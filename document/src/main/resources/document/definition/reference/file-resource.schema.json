@@ -1,0 +1,20 @@
+{
+    "$id": "file-resource.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "File resource",
+    "additionalProperties": false,
+    "properties": {
+        "fileResource": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id"
+            ]
+        }
+    }
+}

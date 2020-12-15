@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ritense.valtimo.mapper">
+
+    <resultMap id="processInstancesDurationResultMap" type="com.ritense.valtimo.web.rest.dto.ProcessInstanceStatisticsDTO">
+        <result property="processName" column="processName" jdbcType="VARCHAR"/>
+        <result property="duration" column="duration" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="processInstancesDuration" parameterType="org.camunda.bpm.engine.impl.db.ListQueryParameterObject" resultMap="processInstancesDurationResultMap">
+        SELECT          avg(DURATION_) AS DURATION
+        ,               ACT_RE_PROCDEF.NAME_ AS PROCESSNAME
+        FROM            ${prefix}ACT_RE_PROCDEF
+        LEFT OUTER JOIN ACT_HI_PROCINST
+        ON              ACT_RE_PROCDEF.KEY_ = ACT_HI_PROCINST.PROC_DEF_KEY_
+        WHERE 1 = 1
+        <if test="parameter.processDefinitionKey != null">
+            AND ACT_RE_PROCDEF.KEY_ = #{parameter.processDefinitionKey, jdbcType=VARCHAR}
+        </if>
+        <if test="parameter.startDate != null">
+            AND ACT_HI_PROCINST.START_TIME_ &gt;= #{parameter.startDate, jdbcType=TIMESTAMP}
+        </if>
+        <if test="parameter.endDate != null">
+            AND ACT_HI_PROCINST.END_TIME_ &lt;= #{parameter.endDate, jdbcType=TIMESTAMP}
+        </if>
+        GROUP BY ACT_RE_PROCDEF.KEY_
+    </select>
+
+    <!-- Process instance search -->
+
+    <resultMap id="processVariablesResultMap" type="com.ritense.valtimo.repository.camunda.dto.Variable">
+        <id property="id" column="VAR_ID_" />
+        <result property="name" column="VAR_NAME_" jdbcType="VARCHAR"/>
+        <result property="textValue" column="VAR_TEXT_" jdbcType="VARCHAR"/>
+        <result property="doubleValue" column="VAR_DOUBLE_" jdbcType="DOUBLE"/>
+        <result property="longValue" column="VAR_LONG_" jdbcType="BIGINT"/>
+        <result property="type" column="VAR_TYPE_" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="searchInstancesResultMap" type="com.ritense.valtimo.repository.camunda.dto.ProcessInstance">
+        <id property="id" column="ID_" jdbcType="VARCHAR"/>
+        <result property="businessKey" column="BUSINESS_KEY_" jdbcType="VARCHAR"/>
+        <result property="deleteReason" column="DELETE_REASON_" jdbcType="VARCHAR"/>
+        <result property="startTime" column="START_TIME_" jdbcType="TIMESTAMP"/>
+        <result property="endTime" column="END_TIME_" jdbcType="TIMESTAMP"/>
+        <result property="processDefinitionKey" column="PROC_DEF_KEY_" jdbcType="VARCHAR"/>
+        <result property="startUserId" column="START_USER_ID_" jdbcType="VARCHAR"/>
+        <collection ofType="com.ritense.valtimo.repository.camunda.dto.Variable" fetchType="eager" property="variables" column="VAR_ID_" resultMap="processVariablesResultMap"/>
+    </resultMap>
+
+    <select id="searchInstances" parameterType="org.camunda.bpm.engine.impl.db.ListQueryParameterObject" resultMap="searchInstancesResultMap">
+        <include refid="com.ritense.valtimo.camunda.common.bindOrderBy">
+            <property name="tablealias" value="PI"/>
+        </include>
+        SELECT    RES.ID_
+        ,         RES.BUSINESS_KEY_
+        ,         RES.DELETE_REASON_
+        ,         RES.START_TIME_
+        ,         RES.END_TIME_
+        ,         RES.PROC_DEF_KEY_
+        ,         RES.START_USER_ID_
+        ,         V.ID_ AS VAR_ID_
+        ,         V.NAME_ AS VAR_NAME_
+        ,         V.TEXT_ AS VAR_TEXT_
+        ,         V.VAR_TYPE_ AS VAR_TYPE_
+        ,         V.TEXT_ AS VAR_TEXT_
+        ,         V.LONG_ AS VAR_LONG_
+        ,         V.DOUBLE_ AS VAR_DOUBLE_
+        FROM      (${limitBefore} SELECT PI.*
+                  FROM ${prefix}ACT_HI_PROCINST PI
+                  <include refid="selectSearchProcessInstancesSqlCriteria"/>
+                  ${orderBy}
+                  ${limitBetween}
+                  ${limitAfter}) RES
+        LEFT OUTER JOIN ${prefix}ACT_HI_VARINST V ON V.PROC_INST_ID_ = RES.ID_
+    </select>
+
+    <select id="searchInstancesCount" parameterType="org.camunda.bpm.engine.impl.db.ListQueryParameterObject" resultType="long">
+        SELECT count( ${distinct} PI.ID_)
+        FROM   ${prefix}ACT_HI_PROCINST PI
+        <include refid="selectSearchProcessInstancesSqlCriteria"/>
+    </select>
+
+    <sql id="selectSearchProcessInstancesSqlCriteria">
+        where 1 = 1
+        <if test="parameter.active != null">
+            <if test="parameter.active">
+                AND PI.END_TIME_ IS NULL
+            </if>
+            <if test="!parameter.active">
+                AND PI.END_TIME_ IS NOT NULL
+            </if>
+        </if>
+        <if test="parameter.fromDate != null">
+            AND PI.START_TIME_ &gt;= #{parameter.fromDate, jdbcType=TIMESTAMP}
+        </if>
+        <if test="parameter.toDate != null">
+            AND PI.START_TIME_ &lt;= #{parameter.toDate, jdbcType=TIMESTAMP}
+        </if>
+        <if test="parameter.dayinPast != null">
+            AND PI.START_TIME_ &lt;= #{parameter.dayinPast, jdbcType=TIMESTAMP}
+        </if>
+        <if test="parameter.processDefinitionName != null">
+            AND PI.PROC_DEF_KEY_ = #{parameter.processDefinitionName, jdbcType=VARCHAR}
+        </if>
+        <if test="parameter.processDefinitionId != null">
+            AND PI.PROC_DEF_ID_ = #{parameter.processDefinitionId, jdbcType=VARCHAR}
+        </if>
+        <if test="parameter.searchStatus != null">
+            AND EXISTS (select V.ID_
+               FROM ${prefix}ACT_HI_TASKINST T
+               WHERE T.PROC_INST_ID_ = PI.ID_
+               AND T.NAME_ = #{parameter.searchStatus, jdbcType=VARCHAR} AND T.END_TIME_ IS NULL)
+        </if>
+        <if test="parameter.businessKey != null">
+            and PI.BUSINESS_KEY_ = #{parameter.businessKey, jdbcType=VARCHAR}
+        </if>
+        <if test="parameter.variables != null">
+            <foreach  item="value" index="key"  collection="parameter.variables.entrySet()">
+                <if test="value != ''">
+                    AND EXISTS (select V.ID_
+                       FROM ${prefix}ACT_HI_VARINST V
+                       WHERE V.PROC_INST_ID_ = PI.PROC_INST_ID_
+                       AND V.NAME_= #{key, jdbcType=VARCHAR} and  UPPER(V.TEXT_) LIKE #{value, jdbcType=VARCHAR})
+                </if>
+            </foreach>
+        </if>
+    </sql>
+
+    <resultMap id="taskResultMap" type="com.ritense.valtimo.repository.camunda.dto.TaskExtended">
+        <id property="id" column="ID_" jdbcType="VARCHAR"/>
+        <result property="businessKey" column="BUSINESS_KEY_" jdbcType="VARCHAR"/>
+        <result property="processDefinitionKey" column="PROCESS_DEFINITION_KEY_" jdbcType="VARCHAR"/>
+        <result property="name" column="NAME_" jdbcType="VARCHAR"/>
+        <result property="parentTaskId" column="PARENT_TASK_ID_" jdbcType="VARCHAR"/>
+        <result property="description" column="DESCRIPTION_" jdbcType="VARCHAR"/>
+        <result property="priority" column="PRIORITY_" jdbcType="INTEGER"/>
+        <result property="created" column="CREATE_TIME_" jdbcType="TIMESTAMP" />
+        <result property="owner" column="OWNER_" jdbcType="VARCHAR"/>
+        <result property="assignee" column="ASSIGNEE_" jdbcType="VARCHAR"/>
+        <result property="delegationState" column="DELEGATION_" jdbcType="VARCHAR"/>
+        <result property="executionId" column="EXECUTION_ID_" jdbcType="VARCHAR" />
+        <result property="processInstanceId" column="PROC_INST_ID_" jdbcType="VARCHAR" />
+        <result property="processDefinitionId" column="PROC_DEF_ID_" jdbcType="VARCHAR"/>
+        <result property="caseExecutionId" column="CASE_EXECUTION_ID_" jdbcType="VARCHAR" />
+        <result property="caseInstanceId" column="CASE_INST_ID_" jdbcType="VARCHAR" />
+        <result property="caseDefinitionId" column="CASE_DEF_ID_" jdbcType="VARCHAR"/>
+        <result property="taskDefinitionKey" column="TASK_DEF_KEY_" jdbcType="VARCHAR"/>
+        <result property="due" column="DUE_DATE_" jdbcType="TIMESTAMP"/>
+        <result property="followUp" column="FOLLOW_UP_DATE_" jdbcType="TIMESTAMP"/>
+        <result property="suspended" column="SUSPENSION_STATE_" jdbcType="INTEGER" />
+        <result property="tenantId" column="TENANT_ID_" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="taskColumnSelection">
+        RES.ID_,
+        RES.NAME_,
+        RES.PARENT_TASK_ID_,
+        RES.DESCRIPTION_,
+        RES.PRIORITY_,
+        RES.CREATE_TIME_,
+        RES.OWNER_,
+        RES.ASSIGNEE_,
+        RES.DELEGATION_,
+        RES.EXECUTION_ID_ AS TASK_EXECUTION_ID_,
+        RES.PROC_INST_ID_,
+        RES.PROC_DEF_ID_,
+        RES.CASE_EXECUTION_ID_,
+        RES.CASE_INST_ID_,
+        RES.CASE_DEF_ID_,
+        RES.TASK_DEF_KEY_,
+        RES.DUE_DATE_,
+        RES.FOLLOW_UP_DATE_,
+        RES.SUSPENSION_STATE_,
+        RES.TENANT_ID_,
+        RES.BUSINESS_KEY_,
+        RES.PROCESS_DEFINITION_KEY_
+    </sql>
+
+    <select id="findTasks"
+            parameterType="org.camunda.bpm.engine.impl.db.ListQueryParameterObject"
+            resultMap="taskResultMap">
+
+        <include refid="com.ritense.valtimo.camunda.common.bindOrderBy">
+            <property name="tablealias" value="RES"/>
+        </include>
+        SELECT      ${distinct} <include refid="taskColumnSelection"/>
+        FROM        (
+            ${limitBefore}
+            SELECT      RES.*
+            ,           EXECUTION.BUSINESS_KEY_
+            ,           ACT_RE_PROCDEF.KEY_ AS PROCESS_DEFINITION_KEY_
+            FROM        ${prefix}ACT_RU_TASK RES
+            <include refid="findTaskWithVariablesCriteriaSqlJoins"/>
+            <include refid="findTaskWithVariablesCriteriaSqlWhere"/>
+            ${limitBetween}
+            ${orderBy}
+            ${limitAfter}
+        ) RES
+    </select>
+
+    <select id="findTasksCount" parameterType="org.camunda.bpm.engine.impl.db.ListQueryParameterObject" resultType="long">
+        SELECT  COUNT( ${distinct} RES.ID_ )
+        FROM    ${prefix}ACT_RU_TASK RES
+        <include refid="findTaskWithVariablesCriteriaSqlJoins"/>
+        <include refid="findTaskWithVariablesCriteriaSqlWhere"/>
+    </select>
+
+    <sql id="findTaskWithVariablesCriteriaSqlJoins">
+        <if test="parameter.candidateGroups != null">
+            INNER JOIN  ${prefix}ACT_RU_IDENTITYLINK I
+            ON          I.TASK_ID_ = RES.ID_
+        </if>
+        INNER JOIN  ${prefix}ACT_RE_PROCDEF
+        ON          ${prefix}ACT_RE_PROCDEF.ID_ = RES.PROC_DEF_ID_
+        INNER JOIN  ${prefix}ACT_RU_EXECUTION EXECUTION
+        ON          EXECUTION.PROC_INST_ID_ = RES.PROC_INST_ID_
+        AND         EXECUTION.BUSINESS_KEY_ IS NOT NULL
+    </sql>
+
+    <sql id="findTaskWithVariablesCriteriaSqlWhere">
+        WHERE 1 = 1
+        <if test="parameter.taskId != null">
+            AND RES.ID_ = #{parameter.taskId, jdbcType=VARCHAR}
+        </if>
+        <if test="parameter.assignee != null">
+            AND RES.ASSIGNEE_ = #{parameter.assignee, jdbcType=VARCHAR}
+        </if>
+        <if test="parameter.candidateGroups != null">
+            <if test="!parameter.includeAssignedTasks">
+                AND RES.ASSIGNEE_ IS NULL
+            </if>
+            AND I.TYPE_ = 'candidate'
+            AND (
+            <if test="parameter.candidateGroups != null &amp;&amp; parameter.candidateGroups.size() &gt; 0">
+                I.GROUP_ID_ IN
+                <foreach item="group" index="index" collection="parameter.candidateGroups"
+                         open="(" separator="," close=")">
+                    #{group}
+                </foreach>
+            </if>
+            )
+        </if>
+        <if test="parameter.processDefinitionKeys != null &amp;&amp; parameter.processDefinitionKeys.size() &gt; 0">
+            AND
+            (
+            ACT_RE_PROCDEF.KEY_ IN
+            <foreach item="processKey" index="index" collection="parameter.processDefinitionKeys" open="(" separator=","
+                     close=")">
+                #{processKey}
+            </foreach>
+            )
+        </if>
+        <!-- If the processDefinitionKeys is set but empty, return nothing. -->
+        <if test="parameter.processDefinitionKeys != null &amp;&amp; parameter.processDefinitionKeys.size() == 0">
+            AND 0 = 1
+        </if>
+    </sql>
+
+    <!-- Dashboard instance count query -->
+    <resultMap id="instanceCountResultMap" type="com.ritense.valtimo.repository.camunda.dto.InstanceCount">
+        <id property="name" column="NAME_" jdbcType="VARCHAR"/>
+        <collection ofType="com.ritense.valtimo.repository.camunda.dto.InstanceCountValue" fetchType="eager" property="values" column="DATE_" resultMap="instanceCountResultValuesMap"/>
+    </resultMap>
+
+    <resultMap id="instanceCountResultValuesMap" type="com.ritense.valtimo.repository.camunda.dto.InstanceCountValue">
+        <id property="date" column="DATE_" jdbcType="DATE"/>
+        <result property="count" column="COUNT_" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="getInstanceCount" parameterType="java.util.Map" resultMap="instanceCountResultMap">
+        SELECT      DEF.NAME_ AS NAME_
+        ,           ${truncDatepart1}PI.START_TIME_${truncDatepart2} AS DATE_
+        ,           count(1) AS COUNT_
+        FROM        ${prefix}ACT_HI_PROCINST AS PI
+        INNER JOIN  ${prefix}ACT_RE_PROCDEF AS DEF
+        ON          PI.PROC_DEF_ID_  = DEF.ID_
+        WHERE       PI.START_TIME_ >= #{dateFrom, jdbcType=TIMESTAMP}
+        <if test="key != null">
+          AND       DEF.KEY_ = #{key, jdbcType=VARCHAR}
+        </if>
+        GROUP BY    DEF.NAME_
+        ,           ${truncDatepart1}PI.START_TIME_${truncDatepart2}
+    </select>
+
+    <!-- Pending tasks per Role -->
+    <resultMap id="pendingTasksPerRoleResultMap" type="com.ritense.valtimo.repository.camunda.dto.Serie">
+        <id property="name" column="NAME_" jdbcType="VARCHAR"/>
+        <result property="count" column="COUNT_" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="pendingTasksPerRole" parameterType="java.util.Map" resultMap="pendingTasksPerRoleResultMap">
+       SELECT     ACT_RU_IDENTITYLINK.GROUP_ID_ AS NAME_
+       ,          count(1) AS COUNT_
+       FROM       ${prefix}ACT_HI_TASKINST
+       INNER JOIN ACT_RU_IDENTITYLINK
+       ON         ACT_HI_TASKINST.ID_ = ACT_RU_IDENTITYLINK.TASK_ID_
+       INNER JOIN ${prefix}ACT_RE_PROCDEF
+       ON         ACT_HI_TASKINST.PROC_DEF_ID_ = ACT_RE_PROCDEF.ID_
+       WHERE      ACT_HI_TASKINST.END_TIME_ IS NULL
+        <if test="processDefinitionKey != null">
+          AND ACT_RE_PROCDEF.KEY_= #{processDefinitionKey, jdbcType=VARCHAR}
+        </if>
+        <if test="begin != null &amp;&amp; end != null">
+          AND ACT_HI_TASKINST.START_TIME_ BETWEEN #{begin, jdbcType=TIMESTAMP} AND #{end, jdbcType=TIMESTAMP}
+        </if>
+        GROUP BY  ACT_RU_IDENTITYLINK.GROUP_ID_
+    </select>
+
+    <select id="getProcessInstancesByProcessDataObjectObject" parameterType="org.camunda.bpm.engine.impl.db.ListQueryParameterObject" resultMap="searchInstancesResultMap">
+        <include refid="com.ritense.valtimo.camunda.common.bindOrderBy">
+            <property name="tablealias" value="PI"/>
+        </include>
+        SELECT
+            RES.ID_,
+            RES.BUSINESS_KEY_,
+            RES.DELETE_REASON_,
+            RES.START_TIME_,
+            RES.END_TIME_,
+            RES.PROC_DEF_KEY_,
+            RES.START_USER_ID_,
+            RES.STATE_ = 'SUSPENDED' AS SUSPENDED,
+            V.ID_ AS VAR_ID_,
+            V.NAME_ AS VAR_NAME_,
+            V.TEXT_ AS VAR_TEXT_,
+            V.VAR_TYPE_ AS VAR_TYPE_,
+            V.TEXT_ AS VAR_TEXT_,
+            V.LONG_ AS VAR_LONG_,
+            V.DOUBLE_ AS VAR_DOUBLE_
+        FROM
+            (${limitBefore} SELECT PI.*
+            FROM
+                ${prefix}ACT_HI_PROCINST PI
+            INNER JOIN process_data_object_relation PDR ON PI.ID_ = PDR.process_instance_id
+            <include refid="selectSearchProcessInstancesSqlCriteria"/>
+                AND PDR.obj_type = #{parameter.objType, jdbcType=VARCHAR}
+                AND PDR.obj_id = #{parameter.objId, jdbcType=VARCHAR}
+            ${orderBy}
+            ${limitBetween}
+            ${limitAfter}) RES
+        LEFT JOIN ${prefix}ACT_HI_VARINST V ON V.PROC_INST_ID_ = RES.ID_
+    </select>
+
+    <select id="getProcessInstancesByProcessDataObjectObjectCount" parameterType="org.camunda.bpm.engine.impl.db.ListQueryParameterObject" resultType="long">
+        SELECT count( ${distinct} PI.ID_)
+        FROM   ${prefix}ACT_HI_PROCINST PI
+        INNER JOIN process_data_object_relation PDR ON PI.ID_ = PDR.process_instance_id
+        <include refid="selectSearchProcessInstancesSqlCriteria"/>
+        AND PDR.obj_type = #{parameter.objType, jdbcType=VARCHAR} AND PDR.obj_id = #{parameter.objId, jdbcType=VARCHAR}
+    </select>
+
+</mapper>

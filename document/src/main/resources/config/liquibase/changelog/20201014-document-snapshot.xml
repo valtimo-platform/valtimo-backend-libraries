@@ -1,0 +1,52 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="klaasschuijtemaker (generated)" id="1602750329017-4">
+        <createTable tableName="json_schema_document_snapshot">
+            <column name="json_schema_document_snapshot_id" type="BINARY(16)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="json_schema_document_snapshotPK"/>
+            </column>
+            <column name="json_schema_document_snapshot_created_on" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="json_schema_document_snapshot_created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="json_schema_document_id" type="BINARY(16)"/>
+            <column name="json_document_content" type="JSON"/>
+            <column name="document_definition_name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_definition_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_created_on" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_modified_on" type="TIMESTAMP"/>
+            <column name="document_created_by" type="VARCHAR(255)"/>
+            <column name="document_sequence" type="BIGINT"/>
+            <column name="document_relations" type="JSON"/>
+            <column name="document_related_files" type="JSON"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

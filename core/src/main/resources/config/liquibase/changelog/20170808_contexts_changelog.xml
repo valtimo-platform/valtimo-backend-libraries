@@ -1,0 +1,119 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+	<changeSet author="tom bokma (generated)" id="1502291095179-1">
+		<createSequence sequenceName="hibernate_sequence"/>
+	</changeSet>
+	<changeSet author="tom bokma (generated)" id="1502291095179-2">
+		<createTable tableName="context">
+			<column autoIncrement="true" name="context_id" type="BIGINT">
+				<constraints primaryKey="true" primaryKeyName="contextPK"/>
+			</column>
+			<column name="name" type="VARCHAR(250)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="tom bokma (generated)" id="1502291095179-3">
+		<createTable tableName="context_processes">
+			<column name="context_id" type="BIGINT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="process" type="VARCHAR(500)"/>
+		</createTable>
+	</changeSet>
+	<changeSet author="tom bokma (generated)" id="1502291095179-4">
+		<createTable tableName="context_roles">
+			<column name="context_id" type="BIGINT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="role" type="VARCHAR(500)"/>
+		</createTable>
+	</changeSet>
+	<changeSet author="tom bokma (generated)" id="1502291095179-5">
+		<createTable tableName="menu_item">
+			<column autoIncrement="true" name="menu_item_id" type="BIGINT">
+				<constraints primaryKey="true" primaryKeyName="menu_itemPK"/>
+			</column>
+			<column name="name" type="VARCHAR(500)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="url" type="VARCHAR(500)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="context_id" type="BIGINT">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="tom bokma (generated)" id="1502291095179-6">
+		<createTable tableName="user_context">
+			<column name="user_id" type="VARCHAR(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="context_id" type="BIGINT">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="tom bokma (generated)" id="1502291095179-7">
+		<addPrimaryKey columnNames="user_id" constraintName="user_contextPK" tableName="user_context"/>
+	</changeSet>
+	<changeSet author="tom bokma (generated)" id="1502291095179-8">
+		<addUniqueConstraint columnNames="name" constraintName="UC_CONTEXTNAME_COL" tableName="context"/>
+	</changeSet>
+	<changeSet author="tom bokma (generated)" id="1502291095179-9">
+		<addUniqueConstraint columnNames="user_id" constraintName="UC_USER_CONTEXTUSER_ID_COL"
+							 tableName="user_context"/>
+	</changeSet>
+	<changeSet author="tom bokma (generated)" id="1502291095179-10">
+		<addForeignKeyConstraint baseColumnNames="context_id" baseTableName="menu_item"
+								 constraintName="FKdnbt8o03rp7290nxug13ug63e" deferrable="false"
+								 initiallyDeferred="false" referencedColumnNames="context_id"
+								 referencedTableName="context"/>
+	</changeSet>
+	<changeSet author="tom bokma (generated)" id="1502291095179-11">
+		<addForeignKeyConstraint baseColumnNames="context_id" baseTableName="context_roles"
+								 constraintName="FKfde2i77mrtal49f6clqih2f5p" deferrable="false"
+								 initiallyDeferred="false" referencedColumnNames="context_id"
+								 referencedTableName="context"/>
+	</changeSet>
+	<changeSet author="tom bokma (generated)" id="1502291095179-12">
+		<addForeignKeyConstraint baseColumnNames="context_id" baseTableName="context_processes"
+								 constraintName="FKha540k91fhaleu4q8m6x342t4" deferrable="false"
+								 initiallyDeferred="false" referencedColumnNames="context_id"
+								 referencedTableName="context"/>
+	</changeSet>
+
+	<changeSet author="tom bokma (generated)" id="1502112472863-15">
+		<loadData encoding="UTF-8"
+				  file="config/liquibase/import/defaultContext.csv"
+				  separator=";"
+				  tableName="context"/>
+	</changeSet>
+
+	<changeSet author="tom bokma (generated)" id="1502112472863-16">
+		<loadData encoding="UTF-8"
+				  file="config/liquibase/import/defaultContextRoles.csv"
+				  separator=";"
+				  tableName="context_roles"/>
+	</changeSet>
+
+</databaseChangeLog>

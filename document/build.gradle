@@ -1,0 +1,59 @@
+/*
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+dependencies {
+    implementation project(':contract')
+    implementation project(':resource')
+
+    implementation "org.springframework.boot:spring-boot-autoconfigure"
+
+    implementation group: 'org.liquibase', name: 'liquibase-core', version: '3.8.5'
+    implementation group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '3.8'
+    implementation group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
+
+    implementation group: 'com.vladmihalcea', name: 'hibernate-types-52', version: '2.9.3'
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.19'
+
+    implementation "org.hibernate:hibernate-core"
+
+    implementation "org.apache.commons:commons-lang3:3.8.1"
+
+    implementation "com.fasterxml.jackson.core:jackson-annotations"
+    implementation "com.fasterxml.jackson.module:jackson-module-afterburner"
+    implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+
+    implementation group: 'org.json', name: 'json', version: '20200518'
+    implementation group: 'com.github.erosb', name: 'everit-json-schema', version: '1.12.1'
+    implementation group: 'com.flipkart.zjsonpatch', name: 'zjsonpatch', version: '0.4.10'
+    implementation group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.5.RELEASE'
+    implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
+
+    annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
+
+    testImplementation project(path: ":core", configuration: 'testOutput')
+    testImplementation "org.testcontainers:mysql"
+    testImplementation "org.testcontainers:junit-jupiter"
+    testImplementation "org.springframework.security:spring-security-test"
+
+    jar {
+        enabled = true
+        manifest {
+            attributes("Implementation-Title": "Ritense Document module")
+            attributes("Implementation-Version": projectVersion)
+        }
+    }
+}

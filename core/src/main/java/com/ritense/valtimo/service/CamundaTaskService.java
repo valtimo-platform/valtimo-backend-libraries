@@ -1,0 +1,273 @@
+/*
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.ritense.valtimo.service;
+
+import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
+import com.ritense.valtimo.contract.event.TaskAssignedEvent;
+import com.ritense.valtimo.contract.utils.RequestHelper;
+import com.ritense.valtimo.contract.utils.SecurityUtils;
+import com.ritense.valtimo.domain.contexts.Context;
+import com.ritense.valtimo.domain.contexts.ContextProcess;
+import com.ritense.valtimo.helper.DelegateTaskHelper;
+import com.ritense.valtimo.repository.CamundaTaskRepository;
+import com.ritense.valtimo.repository.camunda.dto.TaskExtended;
+import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
+import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
+import com.ritense.valtimo.service.util.FormUtils;
+import com.ritense.valtimo.web.rest.dto.TaskCompletionDTO;
+import lombok.RequiredArgsConstructor;
+import org.camunda.bpm.engine.AuthorizationException;
+import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.ProcessEngineException;
+import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.delegate.DelegateTask;
+import org.camunda.bpm.engine.form.TaskFormData;
+import org.camunda.bpm.engine.impl.form.validator.FormFieldValidationException;
+import org.camunda.bpm.engine.rest.dto.task.IdentityLinkDto;
+import org.camunda.bpm.engine.rest.dto.task.TaskDto;
+import org.camunda.bpm.engine.task.IdentityLink;
+import org.camunda.bpm.engine.task.Task;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toSet;
+
+@RequiredArgsConstructor
+public class CamundaTaskService {
+
+    private static final String NO_USER = null;
+    private final TaskService taskService;
+    private final FormService formService;
+    private final ContextService contextService;
+    private final DelegateTaskHelper delegateTaskHelper;
+    private final CamundaTaskRepository camundaTaskRepository;
+    private final CamundaProcessService camundaProcessService;
+    private final Optional<ResourceService> optionalResourceService;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final RuntimeService runtimeService;
+
+    public Task findTaskById(String taskId) {
+        Task task;
+        try {
+            task = taskService.createTaskQuery().taskId(taskId).initializeFormKeys().singleResult();
+        } catch (ProcessEngineException e) {
+            throw new IllegalStateException(String.format("Found more than one task for id %s", taskId));
+        }
+        if (task == null) {
+            throw new TaskNotFoundException(String.format("Cannot find task %s", taskId));
+        }
+        return task;
+    }
+
+    public void assign(String taskId, String newAssignee) throws IllegalStateException {
+        final Task task = findTaskById(taskId);
+        final String currentAssignee = task.getAssignee();
+        try {
+            taskService.setAssignee(task.getId(), newAssignee);
+            publishTaskAssignedEvent((DelegateTask) task, currentAssignee, newAssignee);
+        } catch (AuthorizationException ex) {
+            throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
+        } catch (ProcessEngineException ex) {
+            throw new IllegalStateException("Cannot claim task: reason is the task doesn't exist.", ex);
+        }
+    }
+
+    public void unassign(String taskId) {
+        final Task task = findTaskById(taskId);
+        try {
+            taskService.setAssignee(task.getId(), NO_USER);
+        } catch (AuthorizationException ex) {
+            throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
+        } catch (ProcessEngineException ex) {
+            throw new IllegalStateException("Cannot claim task: reason is the task doesn't exist.", ex);
+        }
+    }
+
+    public void completeTaskWithoutFormData(String taskId) {
+        taskService.complete(taskId);
+    }
+
+    public void completeTask(String taskId, Map<String, Object> variables) {
+        final Task task = findTaskById(taskId);
+        try {
+            if (variables == null || variables.isEmpty()) {
+                completeTaskWithoutFormData(task.getId());
+            } else {
+                formService.submitTaskForm(task.getId(), FormUtils.createTypedVariableMap(variables));
+            }
+        } catch (FormFieldValidationException ex) {
+            throw ex;
+        } catch (ProcessEngineException ex) {
+            throw new IllegalStateException("Cannot complete task: when no task exists with the given id.", ex);
+        }
+    }
+
+    public void completeTaskAndDeleteFiles(String taskId, TaskCompletionDTO taskCompletionDTO) {
+        completeTask(taskId, taskCompletionDTO.getVariables());
+        optionalResourceService.ifPresent(amazonS3Service -> taskCompletionDTO.getFilesToDelete().forEach(amazonS3Service::removeResource));
+    }
+
+    public Page<TaskExtended> findTasksFiltered(TaskFilter taskFilter, Pageable pageable) throws IllegalAccessException {
+        var parameters = buildTaskFilterParameters(taskFilter);
+        return camundaTaskRepository.findTasks(pageable, parameters);
+    }
+
+    public List<TaskInstanceWithIdentityLink> getProcessInstanceTasks(String processInstanceId, String businessKey) {
+        return taskService
+            .createTaskQuery()
+            .processInstanceId(processInstanceId)
+            .orderByTaskCreateTime()
+            .desc()
+            .list()
+            .stream()
+            .map(task -> {
+                final var identityLinks = getIdentityLinks(task.getId());
+                return new TaskInstanceWithIdentityLink(
+                    businessKey,
+                    TaskDto.fromEntity(task),
+                    delegateTaskHelper.isTaskPublic(task),
+                    getProcessDefinitionKey(task.getProcessDefinitionId()),
+                    identityLinks
+                );
+            })
+            .collect(Collectors.toList());
+    }
+
+    public List<IdentityLinkDto> getIdentityLinks(String taskId) {
+        final List<IdentityLink> identityLinksForTask = taskService.getIdentityLinksForTask(taskId);
+        return identityLinksForTask.stream().map(IdentityLinkDto::fromIdentityLink).collect(Collectors.toList());
+    }
+
+    public Map<String, Object> getTaskVariables(String taskInstanceId) {
+        return taskService.getVariables(taskInstanceId);
+    }
+
+    public enum TaskFilter {
+        MINE, OPEN, ALL
+    }
+
+    private void publishTaskAssignedEvent(DelegateTask task, String formerAssignee, String newAssignee) {
+        final String businessKey = runtimeService
+            .createProcessInstanceQuery()
+            .processInstanceId(task.getProcessInstanceId())
+            .singleResult()
+            .getBusinessKey();
+
+        applicationEventPublisher.publishEvent(
+            new TaskAssignedEvent(
+                UUID.randomUUID(),
+                RequestHelper.getOrigin(),
+                LocalDateTime.now(),
+                SecurityUtils.getCurrentUserLogin(),
+                formerAssignee,
+                newAssignee,
+                task.getId(),
+                task.getName(),
+                LocalDateTime.ofInstant(task.getCreateTime().toInstant(), ZoneId.systemDefault()),
+                task.getProcessDefinitionId(),
+                task.getProcessInstanceId(),
+                businessKey
+            )
+        );
+    }
+
+    private Map<String, Object> buildTaskFilterParameters(TaskFilter taskFilter) throws IllegalAccessException {
+        Map<String, Object> parameters = new HashMap<>();
+        String currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        List<String> userRoles = SecurityUtils.getCurrentUserRoles();
+
+        if (taskFilter == TaskFilter.MINE) {
+            if (currentUserLogin == null) {
+                throw new IllegalStateException("Cannot find currentUserLogin");
+            }
+            parameters.put("assignee", currentUserLogin);
+            parameters.put("includeAssignedTasks", true);
+        } else if (taskFilter == TaskFilter.ALL) {
+            parameters.put("candidateGroups", userRoles);
+            parameters.put("includeAssignedTasks", true);
+        } else if (taskFilter == TaskFilter.OPEN) {
+            parameters.put("candidateGroups", userRoles);
+        }
+
+        //Always filter on context
+        Context context = contextService.getContextOfCurrentUser();
+        parameters.put("processDefinitionKeys", context.getProcesses().stream().map(ContextProcess::getProcessDefinitionKey).collect(toSet()));
+        return parameters;
+    }
+
+    private boolean isAnyGroupsCriteriaPresentInRequiredUserGroups(SearchByUserGroupsCriteria groupsCriteria, String[] roleList) {
+        for (String orQuery : roleList) {
+            if (groupsCriteria.containsRequiredUserGroup(orQuery)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasTaskFormData(String taskId) {
+        final TaskFormData taskFormData = formService.getTaskFormData(taskId);
+        return taskFormData == null || taskFormData.getFormKey() != null || taskFormData.getFormFields().size() != 0;
+    }
+
+    private SearchByUserGroupsCriteria prepareGroupCriteria(List<String> groupsDbResult) {
+        SearchByUserGroupsCriteria groupsCriteria = new SearchByUserGroupsCriteria();
+        for (String role : groupsDbResult) {
+            String[] roleList = role.split(",");
+            if (roleList.length == 1) {
+                groupsCriteria.addToRequiredUserGroups(roleList[0]);
+            }
+        }
+        for (String role : groupsDbResult) {
+            String[] roleList = role.split(",");
+            if (roleList.length == 1 || isAnyGroupsCriteriaPresentInRequiredUserGroups(groupsCriteria, roleList)) {
+                continue;
+            }
+            groupsCriteria.addToOrUserGroups(new HashSet<>(Arrays.asList(roleList)));
+        }
+        return groupsCriteria;
+    }
+
+    /**
+     * Gets the process definition key based on the process definition id. See url below that explains how the Id is created.
+     * https://github.com/camunda/camunda-bpm-platform/blob/master/engine/src/main/java/org/camunda/bpm/engine/impl/AbstractDefinitionDeployer.java#L331-L351
+     *
+     * @param processDefinitionId The ID of the process definition
+     * @return The key of the process definition
+     */
+    private String getProcessDefinitionKey(String processDefinitionId) {
+        if (processDefinitionId.contains(":")) {
+            return processDefinitionId.substring(0, processDefinitionId.indexOf(':'));
+        } else {
+            return camundaProcessService.findProcessDefinitionById(processDefinitionId).getKey();
+        }
+    }
+
+}

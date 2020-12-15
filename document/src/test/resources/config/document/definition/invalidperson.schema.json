@@ -1,0 +1,17 @@
+{
+    "title": "Person",
+    "type": "objectaaaa",
+    "properties": {
+        "firstName": {
+            "type": "string",
+            "description": "The person's first name.",
+            "maxLength": 100,
+            "pattern": "Check first letter is ucase"
+        },
+        "age": {
+            "description": "Age in years which must be equal to or greater than zero.",
+            "type": "integer",
+            "minimum": 0
+        }
+    }
+}

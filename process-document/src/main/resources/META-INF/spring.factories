@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.ritense.processdocument.autoconfigure.ProcessDocumentAutoConfiguration, \
+  com.ritense.processdocument.autoconfigure.ProcessDocumentAuditAutoConfiguration, \
+  com.ritense.processdocument.autoconfigure.SecurityAutoConfiguration, \
+  com.ritense.processdocument.autoconfigure.LiquibaseAutoConfiguration

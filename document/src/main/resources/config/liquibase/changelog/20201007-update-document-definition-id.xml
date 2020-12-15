@@ -1,0 +1,77 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Klaas Schuijtemaker" id="rename_name_and_version_column_document_definition_sequence_record_1">
+        <renameColumn tableName="json_schema_document"
+                      oldColumnName="name"
+                      newColumnName="document_definition_name"
+                      columnDataType="VARCHAR(50)"/>
+        <renameColumn tableName="json_schema_document_definition"
+                      oldColumnName="name"
+                      newColumnName="document_definition_name"
+                      columnDataType="VARCHAR(50)"/>
+        <renameColumn tableName="json_schema_document_definition_sequence_record"
+                      oldColumnName="name"
+                      newColumnName="document_definition_name"
+                      columnDataType="VARCHAR(50)"/>
+        <renameColumn tableName="json_schema_document_definition_sequence_record"
+                      oldColumnName="version"
+                      newColumnName="sequence_version"
+                      columnDataType="BIGINT"/>
+    </changeSet>
+
+    <changeSet author="Klaas Schuijtemaker" id="add_column_document_definition_version_1">
+        <addColumn tableName="json_schema_document">
+            <column name="document_definition_version" defaultValue="1" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="json_schema_document_definition">
+            <column name="document_definition_version" defaultValue="1" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="json_schema_document_definition_sequence_record">
+            <column name="document_definition_version" defaultValue="1" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="Klaas Schuijtemaker" id="drop_unique_constraint_document_definition_definition_name_1">
+        <dropPrimaryKey tableName="json_schema_document_definition"
+                        constraintName="json_schema_document_definitionPK"
+                        uniqueColumns="document_definition_name"/>
+        <dropPrimaryKey tableName="json_schema_document_definition_sequence_record"
+                        constraintName="json_schema_document_definition_sequence_recordPK"
+                        uniqueColumns="document_definition_name"/>
+    </changeSet>
+
+    <changeSet author="Klaas Schuijtemaker" id="add_unique_constraint_document_definition_name_version_1">
+        <addPrimaryKey tableName="json_schema_document_definition"
+                       constraintName="json_schema_document_definitionPK"
+                       columnNames="document_definition_name, document_definition_version"/>
+        <addPrimaryKey tableName="json_schema_document_definition_sequence_record"
+                       constraintName="json_schema_document_definition_sequence_recordPK"
+                       columnNames="document_definition_name, document_definition_version"/>
+    </changeSet>
+
+</databaseChangeLog>

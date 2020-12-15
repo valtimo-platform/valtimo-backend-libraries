@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <include file="changelog/20190712-create-document-domain-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20190815-document-dates-added-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20190916-document-created-by-added-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20191014-document-definition-sequence.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20191018-document-relationships.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20191018-document-indexes.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20200310-document-related-files.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20201007-update-document-definition-id.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20201014-document-snapshot.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

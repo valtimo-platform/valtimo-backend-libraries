@@ -1,0 +1,32 @@
+{
+    "$id": "array-example.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "array examples",
+    "type": "object",
+    "additionalProperties": false,
+    "definitions": {
+        "fileResource": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id"
+            ]
+        }
+    },
+    "properties": {
+        "files": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/fileResource",
+                "uniqueItems": false,
+                "additionalItems": true,
+                "additionalProperties": false
+            }
+        }
+    }
+}

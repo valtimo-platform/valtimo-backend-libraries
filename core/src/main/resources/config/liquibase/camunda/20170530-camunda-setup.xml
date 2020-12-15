@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="2" author="Ron Alders">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <tableExists tableName="ACT_RE_DECISION_REQ_DEF"/>
+            </not>
+            <and>
+                <tableExists tableName="ACT_RU_EXECUTION"/>
+            </and>
+        </preConditions>
+        <comment>Camunda 7.5 upgrade to 7.6</comment>
+        <sqlFile path="20170530-mysql_engine_7.5_to_7.6.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="3" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <and>
+                <tableExists tableName="ACT_RU_EVENT_SUBSCR"/>
+                <sqlCheck expectedResult="64">
+                    SELECT character_maximum_length
+                    FROM INFORMATION_SCHEMA.COLUMNS
+                    WHERE TABLE_NAME = 'ACT_RU_EVENT_SUBSCR'
+                    AND COLUMN_NAME = 'ACTIVITY_ID_'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <comment>Camunda 7.6 upgrade to 7.6.1</comment>
+        <sqlFile path="mysql_engine_7.6_patch_7.6.0_to_7.6.1.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="4" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_EXT_TASK_ERR_DETAILS"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.6.2 upgrade to 7.6.3</comment>
+        <sqlFile path="mysql_engine_7.6_patch_7.6.2_to_7.6.3.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="5" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <tableExists tableName="ACT_HI_EXT_TASK_LOG"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.6 upgrade to 7.7</comment>
+        <sqlFile path="mysql_engine_7.6_to_7.7.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="6" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <and>
+                <tableExists tableName="ACT_GE_PROPERTY"/>
+                <sqlCheck expectedResult="0">
+                    SELECT count(*)
+                    FROM ACT_GE_PROPERTY
+                    WHERE NAME_ = 'startup.lock'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <comment>Camunda 7.7.3 upgrade to 7.7.4</comment>
+        <sqlFile path="mysql_engine_7.7_patch_7.7.3_to_7.7.4.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="7" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_JOB_LOG_EX_STACK"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.7.4 upgrade to 7.7.5(1)</comment>
+        <sqlFile path="mysql_engine_7.7_patch_7.7.4_to_7.7.5_1.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="8" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <and>
+                <tableExists tableName="ACT_RU_AUTHORIZATION"/>
+                <sqlCheck expectedResult="64">
+                    SELECT character_maximum_length
+                    FROM INFORMATION_SCHEMA.COLUMNS
+                    WHERE TABLE_NAME = 'ACT_RU_AUTHORIZATION'
+                    AND COLUMN_NAME = 'RESOURCE_ID_'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <comment>Camunda 7.7.4 upgrade to 7.7.5(2)</comment>
+        <sqlFile path="mysql_engine_7.7_patch_7.7.4_to_7.7.5_2.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="9" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_ACT_INST_STATS"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.7.5 upgrade to 7.7.6</comment>
+        <sqlFile path="mysql_engine_7.7_patch_7.7.5_to_7.7.6.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="10" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_PI_PDEFID_END_TIME"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.7.8 upgrade to 7.7.9(1)</comment>
+        <sqlFile path="mysql_engine_7.7_patch_7.7.8_to_7.7.9_1.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="11" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_CASE_EXE_CASE_INST"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.7.8 upgrade to 7.7.9(2)</comment>
+        <sqlFile path="mysql_engine_7.7_patch_7.7.8_to_7.7.9_2.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="12" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <and>
+                <tableExists tableName="ACT_HI_VARINST"/>
+                <sqlCheck expectedResult="0">
+                    SELECT count(*)
+                    FROM INFORMATION_SCHEMA.COLUMNS
+                    WHERE TABLE_NAME = 'ACT_HI_VARINST'
+                    AND COLUMN_NAME = 'STATE_'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <comment>Camunda 7.7 upgrade to 7.8</comment>
+        <sqlFile path="mysql_engine_7.7_to_7.8.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="13" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_CASE_EXE_CASE_INST"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.8.0 upgrade to 7.8.1</comment>
+        <sqlFile path="mysql_engine_7.8_patch_7.8.0_to_7.8.1.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="14" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_PI_PDEFID_END_TIME"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.8.4 upgrade to 7.8.5</comment>
+        <sqlFile path="mysql_engine_7.8_patch_7.8.4_to_7.8.5.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="15" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_CASE_EXE_CASE_INST"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.8.7 upgrade to 7.8.8</comment>
+        <sqlFile path="mysql_engine_7.8_patch_7.8.7_to_7.8.8.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="16" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_DETAIL_TASK_BYTEAR"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.8.11 upgrade to 7.8.12</comment>
+        <sqlFile path="mysql_engine_7.8_patch_7.8.11_to_7.8.12.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="17" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_TASK_INST_START"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.8.12 upgrade to 7.8.13(1)</comment>
+        <sqlFile path="mysql_engine_7.8_patch_7.8.12_to_7.8.13_1.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="18" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_OP_LOG_TIMESTAMP"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.8.12 upgrade to 7.8.13(2)</comment>
+        <sqlFile path="mysql_engine_7.8_patch_7.8.12_to_7.8.13_2.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="19" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <and>
+                <tableExists tableName="ACT_ID_USER"/>
+                <sqlCheck expectedResult="0">
+                    SELECT count(*)
+                    FROM INFORMATION_SCHEMA.COLUMNS
+                    WHERE TABLE_NAME = 'ACT_ID_USER'
+                    AND COLUMN_NAME = 'LOCK_EXP_TIME_'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <comment>Camunda 7.8 upgrade to 7.9</comment>
+        <sqlFile path="mysql_engine_7.8_to_7.9.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="20" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_OP_LOG_TASK"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.9.0 upgrade to 7.9.1</comment>
+        <sqlFile path="mysql_engine_7.9_patch_7.9.0_to_7.9.1.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="21" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_CASE_EXE_CASE_INST"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.9.1 upgrade to 7.9.2</comment>
+        <sqlFile path="mysql_engine_7.9_patch_7.9.1_to_7.9.2.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="22" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_DETAIL_TASK_BYTEAR"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.9.5 upgrade to 7.9.6</comment>
+        <sqlFile path="mysql_engine_7.9_patch_7.9.5_to_7.9.6.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="23" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_TASK_INST_START"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.9.6 upgrade to 7.9.7(1)</comment>
+        <sqlFile path="mysql_engine_7.9_patch_7.9.6_to_7.9.7_1.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="24" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_OP_LOG_TIMESTAMP"/>
+            </not>
+        </preConditions>
+        <comment>Camunda 7.9.6 upgrade to 7.9.7(2)</comment>
+        <sqlFile path="mysql_engine_7.9_patch_7.9.6_to_7.9.7_2.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="25" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <and>
+                <tableExists tableName="ACT_RE_PROCDEF"/>
+                <sqlCheck expectedResult="0">
+                    SELECT count(*)
+                    FROM INFORMATION_SCHEMA.COLUMNS
+                    WHERE TABLE_NAME = 'ACT_RE_PROCDEF'
+                    AND COLUMN_NAME = 'STARTABLE_'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <comment>Camunda 7.9 upgrade to 7.10</comment>
+        <sqlFile path="mysql_engine_7.9_to_7.10.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,19 @@
+{
+    "$id": "referenced-array.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Referenced array",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "addresses": {
+            "type": "array",
+            "items": {
+                "$ref": "address.schema.json"
+            },
+            "additionalItems": false,
+            "uniqueItems": false,
+            "maxItems": 3,
+            "minimum": 0
+        }
+    }
+}

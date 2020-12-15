@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <include file="camunda/20170530-camunda-setup.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/process-definition-version-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/initial-domain-tables.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20170228-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20170530-auditevents.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20170621-auditevents-changed-value-column-datatype.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20170808_contexts_changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20171127-aditional_roles.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/initial-process-data-object.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20180219-authorities-fix.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20180801-auditevents-added-column-action.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20180824-auditevents-added-column-unique_id.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20180919-context-processes.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20190719-email-notification-settings-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20190828-email-settings-changed-changelog.xml" relativeToChangelogFile="true"/>
+
+
+</databaseChangeLog>

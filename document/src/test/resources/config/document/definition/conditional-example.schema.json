@@ -1,0 +1,36 @@
+{
+    "$id": "conditional-example.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "conditional-example",
+    "type": "object",
+    "properties": {
+        "next": {
+            "type": "string"
+        },
+        "status": {
+            "enum": [
+                "1",
+                "2",
+                "3"
+            ]
+        }
+    },
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "status": {
+                        "const": "1"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "next": {
+                        "default": "2"
+                    }
+                }
+            }
+        }
+    ]
+}

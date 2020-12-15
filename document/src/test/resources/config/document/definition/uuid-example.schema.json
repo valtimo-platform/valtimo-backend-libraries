@@ -1,0 +1,12 @@
+{
+    "$id": "uuid-example.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "uuid-example",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "format": "uuid"
+        }
+    }
+}

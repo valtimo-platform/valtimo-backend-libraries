@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_12j1sji" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.1.0">
+  <bpmn:process id="loan-process-demo" name="Lening aanvraag process" isExecutable="true">
+    <bpmn:startEvent id="start-event" camunda:formKey="formio:new-load-request">
+      <bpmn:extensionElements>
+        <camunda:formData businessKey="emailadres">
+          <camunda:formField id="voornaam" label="Voornaam" type="string" />
+          <camunda:formField id="achternaam" label="Achternaam" type="string" />
+          <camunda:formField id="emailadres" label="Emailadres" type="string" />
+          <camunda:formField id="jaar-omzet" label="Jaar omzet" type="string" />
+          <camunda:formField id="leen-bedrag" label="Leen bedrag" type="string" />
+          <camunda:formField id="lening-startdatum" label="Startdatum lening" type="date" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_1abb79g</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="end-event">
+      <bpmn:incoming>SequenceFlow_0j10547</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1abb79g" sourceRef="start-event" targetRef="form-task" />
+    <bpmn:sequenceFlow id="SequenceFlow_0j10547" sourceRef="form-task" targetRef="end-event" />
+    <bpmn:userTask id="form-task" name="Akkoord op lening?" camunda:formKey="formio:user-task" camunda:candidateGroups="ROLE_DEVELOPER">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="lening-akkoord" label="Lening akkoord?" type="boolean" />
+          <camunda:formField id="upload" label="File" type="FileUpload" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1abb79g</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0j10547</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="loan-process-demo">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start-event">
+        <dc:Bounds x="168" y="81" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_030pkfh_di" bpmnElement="end-event">
+        <dc:Bounds x="492" y="81" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1abb79g_di" bpmnElement="SequenceFlow_1abb79g">
+        <di:waypoint x="204" y="99" />
+        <di:waypoint x="297" y="99" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0j10547_di" bpmnElement="SequenceFlow_0j10547">
+        <di:waypoint x="397" y="99" />
+        <di:waypoint x="492" y="99" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_18proky_di" bpmnElement="form-task">
+        <dc:Bounds x="297" y="59" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

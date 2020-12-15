@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ritense.valtimo.camunda.common">
+
+    <!-- Ordering -->
+
+    <!-- Input: property "orderingProperties", a collection of OrderingProperty objects -->
+    <!-- Output: property "orderBy", filled with ordering constraints -->
+    <!-- Example Output: V0_TEXT_ asc, RES.ID_ desc, RES.NAME_ asc -->
+    <sql id="bindOrderBy">
+        <choose>
+            <when test="orderingProperties.size > 0">
+                <foreach collection="orderingProperties" item="orderingProperty" index="index">
+                    <bind name="newOrderBy" value="@com.ritense.valtimo.helper.CamundaOrderByHelper@orderBy(orderingProperty, '${tablealias}')" />
+
+                    <if test="index == 0">
+                        <bind name="internalOrderBy" value="newOrderBy"/>
+                    </if>
+                    <if test="index > 0">
+                        <bind name="internalOrderBy" value="internalOrderBy + ', ' + newOrderBy"/>
+                    </if>
+                </foreach>
+            </when>
+            <otherwise>
+                <bind name="internalOrderBy" value="'${tablealias}.ID_ asc'"/>
+            </otherwise>
+        </choose>
+
+    </sql>
+
+</mapper>

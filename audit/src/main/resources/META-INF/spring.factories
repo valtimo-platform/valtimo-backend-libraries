@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.ritense.audit.autoconfigure.AuditAutoConfiguration, \
+  com.ritense.audit.autoconfigure.LiquibaseAutoConfiguration

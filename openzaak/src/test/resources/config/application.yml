@@ -1,0 +1,95 @@
+
+spring:
+    datasource:
+        driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+        url: jdbc:tc:mysql:5.7://localhost:3306/valtimo-test?TC_MY_CNF=config/mysql
+        name: valtimo-test
+        username: mysql
+        password:
+        hikari:
+            poolName: "valtimo-test-pool"
+            auto-commit: false
+            maximum-pool-size: 25
+            leak-detection-threshold: 20000
+            connection-timeout: 10000
+            data-source-properties:
+                cachePrepStmts: true
+                prepStmtCacheSize: 500
+                prepStmtCacheSqlLimit: 2048
+                useServerPrepStmts: true
+                characterEncoding: utf8
+                useUnicode: true
+                useLegacyDatetimeCode: false
+                useSSL: false
+                useLocalSessionState: true
+                rewriteBatchedStatements: true
+                cacheResultSetMetadata: true
+                cacheServerConfiguration: true
+                elideSetAutoCommits: true
+                maintainTimeStats: false
+                serverTimezone: UTC
+                allowPublicKeyRetrieval: true
+    liquibase:
+        enabled: false
+    jpa:
+        database-platform: org.hibernate.dialect.MySQL57Dialect
+        database: mysql
+        show_sql: true
+        open-in-view: false
+        properties:
+            hibernate:
+                hbm2ddl.auto: none
+                generate_statistics: false
+                naming-strategy: org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy
+                cache:
+                    use_second_level_cache: false
+                    use_query_cache: false
+                    region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+                format_sql: true
+                jdbc:
+                    time_zone: UTC
+                connection:
+                    provider_disables_autocommit: true
+        hibernate:
+            ddl-auto: none
+            naming:
+                physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+                implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+            use-new-id-generator-mappings: false
+
+scheduling:
+    enabled: false
+    job:
+        cron:
+            syncAuth0LogsEvents: 0 0 3 * * ? # Every day at 3:00
+            cleanupAuditEvents: 0 0 4 * * ? # Every day at 00:00
+            taskNotificationReminder: 0 0 10 * * ? # Every day at 10:00
+
+spring-actuator:
+    username: test
+    password: test
+
+camunda:
+    bpm:
+        history-level: audit
+aws:
+    profile: ritense
+    region: eu-central-1
+    s3:
+        bucketName: test-name
+        bucketRegion: eu-central-1
+
+valtimo:
+    auth0:
+        enabled: false
+    mandrill:
+        apiKey: some-key
+        dateFormat: dd-MM-yyyy
+        notificationTemplate: bpc-task-notification
+        completionTemplate: bpc-task-completion
+        reminderTemplate: bpc-task-reminder
+    public-task:
+        token-secret: mfEddMIK+lrHfNK1J6rfLcdQ1Tao8OCpWrpmXvyEQGd5FhOkNfHlX9hyWHs+4GfGhUky8kv4v4Ar3JOvbOGGgQ==
+
+openzaak:
+    superSecret: some-super-secret

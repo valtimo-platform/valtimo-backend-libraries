@@ -1,0 +1,73 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="juliadelozanne (generated)" id="1567000318733-1">
+        <createTable tableName="email_notification_settings_days">
+            <column name="email_notification_settings_email_address" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="days" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="juliadelozanne (generated)" id="1567000318733-2">
+        <addColumn tableName="email_notification_settings">
+            <column name="reminder_notifications_enabled" type="BOOLEAN"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="juliadelozanne (generated)" id="1567000318733-3">
+        <addColumn tableName="email_notification_settings">
+            <column name="task_notifications_enabled" type="BOOLEAN"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="juliadelozanne (generated)" id="1567000318733-4">
+        <addForeignKeyConstraint baseColumnNames="email_notification_settings_email_address"
+                                 baseTableName="email_notification_settings_days"
+                                 constraintName="FKs2cste6t065p3shvv2yt5mjos"
+                                 deferrable="false" initiallyDeferred="false"
+                                 referencedColumnNames="email_address"
+                                 referencedTableName="email_notification_settings"
+                                 validate="true"/>
+    </changeSet>
+
+    <changeSet author="juliadelozanne (generated)" id="1567000318733-154">
+        <dropColumn columnName="friday" tableName="email_notification_settings"/>
+    </changeSet>
+    <changeSet author="juliadelozanne (generated)" id="1567000318733-155">
+        <dropColumn columnName="monday" tableName="email_notification_settings"/>
+    </changeSet>
+    <changeSet author="juliadelozanne (generated)" id="1567000318733-156">
+        <dropColumn columnName="notifications_enabled" tableName="email_notification_settings"/>
+    </changeSet>
+    <changeSet author="juliadelozanne (generated)" id="1567000318733-157">
+        <dropColumn columnName="saturday" tableName="email_notification_settings"/>
+    </changeSet>
+    <changeSet author="juliadelozanne (generated)" id="1567000318733-158">
+        <dropColumn columnName="sunday" tableName="email_notification_settings"/>
+    </changeSet>
+    <changeSet author="juliadelozanne (generated)" id="1567000318733-159">
+        <dropColumn columnName="thursday" tableName="email_notification_settings"/>
+    </changeSet>
+    <changeSet author="juliadelozanne (generated)" id="1567000318733-160">
+        <dropColumn columnName="tuesday" tableName="email_notification_settings"/>
+    </changeSet>
+    <changeSet author="juliadelozanne (generated)" id="1567000318733-161">
+        <dropColumn columnName="wednesday" tableName="email_notification_settings"/>
+    </changeSet>
+</databaseChangeLog>

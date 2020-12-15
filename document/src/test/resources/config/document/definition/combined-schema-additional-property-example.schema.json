@@ -1,0 +1,42 @@
+{
+    "$id": "combined-schema-additional-property-example.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "combined-schema-additional-property-example",
+    "definitions": {
+        "address": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "streetName": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "province": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string",
+                    "default": "NL"
+                }
+            },
+            "required": [
+                "streetName",
+                "number",
+                "city",
+                "province"
+            ]
+        }
+    },
+    "type": "object",
+    "properties": {
+        "address": {
+            "$ref": "#/definitions/address"
+        }
+    },
+    "additionalProperties": false
+}

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ritense.valtimo.camunda.processinstance">
+    <resultMap id="processVariablesResultMap" type="com.ritense.valtimo.repository.camunda.dto.Variable">
+        <id property="id" column="VAR_ID_" />
+        <result property="name" column="VAR_NAME_" jdbcType="VARCHAR"/>
+        <result property="textValue" column="VAR_TEXT_" jdbcType="VARCHAR"/>
+        <result property="textValue2" column="VAR_TEXT2_" jdbcType="VARCHAR"/>
+        <result property="doubleValue" column="VAR_DOUBLE_" jdbcType="DOUBLE"/>
+        <result property="longValue" column="VAR_LONG_" jdbcType="BIGINT"/>
+        <result property="type" column="VAR_TYPE_" jdbcType="VARCHAR"/>
+        <result property="byteArrayValueId" column="VAR_BYTEARRAY_ID_" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <resultMap id="searchInstancesResultMap" type="com.ritense.valtimo.repository.camunda.dto.ProcessInstance">
+        <id property="id" column="ID_" jdbcType="VARCHAR"/>
+        <result property="businessKey" column="BUSINESS_KEY_" jdbcType="VARCHAR"/>
+        <result property="deleteReason" column="DELETE_REASON_" jdbcType="VARCHAR"/>
+        <result property="startTime" column="START_TIME_" jdbcType="TIMESTAMP"/>
+        <result property="endTime" column="END_TIME_" jdbcType="TIMESTAMP"/>
+        <result property="processDefinitionKey" column="PROC_DEF_KEY_" jdbcType="VARCHAR"/>
+        <result property="startUserId" column="START_USER_ID_" jdbcType="VARCHAR"/>
+        <collection ofType="com.ritense.valtimo.repository.camunda.dto.Variable" fetchType="eager" property="variables" column="VAR_ID_" resultMap="processVariablesResultMap"/>
+    </resultMap>
+
+    <select id="searchInstances" parameterType="org.camunda.bpm.engine.impl.db.ListQueryParameterObject" resultMap="searchInstancesResultMap">
+        <include refid="com.ritense.valtimo.camunda.common.bindOrderBy">
+            <property name="tablealias" value="PI"/>
+        </include>
+        SELECT    PI.ID_
+        ,         PI.BUSINESS_KEY_
+        ,         PI.DELETE_REASON_
+        ,         PI.START_TIME_
+        ,         PI.END_TIME_
+        ,         PI.PROC_DEF_KEY_
+        ,         PI.START_USER_ID_
+        ,         V.ID_ AS VAR_ID_
+        ,         V.NAME_ AS VAR_NAME_
+        ,         V.TEXT_ AS VAR_TEXT_
+        ,         V.VAR_TYPE_ AS VAR_TYPE_
+        ,         V.TEXT_ AS VAR_TEXT_
+        ,         V.LONG_ AS VAR_LONG_
+        ,         V.DOUBLE_ AS VAR_DOUBLE_
+        ,         V.BYTEARRAY_ID_ AS VAR_BYTEARRAY_ID_
+        FROM      (
+            ${limitBefore} SELECT PI.*
+            FROM ${prefix}ACT_HI_PROCINST PI
+            <include refid="selectSearchProcessInstancesSqlCriteria"/>
+            ${orderBy}
+            ${limitBetween}
+            ${limitAfter}
+        ) PI
+        LEFT JOIN ${prefix}ACT_HI_VARINST V ON V.PROC_INST_ID_ = PI.ID_
+        ${orderBy}
+    </select>
+
+    <select id="searchInstancesCount" parameterType="org.camunda.bpm.engine.impl.db.ListQueryParameterObject" resultType="long">
+        SELECT count(${distinct} PI.ID_)
+        FROM   ${prefix}ACT_HI_PROCINST PI
+        <include refid="selectSearchProcessInstancesSqlCriteria"/>
+    </select>
+
+    <sql id="selectSearchProcessInstancesSqlCriteria">
+        WHERE 1 = 1
+        <if test="parameter.processDefinitionName != null">
+            AND PI.PROC_DEF_KEY_ = #{parameter.processDefinitionName, jdbcType=VARCHAR}
+        </if>
+        <if test="parameter.processDefinitionId != null">
+            AND PI.PROC_DEF_ID_ = #{parameter.processDefinitionId, jdbcType=VARCHAR}
+        </if>
+        <if test="parameter.variables != null">
+            <foreach item="processVariableQueryParameter" index="index" collection="parameter.variables">
+                <if test="processVariableQueryParameter.isStartUser() &amp;&amp; processVariableQueryParameter.hasValue()">
+                    AND UPPER(PI.START_USER_ID_) LIKE concat('%', #{processVariableQueryParameter.value, jdbcType=VARCHAR}, '%')
+                </if>
+                <if test="processVariableQueryParameter.isBusinessKey() &amp;&amp; processVariableQueryParameter.hasValue()">
+                    AND UPPER(PI.BUSINESS_KEY_) LIKE concat('%', #{processVariableQueryParameter.value, jdbcType=VARCHAR}, '%')
+                </if>
+                <if test="processVariableQueryParameter.isActive() &amp;&amp; processVariableQueryParameter.hasValue()">
+                    <if test="processVariableQueryParameter.getValue()">
+                        AND PI.END_TIME_ IS NULL
+                    </if>
+                    <if test="!processVariableQueryParameter.getValue()">
+                        AND PI.END_TIME_ IS NOT NULL
+                    </if>
+                </if>
+                <if test="  processVariableQueryParameter.isVariableDate() &amp;&amp;
+                            processVariableQueryParameter.isProcessStarted()">
+                    <if test="processVariableQueryParameter.fromDate != null">
+                        AND PI.START_TIME_ &gt;= #{processVariableQueryParameter.fromDate, jdbcType=TIMESTAMP}
+                    </if>
+                    <if test="processVariableQueryParameter.toDate != null">
+                        AND PI.START_TIME_ &lt;= #{processVariableQueryParameter.toDate, jdbcType=TIMESTAMP}
+                    </if>
+                </if>
+                <if test="  processVariableQueryParameter.isVariableDate() &amp;&amp;
+                            processVariableQueryParameter.isProcessEnded()">
+                    <if test="processVariableQueryParameter.fromDate != null">
+                        AND PI.END_TIME_ &gt;= #{processVariableQueryParameter.fromDate, jdbcType=TIMESTAMP}
+                    </if>
+                    <if test="processVariableQueryParameter.toDate != null">
+                        AND PI.END_TIME_ &lt;= #{processVariableQueryParameter.toDate, jdbcType=TIMESTAMP}
+                    </if>
+                </if>
+                <include refid="selectSearchProcessInstancesSql_StringVariableCriterium"/>
+                <include refid="selectSearchProcessInstancesSql_LongVariableCriterium"/>
+                <include refid="selectSearchProcessInstancesSql_BooleanVariableCriterium"/>
+                <include refid="selectSearchProcessInstancesSql_EnumVariableCriterium"/>
+                <include refid="selectSearchProcessInstancesSql_DateFromVariableCriterium"/>
+                <include refid="selectSearchProcessInstancesSql_DateToVariableCriterium"/>
+                <include refid="selectSearchProcessInstancesSql_FileUploadVariableCriterium"/>
+            </foreach>
+        </if>
+    </sql>
+
+    <sql id="selectSearchProcessInstancesSqlVariableCriteriumBegin">
+        AND EXISTS (
+            SELECT V.ID_
+            FROM ${prefix}ACT_HI_VARINST V
+            WHERE V.PROC_INST_ID_ = PI.PROC_INST_ID_
+    </sql>
+
+    <sql id="selectSearchProcessInstancesSqlVariableCriteriumEnd">
+        )
+    </sql>
+
+    <sql id="selectSearchProcessInstancesSql_StringVariableCriterium">
+        <if test="processVariableQueryParameter.isVariableString()">
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumBegin"/>
+
+            AND V.NAME_= #{processVariableQueryParameter.name, jdbcType=VARCHAR}
+            AND UPPER(V.TEXT_) LIKE concat('%', #{processVariableQueryParameter.value, jdbcType=VARCHAR}, '%')
+
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumEnd"/>
+        </if>
+    </sql>
+
+    <sql id="selectSearchProcessInstancesSql_LongVariableCriterium">
+        <if test="processVariableQueryParameter.isVariableLong() &amp;&amp; processVariableQueryParameter.hasValue()">
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumBegin"/>
+
+            AND V.NAME_= #{processVariableQueryParameter.name, jdbcType=VARCHAR}
+            AND V.LONG_ = #{processVariableQueryParameter.value, jdbcType=LONGVARCHAR}
+
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumEnd"/>
+        </if>
+    </sql>
+
+    <sql id="selectSearchProcessInstancesSql_BooleanVariableCriterium">
+        <if test="processVariableQueryParameter.isVariableBoolean() &amp;&amp;
+                  processVariableQueryParameter.hasValue()">
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumBegin"/>
+            <if test="processVariableQueryParameter.getValue()">
+                AND V.NAME_= #{processVariableQueryParameter.name, jdbcType=VARCHAR}
+                AND V.LONG_ = #{processVariableQueryParameter.value, jdbcType=BOOLEAN}
+            </if>
+            <if test="!processVariableQueryParameter.getValue()">
+                AND (
+                    V.NAME_= #{processVariableQueryParameter.name, jdbcType=VARCHAR} AND
+                    (V.LONG_ = #{processVariableQueryParameter.value, jdbcType=BOOLEAN} OR V.LONG_ IS NULL)
+                )
+                OR
+                (
+                    NOT EXISTS (
+                        SELECT V.ID_
+                        FROM ${prefix}ACT_HI_VARINST V
+                        WHERE V.PROC_INST_ID_ = PI.PROC_INST_ID_
+                        AND V.NAME_= #{processVariableQueryParameter.name, jdbcType=VARCHAR}
+                    )
+                )
+            </if>
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumEnd"/>
+        </if>
+    </sql>
+
+    <sql id="selectSearchProcessInstancesSql_EnumVariableCriterium">
+        <if test="processVariableQueryParameter.isVariableEnum() &amp;&amp; processVariableQueryParameter.hasValues()">
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumBegin"/>
+
+            AND V.NAME_= #{processVariableQueryParameter.name, jdbcType=VARCHAR}
+            AND UPPER(V.TEXT_) IN
+            <foreach item="item" index="index" collection="processVariableQueryParameter.values"
+                     open="(" separator="," close=")">
+                <if test="item != ''">
+                    UPPER(#{item, jdbcType=VARCHAR})
+                </if>
+            </foreach>
+
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumEnd"/>
+        </if>
+    </sql>
+
+    <sql id="selectSearchProcessInstancesSql_DateFromVariableCriterium">
+        <if test="processVariableQueryParameter.isVariableDate() &amp;&amp;
+                  !processVariableQueryParameter.isProcessStarted() &amp;&amp;
+                  !processVariableQueryParameter.isProcessEnded() &amp;&amp;
+                  processVariableQueryParameter.from != null">
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumBegin"/>
+
+            AND V.NAME_= #{processVariableQueryParameter.name, jdbcType=VARCHAR}
+            AND V.LONG_ &gt;= #{processVariableQueryParameter.from, jdbcType=LONGVARCHAR}
+
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumEnd"/>
+        </if>
+    </sql>
+
+    <sql id="selectSearchProcessInstancesSql_DateToVariableCriterium">
+        <if test="processVariableQueryParameter.isVariableDate() &amp;&amp;
+                  !processVariableQueryParameter.isProcessStarted() &amp;&amp;
+                  !processVariableQueryParameter.isProcessEnded() &amp;&amp;
+                  processVariableQueryParameter.to != null">
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumBegin"/>
+
+            AND V.NAME_= #{processVariableQueryParameter.name, jdbcType=VARCHAR}
+            AND V.LONG_ &lt;= #{processVariableQueryParameter.to, jdbcType=LONGVARCHAR}
+
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumEnd"/>
+        </if>
+    </sql>
+
+    <sql id="selectSearchProcessInstancesSql_FileUploadVariableCriterium">
+        <if test="processVariableQueryParameter.isVariableFileUpload() &amp;&amp; processVariableQueryParameter.hasValue()">
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumBegin"/>
+
+            <if test="processVariableQueryParameter.value">
+                AND V.NAME_= #{processVariableQueryParameter.name, jdbcType=VARCHAR}
+                AND V.BYTEARRAY_ID_ IS NOT NULL
+            </if>
+            <if test="!processVariableQueryParameter.value">
+                AND (
+                    V.NAME_= #{processVariableQueryParameter.name, jdbcType=VARCHAR}
+                    AND
+                    V.BYTEARRAY_ID_ IS NULL
+                )
+                OR
+                (
+                    NOT EXISTS (
+                        SELECT V.ID_
+                        FROM ${prefix}ACT_HI_VARINST V
+                        WHERE V.PROC_INST_ID_ = PI.PROC_INST_ID_
+                        AND V.NAME_= #{processVariableQueryParameter.name, jdbcType=VARCHAR}
+                    )
+                )
+            </if>
+
+            <include refid="selectSearchProcessInstancesSqlVariableCriteriumEnd"/>
+        </if>
+    </sql>
+</mapper>

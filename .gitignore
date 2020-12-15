@@ -1,0 +1,44 @@
+.gradle
+/build/
+/classes/
+!gradle/wrapper/gradle-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+/contract/out/
+/contract/target/h2db/db/
+/core/out/
+/core/target/h2db/db/
+/document/out/
+/document/target/h2db/db/
+/external-connector/out/
+/milestones/out/
+/milestones/target/h2db/db/
+/plugin-ae-auth0/out/
+/plugin-mail-filters/out/
+/plugin-mail-mandrill/out/
+/process-document/out/
+/process-document/target/h2db/db/
+/view-configurator/out/
+/view-configurator/target/h2db/db/
+/openzaak/target/
+/openzaak/out/
