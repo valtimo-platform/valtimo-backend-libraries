@@ -1,6 +1,6 @@
 
 ## What is Valtimo?
-Welcome at the Valtimo repository. Valtimo is the less-code platform for Business Process Automation. Build on top of Camunda. Our goal is to make implementing business process automation and case management easy. 
+Welcome at the Valtimo repository. Valtimo is the less-code platform for Business Process Automation. Built on top of Camunda. Our goal is to make implementing business process automation and case management easy. 
 
 ## What is the Valtimo Engine?
 It's the server side component for BPA. Install the Console as well if you need a UI.  
