@@ -49,11 +49,13 @@ public class ChoiceFieldAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ChoiceFieldResource.class)
     public ChoiceFieldResource choiceFieldResource(ChoiceFieldService choiceFieldService) {
         return new ChoiceFieldResource(choiceFieldService);
     }
 
     @Bean
+    @ConditionalOnMissingBean(ChoiceFieldValueResource.class)
     public ChoiceFieldValueResource choiceFieldValueResource(
         final ChoiceFieldValueService choiceFieldValueService,
         final ChoiceFieldRepository choiceFieldRepository

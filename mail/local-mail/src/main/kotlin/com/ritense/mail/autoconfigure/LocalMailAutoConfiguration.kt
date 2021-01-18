@@ -29,4 +29,5 @@ class LocalMailAutoConfiguration {
     fun mailSender(): LocalMailSender {
         return LocalMailSender()
     }
+
 }

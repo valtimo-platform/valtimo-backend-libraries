@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.web.rest.error;
 
-import com.ritense.common.hardening.config.HardeningProperties;
-import com.ritense.common.hardening.service.impl.HardeningServiceImpl;
+import com.ritense.valtimo.contract.hardening.config.HardeningProperties;
+import com.ritense.valtimo.contract.hardening.service.impl.HardeningServiceImpl;
 import com.ritense.valtimo.contract.web.rest.error.ExceptionTranslator;
 import com.ritense.valtimo.web.autoconfigure.WebAutoConfiguration;
 import org.junit.jupiter.api.BeforeEach;

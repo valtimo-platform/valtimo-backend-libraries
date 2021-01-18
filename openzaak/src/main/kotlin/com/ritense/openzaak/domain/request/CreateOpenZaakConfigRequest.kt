@@ -20,6 +20,5 @@ data class CreateOpenZaakConfigRequest(
     val url: String,
     val clientId: String,
     val secret: String,
-    val rsin: String,
-    val organisation: String
+    val rsin: String
 )

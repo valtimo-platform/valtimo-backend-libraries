@@ -19,15 +19,21 @@ package com.valtimo.keycloak.autoconfigure;
 import com.valtimo.keycloak.repository.KeycloakCurrentUserRepository;
 import com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator;
 import com.valtimo.keycloak.security.jwt.provider.KeycloakSecretKeyProvider;
+import com.valtimo.keycloak.service.KeycloakService;
 import com.valtimo.keycloak.service.KeycloakUserManagementService;
+import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
+import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@KeycloakConfiguration
+@EnableConfigurationProperties(KeycloakSpringBootProperties.class)
 public class KeycloakAutoConfiguration {
 
     @Bean
@@ -54,8 +60,17 @@ public class KeycloakAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(KeycloakUserManagementService.class)
     @ConditionalOnWebApplication
-    public KeycloakUserManagementService keycloakUserManagementService() {
-        return new KeycloakUserManagementService();
+    public KeycloakUserManagementService keycloakUserManagementService(
+        final KeycloakService keycloakService
+    ) {
+        return new KeycloakUserManagementService(keycloakService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(KeycloakService.class)
+    @ConditionalOnWebApplication
+    public KeycloakService keycloakService(final KeycloakSpringBootProperties properties) {
+        return new KeycloakService(properties);
     }
 
 }

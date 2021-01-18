@@ -16,6 +16,8 @@
 
 package com.ritense.openzaak.form
 
+import com.ritense.openzaak.exception.UnmappableOpenZaakPropertyException
+import com.ritense.openzaak.exception.ZaakInstanceNotFoundException
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.valtimo.contract.form.ExternalFormFieldType
@@ -33,18 +35,22 @@ class OpenZaakFormFieldDataResolver(
 
     override fun get(documentDefinitionName: String, documentId: UUID, vararg varNames: String): Map<String, Any> {
         val zaakTypeLink = zaakTypeLinkService.findBy(documentDefinitionName)
-        val zaakInstanceLink = zaakTypeLink.getZaakInstanceLink(documentId)
-        val eigenschappen = zaakService.getZaakEigenschappen(zaakInstanceLink.zaakInstanceId)
-
         val result = mutableMapOf<String, String>()
+        try {
+            val zaakInstanceLink = zaakTypeLink.getZaakInstanceLink(documentId)
+            val eigenschappen = zaakService.getZaakEigenschappen(zaakInstanceLink.zaakInstanceId)
 
-        if (!eigenschappen.isEmpty()) {
-            for (varName in varNames) {
-                val waarde = eigenschappen.first { it.naam == varName }.waarde
-                result[varName] = waarde
+            if (eigenschappen.isNotEmpty()) {
+                for (varName in varNames) {
+                    val eigenschap = eigenschappen.find { it.naam == varName }
+                    if (eigenschap != null) {
+                        result[varName] = eigenschap.waarde
+                    }
+                }
             }
+        } catch (e: ZaakInstanceNotFoundException) {
+            throw UnmappableOpenZaakPropertyException("No zaak instance link available even though oz prefix is used in form")
         }
-
         return result
     }
 

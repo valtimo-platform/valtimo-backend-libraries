@@ -23,6 +23,7 @@ import com.ritense.valtimo.camunda.task.service.ReminderService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
+import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
-
+@RequiredArgsConstructor
 public class ReminderServiceImpl implements ReminderService {
 
     private final TaskService taskService;
@@ -42,22 +43,8 @@ public class ReminderServiceImpl implements ReminderService {
     private final UserManagementService userManagementService;
     private final String reminderTemplate;
 
-    public ReminderServiceImpl(
-        final TaskService taskService,
-        final EmailNotificationSettingsService emailNotificationService,
-        final MailSender mailSender,
-        final UserManagementService userManagementService,
-        final String reminderTemplate
-    ) {
-        this.taskService = taskService;
-        this.emailNotificationService = emailNotificationService;
-        this.mailSender = mailSender;
-        this.userManagementService = userManagementService;
-        this.reminderTemplate = reminderTemplate;
-    }
-
     @Override
-    @Scheduled(cron = "${scheduling.job.cron.taskNotificationReminder}")
+    @Scheduled(cron = "${scheduling.job.cron.taskNotificationReminder:-}")
     public void notifyUsersWithOpenTasks() {
         final List<String> users = userToNotifyToday();
 

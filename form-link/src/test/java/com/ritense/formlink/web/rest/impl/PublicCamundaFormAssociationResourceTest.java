@@ -190,11 +190,11 @@ public class PublicCamundaFormAssociationResourceTest extends BaseIntegrationTes
 
     private void mockFormAssociation(BpmnElementFormIdLink formLink) {
         CamundaProcessFormAssociation formAssociation = new CamundaProcessFormAssociation(
-            CamundaProcessFormAssociationId.newId(UUID.nameUUIDFromBytes(new byte[]{0})),
+            CamundaProcessFormAssociationId.newId(UUID.nameUUIDFromBytes(new byte[] {0})),
             PROCESS_DEFINITION_KEY,
             new FormAssociations(
                 Collections.singletonList(new UserTaskFormAssociation(
-                        UUID.nameUUIDFromBytes(new byte[]{0}),
+                        UUID.nameUUIDFromBytes(new byte[] {0}),
                         formLink
                     )
                 )
@@ -206,7 +206,9 @@ public class PublicCamundaFormAssociationResourceTest extends BaseIntegrationTes
 
         FormIoFormDefinition formDefinition = new FormIoFormDefinition(UUID.randomUUID(),
             "",
-            "{}");
+            "{}",
+            false
+        );
         doReturn(Optional.of(formDefinition)).when(formDefinitionService).getFormDefinitionById(eq(FORM_ID));
 
         var taskQuery = mock(TaskQuery.class);

@@ -18,6 +18,7 @@ package com.ritense.openzaak.autoconfigure
 
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
@@ -30,6 +31,7 @@ class OpenZaakLiquibaseAutoConfiguration {
 
     @Order(Ordered.HIGHEST_PRECEDENCE + 11)
     @Bean
+    @ConditionalOnMissingBean(name = ["openZaakLiquibaseMasterChangeLogLocation"])
     fun openZaakLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
         return LiquibaseMasterChangeLogLocation("config/liquibase/openzaak-master.xml")
     }

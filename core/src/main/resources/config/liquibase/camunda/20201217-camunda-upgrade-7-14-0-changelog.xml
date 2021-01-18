@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2"/>
+    <property name="autoIncrement" value="true" dbms="mysql"/>
+    <property name="floatType" value="float" dbms="mysql, oracle"/>
+
+    <changeSet id="1" author="Tom Bokma">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_IDENT_LNK_TIMESTAMP"/>
+            </not>
+        </preConditions>
+        <comment>mysql_engine_7.10_patch_7.10.5_to_7.10.6.sql</comment>
+        <sqlFile path="mysql_engine_7.10_patch_7.10.5_to_7.10.6.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="2" author="Tom Bokma">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_JOB_LOG_JOB_CONF"/>
+            </not>
+        </preConditions>
+        <comment>mysql_engine_7.10_patch_7.10.6_to_7.10.7.sql</comment>
+        <sqlFile path="mysql_engine_7.10_patch_7.10.6_to_7.10.7.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="3" author="Tom Bokma">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_ACT_INST_START_END"/>
+            </not>
+        </preConditions>
+        <comment>mysql_engine_7.10_patch_7.10.13_to_7.10.14</comment>
+        <sqlFile path="mysql_engine_7.10_patch_7.10.13_to_7.10.14.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="4" author="Tom Bokma">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <and>
+                <sqlCheck expectedResult="1">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RE_DEPLOYMENT'
+                    AND     COLUMN_NAME = 'DEPLOY_TIME_'
+                    AND     COLUMN_TYPE = 'timestamp'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="1">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_JOB'
+                    AND     COLUMN_NAME = 'LOCK_EXP_TIME_'
+                    AND     COLUMN_TYPE = 'timestamp'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="1">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_JOB'
+                    AND     COLUMN_NAME = 'DUEDATE_'
+                    AND     COLUMN_TYPE = 'timestamp'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="1">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_TASK'
+                    AND     COLUMN_NAME = 'CREATE_TIME_'
+                    AND     COLUMN_TYPE = 'timestamp'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="1">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_EVENT_SUBSCR'
+                    AND     COLUMN_NAME = 'CREATED_'
+                    AND     COLUMN_TYPE = 'timestamp'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="1">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_INCIDENT'
+                    AND     COLUMN_NAME = 'INCIDENT_TIMESTAMP_'
+                    AND     COLUMN_TYPE = 'timestamp'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="1">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_METER_LOG'
+                    AND     COLUMN_NAME = 'TIMESTAMP_'
+                    AND     COLUMN_TYPE = 'timestamp'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="1">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_EXT_TASK'
+                    AND     COLUMN_NAME = 'LOCK_EXP_TIME_'
+                    AND     COLUMN_TYPE = 'timestamp'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="1">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_HI_JOB_LOG'
+                    AND     COLUMN_NAME = 'TIMESTAMP_'
+                    AND     COLUMN_TYPE = 'timestamp'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="1">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_HI_JOB_LOG'
+                    AND     COLUMN_NAME = 'JOB_DUEDATE_'
+                    AND     COLUMN_TYPE = 'timestamp'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="1">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_ID_USER'
+                    AND     COLUMN_NAME = 'LOCK_EXP_TIME_'
+                    AND     COLUMN_TYPE = 'timestamp'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_HI_OP_LOG'
+                    AND     COLUMN_NAME = 'CATEGORY_'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_HI_OP_LOG'
+                    AND     COLUMN_NAME = 'EXTERNAL_TASK_ID_'
+                </sqlCheck>
+            </and>
+            <and>
+                <not>
+                    <tableExists tableName="ACT_GE_SCHEMA_LOG"/>
+                </not>
+            </and>
+            <and>
+                <not>
+                    <indexExists indexName="ACT_IDX_HI_OP_LOG_USER_ID"/>
+                </not>
+            </and>
+            <and>
+                <not>
+                    <indexExists indexName="ACT_IDX_HI_OP_LOG_OP_TYPE"/>
+                </not>
+            </and>
+            <and>
+                <not>
+                    <indexExists indexName="ACT_IDX_HI_OP_LOG_ENTITY_TYPE"/>
+                </not>
+            </and>
+        </preConditions>
+        <comment>Camunda 7.10 upgrade to 7.11</comment>
+        <sqlFile path="mysql_engine_7.10_to_7.11.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="5" author="Tom Bokma">
+        <preConditions onFail="MARK_RAN">
+        <dbms type="mysql"/>
+        <and>
+            <tableExists tableName="ACT_GE_SCHEMA_LOG"/>
+            <sqlCheck expectedResult="0">
+                SELECT  COUNT(*)
+                FROM    ACT_GE_SCHEMA_LOG
+                WHERE   VERSION_ = '7.11.19'
+            </sqlCheck>
+        </and>
+        <and>
+            <tableExists tableName="ACT_GE_PROPERTY"/>
+            <sqlCheck expectedResult="0">
+                SELECT  COUNT(*)
+                FROM    ACT_GE_PROPERTY
+                WHERE   NAME_ = 'telemetry.lock'
+            </sqlCheck>
+        </and>
+        <and>
+            <tableExists tableName="ACT_GE_PROPERTY"/>
+            <sqlCheck expectedResult="0">
+                SELECT  COUNT(*)
+                FROM    ACT_GE_PROPERTY
+                WHERE   NAME_ = 'installationId.lock'
+            </sqlCheck>
+        </and>
+        </preConditions>
+        <comment>mysql_engine_7.11_patch_7.11.18_to_7.11.19.sql</comment>
+        <sqlFile path="mysql_engine_7.11_patch_7.11.18_to_7.11.19.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="6" author="Tom Bokma">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <and>
+                <tableExists tableName="ACT_HI_OP_LOG"/>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_HI_OP_LOG'
+                    AND     COLUMN_NAME = 'ANNOTATION_'
+                </sqlCheck>
+            </and>
+            <and>
+                <tableExists tableName="ACT_RU_JOB"/>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_JOB'
+                    AND     COLUMN_NAME = 'REPEAT_OFFSET_'
+                </sqlCheck>
+            </and>
+            <and>
+                <tableExists tableName="ACT_HI_INCIDENT"/>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_HI_INCIDENT'
+                    AND     COLUMN_NAME = 'HISTORY_CONFIGURATION_'
+                </sqlCheck>
+            </and>
+            <and>
+                <not>
+                    <indexExists indexName="ACT_IDX_HI_DETAIL_VAR_INST_ID"/>
+                </not>
+            </and>
+        </preConditions>
+        <comment>mysql_engine_7.11_to_7.12.sql</comment>
+        <sqlFile path="mysql_engine_7.11_to_7.12.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="7" author="Tom Bokma">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <and>
+                <not>
+                    <indexExists indexName="ACT_IDX_HI_INCIDENT_CREATE_TIME"/>
+                </not>
+            </and>
+            <and>
+                <not>
+                    <indexExists indexName="ACT_IDX_HI_INCIDENT_END_TIME"/>
+                </not>
+            </and>
+        </preConditions>
+        <comment>mysql_engine_7.12_patch_7.12.10_to_7.12.11.sql</comment>
+        <sqlFile path="mysql_engine_7.12_patch_7.12.10_to_7.12.11.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="8" author="Tom Bokma">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <and>
+                <not>
+                    <indexExists indexName="ACT_IDX_HI_VAR_PI_NAME_TYPE"/>
+                </not>
+            </and>
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_HI_JOB_LOG'
+                    AND     COLUMN_NAME = 'HOSTNAME_'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_JOB'
+                    AND     COLUMN_NAME = 'FAILED_ACT_ID_'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_HI_JOB_LOG'
+                    AND     COLUMN_NAME = 'FAILED_ACT_ID_'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_INCIDENT'
+                    AND     COLUMN_NAME = 'FAILED_ACTIVITY_ID_'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_HI_INCIDENT'
+                    AND     COLUMN_NAME = 'FAILED_ACTIVITY_ID_'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_AUTHORIZATION'
+                    AND     COLUMN_NAME = 'REMOVAL_TIME_'
+                </sqlCheck>
+            </and>
+            <and>
+                <not>
+                    <indexExists indexName="ACT_IDX_AUTH_RM_TIME"/>
+                </not>
+            </and>
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_AUTHORIZATION'
+                    AND     COLUMN_NAME = 'ROOT_PROC_INST_ID_'
+                </sqlCheck>
+            </and>
+            <and>
+                <not>
+                    <indexExists indexName="ACT_IDX_AUTH_ROOT_PI"/>
+                </not>
+            </and>
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_JOBDEF'
+                    AND     COLUMN_NAME = 'DEPLOYMENT_ID_'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_VARIABLE'
+                    AND     COLUMN_NAME = 'PROC_DEF_ID_'
+                </sqlCheck>
+            </and>
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_HI_DETAIL'
+                    AND     COLUMN_NAME = 'INITIAL_'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <comment>mysql_engine_7.12_to_7.13.sql</comment>
+        <sqlFile path="mysql_engine_7.12_to_7.13.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="9" author="Tom Bokma">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_TASK_OWNER"/>
+            </not>
+        </preConditions>
+        <comment>mysql_engine_7.13_patch_7.13.4_to_7.13.5_1.sql</comment>
+        <sqlFile path="mysql_engine_7.13_patch_7.13.4_to_7.13.5_1.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="10" author="Tom Bokma">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <and>
+                <sqlCheck expectedResult="0">
+                    SELECT  COUNT(*)
+                    FROM    INFORMATION_SCHEMA.COLUMNS
+                    WHERE   TABLE_NAME = 'ACT_RU_VARIABLE'
+                    AND     COLUMN_NAME = 'BATCH_ID_'
+                </sqlCheck>
+            </and>
+            <and>
+                <not>
+                    <indexExists indexName="ACT_IDX_BATCH_ID"/>
+                </not>
+            </and>
+            <and>
+                <not>
+                    <foreignKeyConstraintExists foreignKeyTableName="ACT_RU_VARIABLE"
+                                                foreignKeyName="ACT_FK_VAR_BATCH"/>
+                </not>
+            </and>
+            <and>
+                <not>
+                    <indexExists indexName="ACT_IDX_VARIABLE_TASK_NAME_TYPE"/>
+                </not>
+            </and>
+        </preConditions>
+        <comment>mysql_engine_7.13_to_7.14.sql</comment>
+        <sqlFile path="mysql_engine_7.13_to_7.14.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+</databaseChangeLog>

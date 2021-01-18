@@ -20,7 +20,8 @@ import java.util.EnumSet;
 
 public enum JsonPatchFilterFlag {
 
-    SKIP_REMOVAL_OPERATIONS;
+    SKIP_REMOVAL_OPERATIONS,
+    ALLOW_ARRAY_REMOVAL_ONLY;
 
     public static EnumSet<JsonPatchFilterFlag> defaultPatchFlags() {
         return EnumSet.of(
@@ -30,6 +31,12 @@ public enum JsonPatchFilterFlag {
 
     public static EnumSet<JsonPatchFilterFlag> allowRemovalOperations() {
         return EnumSet.noneOf(JsonPatchFilterFlag.class);
+    }
+
+    public static EnumSet<JsonPatchFilterFlag> allowArrayRemovalOperations() {
+        return EnumSet.of(
+            ALLOW_ARRAY_REMOVAL_ONLY
+        );
     }
 
 }

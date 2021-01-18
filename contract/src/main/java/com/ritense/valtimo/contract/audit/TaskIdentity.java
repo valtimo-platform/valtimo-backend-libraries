@@ -17,6 +17,8 @@
 package com.ritense.valtimo.contract.audit;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.ritense.valtimo.contract.audit.view.AuditView;
 
 public interface TaskIdentity {
 
@@ -24,6 +26,7 @@ public interface TaskIdentity {
     String getTaskId();
 
     @JsonProperty
+    @JsonView(AuditView.Public.class)
     String getTaskName();
 
 }

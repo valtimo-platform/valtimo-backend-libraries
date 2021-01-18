@@ -145,7 +145,7 @@ public abstract class BaseTest {
     }
 
     protected CreateFormDefinitionRequest createFormDefinitionRequest() throws IOException {
-        return new CreateFormDefinitionRequest("myForm", rawFormDefinition("form-example"));
+        return new CreateFormDefinitionRequest("myForm", rawFormDefinition("form-example"), false);
     }
 
     protected String rawFormDefinition(String formDefinitionId) throws IOException {
@@ -157,7 +157,7 @@ public abstract class BaseTest {
 
     protected FormIoFormDefinition formDefinitionOf(String formDefinitionId) throws IOException {
         final String formDefinition = rawFormDefinition(formDefinitionId);
-        return new FormIoFormDefinition(UUID.randomUUID(), "form-example", formDefinition);
+        return new FormIoFormDefinition(UUID.randomUUID(), "form-example", formDefinition, false);
     }
 
     protected Throwable getRootCause(Throwable throwable) {

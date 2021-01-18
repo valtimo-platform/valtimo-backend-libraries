@@ -18,6 +18,7 @@ package com.ritense.audit.autoconfigure;
 
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -31,6 +32,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 public class LiquibaseAutoConfiguration {
 
     @Order(HIGHEST_PRECEDENCE + 6)
+    @ConditionalOnMissingBean(name = "auditLiquibaseMasterChangeLogLocation")
     @Bean
     public LiquibaseMasterChangeLogLocation auditLiquibaseMasterChangeLogLocation() {
         return new LiquibaseMasterChangeLogLocation("config/liquibase/audit-master.xml");

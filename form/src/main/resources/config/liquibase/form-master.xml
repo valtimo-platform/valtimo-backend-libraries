@@ -24,5 +24,6 @@
     <include file="changelog/20200330-remove-name-unique-constraint-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200408-add-storage-type.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20201022-remove-storage-type-column.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20210107-add-readonly-column.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

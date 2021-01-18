@@ -37,6 +37,8 @@ public interface FormDefinitionService {
 
     FormDefinition modifyFormDefinition(ModifyFormDefinitionRequest request);
 
+    FormDefinition modifyFormDefinition(UUID id, String name, String definition, Boolean readOnly);
+
     void deleteFormDefinition(UUID id);
 
     boolean formDefinitionExistsById(UUID id);

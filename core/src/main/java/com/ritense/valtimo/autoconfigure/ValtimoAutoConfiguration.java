@@ -89,6 +89,7 @@ public class ValtimoAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ValtimoPermissionEvaluator.class)
     public ValtimoPermissionEvaluator valtimoPermissionEvaluator(
         final TaskAccessPermission taskAccessPermission,
         final PublicTaskAccessPermission publicTaskAccessPermission
@@ -100,11 +101,13 @@ public class ValtimoAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(TaskAccessPermission.class)
     public TaskAccessPermission taskAccessPermission(final TaskService taskService) {
         return new TaskAccessPermission(taskService);
     }
 
     @Bean
+    @ConditionalOnMissingBean(PublicTaskAccessPermission.class)
     public PublicTaskAccessPermission publicTaskAccessPermission(
         final BpmnModelService bpmnModelService,
         final DelegateTaskHelper delegateTaskHelper,
@@ -114,6 +117,7 @@ public class ValtimoAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ProcessApplicationStartedEventListener.class)
     public ProcessApplicationStartedEventListener processApplicationStartedEventListener(
         final ApplicationEventPublisher applicationEventPublisher,
         final CamundaProcessService camundaProcessService
@@ -122,11 +126,13 @@ public class ValtimoAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(TaskCompletedListener.class)
     public TaskCompletedListener taskCompletedListener(final ApplicationEventPublisher applicationEventPublisher) {
         return new TaskCompletedListener(applicationEventPublisher);
     }
 
     @Bean
+    @ConditionalOnMissingBean(TaskCreationListener.class)
     public TaskCreationListener taskCreationListener(final UserManagementService userManagementService) {
         return new TaskCreationListener(userManagementService);
     }
@@ -171,7 +177,8 @@ public class ValtimoAutoConfiguration {
         final CamundaProcessService camundaProcessService,
         final Optional<ResourceService> resourceServiceOptional,
         final ApplicationEventPublisher applicationEventPublisher,
-        final RuntimeService runtimeService
+        final RuntimeService runtimeService,
+        final UserManagementService userManagementService
     ) {
         return new CamundaTaskService(
             taskService,
@@ -182,7 +189,8 @@ public class ValtimoAutoConfiguration {
             camundaProcessService,
             resourceServiceOptional,
             applicationEventPublisher,
-            runtimeService
+            runtimeService,
+            userManagementService
         );
     }
 
@@ -236,6 +244,7 @@ public class ValtimoAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public SqlSessionTemplate sqlSession(SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
     }

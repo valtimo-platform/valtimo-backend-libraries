@@ -22,19 +22,18 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.document.domain.patch.JsonPatchService;
-import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowRemovalOperations;
 import static com.ritense.form.domain.FormIoFormDefinition.PROPERTY_KEY;
 
-public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTransformerService {
+public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTransformerService<FormIoFormDefinition> {
 
     private static final String CUSTOM_PROPERTIES = "properties";
     private static final String CONTAINER_KEY = "container";
@@ -42,7 +41,7 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
     private static final String DEFAULT_VALUE_FIELD = "defaultValue";
 
     @Override
-    public void prePreFillTransform(FormDefinition formDefinition, JsonNode placeholders, JsonNode source) {
+    public void prePreFillTransform(FormIoFormDefinition formDefinition, JsonNode placeholders, JsonNode source) {
         final JsonNode formDefinitionData = formDefinition.getFormDefinition();
         final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionData);
 
@@ -75,12 +74,9 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
                 }
             }
         });
+        formDefinition.isWriting();
         formDefinition.changeDefinition(formDefinitionData.toString());
-
-    }
-
-    private String getIndexValueJsonPointer(String container) {
-        return StringUtils.substringBetween(container, "(", ")");
+        formDefinition.doneWriting();
     }
 
     /**
@@ -170,7 +166,7 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
      * @return JsonPatch a patch containing patch operations for array modifications.
      */
     @Override
-    public JsonPatch preSubmissionTransform(FormDefinition formDefinition, JsonNode submission, JsonNode placeholders, JsonNode source) {
+    public JsonPatch preSubmissionTransform(FormIoFormDefinition formDefinition, JsonNode submission, JsonNode placeholders, JsonNode source) {
         final JsonPatchBuilder sourceJsonPatchBuilder = new JsonPatchBuilder();
         final JsonPatchBuilder submissionJsonPatchBuilder = new JsonPatchBuilder();
 
@@ -185,7 +181,6 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
                 final JsonPointer submissionProperty = JsonPointer.valueOf("/" + propertyName);
 
                 if (container.contains("/{indexOf")) {
-
                     final String indexValueJsonPointer = getIndexValueJsonPointer(container);
                     final String id = placeholders.at(indexValueJsonPointer).textValue();
 
@@ -225,6 +220,10 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
             JsonPatchService.apply(submissionPatch, submission, allowRemovalOperations());
         }
         return sourceJsonPatchBuilder.build();
+    }
+
+    private String getIndexValueJsonPointer(String container) {
+        return StringUtils.substringBetween(container, "(", ")");
     }
 
     private String lookupIndexForIdValue(ArrayNode list, String id) {

@@ -33,6 +33,9 @@ public interface FormDefinition {
     @JsonProperty
     JsonNode getFormDefinition();
 
+    @JsonProperty
+    boolean isReadOnly();
+
     @JsonIgnore
     void changeName(String name);
 
@@ -41,5 +44,8 @@ public interface FormDefinition {
 
     @JsonIgnore
     FormDefinition preFill(JsonNode rootNode);
+
+    @JsonIgnore
+    void setReadOnly(Boolean value);
 
 }

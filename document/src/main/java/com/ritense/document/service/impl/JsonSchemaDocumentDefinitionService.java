@@ -54,14 +54,10 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
-    public JsonSchemaDocumentDefinitionId findIdByNameAndVersion(String name, Long version) {
-        if (version == null) {
-            return findLatestByName(name)
-                .orElseThrow(() -> new UnknownDocumentDefinitionException(name))
-                .getId();
-        } else {
-            return JsonSchemaDocumentDefinitionId.existingId(name, version);
-        }
+    public JsonSchemaDocumentDefinitionId findIdByName(String name) {
+        return findLatestByName(name)
+            .orElseThrow(() -> new UnknownDocumentDefinitionException(name))
+            .getId();
     }
 
     @Override

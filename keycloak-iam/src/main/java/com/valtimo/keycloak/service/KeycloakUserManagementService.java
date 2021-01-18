@@ -21,16 +21,20 @@ import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.UserNotFoundException;
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
+import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+@AllArgsConstructor
 public class KeycloakUserManagementService implements UserManagementService {
 
-    public KeycloakUserManagementService() {
-    }
+    private final KeycloakService keycloakService;
 
     @Override
     public ManageableUser createUser(ManageableUser user) {
@@ -61,7 +65,17 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public Page<ManageableUser> getAllUsers(Pageable pageable) {
-        return null;
+        List<ManageableUser> users = keycloakService.usersResource().list().stream().map(
+            user -> new ValtimoUserBuilder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .roles(user.getRealmRoles()).build()
+        ).collect(Collectors.toList());
+
+        return new PageImpl<>(users);
     }
 
     @Override
@@ -81,7 +95,15 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public List<ManageableUser> findByRole(String authority) {
-        return null;
+        return keycloakService.rolesResource().get(authority).getRoleUserMembers().stream().map(
+            user -> new ValtimoUserBuilder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .roles(user.getRealmRoles()).build()
+        ).collect(Collectors.toList());
     }
 
     @Override

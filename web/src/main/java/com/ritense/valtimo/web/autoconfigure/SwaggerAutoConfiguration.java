@@ -18,6 +18,7 @@ package com.ritense.valtimo.web.autoconfigure;
 
 import com.ritense.valtimo.web.config.SwaggerProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -58,6 +59,7 @@ public class SwaggerAutoConfiguration {
      * @return the Swagger Springfox configuration
      */
     @Bean
+    @ConditionalOnMissingBean(name = "swaggerSpringfoxDocket")
     public Docket swaggerSpringfoxDocket(SwaggerProperties swaggerProperties) {
         logger.debug("Starting Swagger");
         StopWatch watch = new StopWatch();

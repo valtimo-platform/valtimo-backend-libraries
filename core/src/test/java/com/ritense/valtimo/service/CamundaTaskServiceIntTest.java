@@ -18,6 +18,7 @@ package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
+import com.ritense.valtimo.contract.authentication.ManageableUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +26,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
@@ -104,4 +106,19 @@ public class CamundaTaskServiceIntTest extends BaseIntegrationTest {
         assertThat(task.processDefinitionKey).isEqualTo(processDefinitionKey);
     }
 
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = USER)
+    public void shouldFindCandidateUsers() throws IllegalAccessException {
+        var pagedTasks = camundaTaskService.findTasksFiltered(
+            CamundaTaskService.TaskFilter.ALL,
+            PageRequest.of(0, 20)
+        );
+
+        var task = pagedTasks.get().findFirst().orElseThrow().getId();
+
+        //when(userManagementService.findByRole(eq("ROLE_USER"))).thenReturn(Collections.emptyList());
+        List<ManageableUser> candidateUsers = camundaTaskService.getCandidateUsers(task);
+
+        assertThat(candidateUsers).isEmpty();
+    }
 }

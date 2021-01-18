@@ -20,6 +20,7 @@ import com.ritense.valtimo.emailnotificationsettings.domain.request.EmailNotific
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettings;
 import com.ritense.valtimo.emailnotificationsettings.repository.EmailNotificationSettingsRepository;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
+import lombok.RequiredArgsConstructor;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -27,13 +28,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class EmailNotificationSettingsServiceImpl implements EmailNotificationSettingsService {
 
     private final EmailNotificationSettingsRepository emailNotificationSettingsRepository;
-
-    public EmailNotificationSettingsServiceImpl(EmailNotificationSettingsRepository emailNotificationSettingsRepository) {
-        this.emailNotificationSettingsRepository = emailNotificationSettingsRepository;
-    }
 
     @Override
     public Optional<EmailNotificationSettings> getSettingsFor(String emailAddress) {

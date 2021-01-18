@@ -23,6 +23,7 @@ import org.camunda.bpm.engine.impl.db.sql.DbSqlSessionFactory;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -51,11 +52,13 @@ public class ValtimoMybatisAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(SpringManagedTransactionFactory.class)
     public SpringManagedTransactionFactory springManagedTransactionFactory() {
         return new SpringManagedTransactionFactory();
     }
 
     @Bean
+    @ConditionalOnMissingBean(SqlSessionFactory.class)
     public SqlSessionFactory sqlSessionFactory(
         final SpringProcessEngineConfiguration springProcessEngineConfiguration,
         final SpringManagedTransactionFactory springManagedTransactionFactory

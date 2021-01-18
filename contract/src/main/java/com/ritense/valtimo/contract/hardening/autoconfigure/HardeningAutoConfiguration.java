@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 public class HardeningAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(HardeningService.class)
     public HardeningService hardeningService(HardeningProperties hardeningProperties) {
         return new HardeningServiceImpl(hardeningProperties);
     }

@@ -21,15 +21,13 @@ import org.junit.jupiter.api.Test;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class OfficeIpRequestTest {
 
     private static final String OFFICE_IP = "213.127.182.74";
-
     private OfficeIpRequest officeIpRequest;
     private HttpServletRequest httpServletRequest;
 
@@ -44,7 +42,7 @@ public class OfficeIpRequestTest {
         when(httpServletRequest.getRemoteAddr()).thenReturn(OFFICE_IP);
 
         final boolean result = officeIpRequest.check(httpServletRequest);
-        assertTrue(result);
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -52,7 +50,7 @@ public class OfficeIpRequestTest {
         when(httpServletRequest.getRemoteAddr()).thenReturn("");
 
         final boolean result = officeIpRequest.check(httpServletRequest);
-        assertFalse(result);
+        assertThat(result).isFalse();
     }
 
     @Test
@@ -60,7 +58,7 @@ public class OfficeIpRequestTest {
         when(httpServletRequest.getRemoteAddr()).thenReturn("127.0.0.1");
 
         final boolean result = officeIpRequest.check(httpServletRequest);
-        assertFalse(result);
+        assertThat(result).isFalse();
     }
 
 }

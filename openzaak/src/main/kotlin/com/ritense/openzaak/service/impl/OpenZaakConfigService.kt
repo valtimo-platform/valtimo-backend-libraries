@@ -18,6 +18,7 @@ package com.ritense.openzaak.service.impl
 
 import com.ritense.openzaak.domain.configuration.OpenZaakConfig
 import com.ritense.openzaak.domain.configuration.OpenZaakConfigId
+import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.openzaak.domain.configuration.Secret
 import com.ritense.openzaak.domain.request.CreateOpenZaakConfigRequest
 import com.ritense.openzaak.domain.request.ModifyOpenZaakConfigRequest
@@ -47,15 +48,14 @@ class OpenZaakConfigService(
     override fun createOpenZaakConfig(request: CreateOpenZaakConfigRequest): CreateOpenZaakConfigResult {
         return try {
             if (get() != null) {
-                throw IllegalStateException("Only one OpenZaak config is allowed")
+                throw IllegalStateException("Only one Open Zaak config is allowed")
             }
             val openZaakConfig = OpenZaakConfig(
                 OpenZaakConfigId.newId(UUID.randomUUID()),
                 request.url,
                 request.clientId,
                 Secret(request.secret),
-                request.rsin,
-                request.organisation
+                Rsin(request.rsin)
             )
             testConnection(openZaakConfig)
             openZaakConfigRepository.save(openZaakConfig)
@@ -65,12 +65,14 @@ class OpenZaakConfigService(
             CreateOpenZaakConfigResultFailed(errors)
         } catch (ex: IllegalStateException) {
             CreateOpenZaakConfigResultFailed(listOf(OperationError.FromException(ex)))
+        } catch (ex: IllegalArgumentException) {
+            CreateOpenZaakConfigResultFailed(listOf(OperationError.FromException(ex)))
         }
     }
 
     override fun modifyOpenZaakConfig(request: ModifyOpenZaakConfigRequest): ModifyOpenZaakConfigResult {
         return try {
-            val openZaakConfig = get() ?: throw IllegalStateException("OpenZaak config is not found")
+            val openZaakConfig = get() ?: throw IllegalStateException("Open Zaak config is not found")
             openZaakConfig.changeConfig(request)
             testConnection(openZaakConfig)
             openZaakConfigRepository.save(openZaakConfig)
@@ -80,11 +82,13 @@ class OpenZaakConfigService(
             ModifyOpenZaakConfigResultFailed(errors)
         } catch (ex: IllegalStateException) {
             ModifyOpenZaakConfigResultFailed(listOf(OperationError.FromException(ex)))
+        } catch (ex: IllegalArgumentException) {
+            ModifyOpenZaakConfigResultFailed(listOf(OperationError.FromException(ex)))
         }
     }
 
     override fun removeOpenZaakConfig() {
-        val openZaakConfig = get() ?: throw IllegalStateException("OpenZaak config is not found")
+        val openZaakConfig = get() ?: throw IllegalStateException("Open Zaak config is not found")
         openZaakConfigRepository.delete(openZaakConfig)
     }
 

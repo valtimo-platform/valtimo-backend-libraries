@@ -34,7 +34,6 @@ import com.ritense.valtimo.security.config.DenyAllHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.EmailNotificationSettingsSecurityConfigurer;
 import com.ritense.valtimo.security.config.ErrorHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.JwtHttpSecurityConfigurer;
-import com.ritense.valtimo.security.config.LocalHostIpHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ProcessDefinitionVersionChangeLogHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ProcessHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ProcessInstanceHttpSecurityConfigurer;
@@ -70,16 +69,19 @@ import java.util.List;
 public class HttpSecurityAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(SecurityEvaluationContextExtension.class)
     public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
         return new SecurityEvaluationContextExtension();
     }
 
     @Bean
+    @ConditionalOnMissingBean(Http401UnauthorizedEntryPoint.class)
     public Http401UnauthorizedEntryPoint http401UnauthorizedEntryPoint() {
         return new Http401UnauthorizedEntryPoint();
     }
 
     @Bean
+    @ConditionalOnMissingBean(SpringSecurityAuditorAware.class)
     public SpringSecurityAuditorAware springSecurityAuditorAware() {
         return new SpringSecurityAuditorAware();
     }
@@ -97,11 +99,13 @@ public class HttpSecurityAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(PasswordEncoder.class)
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
+    @ConditionalOnMissingBean(Http403ForbiddenEntryPoint.class)
     public Http403ForbiddenEntryPoint http403ForbiddenEntryPoint() {
         return new Http403ForbiddenEntryPoint();
     }
@@ -285,13 +289,6 @@ public class HttpSecurityAutoConfiguration {
         return new CamundaCockpitHttpSecurityConfigurer();
     }
 
-    @Order(480)
-    @Bean
-    @ConditionalOnMissingBean(LocalHostIpHttpSecurityConfigurer.class)
-    public LocalHostIpHttpSecurityConfigurer localHostIpHttpSecurityConfigurer() {
-        return new LocalHostIpHttpSecurityConfigurer();
-    }
-
     @Order(500)
     @Bean
     @ConditionalOnMissingBean(DenyAllHttpSecurityConfigurer.class)
@@ -310,6 +307,7 @@ public class HttpSecurityAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(AuthenticationManager.class)
     public AuthenticationManager authenticationManager(CoreHttpSecurityConfigurerAdapter configurerAdapter) throws Exception {
         return configurerAdapter.authenticationManagerBean();
     }

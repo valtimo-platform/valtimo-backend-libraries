@@ -35,6 +35,6 @@
     <include file="changelog/20180919-context-processes.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20190719-email-notification-settings-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20190828-email-settings-changed-changelog.xml" relativeToChangelogFile="true"/>
-
+    <include file="camunda/20201217-camunda-upgrade-7-14-0-changelog.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

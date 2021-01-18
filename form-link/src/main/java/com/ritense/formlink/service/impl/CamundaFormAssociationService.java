@@ -65,8 +65,8 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.form.domain.FormIoFormDefinition.PROCESS_VAR_PREFIX;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @RequiredArgsConstructor
 public class CamundaFormAssociationService implements FormAssociationService {

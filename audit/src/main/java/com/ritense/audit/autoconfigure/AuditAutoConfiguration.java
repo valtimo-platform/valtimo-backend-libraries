@@ -27,12 +27,12 @@ import com.ritense.audit.service.impl.AuditEventProcessorImpl;
 import com.ritense.audit.service.impl.AuditRetentionServiceImpl;
 import com.ritense.audit.service.impl.AuditSearchServiceImpl;
 import com.ritense.audit.service.impl.AuditServiceImpl;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import javax.persistence.EntityManager;
@@ -56,14 +56,12 @@ public class AuditAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(AuditRetentionService.class)
-    @ConditionalOnExpression(value = "" +
-        " !T(org.springframework.util.StringUtils).isEmpty('${scheduling.enabled}') and ${scheduling.enabled} == true " +
-        " and " +
-        " !T(org.springframework.util.StringUtils).isEmpty('${audit.record.retention}') " +
-        " and " +
-        " !T(org.springframework.util.StringUtils).isEmpty('${scheduling.job.cron.cleanupAuditEvents}') ")
-    public AuditRetentionService auditRetentionService(AuditService auditService, Environment env) {
-        return new AuditRetentionServiceImpl(auditService, env.getRequiredProperty("audit.record.retention", Integer.class));
+    @ConditionalOnProperty(prefix = "scheduling", name = "enabled", havingValue = "true", matchIfMissing = true)
+    public AuditRetentionService auditRetentionService(
+        AuditService auditService,
+        @Value("${audit.record.retention:15}") long retentionInDays
+    ) {
+        return new AuditRetentionServiceImpl(auditService, retentionInDays);
     }
 
     @Bean

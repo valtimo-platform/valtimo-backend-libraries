@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import org.camunda.bpm.engine.AuthorizationException;
@@ -59,6 +60,7 @@ public class CamundaTaskServiceTest {
     private CamundaTaskService camundaTaskService;
     private CamundaProcessService camundaProcessService;
     private RuntimeService runtimeService;
+    private UserManagementService userManagementService;
 
     @BeforeEach
     public void setUp() {
@@ -68,6 +70,7 @@ public class CamundaTaskServiceTest {
         runtimeService = mock(RuntimeService.class);
         delegateTaskHelper = mock(DelegateTaskHelper.class);
         camundaProcessService = mock(CamundaProcessService.class);
+        userManagementService = mock(UserManagementService.class);
         task = new TaskEntity(TASK_ID);
         camundaTaskService = spy(
             new CamundaTaskService(
@@ -79,7 +82,8 @@ public class CamundaTaskServiceTest {
                 camundaProcessService,
                 Optional.empty(),
                 applicationEventPublisher,
-                runtimeService
+                runtimeService,
+                userManagementService
             )
         );
     }
@@ -149,7 +153,7 @@ public class CamundaTaskServiceTest {
         //initialize own taskService here because we need to override the complete method
         TaskService taskService = mock(TaskService.class, RETURNS_DEEP_STUBS);
         CamundaTaskService camundaTaskService = spy(new CamundaTaskService(taskService, null, null, delegateTaskHelper, null, null,
-            Optional.empty(), applicationEventPublisher, null));
+            Optional.empty(), applicationEventPublisher, null, userManagementService));
 
         when(taskService.createTaskQuery().taskId(TASK_ID).initializeFormKeys().singleResult()).thenReturn(task);
         doNothing().when(taskService).complete(TASK_ID);

@@ -30,8 +30,7 @@ interface ZaakService {
     fun createZaak(
         zaaktype: URI,
         startdatum: LocalDateTime,
-        bronorganisatie: String,
-        verantwoordelijkeOrganisatie: String
+        rsin: String,
     ): Zaak
 
     fun getZaak(id: UUID): Zaak

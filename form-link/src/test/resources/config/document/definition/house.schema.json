@@ -13,6 +13,11 @@
             "description": "house number must be equal to or greater than zero.",
             "type": "integer",
             "minimum": 0
+        },
+        "postcode": {
+            "type": "string",
+            "description": "Postcode",
+            "maxLength": 100
         }
     }
 }

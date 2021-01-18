@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.EnumSet;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 public interface JsonPatchFilter {
 
@@ -31,8 +32,18 @@ public interface JsonPatchFilter {
                 if (operation.get("op").asText().equals("remove")) {
                     item.remove();
                 }
+            } else if (flags.contains(JsonPatchFilterFlag.ALLOW_ARRAY_REMOVAL_ONLY)) {
+                if (operation.get("op").asText().equals("remove")
+                    && !arrayPattern().matcher(operation.get("path").asText()).matches()
+                ) {
+                    item.remove();
+                }
             }
         }
+    }
+
+    static Pattern arrayPattern() {
+        return Pattern.compile(".*/[0-9]");
     }
 
 }

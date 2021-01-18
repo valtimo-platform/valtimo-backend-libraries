@@ -18,6 +18,6 @@ package com.ritense.formlink.domain.impl.submission
 
 import com.ritense.formlink.domain.impl.submission.formfield.FormField
 
-data class FieldReference(
+data class DocumentFieldReference(
     val formfield: FormField
 )

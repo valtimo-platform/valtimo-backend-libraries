@@ -27,6 +27,7 @@ import com.ritense.document.service.DocumentSequenceGeneratorService
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.domain.configuration.OpenZaakConfig
 import com.ritense.openzaak.domain.configuration.OpenZaakConfigId
+import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.openzaak.domain.configuration.Secret
 import com.ritense.openzaak.service.impl.OpenZaakConfigService
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
@@ -82,8 +83,7 @@ abstract class BaseTest {
             "https://openzaak.ritense.com/",
             "valtimo_openzaak_test",
             Secret("ySCrWMK7nCPdoSkjydb58racw2tOzuDqgge3SFhgR3Fe"),
-            "123456789",
-            "organisation"
+            Rsin("002564440")
         )
     }
 

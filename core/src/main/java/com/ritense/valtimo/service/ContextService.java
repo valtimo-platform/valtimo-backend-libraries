@@ -23,6 +23,7 @@ import com.ritense.valtimo.domain.contexts.Context;
 import com.ritense.valtimo.domain.contexts.UserContext;
 import com.ritense.valtimo.repository.ContextRepository;
 import com.ritense.valtimo.repository.UserContextRepository;
+import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDto;
@@ -35,24 +36,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class ContextService {
 
     private final CurrentUserService currentUserService;
     private final ContextRepository contextRepository;
     private final UserContextRepository userContextRepository;
     private final RepositoryService repositoryService;
-
-    public ContextService(
-        CurrentUserService currentUserService,
-        ContextRepository contextRepository,
-        UserContextRepository userContextRepository,
-        RepositoryService repositoryService
-    ) {
-        this.currentUserService = currentUserService;
-        this.contextRepository = contextRepository;
-        this.userContextRepository = userContextRepository;
-        this.repositoryService = repositoryService;
-    }
 
     public void setContextOfCurrentUser(Long contextId) throws IllegalAccessException {
         ValtimoUser valtimoUser = currentUserService.getCurrentUser();

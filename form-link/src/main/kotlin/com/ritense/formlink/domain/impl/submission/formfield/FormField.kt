@@ -44,11 +44,15 @@ abstract class FormField(
             documentSupplier: () -> JsonSchemaDocument?,
             applicationEventPublisher: ApplicationEventPublisher
         ): FormField? {
+            val jsonPointer = getJsonPointer(objectNode[PROPERTY_KEY].asText())
+            val value = getValue(formData, jsonPointer)
+            if (value.isNull || value.isMissingNode) {
+                return null
+            }
             when {
                 isUploadComponent(objectNode) -> {
-                    val jsonPointer = getJsonPointer(objectNode[PROPERTY_KEY].asText())
                     return UploadField(
-                        getValue(formData, jsonPointer),
+                        value,
                         jsonPointer,
                         documentSupplier,
                         applicationEventPublisher
@@ -58,9 +62,8 @@ abstract class FormField(
                     return null //skip buttons
                 }
                 isDataFieldComponent(objectNode) -> {
-                    val jsonPointer = getJsonPointer(objectNode[PROPERTY_KEY].asText())
                     return DataField(
-                        getValue(formData, jsonPointer),
+                        value,
                         jsonPointer,
                         documentSupplier,
                         applicationEventPublisher

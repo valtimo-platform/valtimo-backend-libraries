@@ -29,7 +29,7 @@ spring:
                 serverTimezone: UTC
                 allowPublicKeyRetrieval: true
     liquibase:
-        enabled: false
+        enabled: false #relies on core so liquibase is already done
     jpa:
         database-platform: org.hibernate.dialect.MySQL57Dialect
         database: mysql

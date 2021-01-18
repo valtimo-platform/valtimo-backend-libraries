@@ -55,76 +55,30 @@ data class FormIoSubmission(
     val formDefinition: FormIoFormDefinition,
     val processDocumentDefinition: ProcessDocumentDefinition,
     val formData: JsonNode,
-    val document: JsonSchemaDocument?,
+    var document: JsonSchemaDocument?,
     val taskInstanceId: String?,
     val processDocumentService: ProcessDocumentService,
     val taskService: CamundaTaskService,
-    val submissionTransformerService: SubmissionTransformerService,
+    val submissionTransformerService: SubmissionTransformerService<FormIoFormDefinition>,
     val applicationEventPublisher: ApplicationEventPublisher
 ) : Submission {
 
     private val logger = KotlinLogging.logger {}
-    private val content: ObjectNode = emptyContent()
+    private val documentContent: ObjectNode = emptyContent()
     private var processVariables: JsonNode? = null
     private var formDefinedProcessVariables: Map<String, Any?>? = null
-    private var fieldReferences: MutableList<FieldReference> = mutableListOf()
+    private var documentFieldReferences: MutableList<DocumentFieldReference> = mutableListOf()
     private var preJsonPatch: JsonPatch? = null
     private val request: Request
     private lateinit var externalFormData: Map<ExternalFormFieldType, Map<String, String>>
 
     init {
-        initFieldReferences()  //Load all mappable form fields
+        initDocumentDefinitionFieldReferences()  //Load all mappable document definition form fields
         initProcessVariables() //Load task related processVars
-        getContent() //Sanitize and process field types
+        getDocumentContent() //Sanitize and process field types
         getFormDefinedProcessVariables() //Extracting specific form configuration
         buildExternalFormData()
         request = makeRequest(this)
-    }
-
-    private fun initFieldReferences() {
-        formDefinition.documentMappedFields.forEach(Consumer { objectNode: ObjectNode ->
-            val formField = FormField.getFormField(formData, objectNode, { document }, applicationEventPublisher)
-            if (formField != null) {
-                fieldReferences.add(
-                    FieldReference(formField)
-                )
-            }
-        })
-    }
-
-    private fun initProcessVariables() {
-        if (!taskInstanceId.isNullOrEmpty()) {
-            val variables = taskService.getTaskVariables(taskInstanceId)
-            processVariables = Mapper.INSTANCE.objectMapper().valueToTree(variables)
-        }
-    }
-
-    private fun buildExternalFormData() {
-        externalFormData = formDefinition.buildExternalFormFieldsMap().map { entry ->
-            entry.key to entry.value.map {
-                it.name to FormField.getValue(formData, it.jsonPointer).asText()
-            }.toMap()
-        }.toMap()
-    }
-
-    private fun getContent(): JsonNode? {
-        buildContent()
-        //Note: Pre patch can be refactored into a specific field types that apply itself
-        preJsonPatch = submissionTransformerService.preSubmissionTransform(
-            formDefinition,
-            content,
-            processVariables,
-            document?.content()?.asJson()
-        )
-        logger.debug { "getContent:$content" }
-        return content
-    }
-
-    private fun buildContent() {
-        fieldReferences.forEach {
-            it.formfield.preProcess()
-            JsonPointerHelper.appendJsonPointerTo(content, it.formfield.pointer, it.formfield.value)
-        }
     }
 
     override fun apply(): FormSubmissionResult {
@@ -134,10 +88,12 @@ data class FormIoSubmission(
                 FormSubmissionResultFailed(result.errors())
             } else {
                 val submittedDocument = result.resultingDocument().orElseThrow()
-                fieldReferences.forEach {
+                document = submittedDocument
+
+                documentFieldReferences.forEach {
                     it.formfield.postProcess()
                 }
-                if(externalFormData.isNotEmpty()) {
+                if (externalFormData.isNotEmpty()) {
                     applicationEventPublisher.publishEvent(
                         ExternalDataSubmittedEvent(
                             externalFormData,
@@ -153,14 +109,64 @@ data class FormIoSubmission(
         }
     }
 
+    public fun documentContent(): ObjectNode {
+        return documentContent
+    }
+
+    private fun initDocumentDefinitionFieldReferences() {
+        formDefinition.documentMappedFields.forEach(Consumer { objectNode: ObjectNode ->
+            val formField = FormField.getFormField(formData, objectNode, { document }, applicationEventPublisher)
+            if (formField != null) {
+                documentFieldReferences.add(
+                    DocumentFieldReference(formField)
+                )
+            }
+        })
+    }
+
+    private fun initProcessVariables() {
+        if (!taskInstanceId.isNullOrEmpty()) {
+            val variables = taskService.getTaskVariables(taskInstanceId)
+            processVariables = Mapper.INSTANCE.objectMapper().valueToTree(variables)
+        }
+    }
+
+    private fun getDocumentContent(): JsonNode {
+        buildDocumentContent()
+        //Note: Pre patch can be refactored into a specific field types that apply itself
+        preJsonPatch = submissionTransformerService.preSubmissionTransform(
+            formDefinition,
+            documentContent,
+            processVariables,
+            document?.content()?.asJson()
+        )
+        logger.debug { "getContent:$documentContent" }
+        return documentContent
+    }
+
+    private fun getFormDefinedProcessVariables() {
+        formDefinedProcessVariables = formDefinition.extractProcessVars(formData)
+    }
+
+    private fun buildExternalFormData() {
+        externalFormData = formDefinition.buildExternalFormFieldsMap().map { entry ->
+            entry.key to entry.value.map {
+                it.name to FormField.getValue(formData, it.jsonPointer).asText()
+            }.toMap()
+        }.toMap()
+    }
+
+    private fun buildDocumentContent() {
+        documentFieldReferences.forEach {
+            it.formfield.preProcess()
+            JsonPointerHelper.appendJsonPointerTo(documentContent, it.formfield.pointer, it.formfield.value)
+        }
+    }
+
     private fun parseAndLogException(ex: Exception): OperationError {
         val referenceId = UUID.randomUUID()
         logger.error("Unexpected error occurred - $referenceId", ex)
         return FromString("Unexpected error occurred, please contact support - referenceId: $referenceId")
-    }
-
-    private fun getFormDefinedProcessVariables() {
-        formDefinition.extractProcessVars(content)
     }
 
     companion object RequestFactory {
@@ -172,7 +178,7 @@ data class FormIoSubmission(
                         submission.processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(),
                         NewDocumentRequest(
                             documentDefinitionId.name(),
-                            submission.content
+                            submission.documentContent
                         )
                     ).withProcessVars(submission.formDefinedProcessVariables)
                 } else {
@@ -180,7 +186,7 @@ data class FormIoSubmission(
                         submission.processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(),
                         ModifyDocumentRequest(
                             submission.document?.id().toString(),
-                            submission.content,
+                            submission.documentContent,
                             submission.document?.version().toString()
                         ).withJsonPatch(submission.preJsonPatch)
                     ).withProcessVars(submission.formDefinedProcessVariables)
@@ -189,7 +195,7 @@ data class FormIoSubmission(
                 return ModifyDocumentAndCompleteTaskRequest(
                     ModifyDocumentRequest(
                         submission.document?.id().toString(),
-                        submission.content,
+                        submission.documentContent,
                         submission.document?.version().toString()
                     ).withJsonPatch(submission.preJsonPatch),
                     submission.taskInstanceId

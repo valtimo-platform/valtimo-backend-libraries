@@ -17,14 +17,12 @@
 package com.ritense.form.autodeployment;
 
 import com.ritense.document.domain.listener.ApplicationReadyEventListener;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class FormApplicationReadyEventListener implements ApplicationReadyEventListener {
 
     private final FormDefinitionDeploymentService formDefinitionDeploymentService;
-
-    public FormApplicationReadyEventListener(final FormDefinitionDeploymentService formDefinitionDeploymentService) {
-        this.formDefinitionDeploymentService = formDefinitionDeploymentService;
-    }
 
     public void handle() {
         formDefinitionDeploymentService.deployAllFromResourceFiles();

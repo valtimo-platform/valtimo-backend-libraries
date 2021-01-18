@@ -395,7 +395,11 @@ public class ProcessResource extends AbstractProcessResource {
             .list();
 
         List<HistoricActivityInstanceDto> result = historicActivityInstances.stream()
-            .map(HistoricActivityInstanceDto::fromHistoricActivityInstance)
+            .map(instance -> {
+                HistoricActivityInstanceDto historicActivityInstanceDto = new HistoricActivityInstanceDto();
+                HistoricActivityInstanceDto.fromHistoricActivityInstance(historicActivityInstanceDto, instance);
+                return historicActivityInstanceDto;
+            })
             .collect(Collectors.toList());
         return ResponseEntity.ok(result);
     }
