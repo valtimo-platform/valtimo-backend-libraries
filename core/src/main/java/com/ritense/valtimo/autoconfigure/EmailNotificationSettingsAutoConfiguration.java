@@ -40,10 +40,11 @@ public class EmailNotificationSettingsAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(EmailNotificationSettingsResource.class)
     public EmailNotificationSettingsResource emailNotificationSettingsResource(
-        final EmailNotificationSettingsService emailNotificationService
+        final EmailNotificationSettingsService emailNotificationSettingsService
     ) {
-        return new EmailNotificationSettingsResource(emailNotificationService);
+        return new EmailNotificationSettingsResource(emailNotificationSettingsService);
     }
 
 }

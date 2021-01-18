@@ -58,7 +58,8 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
             new FormIoFormDefinition(
                 UUID.randomUUID(),
                 request.getName(),
-                request.getFormDefinition()
+                request.getFormDefinition(),
+                request.isReadOnly()
             )
         );
     }
@@ -75,8 +76,21 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
                 formIoFormDefinition.changeName(request.getName());
                 formIoFormDefinition.changeDefinition(request.getFormDefinition());
                 return formDefinitionRepository.save(formIoFormDefinition);
-            })
-            .orElseThrow();
+            }).orElseThrow();
+    }
+
+    @Override
+    @Transactional
+    public FormIoFormDefinition modifyFormDefinition(UUID id, String name, String definition, Boolean readOnly) {
+       return formDefinitionRepository.findById(id)
+        .map(formIoFormDefinition -> {
+            formIoFormDefinition.isWriting();
+            formIoFormDefinition.changeName(name);
+            formIoFormDefinition.changeDefinition(definition);
+            formIoFormDefinition.setReadOnly(readOnly);
+            formIoFormDefinition.doneWriting();
+            return formDefinitionRepository.save(formIoFormDefinition);
+        }).orElseThrow();
     }
 
     @Override

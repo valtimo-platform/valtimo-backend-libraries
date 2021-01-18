@@ -57,6 +57,25 @@ public class JsonPatchServiceTest {
     }
 
     @Test
+    public void removeArrayItem() {
+
+        final ObjectNode addOperation = JsonNodeFactory.instance.objectNode();
+        addOperation.put("op", "add");
+        addOperation.put("path", "/favorites/-");
+        addOperation.put("value", "Bread");
+
+        ArrayNode patches = JsonNodeFactory.instance.arrayNode();
+        patches.add(addOperation);
+
+        //when
+        JsonPatchService.apply(patches, source);
+
+        //then
+        assertThat(source.at("/favorites/0").textValue()).isEqualTo("Croissant");
+        assertThat(source.at("/favorites/1").textValue()).isEqualTo("Bread");
+    }
+
+    @Test
     public void addArrayItemToEndOfArrayCombined() {
 
         ObjectNode source = JsonNodeFactory.instance.objectNode();

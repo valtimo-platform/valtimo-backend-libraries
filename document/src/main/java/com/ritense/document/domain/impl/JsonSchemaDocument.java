@@ -37,6 +37,7 @@ import com.ritense.valtimo.contract.document.event.DocumentRelatedFileRemovedEve
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
@@ -73,6 +74,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
     }
 )
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
 public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument>
     implements Document, Persistable<JsonSchemaDocumentId> {
 
@@ -253,7 +255,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
                 )
             );
         } else {
-            throw new IllegalStateException("Related file not added");
+            logger.warn("Related file not added");
         }
     }
 
@@ -278,7 +280,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
                 )
             );
         } else {
-            throw new IllegalStateException("Related file not removed");
+            logger.warn("Related file not removed");
         }
     }
 

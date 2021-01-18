@@ -29,7 +29,7 @@ public interface DocumentDefinitionService {
 
     Page<? extends DocumentDefinition> findAll(Pageable pageable);
 
-    JsonSchemaDocumentDefinitionId findIdByNameAndVersion(String name, Long version);
+    JsonSchemaDocumentDefinitionId findIdByName(String name);
 
     Optional<? extends DocumentDefinition> findBy(DocumentDefinition.Id id);
 

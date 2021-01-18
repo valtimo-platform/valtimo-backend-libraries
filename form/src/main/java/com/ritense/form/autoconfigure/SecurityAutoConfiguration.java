@@ -59,5 +59,4 @@ public class SecurityAutoConfiguration {
         return new FormFileJwtHttpSecurityConfigurer(tokenAuthenticationService);
     }
 
-
 }

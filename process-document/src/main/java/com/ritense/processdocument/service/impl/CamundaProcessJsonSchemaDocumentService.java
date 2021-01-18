@@ -90,9 +90,8 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         try {
             final var processDefinitionKey = new CamundaProcessDefinitionKey(request.processDefinitionKey());
             final var newDocumentRequest = request.newDocumentRequest();
-            final var documentDefinitionId = documentDefinitionService.findIdByNameAndVersion(
-                newDocumentRequest.documentDefinitionName(),
-                null
+            final var documentDefinitionId = documentDefinitionService.findIdByName(
+                newDocumentRequest.documentDefinitionName()
             );
             final var processDocumentDefinitionId = CamundaProcessJsonSchemaDocumentDefinitionId.existingId(
                 processDefinitionKey,
@@ -178,9 +177,8 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             final var processDefinitionKey = new CamundaProcessDefinitionKey(request.processDefinitionKey());
             final var processInstanceId = new CamundaProcessInstanceId(request.processInstanceId());
             final var newDocumentRequest = request.newDocumentRequest();
-            final var documentDefinitionId = documentDefinitionService.findIdByNameAndVersion(
-                newDocumentRequest.documentDefinitionName(),
-                null
+            final var documentDefinitionId = documentDefinitionService.findIdByName(
+                newDocumentRequest.documentDefinitionName()
             );
 
             final var processDocumentDefinitionId = CamundaProcessJsonSchemaDocumentDefinitionId.newId(

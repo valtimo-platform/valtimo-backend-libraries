@@ -24,5 +24,5 @@ import java.util.UUID
 data class ZaakInstanceLink(
     val zaakInstanceUrl: URI,
     val zaakInstanceId: UUID,
-    val documentId: UUID,
+    val documentId: UUID
 ) : ZaakInstanceLink, Serializable

@@ -48,6 +48,7 @@ public class LiquibaseAutoConfiguration {
 
     @Order(HIGHEST_PRECEDENCE + 1)
     @Bean
+    @ConditionalOnMissingBean(name = "coreLiquibaseMasterChangeLogLocation")
     public LiquibaseMasterChangeLogLocation coreLiquibaseMasterChangeLogLocation() {
         return new LiquibaseMasterChangeLogLocation("config/liquibase/valtimo-master.xml");
     }

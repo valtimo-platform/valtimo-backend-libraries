@@ -40,6 +40,7 @@ import java.util.List;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Tag("integration")
 @Transactional
@@ -66,6 +67,31 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends B
         assertThat(processDocumentDefinitions.size()).isEqualTo(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
+    }
+
+    @Test
+    public void shouldCreateProcessDocumentDefinition() {
+        var request = new ProcessDocumentDefinitionRequest(
+            "embedded-subprocess-example",
+            DOCUMENT_DEFINITION_NAME,
+            true
+        );
+
+        final var optionalProcessDocumentDefinition = camundaProcessJsonSchemaDocumentAssociationService
+            .createProcessDocumentDefinition(request);
+
+        assertThat(optionalProcessDocumentDefinition).isPresent();
+    }
+
+    @Test
+    public void shouldNotCreateProcessDocumentDefinitionForMultipleDossiers() {
+        var request = new ProcessDocumentDefinitionRequest(
+            "embedded-subprocess-example",
+            DOCUMENT_DEFINITION_NAME,
+            true
+        );
+        camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(request);
+        assertThrows(IllegalStateException.class, () -> camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(request));
     }
 
     @Test

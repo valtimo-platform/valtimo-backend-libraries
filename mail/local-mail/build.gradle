@@ -15,7 +15,7 @@
  */
 
 dependencies {
-    implementation project(":mail")
+    api project(":mail")
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 

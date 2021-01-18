@@ -16,20 +16,26 @@
 
 package com.ritense.valtimo.security.interceptor;
 
-import com.ritense.common.util.IpUtils;
+import com.ritense.valtimo.contract.utils.IpUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class OfficeIpRequest implements RequestInterceptor {
 
     private static final String KANTOOR_DOMEIN = "kantoor.ritense.com";
-    private final String hostAddress;
+    private static final String KANTOOR_PRIMARY_DOMEIN = "kantoor-primary.ritense.com";
+    private static final String KANTOOR_BACKUP_DOMEIN = "kantoor-backup.ritense.com";
+    private final Set<String> hostAddresses = new HashSet<>();
 
     public OfficeIpRequest() {
         try {
-            hostAddress = InetAddress.getByName(KANTOOR_DOMEIN).getHostAddress();
+            hostAddresses.add(InetAddress.getByName(KANTOOR_DOMEIN).getHostAddress());
+            hostAddresses.add(InetAddress.getByName(KANTOOR_PRIMARY_DOMEIN).getHostAddress());
+            hostAddresses.add(InetAddress.getByName(KANTOOR_BACKUP_DOMEIN).getHostAddress());
         } catch (UnknownHostException e) {
             throw new RuntimeException("Failed to get kantoor domain hostaddress", e);
         }
@@ -38,7 +44,7 @@ public class OfficeIpRequest implements RequestInterceptor {
     public boolean check(HttpServletRequest httpServletRequest) {
         return IpUtils.extractSourceIpsFrom(httpServletRequest)
             .stream()
-            .anyMatch(ip -> ip.equals(hostAddress));
+            .anyMatch(s -> hostAddresses.contains(s));
     }
 
 }

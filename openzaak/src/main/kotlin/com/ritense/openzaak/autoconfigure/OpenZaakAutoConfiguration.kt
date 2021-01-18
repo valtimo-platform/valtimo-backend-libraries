@@ -53,6 +53,7 @@ import org.springframework.web.client.RestTemplate
 class OpenZaakAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(Encryptor::class)
     fun encryptor(@Value("\${openzaak.superSecret}") superSecret: String): Encryptor {
         return Encryptor(superSecret)
     }
@@ -76,6 +77,7 @@ class OpenZaakAutoConfiguration {
     //Services
 
     @Bean
+    @ConditionalOnMissingBean(OpenZaakTokenGeneratorService::class)
     fun openzaakTokenGeneratorService(): OpenZaakTokenGeneratorService {
         return OpenZaakTokenGeneratorService()
     }
@@ -129,6 +131,7 @@ class OpenZaakAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ZaakTypeLinkService::class)
     fun zaakTypeLinkService(
         zaakTypeLinkRepository: ZaakTypeLinkRepository,
         processDocumentAssociationService: ProcessDocumentAssociationService

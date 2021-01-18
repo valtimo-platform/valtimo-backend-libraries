@@ -42,7 +42,7 @@ public interface AuditEvent {
 
     /**
      * IP preferable, otherwise "unidentified"  .
-     * See also com.ritense.common.utils.IpUtils note: this extracts also X_FORWARDED_FOR requests.
+     * See also com.ritense.valtimo.contract.utils.IpUtils note: this extracts also X_FORWARDED_FOR requests.
      *
      * @return String
      */

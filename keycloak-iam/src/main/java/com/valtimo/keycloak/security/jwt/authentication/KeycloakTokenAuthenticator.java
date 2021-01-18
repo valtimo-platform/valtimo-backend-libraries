@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.NAME_KEY;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
 import static java.util.Objects.requireNonNull;
 
@@ -45,9 +45,9 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
     @Override
     public boolean supports(Claims claims) {
         try {
-            final String userName = getUserName(claims);
-            if (userName.isBlank()) {
-                logger.debug("Support failed: username is blank");
+            final String email = getEmail(claims);
+            if (email.isBlank()) {
+                logger.debug("Support failed: email is blank");
                 return false;
             }
             final List<String> roles = getRoles(claims);
@@ -68,22 +68,22 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
         requireNonNull(jwt, "jwt must not be null");
         requireNonNull(claims, "claims must not be null");
 
-        final String userName = getUserName(claims);
+        final String email = getEmail(claims);
         final List<String> roles = getRoles(claims);
 
-        if (userName != null && roles != null && !roles.isEmpty()) {
+        if (email != null && roles != null && !roles.isEmpty()) {
             final Set<? extends GrantedAuthority> authorities = roles.stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.toUpperCase()))
                 .collect(Collectors.toSet());
 
-            final User principal = new User(userName, "", authorities);
+            final User principal = new User(email, "", authorities);
             return new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
         }
         return null;
     }
 
-    private String getUserName(Claims claims) {
-        return claims.get(NAME_KEY, String.class);
+    private String getEmail(Claims claims) {
+        return claims.get(EMAIL_KEY, String.class);
     }
 
     private List<String> getRoles(Claims claims) {

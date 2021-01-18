@@ -186,5 +186,4 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
         logger.error("Unexpected error occurred - {}", referenceId, ex);
         return new OperationError.FromString("Unexpected error occurred, please contact support - referenceId: " + referenceId);
     }
-
 }

@@ -31,11 +31,11 @@ public abstract class BaseTest {
     protected static final String DEFAULT_FORM_DEFINITION_NAME = "Form1";
 
     protected FormIoFormDefinition formDefinition() {
-        return new FormIoFormDefinition(UUID.randomUUID(), DEFAULT_FORM_DEFINITION_NAME, "{}");
+        return new FormIoFormDefinition(UUID.randomUUID(), DEFAULT_FORM_DEFINITION_NAME, "{}", false);
     }
 
     protected FormIoFormDefinition formDefinition(UUID id, String formName) {
-        return new FormIoFormDefinition(id, formName, "{}");
+        return new FormIoFormDefinition(id, formName, "{}", false);
     }
 
     protected Throwable getRootCause(Throwable throwable) {
@@ -50,7 +50,7 @@ public abstract class BaseTest {
             Thread.currentThread().getContextClassLoader().getResourceAsStream("config/form/" + formDefinitionId + ".json"),
             StandardCharsets.UTF_8);
 
-        return new FormIoFormDefinition(UUID.randomUUID(), "form-example", s);
+        return new FormIoFormDefinition(UUID.randomUUID(), "form-example", s, false);
     }
 
     protected JsonSchemaDocumentDefinition definition() {

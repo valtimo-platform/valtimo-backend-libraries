@@ -36,8 +36,8 @@ import org.camunda.bpm.application.impl.event.ProcessApplicationEventListenerPlu
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,21 +47,25 @@ import org.springframework.context.annotation.Configuration;
 public class CamundaAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(CustomFormTypesProcessEnginePlugin.class)
     public CustomFormTypesProcessEnginePlugin customFormTypesProcessEnginePlugin() {
         return new CustomFormTypesProcessEnginePlugin();
     }
 
     @Bean
+    @ConditionalOnMissingBean(HistoryEventAuditProcessEnginePlugin.class)
     public HistoryEventAuditProcessEnginePlugin historyEventAuditProcessEnginePlugin(final ApplicationEventPublisher applicationEventPublisher) {
         return new HistoryEventAuditProcessEnginePlugin(applicationEventPublisher);
     }
 
     @Bean
+    @ConditionalOnMissingBean(CamundaCollectionHelper.class)
     public CamundaCollectionHelper camundaCollectionHelper() {
         return new CamundaCollectionHelper();
     }
 
     @Bean
+    @ConditionalOnMissingBean(ProcessApplicationEventListenerPlugin.class)
     public ProcessApplicationEventListenerPlugin processApplicationEventListenerPlugin() {
         return new ProcessApplicationEventListenerPlugin();
     }
@@ -82,6 +86,7 @@ public class CamundaAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(CustomRepositoryServiceImpl.class)
     public CustomRepositoryServiceImpl customRepositoryServiceImpl(final ApplicationEventPublisher applicationEventPublisher) {
         return new CustomRepositoryServiceImpl(applicationEventPublisher);
     }
@@ -106,12 +111,7 @@ public class CamundaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ReminderService.class)
-    @ConditionalOnExpression(value = "" +
-        " !T(org.springframework.util.StringUtils).isEmpty('${scheduling.enabled}') and ${scheduling.enabled} == true " +
-        " and " +
-        " !T(org.springframework.util.StringUtils).isEmpty('${valtimo.mandrill.reminderTemplate}') " +
-        " and " +
-        " !T(org.springframework.util.StringUtils).isEmpty('${scheduling.job.cron.taskNotificationReminder}') ")
+    @ConditionalOnProperty(prefix = "scheduling", name = "enabled", havingValue = "true", matchIfMissing = true)
     public ReminderService reminderService(
         final TaskService taskService,
         final EmailNotificationSettingsService emailNotificationService,

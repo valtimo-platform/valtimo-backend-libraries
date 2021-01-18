@@ -17,6 +17,8 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.authentication.ManageableUser;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
 import com.ritense.valtimo.contract.utils.RequestHelper;
@@ -42,6 +44,7 @@ import org.camunda.bpm.engine.impl.form.validator.FormFieldValidationException;
 import org.camunda.bpm.engine.rest.dto.task.IdentityLinkDto;
 import org.camunda.bpm.engine.rest.dto.task.TaskDto;
 import org.camunda.bpm.engine.task.IdentityLink;
+import org.camunda.bpm.engine.task.IdentityLinkType;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -50,6 +53,7 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -73,6 +77,7 @@ public class CamundaTaskService {
     private final Optional<ResourceService> optionalResourceService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RuntimeService runtimeService;
+    private final UserManagementService userManagementService;
 
     public Task findTaskById(String taskId) {
         Task task;
@@ -108,6 +113,21 @@ public class CamundaTaskService {
             throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
         } catch (ProcessEngineException ex) {
             throw new IllegalStateException("Cannot claim task: reason is the task doesn't exist.", ex);
+        }
+    }
+
+    public List<ManageableUser> getCandidateUsers(String taskId) {
+        final Task task = findTaskById(taskId);
+        final Optional<IdentityLink> first = taskService
+            .getIdentityLinksForTask(task.getId())
+            .stream()
+            .filter(identityLink -> IdentityLinkType.CANDIDATE.equals(identityLink.getType()))
+            .findFirst();
+
+        if (first.isPresent()) {
+            return userManagementService.findByRole(first.get().getGroupId());
+        } else {
+            return Collections.emptyList();
         }
     }
 

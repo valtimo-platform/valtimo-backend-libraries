@@ -17,6 +17,7 @@
 package com.ritense.formlink;
 
 import com.ritense.document.service.DocumentSnapshotService;
+import com.ritense.form.autodeployment.FormApplicationReadyEventListener;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -51,6 +52,9 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @Inject
     public FormDefinitionRepository formDefinitionRepository;
+
+    @MockBean
+    public FormApplicationReadyEventListener formApplicationReadyEventListener;
 
     @BeforeAll
     public static void beforeAll() {

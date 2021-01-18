@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.repository.camunda.dto.TaskExtended;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import com.ritense.valtimo.service.CamundaProcessService;
@@ -31,7 +32,6 @@ import org.camunda.bpm.engine.task.Task;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -70,7 +70,6 @@ public class TaskResource extends AbstractTaskResource {
     }
 
     @GetMapping(value = "/task/{taskId}")
-    @PreAuthorize("hasAuthority('ROLE_USER') and hasPermission(#taskId, 'taskAccess')")
     public ResponseEntity<CustomTaskDto> getTask(@PathVariable String taskId, HttpServletRequest request) {
         CustomTaskDto customTaskDto;
         try {
@@ -82,8 +81,7 @@ public class TaskResource extends AbstractTaskResource {
     }
 
     @PostMapping(value = "/task/{taskId}/assign")
-    @PreAuthorize("hasAuthority('ROLE_USER') and hasPermission(#taskId, 'taskAccess')")
-    public ResponseEntity<Void> claim(@PathVariable String taskId, @RequestBody String assignee) {
+    public ResponseEntity<Void> assign(@PathVariable String taskId, @RequestBody String assignee) {
         camundaTaskService.assign(taskId, assignee);
         return ResponseEntity.ok().build();
     }
@@ -96,14 +94,12 @@ public class TaskResource extends AbstractTaskResource {
     }
 
     @PostMapping(value = "/task/{taskId}/unassign")
-    @PreAuthorize("hasAuthority('ROLE_USER') and hasPermission(#taskId, 'taskAccess')")
-    public ResponseEntity<Void> unAssign(@PathVariable String taskId) {
+    public ResponseEntity<Void> unassign(@PathVariable String taskId) {
         camundaTaskService.unassign(taskId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping(value = "/task/{taskId}/complete")
-    @PreAuthorize("hasAuthority('ROLE_USER') and hasPermission(#taskId, 'taskAccess')")
     public ResponseEntity<Void> complete(
         @PathVariable String taskId,
         @RequestBody TaskCompletionDTO taskCompletionDTO
@@ -123,13 +119,18 @@ public class TaskResource extends AbstractTaskResource {
     }
 
     @GetMapping(value = "/task/{taskId}/comments")
-    @PreAuthorize("hasAuthority('ROLE_USER') and hasPermission(#taskId, 'taskAccess')")
     public ResponseEntity<List<Comment>> getProcessInstanceComments(@PathVariable String taskId) {
         final Task task = camundaTaskService.findTaskById(taskId);
         List<Comment> taskComments = taskService.getTaskComments(task.getId());
         taskComments.addAll(taskService.getProcessInstanceComments(task.getProcessInstanceId()));
         taskComments.sort((Comment c1, Comment c2) -> c2.getTime().compareTo(c1.getTime()));
         return ResponseEntity.ok(taskComments);
+    }
+
+    @GetMapping(value = "/task/{taskId}/candidate-user", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ManageableUser>> getTaskCandidateUsers(@PathVariable String taskId) {
+        List<ManageableUser> users = camundaTaskService.getCandidateUsers(taskId);
+        return ResponseEntity.ok(users);
     }
 
     // Overriding the default TaskFilter binder so it's not case sensitive

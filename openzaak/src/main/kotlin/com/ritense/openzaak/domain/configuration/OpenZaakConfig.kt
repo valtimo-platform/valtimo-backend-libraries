@@ -49,17 +49,11 @@ data class OpenZaakConfig(
 
     @Embedded
     var secret: Secret,
-    @Column(name = "rsin", columnDefinition = "CHAR(9)", nullable = false)
-    @field:Length(min = 9, max = 9)
-    @field:NotBlank
-    var rsin: String,
 
-    @Column(name = "organisation", columnDefinition = "VARCHAR(255)", nullable = false)
-    @field:Length(max = 255)
-    @field:NotBlank
-    var organisation: String,
+    @Embedded
+    var rsin: Rsin
 
-    ) : Persistable<OpenZaakConfigId>, Validatable {
+) : Persistable<OpenZaakConfigId>, Validatable {
 
     init {
         validate()
@@ -69,8 +63,7 @@ data class OpenZaakConfig(
         this.url = request.url
         this.clientId = request.clientId
         this.secret = Secret(request.secret)
-        this.rsin = request.rsin
-        this.organisation = request.organisation
+        this.rsin = Rsin(request.rsin)
         validate()
     }
 

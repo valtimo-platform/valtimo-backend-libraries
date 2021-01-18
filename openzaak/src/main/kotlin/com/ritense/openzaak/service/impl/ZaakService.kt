@@ -48,8 +48,7 @@ class ZaakService(
         val zaakInstance = createZaak(
             zaakTypeLink.zaakTypeUrl,
             LocalDateTime.now(),
-            openZaakConfig.rsin,
-            openZaakConfig.organisation
+            openZaakConfig.rsin.value
         )
         zaakTypeLinkService.assignZaakInstance(
             zaakTypeLink.zaakTypeLinkId,
@@ -60,8 +59,7 @@ class ZaakService(
     override fun createZaak(
         zaaktype: URI,
         startdatum: LocalDateTime,
-        bronorganisatie: String,
-        verantwoordelijkeOrganisatie: String
+        rsin: String
     ): Zaak {
         return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
             .path("zaken/api/v1/zaken")
@@ -70,8 +68,8 @@ class ZaakService(
                 mapOf(
                     "zaaktype" to zaaktype,
                     "startdatum" to startdatum.format(DATE_PATTERN),
-                    "bronorganisatie" to bronorganisatie,
-                    "verantwoordelijkeOrganisatie" to verantwoordelijkeOrganisatie
+                    "bronorganisatie" to rsin,
+                    "verantwoordelijkeOrganisatie" to rsin
                 )
             )
             .build()

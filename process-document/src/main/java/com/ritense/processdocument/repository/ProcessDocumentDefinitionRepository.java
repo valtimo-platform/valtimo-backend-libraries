@@ -32,13 +32,14 @@ import java.util.Optional;
 @Repository
 public interface ProcessDocumentDefinitionRepository extends
     JpaRepository<CamundaProcessJsonSchemaDocumentDefinition, ProcessDocumentDefinitionId> {
+
     @Query("" +
         "SELECT  pdd " +
         "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
         "WHERE   pdd.processDocumentDefinitionId.documentDefinitionId.version = ( " +
-        "   SELECT max(dd.id.version) " +
-        "   FROM JsonSchemaDocumentDefinition dd " +
-        "   WHERE dd.id.name = pdd.id.documentDefinitionId.name " +
+        "   SELECT  MAX(dd.id.version) " +
+        "   FROM    JsonSchemaDocumentDefinition dd " +
+        "   WHERE   dd.id.name = pdd.id.documentDefinitionId.name " +
         ")")
     Page<CamundaProcessJsonSchemaDocumentDefinition> findAllByLatestDocumentDefinitionVersion(Pageable pageable);
 
@@ -47,23 +48,22 @@ public interface ProcessDocumentDefinitionRepository extends
         "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
         "WHERE   pdd.processDocumentDefinitionId.documentDefinitionId.name = :documentDefinitionName " +
         "AND     pdd.processDocumentDefinitionId.documentDefinitionId.version = ( " +
-        "   SELECT max(dd.id.version) " +
-        "   FROM JsonSchemaDocumentDefinition dd " +
-        "   WHERE dd.id.name = pdd.id.documentDefinitionId.name " +
+        "   SELECT  MAX(dd.id.version) " +
+        "   FROM    JsonSchemaDocumentDefinition dd " +
+        "   WHERE   dd.id.name = pdd.id.documentDefinitionId.name " +
         ")")
     List<CamundaProcessJsonSchemaDocumentDefinition> findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(
         @Param("documentDefinitionName") String documentDefinitionName
     );
 
-    //TODO possible issues with multiple definitions for same processDefinitionKey
     @Query("" +
         "SELECT  pdd " +
         "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
         "WHERE   pdd.processDocumentDefinitionId.processDefinitionKey = :processDefinitionKey " +
         "AND     pdd.processDocumentDefinitionId.documentDefinitionId.version = ( " +
-        "   SELECT max(dd.id.version) " +
-        "   FROM JsonSchemaDocumentDefinition dd " +
-        "   WHERE dd.id.name = pdd.id.documentDefinitionId.name " +
+        "   SELECT  MAX(dd.id.version) " +
+        "   FROM    JsonSchemaDocumentDefinition dd " +
+        "   WHERE   dd.id.name = pdd.id.documentDefinitionId.name " +
         ")")
     Optional<CamundaProcessJsonSchemaDocumentDefinition> findByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(
         @Param("processDefinitionKey") ProcessDefinitionKey processDefinitionKey
@@ -74,9 +74,9 @@ public interface ProcessDocumentDefinitionRepository extends
         "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
         "WHERE   pdd.processDocumentDefinitionId.processDefinitionKey = :processDefinitionKey " +
         "AND     pdd.processDocumentDefinitionId.documentDefinitionId.version = ( " +
-        "   SELECT max(dd.id.version) " +
-        "   FROM JsonSchemaDocumentDefinition dd " +
-        "   WHERE dd.id.name = pdd.id.documentDefinitionId.name " +
+        "   SELECT MAX(dd.id.version) " +
+        "   FROM   JsonSchemaDocumentDefinition dd " +
+        "   WHERE  dd.id.name = pdd.id.documentDefinitionId.name " +
         ")")
     List<CamundaProcessJsonSchemaDocumentDefinition> findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(
         @Param("processDefinitionKey") ProcessDefinitionKey processDefinitionKey
@@ -91,4 +91,5 @@ public interface ProcessDocumentDefinitionRepository extends
         @Param("processDefinitionKey") ProcessDefinitionKey processDefinitionKey,
         @Param("documentDefinitionVersion") long documentDefinitionVersion
     );
+
 }

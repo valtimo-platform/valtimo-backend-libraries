@@ -50,7 +50,7 @@ public class FormIoFormFileResource implements FormFileResource {
     public RedirectView getFile(@RequestParam("form") String fileName) {
         return new RedirectView(
             resourceService
-                .getResourceUrl(fileName.replace("/", ""))
+                .getResourceUrl(stripInitialSlashFromPath(fileName))
                 .toString()
         );
     }
@@ -59,8 +59,11 @@ public class FormIoFormFileResource implements FormFileResource {
     @DeleteMapping(value = "/form-file")
     public ResponseEntity<Void> deleteFile(@RequestParam("form") String fileName) {
         //TODO needs update of s3 object with tag archive instead of direct deletion
-        resourceService.removeResource(fileName.replace("/", ""));
+        resourceService.removeResource(stripInitialSlashFromPath(fileName));
         return ResponseEntity.noContent().build();
     }
 
+    private String stripInitialSlashFromPath(String input) {
+        return input.replaceFirst("^\\/{1}", "");
+    }
 }

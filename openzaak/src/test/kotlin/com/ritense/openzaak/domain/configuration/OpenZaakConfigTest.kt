@@ -28,8 +28,7 @@ class OpenZaakConfigTest {
     private val url = "www.zaakurl.nl"
     private val clientId = "client id"
     private val secret = Secret("value")
-    private val rsin = "123456789"
-    private val organisation = "organisation"
+    private val rsin = Rsin("002564440")
 
     @Test
     fun `should not create entity`() {
@@ -48,8 +47,7 @@ class OpenZaakConfigTest {
                     + "tooooloooooooonnngggggg-tooooloooooooonnngggggg-tooooloooooooonnngggggg-tooooloooooooonnngggggg-tooooloooooooonnngggggg",
                 clientId,
                 secret,
-                rsin,
-                organisation
+                rsin
             )
         }
     }
@@ -61,8 +59,7 @@ class OpenZaakConfigTest {
             url,
             clientId,
             secret,
-            rsin,
-            organisation
+            rsin
         )
 
         assertThat(openZaakConfig.id).isEqualTo(id)
@@ -70,7 +67,6 @@ class OpenZaakConfigTest {
         assertThat(openZaakConfig.clientId).isEqualTo(clientId)
         assertThat(openZaakConfig.secret).isEqualTo(secret)
         assertThat(openZaakConfig.rsin).isEqualTo(rsin)
-        assertThat(openZaakConfig.organisation).isEqualTo(organisation)
     }
 
 }

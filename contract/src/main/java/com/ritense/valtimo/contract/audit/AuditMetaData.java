@@ -73,9 +73,9 @@ public abstract class AuditMetaData {
         }
         AuditMetaData that = (AuditMetaData) o;
         return getId().equals(that.getId()) &&
-                getOrigin().equals(that.getOrigin()) &&
-                getOccurredOn().equals(that.getOccurredOn()) &&
-                getUser().equals(that.getUser());
+            getOrigin().equals(that.getOrigin()) &&
+            getOccurredOn().equals(that.getOccurredOn()) &&
+            getUser().equals(that.getUser());
     }
 
     @Override

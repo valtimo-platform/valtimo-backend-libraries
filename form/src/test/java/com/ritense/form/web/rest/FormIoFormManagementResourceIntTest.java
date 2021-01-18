@@ -81,7 +81,7 @@ public class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn200WithFormCreated() throws Exception {
-        final var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}");
+        final var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false);
         mockMvc.perform(
             post("/api/form-management")
                 .characterEncoding(StandardCharsets.UTF_8.name())
@@ -96,7 +96,7 @@ public class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn200WithFormModified() throws Exception {
-        final var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}");
+        final var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false);
         final MvcResult result = mockMvc.perform(
             post("/api/form-management")
                 .characterEncoding(StandardCharsets.UTF_8.name())

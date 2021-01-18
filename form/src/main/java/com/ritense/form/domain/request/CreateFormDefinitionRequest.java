@@ -27,13 +27,18 @@ public class CreateFormDefinitionRequest {
     @JsonProperty
     private final String formDefinition;
 
+    @JsonProperty
+    private final Boolean isReadOnly;
+
     @JsonCreator
     public CreateFormDefinitionRequest(
         @JsonProperty(value = "name", required = true) String name,
-        @JsonProperty(value = "formDefinition", required = true) String formDefinition
+        @JsonProperty(value = "formDefinition", required = true) String formDefinition,
+        @JsonProperty(value = "isReadOnly") Boolean isReadOnly
     ) {
         this.name = name;
         this.formDefinition = formDefinition;
+        this.isReadOnly = isReadOnly;
     }
 
     public String getName() {
@@ -42,6 +47,10 @@ public class CreateFormDefinitionRequest {
 
     public String getFormDefinition() {
         return formDefinition;
+    }
+
+    public Boolean isReadOnly() {
+        return isReadOnly;
     }
 
 }

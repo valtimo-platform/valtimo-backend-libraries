@@ -55,8 +55,8 @@ public class HardeningServiceImpl implements HardeningService {
         final SourceIpList sourceIpList = new SourceIpList(whitelists, sourceIps);
         if (sourceIpList.isWhitelisted()) {
             return problemBuilder
-                    .with("reason-not-sanitized", WHITELIST_MESSSAGE + sourceIpList.getWhiteListedIp())
-                    .with("stack-trace", throwableProblem.getStackTrace());
+                .with("reason-not-sanitized", WHITELIST_MESSSAGE + sourceIpList.getWhiteListedIp())
+                .with("stack-trace", throwableProblem.getStackTrace());
         } else {
             return problemBuilder;
         }

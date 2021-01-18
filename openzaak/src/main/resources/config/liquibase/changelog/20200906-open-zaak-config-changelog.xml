@@ -44,4 +44,10 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="juliadelozanne (generated)" id="1599414709479-3">
+        <dropColumn
+            tableName="open_zaak_config"
+            columnName="organisation">
+        </dropColumn>
+    </changeSet>
 </databaseChangeLog>

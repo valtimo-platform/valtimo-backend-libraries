@@ -52,5 +52,4 @@ public class ContextAutoConfiguration {
         return new ContextResource(contextService, camundaProcessService);
     }
 
-
 }

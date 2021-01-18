@@ -32,7 +32,6 @@ import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
-import org.camunda.bpm.extension.mockito.process.ProcessDefinitionFake;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -86,7 +85,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         when(camundaProcessService.processDefinitionExistsByKey(anyString()))
             .thenReturn(true);
 
-        when(documentDefinitionService.findIdByNameAndVersion(anyString(), any()))
+        when(documentDefinitionService.findIdByName(anyString()))
             .thenReturn(definitionId);
 
         when(documentDefinitionRepository.existsById(any(JsonSchemaDocumentDefinitionId.class)))
@@ -111,7 +110,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
             true
         );
 
-        when(documentDefinitionService.findIdByNameAndVersion(anyString(), any()))
+        when(documentDefinitionService.findIdByName(anyString()))
             .thenReturn(definitionId);
 
         when(camundaProcessService.processDefinitionExistsByKey(anyString()))
@@ -135,7 +134,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         when(camundaProcessService.processDefinitionExistsByKey(anyString()))
             .thenReturn(true);
 
-        when(documentDefinitionService.findIdByNameAndVersion(anyString(), any()))
+        when(documentDefinitionService.findIdByName(anyString()))
             .thenReturn(definitionId);
 
         when(documentDefinitionRepository.existsById(any(JsonSchemaDocumentDefinitionId.class)))
@@ -231,8 +230,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
             true
         );
 
-        when(documentDefinitionService.findIdByNameAndVersion(anyString(), any()))
-            .thenReturn(id.documentDefinitionId());
+        when(documentDefinitionService.findIdByName(anyString())).thenReturn(id.documentDefinitionId());
 
         service.deleteProcessDocumentDefinition(request);
         verify(processDocumentDefinitionRepository).deleteById(id);

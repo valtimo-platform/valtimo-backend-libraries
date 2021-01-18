@@ -22,6 +22,7 @@ import com.ritense.openzaak.domain.event.EigenschappenSetEvent
 import com.ritense.openzaak.domain.event.ResultaatSetEvent
 import com.ritense.openzaak.domain.event.StatusSetEvent
 import com.ritense.openzaak.domain.event.ZaakCreatedEvent
+import com.ritense.openzaak.exception.ZaakInstanceNotFoundException
 import com.ritense.openzaak.repository.converter.UriAttributeConverter
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.valtimo.contract.domain.AggregateRoot
@@ -80,7 +81,11 @@ data class ZaakTypeLink(
     }
 
     fun getZaakInstanceLink(documentId: UUID): ZaakInstanceLink {
-        return zaakInstanceLinks.single { it.documentId == documentId }
+        try {
+           return zaakInstanceLinks.single { it.documentId == documentId }
+        } catch (e: Exception) {
+            throw ZaakInstanceNotFoundException("No zaak instance link has been found", e)
+        }
     }
 
     fun assignZaakServiceHandler(request: ServiceTaskHandlerRequest) {
@@ -99,19 +104,19 @@ data class ZaakTypeLink(
 
     @JsonIgnore
     fun assignZaakInstanceStatus(documentId: UUID, statusType: URI) {
-        val zaakInstanceUrl = getZaakInstanceLinkBy(documentId)!!.zaakInstanceUrl
+        val zaakInstanceUrl = getZaakInstanceLink(documentId).zaakInstanceUrl
         registerEvent(StatusSetEvent(zaakInstanceUrl, statusType))
     }
 
     @JsonIgnore
     fun assignZaakInstanceResultaat(documentId: UUID, resultaatType: URI) {
-        val zaakInstanceUrl = getZaakInstanceLinkBy(documentId)!!.zaakInstanceUrl
+        val zaakInstanceUrl = getZaakInstanceLink(documentId).zaakInstanceUrl
         registerEvent(ResultaatSetEvent(zaakInstanceUrl, resultaatType))
     }
 
     @JsonIgnore
     fun assignZaakInstanceEigenschappen(documentId: UUID, eigenschappen: MutableMap<URI, String>) {
-        val zaakInstanceLink = getZaakInstanceLinkBy(documentId)!!
+        val zaakInstanceLink = getZaakInstanceLink(documentId)
         registerEvent(
             EigenschappenSetEvent(
                 zaakInstanceLink.zaakInstanceUrl,
@@ -122,7 +127,7 @@ data class ZaakTypeLink(
     }
 
     @JsonIgnore
-    override fun getId(): ZaakTypeLinkId? {
+    override fun getId(): ZaakTypeLinkId {
         return zaakTypeLinkId
     }
 
@@ -134,11 +139,6 @@ data class ZaakTypeLink(
     @JsonIgnore
     private fun getServiceTaskHandlerBy(serviceTaskId: String): ServiceTaskHandler? {
         return serviceTaskHandlers.find { sth -> sth.serviceTaskId == serviceTaskId }
-    }
-
-    @JsonIgnore
-    private fun getZaakInstanceLinkBy(documentId: UUID): ZaakInstanceLink? {
-        return zaakInstanceLinks.find { zil -> zil.documentId == documentId }
     }
 
     @JsonIgnore

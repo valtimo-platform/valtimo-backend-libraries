@@ -30,6 +30,7 @@ import javax.persistence.Embeddable;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowArrayRemovalOperations;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
@@ -46,7 +47,7 @@ public class JsonDocumentContent implements DocumentContent {
 
         //Diff patching to support partial changes
         final var patchDiff = JsonDifferenceService.diff(currentContent, modifiedContent);
-        JsonPatchService.apply(patchDiff, currentContent);
+        JsonPatchService.apply(patchDiff, currentContent, allowArrayRemovalOperations());
         return JsonDocumentContent.build(currentContent);
     }
 

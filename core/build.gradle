@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+apply from: 'gradle/liquibase.gradle'
+
 dependencies {
     implementation project(":contract")
     implementation project(":web")
@@ -23,15 +25,15 @@ dependencies {
     implementation "org.testcontainers:jdbc"
 
     // Camunda
-    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter:3.2.1"
-    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:3.2.1"
+    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter:7.14.0"
+    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:7.14.0"
 
     // Cockpit
-    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:3.2.1"
+    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:7.14.0"
 
     // Camunda plugins
-    implementation "org.camunda.bpm:camunda-engine-plugin-spin:7.10.0"
-    implementation "org.camunda.bpm:camunda-engine-plugin-connect:7.10.0"
+    implementation "org.camunda.bpm:camunda-engine-plugin-spin:7.14.0"
+    implementation "org.camunda.bpm:camunda-engine-plugin-connect:7.14.0"
     api 'org.camunda.bpm.extension.reactor:camunda-bpm-reactor-spring-starter:2.1.2'
 
     // spring boot admin client
@@ -85,7 +87,7 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-jackson:0.11.2"
 
     // Camunda test
-    testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.13.0")
+    testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.14.0")
     testImplementation "org.testcontainers:mysql"
     testImplementation "org.testcontainers:junit-jupiter"
     testImplementation "org.springframework.security:spring-security-test"

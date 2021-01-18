@@ -16,8 +16,10 @@
 
 package com.ritense.form.autodeployment;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.form.domain.FormDefinition;
-import com.ritense.form.domain.FormIoFormDefinition;
+import com.ritense.form.domain.Mapper;
 import com.ritense.form.domain.event.FormsAutoDeploymentFinishedEvent;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.repository.FormDefinitionRepository;
@@ -32,7 +34,8 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Optional;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -53,27 +56,43 @@ public class FormDefinitionDeploymentService {
                 if (resource.getFilename() == null) {
                     continue;
                 }
-
-                String name = getFormName(resource);
-                Optional<FormIoFormDefinition> savedForm = formDefinitionRepository.findByName(name);
-
-                if (savedForm.isPresent()) {
-                    continue;
+                var name = getFormName(resource);
+                var rawFormDefinition = getJson(IOUtils.toString(resource.getInputStream(), UTF_8));
+                var optionalFormDefinition = formDefinitionRepository.findByName(name);
+                if (optionalFormDefinition.isPresent()) {
+                    var existingFormDefinition = optionalFormDefinition.get();
+                    if (rawFormDefinition.equals(existingFormDefinition.getFormDefinition())) {
+                        continue; //Skip unchanged
+                    } else {
+                        var formDefinition = formDefinitionService.modifyFormDefinition(
+                            existingFormDefinition.getId(),
+                            name,
+                            rawFormDefinition.toString(),
+                            true
+                        );
+                        formDefinitions.add(formDefinition);
+                        logger.info("Modified existing form-definition {}", name);
+                    }
+                } else {
+                    var formDefinition = formDefinitionService.createFormDefinition(
+                        new CreateFormDefinitionRequest(
+                            name,
+                            rawFormDefinition.toString(),
+                            true
+                        )
+                    );
+                    formDefinitions.add(formDefinition);
+                    logger.info("Deployed form definition {}", name);
                 }
-                final String definition = IOUtils.toString(resource.getInputStream());
-                FormDefinition formDefinition = formDefinitionService.createFormDefinition(
-                    new CreateFormDefinitionRequest(
-                        name,
-                        definition
-                    )
-                );
-                formDefinitions.add(formDefinition);
-                logger.info("Deployed form {}", name);
             }
             applicationEventPublisher.publishEvent(new FormsAutoDeploymentFinishedEvent(formDefinitions));
         } catch (IOException e) {
-            logger.error("Error deploying document schema's", e);
+            logger.error("Error while deploying form definition's", e);
         }
+    }
+
+    private JsonNode getJson(String rawJson) throws JsonProcessingException {
+        return Mapper.INSTANCE.get().readTree(rawJson);
     }
 
     private String getFormName(Resource resource) {

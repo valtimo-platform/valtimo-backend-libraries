@@ -20,10 +20,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
 
-public interface SubmissionTransformerService {
+public interface SubmissionTransformerService<T extends FormDefinition> {
 
-    void prePreFillTransform(FormDefinition formDefinition, JsonNode placeholders, JsonNode source);
+    void prePreFillTransform(T formDefinition, JsonNode placeholders, JsonNode source);
 
-    JsonPatch preSubmissionTransform(FormDefinition formDefinition, JsonNode submission, JsonNode placeholders, JsonNode source);
+    JsonPatch preSubmissionTransform(T formDefinition, JsonNode submission, JsonNode placeholders, JsonNode source);
 
 }

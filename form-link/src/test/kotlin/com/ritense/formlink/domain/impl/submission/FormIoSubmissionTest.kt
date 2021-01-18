@@ -17,6 +17,8 @@
 package com.ritense.formlink.domain.impl.submission
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
@@ -44,7 +46,7 @@ import org.mockito.MockitoAnnotations
 import org.springframework.context.ApplicationEventPublisher
 import java.util.Optional
 
-class FormIoSubmissionTest {
+class FormIoSubmissionTest : BaseTest() {
 
     lateinit var formIoSubmission: FormIoSubmission
 
@@ -69,7 +71,7 @@ class FormIoSubmissionTest {
     lateinit var taskService: CamundaTaskService
 
     @Mock
-    lateinit var submissionTransformerService: SubmissionTransformerService
+    lateinit var submissionTransformerService: SubmissionTransformerService<FormIoFormDefinition>
 
     @Mock
     lateinit var applicationEventPublisher: ApplicationEventPublisher
@@ -106,7 +108,7 @@ class FormIoSubmissionTest {
     }
 
     @Test
-    fun `should apply submission without external form data`() {
+    fun `apply - should apply submission without external form data`() {
         formIoSubmission = FormIoSubmission(
             formAssociation,
             formDefinition,
@@ -125,6 +127,125 @@ class FormIoSubmissionTest {
         verifyZeroInteractions(applicationEventPublisher)
 
         assertThat(result is FormSubmissionResultSucceeded)
+    }
+
+    @Test
+    fun `apply - should apply start form no document available yet`() {
+        formIoSubmission = FormIoSubmission(
+            formAssociation,
+            formDefinition,
+            processDocumentDefinition,
+            formData,
+            null,
+            null,
+            processDocumentService,
+            taskService,
+            submissionTransformerService,
+            applicationEventPublisher
+        )
+
+        val result = formIoSubmission.apply()
+
+        verifyZeroInteractions(applicationEventPublisher)
+
+        assertThat(result is FormSubmissionResultSucceeded)
+    }
+
+    @Test
+    fun `apply - should update fields with value only`() {
+        val formDefinition: FormIoFormDefinition = formDefinitionOf("form-street-only-example")
+
+        formIoSubmission = FormIoSubmission(
+            formAssociation,
+            formDefinition,
+            processDocumentDefinition,
+            formData(),
+            null,
+            null,
+            processDocumentService,
+            taskService,
+            submissionTransformerService,
+            applicationEventPublisher
+        )
+
+        val result = formIoSubmission.apply()
+
+        //assert content only contains form field, not the whole document with null values
+        assertThat(formIoSubmission.documentContent().size()).isEqualTo(1)
+        assertThat(formIoSubmission.documentContent().get("street").equals("Funenpark"))
+        assertThat(result.errors()).isEmpty()
+    }
+
+    @Test
+    fun `apply - should update fields with empty value`() {
+        val formDefinition: FormIoFormDefinition = formDefinitionOf("form-street-housenumber-example")
+
+        formIoSubmission = FormIoSubmission(
+            formAssociation,
+            formDefinition,
+            processDocumentDefinition,
+            formDataWithEmptyStringValue(),
+            null,
+            null,
+            processDocumentService,
+            taskService,
+            submissionTransformerService,
+            applicationEventPublisher
+        )
+
+        val result = formIoSubmission.apply()
+
+        //assert content only contains form field, not the whole document with null values
+        assertThat(formIoSubmission.documentContent().size()).isEqualTo(2)
+        assertThat(formIoSubmission.documentContent().get("street").equals(""))
+        assertThat(result.errors()).isEmpty()
+    }
+
+    @Test
+    fun `apply - should not update field with null node`() {
+        val formDefinition: FormIoFormDefinition = formDefinitionOf("form-street-only-example")
+
+        formIoSubmission = FormIoSubmission(
+            formAssociation,
+            formDefinition,
+            processDocumentDefinition,
+            formDataWithNullNode(),
+            null,
+            null,
+            processDocumentService,
+            taskService,
+            submissionTransformerService,
+            applicationEventPublisher
+        )
+
+        val result = formIoSubmission.apply()
+
+        //assert content only contains form field, not the whole document with null values
+        assertThat(formIoSubmission.documentContent().size()).isEqualTo(1)
+        assertThat(formIoSubmission.documentContent().get("street").equals("Funenpark"))
+        assertThat(result.errors()).isEmpty()
+    }
+
+    private fun formData(): ObjectNode {
+        val jsonNode = JsonNodeFactory.instance.objectNode()
+        jsonNode.put("street", "Funenpark")
+        return jsonNode
+    }
+
+    private fun formDataWithEmptyStringValue(): ObjectNode {
+        val jsonNode = JsonNodeFactory.instance.objectNode()
+        jsonNode.put("street", "")
+        jsonNode.put("housenumber", 1)
+        return jsonNode
+    }
+
+    private fun formDataWithNullNode(): ObjectNode {
+        val jsonNode = JsonNodeFactory.instance.objectNode()
+        val nullNode = JsonNodeFactory.instance.nullNode()
+
+        jsonNode.put("street", "Funenpark")
+        jsonNode.put("housenumber", nullNode)
+        return jsonNode
     }
 
     private fun documentOptional(): Optional<JsonSchemaDocument> {

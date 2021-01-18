@@ -37,21 +37,21 @@ class EigenschappenSubmittedListener(
             val mappedEigenschappen: MutableMap<URI, String> = mutableMapOf()
             val zaakTypeLink = zaakTypeLinkService.findBy(event.documentDefinition)
             val eigenschappen = eigenschapService.getEigenschappen(zaakTypeLink.zaakTypeUrl).results
-            if (!eigenschappen.isEmpty()) {
+            if (eigenschappen.isNotEmpty()) {
                 it.forEach { (key, value) ->
                     eigenschappen.forEach { e ->
                         if (e.naam == key) {
                             mappedEigenschappen[e.url!!] = value
                         }
                     }
-                    if (mappedEigenschappen.isNotEmpty()) {
-                        zaakTypeLink.assignZaakInstanceEigenschappen(event.documentId, mappedEigenschappen)
-                    }
+                }
+                if (mappedEigenschappen.isNotEmpty()) {
+                    zaakTypeLink.assignZaakInstanceEigenschappen(event.documentId, mappedEigenschappen)
                 }
                 zaakTypeLinkService.modify(zaakTypeLink)
             } else
                 throw UnmappableOpenZaakPropertyException(
-                    "Cannot process variables prefixed with 'oz'. Please check Open Zaak for the available 'Eigenschappen'"
+                    "Cannot process form variables prefixed with 'oz'. Please check Open Zaak for the available 'Eigenschappen'"
                 )
         }
     }

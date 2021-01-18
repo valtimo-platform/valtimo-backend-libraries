@@ -52,6 +52,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
+
 @Slf4j
 @RequiredArgsConstructor
 public class CamundaProcessJsonSchemaDocumentAssociationService implements ProcessDocumentAssociationService {
@@ -88,14 +90,12 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
-    public Optional<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstance(
-        ProcessDocumentInstanceId processDocumentInstanceId) {
+    public Optional<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstance(ProcessDocumentInstanceId processDocumentInstanceId) {
         return processDocumentInstanceRepository.findById(processDocumentInstanceId);
     }
 
     @Override
-    public Optional<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstance(
-        ProcessInstanceId processInstanceId) {
+    public Optional<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstance(ProcessInstanceId processInstanceId) {
         return processDocumentInstanceRepository.findByProcessInstanceId(processInstanceId);
     }
 
@@ -106,11 +106,8 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     @Transactional
-    public Optional<CamundaProcessJsonSchemaDocumentDefinition> createProcessDocumentDefinition(
-        ProcessDocumentDefinitionRequest request
-    ) {
-        final var documentDefinitionId = documentDefinitionService
-            .findIdByNameAndVersion(request.documentDefinitionName(), null);
+    public Optional<CamundaProcessJsonSchemaDocumentDefinition> createProcessDocumentDefinition(ProcessDocumentDefinitionRequest request) {
+        final var documentDefinitionId = documentDefinitionService.findIdByName(request.documentDefinitionName());
         return createProcessDocumentDefinition(
             new CamundaProcessDefinitionKey(request.processDefinitionKey()),
             documentDefinitionId,
@@ -129,6 +126,11 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         if (!documentDefinitionRepository.existsById(documentDefinitionId)) {
             throw new UnknownDocumentDefinitionException(documentDefinitionId.toString());
         }
+
+        var knownProcessDocumentDefinitions = processDocumentDefinitionRepository
+            .findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
+
+        assertStateTrue(knownProcessDocumentDefinitions.isEmpty(), "Process is already in use within the context of another dossier.");
 
         final var id = CamundaProcessJsonSchemaDocumentDefinitionId.newId(
             processDefinitionKey,
@@ -151,8 +153,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public void deleteProcessDocumentDefinition(ProcessDocumentDefinitionRequest request) {
-        final var documentDefinitionId = documentDefinitionService
-            .findIdByNameAndVersion(request.documentDefinitionName(), null);
+        final var documentDefinitionId = documentDefinitionService.findIdByName(request.documentDefinitionName());
         final var id = CamundaProcessJsonSchemaDocumentDefinitionId.existingId(
             new CamundaProcessDefinitionKey(request.processDefinitionKey()),
             documentDefinitionId

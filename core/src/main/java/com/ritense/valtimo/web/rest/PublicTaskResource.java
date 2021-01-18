@@ -25,7 +25,6 @@ import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,7 +50,6 @@ public class PublicTaskResource extends AbstractTaskResource {
 
     @GetMapping(value = "/task/{taskDefinitionId}")
     @ResponseBody
-    @PreAuthorize("hasPermission(#taskDefinitionId, 'publicTaskAccess')")
     public ResponseEntity<CustomTaskDto> getTask(
         @PathVariable(name = "taskDefinitionId") final String taskDefinitionId,
         HttpServletRequest request
@@ -67,7 +65,6 @@ public class PublicTaskResource extends AbstractTaskResource {
 
     @PostMapping(value = "/task/{taskDefinitionId}/complete")
     @ResponseBody
-    @PreAuthorize("hasPermission(#taskDefinitionId, 'publicTaskAccess')")
     public ResponseEntity<Void> completeTaskAndDeleteFiles(
         @PathVariable(name = "taskDefinitionId") final String taskDefinitionId,
         @RequestBody TaskCompletionDTO taskCompletionDTO

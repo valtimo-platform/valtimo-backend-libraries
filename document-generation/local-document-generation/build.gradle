@@ -20,5 +20,5 @@ dependencies {
     implementation project(':document')
     implementation project(':process-document')
     implementation project(':resource')
-    implementation project(':document-generation')
+    api project(':document-generation')
 }

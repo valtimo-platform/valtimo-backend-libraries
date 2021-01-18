@@ -27,7 +27,6 @@ import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.model.zaak.Eigenschap
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers
@@ -81,10 +80,10 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
     }
 
     @Test
-    fun `should throw exception getting unknown open zaak eigenschap`() {
-        assertThrows(NoSuchElementException::class.java) {
-            openZaakFormFieldDataResolver.get("house", document.id.id, "unknownVarName")
-        }
+    fun `should not contain eigenschap with unknown key`() {
+        val resultMap = openZaakFormFieldDataResolver.get("house", document.id.id, "unknownVarName")
+        assertThat(resultMap).isNotNull
+        assertThat(resultMap).doesNotContainKey("unknownVarName")
     }
 
     @Test
@@ -136,5 +135,4 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
             ArgumentMatchers.any(ParameterizedTypeReference::class.java)
         )).thenReturn(responseEntity)
     }
-
 }

@@ -39,7 +39,8 @@ public class TaskHttpSecurityConfigurer implements HttpSecurityConfigurer {
                 .antMatchers(POST, "/api/task/{taskId}/assign").access(TASK_ACCESS_PERMISSION)
                 .antMatchers(GET, "/api/task/{taskId}/comments").access(TASK_ACCESS_PERMISSION)
                 .antMatchers(POST, "/api/task/{taskId}/complete").access(TASK_ACCESS_PERMISSION)
-                .antMatchers(POST, "/api/task/{taskId}/unassign").access(TASK_ACCESS_PERMISSION);
+                .antMatchers(POST, "/api/task/{taskId}/unassign").access(TASK_ACCESS_PERMISSION)
+                .antMatchers(GET, "/api/task/{taskId}/candidate-user").access(TASK_ACCESS_PERMISSION);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -81,36 +81,6 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotExtractContent() throws IOException {
-        final var formDefinition = formDefinitionOf("form-example");
-
-        final ObjectNode formData = JsonNodeFactory.instance.objectNode();
-        final ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
-        objectNode.put("lastName", "John");//Non existing key
-        formData.set("person", objectNode);
-
-        final JsonNode extractedContent = formDefinition.extractContent(formData);
-
-        assertThat(extractedContent).isEmpty();
-    }
-
-    @Test
-    public void shouldExtractContent() throws IOException {
-        final var formDefinition = formDefinitionOf("form-example");
-
-        final ObjectNode formData = JsonNodeFactory.instance.objectNode();
-        final ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
-        objectNode.put("firstName", "John");
-        objectNode.put("unmappedKey", "bla");
-        formData.set("person", objectNode);
-
-        final JsonNode extractedContent = formDefinition.extractContent(formData);
-
-        assertThat(extractedContent.get("person").get("firstName").asText()).isEqualTo("John");
-        assertThat(extractedContent.get("person").get("unmappedKey")).isNull();
-    }
-
-    @Test
     public void shouldGetInputFieldsOnly() throws IOException {
         final var formDefinition = formDefinitionOf("form-example-nested-components");
 

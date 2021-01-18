@@ -16,6 +16,7 @@
 
 package com.ritense.form;
 
+import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -39,6 +40,9 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @MockBean
     public ResourceService resourceService;
+
+    @MockBean
+    public DocumentSnapshotService documentSnapshotService;
 
     @Inject
     public FormDefinitionRepository formDefinitionRepository;
