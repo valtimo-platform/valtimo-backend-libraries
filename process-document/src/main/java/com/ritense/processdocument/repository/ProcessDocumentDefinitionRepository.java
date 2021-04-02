@@ -22,6 +22,7 @@ import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentD
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -53,6 +54,15 @@ public interface ProcessDocumentDefinitionRepository extends
         "   WHERE   dd.id.name = pdd.id.documentDefinitionId.name " +
         ")")
     List<CamundaProcessJsonSchemaDocumentDefinition> findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(
+        @Param("documentDefinitionName") String documentDefinitionName
+    );
+
+    @Query("" +
+        "SELECT  pdd " +
+        "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
+        "WHERE   pdd.processDocumentDefinitionId.documentDefinitionId.name = :documentDefinitionName"
+    )
+    Optional<CamundaProcessJsonSchemaDocumentDefinition> findByDocumentDefinitionName(
         @Param("documentDefinitionName") String documentDefinitionName
     );
 
@@ -91,5 +101,12 @@ public interface ProcessDocumentDefinitionRepository extends
         @Param("processDefinitionKey") ProcessDefinitionKey processDefinitionKey,
         @Param("documentDefinitionVersion") long documentDefinitionVersion
     );
+
+    @Modifying
+    @Query("" +
+        "   DELETE " +
+        "   FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
+        "   WHERE   pdd.processDocumentDefinitionId.documentDefinitionId.name = :documentDefinitionName")
+    void deleteByDocumentDefinition(@Param("documentDefinitionName") String documentDefinitionName);
 
 }

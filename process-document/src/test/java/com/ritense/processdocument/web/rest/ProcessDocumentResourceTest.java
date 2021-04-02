@@ -330,7 +330,7 @@ public class ProcessDocumentResourceTest extends BaseTest {
                 .content(TestUtil.convertObjectToJsonBytes(request)))
             .andDo(print())
             .andExpect(status().isNoContent());
-        verify(processDocumentAssociationService).deleteProcessDocumentDefinition(any());
+        verify(processDocumentAssociationService).deleteProcessDocumentDefinition((ProcessDocumentDefinitionRequest) any());
     }
 
 }
