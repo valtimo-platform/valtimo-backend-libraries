@@ -29,5 +29,6 @@
     <include file="changelog/20200310-document-related-files.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20201007-update-document-definition-id.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20201014-document-snapshot.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20210202-add-readonly-column.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

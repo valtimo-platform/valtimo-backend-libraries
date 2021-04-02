@@ -35,4 +35,5 @@ public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefiniti
         "   WHERE dd2.id.name = dd.id.name " +
         ") ")
     Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable);
+
 }

@@ -18,9 +18,11 @@ package com.ritense.document.autoconfigure;
 
 import com.ritense.document.domain.impl.listener.DocumentSnapshotCapturedEventListener;
 import com.ritense.document.domain.impl.listener.DocumentSnapshotCapturedEventPublisher;
+import com.ritense.document.domain.impl.listener.UndeployDocumentDefinitionEventListener;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentSnapshotService;
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSnapshotService;
 import com.ritense.document.web.rest.DocumentSnapshotResource;
@@ -41,9 +43,10 @@ public class DocumentSnapshotAutoConfiguration {
     @ConditionalOnMissingBean(DocumentSnapshotService.class)
     public DocumentSnapshotService documentSnapshotService(
         final DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository,
-        final JsonSchemaDocumentService documentService
+        final JsonSchemaDocumentService documentService,
+        final JsonSchemaDocumentDefinitionService documentDefinitionService
     ) {
-        return new JsonSchemaDocumentSnapshotService(documentSnapshotRepository, documentService);
+        return new JsonSchemaDocumentSnapshotService(documentSnapshotRepository, documentService, documentDefinitionService);
     }
 
     @Bean
@@ -68,6 +71,14 @@ public class DocumentSnapshotAutoConfiguration {
         final DocumentSnapshotService documentSnapshotService
     ) {
         return new DocumentSnapshotCapturedEventListener(documentSnapshotService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(UndeployDocumentDefinitionEventListener.class)
+    public UndeployDocumentDefinitionEventListener undeployDocumentDefinitionListener(
+        final DocumentSnapshotService documentSnapshotService
+    ) {
+        return new UndeployDocumentDefinitionEventListener(documentSnapshotService);
     }
 
 }

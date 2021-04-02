@@ -24,6 +24,7 @@ import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSearchService;
 import com.ritense.document.service.impl.SearchCriteria;
+import com.ritense.document.service.impl.SearchRequest;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
 import com.ritense.valtimo.contract.utils.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,18 +90,21 @@ public class JsonSchemaDocumentSearchResourceTest extends BaseTest {
 
     @Test
     public void shouldReturnOkWithSearchCriteria() throws Exception {
-        when(documentSearchService.search(any(), any(), any())).thenReturn(Page.empty());
+        when(documentSearchService.search(any(), any())).thenReturn(Page.empty());
 
         List<SearchCriteria> values = Arrays.asList(
             new SearchCriteria("aPath", "aValue"),
             new SearchCriteria("aPath2", "aValue2")
         );
 
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.setOtherFilters(values);
+
         mockMvc.perform(
-            post("/api/document-search/{document-definition-name}", "definition")
+            post("/api/document-search", "definition")
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(TestUtil.convertObjectToJsonBytes(values))
+                .content(TestUtil.convertObjectToJsonBytes(searchRequest))
         )
             .andDo(print())
             .andExpect(status().isOk())
@@ -109,47 +113,18 @@ public class JsonSchemaDocumentSearchResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnOkWhenSearchingDocumentWithDefinition() throws Exception {
-        final String definitionName = "house";
-        when(documentSearchService.search(any(), any(), any(), any(), any())).thenReturn(new PageImpl(List.of(document), Pageable.unpaged(), 1));
-
-        mockMvc.perform(get("/api/document-search")
-            .accept(APPLICATION_JSON_VALUE)
-            .contentType(APPLICATION_JSON_VALUE)
-            .param("searchCriteria", "someValue")
-            .param("definitionName", definitionName)
-        )
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$").isNotEmpty());
-    }
-
-    @Test
     public void shouldReturnPagedRecordPageWithoutSearchParams() throws Exception {
-        when(documentSearchService.search(any(), any(), any(), any(), any())).thenReturn(new PageImpl(List.of(document), Pageable.unpaged(), 1));
+        when(documentSearchService.search(any(), any())).thenReturn(new PageImpl(List.of(document), Pageable.unpaged(), 1));
 
-        mockMvc.perform(get("/api/document-search")
-            .accept(APPLICATION_JSON_VALUE)
-            .contentType(APPLICATION_JSON_VALUE)
+        mockMvc.perform(
+            post("/api/document-search", "definition")
+                .accept(APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content("{}")
         )
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$").isNotEmpty());
-    }
-
-    @Test
-    public void shouldReturnOkWhenSearchingDocument() throws Exception {
-        when(documentSearchService.search(any(), any(), any(), any(), any())).thenReturn(new PageImpl(List.of(document), Pageable.unpaged(), 1));
-
-        mockMvc.perform(get("/api/document-search")
-            .accept(APPLICATION_JSON_VALUE)
-            .contentType(APPLICATION_JSON_VALUE)
-            .param("searchCriteria", "someValue")
-        )
-            .andDo(print())
-            .andExpect(status().isOk())
             .andExpect(jsonPath("$").isNotEmpty());
     }
 

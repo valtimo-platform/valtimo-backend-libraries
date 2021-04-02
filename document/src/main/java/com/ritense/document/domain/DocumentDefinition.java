@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.validation.DocumentContentValidationResult;
 
+
 import java.time.temporal.Temporal;
 
 public interface DocumentDefinition {

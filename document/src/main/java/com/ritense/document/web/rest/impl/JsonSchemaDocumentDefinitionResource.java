@@ -18,43 +18,56 @@ package com.ritense.document.web.rest.impl;
 
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.UndeployDocumentDefinitionService;
+import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
+import com.ritense.document.service.result.DeployDocumentDefinitionResult;
+import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
 import com.ritense.document.web.rest.DocumentDefinitionResource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.data.domain.Sort.Direction.DESC;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RequiredArgsConstructor
-@RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionResource {
 
     private final DocumentDefinitionService documentDefinitionService;
+    private final UndeployDocumentDefinitionService undeployDocumentDefinitionService;
 
     @Override
-    @GetMapping(value = "/document-definition")
-    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
-        @PageableDefault(sort = {"createdOn"}, direction = DESC) Pageable pageable
-    ) {
-        return ResponseEntity.ok(documentDefinitionService.findAll(pageable));
+    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(Pageable pageable) {
+        return ok(documentDefinitionService.findAll(pageable));
     }
 
     @Override
-    @GetMapping(value = "/document-definition/{name}")
-    public ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(
-        @PathVariable String name
-    ) {
+    public ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(String name) {
         return documentDefinitionService.findLatestByName(name)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
+
+    @Override
+    public ResponseEntity<DeployDocumentDefinitionResult> deployDocumentDefinition(DocumentDefinitionCreateRequest request) {
+        return applyResult(documentDefinitionService.deploy(request.getDefinition()));
+    }
+
+    @Override
+    public ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(String name) {
+        return applyResult(undeployDocumentDefinitionService.undeploy(name));
+    }
+
+    <T extends DeployDocumentDefinitionResult> ResponseEntity<T> applyResult(T result) {
+        var httpStatus = result.documentDefinition() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(httpStatus).body(result);
+    }
+
+    <T extends UndeployDocumentDefinitionResult> ResponseEntity<T> applyResult(T result) {
+        var httpStatus = result.documentDefinitionName() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(httpStatus).body(result);
+    }
+
 
 }

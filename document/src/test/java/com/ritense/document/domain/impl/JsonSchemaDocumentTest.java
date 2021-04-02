@@ -192,13 +192,15 @@ public class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     public void shouldModifyDocument() {
+        var definition = definitionOf("person");
+
         final var content = new JsonDocumentContent("{\"firstName\": \"John\"}");
-        final var createResult = createDocument(definitionOf("person"), content);
+        final var createResult = createDocument(definition, content);
 
         final var document = createResult.resultingDocument().orElseThrow();
 
         final var contentModified = new JsonDocumentContent("{\"firstName\": \"Johnny\"}");
-        final var result = document.applyModifiedContent(contentModified, document.version());
+        final var result = document.applyModifiedContent(contentModified, definition, document.version());
 
         final var modifiedDocument = result.resultingDocument().orElseThrow();
 
@@ -208,14 +210,16 @@ public class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     public void shouldModifyDocumentPartial() {
+        var definition = definitionOf("person");
+
         final var content = new JsonDocumentContent("{\"firstName\": \"John\", \"lastName\": \"Doe\"}");
-        final var createResult = createDocument(definitionOf("person"), content);
+        final var createResult = createDocument(definition, content);
 
         final var document = createResult.resultingDocument().orElseThrow();
 
         final var partialContentChange = new JsonDocumentContent("{\"firstName\": \"Johnny\"}");
         final var contentModified = JsonDocumentContent.build(content.asJson(), partialContentChange.asJson(), null);
-        final var result = document.applyModifiedContent(contentModified, document.version());
+        final var result = document.applyModifiedContent(contentModified, definition, document.version());
 
         final var modifiedDocument = result.resultingDocument().orElseThrow();
 
@@ -226,6 +230,8 @@ public class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     public void shouldNotModifyDocumentWhenVersionDiverged() {
+        var definition = definitionOf("person");
+
         final var content = new JsonDocumentContent("{\"firstName\": \"John\"}");
         final var createResult = createDocument(definitionOf("person"), content);
 
@@ -233,10 +239,10 @@ public class JsonSchemaDocumentTest extends BaseTest {
 
         var contentModified = new JsonDocumentContent("{\"firstName\": \"Johnny\"}");
         DocumentVersion version = document.version();
-        JsonSchemaDocument.ModifyDocumentResultImpl result = document.applyModifiedContent(contentModified, version);
+        JsonSchemaDocument.ModifyDocumentResultImpl result = document.applyModifiedContent(contentModified, definition, version);
 
         contentModified = new JsonDocumentContent("{\"firstName\": \"Henk\"}");
-        result = result.resultingDocument().orElseThrow().applyModifiedContent(contentModified, version);
+        result = result.resultingDocument().orElseThrow().applyModifiedContent(contentModified, definition, version);
 
         assertThat(result.errors()).hasSize(1);
         assertThat(result.resultingDocument()).isEmpty();
@@ -244,6 +250,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     public void shouldAddArrayItem() throws JsonProcessingException {
+        var definition = definitionOf("person");
         final var content = new JsonDocumentContent("{\"files\": [{\"id\" : \"1\"}]}");
         final var createResult = createDocument(definitionOf("array-example"), content);
 
@@ -256,7 +263,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
             null
         );
 
-        final var result = document.applyModifiedContent(jsonDocumentContent, document.version());
+        final var result = document.applyModifiedContent(jsonDocumentContent, definition, document.version());
 
         final var modifiedDocument = result.resultingDocument().orElseThrow();
 
@@ -267,13 +274,14 @@ public class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     public void shouldEmptyArrayItems() {
+        var definition = definitionOf("array-example");
         final var content = new JsonDocumentContent("{\"files\": [{\"id\" : \"1\"}, {\"id\" : \"2\"}, {\"id\" : \"3\"}]}");
-        final var createResult = createDocument(definitionOf("array-example"), content);
+        final var createResult = createDocument(definition, content);
 
         final var document = createResult.resultingDocument().orElseThrow();
 
         final var contentModified = new JsonDocumentContent("{\"files\": [{\"id\" : \"1\"}, {\"id\" : \"\"}, {\"id\" : \"\"}]}");
-        final var result = document.applyModifiedContent(contentModified, document.version());
+        final var result = document.applyModifiedContent(contentModified, definition, document.version());
 
         final var modifiedDocument = result.resultingDocument().orElseThrow();
 
@@ -285,13 +293,14 @@ public class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     public void shouldEmptyAllArrayRefItems() {
+        var definition = definitionOf("array-example");
         final var content = new JsonDocumentContent("{\"files\" : [{\"id\" : \"1\"}, {\"id\" : \"2\"}, {\"id\" : \"3\"}]}");
-        final var createResult = createDocument(definitionOf("array-example"), content);
+        final var createResult = createDocument(definition, content);
 
         final var document = createResult.resultingDocument().orElseThrow();
 
         final var contentModified = new JsonDocumentContent("{\"files\" : [{\"id\" : \"\"}, {\"id\" : \"\"}, {\"id\" : \"\"}]}");
-        final var result = document.applyModifiedContent(contentModified, document.version());
+        final var result = document.applyModifiedContent(contentModified, definition, document.version());
 
         final var modifiedDocument = result.resultingDocument().orElseThrow();
 
@@ -303,13 +312,14 @@ public class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     public void shouldNotAllowAdditionalItemInArray() {
+        var definition = definitionOf("array-example");
         final var content = new JsonDocumentContent("{\"files\" : [{\"id\" : \"1\"}, {\"id\" : \"2\"}, {\"id\" : \"3\"}]}");
-        final var createResult = createDocument(definitionOf("array-example"), content);
+        final var createResult = createDocument(definition, content);
 
         final var document = createResult.resultingDocument().orElseThrow();
 
         final var contentModified = new JsonDocumentContent("{\"files\" : [{\"id\" : \"1\"}, {\"id\" : \"2\"}, {\"id\" : \"3\"}, \"aRandom\"]}");
-        final var result = document.applyModifiedContent(contentModified, document.version());
+        final var result = document.applyModifiedContent(contentModified, definition, document.version());
 
         assertThat(result.errors()).hasSize(1);
     }
@@ -326,13 +336,14 @@ public class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     public void shouldNotAllowAdditionalItemInReferencedArray() {
+        var definition = definitionOf("referenced-array");
         final var content = new JsonDocumentContent("{\"addresses\" : [{\"streetName\" : \"Funenpark\"}]}");
-        final var createResult = createDocument(definitionOf("referenced-array"), content);
+        final var createResult = createDocument(definition, content);
 
         final var document = createResult.resultingDocument().orElseThrow();
 
         final var contentModified = new JsonDocumentContent("{\"addresses\" : [{\"streetName2\" : \"Funenpark 1F\"}]}");
-        final var result = document.applyModifiedContent(contentModified, document.version());
+        final var result = document.applyModifiedContent(contentModified, definition, document.version());
 
         assertThat(result.errors()).hasSize(1);
     }

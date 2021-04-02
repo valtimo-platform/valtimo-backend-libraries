@@ -17,6 +17,7 @@
 package com.ritense.document.domain.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.DocumentContent;
 import com.ritense.document.domain.DocumentDefinition;
@@ -58,7 +59,13 @@ public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSche
     @Column(name = "created_on", columnDefinition = "DATETIME", nullable = false)
     private LocalDateTime createdOn;
 
-    public JsonSchemaDocumentDefinition(JsonSchemaDocumentDefinitionId id, JsonSchema schema) {
+    @Column(name = "read_only", columnDefinition = "BIT")
+    private Boolean readOnly = false;
+
+    public JsonSchemaDocumentDefinition(
+        final JsonSchemaDocumentDefinitionId id,
+        final JsonSchema schema
+    ) {
         assertArgumentNotNull(id, "id is required");
         assertArgumentNotNull(schema, "schema is required");
         assertMatchingSchemaIds(id, schema);
@@ -91,6 +98,19 @@ public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSche
     @Override
     public JsonNode schema() {
         return schema.asJson();
+    }
+
+    public JsonSchema getSchema() {
+        return schema;
+    }
+
+    public void markReadOnly() {
+        this.readOnly = true;
+    }
+
+    @JsonProperty
+    public boolean isReadOnly() {
+        return readOnly;
     }
 
     @Override

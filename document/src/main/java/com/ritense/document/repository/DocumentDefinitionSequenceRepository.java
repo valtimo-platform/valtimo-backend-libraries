@@ -28,4 +28,6 @@ public interface DocumentDefinitionSequenceRepository<T extends DocumentDefiniti
     extends JpaRepository<T, DocumentDefinition.Id> {
 
     Optional<T> findByDefinition(DocumentDefinition.Id definitionId);
+
+    void deleteByDocumentDefinitionName(String documentDefinitionName);
 }

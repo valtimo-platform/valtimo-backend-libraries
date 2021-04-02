@@ -25,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface DocumentSnapshotService {
 
@@ -40,5 +39,7 @@ public interface DocumentSnapshotService {
     );
 
     void makeSnapshot(Document.Id documentId, LocalDateTime createdOn, String createdBy);
+
+    void deleteSnapshotsBy(String documentDefinitionName);
 
 }

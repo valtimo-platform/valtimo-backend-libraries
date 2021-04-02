@@ -21,6 +21,7 @@ import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
@@ -29,7 +30,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -82,11 +82,14 @@ public class HistoricDocument implements Document {
     @Column(name = "document_related_files", columnDefinition = "json")
     private Set<? extends RelatedFile> relatedFiles = new HashSet<>();
 
-    public HistoricDocument(@NonNull final JsonSchemaDocument document) {
+    public HistoricDocument(
+        final JsonSchemaDocument document,
+        final JsonSchemaDocumentDefinition documentDefinition
+    ) {
         this.id = document.id();
         this.content = new JsonDocumentContent(document.content());
         this.documentDefinitionId = document.definitionId();
-        this.documentDefinition = document.definition();
+        this.documentDefinition = documentDefinition;
         this.version = document.version();
         this.createdOn = document.createdOn();
         this.modifiedOn = document.modifiedOn().orElse(null);
@@ -127,11 +130,6 @@ public class HistoricDocument implements Document {
     }
 
     @Override
-    public DocumentDefinition definition() {
-        return null;
-    }
-
-    @Override
     public String createdBy() {
         return createdBy;
     }
@@ -150,4 +148,5 @@ public class HistoricDocument implements Document {
     public Set<? extends RelatedFile> relatedFiles() {
         return relatedFiles;
     }
+
 }

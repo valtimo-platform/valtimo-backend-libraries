@@ -16,7 +16,6 @@
 
 package com.ritense.document.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.ritense.document.domain.relation.DocumentRelation;
@@ -41,9 +40,6 @@ public interface Document {
 
     @JsonProperty
     DocumentDefinition.Id definitionId();
-
-    @JsonIgnore
-    DocumentDefinition definition();
 
     @JsonProperty
     DocumentContent content();

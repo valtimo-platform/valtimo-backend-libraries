@@ -17,14 +17,44 @@
 package com.ritense.document.web.rest;
 
 import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
+import com.ritense.document.service.result.DeployDocumentDefinitionResult;
+import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
+import static org.springframework.data.domain.Sort.Direction.DESC;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+@RestController
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface DocumentDefinitionResource {
 
-    ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(Pageable pageable);
+    @GetMapping(value = "/document-definition")
+    ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
+        @PageableDefault(sort = {"createdOn"}, direction = DESC) Pageable pageable
+    );
 
-    ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(String name);
+    @GetMapping(value = "/document-definition/{name}")
+    ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(@PathVariable String name);
 
+    @PostMapping(value = "/document-definition", consumes = APPLICATION_JSON_VALUE)
+    ResponseEntity<DeployDocumentDefinitionResult> deployDocumentDefinition(
+        @Valid @RequestBody DocumentDefinitionCreateRequest request
+    );
+
+    @DeleteMapping(value = "/document-definition/{name}")
+    ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(@PathVariable String name);
 }

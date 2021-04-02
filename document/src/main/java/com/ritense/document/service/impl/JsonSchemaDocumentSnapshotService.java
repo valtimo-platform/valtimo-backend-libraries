@@ -17,7 +17,6 @@
 package com.ritense.document.service.impl;
 
 import com.ritense.document.domain.Document;
-import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
@@ -37,6 +36,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
 
     private final DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
     private final JsonSchemaDocumentService documentService;
+    private final JsonSchemaDocumentDefinitionService documentDefinitionService;
 
     @Override
     public Optional<JsonSchemaDocumentSnapshot> findById(DocumentSnapshot.Id id) {
@@ -63,11 +63,19 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     @Transactional
     @Override
     public void makeSnapshot(Document.Id documentId, LocalDateTime createdOn, String createdBy) {
-
-        final JsonSchemaDocument document = documentService.findBy(documentId)
+        var document = documentService.findBy(documentId)
             .orElseThrow(() -> new DocumentNotFoundException("Document not found with id " + documentId));
 
-        documentSnapshotRepository.saveAndFlush(new JsonSchemaDocumentSnapshot(document, createdOn, createdBy));
+        var documentDefinition = documentDefinitionService.findBy(document.definitionId())
+            .orElseThrow();
+
+        documentSnapshotRepository.saveAndFlush(new JsonSchemaDocumentSnapshot(document, createdOn, createdBy, documentDefinition));
+    }
+
+    @Transactional
+    @Override
+    public void deleteSnapshotsBy(String documentDefinitionName) {
+        documentSnapshotRepository.deleteAllByDefinitionName(documentDefinitionName);
     }
 
 }

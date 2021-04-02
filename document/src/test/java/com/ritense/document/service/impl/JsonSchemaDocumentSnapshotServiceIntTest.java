@@ -18,9 +18,9 @@ package com.ritense.document.service.impl;
 
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
-import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import org.junit.jupiter.api.AfterEach;
@@ -38,12 +38,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Tag("integration")
 public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTest {
 
-    private DocumentDefinition definition;
+    private JsonSchemaDocumentDefinition definition;
     private JsonSchemaDocument document;
 
     @BeforeEach
     public void beforeEach() {
         definition = definition();
+        documentDefinitionService.store(definition);
         document = (JsonSchemaDocument) createDocument("{\"street\": \"Funenpark\"}");
     }
 
@@ -55,9 +56,8 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = USER)
     public void shouldGetDocumentSnapshots() {
-
         final var page = documentSnapshotService.getDocumentSnapshots(
-            document.definition().id().name(),
+            definition.id().name(),
             document.id(),
             LocalDateTime.now().minusHours(1),
             LocalDateTime.now().plusHours(1),
@@ -74,8 +74,14 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     public void shouldCreateSnapshotWhenCreatingDocument() {
 
         final var document = (JsonSchemaDocument) createDocument("{}");
+        final var page = documentSnapshotService.getDocumentSnapshots(
+            null,
+            document.id(),
+            null,
+            null,
+            Pageable.unpaged()
+        );
 
-        final var page = documentSnapshotService.getDocumentSnapshots(null, document.id(), null, null, Pageable.unpaged());
         assertThat(page).isNotNull();
         assertThat(page.getTotalElements()).isEqualTo(1);
         assertThat(page.getTotalPages()).isEqualTo(1);
@@ -96,8 +102,14 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
         );
 
         final var modifiedDocument = (JsonSchemaDocument) documentService.modifyDocument(request).resultingDocument().orElseThrow();
+        final var page = documentSnapshotService.getDocumentSnapshots(
+            null,
+            modifiedDocument.id(),
+            null,
+            null,
+            Pageable.unpaged()
+        );
 
-        final var page = documentSnapshotService.getDocumentSnapshots(null, modifiedDocument.id(), null, null, Pageable.unpaged());
         assertThat(page).isNotNull();
         assertThat(page.getTotalElements()).isEqualTo(2);
         assertThat(page.getTotalPages()).isEqualTo(1);

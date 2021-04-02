@@ -19,6 +19,7 @@ package com.ritense.document.repository.impl;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -28,11 +29,21 @@ import java.util.Optional;
 @Repository
 public interface JsonSchemaDocumentDefinitionSequenceRepository extends DocumentDefinitionSequenceRepository<JsonSchemaDocumentDefinitionSequenceRecord> {
 
-    @Query(" SELECT  ddsr " +
-        "    FROM    JsonSchemaDocumentDefinitionSequenceRecord ddsr " +
-        "    WHERE   ddsr.id = :definitionId ")
+    @Query("" +
+        "   SELECT  ddsr " +
+        "   FROM    JsonSchemaDocumentDefinitionSequenceRecord ddsr " +
+        "   WHERE   ddsr.id = :definitionId ")
     Optional<JsonSchemaDocumentDefinitionSequenceRecord> findByDefinition(
         @Param("definitionId") DocumentDefinition.Id definitionId
+    );
+
+    @Modifying
+    @Query("" +
+        "   DELETE " +
+        "   FROM    JsonSchemaDocumentDefinitionSequenceRecord ddsr " +
+        "   WHERE   ddsr.id.name = :documentDefinitionName ")
+    void deleteByDocumentDefinitionName(
+        @Param("documentDefinitionName") String documentDefinitionName
     );
 
 }

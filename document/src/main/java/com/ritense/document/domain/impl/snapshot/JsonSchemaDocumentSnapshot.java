@@ -17,10 +17,10 @@
 package com.ritense.document.domain.impl.snapshot;
 
 import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.Column;
@@ -52,11 +52,16 @@ public class JsonSchemaDocumentSnapshot implements DocumentSnapshot, Persistable
     @Transient
     private transient boolean isNew = false;
 
-    public JsonSchemaDocumentSnapshot(@NonNull JsonSchemaDocument document, @NonNull LocalDateTime createdOn, @NonNull String createdBy) {
+    public JsonSchemaDocumentSnapshot(
+        JsonSchemaDocument document,
+        LocalDateTime createdOn,
+        String createdBy,
+        JsonSchemaDocumentDefinition documentDefinition
+    ) {
         this.id = JsonSchemaDocumentSnapshotId.newId(UUID.randomUUID());
         this.createdOn = createdOn;
         this.createdBy = createdBy;
-        this.document = new HistoricDocument(document);
+        this.document = new HistoricDocument(document, documentDefinition);
         this.isNew = true;
     }
 
@@ -89,4 +94,5 @@ public class JsonSchemaDocumentSnapshot implements DocumentSnapshot, Persistable
     public boolean isNew() {
         return isNew;
     }
+
 }

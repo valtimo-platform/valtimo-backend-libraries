@@ -29,7 +29,7 @@ import java.util.Objects;
 public class JsonSchemaDocumentVersion implements DocumentVersion {
 
     private JsonDocumentContent documentContent;
-    private JsonSchemaDocumentDefinition documentDef;
+    private JsonSchemaDocumentDefinitionId documentDefinitionId;
     private String versionAsString;
 
     private JsonSchemaDocumentVersion(JsonSchemaDocument document) {
@@ -37,7 +37,7 @@ public class JsonSchemaDocumentVersion implements DocumentVersion {
         // the object representing the document version before modification will equal the modified version!
         // Hence, store refs to the content and def instead. As those are immutable!
         this.documentContent = document.content();
-        this.documentDef = document.definition();
+        this.documentDefinitionId = document.definitionId();
         this.versionAsString = null;
     }
 
@@ -45,7 +45,7 @@ public class JsonSchemaDocumentVersion implements DocumentVersion {
         // Ideally: split this class into two implementations of DocumentVersion, one dynamic/lazy/document based other lazy
         // For now: two constructors
         this.documentContent = null;
-        this.documentDef = null;
+        this.documentDefinitionId = null;
         this.versionAsString = versionAsString;
     }
 
@@ -101,12 +101,10 @@ public class JsonSchemaDocumentVersion implements DocumentVersion {
 
     private String computeHashVersion() {
         var digest = new DigestUtils(MessageDigestAlgorithms.SHA_256).getMessageDigest();
-
         digest.update(String.valueOf(documentContent.asJson().hashCode()).getBytes());
-
-        digest.update(documentDef.id().name().getBytes());
-        if (documentDef.id().version() > 1) {
-            digest.update(Long.toString(documentDef.id().version()).getBytes());
+        digest.update(documentDefinitionId.name().getBytes());
+        if (documentDefinitionId.version() > 1) {
+            digest.update(Long.toString(documentDefinitionId.version()).getBytes());
         }
         var digestedBytes = digest.digest();
         return Hex.encodeHexString(digestedBytes);

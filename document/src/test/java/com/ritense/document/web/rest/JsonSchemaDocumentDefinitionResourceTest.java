@@ -18,7 +18,14 @@ package com.ritense.document.web.rest;
 
 import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
+import com.ritense.document.service.impl.UndeployJsonSchemaDocumentDefinitionService;
+import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
+import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
+import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
+import com.ritense.document.service.result.UndeployDocumentDefinitionResultFailed;
+import com.ritense.document.service.result.UndeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,15 +36,22 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -47,6 +61,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
     private JsonSchemaDocumentDefinitionService documentDefinitionService;
     private DocumentDefinitionResource documentDefinitionResource;
+    private UndeployDocumentDefinitionService undeployDocumentDefinitionService;
     private MockMvc mockMvc;
     private Page<JsonSchemaDocumentDefinition> definitionPage;
     private JsonSchemaDocumentDefinition definition;
@@ -54,7 +69,11 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     @BeforeEach
     public void setUp() {
         documentDefinitionService = mock(JsonSchemaDocumentDefinitionService.class);
-        documentDefinitionResource = new JsonSchemaDocumentDefinitionResource(documentDefinitionService);
+        undeployDocumentDefinitionService = mock(UndeployJsonSchemaDocumentDefinitionService.class);
+        documentDefinitionResource = new JsonSchemaDocumentDefinitionResource(
+            documentDefinitionService,
+            undeployDocumentDefinitionService
+        );
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentDefinitionResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -87,6 +106,120 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
+    }
+
+    @Test
+    public void shouldReturnCreateSuccessResult() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest("{\n" +
+            "  \"$id\": \"person.schema\",\n" +
+            "  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+            "  \"title\": \"Person\",\n" +
+            "  \"type\": \"object\",\n" +
+            "  \"properties\": {\n" +
+            "    \"firstName\": {\n" +
+            "      \"type\": \"string\",\n" +
+            "      \"description\": \"The person's first name.\"\n" +
+            "    },\n" +
+            "    \"lastName\": {\n" +
+            "      \"type\": \"string\",\n" +
+            "      \"description\": \"The person's last name.\"\n" +
+            "    },\n" +
+            "    \"age\": {\n" +
+            "      \"description\": \"Age in years which must be equal to or greater than zero.\",\n" +
+            "      \"type\": \"integer\",\n" +
+            "      \"minimum\": 0\n" +
+            "    }\n" +
+            "  }\n" +
+            "}\n");
+
+        when(documentDefinitionService.deploy(anyString()))
+            .thenReturn(new DeployDocumentDefinitionResultSucceeded(definition));
+
+        mockMvc.perform(post("/api/document-definition")
+            .content(objectMapper.writeValueAsString(documentDefinitionCreateRequest))
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        verify(documentDefinitionService, times(1)).deploy(anyString());
+    }
+
+    @Test
+    public void shouldReturnCreateFailedResult() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest("{\n" +
+            "  \"$id\": \"person.schema\",\n" +
+            "  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+            "  \"title\": \"Person\",\n" +
+            "  \"type\": \"object\",\n" +
+            "  \"properties\": {\n" +
+            "    \"firstName\": {\n" +
+            "      \"type\": \"string\",\n" +
+            "      \"description\": \"The person's first name.\"\n" +
+            "    },\n" +
+            "    \"lastName\": {\n" +
+            "      \"type\": \"string\",\n" +
+            "      \"description\": \"The person's last name.\"\n" +
+            "    },\n" +
+            "    \"age\": {\n" +
+            "      \"description\": \"Age in years which must be equal to or greater than zero.\",\n" +
+            "      \"type\": \"integer\",\n" +
+            "      \"minimum\": 0\n" +
+            "    }\n" +
+            "  }\n" +
+            "}\n");
+
+        when(documentDefinitionService.deploy(anyString()))
+            .thenReturn(new DeployDocumentDefinitionResultFailed(List.of(() -> "This schema was already deployed")));
+
+        mockMvc.perform(post("/api/document-definition")
+            .content(objectMapper.writeValueAsString(documentDefinitionCreateRequest))
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isBadRequest());
+
+        verify(documentDefinitionService, times(1)).deploy(anyString());
+    }
+
+    @Test
+    public void shouldReturnUndeployDocumentDefinitionSucceeded() throws Exception {
+        String definitionName = "documentDefinitionName";
+
+        when(undeployDocumentDefinitionService.undeploy(eq(definitionName))).thenReturn(
+            new UndeployDocumentDefinitionResultSucceeded(definitionName)
+        );
+
+        mockMvc.perform(delete("/api/document-definition/{name}", definitionName)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        verify(undeployDocumentDefinitionService, times(1)).undeploy(eq(definitionName));
+    }
+
+    @Test
+    public void shouldReturnUndeployDocumentDefinitionFailed() throws Exception {
+        String definitionName = "documentDefinitionName";
+
+        when(undeployDocumentDefinitionService.undeploy(eq(definitionName))).thenReturn(
+            new UndeployDocumentDefinitionResultFailed(List.of())
+        );
+
+        mockMvc.perform(delete("/api/document-definition/{name}", definitionName)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isBadRequest());
+
+        verify(undeployDocumentDefinitionService, times(1)).undeploy(eq(definitionName));
     }
 
 }

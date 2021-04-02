@@ -16,9 +16,11 @@
 
 package com.ritense.document.web.rest.impl;
 
+import static org.springframework.data.domain.Sort.Direction.DESC;
+
 import com.ritense.document.domain.Document;
 import com.ritense.document.service.DocumentSearchService;
-import com.ritense.document.service.impl.SearchCriteria;
+import com.ritense.document.service.impl.SearchRequest;
 import com.ritense.document.web.rest.DocumentSearchResource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,17 +28,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-
-import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RequiredArgsConstructor
 @RestController
@@ -46,34 +41,13 @@ public class JsonSchemaDocumentSearchResource implements DocumentSearchResource 
     private final DocumentSearchService documentSearchService;
 
     @Override
-    @PostMapping(value = "/document-search/{document-definition-name}")
+    @PostMapping(value = "/document-search")
     public ResponseEntity<Page<? extends Document>> search(
-        @PathVariable(name = "document-definition-name") String documentDefinitionName,
-        @RequestBody List<SearchCriteria> searchCriteria,
+        @RequestBody SearchRequest searchRequest,
         @PageableDefault(sort = {"createdOn"}, direction = DESC) Pageable pageable
     ) {
         return ResponseEntity.ok(
-            documentSearchService.search(documentDefinitionName, searchCriteria, pageable)
-        );
-    }
-
-    @Override
-    @GetMapping(value = "/document-search")
-    public ResponseEntity<Page<? extends Document>> search(
-        @RequestParam(name = "definitionName", required = false) String documentDefinitionName,
-        @RequestParam(name = "searchCriteria", required = false) String searchCriteria,
-        @RequestParam(name = "sequence", required = false) Long sequence,
-        @RequestParam(name = "createdBy", required = false) String createdBy,
-        @PageableDefault(sort = {"createdOn"}, direction = DESC) Pageable pageable
-    ) {
-        return ResponseEntity.ok(
-            documentSearchService.search(
-                documentDefinitionName,
-                searchCriteria,
-                sequence,
-                createdBy,
-                pageable
-            )
+            documentSearchService.search(searchRequest, pageable)
         );
     }
 

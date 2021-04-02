@@ -18,10 +18,10 @@ package com.ritense.document.domain.impl.listener;
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile;
-import com.ritense.document.domain.listener.DocumentRelatedFileEventListener;
 import com.ritense.document.service.DocumentService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent;
+import com.ritense.valtimo.contract.listener.DocumentRelatedFileEventListener;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -32,16 +32,10 @@ public class DocumentRelatedFileSubmittedEventListenerImpl implements DocumentRe
 
     @Override
     public void handle(DocumentRelatedFileSubmittedEvent event) {
-        var resource = resourceService.getResourceByFileName(event.getFileName());
-        try {
-            documentService.assignRelatedFile(
-                JsonSchemaDocumentId.existingId(event.getDocumentId()),
-                JsonSchemaRelatedFile.from(resource)
-            );
-            resourceService.activate(resource.id());
-        } catch (Exception ex) {
-            resourceService.pending(resource.id());
-            throw ex;
-        }
+        var resource = resourceService.getResource(event.getResourceId());
+        documentService.assignRelatedFile(
+            JsonSchemaDocumentId.existingId(event.getDocumentId()),
+            JsonSchemaRelatedFile.from(resource)
+        );
     }
 }

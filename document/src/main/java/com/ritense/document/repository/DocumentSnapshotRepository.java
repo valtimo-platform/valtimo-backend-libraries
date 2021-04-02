@@ -35,4 +35,6 @@ public interface DocumentSnapshotRepository<T extends DocumentSnapshot> extends 
         LocalDateTime toDateTime,
         Pageable pageable
     );
+
+    void deleteAllByDefinitionName(String definitionName);
 }

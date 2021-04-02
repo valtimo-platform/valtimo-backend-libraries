@@ -44,19 +44,19 @@ public abstract class BaseTest {
 
     protected JsonSchemaDocumentDefinition definition() {
         final var jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("house");
-        final var jsonSchema = JsonSchema.fromResource(jsonSchemaDocumentDefinitionId.path());
-        return new JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema);
+        final var schema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
+        return new JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, schema);
     }
 
     protected JsonSchemaDocumentDefinition definitionOf(String name) {
         final var documentDefinitionName = JsonSchemaDocumentDefinitionId.newId(name);
-        final var schema = JsonSchema.fromResource(documentDefinitionName.path());
+        final var schema = JsonSchema.fromResourceUri(path(documentDefinitionName.name()));
         return new JsonSchemaDocumentDefinition(documentDefinitionName, schema);
     }
 
     protected JsonSchemaDocumentDefinition definitionOf(String name, long version, String schemaPath) {
         final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(name, version);
-        final var schema = JsonSchema.fromResource(URI.create("config/document/definition/" + schemaPath));
+        final var schema = JsonSchema.fromResourceUri(URI.create("config/document/definition/" + schemaPath));
         return new JsonSchemaDocumentDefinition(documentDefinitionId, schema);
     }
 
@@ -79,6 +79,10 @@ public abstract class BaseTest {
             LocalDateTime.now(),
             "some-body"
         );
+    }
+
+    public URI path(String name) {
+        return URI.create(String.format("config/document/definition/%s.json", name + ".schema"));
     }
 
 }

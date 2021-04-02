@@ -17,25 +17,25 @@
 package com.ritense.document.service.impl;
 
 import com.ritense.document.BaseTest;
-import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchema;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.exception.DocumentDefinitionNameMismatchException;
 import com.ritense.document.repository.impl.JsonSchemaDocumentDefinitionRepository;
-import com.ritense.document.service.DocumentDefinitionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 public class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
 
-    private DocumentDefinitionService documentDefinitionService;
+    private JsonSchemaDocumentDefinitionService documentDefinitionService;
     private JsonSchemaDocumentDefinitionRepository jsonSchemaDocumentDefinitionRepository;
     private ResourceLoader resourceLoader;
     private JsonSchemaDocumentDefinition definition;
@@ -64,27 +64,29 @@ public class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         when(jsonSchemaDocumentDefinitionRepository.findAllByIdName(anyString())).thenReturn(Collections.emptyList());
         when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(Optional.empty());
         documentDefinitionService.deployAll();
-        verify(documentDefinitionService, times(3)).deploy(any(JsonSchemaDocumentDefinition.class));
+        verify(documentDefinitionService, times(3)).store(any(JsonSchemaDocumentDefinition.class));
     }
 
     @Test
-    public void shouldDeploy() {
+    public void shouldStore() {
         when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(Optional.empty());
         when(jsonSchemaDocumentDefinitionRepository.findById(any(JsonSchemaDocumentDefinitionId.class))).thenReturn(Optional.empty());
 
-        documentDefinitionService.deploy(definition);
+        documentDefinitionService.store(definition);
 
         verify(jsonSchemaDocumentDefinitionRepository, times(1)).saveAndFlush(definition);
     }
 
     @Test
     public void shouldReturnSaveOnceWhenDeployingUnchangedSchema() {
-        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(Optional.empty());
-        when(jsonSchemaDocumentDefinitionRepository.findById(any(JsonSchemaDocumentDefinitionId.class))).thenReturn(Optional.empty())
+        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString()))
+            .thenReturn(Optional.empty());
+        when(jsonSchemaDocumentDefinitionRepository.findById(any(JsonSchemaDocumentDefinitionId.class)))
+            .thenReturn(Optional.empty())
             .thenReturn(Optional.of(definition));
 
-        documentDefinitionService.deploy(definition);
-        documentDefinitionService.deploy(definition);
+        documentDefinitionService.store(definition);
+        documentDefinitionService.store(definition);
 
         verify(jsonSchemaDocumentDefinitionRepository, times(1)).saveAndFlush(definition);
     }
@@ -96,7 +98,7 @@ public class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
 
         final var definitionChanged = definitionOf("house");
 
-        assertThrows(UnsupportedOperationException.class, () -> documentDefinitionService.deploy(definitionChanged));
+        assertThrows(UnsupportedOperationException.class, () -> documentDefinitionService.store(definitionChanged));
     }
 
     @Test
@@ -106,8 +108,20 @@ public class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
 
         final var jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("person");
         final var otherJsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("person2");
-        final var jsonSchema = JsonSchema.fromResource(jsonSchemaDocumentDefinitionId.path());
+        final var jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
         assertThrows(DocumentDefinitionNameMismatchException.class, () -> new JsonSchemaDocumentDefinition(otherJsonSchemaDocumentDefinitionId, jsonSchema));
+    }
+
+    public URI path(String name) {
+        return URI.create(String.format("config/document/definition/%s.json", name + ".schema"));
+    }
+
+    @Test
+    public void shouldRemoveDocumentDefinition() {
+        String documentDefinitionName = "name";
+        documentDefinitionService.removeDocumentDefinition(documentDefinitionName);
+
+        verify(jsonSchemaDocumentDefinitionRepository, times(1)).deleteByIdName(eq(documentDefinitionName));
     }
 
 }

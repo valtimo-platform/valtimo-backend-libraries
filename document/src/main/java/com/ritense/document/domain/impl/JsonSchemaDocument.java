@@ -190,6 +190,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
      */
     public synchronized ModifyDocumentResultImpl applyModifiedContent(
         final JsonDocumentContent modifiedContent,
+        final JsonSchemaDocumentDefinition documentDefinition,
         final DocumentVersion versionCheck
     ) {
         assertArgumentNotNull(modifiedContent, "modifiedContent is required");
@@ -202,7 +203,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         }
 
         if (!content.equals(modifiedContent)) {
-            final var result = definition().validate(modifiedContent);
+            final var result = documentDefinition.validate(modifiedContent);
             if (!result.passedValidation()) {
                 List<DocumentOperationError> documentContentValidationErrors = new ArrayList<>(result.validationErrors());
                 return new ModifyDocumentResultImpl(documentContentValidationErrors);
@@ -284,6 +285,10 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         }
     }
 
+    public void removeAllRelatedFiles() {
+        relatedFiles.forEach(file -> removeRelatedFileBy(file.getFileId()));
+    }
+
     @Override
     public JsonSchemaDocumentId id() {
         return id;
@@ -307,11 +312,6 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Override
     public JsonSchemaDocumentDefinitionId definitionId() {
         return documentDefinitionId;
-    }
-
-    @Override
-    public JsonSchemaDocumentDefinition definition() {
-        return new JsonSchemaDocumentDefinition(documentDefinitionId, JsonSchema.fromResource(documentDefinitionId.path()));
     }
 
     @Override

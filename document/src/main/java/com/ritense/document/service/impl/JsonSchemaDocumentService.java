@@ -32,8 +32,6 @@ import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentRepository;
-import com.ritense.document.service.DocumentDefinitionService;
-import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.resource.Resource;
@@ -43,15 +41,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 public class JsonSchemaDocumentService implements DocumentService {
 
-    private final DocumentRepository<JsonSchemaDocument> documentRepository;
-    private final DocumentDefinitionService documentDefinitionService;
-    private final DocumentSequenceGeneratorService documentSequenceGeneratorService;
+    private final DocumentRepository documentRepository;
+    private final JsonSchemaDocumentDefinitionService documentDefinitionService;
+    private final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService;
     private final ResourceService resourceService;
 
     @Override
@@ -74,7 +73,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     public JsonSchemaDocument.CreateDocumentResultImpl createDocument(
         NewDocumentRequest newDocumentRequest
     ) {
-        final JsonSchemaDocumentDefinition definition = (JsonSchemaDocumentDefinition) documentDefinitionService
+        final JsonSchemaDocumentDefinition definition = documentDefinitionService
             .findLatestByName(newDocumentRequest.documentDefinitionName())
             .orElseThrow(() -> new UnknownDocumentDefinitionException(newDocumentRequest.documentDefinitionName()));
         final var content = JsonDocumentContent.build(newDocumentRequest.content());
@@ -106,7 +105,12 @@ public class JsonSchemaDocumentService implements DocumentService {
             request.content(),
             request.jsonPatch()
         );
-        final var result = document.applyModifiedContent(modifiedContent, version);
+        var documentDefinition = documentDefinitionService.findBy(document.definitionId()).orElseThrow();
+        final var result = document.applyModifiedContent(
+            modifiedContent,
+            documentDefinition,
+            version
+        );
 
         result.resultingDocument().ifPresent(documentRepository::saveAndFlush);
         return result;
@@ -161,4 +165,14 @@ public class JsonSchemaDocumentService implements DocumentService {
             .orElseThrow(() -> new DocumentNotFoundException("Unable to find document with ID " + documentId));
     }
 
+    @Override
+    public void removeDocuments(String documentDefinitionName) {
+        List<JsonSchemaDocument> documents = getAllByDocumentDefinitionName(Pageable.unpaged(), documentDefinitionName).toList();
+        if (!documents.isEmpty()) {
+            documents.forEach(JsonSchemaDocument::removeAllRelatedFiles);
+            documentRepository.saveAll(documents);
+            documentRepository.deleteAll(documents);
+            documentSequenceGeneratorService.deleteSequenceRecordBy(documentDefinitionName);
+        }
+    }
 }
