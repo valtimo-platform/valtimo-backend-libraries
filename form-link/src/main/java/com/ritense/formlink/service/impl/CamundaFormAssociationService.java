@@ -277,7 +277,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
                                 String[] varNames = externalContentItems.stream()
                                     .map(FormIoFormDefinition.ExternalContentItem::getName).toArray(String[]::new);
                                 Map<String, Object> externalDataMap = formFieldDataResolver.get(
-                                    document.definition().id().name(),
+                                    document.definitionId().name(),
                                     document.id().getId(),
                                     varNames
                                 );

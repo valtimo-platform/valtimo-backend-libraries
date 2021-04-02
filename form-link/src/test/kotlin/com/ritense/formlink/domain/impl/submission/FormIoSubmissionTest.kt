@@ -44,6 +44,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.springframework.context.ApplicationEventPublisher
+import java.net.URI
 import java.util.Optional
 
 class FormIoSubmissionTest : BaseTest() {
@@ -84,27 +85,23 @@ class FormIoSubmissionTest : BaseTest() {
 
     @BeforeEach
     fun init() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
 
         whenever(documentSequenceGeneratorService.next(any())).thenReturn(1)
-
         val documentOptional = documentOptional()
-
         document = documentOptional.orElseThrow()
 
         whenever(processDocumentDefinition.processDocumentDefinitionId()).thenReturn(
             CamundaProcessJsonSchemaDocumentDefinitionId.existingId(
                 CamundaProcessDefinitionKey("processDefintionKey"),
                 JsonSchemaDocumentDefinitionId.existingId("documentId", 1)
-            ))
-
+            )
+        )
         whenever(processDocumentDefinition.canInitializeDocument()).thenReturn(true)
-
         whenever(processDocumentService.dispatch(any())).thenReturn(documentFunctionResult)
-
         whenever(documentFunctionResult.resultingDocument()).thenReturn(
-            documentOptional)
-
+            documentOptional
+        )
     }
 
     @Test
@@ -260,8 +257,12 @@ class FormIoSubmissionTest : BaseTest() {
 
     private fun definition(): JsonSchemaDocumentDefinition {
         val jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("house")
-        val jsonSchema = JsonSchema.fromResource(jsonSchemaDocumentDefinitionId.path())
+        val jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()))
         return JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema)
+    }
+
+    fun path(name: String): URI {
+        return URI.create(String.format("config/document/definition/%s.json", "$name.schema"))
     }
 
 }

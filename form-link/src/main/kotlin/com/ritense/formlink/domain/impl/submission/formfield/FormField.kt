@@ -88,7 +88,8 @@ abstract class FormField(
 
         private fun isUploadComponent(jsonNode: ObjectNode): Boolean {
             return (jsonNode.has("type")
-                && jsonNode["type"].textValue().equals("file", ignoreCase = true)
+                && (jsonNode["type"].textValue().equals("file", ignoreCase = true) ||
+                jsonNode["type"].textValue().equals("valtimo-file", ignoreCase = true))
                 && jsonNode["input"].booleanValue()
                 && jsonNode.has(PROPERTY_KEY))
         }

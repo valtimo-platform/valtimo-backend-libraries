@@ -183,6 +183,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
         file.put("type", "text/rtf");
         ObjectNode data = JsonNodeFactory.instance.objectNode();
         data.put("key", "test-736b4bfc-5ed0-4fac-a9c2-89629ccbe451.rtf");
+        data.put("resourceId", "736b4bfc-5ed0-4fac-a9c2-89629ccbe451");
         data.put("baseUrl", "http://localhost:4200");
         data.put("project", "");
         data.put("form", "");

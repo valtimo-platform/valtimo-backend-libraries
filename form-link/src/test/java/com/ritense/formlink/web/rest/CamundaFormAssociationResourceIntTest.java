@@ -39,6 +39,7 @@ import java.util.Collections;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -91,6 +92,22 @@ public class CamundaFormAssociationResourceIntTest extends BaseIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    public void shouldHavePermissionWithNoTaskIdSubmission() throws Exception {
+
+        final MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.put("processDefinitionKey", Collections.singletonList(PROCESS_DEFINITION_KEY));
+        parameters.put("formLinkId", Collections.singletonList("formLinkId"));
+        mockMvc.perform(
+            post("/api/form-association/form-definition/submission")
+                .params(parameters)
+                .content("{}")
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isBadRequest());
     }
 
 }

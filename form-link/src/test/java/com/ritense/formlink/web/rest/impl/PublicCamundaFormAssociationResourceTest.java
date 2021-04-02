@@ -47,6 +47,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -231,7 +232,7 @@ public class PublicCamundaFormAssociationResourceTest extends BaseIntegrationTes
 
     private void mockDocument() {
         final var jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("house");
-        final var jsonSchema = JsonSchema.fromResource(jsonSchemaDocumentDefinitionId.path());
+        final var jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
         final var definition = new JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema);
         var content = new JsonDocumentContent("{\"firstName\": \"John\"}");
         final JsonSchemaDocument.CreateDocumentResultImpl result = JsonSchemaDocument.create(
@@ -244,6 +245,10 @@ public class PublicCamundaFormAssociationResourceTest extends BaseIntegrationTes
 
         var document = result.resultingDocument().orElseThrow();
         doReturn(Optional.of(document)).when(documentService).findBy(any());
+    }
+
+    public URI path(String name) {
+        return URI.create(String.format("config/document/definition/%s.json", name + ".schema"));
     }
 
 }

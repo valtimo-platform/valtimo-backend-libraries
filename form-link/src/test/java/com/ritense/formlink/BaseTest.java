@@ -43,6 +43,7 @@ import io.jsonwebtoken.impl.DefaultClaims;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Objects;
@@ -169,7 +170,7 @@ public abstract class BaseTest {
 
     protected JsonSchemaDocumentDefinition definition() {
         final var jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("house");
-        final var jsonSchema = JsonSchema.fromResource(jsonSchemaDocumentDefinitionId.path());
+        final var jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
         return new JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema);
     }
 
@@ -205,6 +206,10 @@ public abstract class BaseTest {
             .addClaims(claims)
             .signWith(SignatureAlgorithm.HS512, key.getBytes(StandardCharsets.UTF_8))
             .compact();
+    }
+
+    public URI path(String name) {
+        return URI.create(String.format("config/document/definition/%s.json", name + ".schema"));
     }
 
 }
