@@ -34,6 +34,8 @@ interface ZaakTypeLinkService {
 
     fun createZaakTypeLink(request: CreateZaakTypeLinkRequest): CreateZaakTypeLinkResult
 
+    fun deleteZaakTypeLinkBy(documentDefinitionName: String)
+
     fun assignZaakInstance(id: ZaakTypeLinkId, zaakInstanceLink: ZaakInstanceLink): ZaakTypeLink
 
     fun assignServiceTaskHandler(zaakTypeLinkId: ZaakTypeLinkId, request: ServiceTaskHandlerRequest): CreateServiceTaskHandlerResult

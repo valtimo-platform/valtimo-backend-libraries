@@ -16,6 +16,9 @@
 
 package com.ritense.openzaak.service
 
+import com.ritense.openzaak.service.impl.model.ResultWrapper
+import com.ritense.openzaak.service.impl.model.catalogi.Catalogus
+import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
 import com.ritense.openzaak.service.impl.model.zaak.Eigenschap
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -42,4 +45,10 @@ interface ZaakService {
     fun setZaakResultaat(zaak: URI, resultaatType: URI)
 
     fun modifyEigenschap(zaakUrl: URI, zaakId: UUID, eigenschappen: Map<URI, String>)
+
+    fun getInformatieobjecttypes(catalogus: UUID): Collection<InformatieObjectType?>
+
+    fun getCatalogus(catalogus: UUID): Catalogus
+
+    fun getInformatieObjectTypen(catalogus: URI): ResultWrapper<InformatieObjectType>
 }

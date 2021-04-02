@@ -144,6 +144,8 @@ data class OpenZaakRequestBuilder(
         )
         val headers = HttpHeaders()
         headers.accept = listOf(MediaType.APPLICATION_JSON)
+        headers.set("Accept-Crs", "EPSG:4326")
+        headers.set("Content-Crs", "EPSG:4326")
         headers.setBearerAuth(generatedToken)
         return headers
     }
@@ -159,6 +161,7 @@ data class OpenZaakRequestBuilder(
         headers.set("Accept-Crs", "EPSG:4326")
         headers.set("Content-Crs", "EPSG:4326")
         headers.setBearerAuth(generatedToken)
+
         return headers
     }
 

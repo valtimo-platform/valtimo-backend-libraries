@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,24 @@
 
 package com.ritense.openzaak.repository
 
-import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
-import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
+import com.ritense.openzaak.domain.mapping.impl.InformatieObjectTypeLink
+import com.ritense.openzaak.domain.mapping.impl.InformatieObjectTypeLinkId
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
-interface ZaakTypeLinkRepository : JpaRepository<ZaakTypeLink, ZaakTypeLinkId> {
+interface InformatieObjectTypeLinkRepository: JpaRepository<InformatieObjectTypeLink, InformatieObjectTypeLinkId> {
 
-    fun findByDocumentDefinitionName(documentDefinitionName: String): ZaakTypeLink?
-
-    fun findByDocumentDefinitionNameIn(documentDefinitionNames: List<String>): List<ZaakTypeLink?>
+    fun findByDocumentDefinitionName(documentDefinitionName: String): InformatieObjectTypeLink?
 
     @Modifying
     @Query("" +
-            "   DELETE " +
-            "   FROM    ZaakTypeLink ztl " +
-            "   WHERE   ztl.documentDefinitionName = :documentDefinitionName "
+        "   DELETE " +
+        "   FROM    InformatieObjectTypeLink iotl " +
+        "   WHERE   iotl.documentDefinitionName = :documentDefinitionName "
     )
     fun deleteByDocumentDefinitionName(
         @Param("documentDefinitionName") documentDefinitionName: String
     )
-
 }

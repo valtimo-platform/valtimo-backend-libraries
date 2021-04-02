@@ -49,6 +49,9 @@ interface ZaakTypeLinkResource {
     @PostMapping
     fun create(@Valid @RequestBody request: CreateZaakTypeLinkRequest): ResponseEntity<CreateZaakTypeLinkResult>
 
+    @DeleteMapping(value = ["/{documentDefinitionName}"])
+    fun remove(@PathVariable(name = "documentDefinitionName") documentDefinitionName: String): ResponseEntity<ZaakTypeLink?>
+
     @PostMapping(value = ["/{id}/service-handler"])
     fun createServiceTaskHandler(
         @PathVariable(name = "id") id: UUID,

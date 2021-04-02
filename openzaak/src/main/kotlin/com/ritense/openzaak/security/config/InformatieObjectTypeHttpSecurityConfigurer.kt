@@ -19,27 +19,18 @@ package com.ritense.openzaak.security.config
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
-import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
-import org.springframework.http.HttpMethod.POST
-import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
-class ZaakTypeLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
+class InformatieObjectTypeHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/openzaak/link").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/openzaak/link").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/openzaak/link/{id}/service-handler/{serviceTaskId}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/openzaak/link/process/{processDefinitionKey}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/openzaak/informatie-object-typen/{catalogus}").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
     }
+
 }

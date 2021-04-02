@@ -38,6 +38,7 @@ import org.mockito.MockitoAnnotations
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestTemplate
+import java.net.URI
 import java.util.Optional
 import java.util.UUID
 
@@ -99,7 +100,7 @@ abstract class BaseTest {
 
     private fun definition(): JsonSchemaDocumentDefinition {
         val jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("house")
-        val jsonSchema = JsonSchema.fromResource(jsonSchemaDocumentDefinitionId.path())
+        val jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()))
         return JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema)
     }
 
@@ -107,6 +108,10 @@ abstract class BaseTest {
         val header = HttpHeaders()
         header.contentType = MediaType.APPLICATION_JSON
         return header
+    }
+
+    open fun path(name: String): URI {
+        return URI.create(String.format("config/document/definition/%s.json", "$name.schema"))
     }
 
 }
