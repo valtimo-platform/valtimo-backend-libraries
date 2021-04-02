@@ -15,7 +15,6 @@
  */
 
 package com.ritense.audit.service.impl;
-
 import com.ritense.audit.BaseIntegrationTest;
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.domain.event.TestEvent;
