@@ -16,7 +16,12 @@
 
 package com.ritense.resource.service
 
+import com.ritense.openzaak.service.impl.DocumentenService
+import com.ritense.resource.domain.OpenZaakResource
+import com.ritense.resource.domain.ResourceId
+import com.ritense.resource.repository.OpenZaakResourceRepository
 import com.ritense.resource.service.request.FileUploadRequest
+import com.ritense.resource.service.request.MultipartFileUploadRequest
 import com.ritense.resource.web.ObjectContentDTO
 import com.ritense.resource.web.ObjectUrlDTO
 import com.ritense.resource.web.ResourceDTO
@@ -24,9 +29,13 @@ import com.ritense.valtimo.contract.resource.FileStatus
 import com.ritense.valtimo.contract.resource.Resource
 import org.springframework.web.multipart.MultipartFile
 import java.net.URL
+import java.time.LocalDateTime
 import java.util.UUID
 
-class LocalResourceService : ResourceService {
+class OpenZaakService(
+    val documentenService: DocumentenService,
+    val openZaakResourceRepository: OpenZaakResourceRepository
+): ResourceService {
 
     override fun store(key: String, multipartFile: MultipartFile): Resource {
         TODO("Not yet implemented")
@@ -36,8 +45,21 @@ class LocalResourceService : ResourceService {
         TODO("Not yet implemented")
     }
 
-    override fun store(documentDefinitionName: String, name: String, multipartFile: MultipartFile): Resource {
-        TODO("Not yet implemented")
+    override fun store(documentDefinitionName: String, name: String, multipartFile: MultipartFile): OpenZaakResource {
+        val informatieObjectUrl =
+            documentenService.createEnkelvoudigInformatieObject(documentDefinitionName, multipartFile)
+
+        val uploadRequest = MultipartFileUploadRequest.from(multipartFile)
+
+        val openZaakResource = OpenZaakResource(
+            ResourceId.newId(UUID.randomUUID()),
+            informatieObjectUrl,
+            name,
+            uploadRequest.getExtension(),
+            uploadRequest.getSize(),
+            LocalDateTime.now()
+        )
+        return openZaakResourceRepository.saveAndFlush(openZaakResource)
     }
 
     override fun store(key: String, fileUploadRequest: FileUploadRequest): Resource {
@@ -72,8 +94,8 @@ class LocalResourceService : ResourceService {
         TODO("Not yet implemented")
     }
 
-    override fun getResource(id: UUID): Resource {
-        TODO("Not yet implemented")
+    override fun getResource(id: UUID): OpenZaakResource {
+        return openZaakResourceRepository.findById(ResourceId.existingId(id)).orElseThrow()
     }
 
     override fun getResourceByKey(fileName: String): Resource {
