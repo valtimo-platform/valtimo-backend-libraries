@@ -1,0 +1,13 @@
+{
+    "$id": "rhino.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Rhino",
+    "type": "object",
+    "properties": {
+        "age": {
+            "description": "The age.",
+            "type": "string",
+            "maxLength": 100
+        }
+    }
+}
