@@ -23,19 +23,25 @@ import java.util.UUID;
 public class DocumentRelatedFileSubmittedEvent {
 
     private final UUID documentId;
-    private final String fileName;
+    private final UUID resourceId;
+    private final String documentDefinitionName;
 
     @JsonCreator
-    public DocumentRelatedFileSubmittedEvent(UUID documentId, String fileName) {
+    public DocumentRelatedFileSubmittedEvent(UUID documentId, UUID resourceId, String documentDefinitionName) {
         this.documentId = documentId;
-        this.fileName = fileName;
+        this.resourceId = resourceId;
+        this.documentDefinitionName = documentDefinitionName;
     }
 
     public UUID getDocumentId() {
         return documentId;
     }
 
-    public String getFileName() {
-        return fileName;
+    public UUID getResourceId() {
+        return resourceId;
+    }
+
+    public String getDocumentDefinitionName() {
+        return documentDefinitionName;
     }
 }
