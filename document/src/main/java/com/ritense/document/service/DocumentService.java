@@ -49,4 +49,6 @@ public interface DocumentService {
 
     void removeRelatedFile(Document.Id documentId, UUID fileId);
 
+    void removeDocuments(String documentDefinitionName);
+
 }

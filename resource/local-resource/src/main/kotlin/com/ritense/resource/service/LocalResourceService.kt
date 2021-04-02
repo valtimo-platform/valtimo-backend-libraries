@@ -27,11 +27,16 @@ import java.net.URL
 import java.util.UUID
 
 class LocalResourceService : ResourceService {
+
     override fun store(key: String, multipartFile: MultipartFile): Resource {
         TODO("Not yet implemented")
     }
 
     override fun store(key: String, multipartFile: MultipartFile, fileStatus: FileStatus): Resource {
+        TODO("Not yet implemented")
+    }
+
+    override fun store(documentDefinitionName: String, name: String, multipartFile: MultipartFile): Resource {
         TODO("Not yet implemented")
     }
 
@@ -71,7 +76,7 @@ class LocalResourceService : ResourceService {
         TODO("Not yet implemented")
     }
 
-    override fun getResourceByFileName(fileName: String): Resource {
+    override fun getResourceByKey(fileName: String): Resource {
         TODO("Not yet implemented")
     }
 

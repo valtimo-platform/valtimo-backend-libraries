@@ -23,6 +23,7 @@ import com.ritense.form.domain.FormIoFormDefinition;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
@@ -46,17 +47,21 @@ public abstract class BaseTest {
     }
 
     protected FormIoFormDefinition formDefinitionOf(String formDefinitionId) throws IOException {
-        String s = IOUtils.toString(
+        var s = IOUtils.toString(
             Thread.currentThread().getContextClassLoader().getResourceAsStream("config/form/" + formDefinitionId + ".json"),
-            StandardCharsets.UTF_8);
-
+            StandardCharsets.UTF_8
+        );
         return new FormIoFormDefinition(UUID.randomUUID(), "form-example", s, false);
     }
 
     protected JsonSchemaDocumentDefinition definition() {
         final JsonSchemaDocumentDefinitionId jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("person");
-        final JsonSchema jsonSchema = JsonSchema.fromResource(jsonSchemaDocumentDefinitionId.path());
+        final JsonSchema jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
         return new JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema);
+    }
+
+    public URI path(String name) {
+        return URI.create(String.format("config/document/definition/%s.json", name + ".schema"));
     }
 
 }

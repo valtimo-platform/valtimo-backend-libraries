@@ -25,6 +25,7 @@ import com.ritense.processdocument.domain.impl.delegate.DocumentVariableDelegate
 import com.ritense.processdocument.domain.impl.delegate.ProcessDocumentStartEventMessageDelegateImpl;
 import com.ritense.processdocument.domain.impl.listener.StartEventFromCallActivityListenerImpl;
 import com.ritense.processdocument.domain.impl.listener.StartEventListenerImpl;
+import com.ritense.processdocument.domain.impl.listener.UndeployDocumentDefinitionEventListener;
 import com.ritense.processdocument.domain.listener.StartEventFromCallActivityListener;
 import com.ritense.processdocument.domain.listener.StartEventListener;
 import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
@@ -125,6 +126,18 @@ public class ProcessDocumentAutoConfiguration {
         ApplicationEventPublisher applicationEventPublisher
     ) {
         return new StartEventListenerImpl(processDocumentService, processDocumentAssociationService, applicationEventPublisher);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(UndeployDocumentDefinitionEventListener.class)
+    public UndeployDocumentDefinitionEventListener undeployDocumentDefinitionEventListener(
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        CamundaProcessService camundaProcessService
+    ) {
+        return new UndeployDocumentDefinitionEventListener(
+            processDocumentAssociationService,
+            camundaProcessService
+        );
     }
 
     @Bean

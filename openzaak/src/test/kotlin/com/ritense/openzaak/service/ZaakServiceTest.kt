@@ -26,12 +26,16 @@ import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinks
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.service.impl.ZaakService
+import com.ritense.openzaak.service.impl.model.ResultWrapper
+import com.ritense.openzaak.service.impl.model.catalogi.Catalogus
+import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
+import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers.contains
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -43,10 +47,11 @@ import java.util.UUID
 class ZaakServiceTest : BaseTest() {
 
     private val UUID_STRING = "91e750e1-53ab-4922-9979-6a2dacd009cf"
-
     val zaaktypeLinkId = ZaakTypeLinkId.existingId(UUID.randomUUID())
-
     val zaakType = URI.create("http://example.com")
+    val catalogusUuid = UUID.randomUUID()
+    val informatieobjecttype = URI.create("http://informatieobjecttypeUri.com")
+    val informatieobjecttype1 = URI.create("http://informatieobjecttype2Uri.com")
 
     @BeforeEach
     fun setUp() {
@@ -60,7 +65,7 @@ class ZaakServiceTest : BaseTest() {
                 ServiceTaskHandlers()
             )
         )
-        httpZaakCreated()
+
         zaakService = ZaakService(
             restTemplate,
             openZaakConfigService,
@@ -77,6 +82,8 @@ class ZaakServiceTest : BaseTest() {
             .withProcessBusinessKey(document.id!!.id.toString())
 
         //when
+        httpZaakCreated()
+
         zaakService.createZaakWithLink(delegateExecutionFake)
 
         //then
@@ -84,6 +91,29 @@ class ZaakServiceTest : BaseTest() {
             eq(zaaktypeLinkId),
             eq(ZaakInstanceLink(URI.create("http://example.com"), UUID.fromString(UUID_STRING), document.id!!.id))
         )
+    }
+
+    @Test
+    fun `should get list of informatieobjecttype`() {
+        httpGetCatalogus()
+        httpGetInformatieObjectTypen()
+
+        val informatieobjecttypes = zaakService.getInformatieobjecttypes(catalogusUuid)
+
+        assertThat(informatieobjecttypes).isNotEmpty
+    }
+
+    @Test
+    fun `should get catalogus`() {
+        httpGetCatalogus()
+
+        val catalogus = zaakService.getCatalogus(catalogusUuid)
+
+        assertThat(catalogus).isNotNull
+        assertThat(catalogus.domein).isNotEmpty
+        assertThat(catalogus.rsin).isNotEmpty
+        assertThat(catalogus.informatieobjecttypen).contains(informatieobjecttype)
+        assertThat(catalogus.informatieobjecttypen).contains(informatieobjecttype1)
     }
 
     private fun httpZaakCreated() {
@@ -100,12 +130,64 @@ class ZaakServiceTest : BaseTest() {
             httpHeaders(),
             HttpStatus.OK
         )
-        whenever(restTemplate.exchange(
-            anyString(),
-            any(HttpMethod::class.java),
-            any(HttpEntity::class.java),
-            any(ParameterizedTypeReference::class.java)
-        )).thenReturn(responseEntity)
+        whenever(
+            restTemplate.exchange(
+                contains("zaken/api/v1/zaken"),
+                any(HttpMethod::class.java),
+                any(HttpEntity::class.java),
+                any(ParameterizedTypeReference::class.java)
+            )
+        ).thenReturn(responseEntity)
+    }
+
+    private fun httpGetCatalogus() {
+        val responseEntity = ResponseEntity(
+            Catalogus(
+                URI.create("http://catalogusUri.com"),
+                "domein",
+                "rsin",
+                listOf(
+                    informatieobjecttype,
+                    informatieobjecttype1
+                )
+            ),
+            httpHeaders(),
+            HttpStatus.OK
+        )
+        whenever(
+            restTemplate.exchange(
+                contains("catalogi/api/v1/catalogussen/"),
+                any(HttpMethod::class.java),
+                any(HttpEntity::class.java),
+                any(ParameterizedTypeReference::class.java)
+            )
+        ).thenReturn(responseEntity)
+    }
+
+    private fun httpGetInformatieObjectTypen() {
+        val responseEntity = ResponseEntity(
+            ResultWrapper(
+                1,
+                null,
+                null,
+                listOf(
+                    InformatieObjectType(
+                        URI.create("http://url.com"),
+                        "omschrijving"
+                    )
+                )
+            ),
+            httpHeaders(),
+            HttpStatus.OK
+        )
+        whenever(
+            restTemplate.exchange(
+                contains("catalogi/api/v1/informatieobjecttypen"),
+                any(HttpMethod::class.java),
+                any(HttpEntity::class.java),
+                any(ParameterizedTypeReference::class.java)
+            )
+        ).thenReturn(responseEntity)
     }
 
 }

@@ -37,8 +37,8 @@ public class JsonSchemaDocumentVersionTest extends BaseTest {
         var content = new JsonDocumentContent("{\"firstName\": \"John\"}");
         var document = createDocument(definition, content).resultingDocument().orElseThrow();
 
-        JsonSchemaDocumentVersion version = document.version();
-        JsonSchemaDocumentVersion versionPrecomputed = JsonSchemaDocumentVersion.from(version.toString());
+        var version = document.version();
+        var versionPrecomputed = JsonSchemaDocumentVersion.from(version.toString());
 
         assertEquals(version.toString(), versionPrecomputed.toString());
         assertEquals(version, versionPrecomputed);
@@ -50,8 +50,12 @@ public class JsonSchemaDocumentVersionTest extends BaseTest {
         var document = createDocument(definition, content).resultingDocument().orElseThrow();
         var origVersion = document.version();
 
-        JsonDocumentContent updatedContent = new JsonDocumentContent("{\"firstName\": \"Paul\"}");
-        document.applyModifiedContent(updatedContent, document.version()); // keep in mind: document is mutable (immutable objects pattern not applicable due to JPA)
+        var updatedContent = new JsonDocumentContent("{\"firstName\": \"Paul\"}");
+        document.applyModifiedContent(
+            updatedContent,
+            definition,
+            document.version()
+        ); // keep in mind: document is mutable (immutable objects pattern not applicable due to JPA)
 
         assertNotEquals(origVersion, document.version());
     }
@@ -61,8 +65,8 @@ public class JsonSchemaDocumentVersionTest extends BaseTest {
         var contentA = new JsonDocumentContent("{\"obj_1\":{\"obj_2\":{\"q_1\":\"a\",\"a_1\":\"a\",\"a\":[3, 2, 1]}}}");
         var contentB = new JsonDocumentContent("{\"obj_1\":{\"obj_2\":{\"a_1\":\"a\",\"q_1\":\"a\",\"a\":[3, 2, 1]}}}");
 
-        var documentA = createDocument(definition, contentA).resultingDocument().get();
-        var documentB = createDocument(definition, contentB).resultingDocument().get();
+        var documentA = createDocument(definition, contentA).resultingDocument().orElseThrow();
+        var documentB = createDocument(definition, contentB).resultingDocument().orElseThrow();
 
         assertEquals(documentA.version(), documentB.version());
     }
@@ -72,9 +76,10 @@ public class JsonSchemaDocumentVersionTest extends BaseTest {
         var contentA = new JsonDocumentContent("{\"obj_1\":{\"obj_2\":{\"q_1\":\"a\",\"a_1\":\"a\",\"a\":[1, 2, 3]}}}");
         var contentB = new JsonDocumentContent("{\"obj_1\":{\"obj_2\":{\"q_1\":\"a\",\"a_1\":\"a\",\"a\":[3, 2, 1]}}}");
 
-        var documentA = createDocument(definition, contentA).resultingDocument().get();
-        var documentB = createDocument(definition, contentB).resultingDocument().get();
+        var documentA = createDocument(definition, contentA).resultingDocument().orElseThrow();
+        var documentB = createDocument(definition, contentB).resultingDocument().orElseThrow();
 
         assertNotEquals(documentA.version(), documentB.version());
     }
+
 }

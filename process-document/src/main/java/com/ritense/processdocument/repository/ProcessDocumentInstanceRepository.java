@@ -21,6 +21,7 @@ import com.ritense.processdocument.domain.ProcessDocumentInstanceId;
 import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstance;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -35,6 +36,13 @@ public interface ProcessDocumentInstanceRepository extends JpaRepository<Camunda
         "    FROM    CamundaProcessJsonSchemaDocumentInstance pdi " +
         "    WHERE   pdi.processDocumentInstanceId.documentId = :documentId ")
     List<CamundaProcessJsonSchemaDocumentInstance> findAllByDocumentId(@Param("documentId") Document.Id documentId);
+
+    @Modifying
+    @Query(" DELETE " +
+        "    FROM    CamundaProcessJsonSchemaDocumentInstance pdi " +
+        "    WHERE   pdi.processName = :processName ")
+    void deleteAllByProcessName(@Param("processName") String processName);
+
 
     @Query(" SELECT  pdi " +
         "    FROM    CamundaProcessJsonSchemaDocumentInstance pdi " +

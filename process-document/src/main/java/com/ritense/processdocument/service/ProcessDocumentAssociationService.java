@@ -45,11 +45,15 @@ public interface ProcessDocumentAssociationService {
 
     List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName);
 
+    Optional<? extends  ProcessDocumentDefinition> findByDocumentDefinitionName(String documentDefinitionName);
+
     Optional<? extends ProcessDocumentInstance> findProcessDocumentInstance(ProcessDocumentInstanceId processDocumentInstanceId);
 
     Optional<? extends ProcessDocumentInstance> findProcessDocumentInstance(ProcessInstanceId processInstanceId);
 
     List<? extends ProcessDocumentInstance> findProcessDocumentInstances(Document.Id documentId);
+
+    void deleteProcessDocumentInstances(String processName);
 
     FunctionResult<? extends ProcessDocumentDefinition, OperationError> getProcessDocumentDefinitionResult(
         ProcessDocumentDefinitionId processDocumentDefinitionId
@@ -64,6 +68,8 @@ public interface ProcessDocumentAssociationService {
     );
 
     void deleteProcessDocumentDefinition(ProcessDocumentDefinitionRequest processDocumentDefinitionRequest);
+
+    void deleteProcessDocumentDefinition(String documentDefititionName);
 
     Optional<? extends ProcessDocumentInstance> createProcessDocumentInstance(
         String processInstanceId,

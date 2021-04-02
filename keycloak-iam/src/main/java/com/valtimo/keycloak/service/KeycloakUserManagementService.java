@@ -23,8 +23,9 @@ import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCrite
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import lombok.AllArgsConstructor;
+import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -65,17 +66,19 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public Page<ManageableUser> getAllUsers(Pageable pageable) {
-        List<ManageableUser> users = keycloakService.usersResource().list().stream().map(
-            user -> new ValtimoUserBuilder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .roles(user.getRealmRoles()).build()
-        ).collect(Collectors.toList());
+        return null;
+    }
 
-        return new PageImpl<>(users);
+    public Integer countUsers() {
+        return keycloakService.usersResource().count();
+    }
+
+    @Override
+    public List<ManageableUser> getAllUsers() {
+        return keycloakService.usersResource().list().stream()
+            .filter(UserRepresentation::isEnabled)
+            .map(this::userRepresentationToManagableUser)
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -85,25 +88,25 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public Optional<ManageableUser> findByEmail(String email) {
-        return Optional.empty();
+        var userList = keycloakService
+            .usersResource()
+            .search(null, null, null, email, 0, 1, true, true);
+
+        return userList.isEmpty() ? Optional.empty() : Optional.of(userRepresentationToManagableUser(userList.get(0)));
     }
 
     @Override
     public ValtimoUser findById(String userId) {
-        return null;
+        var user = keycloakService.usersResource().get(userId).toRepresentation();
+        return user.isEnabled() ? userRepresentationToValtimoUser(user) : null;
     }
 
     @Override
     public List<ManageableUser> findByRole(String authority) {
-        return keycloakService.rolesResource().get(authority).getRoleUserMembers().stream().map(
-            user -> new ValtimoUserBuilder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .roles(user.getRealmRoles()).build()
-        ).collect(Collectors.toList());
+        return keycloakService.rolesResource().get(authority).getRoleUserMembers().stream()
+            .filter(UserRepresentation::isEnabled)
+            .map(this::userRepresentationToManagableUser)
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -111,4 +114,32 @@ public class KeycloakUserManagementService implements UserManagementService {
         return null;
     }
 
+    private ManageableUser userRepresentationToManagableUser(UserRepresentation userRepresentation) {
+        return new ValtimoUserBuilder()
+            .id(userRepresentation.getId())
+            .username(userRepresentation.getUsername())
+            .firstName(userRepresentation.getFirstName())
+            .lastName(userRepresentation.getLastName())
+            .email(userRepresentation.getEmail())
+            .roles(getRolesAsStringFromUser(userRepresentation))
+            .build();
+    }
+
+    private List<String> getRolesAsStringFromUser(UserRepresentation userRepresentation) {
+        return getRolesFromUser(userRepresentation)
+            .stream()
+            .map(RoleRepresentation::getName)
+            .collect(Collectors.toList());
+    }
+
+    private List<RoleRepresentation> getRolesFromUser(UserRepresentation userRepresentation) {
+        return keycloakService
+            .usersResource()
+            .get(userRepresentation.getId())
+            .roles().realmLevel().listAll();
+    }
+
+    private ValtimoUser userRepresentationToValtimoUser(UserRepresentation userRepresentation) {
+        return (ValtimoUser) userRepresentationToManagableUser(userRepresentation);
+    }
 }

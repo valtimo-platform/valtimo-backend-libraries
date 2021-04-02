@@ -46,6 +46,17 @@ public class FormIoFormFileResource implements FormFileResource {
     }
 
     @Override
+    @PostMapping(value = "/form-file/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<? extends Resource> uploadOpenZaakFile(
+        @RequestParam("documentDefinitionName") String documentDefinitionName,
+        @RequestParam("name") String fileName,
+        @RequestParam("file") MultipartFile file
+    ) {
+        Resource storedResource = resourceService.store(documentDefinitionName, fileName, file);
+        return ResponseEntity.ok(storedResource);
+    }
+
+    @Override
     @GetMapping(value = "/form-file")
     public RedirectView getFile(@RequestParam("form") String fileName) {
         return new RedirectView(

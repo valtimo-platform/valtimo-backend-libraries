@@ -16,6 +16,8 @@
 
 package com.ritense.openzaak.autoconfigure
 
+import com.ritense.openzaak.security.config.InformatieObjectTypeHttpSecurityConfigurer
+import com.ritense.openzaak.security.config.InformatieObjectTypeLinkHttpSecurityConfigurer
 import com.ritense.openzaak.security.config.OpenZaakConfigHttpSecurityConfigurer
 import com.ritense.openzaak.security.config.ResultaatHttpSecurityConfigurer
 import com.ritense.openzaak.security.config.StatusHttpSecurityConfigurer
@@ -62,6 +64,20 @@ class OpenZaakSecurityAutoConfiguration {
     @ConditionalOnMissingBean(ZaakTypeHttpSecurityConfigurer::class)
     fun zaakTypeHttpSecurityConfigurer(): ZaakTypeHttpSecurityConfigurer {
         return ZaakTypeHttpSecurityConfigurer()
+    }
+
+    @Bean
+    @Order(270)
+    @ConditionalOnMissingBean(InformatieObjectTypeHttpSecurityConfigurer::class)
+    fun informatieObjectTypeHttpSecurityConfigurer(): InformatieObjectTypeHttpSecurityConfigurer {
+        return InformatieObjectTypeHttpSecurityConfigurer()
+    }
+
+    @Bean
+    @Order(270)
+    @ConditionalOnMissingBean(InformatieObjectTypeLinkHttpSecurityConfigurer::class)
+    fun informatieObjectTypeLinkHttpSecurityConfigurer(): InformatieObjectTypeLinkHttpSecurityConfigurer {
+        return InformatieObjectTypeLinkHttpSecurityConfigurer()
     }
 
 }

@@ -39,6 +39,8 @@ public interface UserManagementService {
 
     Page<ManageableUser> getAllUsers(Pageable pageable);
 
+    List<ManageableUser> getAllUsers();
+
     Page<ManageableUser> queryUsers(String searchTerm, Pageable pageable);
 
     Optional<ManageableUser> findByEmail(String email);

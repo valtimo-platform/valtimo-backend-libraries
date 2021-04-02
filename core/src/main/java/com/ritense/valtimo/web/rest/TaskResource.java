@@ -21,6 +21,7 @@ import com.ritense.valtimo.repository.camunda.dto.TaskExtended;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
+import com.ritense.valtimo.service.request.AssigneeRequest;
 import com.ritense.valtimo.web.rest.dto.BatchAssignTaskDTO;
 import com.ritense.valtimo.web.rest.dto.CustomTaskDto;
 import com.ritense.valtimo.web.rest.dto.TaskCompletionDTO;
@@ -81,8 +82,8 @@ public class TaskResource extends AbstractTaskResource {
     }
 
     @PostMapping(value = "/task/{taskId}/assign")
-    public ResponseEntity<Void> assign(@PathVariable String taskId, @RequestBody String assignee) {
-        camundaTaskService.assign(taskId, assignee);
+    public ResponseEntity<Void> assign(@PathVariable String taskId, @RequestBody AssigneeRequest assigneeRequest) {
+        camundaTaskService.assign(taskId, assigneeRequest.getAssignee());
         return ResponseEntity.ok().build();
     }
 

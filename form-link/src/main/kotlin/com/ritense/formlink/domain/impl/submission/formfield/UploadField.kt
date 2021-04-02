@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent
 import org.springframework.context.ApplicationEventPublisher
+import java.util.UUID
 
 /**
  * Upload field class to perform additional processing when submission has files.
@@ -64,10 +65,10 @@ data class UploadField(
         val document = documentSupplier()
         if (document != null) {
             value.forEach {
-                val fileName = getFileName(it)
-                logger.debug { "file $fileName" }
+                val resourceId = getResourceId(it)
+                logger.debug { "file $resourceId" }
                 applicationEventPublisher.publishEvent(
-                    DocumentRelatedFileSubmittedEvent(document.id()?.id, fileName)
+                    DocumentRelatedFileSubmittedEvent(document.id()?.id, resourceId, document.definitionId().name())
                 )
             }
             processed = true
@@ -83,10 +84,10 @@ data class UploadField(
         val document = documentSupplier()
         if (document != null) {
             value.forEach {
-                val fileName = getFileName(it)
-                logger.debug { "file $fileName" }
+                val resourceId = getResourceId(it)
+                logger.debug { "file $resourceId" }
                 applicationEventPublisher.publishEvent(
-                    DocumentRelatedFileSubmittedEvent(document.id()?.id, fileName)
+                    DocumentRelatedFileSubmittedEvent(document.id()?.id, resourceId, document.definitionId().name())
                 )
             }
             processed = true
@@ -94,8 +95,8 @@ data class UploadField(
     }
 
     companion object {
-        private fun getFileName(fileSchema: JsonNode): String {
-            return fileSchema.at("/data/key").asText()
+        private fun getResourceId(fileSchema: JsonNode): UUID {
+            return UUID.fromString(fileSchema.at("/data/resourceId").asText())
         }
     }
 

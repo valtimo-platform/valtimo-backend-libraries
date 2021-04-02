@@ -37,9 +37,11 @@ import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.contract.result.OperationError
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import javax.validation.ConstraintViolationException
 
+@Transactional
 class ZaakTypeLinkService(
     private val zaakTypeLinkRepository: ZaakTypeLinkRepository,
     private val processDocumentAssociationService: ProcessDocumentAssociationService
@@ -50,7 +52,9 @@ class ZaakTypeLinkService(
     }
 
     fun getByProcess(processDefinitionKey: String): List<ZaakTypeLink?> {
-        val processDocumentDefinitions = processDocumentAssociationService.findAllProcessDocumentDefinitions(CamundaProcessDefinitionKey(processDefinitionKey))
+        val processDocumentDefinitions = processDocumentAssociationService.findAllProcessDocumentDefinitions(
+            CamundaProcessDefinitionKey(processDefinitionKey)
+        )
         if (processDocumentDefinitions.isNotEmpty()) {
             val documentDefinitionsNames = processDocumentDefinitions
                 .map { it.processDocumentDefinitionId().documentDefinitionId().name() }.toList()
@@ -88,6 +92,10 @@ class ZaakTypeLinkService(
         } catch (ex: RuntimeException) {
             CreateZaakTypeLinkResultFailed(listOf(OperationError.FromException(ex)))
         }
+    }
+
+    override fun deleteZaakTypeLinkBy(documentDefinitionName: String) {
+        zaakTypeLinkRepository.deleteByDocumentDefinitionName(documentDefinitionName)
     }
 
     override fun assignZaakInstance(id: ZaakTypeLinkId, zaakInstanceLink: ZaakInstanceLink): ZaakTypeLink {

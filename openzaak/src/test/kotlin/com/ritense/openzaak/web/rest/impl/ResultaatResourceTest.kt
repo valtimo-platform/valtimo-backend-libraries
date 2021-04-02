@@ -78,7 +78,7 @@ class ResultaatResourceTest : BaseTest() {
             ResultaatType.Afleidingswijze.afgehandeld,
             "datumkenmerk",
             true,
-            ResultaatType.Objecttype.adres,
+            "adres",
             "registratie",
             "procestermijn"
         )

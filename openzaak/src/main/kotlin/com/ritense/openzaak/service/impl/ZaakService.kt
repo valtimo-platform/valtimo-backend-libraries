@@ -22,6 +22,9 @@ import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.openzaak.service.impl.ZaakService.Constants.Companion.DATE_PATTERN
 import com.ritense.openzaak.service.impl.ZaakService.Constants.Companion.DATE_TIME_FORMAT
+import com.ritense.openzaak.service.impl.model.ResultWrapper
+import com.ritense.openzaak.service.impl.model.catalogi.Catalogus
+import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
 import com.ritense.openzaak.service.impl.model.zaak.Eigenschap
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -136,6 +139,28 @@ class ZaakService(
                 .build()
                 .execute(Map::class.java)
         }
+    }
+
+    override fun getInformatieobjecttypes(catalogus: UUID): Collection<InformatieObjectType?> {
+        val catalogusUrl = getCatalogus(catalogus).url
+        return getInformatieObjectTypen(catalogusUrl).results
+    }
+
+    override fun getCatalogus(catalogus: UUID): Catalogus {
+        return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
+            .path("catalogi/api/v1/catalogussen/$catalogus")
+            .get()
+            .build()
+            .execute(Catalogus::class.java)
+    }
+
+    override fun getInformatieObjectTypen(catalogus: URI): ResultWrapper<InformatieObjectType> {
+        return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
+            .path("catalogi/api/v1/informatieobjecttypen")
+            .queryParams(mapOf("catalogus" to catalogus.toString()))
+            .get()
+            .build()
+            .executeWrapped(InformatieObjectType::class.java)
     }
 
     class Constants {

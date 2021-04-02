@@ -23,7 +23,6 @@ import com.ritense.document.domain.DocumentContent;
 import com.ritense.document.domain.impl.meta.MetaJsonSchemaV7Draft;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.io.IOUtils;
 import org.everit.json.schema.ReadWriteContext;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.Validator;
@@ -31,13 +30,13 @@ import org.everit.json.schema.loader.SchemaClient;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.annotation.Transient;
 import org.springframework.util.StreamUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -73,23 +72,17 @@ public final class JsonSchema {
         return new JsonSchema(schema);
     }
 
-    public static JsonSchema fromResource(URI resource) {
-        assertArgumentNotNull(resource, "resource is required");
+    public static JsonSchema fromResourceUri(URI resourceUri) {
+        assertArgumentNotNull(resourceUri, "resourceUri is required");
         try {
-            final String rawJson = getResourceAsString(resource.toString());
+            var classPathResource = new ClassPathResource(resourceUri.getPath());
+            var rawJson = StreamUtils.copyToString(classPathResource.getInputStream(), StandardCharsets.UTF_8);
             return new JsonSchema(rawJson);
         } catch (IOException ex) {
-            throw new RuntimeException("Cannot build schema from resource", ex);
-        }
-    }
-
-    public static JsonSchema fromStream(InputStream stream) {
-        assertArgumentNotNull(stream, "stream is required");
-        try {
-            final String rawJson = StreamUtils.copyToString(stream, StandardCharsets.UTF_8);
-            return new JsonSchema(rawJson);
-        } catch (IOException ex) {
-            throw new RuntimeException("Cannot build schema from stream", ex);
+            throw new RuntimeException(
+                String.format("Cannot build schema from resource %s", resourceUri.toString()),
+                ex
+            );
         }
     }
 
@@ -138,14 +131,6 @@ public final class JsonSchema {
     @Override
     public int hashCode() {
         return Objects.hash(getSchema());
-    }
-
-    private static String getResourceAsString(String resource) throws IOException {
-        return IOUtils.toString(getResourceAsStream(resource));
-    }
-
-    private static InputStream getResourceAsStream(String resource) {
-        return Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
     }
 
 }

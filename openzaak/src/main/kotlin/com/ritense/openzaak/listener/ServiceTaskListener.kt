@@ -37,10 +37,11 @@ open class ServiceTaskListener(
         val processBusinessKey = execution.processBusinessKey
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(processBusinessKey))
         val document = documentService.findBy(documentId).orElseThrow()
-        val zaakTypeLink = zaakTypeLinkService.get(document.definition().id().name())
+        val zaakTypeLink = zaakTypeLinkService.get(document.definitionId().name())
         if (zaakTypeLink != null) {
             zaakTypeLink.handleServiceTask(execution, documentId.id)
             zaakTypeLinkService.modify(zaakTypeLink)
         }
     }
+
 }

@@ -19,6 +19,7 @@ package com.ritense.document.web.rest;
 import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.service.impl.JsonSchemaDocumentSnapshotService;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSnapshotResource;
@@ -54,6 +55,7 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
     private JsonSchemaDocument document;
     private JsonSchemaDocumentSnapshot documentSnapshot;
     private Page<JsonSchemaDocumentSnapshot> documentSnapshotPage;
+    private JsonSchemaDocumentDefinition documentDefinition;
 
     @BeforeEach
     public void setUp() {
@@ -65,7 +67,8 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
             .build();
 
         document = createDocument(new JsonDocumentContent("{\"street\": \"Funenpark\"}"));
-        documentSnapshot = new JsonSchemaDocumentSnapshot(document, LocalDateTime.now(), "user");
+        documentDefinition = definition();
+        documentSnapshot = new JsonSchemaDocumentSnapshot(document, LocalDateTime.now(), "user", documentDefinition);
         documentSnapshotPage = new PageImpl<>(List.of(documentSnapshot), Pageable.unpaged(), 1);
     }
 
@@ -85,11 +88,16 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
 
     @Test
     public void shouldReturnOkWithDocumentSnapshotPage() throws Exception {
-        LocalDateTime fromDateTime = LocalDateTime.now().minusYears(1);
-        LocalDateTime toDateTime = LocalDateTime.now().plusYears(1);
+        var fromDateTime = LocalDateTime.now().minusYears(1);
+        var toDateTime = LocalDateTime.now().plusYears(1);
 
-        when(documentSnapshotService.getDocumentSnapshots(eq(document.definitionId().name()), eq(documentSnapshot.document().id()), eq(fromDateTime), eq(toDateTime), any()))
-            .thenReturn(documentSnapshotPage);
+        when(documentSnapshotService.getDocumentSnapshots(
+            eq(document.definitionId().name()),
+            eq(documentSnapshot.document().id()),
+            eq(fromDateTime),
+            eq(toDateTime),
+            any())
+        ).thenReturn(documentSnapshotPage);
 
         mockMvc.perform(get("/api/document-snapshot/")
             .param("definitionName", document.definitionId().name())

@@ -32,6 +32,7 @@ class ZaakTypeLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
                 .antMatchers(POST, "/api/openzaak/link").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/openzaak/link").hasAuthority(ADMIN)
                 .antMatchers(POST, "/api/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)

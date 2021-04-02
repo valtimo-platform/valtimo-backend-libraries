@@ -20,10 +20,13 @@ import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchema;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
-import com.ritense.document.exception.DocumentDefinitionNameMismatchException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.result.DeployDocumentDefinitionResult;
+import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
+import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
+import com.ritense.document.service.result.error.DocumentDefinitionError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -32,8 +35,12 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
@@ -70,56 +77,95 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         return documentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(documentDefinitionName);
     }
 
+    @Override
     public void deployAll() {
         logger.info("Deploy all schema's");
         try {
             final Resource[] resources = loadResources();
             for (Resource resource : resources) {
                 if (resource.getFilename() != null) {
-                    final var schema = JsonSchema.fromStream(resource.getInputStream());
-
-                    if (!resource.getFilename().equals(schema.getSchema().getId() + ".json")) {
-                        throw new DocumentDefinitionNameMismatchException(
-                            "Id schema doesn't correspond with file name.");
-                    }
-
-                    deploy(schema);
+                    deploy(resource.getInputStream());
                 }
             }
-        } catch (Exception e) {
-            logger.error("Error deploying document schema's", e);
+        } catch (Exception ex) {
+            logger.error("Error deploying document schema's", ex);
         }
     }
 
-    public void deploy(JsonSchema schema) {
-        final var definitionName = schema.getSchema().getId().replace(".schema", "");
-        final var existingDefinition = findLatestByName(definitionName);
-        var definitionId = JsonSchemaDocumentDefinitionId.newId(definitionName);
-        if (existingDefinition.isPresent()) {
-            if (JsonSchema.fromString(existingDefinition.get().schema().toString()).equals(schema)) {
-                logger.info("Schema already deployed - {} - {} ", existingDefinition.get().getId(), schema.getSchema().getId());
-                return;
-            } else {
-                definitionId = JsonSchemaDocumentDefinitionId.nextVersion(existingDefinition.get().id());
-                logger.info("Schema changed. Deploying next version - {} - {} ", definitionId.toString(), schema.getSchema().getId());
+    @Override
+    public void deploy(InputStream inputStream) throws IOException {
+        var jsonSchema = JsonSchema.fromString(StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8));
+        deploy(jsonSchema, true);
+    }
+
+    @Override
+    public DeployDocumentDefinitionResult deploy(String schema) {
+        try {
+            var jsonSchema = JsonSchema.fromString(schema);
+            return deploy(jsonSchema, false);
+        } catch (Exception ex) {
+            DocumentDefinitionError error = ex::getMessage;
+            return new DeployDocumentDefinitionResultFailed(List.of(error));
+        }
+    }
+
+    private DeployDocumentDefinitionResult deploy(JsonSchema jsonSchema, boolean readOnly) {
+        try {
+            var documentDefinitionName = jsonSchema.getSchema().getId().replace(".schema", "");
+            var existingDefinition = findLatestByName(documentDefinitionName);
+            var documentDefinitionId = JsonSchemaDocumentDefinitionId.newId(documentDefinitionName);
+
+            if (existingDefinition.isPresent()) {
+                var existingDocumentDefinition = existingDefinition.get();
+
+                // Check read-only of previous definition
+                if (existingDocumentDefinition.isReadOnly()) {
+                    DocumentDefinitionError error = () -> "This schema cannot be updated, because its readonly in previous versions";
+                    return new DeployDocumentDefinitionResultFailed(List.of(error));
+                }
+
+                if (existingDocumentDefinition.getSchema().equals(jsonSchema)) {
+                    logger.info("Schema already deployed - {} - {} ", existingDocumentDefinition.getId(), jsonSchema.getSchema().getId());
+                    DocumentDefinitionError error = () -> "This exact schema is already deployed";
+                    return new DeployDocumentDefinitionResultFailed(List.of(error));
+                } else {
+                    // Definition changed increase version
+                    documentDefinitionId = JsonSchemaDocumentDefinitionId.nextVersion(existingDocumentDefinition.id());
+                    logger.info("Schema changed. Deploying next version - {} - {} ", documentDefinitionId.toString(), jsonSchema.getSchema().getId());
+                }
             }
-        }
-        final var definition = new JsonSchemaDocumentDefinition(definitionId, schema);
 
-        deploy(definition);
-        logger.info("Deployed schema - {} - {} ", definitionId.toString(), schema.getSchema().getId());
+            var documentDefinition = new JsonSchemaDocumentDefinition(documentDefinitionId, jsonSchema);
+
+            if (readOnly) {
+                documentDefinition.markReadOnly();
+            }
+
+            store(documentDefinition);
+            logger.info("Deployed schema - {} - {} ", documentDefinitionId.toString(), jsonSchema.getSchema().getId());
+            return new DeployDocumentDefinitionResultSucceeded(documentDefinition);
+        } catch (Exception ex) {
+            DocumentDefinitionError error = ex::getMessage;
+            return new DeployDocumentDefinitionResultFailed(List.of(error));
+        }
     }
 
-    public void deploy(JsonSchemaDocumentDefinition newDocumentDefinition) {
-        assertArgumentNotNull(newDocumentDefinition, "documentDefinition is required");
-        documentDefinitionRepository.findById(newDocumentDefinition.id())
+    @Override
+    public void store(JsonSchemaDocumentDefinition documentDefinition) {
+        assertArgumentNotNull(documentDefinition, "documentDefinition is required");
+        documentDefinitionRepository.findById(documentDefinition.id())
             .ifPresentOrElse(
-                documentDefinition -> {
-                    if (!documentDefinition.equals(newDocumentDefinition)) {
-                        throw new UnsupportedOperationException("Schema already deployed, cannot redeploy");
+                existingDocumentDefinition -> {
+                    if (!existingDocumentDefinition.equals(documentDefinition)) {
+                        throw new UnsupportedOperationException("Schema already deployed, will cannot redeploy");
                     }
-                }, () -> documentDefinitionRepository.saveAndFlush(newDocumentDefinition)
+                }, () -> documentDefinitionRepository.saveAndFlush(documentDefinition)
             );
+    }
+
+    @Override
+    public void removeDocumentDefinition(String documentDefinitionName) {
+        documentDefinitionRepository.deleteByIdName(documentDefinitionName);
     }
 
     private Resource[] loadResources() throws IOException {

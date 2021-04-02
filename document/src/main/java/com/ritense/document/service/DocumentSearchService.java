@@ -17,25 +17,14 @@
 package com.ritense.document.service;
 
 import com.ritense.document.domain.Document;
-import com.ritense.document.service.impl.SearchCriteria;
+import com.ritense.document.service.impl.SearchRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface DocumentSearchService {
 
     Page<? extends Document> search(
-        String documentDefinitionName,
-        List<SearchCriteria> criteriaList,
-        Pageable pageable
-    );
-
-    Page<? extends Document> search(
-        String documentDefinitionName,
-        String searchCriteria,
-        Long sequence,
-        String createdBy,
+        SearchRequest searchRequest,
         Pageable pageable
     );
 

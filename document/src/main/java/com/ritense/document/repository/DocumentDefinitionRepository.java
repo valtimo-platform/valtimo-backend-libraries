@@ -17,7 +17,6 @@
 package com.ritense.document.repository;
 
 import com.ritense.document.domain.DocumentDefinition;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,4 +34,6 @@ public interface DocumentDefinitionRepository<T extends DocumentDefinition> exte
     List<T> findAllByIdName(String documentDefinitionName);
 
     Page<T> findAll(Pageable pageable);
+
+    void deleteByIdName(String documentDefinitionName);
 }

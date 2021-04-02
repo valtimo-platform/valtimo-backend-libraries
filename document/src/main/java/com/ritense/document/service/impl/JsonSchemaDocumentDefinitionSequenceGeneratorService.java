@@ -21,7 +21,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -31,6 +30,8 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -66,6 +67,12 @@ public class JsonSchemaDocumentDefinitionSequenceGeneratorService implements Doc
         }
         documentDefinitionSequenceRepository.saveAndFlush(sequenceRecord);
         return sequenceRecord.sequence();
+    }
+
+    @Transactional
+    @Override
+    public void deleteSequenceRecordBy(String documentDefinitionName) {
+        documentDefinitionSequenceRepository.deleteByDocumentDefinitionName(documentDefinitionName);
     }
 
 }

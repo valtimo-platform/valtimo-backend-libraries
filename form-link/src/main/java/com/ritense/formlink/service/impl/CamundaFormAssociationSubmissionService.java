@@ -41,13 +41,12 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.task.publictask.PublicTaskRequest;
 import com.ritense.valtimo.task.publictask.PublicTaskTokenParseException;
 import com.ritense.valtimo.task.publictask.PublicTaskTokenService;
+import java.util.UUID;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
-
-import javax.transaction.Transactional;
-import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor

@@ -24,6 +24,7 @@ import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.domain.ProcessDefinitionKey;
+import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.domain.ProcessDocumentDefinitionId;
 import com.ritense.processdocument.domain.ProcessDocumentInstanceId;
 import com.ritense.processdocument.domain.ProcessInstanceId;
@@ -90,6 +91,11 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
+    public Optional<? extends ProcessDocumentDefinition> findByDocumentDefinitionName(String documentDefinitionName) {
+        return processDocumentDefinitionRepository.findByDocumentDefinitionName(documentDefinitionName);
+    }
+
+    @Override
     public Optional<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstance(ProcessDocumentInstanceId processDocumentInstanceId) {
         return processDocumentInstanceRepository.findById(processDocumentInstanceId);
     }
@@ -102,6 +108,13 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     @Override
     public List<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstances(Document.Id documentId) {
         return processDocumentInstanceRepository.findAllByDocumentId(documentId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteProcessDocumentInstances(String processName) {
+        logger.debug("Remove all running process document instances for process: {}", processName);
+        processDocumentInstanceRepository.deleteAllByProcessName(processName);
     }
 
     @Override
@@ -151,14 +164,23 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         return Optional.of(association);
     }
 
+    @Transactional
     @Override
     public void deleteProcessDocumentDefinition(ProcessDocumentDefinitionRequest request) {
+        logger.debug("Remove process document definition for document definition: {}", request.documentDefinitionName());
+
         final var documentDefinitionId = documentDefinitionService.findIdByName(request.documentDefinitionName());
         final var id = CamundaProcessJsonSchemaDocumentDefinitionId.existingId(
             new CamundaProcessDefinitionKey(request.processDefinitionKey()),
             documentDefinitionId
         );
         processDocumentDefinitionRepository.deleteById(id);
+    }
+
+    @Transactional
+    @Override
+    public void deleteProcessDocumentDefinition(String documentDefinitionName) {
+        processDocumentDefinitionRepository.deleteByDocumentDefinition(documentDefinitionName);
     }
 
     @Transactional

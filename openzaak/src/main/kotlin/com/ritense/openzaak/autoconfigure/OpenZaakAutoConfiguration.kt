@@ -20,11 +20,15 @@ import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.form.OpenZaakFormFieldDataResolver
 import com.ritense.openzaak.listener.EigenschappenSubmittedListener
 import com.ritense.openzaak.listener.GlobalZaakEventListener
+import com.ritense.openzaak.listener.OpenZaakUndeployDocumentDefinitionEventListener
 import com.ritense.openzaak.listener.ServiceTaskListener
+import com.ritense.openzaak.repository.InformatieObjectTypeLinkRepository
 import com.ritense.openzaak.repository.OpenZaakConfigRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
 import com.ritense.openzaak.repository.converter.Encryptor
+import com.ritense.openzaak.service.impl.DocumentenService
 import com.ritense.openzaak.service.impl.EigenschapService
+import com.ritense.openzaak.service.impl.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.impl.OpenZaakConfigService
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
 import com.ritense.openzaak.service.impl.ZaakResultaatService
@@ -32,6 +36,8 @@ import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakStatusService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakTypeService
+import com.ritense.openzaak.web.rest.impl.InformatieObjectTypeLinkResource
+import com.ritense.openzaak.web.rest.impl.InformatieObjectTypeResource
 import com.ritense.openzaak.web.rest.impl.OpenZaakConfigResource
 import com.ritense.openzaak.web.rest.impl.ResultaatResource
 import com.ritense.openzaak.web.rest.impl.StatusResource
@@ -160,6 +166,14 @@ class OpenZaakAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(InformatieObjectTypeLinkService::class)
+    fun informatieObjectTypeLinkService(
+        informatieObjectTypeLinkRepository: InformatieObjectTypeLinkRepository
+    ): InformatieObjectTypeLinkService {
+        return InformatieObjectTypeLinkService(informatieObjectTypeLinkRepository)
+    }
+
+    @Bean
     @ConditionalOnMissingBean(ServiceTaskListener::class)
     fun serviceTaskListener(
         zaakTypeLinkService: ZaakTypeLinkService,
@@ -182,6 +196,32 @@ class OpenZaakAutoConfiguration {
         zaakService: ZaakService
     ): EigenschappenSubmittedListener {
         return EigenschappenSubmittedListener(zaakTypeLinkService, eigenschapService, zaakService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(OpenZaakUndeployDocumentDefinitionEventListener::class)
+    fun openZaakUndeployDocumentDefinitionEventListener(
+        zaakTypeLinkService: ZaakTypeLinkService
+    ): OpenZaakUndeployDocumentDefinitionEventListener {
+        return OpenZaakUndeployDocumentDefinitionEventListener(zaakTypeLinkService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentenService::class)
+    fun documentenService(
+        restTemplate: RestTemplate,
+        openZaakConfigService: OpenZaakConfigService,
+        openZaakTokenGeneratorService: OpenZaakTokenGeneratorService,
+        informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
+        zaakTypeLinkService: ZaakTypeLinkService
+    ): DocumentenService {
+        return DocumentenService(
+            restTemplate,
+            openZaakConfigService,
+            openZaakTokenGeneratorService,
+            informatieObjectTypeLinkService,
+            zaakTypeLinkService
+        )
     }
 
     //Resources
@@ -223,6 +263,22 @@ class OpenZaakAutoConfiguration {
         zaakStatusService: ZaakStatusService
     ): StatusResource {
         return StatusResource(zaakStatusService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(InformatieObjectTypeLinkResource::class)
+    fun informatieObjectTypeLinkResource(
+        informatieObjectTypeLinkService: InformatieObjectTypeLinkService
+    ): InformatieObjectTypeLinkResource {
+        return InformatieObjectTypeLinkResource(informatieObjectTypeLinkService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(InformatieObjectTypeResource::class)
+    fun informatieObjectTypeResource(
+        zaakService: ZaakService
+    ): InformatieObjectTypeResource {
+        return InformatieObjectTypeResource(zaakService)
     }
 
 }

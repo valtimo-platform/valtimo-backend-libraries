@@ -54,6 +54,11 @@ class ZaakTypeLinkResource(
         }
     }
 
+    override fun remove(documentDefinitionName: String): ResponseEntity<ZaakTypeLink?> {
+        zaakTypeLinkService.deleteZaakTypeLinkBy(documentDefinitionName)
+        return noContent().build()
+    }
+
     override fun createServiceTaskHandler(
         id: UUID,
         request: ServiceTaskHandlerRequest

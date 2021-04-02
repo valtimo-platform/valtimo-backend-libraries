@@ -43,9 +43,6 @@ public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumen
     @Transient
     private static final long INITIAL_VERSION = 1;
 
-    @Transient
-    private static final String RESOURCE_PATH = "config/document/definition/%s.json";
-
     @Column(name = "document_definition_name", length = 50, columnDefinition = "VARCHAR(50)", nullable = false, updatable = false)
     private String name;
 
@@ -104,10 +101,6 @@ public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumen
     @Override
     public String toString() {
         return name + ":" + version;
-    }
-
-    public URI path() {
-        return URI.create(String.format(RESOURCE_PATH, name + ".schema"));
     }
 
 }

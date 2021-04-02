@@ -33,7 +33,12 @@ public class ChoiceFieldHttpSecurityConfigurer implements HttpSecurityConfigurer
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/choice-fields", "/api/choice-fields/{id}", "/api/choice-fields/name/{name}").hasAuthority(USER)
+                .antMatchers(
+                    GET,
+                    "/api/choice-fields",
+                    "/api/choice-fields/{id}",
+                    "/api/choice-fields/name/{name}"
+                ).hasAuthority(USER)
                 .antMatchers(POST, "/api/choice-fields").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/choice-fields").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/choice-fields/{id}").hasAuthority(ADMIN)

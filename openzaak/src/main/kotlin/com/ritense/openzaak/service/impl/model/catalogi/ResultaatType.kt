@@ -16,6 +16,7 @@
 
 package com.ritense.openzaak.service.impl.model.catalogi
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import java.net.URI
 
 data class ResultaatType(
@@ -34,7 +35,8 @@ data class ResultaatType(
         val afleidingswijze: Afleidingswijze,
         val datumkenmerk: String? = null,
         val einddatumBekend: Boolean? = null,
-        val objecttype: Objecttype? = null,
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        val objecttype: String? = null,
         val registratie: String? = null,
         val procestermijn: String? = null
     )
@@ -54,40 +56,6 @@ data class ResultaatType(
         termijn,
         vervaldatum_besluit,
         zaakobject
-    }
-
-    enum class Objecttype {
-        adres,
-        besluit,
-        buurt,
-        enkelvoudig_document,
-        gemeente,
-        gemeentelijke_openbare_ruimte,
-        huishouden,
-        inrichtingselement,
-        kadastrale_onroerende_zaak,
-        kunstwerkdeel,
-        maatschappelijke_activiteit,
-        medewerker,
-        natuurlijk_persoon,
-        niet_natuurlijk_persoon,
-        openbare_ruimte,
-        organisatorische_eenheid,
-        pand,
-        spoorbaandeel,
-        status,
-        terreindeel,
-        terrein_gebouwd_object,
-        vestiging,
-        waterdeel,
-        wegdeel,
-        wijk,
-        woonplaats,
-        woz_deelobject,
-        woz_object,
-        woz_waarde,
-        zakelijk_recht,
-        overige
     }
 
 }

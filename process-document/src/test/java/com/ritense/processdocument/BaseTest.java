@@ -28,6 +28,7 @@ import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
 
+import java.net.URI;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -74,12 +75,16 @@ public abstract class BaseTest {
 
     protected JsonSchemaDocumentDefinition definition() {
         final JsonSchemaDocumentDefinitionId jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("house");
-        final JsonSchema jsonSchema = JsonSchema.fromResource(jsonSchemaDocumentDefinitionId.path());
+        final JsonSchema jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
         return new JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema);
     }
 
     protected JsonSchemaDocument.CreateDocumentResultImpl createDocument(JsonSchemaDocumentDefinition definition, JsonDocumentContent content) {
         return JsonSchemaDocument.create(definition, content, USERNAME, documentSequenceGeneratorService, null);
+    }
+
+    public URI path(String name) {
+        return URI.create(String.format("config/document/definition/%s.json", name + ".schema"));
     }
 
 }

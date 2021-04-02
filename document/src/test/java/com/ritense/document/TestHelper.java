@@ -16,19 +16,12 @@
 
 package com.ritense.document;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.IOException;
-import java.io.InputStream;
+import java.net.URI;
 
 public class TestHelper {
 
-    public static String getResourceAsString(String resource) throws IOException {
-        return IOUtils.toString(getResourceAsStream(resource));
-    }
-
-    public static InputStream getResourceAsStream(String resource) {
-        return Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
+    public URI path(String name) {
+        return URI.create(String.format("config/document/definition/%s.json", name + ".schema"));
     }
 
 }

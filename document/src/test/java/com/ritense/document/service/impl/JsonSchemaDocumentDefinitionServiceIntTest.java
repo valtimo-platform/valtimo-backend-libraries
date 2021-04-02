@@ -17,13 +17,17 @@
 package com.ritense.document.service.impl;
 
 import com.ritense.document.BaseIntegrationTest;
-import com.ritense.document.domain.impl.JsonSchema;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.net.URI;
+import java.io.IOException;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,25 +36,96 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationTest {
 
+    @Inject
+    private ResourceLoader resourceLoader;
+
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = USER)
-    public void shouldDeployNextVersionWhenDifferentSchema() {
-        final var differentHouseSchema = JsonSchema.fromResource(URI.create("config/document/definition/noautodeploy/house_v2.schema.json"));
+    public void shouldDeployFromString() {
+        DeployDocumentDefinitionResult result = documentDefinitionService.deploy("" +
+            "{\n" +
+            "    \"$id\": \"testing.schema\",\n" +
+            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+            "}\n");
 
-        documentDefinitionService.deploy(differentHouseSchema);
+        assertThat(result.documentDefinition()).isNotNull();
+        assertThat(result.errors()).isEmpty();
 
-        final var documentDefinition = documentDefinitionService.findLatestByName("house").get();
-        assertThat(documentDefinition.id().version()).isEqualTo(2);
+        final var documentDefinition = (JsonSchemaDocumentDefinition) documentDefinitionService
+            .findLatestByName("testing").orElseThrow();
+        assertThat(documentDefinition.isReadOnly()).isFalse();
     }
 
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = USER)
-    public void shouldNotDeployNextVersionWhenSchemaAlreadyExists() {
-        final var existingHouseSchema = JsonSchema.fromResource(URI.create("config/document/definition/house.schema.json"));
+    public void shouldDeployResourceAsReadOnly() throws IOException {
 
-        documentDefinitionService.deploy(existingHouseSchema);
+        var resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+            .getResource("classpath:config/document/definition/noautodeploy/giraffe.schema.json");
 
-        final var documentDefinition = documentDefinitionService.findLatestByName("house").get();
+        documentDefinitionService.deploy(resource.getInputStream());
+
+        final var documentDefinition = (JsonSchemaDocumentDefinition) documentDefinitionService
+            .findLatestByName("giraffe").orElseThrow();
+        assertThat(documentDefinition.isReadOnly()).isTrue();
+    }
+
+    @Test
+    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    public void shouldNotDeployASchemaThatChangedReadOnlyFlag() throws IOException {
+
+        var resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+            .getResource("classpath:config/document/definition/noautodeploy/rhino.schema.json");
+
+        documentDefinitionService.deploy(resource.getInputStream());
+
+        DeployDocumentDefinitionResult result = documentDefinitionService.deploy("" +
+            "{\n" +
+            "    \"$id\": \"rhino.schema\",\n" +
+            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+            "}\n");
+
+        final var documentDefinition = (JsonSchemaDocumentDefinition) documentDefinitionService
+            .findLatestByName("rhino").orElseThrow();
+        assertThat(documentDefinition.isReadOnly()).isTrue();
+
+        assertThat(result.documentDefinition()).isNull();
+        assertThat(result.errors().get(0).asString()).isEqualTo("This schema cannot be updated, because its readonly in previous versions");
+    }
+
+    @Test
+    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    public void shouldDeployNextVersionWhenDifferentSchema() {
+
+        documentDefinitionService.deploy("" +
+            "{\n" +
+            "    \"$id\": \"clown.schema\",\n" +
+            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+            "}\n");
+
+        documentDefinitionService.deploy("" +
+            "{\n" +
+            "    \"$id\": \"clown.schema\",\n" +
+            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n"  +
+            "    \"title\": \"Clown\"" +
+            "}\n");
+
+        final var documentDefinition = (JsonSchemaDocumentDefinition) documentDefinitionService
+            .findLatestByName("clown").orElseThrow();
+        assertThat(documentDefinition.id().version()).isEqualTo(2);
+        assertThat(documentDefinition.isReadOnly()).isFalse();
+    }
+
+    @Test
+    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    public void shouldNotDeployNextVersionWhenSchemaAlreadyExists() throws IOException {
+        var resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+            .getResource("classpath:config/document/definition/house.schema.json");
+
+        documentDefinitionService.deploy(resource.getInputStream());
+
+        final var documentDefinition = documentDefinitionService
+            .findLatestByName("house").orElseThrow();
         assertThat(documentDefinition.id().version()).isEqualTo(1);
     }
 

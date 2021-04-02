@@ -16,13 +16,12 @@
 
 package com.ritense.document.security.config;
 
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+import static org.springframework.http.HttpMethod.POST;
+
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
 
 public class DocumentSearchHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -30,8 +29,7 @@ public class DocumentSearchHttpSecurityConfigurer implements HttpSecurityConfigu
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/document-search").hasAuthority(USER)
-                .antMatchers(POST, "/api/document-search/{document-definition-name}").hasAuthority(USER);
+                .antMatchers(POST, "/api/document-search").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

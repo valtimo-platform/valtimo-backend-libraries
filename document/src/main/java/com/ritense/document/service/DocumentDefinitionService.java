@@ -17,12 +17,14 @@
 package com.ritense.document.service;
 
 import com.ritense.document.domain.DocumentDefinition;
-import com.ritense.document.domain.impl.JsonSchema;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
+import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 
 public interface DocumentDefinitionService {
@@ -37,8 +39,12 @@ public interface DocumentDefinitionService {
 
     void deployAll();
 
-    void deploy(JsonSchema schema);
+    DeployDocumentDefinitionResult deploy(String schema);
 
-    void deploy(JsonSchemaDocumentDefinition documentDefinition);
+    void deploy(InputStream inputStream) throws IOException;
+
+    void store(JsonSchemaDocumentDefinition documentDefinition);
+
+    void removeDocumentDefinition(String documentDefinitionName);
 
 }

@@ -22,4 +22,6 @@ public interface DocumentSequenceGeneratorService {
 
     long next(DocumentDefinition.Id documentDefinitionId);
 
+    void deleteSequenceRecordBy(String documentDefinitionName);
+
 }

@@ -19,11 +19,24 @@ package com.ritense.openzaak.repository
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 
 interface ZaakTypeLinkRepository : JpaRepository<ZaakTypeLink, ZaakTypeLinkId> {
 
     fun findByDocumentDefinitionName(documentDefinitionName: String): ZaakTypeLink?
 
     fun findByDocumentDefinitionNameIn(documentDefinitionNames: List<String>): List<ZaakTypeLink?>
+
+    @Modifying
+    @Query("" +
+            "   DELETE " +
+            "   FROM    ZaakTypeLink ztl " +
+            "   WHERE   ztl.documentDefinitionName = :documentDefinitionName "
+    )
+    fun deleteByDocumentDefinitionName(
+        @Param("documentDefinitionName") documentDefinitionName: String
+    )
 
 }
