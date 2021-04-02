@@ -26,7 +26,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Optional;
 
 @Transactional
@@ -98,7 +100,8 @@ public class ChoiceFieldService {
         choiceFieldDTO.setId(choiceField.getId());
         choiceFieldDTO.setKeyName(choiceField.getKeyName());
         if (choiceFieldValues != null) {
-            choiceFieldDTO.setChoiceFieldValues(choiceFieldValues);
+            choiceFieldDTO.setChoiceFieldValues(choiceFieldValues.stream()
+                .sorted(Comparator.comparing(ChoiceFieldValue::getSortOrder)).collect(Collectors.toList()));
         }
 
         return choiceFieldDTO;

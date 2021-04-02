@@ -16,10 +16,13 @@
 
 package com.ritense.valtimo.repository.camunda.dto;
 
+import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
+
 public class TaskExtended extends org.camunda.bpm.engine.rest.dto.task.TaskDto {
 
     public final String businessKey;
     public final String processDefinitionKey;
+    public ValtimoUser valtimoAssignee;
 
     public TaskExtended(final String businessKey, final String processDefinitionKey) {
         super();
@@ -33,6 +36,14 @@ public class TaskExtended extends org.camunda.bpm.engine.rest.dto.task.TaskDto {
 
     public String getProcessDefinitionKey() {
         return processDefinitionKey;
+    }
+
+    public ValtimoUser getValtimoAssignee() {
+        return valtimoAssignee;
+    }
+
+    public void setValtimoAssignee(ValtimoUser user) {
+        valtimoAssignee = user;
     }
 
 }

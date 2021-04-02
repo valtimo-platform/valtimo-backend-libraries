@@ -20,6 +20,7 @@ import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.service.dto.ProcessSearchPropertyDTO;
 import com.ritense.valtimo.service.util.FormUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RepositoryService;
@@ -33,6 +34,7 @@ import org.camunda.bpm.model.bpmn.instance.ExtensionElements;
 import org.camunda.bpm.model.bpmn.instance.Process;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -43,6 +45,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 public class CamundaProcessService {
 
@@ -160,6 +163,17 @@ public class CamundaProcessService {
             .active()
             .latestVersion()
             .list();
+    }
+
+    @Transactional
+    public void deleteAllProcesses(String processDefinitionKey, String reason) {
+        logger.debug("delete all running process instances for processes with key: {}", processDefinitionKey);
+
+        List<ProcessInstance> runningInstances = runtimeService.createProcessInstanceQuery()
+            .processDefinitionKey(processDefinitionKey)
+            .list();
+
+        runningInstances.forEach(i -> deleteProcessInstanceById(i.getProcessInstanceId(), reason));
     }
 
 }

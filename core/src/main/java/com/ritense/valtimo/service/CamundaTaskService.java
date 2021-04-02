@@ -20,6 +20,7 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
+import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
@@ -92,12 +93,12 @@ public class CamundaTaskService {
         return task;
     }
 
-    public void assign(String taskId, String newAssignee) throws IllegalStateException {
+    public void assign(String taskId, String assignee) throws IllegalStateException {
         final Task task = findTaskById(taskId);
         final String currentAssignee = task.getAssignee();
         try {
-            taskService.setAssignee(task.getId(), newAssignee);
-            publishTaskAssignedEvent((DelegateTask) task, currentAssignee, newAssignee);
+            taskService.setAssignee(task.getId(), assignee);
+            publishTaskAssignedEvent((DelegateTask) task, currentAssignee, assignee);
         } catch (AuthorizationException ex) {
             throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
         } catch (ProcessEngineException ex) {
@@ -157,7 +158,28 @@ public class CamundaTaskService {
 
     public Page<TaskExtended> findTasksFiltered(TaskFilter taskFilter, Pageable pageable) throws IllegalAccessException {
         var parameters = buildTaskFilterParameters(taskFilter);
-        return camundaTaskRepository.findTasks(pageable, parameters);
+        Page<TaskExtended> tasks = camundaTaskRepository.findTasks(pageable, parameters);
+        if (!tasks.isEmpty()) {
+            List<String> userIds = tasks.get().map(TaskDto::getAssignee).collect(Collectors.toList());
+            if (!userIds.isEmpty()) {
+                List<ManageableUser> allUsers = userManagementService.getAllUsers();
+                tasks.get().forEach(
+                    t -> {
+                        if (t.getAssignee() != null) {
+                            allUsers
+                                .stream()
+                                .filter(manageableUser -> manageableUser.getEmail().equals(t.getAssignee()))
+                                .findFirst()
+                                .ifPresent(user -> t.valtimoAssignee = new ValtimoUserBuilder()
+                                    .id(user.getId())
+                                    .firstName(user.getFirstName())
+                                    .lastName(user.getLastName())
+                                    .build());
+                        }
+                    });
+            }
+        }
+        return tasks;
     }
 
     public List<TaskInstanceWithIdentityLink> getProcessInstanceTasks(String processInstanceId, String businessKey) {
