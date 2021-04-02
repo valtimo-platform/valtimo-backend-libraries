@@ -72,7 +72,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
     private String formDefinition;
 
-    @Column(name = "read_only", columnDefinition = "BIT", nullable = false)
+    @Column(name = "read_only", columnDefinition = "BIT")
     private Boolean readOnly = false;
 
     @Transient
