@@ -87,10 +87,6 @@ allprojects {
     repositories {
         mavenCentral()
         mavenLocal()
-        maven {
-            url "http://repo.ritense.com/repository/maven-public/"
-            allowInsecureProtocol = true
-        }
     }
 
 }
