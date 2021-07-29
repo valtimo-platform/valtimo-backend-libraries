@@ -17,8 +17,11 @@
 package com.ritense.valtimo.contract.document.event;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
+import com.ritense.valtimo.contract.audit.view.AuditView;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -50,6 +53,9 @@ public class DocumentRelatedFileAddedEvent extends AuditMetaData implements Audi
         this.fileName = fileName;
     }
 
+    @Override
+    @JsonView(AuditView.Internal.class)
+    @JsonIgnore(false)
     public UUID getDocumentId() {
         return documentId;
     }
@@ -61,4 +67,5 @@ public class DocumentRelatedFileAddedEvent extends AuditMetaData implements Audi
     public String getFileName() {
         return fileName;
     }
+
 }

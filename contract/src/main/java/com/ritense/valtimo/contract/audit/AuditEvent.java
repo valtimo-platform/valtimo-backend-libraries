@@ -16,10 +16,10 @@
 
 package com.ritense.valtimo.contract.audit;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.view.AuditView;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -65,5 +65,15 @@ public interface AuditEvent {
      */
     @JsonView(AuditView.Public.class)
     String getUser();
+
+    /**
+     * The document (if applicable) the event is related to.
+     *
+     * @return String
+     */
+    @JsonIgnore
+    default UUID getDocumentId() {
+        return null;
+    }
 
 }

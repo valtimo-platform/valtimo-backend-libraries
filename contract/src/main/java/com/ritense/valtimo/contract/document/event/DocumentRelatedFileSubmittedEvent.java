@@ -17,6 +17,7 @@
 package com.ritense.valtimo.contract.document.event;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.UUID;
 
@@ -33,6 +34,7 @@ public class DocumentRelatedFileSubmittedEvent {
         this.documentDefinitionName = documentDefinitionName;
     }
 
+    @JsonIgnore(value = false)
     public UUID getDocumentId() {
         return documentId;
     }

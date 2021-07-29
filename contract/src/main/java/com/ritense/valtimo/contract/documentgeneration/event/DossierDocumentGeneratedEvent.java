@@ -52,4 +52,10 @@ public class DossierDocumentGeneratedEvent extends AuditMetaData implements Audi
     public String getDossierId() {
         return dossierId;
     }
+
+    @Override
+    public UUID getDocumentId() {
+        return UUID.fromString(dossierId);
+    }
+
 }
