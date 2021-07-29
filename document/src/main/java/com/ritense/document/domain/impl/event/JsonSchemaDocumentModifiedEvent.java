@@ -17,12 +17,15 @@
 package com.ritense.document.domain.impl.event;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.document.domain.event.DocumentModifiedEvent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentFieldChangedEvent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
 
+import com.ritense.valtimo.contract.audit.view.AuditView;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -58,6 +61,13 @@ public class JsonSchemaDocumentModifiedEvent extends AuditMetaData implements Do
     @Override
     public List<JsonSchemaDocumentFieldChangedEvent> changes() {
         return changes;
+    }
+
+    @Override
+    @JsonView(AuditView.Internal.class)
+    @JsonIgnore(false)
+    public UUID getDocumentId() {
+        return documentId.getId();
     }
 
     @Override

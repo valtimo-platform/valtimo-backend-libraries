@@ -79,6 +79,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         final var processDocumentRequest = new ProcessDocumentDefinitionRequest(
             processDefinitionKey.toString(),
             definitionId.name(),
+            true,
             true
         );
 
@@ -107,6 +108,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         final var processDocumentDefinitionRequest = new ProcessDocumentDefinitionRequest(
             processDefinitionKey.toString(),
             definitionId.name(),
+            true,
             true
         );
 
@@ -128,6 +130,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         final var processDocumentRequest = new ProcessDocumentDefinitionRequest(
             processDefinitionKey.toString(),
             definitionId.name(),
+            true,
             true
         );
 
@@ -227,6 +230,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         final var request = new ProcessDocumentDefinitionRequest(
             id.processDefinitionKey().toString(),
             id.documentDefinitionId().name(),
+            true,
             true
         );
 

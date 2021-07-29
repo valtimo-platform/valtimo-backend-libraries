@@ -90,8 +90,7 @@ public class KeycloakUserManagementService implements UserManagementService {
     public Optional<ManageableUser> findByEmail(String email) {
         var userList = keycloakService
             .usersResource()
-            .search(null, null, null, email, 0, 1, true, true);
-
+            .search(null, null, null, email, 0, 1, true);
         return userList.isEmpty() ? Optional.empty() : Optional.of(userRepresentationToManagableUser(userList.get(0)));
     }
 

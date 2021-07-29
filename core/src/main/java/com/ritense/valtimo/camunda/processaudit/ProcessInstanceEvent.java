@@ -57,6 +57,15 @@ public abstract class ProcessInstanceEvent extends AuditMetaData implements Audi
     }
 
     @Override
+    public UUID getDocumentId() {
+        try {
+            return UUID.fromString(businessKey);
+        } catch (IllegalArgumentException iae) {
+            return null;
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

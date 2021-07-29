@@ -18,7 +18,6 @@ package com.ritense.processdocument.web.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.audit.domain.AuditRecord;
-import com.ritense.audit.domain.AuditRecordBuilder;
 import com.ritense.audit.domain.MetaData;
 import com.ritense.audit.domain.MetaDataBuilder;
 import com.ritense.processdocument.BaseTest;
@@ -98,7 +97,7 @@ public class ProcessDocumentAuditResourceTest extends BaseTest {
     }
 
     private AuditRecord auditRecord(AuditEvent event, MetaData metaData) {
-        return new AuditRecordBuilder()
+        return AuditRecord.builder()
             .id(event.getId())
             .metaData(metaData)
             .auditEvent(event)

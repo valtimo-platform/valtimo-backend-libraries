@@ -63,6 +63,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toSet;
 
 @RequiredArgsConstructor
@@ -160,24 +161,21 @@ public class CamundaTaskService {
         var parameters = buildTaskFilterParameters(taskFilter);
         Page<TaskExtended> tasks = camundaTaskRepository.findTasks(pageable, parameters);
         if (!tasks.isEmpty()) {
-            List<String> userIds = tasks.get().map(TaskDto::getAssignee).collect(Collectors.toList());
-            if (!userIds.isEmpty()) {
-                List<ManageableUser> allUsers = userManagementService.getAllUsers();
-                tasks.get().forEach(
-                    t -> {
-                        if (t.getAssignee() != null) {
-                            allUsers
-                                .stream()
-                                .filter(manageableUser -> manageableUser.getEmail().equals(t.getAssignee()))
-                                .findFirst()
-                                .ifPresent(user -> t.valtimoAssignee = new ValtimoUserBuilder()
-                                    .id(user.getId())
-                                    .firstName(user.getFirstName())
-                                    .lastName(user.getLastName())
-                                    .build());
-                        }
-                    });
-            }
+            final var tasksGroupedByAssignee = tasks
+                .stream()
+                .collect(groupingBy(t -> t.getAssignee() == null ? "" : t.getAssignee()));
+
+            tasksGroupedByAssignee.forEach((assigneeEmail, tasksExtended) -> {
+                if (!assigneeEmail.isEmpty()) {
+                    var user = userManagementService.findByEmail(assigneeEmail).orElseThrow();
+                    final var valtimoUser = new ValtimoUserBuilder()
+                        .id(user.getId())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .build();
+                    tasksExtended.forEach(taskExtended -> taskExtended.setValtimoAssignee(valtimoUser));
+                }
+            });
         }
         return tasks;
     }

@@ -116,7 +116,6 @@ public class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
         var task = pagedTasks.get().findFirst().orElseThrow().getId();
 
-        //when(userManagementService.findByRole(eq("ROLE_USER"))).thenReturn(Collections.emptyList());
         List<ManageableUser> candidateUsers = camundaTaskService.getCandidateUsers(task);
 
         assertThat(candidateUsers).isEmpty();

@@ -43,6 +43,9 @@ public class CamundaProcessJsonSchemaDocumentDefinition
     @Column(name = "can_initialize_document", columnDefinition = "BOOLEAN")
     private boolean canInitializeDocument = false;
 
+    @Column(name = "startableByUser", columnDefinition = "BOOLEAN")
+    private boolean startableByUser;
+
     @Formula("( " +
         " SELECT   act_re_procdef.name_ " +
         " FROM     act_re_procdef " +
@@ -53,11 +56,13 @@ public class CamundaProcessJsonSchemaDocumentDefinition
 
     public CamundaProcessJsonSchemaDocumentDefinition(
         final CamundaProcessJsonSchemaDocumentDefinitionId processDocumentDefinitionId,
-        boolean canInitializeDocument
+        boolean canInitializeDocument,
+        boolean startableByUser
     ) {
         assertArgumentNotNull(processDocumentDefinitionId, "processDocumentDefinitionId is required");
         this.processDocumentDefinitionId = processDocumentDefinitionId;
         this.canInitializeDocument = canInitializeDocument;
+        this.startableByUser = startableByUser;
     }
 
     @Override
@@ -68,6 +73,11 @@ public class CamundaProcessJsonSchemaDocumentDefinition
     @Override
     public boolean canInitializeDocument() {
         return this.canInitializeDocument;
+    }
+
+    @Override
+    public boolean startableByUser() {
+        return this.startableByUser;
     }
 
     public void setProcessName(String processName) {

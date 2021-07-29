@@ -40,7 +40,13 @@ public class AssignmentNotification extends TaskNotification {
     private final String baseUrl;
     private final String languageKey;
 
-    public AssignmentNotification(DelegateTask delegateTask, MailTemplateIdentifier mailTemplate, ManageableUser user, String baseUrl, String languageKey) {
+    public AssignmentNotification(
+        DelegateTask delegateTask,
+        MailTemplateIdentifier mailTemplate,
+        ManageableUser user,
+        String baseUrl,
+        String languageKey
+    ) {
         assertArgumentNotNull(delegateTask, "delegateTask is required");
         assertArgumentNotNull(mailTemplate, "mailTemplate is required");
         assertArgumentNotNull(user, "user is required");
@@ -55,18 +61,29 @@ public class AssignmentNotification extends TaskNotification {
 
     @Override
     public Optional<TemplatedMailMessage> asTemplatedMailMessage() {
-        return Optional.of(TemplatedMailMessage.with(
-            Recipient.to(EmailAddress.from(user.getEmail()), SimpleName.from(user.getFirstName() + "" + user.getLastName())),
-            mailTemplate.withLanguageKey(languageKey))
-            .placeholders(placeholderVariables())
-            .attachments(AttachmentCollection.empty())
-            .build());
+        return Optional.of(
+            TemplatedMailMessage.with(
+                Recipient.to(
+                    EmailAddress.from(
+                        user.getEmail()
+                    ),
+                    SimpleName.from(
+                        user.getFirstName() + "" + user.getLastName()
+                    )
+                ),
+                mailTemplate.withLanguageKey(languageKey)
+            )
+                .placeholders(placeholderVariables())
+                .attachments(AttachmentCollection.empty())
+                .build()
+        );
     }
 
     @Override
     protected Map<String, Object> placeholderVariables() {
-        Map<String, Object> executionVariables = placeholderExecutionVariables(delegateTask.getExecution());
-
+        var executionVariables = placeholderExecutionVariables(
+            delegateTask.getExecution()
+        );
         return Map.of(
             "taskname", delegateTask.getName(),
             "var", delegateTask.getVariables(),
@@ -75,7 +92,8 @@ public class AssignmentNotification extends TaskNotification {
             "firstname", user.getFirstName(),
             "lastname", user.getLastName(),
             "email", user.getEmail(),
-            "execution", executionVariables);
+            "execution", executionVariables
+        );
     }
 
 }

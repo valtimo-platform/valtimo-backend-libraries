@@ -31,12 +31,11 @@ public abstract class TaskNotification {
     protected Map<String, Object> placeholderExecutionVariables(DelegateExecution execution) {
         Map<String, Object> executionVariables = execution.getVariables();
         executionVariables.put("business-key", execution.getProcessBusinessKey());
-
         return executionVariables;
     }
 
     protected String taskLinkFromIdAndUrl(String taskId, String baseUrl) {
-        return String.format("%s#/task/%s", baseUrl, taskId);
+        return String.format("%s#task?id=%s", baseUrl, taskId);
     }
 
 }

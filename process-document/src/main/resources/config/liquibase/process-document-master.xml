@@ -25,5 +25,6 @@
     <include file="changelog/20200115-add-process-name-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200119-rename-id-column-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20201008-update-document-definition-id.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20210506-add-column-startable-by-user-changelog.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

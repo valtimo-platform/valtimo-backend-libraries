@@ -275,100 +275,6 @@ public class MailService {
         sendTaskNotificationMail(delegateTask, MailTemplateIdentifier.from(template), attachmentCollection);
     }
 
-    public Optional<List<MailMessageStatus>> sendPublicTaskNotificationWithTemplateAndLangKey(
-        DelegateTask delegateTask, String email, String firstName, String lastName, String template, String langKey
-    ) {
-        logger.info("Public task notification with email {} and template {} ", email, template);
-        return doSendPublicTaskNotification(delegateTask, email, firstName, lastName, MailTemplateIdentifier.from(template), langKey);
-    }
-
-    public Optional<List<MailMessageStatus>> sendPublicTaskNotificationWithTemplateAndLangKey(
-        DelegateTask delegateTask, String firstName, String lastName, String template, String langKey
-    ) {
-        logger.info("Public task notification with assignee {} and template {} ", delegateTask.getAssignee(), template);
-        return doSendPublicTaskNotification(delegateTask, delegateTask.getAssignee(), firstName, lastName, MailTemplateIdentifier.from(template), langKey);
-    }
-
-    public Optional<List<MailMessageStatus>> sendPublicTaskNotificationWithTemplate(
-        DelegateTask delegateTask, String email, String firstName, String lastName, String template
-    ) {
-        logger.info("Public task notification with email {} and template {} ", email, template);
-        return doSendPublicTaskNotification(delegateTask, email, firstName, lastName, MailTemplateIdentifier.from(template));
-    }
-
-    public Optional<List<MailMessageStatus>> sendPublicTaskNotificationWithTemplate(
-        DelegateTask delegateTask, String firstName, String lastName, String template
-    ) {
-        logger.info("Public task notification with assignee {} and template {} ", delegateTask.getAssignee(), template);
-        return doSendPublicTaskNotification(delegateTask, delegateTask.getAssignee(), firstName, lastName, MailTemplateIdentifier.from(template));
-    }
-
-    public Optional<List<MailMessageStatus>> sendPublicTaskNotification(DelegateTask delegateTask, String firstName, String lastName, String langKey) {
-        logger.info("Public task notification with assignee {} and langKey {} ", delegateTask.getAssignee(), langKey);
-        return doSendPublicTaskNotification(delegateTask, delegateTask.getAssignee(), firstName, lastName, defaultNotificationTemplate(), langKey);
-    }
-
-    public Optional<List<MailMessageStatus>> sendPublicTaskNotification(
-        DelegateTask delegateTask, String email, String firstName, String lastName, String langKey
-    ) {
-        logger.info("Public task notification with email {} and langKey {} ", email, langKey);
-        return doSendPublicTaskNotification(delegateTask, email, firstName, lastName, defaultNotificationTemplate(), langKey);
-    }
-
-    private Optional<List<MailMessageStatus>> sendPublicTaskNotification(
-        DelegateTask delegateTask,
-        String email,
-        String firstName,
-        String lastName,
-        MailTemplateIdentifier mailTemplateIdentifier
-    ) {
-        if (!delegateTaskHelper.isTaskPublic(delegateTask)) {
-            throw new IllegalStateException("The task '" + delegateTask.getName() + "' does not have any extension properties set to public.");
-        }
-
-        logger.info("Sending public task notification for task {} and to {}", delegateTask.getName(), email);
-
-        Map<String, Object> variables = extractRelevantUserVariables(firstName, lastName, email);
-        variables.put("taskname", delegateTask.getName());
-        variables.put("var", delegateTask.getVariables());
-        variables.put("baseUrl", valtimoProperties.getApp().getBaselUrl());
-        variables.put("link", createExternalTaskDetailUrl(delegateTask.getId()));
-
-        return send(
-            delegateTask.getExecution(),
-            EmailAddress.from(email),
-            SimpleName.from(firstName + " " + lastName),
-            mailTemplateIdentifier,
-            variables
-        );
-    }
-
-    private Optional<List<MailMessageStatus>> doSendPublicTaskNotification(
-        DelegateTask delegateTask,
-        String email,
-        String firstName,
-        String lastName,
-        MailTemplateIdentifier mailTemplateIdentifier
-    ) {
-        return sendPublicTaskNotification(delegateTask, email, firstName, lastName, mailTemplateIdentifier);
-    }
-
-    private Optional<List<MailMessageStatus>> doSendPublicTaskNotification(
-        DelegateTask delegateTask,
-        String email,
-        String firstName,
-        String lastName,
-        MailTemplateIdentifier mailTemplateIdentifier,
-        String langKey
-    ) {
-        if (!langKey.equalsIgnoreCase("nl") && !langKey.equalsIgnoreCase("en")) {
-            throw new IllegalStateException("Invalid langKey for public task notification. Accepted values are: nl, en");
-        }
-        mailTemplateIdentifier = mailTemplateIdentifier.withLanguageKey(langKey);
-
-        return sendPublicTaskNotification(delegateTask, email, firstName, lastName, mailTemplateIdentifier);
-    }
-
     private Optional<List<MailMessageStatus>> sendTaskNotificationMail(
         DelegateTask delegateTask,
         MailTemplateIdentifier mailTemplateIdentifier,
@@ -449,7 +355,7 @@ public class MailService {
     private String createTaskDetailUrl(String taskId) {
         String baseUrl = valtimoProperties.getApp().getBaselUrl();
 
-        return String.format("%s#/task/%s", baseUrl, taskId);
+        return String.format("%s#?taskId=%s", baseUrl, taskId);
     }
 
     private String createExternalTaskDetailUrl(String taskId) {

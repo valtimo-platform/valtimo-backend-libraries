@@ -421,7 +421,7 @@ public class ProcessResource extends AbstractProcessResource {
     ) {
         return camundaProcessService.findProcessInstanceById(processInstanceId)
             .map(processInstance -> ResponseEntity.ok(camundaTaskService.getProcessInstanceTasks(processInstance.getId(), processInstance.getBusinessKey())))
-            .orElse(ResponseEntity.notFound().build());
+            .orElse(ResponseEntity.noContent().build());
     }
 
     @GetMapping(value = "/process/{processInstanceId}/activetask")
@@ -433,7 +433,7 @@ public class ProcessResource extends AbstractProcessResource {
             .singleResult();
         return Optional.ofNullable(task)
             .map(taskResult -> ResponseEntity.ok(TaskDto.fromEntity(taskResult)))
-            .orElse(ResponseEntity.notFound().build());
+            .orElse(ResponseEntity.noContent().build());
     }
 
     @GetMapping(value = "/process/{processInstanceId}/xml")

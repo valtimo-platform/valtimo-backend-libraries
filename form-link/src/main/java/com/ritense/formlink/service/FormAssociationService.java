@@ -23,7 +23,6 @@ import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
 import com.ritense.formlink.domain.request.CreateFormAssociationRequest;
 import com.ritense.formlink.domain.request.ModifyFormAssociationRequest;
-import com.ritense.valtimo.task.publictask.PublicTaskTokenParseException;
 
 import java.util.Optional;
 import java.util.Set;
@@ -39,15 +38,9 @@ public interface FormAssociationService {
 
     Optional<JsonNode> getFormDefinitionByFormLinkId(String processDefinitionKey, String formLinkId);
 
-    Optional<JsonNode> getPublicFormDefinitionByAuthorization(
-        String authorizationHeaderValue
-    ) throws PublicTaskTokenParseException;
-
     Optional<CamundaFormAssociation> getStartEventFormDefinitionByProcessDefinitionKey(String processDefinitionKey);
 
     Optional<JsonNode> getStartEventFormDefinition(String processDefinitionKey);
-
-    Optional<JsonNode> getPublicStartEventFormDefinition(String processDefinitionKey);
 
     Optional<JsonNode> getPreFilledFormDefinitionByFormLinkId(
         Document.Id documentId, String processDefinitionKey, String formLinkId
@@ -56,10 +49,6 @@ public interface FormAssociationService {
     Optional<JsonNode> getPreFilledFormDefinitionByFormLinkId(
         Document.Id documentId, String processDefinitionKey, String formLinkId, String taskInstanceId
     );
-
-    Optional<JsonNode> getPreFilledPublicFormDefinitionByFormLinkId(
-        Document.Id documentId, String authorizationHeaderValue
-    ) throws PublicTaskTokenParseException;
 
     FormAssociation createFormAssociation(
         String processDefinitionKey,

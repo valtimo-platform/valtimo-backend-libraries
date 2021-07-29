@@ -21,6 +21,7 @@ import com.ritense.openzaak.domain.event.ResultaatSetEvent
 import com.ritense.openzaak.domain.event.StatusSetEvent
 import com.ritense.openzaak.domain.event.ZaakCreatedEvent
 import com.ritense.openzaak.domain.mapping.impl.Operation
+import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandler
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinks
@@ -85,7 +86,13 @@ class ZaakTypeLinkTest {
 
         zaaktypeLink.assignZaakServiceHandler(serviceTaskHandlerRequest)
 
-        assertThat(zaaktypeLink.serviceTaskHandlers.contains(serviceTaskHandlerRequest))
+        assertThat(zaaktypeLink.serviceTaskHandlers).contains(
+            ServiceTaskHandler(
+                serviceTaskHandlerRequest.serviceTaskId,
+                serviceTaskHandlerRequest.operation,
+                serviceTaskHandlerRequest.parameter
+            )
+        )
     }
 
     @Test
@@ -97,8 +104,20 @@ class ZaakTypeLinkTest {
         zaaktypeLink.assignZaakServiceHandler(serviceTaskHandlerRequest)
         zaaktypeLink.assignZaakServiceHandler(newServiceTaskHandlerRequest)
 
-        assertThat(zaaktypeLink.serviceTaskHandlers.contains(newServiceTaskHandlerRequest))
-        assertThat(zaaktypeLink.serviceTaskHandlers.contains(serviceTaskHandlerRequest)).isFalse
+        assertThat(zaaktypeLink.serviceTaskHandlers).contains(
+            ServiceTaskHandler(
+                newServiceTaskHandlerRequest.serviceTaskId,
+                newServiceTaskHandlerRequest.operation,
+                newServiceTaskHandlerRequest.parameter
+            )
+        )
+        assertThat(zaaktypeLink.serviceTaskHandlers).doesNotContain(
+            ServiceTaskHandler(
+                serviceTaskHandlerRequest.serviceTaskId,
+                serviceTaskHandlerRequest.operation,
+                serviceTaskHandlerRequest.parameter
+            )
+        )
     }
 
     @Test

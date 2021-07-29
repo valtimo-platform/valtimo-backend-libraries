@@ -54,6 +54,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends B
         final var processDocumentRequest = new ProcessDocumentDefinitionRequest(
             PROCESS_DEFINITION_KEY,
             DOCUMENT_DEFINITION_NAME,
+            true,
             true
         );
         camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(processDocumentRequest);
@@ -74,6 +75,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends B
         var request = new ProcessDocumentDefinitionRequest(
             "embedded-subprocess-example",
             DOCUMENT_DEFINITION_NAME,
+            true,
             true
         );
 
@@ -88,6 +90,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends B
         var request = new ProcessDocumentDefinitionRequest(
             "embedded-subprocess-example",
             DOCUMENT_DEFINITION_NAME,
+            true,
             true
         );
         camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(request);
@@ -102,6 +105,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends B
         final var processDocumentRequest = new ProcessDocumentDefinitionRequest(
             processDocumentDefinitionKey,
             DOCUMENT_DEFINITION_NAME,
+            true,
             true
         );
         camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(processDocumentRequest);
@@ -151,6 +155,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends B
         final var processDocumentRequest = new ProcessDocumentDefinitionRequest(
             processDocumentDefinitionKey,
             DOCUMENT_DEFINITION_NAME,
+            true,
             true
         );
         camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(processDocumentRequest);

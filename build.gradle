@@ -1,29 +1,20 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        mavenLocal()
-        maven { url "https://repo.spring.io/plugins-release" }
-        maven { url "https://plugins.gradle.org/m2/" }
-    }
-    dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${spring_boot_version}"
-    }
-}
-
 plugins {
-    id "net.ltgt.apt-idea" version "0.21"
-    id "net.ltgt.apt" version "0.21"
-    id "io.spring.dependency-management" version "1.0.10.RELEASE"
+    id "idea"
+
+    id "org.springframework.boot" version "${springVersion}"
+    id "io.spring.dependency-management" version "${springDependencyManagementVersion}"
+
+    id "org.jetbrains.kotlin.jvm" version "${kotlinVersion}"
+    id "org.jetbrains.kotlin.plugin.spring" version "${kotlinVersion}"
+    id "org.jetbrains.kotlin.plugin.jpa" version "${kotlinVersion}"
+    id "org.jetbrains.kotlin.plugin.allopen" version "${kotlinVersion}"
+
     id "org.liquibase.gradle" version "2.0.4"
     id "com.github.ben-manes.versions" version "0.20.0"
-    id "org.owasp.dependencycheck" version "5.0.0-M1"
+    id "io.freefair.lombok" version "5.3.3.3"
     id "org.sonarqube" version "2.7"
     id "checkstyle"
     id "jacoco"
-    id "io.freefair.lombok" version "5.3.0"
-    id "org.jetbrains.kotlin.jvm" version "1.4.21"
-    id "org.jetbrains.kotlin.plugin.spring" version "1.4.21"
-    id "org.jetbrains.kotlin.plugin.jpa" version "1.4.21"
 }
 
 /*
@@ -83,7 +74,7 @@ allprojects {
     }
 
     lombok {
-        version = "1.18.16"
+        version = "1.18.20"
     }
 
     bootJar.enabled = false
@@ -96,7 +87,10 @@ allprojects {
     repositories {
         mavenCentral()
         mavenLocal()
-        maven { url "http://repo.ritense.com/repository/maven-public/" }
+        maven {
+            url "http://repo.ritense.com/repository/maven-public/"
+            allowInsecureProtocol = true
+        }
     }
 
 }
@@ -119,6 +113,7 @@ subprojects { subproject ->
     task allDeps(type: DependencyReportTask) {}
 
     task sourceJar(type: Jar) {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
         // from sourceSets.main.allJava
         // Known issue: with Kotlin sources running publishMavenLocal need to run it twice.
         from sourceSets.main.delombokTask
@@ -153,16 +148,18 @@ subprojects { subproject ->
     jar {
         enabled = true
         manifest {
-            attributes("Implementation-Title": projectName)
-            attributes("Implementation-Version": projectVersion)
+            attributes(
+                "Implementation-Title": projectName,
+                "Implementation-Version": projectVersion
+            )
         }
     }
 
-    apply from: "$rootProject.projectDir/gradle/publishing.gradle"
-    apply from: "$rootProject.projectDir/gradle/owasp-dependency-check.gradle"
+    if(project.name != "app") {
+        apply from: "$rootProject.projectDir/gradle/publishing.gradle"
+    }
 
     dependencies {
-
         implementation "org.springframework.boot:spring-boot-starter"
         implementation "org.springframework.boot:spring-boot-starter-web"
         implementation "org.springframework.boot:spring-boot-starter-actuator"
@@ -182,7 +179,7 @@ subprojects { subproject ->
         implementation 'io.github.microutils:kotlin-logging:2.0.4'
 
         api "org.springframework.security:spring-security-core"
-        api "org.springframework.boot:spring-boot"
+        api("org.springframework.boot:spring-boot")
         api "org.springframework.data:spring-data-commons"
         api "javax.inject:javax.inject:1"
 
@@ -194,7 +191,6 @@ subprojects { subproject ->
 
         //Kotlin test
         testImplementation "org.jetbrains.kotlin:kotlin-test"
-        testImplementation "org.jetbrains.kotlin:kotlin-test-junit"
     }
 
 }

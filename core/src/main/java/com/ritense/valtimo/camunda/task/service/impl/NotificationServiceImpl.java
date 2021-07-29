@@ -17,7 +17,6 @@
 package com.ritense.valtimo.camunda.task.service.impl;
 
 import com.ritense.valtimo.camunda.task.domain.notification.AssignmentNotification;
-import com.ritense.valtimo.camunda.task.domain.notification.PublicAssignmentNotification;
 import com.ritense.valtimo.camunda.task.service.NotificationService;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -56,32 +55,6 @@ public class NotificationServiceImpl implements NotificationService {
             );
         } else if (delegateTaskHelper.isTaskBeingCreated(task)) {
             notifyCandidateGroupAboutTaskAssignment(task, template);
-        }
-    }
-
-    @Override
-    public void sendPublicTaskNotification(DelegateTask task, String firstName, String lastName, String language) {
-        sendPublicTaskNotification(task, firstName, lastName, language, defaultNotificationTemplate());
-    }
-
-    @Override
-    public void sendPublicTaskNotification(DelegateTask task, String firstName, String lastName, String language, String template) {
-        logger.info("send public task notification for task: {} using template: {} to {}", task.getName(), template, firstName + lastName);
-        if (!delegateTaskHelper.isTaskPublic(task)) {
-            throw new IllegalStateException("The task '" + task.getName() + "' does not have any extension properties set to public.");
-        }
-        if (delegateTaskHelper.isTaskBeingAssigned(task)) {
-            final String emailAddress = task.getAssignee();
-            PublicAssignmentNotification notification = new PublicAssignmentNotification(
-                task,
-                MailTemplateIdentifier.from(template),
-                firstName,
-                lastName,
-                emailAddress,
-                baselUrl(),
-                language
-            );
-            notification.asTemplatedMailMessage().ifPresent(mailSender::send);
         }
     }
 

@@ -173,7 +173,7 @@ data class FormIoSubmission(
         fun makeRequest(submission: FormIoSubmission): Request {
             if (submission.formAssociation is StartEventFormAssociation) {
                 if (submission.processDocumentDefinition.canInitializeDocument()) {
-                    val documentDefinitionId = submission.processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId();
+                    val documentDefinitionId = submission.processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId()
                     return NewDocumentAndStartProcessRequest(
                         submission.processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(),
                         NewDocumentRequest(

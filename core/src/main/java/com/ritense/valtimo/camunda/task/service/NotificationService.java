@@ -23,14 +23,4 @@ public interface NotificationService {
     void sendNotification(DelegateTask task);
 
     void sendNotification(DelegateTask task, String template);
-
-    void sendPublicTaskNotification(DelegateTask task, String firstName, String lastName, String language);
-
-    void sendPublicTaskNotification(
-        DelegateTask task,
-        String firstName,
-        String lastName,
-        String language,
-        String template
-    );
 }

@@ -33,7 +33,9 @@ public class ProcessDocumentDefinitionRequest implements Request {
     @JsonProperty("canInitializeDocument")
     private boolean canInitializeDocument;
 
-    @JsonCreator
+    @JsonProperty("startableByUser")
+    private boolean startableByUser;
+
     public ProcessDocumentDefinitionRequest(
         @JsonProperty(value = "processDefinitionKey", required = true) @NotNull String processDefinitionKey,
         @JsonProperty(value = "documentDefinitionName", required = true) @NotNull String documentDefinitionName,
@@ -42,6 +44,24 @@ public class ProcessDocumentDefinitionRequest implements Request {
         this.processDefinitionKey = processDefinitionKey;
         this.documentDefinitionName = documentDefinitionName;
         this.canInitializeDocument = canInitializeDocument;
+        this.startableByUser = true;
+    }
+
+    @JsonCreator
+    public ProcessDocumentDefinitionRequest(
+        @JsonProperty(value = "processDefinitionKey", required = true) @NotNull String processDefinitionKey,
+        @JsonProperty(value = "documentDefinitionName", required = true) @NotNull String documentDefinitionName,
+        @JsonProperty(value = "canInitializeDocument", required = true) boolean canInitializeDocument,
+        @JsonProperty(value = "startableByUser") Boolean startableByUser
+    ) {
+        this.processDefinitionKey = processDefinitionKey;
+        this.documentDefinitionName = documentDefinitionName;
+        this.canInitializeDocument = canInitializeDocument;
+        if (startableByUser == null) {
+            this.startableByUser = true;
+        } else {
+            this.startableByUser = startableByUser;
+        }
     }
 
     public String processDefinitionKey() {
@@ -54,6 +74,10 @@ public class ProcessDocumentDefinitionRequest implements Request {
 
     public boolean canInitializeDocument() {
         return canInitializeDocument;
+    }
+
+    public boolean startableByUser() {
+        return startableByUser;
     }
 
 }

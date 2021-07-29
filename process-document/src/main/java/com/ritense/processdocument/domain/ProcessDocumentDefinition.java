@@ -26,6 +26,9 @@ public interface ProcessDocumentDefinition {
     @JsonProperty("canInitializeDocument")
     boolean canInitializeDocument();
 
+    @JsonProperty("startableByUser")
+    boolean startableByUser();
+
     @JsonProperty("processName")
     String processName();
 

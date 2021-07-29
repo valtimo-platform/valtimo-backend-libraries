@@ -43,7 +43,7 @@ public class JsonSchemaDocumentDefinitionSequenceGeneratorServiceTest {
     public void shouldGetNewSequenceWithInitialValueOf1() {
         final var id = JsonSchemaDocumentDefinitionId.newId("Some-Name");
 
-        when(documentDefinitionSequenceRepository.findByDefinition(id)).thenReturn(Optional.empty());
+        when(documentDefinitionSequenceRepository.findByDefinitionName(id.name())).thenReturn(Optional.empty());
 
         final long nextSequence = sequenceGeneratorService.next(id);
 
@@ -54,7 +54,7 @@ public class JsonSchemaDocumentDefinitionSequenceGeneratorServiceTest {
     public void shouldGetUpdatedSequenceWithValueOf2() {
         final var id = JsonSchemaDocumentDefinitionId.existingId("Some-Name", 1);
 
-        when(documentDefinitionSequenceRepository.findByDefinition(id))
+        when(documentDefinitionSequenceRepository.findByDefinitionName(id.name()))
             .thenReturn(Optional.empty())
             .thenReturn(Optional.of(new JsonSchemaDocumentDefinitionSequenceRecord(id)));
 

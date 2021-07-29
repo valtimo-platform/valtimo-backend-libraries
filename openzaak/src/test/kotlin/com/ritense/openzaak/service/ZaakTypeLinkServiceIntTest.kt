@@ -18,6 +18,7 @@ package com.ritense.openzaak.service
 
 import com.ritense.openzaak.BaseIntegrationTest
 import com.ritense.openzaak.domain.mapping.impl.Operation
+import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandler
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
@@ -82,7 +83,13 @@ class ZaakTypeLinkServiceIntTest : BaseIntegrationTest() {
 
         //then
         assertThat(createServiceTaskHandlerResult).isNotNull
-        assertThat(createServiceTaskHandlerResult.zaakTypeLink()?.serviceTaskHandlers?.contains(serviceTaskHandlerRequest))
+        assertThat(createServiceTaskHandlerResult.zaakTypeLink()?.serviceTaskHandlers).contains(
+            ServiceTaskHandler(
+                serviceTaskHandlerRequest.serviceTaskId,
+                serviceTaskHandlerRequest.operation,
+                serviceTaskHandlerRequest.parameter
+            )
+        )
     }
 
     @Test
@@ -103,8 +110,21 @@ class ZaakTypeLinkServiceIntTest : BaseIntegrationTest() {
 
         //then
         assertThat(modifyServiceTaskHandlerResult).isNotNull
-        assertThat(modifyServiceTaskHandlerResult.zaakTypeLink()?.serviceTaskHandlers?.contains(newServiceTaskHandlerRequest))
-        assertThat(modifyServiceTaskHandlerResult.zaakTypeLink()?.serviceTaskHandlers?.contains(serviceTaskHandlerRequest)).isFalse
+        assertThat(modifyServiceTaskHandlerResult.zaakTypeLink()?.serviceTaskHandlers).contains(
+            ServiceTaskHandler(
+                newServiceTaskHandlerRequest.serviceTaskId,
+                newServiceTaskHandlerRequest.operation,
+                newServiceTaskHandlerRequest.parameter
+            )
+        )
+        assertThat(modifyServiceTaskHandlerResult.zaakTypeLink()?.serviceTaskHandlers).doesNotContain(
+            ServiceTaskHandler(
+                serviceTaskHandlerRequest.serviceTaskId,
+                serviceTaskHandlerRequest.operation,
+                serviceTaskHandlerRequest.parameter
+            )
+        )
+
     }
 
 }

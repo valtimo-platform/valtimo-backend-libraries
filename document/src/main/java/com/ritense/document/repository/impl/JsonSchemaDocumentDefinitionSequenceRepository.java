@@ -16,7 +16,6 @@
 
 package com.ritense.document.repository.impl;
 
-import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -32,9 +31,9 @@ public interface JsonSchemaDocumentDefinitionSequenceRepository extends Document
     @Query("" +
         "   SELECT  ddsr " +
         "   FROM    JsonSchemaDocumentDefinitionSequenceRecord ddsr " +
-        "   WHERE   ddsr.id = :definitionId ")
-    Optional<JsonSchemaDocumentDefinitionSequenceRecord> findByDefinition(
-        @Param("definitionId") DocumentDefinition.Id definitionId
+        "   WHERE   ddsr.id.name = :documentDefinitionName ")
+    Optional<JsonSchemaDocumentDefinitionSequenceRecord> findByDefinitionName(
+        @Param("documentDefinitionName") String documentDefinitionName
     );
 
     @Modifying
