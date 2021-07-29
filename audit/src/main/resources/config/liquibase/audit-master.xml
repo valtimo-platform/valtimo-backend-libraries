@@ -21,5 +21,6 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <include file="changelog/20190305-create-audit-record-changelog.xml" relativeToChangelogFile="true"/>
-
+    <include file="changelog/20210414-audit-record-add-document-id-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20210708-update-document-id-audit-event.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

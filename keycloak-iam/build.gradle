@@ -20,15 +20,16 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
-    implementation 'org.keycloak:keycloak-spring-boot-starter:12.0.1'
+    implementation group: 'org.keycloak', name: 'keycloak-spring-boot-starter', version: '10.0.2'
 
-    implementation group: 'org.liquibase', name: 'liquibase-core', version: '3.8.5'
-    implementation group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '3.8'
+    implementation group: 'org.keycloak', name: 'keycloak-admin-client', version: '10.0.2'
+
+    implementation group: 'org.liquibase', name: 'liquibase-core'
+    implementation group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.3.3'
     implementation group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
 
     implementation "org.hibernate:hibernate-core"
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
-    implementation 'org.keycloak:keycloak-admin-client:12.0.1'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
 
     testImplementation project(":core")
 

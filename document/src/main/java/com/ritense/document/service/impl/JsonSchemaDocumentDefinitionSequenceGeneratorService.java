@@ -31,8 +31,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Slf4j
 @RequiredArgsConstructor
 public class JsonSchemaDocumentDefinitionSequenceGeneratorService implements DocumentSequenceGeneratorService {
@@ -47,8 +45,8 @@ public class JsonSchemaDocumentDefinitionSequenceGeneratorService implements Doc
         backoff = @Backoff(delay = 500, maxDelay = 5000)
     )
     public long next(DocumentDefinition.Id documentDefinitionId) {
-        final Optional<JsonSchemaDocumentDefinitionSequenceRecord> optionalSequence = documentDefinitionSequenceRepository
-            .findByDefinition(documentDefinitionId);
+        final var optionalSequence = documentDefinitionSequenceRepository
+            .findByDefinitionName(documentDefinitionId.name());
 
         JsonSchemaDocumentDefinitionSequenceRecord sequenceRecord;
         if (optionalSequence.isPresent()) {

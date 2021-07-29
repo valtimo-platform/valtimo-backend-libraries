@@ -23,6 +23,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.DayOfWeek;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -41,7 +42,7 @@ public interface EmailNotificationSettingsRepository extends JpaRepository<Email
         "    JOIN ens.days d " +
         "        WHERE ens.reminderNotificationsEnabled = true " +
         "        AND d = :today ")
-    Optional<EmailNotificationSettings> findAllReminderNotificationsEnabled(@Param("today") DayOfWeek today);
+    List<EmailNotificationSettings> findAllReminderNotificationsEnabled(@Param("today") DayOfWeek today);
 
     @Query(" SELECT CASE WHEN COUNT(ens)> 0 then true else false end " +
         "       FROM EmailNotificationSettings ens " +

@@ -19,8 +19,6 @@ package com.ritense.valtimo.contract.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
-import java.util.Base64;
-
 @ConstructorBinding
 @ConfigurationProperties(prefix = "valtimo")
 public class ValtimoProperties {
@@ -31,18 +29,18 @@ public class ValtimoProperties {
 
     private final JWT jwt;
 
-    private final PublicTask publicTask;
+    private final Portal portal;
 
     public ValtimoProperties(
         App app,
         Mandrill mandrill,
         JWT jwt,
-        PublicTask publicTask
+        Portal portal
     ) {
         this.app = app != null ? app : new App();
         this.mandrill = mandrill != null ? mandrill : new Mandrill();
         this.jwt = jwt != null ? jwt : new JWT();
-        this.publicTask = publicTask;
+        this.portal = portal != null ? portal : new Portal();
     }
 
     public App getApp() {
@@ -57,8 +55,8 @@ public class ValtimoProperties {
         return jwt;
     }
 
-    public PublicTask getPublicTask() {
-        return publicTask;
+    public Portal getPortal() {
+        return portal;
     }
 
     public static class App {
@@ -174,16 +172,30 @@ public class ValtimoProperties {
         }
     }
 
-    @ConstructorBinding
-    public static class PublicTask {
-        private final byte[] tokenSecret;
+    public static class Portal {
 
-        public PublicTask(String tokenSecret) {
-            this.tokenSecret = Base64.getDecoder().decode(tokenSecret);
+        private String hostname;
+        private String scheme;
+
+        public String getHostname() {
+            return hostname;
         }
 
-        public byte[] getTokenSecret() {
-            return tokenSecret;
+        public void setHostname(String hostname) {
+            this.hostname = hostname;
+        }
+
+        public String getScheme() {
+            return scheme;
+        }
+
+        public void setScheme(String scheme) {
+            this.scheme = scheme;
+        }
+
+        public String getBaselUrl() {
+            return String.format("%s://%s/", scheme, hostname);
         }
     }
+
 }

@@ -17,7 +17,6 @@
 package com.ritense.audit.service.impl;
 
 import com.ritense.audit.domain.AuditRecord;
-import com.ritense.audit.domain.AuditRecordBuilder;
 import com.ritense.audit.domain.MetaData;
 import com.ritense.audit.domain.MetaDataBuilder;
 import com.ritense.audit.exception.AuditRecordAlreadyProcessedException;
@@ -55,10 +54,11 @@ public class AuditEventProcessorImpl implements AuditEventProcessor {
                 .occurredOn(event.getOccurredOn())
                 .user(event.getUser())
                 .build();
-            final AuditRecord auditRecord = new AuditRecordBuilder()
+            final AuditRecord auditRecord = AuditRecord.builder()
                 .id(event.getId())
                 .metaData(metaData)
                 .auditEvent(event)
+                .documentId(event.getDocumentId())
                 .build();
             auditRecordRepository.saveAndFlush(auditRecord);
             logger.debug("Processed AuditEvent: {}", auditRecord);

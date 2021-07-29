@@ -18,10 +18,9 @@ package com.ritense.audit.service;
 
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.service.impl.SearchCriteria;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface AuditSearchService {
 

@@ -33,7 +33,6 @@ import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocument
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.processdocument.service.impl.result.ModifyDocumentAndCompleteTaskResultSucceeded;
 import com.ritense.valtimo.service.CamundaTaskService;
-import com.ritense.valtimo.task.publictask.PublicTaskTokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
@@ -58,7 +57,6 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
     private CamundaProcessJsonSchemaDocumentAssociationService processDocumentAssociationService;
     private CamundaFormAssociationService formAssociationService;
     private CamundaProcessJsonSchemaDocumentService processDocumentService;
-    private PublicTaskTokenService publicTaskTokenService;
     private CamundaTaskService camundaTaskService;
     private SubmissionTransformerService submissionTransformerService;
     private ApplicationEventPublisher applicationEventPublisher;
@@ -70,7 +68,6 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
         processDocumentAssociationService = mock(CamundaProcessJsonSchemaDocumentAssociationService.class);
         formAssociationService = mock(CamundaFormAssociationService.class);
         processDocumentService = mock(CamundaProcessJsonSchemaDocumentService.class);
-        publicTaskTokenService = mock(PublicTaskTokenService.class);
         camundaTaskService = mock(CamundaTaskService.class);
         submissionTransformerService = mock(FormIoJsonPatchSubmissionTransformerService.class);
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
@@ -81,7 +78,6 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
             processDocumentAssociationService,
             formAssociationService,
             processDocumentService,
-            publicTaskTokenService,
             camundaTaskService,
             submissionTransformerService,
             applicationEventPublisher

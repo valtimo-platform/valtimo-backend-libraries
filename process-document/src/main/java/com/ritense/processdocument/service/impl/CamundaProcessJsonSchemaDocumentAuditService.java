@@ -17,30 +17,30 @@
 package com.ritense.processdocument.service.impl;
 
 import com.ritense.audit.domain.AuditRecord;
-import com.ritense.audit.service.AuditSearchService;
-import com.ritense.audit.service.impl.SearchCriteria;
+import com.ritense.audit.service.AuditService;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentCreatedEvent;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentModifiedEvent;
 import com.ritense.processdocument.service.ProcessDocumentAuditService;
 import com.ritense.valtimo.camunda.processaudit.ProcessEndedEvent;
 import com.ritense.valtimo.camunda.processaudit.ProcessStartedEvent;
+import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileAddedEvent;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileRemovedEvent;
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-
 public class CamundaProcessJsonSchemaDocumentAuditService implements ProcessDocumentAuditService {
 
-    private final AuditSearchService auditSearchService;
+    private final AuditService auditService;
 
-    public CamundaProcessJsonSchemaDocumentAuditService(AuditSearchService auditSearchService) {
-        this.auditSearchService = auditSearchService;
+    public CamundaProcessJsonSchemaDocumentAuditService(AuditService auditService) {
+        this.auditService = auditService;
     }
 
     @Override
@@ -48,18 +48,18 @@ public class CamundaProcessJsonSchemaDocumentAuditService implements ProcessDocu
         final Document.Id id,
         final Pageable pageable
     ) {
-        final List<SearchCriteria> criteriaList = List.of(
-            new SearchCriteria("$.documentId", JsonSchemaDocumentCreatedEvent.class, id.toString()),
-            new SearchCriteria("$.documentId", JsonSchemaDocumentModifiedEvent.class, id.toString()),
-            new SearchCriteria("$.businessKey", TaskAssignedEvent.class, id.toString()),
-            new SearchCriteria("$.businessKey", TaskCompletedEvent.class, id.toString()),
-            new SearchCriteria("$.businessKey", ProcessStartedEvent.class, id.toString()),
-            new SearchCriteria("$.businessKey", ProcessEndedEvent.class, id.toString()),
-            new SearchCriteria("$.dossierId", DossierDocumentGeneratedEvent.class, id.toString()),
-            new SearchCriteria("$.documentId", DocumentRelatedFileAddedEvent.class, id.toString()),
-            new SearchCriteria("$.documentId", DocumentRelatedFileRemovedEvent.class, id.toString())
+        final List<Class<? extends AuditEvent >> eventTypes = List.of(
+            JsonSchemaDocumentCreatedEvent.class,
+            JsonSchemaDocumentModifiedEvent.class,
+            TaskAssignedEvent.class,
+            TaskCompletedEvent.class,
+            ProcessStartedEvent.class,
+            ProcessEndedEvent.class,
+            DossierDocumentGeneratedEvent.class,
+            DocumentRelatedFileAddedEvent.class,
+            DocumentRelatedFileRemovedEvent.class
         );
-        return auditSearchService.search(criteriaList, pageable);
+        return auditService.findByEventAndDocumentId(eventTypes, UUID.fromString(id.toString()), pageable);
     }
 
 }

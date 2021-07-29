@@ -130,14 +130,16 @@ class ZaakTypeLinkServiceTest {
                         CamundaProcessDefinitionKey("processDefinitionKey"),
                         JsonSchemaDocumentDefinitionId.newId("documentDefinitionId")
                     ),
-                    true
+                    true,
+                    false
                 ),
                 CamundaProcessJsonSchemaDocumentDefinition(
                     CamundaProcessJsonSchemaDocumentDefinitionId.newId(
                         CamundaProcessDefinitionKey("processDefinitionKey"),
                         JsonSchemaDocumentDefinitionId.newId("documentDefinitionId2")
                     ),
-                    true
+                    true,
+                    false
                 )
             ))
 

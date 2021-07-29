@@ -28,17 +28,14 @@ import com.ritense.formlink.service.impl.CamundaFormAssociationSubmissionService
 import com.ritense.formlink.service.impl.FormIoJsonPatchSubmissionTransformerService;
 import com.ritense.formlink.web.rest.FormAssociationManagementResource;
 import com.ritense.formlink.web.rest.FormAssociationResource;
-import com.ritense.formlink.web.rest.PublicFormAssociationResource;
 import com.ritense.formlink.web.rest.impl.CamundaFormAssociationManagementResource;
 import com.ritense.formlink.web.rest.impl.CamundaFormAssociationResource;
-import com.ritense.formlink.web.rest.impl.PublicCamundaFormAssociationResource;
 import com.ritense.formlink.web.rest.impl.interceptor.PublicAccessRateLimitInterceptor;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import com.ritense.valtimo.task.publictask.PublicTaskTokenService;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -62,7 +59,6 @@ public class FormLinkAutoConfiguration {
         DocumentService documentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
         CamundaProcessService camundaProcessService,
-        PublicTaskTokenService publicTaskTokenService,
         TaskService taskService,
         SubmissionTransformerService<FormIoFormDefinition> submissionTransformerService,
         List<FormFieldDataResolver> formFieldDataResolvers
@@ -73,7 +69,6 @@ public class FormLinkAutoConfiguration {
             documentService,
             processDocumentAssociationService,
             camundaProcessService,
-            publicTaskTokenService,
             taskService,
             submissionTransformerService,
             formFieldDataResolvers
@@ -88,7 +83,6 @@ public class FormLinkAutoConfiguration {
         ProcessDocumentAssociationService processDocumentAssociationService,
         FormAssociationService formAssociationService,
         ProcessDocumentService processDocumentService,
-        PublicTaskTokenService publicTaskTokenService,
         CamundaTaskService camundaTaskService,
         SubmissionTransformerService<FormIoFormDefinition> submissionTransformerService,
         ApplicationEventPublisher applicationEventPublisher
@@ -99,7 +93,6 @@ public class FormLinkAutoConfiguration {
             processDocumentAssociationService,
             formAssociationService,
             processDocumentService,
-            publicTaskTokenService,
             camundaTaskService,
             submissionTransformerService,
             applicationEventPublisher
@@ -119,15 +112,6 @@ public class FormLinkAutoConfiguration {
         FormAssociationSubmissionService formAssociationSubmissionService
     ) {
         return new CamundaFormAssociationResource(formAssociationService, formAssociationSubmissionService);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(PublicFormAssociationResource.class)
-    public PublicCamundaFormAssociationResource publicFormAssociationResource(
-        FormAssociationService formAssociationService,
-        FormAssociationSubmissionService formAssociationSubmissionService
-    ) {
-        return new PublicCamundaFormAssociationResource(formAssociationService, formAssociationSubmissionService);
     }
 
     @Bean

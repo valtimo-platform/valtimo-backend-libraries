@@ -26,8 +26,6 @@ public class FormLinkSecuritySmokeIntegrationTest extends CoreSecuritySmokeInteg
     protected Set<String> getIgnoredPathPatterns() {
         final Set<String> ignoredPathPatterns = super.getIgnoredPathPatterns();
         ignoredPathPatterns.add("/api/form-file");
-        ignoredPathPatterns.add("/api/public/form-association/form-definition/submission");
-        ignoredPathPatterns.add("/api/public/form-association/form-definition");
         return ignoredPathPatterns;
     }
 }

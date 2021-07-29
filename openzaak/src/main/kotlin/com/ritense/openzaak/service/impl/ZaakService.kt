@@ -25,7 +25,11 @@ import com.ritense.openzaak.service.impl.ZaakService.Constants.Companion.DATE_TI
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.Catalogus
 import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
+import com.ritense.openzaak.service.impl.model.catalogi.ResultaatType
+import com.ritense.openzaak.service.impl.model.catalogi.StatusType
 import com.ritense.openzaak.service.impl.model.zaak.Eigenschap
+import com.ritense.openzaak.service.impl.model.zaak.Resultaat
+import com.ritense.openzaak.service.impl.model.zaak.Status
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.web.client.RestTemplate
@@ -80,11 +84,14 @@ class ZaakService(
     }
 
     override fun getZaak(id: UUID): Zaak {
-        return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
+        val zaak = OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
             .path("zaken/api/v1/zaken/$id")
             .get()
             .build()
             .execute(Zaak::class.java)
+        zaak.statusOmschrijving = zaak.status?.let { getZaakStatusOmschrijving(it) }
+        zaak.resulaatOmschrijving = zaak.resultaat?.let { getZaakResultaatOmschrijving(it) }
+        return zaak
     }
 
     override fun getZaakEigenschappen(id: UUID): Collection<Eigenschap> {
@@ -167,6 +174,46 @@ class ZaakService(
         companion object {
             val DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
             val DATE_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        }
+    }
+
+    private fun getZaakStatusOmschrijving(zaakStatusUrl: URI): String? {
+        val zaakStatusPath = openZaakConfigService.get()?.let { zaakStatusUrl.toString().replace(it.url, "") };
+        val statusType = zaakStatusPath?.let {
+            OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
+                .path(it)
+                .get()
+                .build()
+                .execute(Status::class.java)
+        }
+
+        val statusTypePath = openZaakConfigService.get()?.let { statusType?.statustype.toString().replace(it.url, "") }
+        return statusTypePath?.let {
+            OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
+                .path(it)
+                .get()
+                .build()
+                .execute(StatusType::class.java).omschrijving
+        }
+    }
+
+    private fun getZaakResultaatOmschrijving(zaakResultaatUrl: URI): String? {
+        val zaakResultaatPath = openZaakConfigService.get()?.let { zaakResultaatUrl.toString().replace(it.url, "") };
+        val resultaatType = zaakResultaatPath?.let {
+            OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
+                .path(it)
+                .get()
+                .build()
+                .execute(Resultaat::class.java)
+        }
+
+        val resultaatTypePath = openZaakConfigService.get()?.let { resultaatType?.resultaattype.toString().replace(it.url, "") }
+        return resultaatTypePath?.let {
+            OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
+                .path(it)
+                .get()
+                .build()
+                .execute(ResultaatType::class.java).omschrijving
         }
     }
 

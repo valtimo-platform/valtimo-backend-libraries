@@ -124,14 +124,16 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         return createProcessDocumentDefinition(
             new CamundaProcessDefinitionKey(request.processDefinitionKey()),
             documentDefinitionId,
-            request.canInitializeDocument()
+            request.canInitializeDocument(),
+            request.startableByUser()
         );
     }
 
     private Optional<CamundaProcessJsonSchemaDocumentDefinition> createProcessDocumentDefinition(
         CamundaProcessDefinitionKey processDefinitionKey,
         JsonSchemaDocumentDefinitionId documentDefinitionId,
-        boolean canInitializeDocument
+        boolean canInitializeDocument,
+        boolean startableByUser
     ) {
         if (!camundaProcessService.processDefinitionExistsByKey(processDefinitionKey.toString())) {
             throw new UnknownProcessDefinitionException(processDefinitionKey.toString());
@@ -154,7 +156,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         }
 
         final var association = processDocumentDefinitionRepository.saveAndFlush(
-            new CamundaProcessJsonSchemaDocumentDefinition(id, canInitializeDocument)
+            new CamundaProcessJsonSchemaDocumentDefinition(id, canInitializeDocument, startableByUser)
         );
         logger.info(
             "Created ProcessDocumentDefinition - associated process-definition - {} - with document-definition - {} ",

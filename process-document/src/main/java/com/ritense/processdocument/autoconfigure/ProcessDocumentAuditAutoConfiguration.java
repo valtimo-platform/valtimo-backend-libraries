@@ -17,6 +17,7 @@
 package com.ritense.processdocument.autoconfigure;
 
 import com.ritense.audit.service.AuditSearchService;
+import com.ritense.audit.service.AuditService;
 import com.ritense.processdocument.service.ProcessDocumentAuditService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAuditService;
 import com.ritense.processdocument.web.rest.ProcessDocumentAuditResource;
@@ -31,8 +32,8 @@ public class ProcessDocumentAuditAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ProcessDocumentAuditService.class)
-    public CamundaProcessJsonSchemaDocumentAuditService processDocumentAuditService(AuditSearchService auditSearchService) {
-        return new CamundaProcessJsonSchemaDocumentAuditService(auditSearchService);
+    public CamundaProcessJsonSchemaDocumentAuditService processDocumentAuditService(AuditService auditService) {
+        return new CamundaProcessJsonSchemaDocumentAuditService(auditService);
     }
 
     @Bean

@@ -20,11 +20,12 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class TestHelper {
 
     public static String getResourceAsString(String resource) throws IOException {
-        return IOUtils.toString(getResourceAsStream(resource));
+        return IOUtils.toString(getResourceAsStream(resource), StandardCharsets.UTF_8);
     }
 
     public static InputStream getResourceAsStream(String resource) {

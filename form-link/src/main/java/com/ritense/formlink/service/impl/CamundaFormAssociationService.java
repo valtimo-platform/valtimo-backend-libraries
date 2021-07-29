@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.FormIoFormDefinition;
@@ -48,12 +47,8 @@ import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
-import com.ritense.valtimo.task.publictask.PublicTaskRequest;
-import com.ritense.valtimo.task.publictask.PublicTaskTokenParseException;
-import com.ritense.valtimo.task.publictask.PublicTaskTokenService;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.TaskService;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -76,7 +71,6 @@ public class CamundaFormAssociationService implements FormAssociationService {
     private final DocumentService documentService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final CamundaProcessService camundaProcessService;
-    private final PublicTaskTokenService publicTaskTokenService;
     private final TaskService taskService;
     private final SubmissionTransformerService submissionTransformerService;
     private final List<FormFieldDataResolver> formFieldDataResolvers;
@@ -117,31 +111,6 @@ public class CamundaFormAssociationService implements FormAssociationService {
             .flatMap(camundaFormAssociation -> Optional.of(buildFormDefinition(camundaFormAssociation)));
     }
 
-    @Override
-    public Optional<JsonNode> getPublicFormDefinitionByAuthorization(String authorizationHeaderValue) throws PublicTaskTokenParseException {
-        PublicTaskRequest publicTaskRequest = publicTaskTokenService.getPublicTaskRequestByAuthorization(
-            authorizationHeaderValue
-        );
-
-        Optional<CamundaFormAssociation> optionalFormAssociationByFormLinkId = getFormAssociationByFormLinkId(
-            publicTaskRequest.getProcessDefinitionKey(),
-            publicTaskRequest.getFormLinkId()
-        );
-
-        if (optionalFormAssociationByFormLinkId.isEmpty() || !optionalFormAssociationByFormLinkId.get().getFormLink().isPublic()) {
-            throw new AccessDeniedException("This form is not accessible using the provided credentials.");
-        }
-
-        if (taskService.createTaskQuery().taskId(publicTaskRequest.getTaskInstanceId()).active().count() == 0) {
-            throw new AccessDeniedException("No active task instance could be found for this process. It might have been deleted or is already finished.");
-        }
-
-        return optionalFormAssociationByFormLinkId.flatMap(getPrefilledFormDefinitionFromFormAssociation(
-            JsonSchemaDocumentId.existingId(UUID.fromString(publicTaskRequest.getDocumentId())),
-            publicTaskRequest.getTaskInstanceId())
-        );
-    }
-
     public Optional<CamundaFormAssociation> getStartEventFormDefinitionByProcessDefinitionKey(String processDefinitionKey) {
         Predicate<? super CamundaFormAssociation> filter = camundaFormAssociation ->
             camundaFormAssociation instanceof StartEventFormAssociation;
@@ -150,13 +119,6 @@ public class CamundaFormAssociationService implements FormAssociationService {
 
     public Optional<JsonNode> getStartEventFormDefinition(String processDefinitionKey) {
         return getStartEventFormDefinitionByProcessDefinitionKey(processDefinitionKey).map(this::buildFormDefinition);
-    }
-
-    public Optional<JsonNode> getPublicStartEventFormDefinition(String processDefinitionKey) {
-        Predicate<? super CamundaFormAssociation> filter = camundaFormAssociation ->
-            camundaFormAssociation instanceof StartEventFormAssociation
-                && camundaFormAssociation.getFormLink().isPublic();
-        return getStartEventFormDefinitionByProcessDefinitionKeyAndFilter(processDefinitionKey, filter).map(this::buildFormDefinition);
     }
 
     private Optional<CamundaFormAssociation> getStartEventFormDefinitionByProcessDefinitionKeyAndFilter(
@@ -203,31 +165,6 @@ public class CamundaFormAssociationService implements FormAssociationService {
             processDefinitionKey,
             formLinkId
         ).flatMap(getPrefilledFormDefinitionFromFormAssociation(documentId, taskInstanceId));
-    }
-
-    @Override
-    public Optional<JsonNode> getPreFilledPublicFormDefinitionByFormLinkId(
-        Document.Id documentId,
-        String authorizationHeaderValue
-    ) throws PublicTaskTokenParseException {
-        assertArgumentNotNull(documentId, "documentId is required");
-        var publicTaskRequest = publicTaskTokenService.getPublicTaskRequestByAuthorization(
-            authorizationHeaderValue);
-
-        Optional<CamundaFormAssociation> optionalFormAssociationByFormLinkId = getFormAssociationByFormLinkId(
-            publicTaskRequest.getProcessDefinitionKey(),
-            publicTaskRequest.getFormLinkId()
-        );
-
-        if (optionalFormAssociationByFormLinkId.isEmpty() || !optionalFormAssociationByFormLinkId.get().getFormLink().isPublic()) {
-            throw new AccessDeniedException("This form is not accessible using the provided credentials.");
-        }
-
-        if (taskService.createTaskQuery().taskId(publicTaskRequest.getTaskInstanceId()).active().count() == 0) {
-            throw new AccessDeniedException("No active task instance could be found for this process. It might have been deleted or is already finished.");
-        }
-
-        return optionalFormAssociationByFormLinkId.flatMap(getPrefilledFormDefinitionFromFormAssociation(documentId, publicTaskRequest.getTaskInstanceId()));
     }
 
     //Note: candidate for refactor. Using submission object approach

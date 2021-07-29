@@ -19,6 +19,7 @@ package com.ritense.audit.service;
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.domain.AuditRecordId;
 import com.ritense.valtimo.contract.audit.AuditEvent;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -27,6 +28,8 @@ import java.util.List;
 
 public interface AuditService {
     AuditRecord findById(AuditRecordId auditRecordId);
+
+    Page<AuditRecord> findByEventAndDocumentId(List<Class<? extends AuditEvent>> eventTypes, UUID documentId, Pageable pageable);
 
     List<AuditRecord> findByEventAndOccurredBetween(Class<? extends AuditEvent> event, LocalDateTime from, LocalDateTime until, Pageable pageable);
 

@@ -34,7 +34,6 @@ import com.ritense.valtimo.repository.CamundaReportingRepository;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
 import com.ritense.valtimo.repository.CamundaTaskRepository;
 import com.ritense.valtimo.security.permission.Permission;
-import com.ritense.valtimo.security.permission.PublicTaskAccessPermission;
 import com.ritense.valtimo.security.permission.TaskAccessPermission;
 import com.ritense.valtimo.security.permission.ValtimoPermissionEvaluator;
 import com.ritense.valtimo.service.AuthorizedUsersService;
@@ -43,12 +42,10 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
-import com.ritense.valtimo.task.publictask.PublicTaskTokenService;
 import com.ritense.valtimo.web.rest.AccountResource;
 import com.ritense.valtimo.web.rest.ProcessInstanceResource;
 import com.ritense.valtimo.web.rest.ProcessResource;
 import com.ritense.valtimo.web.rest.PublicProcessResource;
-import com.ritense.valtimo.web.rest.PublicTaskResource;
 import com.ritense.valtimo.web.rest.ReportingResource;
 import com.ritense.valtimo.web.rest.TaskResource;
 import com.ritense.valtimo.web.rest.UserResource;
@@ -63,7 +60,6 @@ import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -91,12 +87,10 @@ public class ValtimoAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ValtimoPermissionEvaluator.class)
     public ValtimoPermissionEvaluator valtimoPermissionEvaluator(
-        final TaskAccessPermission taskAccessPermission,
-        final PublicTaskAccessPermission publicTaskAccessPermission
+        final TaskAccessPermission taskAccessPermission
     ) {
         final HashMap<String, Permission> permissionMap = new HashMap<>();
         permissionMap.put("taskAccess", taskAccessPermission);
-        permissionMap.put("publicTaskAccess", publicTaskAccessPermission);
         return new ValtimoPermissionEvaluator(permissionMap);
     }
 
@@ -104,16 +98,6 @@ public class ValtimoAutoConfiguration {
     @ConditionalOnMissingBean(TaskAccessPermission.class)
     public TaskAccessPermission taskAccessPermission(final TaskService taskService) {
         return new TaskAccessPermission(taskService);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(PublicTaskAccessPermission.class)
-    public PublicTaskAccessPermission publicTaskAccessPermission(
-        final BpmnModelService bpmnModelService,
-        final DelegateTaskHelper delegateTaskHelper,
-        final CamundaTaskService camundaTaskService
-    ) {
-        return new PublicTaskAccessPermission(delegateTaskHelper, bpmnModelService, camundaTaskService);
     }
 
     @Bean
@@ -281,22 +265,6 @@ public class ValtimoAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(PublicTaskResource.class)
-    public PublicTaskResource publicTaskResource(
-        final TaskService taskService,
-        final FormService formService,
-        final CamundaTaskService camundaTaskService,
-        final CamundaProcessService camundaProcessService
-    ) {
-        return new PublicTaskResource(
-            taskService,
-            formService,
-            camundaTaskService,
-            camundaProcessService
-        );
-    }
-
-    @Bean
     @ConditionalOnMissingBean(PublicProcessResource.class)
     public PublicProcessResource publicProcessResource(
         final FormService formService,
@@ -350,13 +318,6 @@ public class ValtimoAutoConfiguration {
     @ConditionalOnMissingBean(UserResource.class)
     public UserResource userResource(UserManagementService userManagementService) {
         return new UserResource(userManagementService);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(PublicTaskTokenService.class)
-    @ConditionalOnProperty("valtimo.public-task.token-secret")
-    public PublicTaskTokenService publicTaskTokenService(ValtimoProperties valtimoProperties) {
-        return new PublicTaskTokenService(valtimoProperties);
     }
 
     @Bean

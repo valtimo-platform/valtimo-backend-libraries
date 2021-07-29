@@ -22,9 +22,63 @@ import java.util.UUID
 data class Zaak(
     val url: URI,
     val uuid: UUID,
+    val identificatie: String,
     val bronorganisatie: String,
+    val omschrijving: String,
+    val toelichting: String,
     val zaaktype: URI,
+    val registratiedatum: String,
     val verantwoordelijkeOrganisatie: String,
     val startdatum: String,
-    val eigenschappen: Collection<URI>?
-)
+    val einddatum: String?,
+    val einddatumGepland: String?,
+    val uiterlijkeEinddatumAfdoening: String?,
+    val publicatiedatum: String?,
+    val communicatiekanaal: String,
+    val productenOfDiensten: Collection<URI>?,
+    val vertrouwelijkheidaanduiding: String,
+    val betalingsindicatie: String,
+    val betalingsindicatieWeergave: String,
+    val laatsteBetaaldatum: String?,
+    val zaakgeometrie: Zaakgeometrie?,
+    val verlenging: Verlenging?,
+    val opschorting: Opschorting?,
+    val selectielijstklasse: URI,
+    val hoofdzaak: URI?,
+    val deelzaken: Collection<URI>?,
+    val relevanteAndereZaken: Collection<RelevanteAndereZaken>?,
+    val eigenschappen: Collection<URI>?,
+    val status: URI?,
+    var statusOmschrijving: String?,
+    val kenmerken: Collection<Kenmerken>?,
+    val archiefnominatie: String?,
+    val archiefstatus: String,
+    val archiefactiedatum: String?,
+    val resultaat: URI?,
+    var resulaatOmschrijving: String?
+) {
+    class Zaakgeometrie(
+        val type: String?,
+        val coordinates: Collection<Int>?
+    )
+
+    class Verlenging(
+        val reden: String?,
+        val duur: String?
+    )
+
+    class Opschorting(
+        val indicatie: Boolean?,
+        val reden: String?
+    )
+
+    class RelevanteAndereZaken(
+        val url: URI,
+        val aardRelatie: String
+    )
+
+    class Kenmerken(
+        val kenmerk: String,
+        val bron: String
+    )
+}

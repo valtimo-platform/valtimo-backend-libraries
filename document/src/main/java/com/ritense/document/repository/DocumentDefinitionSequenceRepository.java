@@ -27,7 +27,7 @@ import java.util.Optional;
 public interface DocumentDefinitionSequenceRepository<T extends DocumentDefinitionSequenceRecord>
     extends JpaRepository<T, DocumentDefinition.Id> {
 
-    Optional<T> findByDefinition(DocumentDefinition.Id definitionId);
+    Optional<T> findByDefinitionName(String documentDefinitionName);
 
     void deleteByDocumentDefinitionName(String documentDefinitionName);
 }

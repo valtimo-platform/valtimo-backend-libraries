@@ -22,12 +22,14 @@ import com.ritense.valtimo.contract.hardening.service.HardeningService;
 import com.ritense.valtimo.contract.hardening.throwable.SanitizedThrowable;
 import com.ritense.valtimo.contract.hardening.throwable.UnsanitizedThrowable;
 import com.ritense.valtimo.contract.utils.IpUtils;
+import java.util.Set;
+import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.zalando.problem.ProblemBuilder;
 import org.zalando.problem.ThrowableProblem;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Set;
-
+@Slf4j
 public class HardeningServiceImpl implements HardeningService {
     private final HardeningProperties hardeningProperties;
     private static String WHITELIST_MESSSAGE = "IP address is whitelisted: ";
@@ -56,9 +58,14 @@ public class HardeningServiceImpl implements HardeningService {
         if (sourceIpList.isWhitelisted()) {
             return problemBuilder
                 .with("reason-not-sanitized", WHITELIST_MESSSAGE + sourceIpList.getWhiteListedIp())
-                .with("stack-trace", throwableProblem.getStackTrace());
+                .with("stack-trace", throwableProblem.getStackTrace())
+                .withDetail(throwableProblem.getDetail())
+                .withCause(throwableProblem.getCause());
         } else {
-            return problemBuilder;
+            UUID referenceId = UUID.randomUUID();
+            logger.info("Exception occurred with reference id {}", referenceId, throwableProblem);
+            return problemBuilder
+                .with("referenceId", referenceId);
         }
     }
 

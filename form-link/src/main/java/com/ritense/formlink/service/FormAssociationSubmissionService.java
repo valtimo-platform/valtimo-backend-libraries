@@ -18,7 +18,6 @@ package com.ritense.formlink.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.formlink.service.result.FormSubmissionResult;
-import com.ritense.valtimo.task.publictask.PublicTaskTokenParseException;
 
 public interface FormAssociationSubmissionService {
 
@@ -29,15 +28,4 @@ public interface FormAssociationSubmissionService {
         String taskInstanceId,
         JsonNode submission
     );
-
-    FormSubmissionResult handlePublicStartFormSubmission(
-        String processDefinitionKey,
-        JsonNode formData
-    );
-
-    FormSubmissionResult handlePublicTaskFormSubmission(
-        String authorizationHeaderValue,
-        JsonNode submission
-    ) throws PublicTaskTokenParseException;
-
 }

@@ -68,8 +68,6 @@ public class ExceptionTranslator implements ProblemHandling {
                 .with("message", ErrorConstants.ERR_VALIDATION);
         } else {
             builder
-                .withCause(((DefaultProblem) problem).getCause())
-                .withDetail(problem.getDetail())
                 .withInstance(problem.getInstance());
 
             problem.getParameters().forEach(builder::with);

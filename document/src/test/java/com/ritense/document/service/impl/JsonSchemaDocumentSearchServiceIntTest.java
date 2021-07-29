@@ -422,12 +422,12 @@ public class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest 
 
         final Page<? extends Document> page = documentSearchService.search(
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.DESC, "createdOn"))
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "sequence"))
         );
         assertThat(page).isNotNull();
         assertThat(page.getTotalElements()).isEqualTo(2);
-        assertThat(page.getContent().get(0).createdOn()).isEqualToIgnoringNanos(documentTwo.resultingDocument().get().createdOn());
-        assertThat(page.getContent().get(1).createdOn()).isEqualToIgnoringNanos(documentOne.resultingDocument().get().createdOn());
+        assertThat(page.getContent().get(0).sequence()).isEqualTo(documentTwo.resultingDocument().get().sequence());
+        assertThat(page.getContent().get(1).sequence()).isEqualTo(documentOne.resultingDocument().get().sequence());
     }
 
     @Test

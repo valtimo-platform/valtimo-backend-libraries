@@ -187,6 +187,7 @@ public abstract class BaseTest {
                 new CamundaProcessDefinitionKey(PROCESS_DEFINITION_KEY),
                 JsonSchemaDocumentDefinitionId.existingId(documentDefinitionName, 1)
             ),
+            false,
             false
         );
     }

@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
+
 @RequiredArgsConstructor
 public class JsonSchemaDocumentService implements DocumentService {
 
@@ -77,7 +79,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             .findLatestByName(newDocumentRequest.documentDefinitionName())
             .orElseThrow(() -> new UnknownDocumentDefinitionException(newDocumentRequest.documentDefinitionName()));
         final var content = JsonDocumentContent.build(newDocumentRequest.content());
-        final var user = SecurityUtils.getCurrentUserLogin();
+        final var user = SecurityUtils.getCurrentUserLogin() != null ? SecurityUtils.getCurrentUserLogin() : SYSTEM_ACCOUNT;
 
         final var result = JsonSchemaDocument.create(
             definition,

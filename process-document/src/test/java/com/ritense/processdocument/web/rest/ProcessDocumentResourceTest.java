@@ -113,6 +113,7 @@ public class ProcessDocumentResourceTest extends BaseTest {
                 processDefinitionKey,
                 documentDefinitionId
             ),
+            false,
             false
         );
 
@@ -250,11 +251,13 @@ public class ProcessDocumentResourceTest extends BaseTest {
         final var request = new ProcessDocumentDefinitionRequest(
             processDefinitionKey.toString(),
             documentDefinitionId.name(),
+            false,
             false
         );
 
         final var camundaProcessJsonSchemaDocumentDefinition = new CamundaProcessJsonSchemaDocumentDefinition(
             CamundaProcessJsonSchemaDocumentDefinitionId.newId(processDefinitionKey, documentDefinitionId),
+            false,
             false
         );
         when(processDocumentAssociationService.createProcessDocumentDefinition(any()))
@@ -272,7 +275,7 @@ public class ProcessDocumentResourceTest extends BaseTest {
 
     @Test
     public void shouldReturnBadRequestWhenCreatingProcessDocumentDefinition() throws Exception {
-        final var request = new ProcessDocumentDefinitionRequest(null, null, false);
+        final var request = new ProcessDocumentDefinitionRequest(null, null, false, false);
 
         when(processDocumentAssociationService.createProcessDocumentDefinition(any())).thenReturn(Optional.empty());
 
@@ -321,6 +324,7 @@ public class ProcessDocumentResourceTest extends BaseTest {
         final var request = new ProcessDocumentDefinitionRequest(
             "some-key",
             "documentDefinitionName",
+            false,
             false
         );
         mockMvc.perform(

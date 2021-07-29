@@ -17,6 +17,8 @@
 package com.ritense.document.domain.impl.event;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.document.domain.event.DocumentCreatedEvent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
@@ -24,6 +26,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
 
+import com.ritense.valtimo.contract.audit.view.AuditView;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -68,6 +71,13 @@ public class JsonSchemaDocumentCreatedEvent extends AuditMetaData implements Doc
     @Override
     public JsonSchemaDocumentVersion version() {
         return version;
+    }
+
+    @Override
+    @JsonView(AuditView.Internal.class)
+    @JsonIgnore(false)
+    public UUID getDocumentId() {
+        return documentId.getId();
     }
 
     @Override

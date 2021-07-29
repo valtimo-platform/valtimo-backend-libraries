@@ -20,7 +20,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.view.AuditView;
+import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Persistable;
@@ -43,6 +47,9 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
     @Index(name = "occurred_on_index", columnList = "occurred_on"),
     @Index(name = "user_index", columnList = "user")
 })
+@Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuditRecord implements Persistable<AuditRecordId> {
 
@@ -56,38 +63,16 @@ public class AuditRecord implements Persistable<AuditRecordId> {
 
     @JsonView(AuditView.Public.class)
     @Column(name = "created_on", updatable = false)
-    private LocalDateTime createdOn;
+    @Builder.Default
+    private LocalDateTime createdOn = LocalDateTime.now();
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
     @Column(name = "audit_event", columnDefinition = "json", updatable = false)
     @JsonView(AuditView.Public.class)
     private AuditEvent auditEvent;
 
-    public AuditRecord(AuditRecordId auditRecordId, MetaData metaData, AuditEvent auditEvent) {
-        assertArgumentNotNull(auditRecordId, "auditRecordId is required");
-        assertArgumentNotNull(metaData, "metaData is required");
-        assertArgumentNotNull(auditEvent, "auditEvent is required");
-        this.auditRecordId = auditRecordId;
-        this.metaData = metaData;
-        this.auditEvent = auditEvent;
-        this.createdOn = LocalDateTime.now();
-    }
-
-    public AuditRecordId getAuditRecordId() {
-        return auditRecordId;
-    }
-
-    public MetaData getMetaData() {
-        return metaData;
-    }
-
-    public AuditEvent getAuditEvent() {
-        return auditEvent;
-    }
-
-    public LocalDateTime getCreatedOn() {
-        return createdOn;
-    }
+    @Column(name = "document_id", columnDefinition = "BINARY(16)", updatable = false)
+    private UUID documentId;
 
     @Override
     public boolean equals(Object o) {
@@ -126,5 +111,12 @@ public class AuditRecord implements Persistable<AuditRecordId> {
             ", createdOn=" + createdOn +
             ", auditEvent=" + auditEvent +
             '}';
+    }
+
+    public static class AuditRecordBuilder {
+        public AuditRecordBuilder id(UUID id) {
+            this.auditRecordId = AuditRecordId.newId(id);
+            return this;
+        }
     }
 }

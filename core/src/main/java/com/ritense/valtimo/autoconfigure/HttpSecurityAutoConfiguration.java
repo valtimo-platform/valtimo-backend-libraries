@@ -38,7 +38,6 @@ import com.ritense.valtimo.security.config.ProcessDefinitionVersionChangeLogHttp
 import com.ritense.valtimo.security.config.ProcessHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ProcessInstanceHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.PublicProcessHttpSecurityConfigurer;
-import com.ritense.valtimo.security.config.PublicTaskHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ReportingHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.StatelessHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.StaticResourcesHttpSecurityConfigurer;
@@ -145,13 +144,6 @@ public class HttpSecurityAutoConfiguration {
     @ConditionalOnMissingBean(TaskHttpSecurityConfigurer.class)
     public TaskHttpSecurityConfigurer taskHttpSecurityConfigurer() {
         return new TaskHttpSecurityConfigurer();
-    }
-
-    @Order(321)
-    @Bean
-    @ConditionalOnMissingBean(PublicTaskHttpSecurityConfigurer.class)
-    public PublicTaskHttpSecurityConfigurer publicTaskHttpSecurityConfigurer() {
-        return new PublicTaskHttpSecurityConfigurer();
     }
 
     @Order(330)

@@ -140,7 +140,7 @@ public abstract class AbstractProcessResource {
         // Get all available tasks for this process definition
         final Collection<Task> tasksElements = repositoryService
             .getBpmnModelInstance(processDefinition.getId())
-            .getModelElementsByType(Task.class);
+            .getModelElementsByType(org.camunda.bpm.model.bpmn.instance.Task.class);
 
         // Get, group and count all task instances
         List<org.camunda.bpm.engine.task.Task> taskList = getAllActiveTasks(

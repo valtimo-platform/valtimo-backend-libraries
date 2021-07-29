@@ -22,6 +22,7 @@ import com.ritense.audit.exception.AuditRecordNotFoundException;
 import com.ritense.audit.repository.impl.AuditRecordImplRepository;
 import com.ritense.audit.service.AuditService;
 import com.ritense.valtimo.contract.audit.AuditEvent;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +42,11 @@ public class AuditServiceImpl implements AuditService {
         return auditRecordRepository
             .findById(auditRecordId)
             .orElseThrow(() -> new AuditRecordNotFoundException("AuditRecord not found for " + auditRecordId));
+    }
+
+    @Override
+    public Page<AuditRecord> findByEventAndDocumentId(List<Class<? extends AuditEvent>> eventTypes, UUID documentId, Pageable pageable) {
+        return auditRecordRepository.findByEventAndDocumentId(eventTypes, documentId, pageable);
     }
 
     @Override

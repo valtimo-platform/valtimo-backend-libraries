@@ -75,13 +75,9 @@ dependencies {
         exclude(module: 'jetty-servlet')
     }
 
-    // Database
-    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.19'
-
     implementation "io.dropwizard.metrics:metrics-core"
     implementation "io.dropwizard.metrics:metrics-annotation"
     implementation "com.mandrillapp.wrapper.lutung:lutung:0.0.8"
-    implementation "javax.ws.rs:javax.ws.rs-api:2.1.1"
     implementation "io.jsonwebtoken:jjwt-api:0.11.2"
     implementation "io.jsonwebtoken:jjwt-impl:0.11.2"
     implementation "io.jsonwebtoken:jjwt-jackson:0.11.2"

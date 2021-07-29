@@ -22,12 +22,11 @@ dependencies {
     implementation "org.testcontainers:jdbc"
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
-    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.19'
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
-    testImplementation group: 'org.liquibase', name: 'liquibase-core', version: '3.8.5'
-    testImplementation group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '3.8'
+    testImplementation group: 'org.liquibase', name: 'liquibase-core', version: '4.3.3'
+    testImplementation group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.3.3'
     testImplementation group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
 
     testImplementation "org.testcontainers:mysql"
