@@ -101,7 +101,6 @@ allprojects {
 
 }
 
-apply from: "gradle/gradle-versions-plugin.gradle"
 apply from: "gradle/deployment.gradle"
 
 subprojects { subproject ->

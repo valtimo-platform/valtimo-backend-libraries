@@ -18,6 +18,8 @@ package com.ritense.audit.repository;
 
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.domain.AuditRecordId;
+import com.ritense.valtimo.contract.audit.AuditEvent;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,12 +38,12 @@ public interface AuditRecordRepository<T extends AuditRecord, ID extends AuditRe
 
     @Query(" SELECT  ar " +
         "    FROM    AuditRecord ar " +
-        "    WHERE   JSON_EXTRACT(ar.auditEvent, '$.className') = :className ")
+        "    WHERE   className = :className ")
     List<AuditRecord> findAuditRecordsByEvent(@Param("className") String className);
 
     @Query(" SELECT  ar " +
         "    FROM    AuditRecord ar " +
-        "    WHERE   JSON_EXTRACT(ar.auditEvent, '$.className') = :className " +
+        "    WHERE   className = :className " +
         "    AND     JSON_EXTRACT(ar.auditEvent, CONCAT('$.',:key)) = :value ")
     List<AuditRecord> findAuditRecordsByEventAndProperty(
         @Param("className") String className,
@@ -51,7 +53,18 @@ public interface AuditRecordRepository<T extends AuditRecord, ID extends AuditRe
 
     @Query(" SELECT  ar " +
         "    FROM    AuditRecord ar " +
-        "    WHERE   JSON_EXTRACT(ar.auditEvent, '$.className') = :className " +
+        "    WHERE   className IN (:eventTypes) " +
+        "    AND     documentId = :documentId " +
+        "    ORDER BY ar.metaData.occurredOn DESC")
+    Page<AuditRecord> findByEventAndDocumentId(
+        List<Class<? extends AuditEvent>> eventTypes,
+        UUID documentId,
+        Pageable pageable
+    );
+
+    @Query(" SELECT  ar " +
+        "    FROM    AuditRecord ar " +
+        "    WHERE   className = :className " +
         "    AND     ar.metaData.occurredOn BETWEEN :from AND :until")
     List<AuditRecord> findByEventAndOccurredBetween(
         @Param("className") String className,
