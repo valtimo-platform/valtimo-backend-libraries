@@ -150,10 +150,6 @@ subprojects { subproject ->
         }
     }
 
-    if(project.name != "app") {
-        apply from: "$rootProject.projectDir/gradle/publishing.gradle"
-    }
-
     dependencies {
         implementation "org.springframework.boot:spring-boot-starter"
         implementation "org.springframework.boot:spring-boot-starter-web"
