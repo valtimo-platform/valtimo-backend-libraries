@@ -35,7 +35,6 @@ dependencies {
     implementation(project(":contract"))
     implementation(project(":core"))
     implementation(project(":keycloak-iam"))
-    implementation(project(":aws"))
     implementation(project(":web"))
     implementation(project(":audit"))
     implementation(project(":document"))
@@ -45,8 +44,7 @@ dependencies {
     implementation(project(":document-generation:local-document-generation"))
     implementation(project(":openzaak"))
     implementation(project(":resource:local-resource"))
-    implementation(project(":mail:mandrill"))
-    implementation(project(":external-event"))
+    implementation(project(":mail:local-mail"))
 
     // Database
     implementation "mysql:mysql-connector-java"
