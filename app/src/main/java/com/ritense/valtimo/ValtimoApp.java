@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-rootProject.name = projectName
-include 'app'
-include 'core'
-include 'contract'
-include 'web'
-include 'keycloak-iam'
-include 'audit'
-include 'document'
-include 'process-document'
-include 'form'
-include 'form-link'
-include 'document-generation'
-include 'document-generation:local-document-generation'
-include 'openzaak'
-include 'mail'
-include 'mail:local-mail'
-include 'resource'
-include 'resource:local-resource'
-include 'resource:openzaak-resource'
+package com.ritense.valtimo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication(scanBasePackages = "com.ritense.*")
+public class ValtimoApp {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ValtimoApp.class, args);
+    }
+
+}

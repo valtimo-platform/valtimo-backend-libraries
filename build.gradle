@@ -122,7 +122,6 @@ subprojects { subproject ->
     }
 
     checkstyle {
-        config project.resources.text.fromUri("${ritenseCheckStyleLocation}")
         ignoreFailures = false
         showViolations = true
     }
