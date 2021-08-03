@@ -122,7 +122,6 @@ subprojects { subproject ->
     }
 
     checkstyle {
-        config project.resources.text.fromUri("${ritenseCheckStyleLocation}")
         ignoreFailures = false
         showViolations = true
     }
@@ -149,10 +148,6 @@ subprojects { subproject ->
                 "Implementation-Version": projectVersion
             )
         }
-    }
-
-    if(project.name != "app") {
-        apply from: "$rootProject.projectDir/gradle/publishing.gradle"
     }
 
     dependencies {

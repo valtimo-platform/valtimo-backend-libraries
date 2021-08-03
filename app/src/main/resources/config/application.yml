@@ -1,0 +1,240 @@
+
+spring:
+    application:
+        name: valtimo-implementation
+    jackson:
+        date-format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+        time-zone: UTC
+    devtools:
+        restart:
+            enabled: true
+        livereload:
+            enabled: true
+    datasource:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        hostname: localhost
+        database-name: valtimo-implementation-dev
+        port: 3306
+        url: jdbc:mysql://localhost:3306/valtimo-implementation-dev
+        username: valtimo
+        password: password
+        hikari:
+            auto-commit: false
+            maximum-pool-size: 25
+            leak-detection-threshold: 20000
+            connection-timeout: 10000
+            data-source-properties:
+                cachePrepStmts: true
+                prepStmtCacheSize: 500
+                prepStmtCacheSqlLimit: 2048
+                useServerPrepStmts: true
+                characterEncoding: utf8
+                useUnicode: true
+                useLegacyDatetimeCode: false
+                useSSL: false
+                useLocalSessionState: true
+                rewriteBatchedStatements: true
+                cacheResultSetMetadata: true
+                cacheServerConfiguration: true
+                elideSetAutoCommits: true
+                maintainTimeStats: false
+                serverTimezone: UTC
+                allowPublicKeyRetrieval: true
+
+    groovy:
+        template:
+            check-template-location: false
+    liquibase:
+        enabled: false
+    profiles:
+        # The commented value for `active` can be replaced with valid spring profiles to load.
+        # Otherwise, it will be filled in by gradle when building the WAR file
+        # Either way, it can be overridden by `--spring.profiles.active` value passed in the commandline or `-Dspring.profiles.active` set in `JAVA_OPTS`
+        active: dev
+    jpa:
+        database-platform: org.hibernate.dialect.MySQL57Dialect
+        database: mysql
+        show_sql: false
+        open-in-view: false
+        properties:
+            hibernate:
+                hbm2ddl.auto: none
+                generate_statistics: false
+                naming-strategy: org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy
+                cache:
+                    use_second_level_cache: false
+                    use_query_cache: false
+                    region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+                format_sql: true
+                jdbc:
+                    time_zone: UTC
+                connection:
+                    provider_disables_autocommit: true
+        hibernate:
+            ddl-auto: none
+            naming:
+                physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+                implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+            use-new-id-generator-mappings: false
+    messages:
+        basename: i18n/messages
+    main.allow-bean-definition-overriding: true
+    jersey:
+        application-path: /api/camunda-rest
+    autoconfigure:
+        exclude:
+            - org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat.TomcatMetricsAutoConfiguration
+            # RabbitAutoConfiguration disabled because we're not using the top level context. See https://stackoverflow.com/a/44687645
+            - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+    cloud:
+        stream:
+            function:
+                definition: createExternalCaseConsumer;completeTaskConsumer;updatedExternalIdConsumer;externalDomainMessageSupplier
+            bindings:
+                createExternalCaseConsumer-in-0:
+                    destination: create-external-case
+                    binder: rabbit
+                    group: Q1
+                completeTaskConsumer-in-0:
+                    destination: complete-task
+                    binder: rabbit
+                    group: Q2
+                updatedExternalIdConsumer-in-0:
+                    destination: external-id-portal-case-updated
+                    binder: rabbit
+                    group: Q3
+            binders:
+                rabbit:
+                    type: rabbit
+                    environment:
+                        spring:
+                            rabbitmq:
+                                host: localhost
+                                port: 5672
+                                username: guest
+                                password: guest
+                                virtual-host: /
+            source: externalDomainMessageSupplier
+
+server:
+    port: 8080
+    compression:
+        enabled: true
+        mime-types: text/html,text/xml,text/plain,text/css, application/javascript, application/json
+        min-response-size: 1024
+
+mailing:
+    onlyAllowWhitelistedRecipients: true
+    redirectAllMails: false
+    whitelistedEmailAddresses:
+        - valtimodemo@gmail.com
+    whitelistedDomains:
+        - ritense.com
+    sendRedirectedMailsTo:
+
+valtimo:
+    app:
+        scheme: http
+    mandrill:
+        apiKey: #external
+        dateFormat: dd-MM-yyyy
+        notificationTemplate: bpc-task-notification
+        completionTemplate: bpc-task-completion
+        reminderTemplate: bpc-task-reminder
+    jwt:
+        base64encoding: false #auth0 client is not base64 encoded
+        tokenValidityInSeconds: 3600 # Token is valid 1 hour
+        tokenValidityInSecondsForRememberMe: 2592000
+        secret: #external
+    hardening:
+        removeStacktracesFromReturnedExceptions: true
+        allowStacktraceOnIps:
+            - 213.127.182.74
+    swagger:
+        enabled: false
+        title: Valtimo Implementation API
+        description: Valtimo Implementation API documentation
+        version: 1.0.0
+        termsOfServiceUrl:
+        contactName:
+        contactUrl:
+        contactEmail:
+        license:
+        licenseUrl:
+    auth0:
+        enabled: false
+        domain: ritense.eu.auth0.com
+        issuer: https://ritense.eu.auth0.com/
+        managementTokenApiClientSecret: #external
+    portal:
+        hostname: localhost:4201
+        scheme: http
+
+aws:
+    profile: ritense
+    region: eu-central-1
+    s3:
+        bucketRegion: eu-central-1
+    ssm:
+        enabled: true
+        region: eu-central-1
+        projectName: Valtimo-Implementation
+
+spring-actuator:
+    username: admin
+    password: #external
+
+audit:
+    record:
+        retention: 365 # days
+
+# ==================
+# CRON job settings
+# ==================
+scheduling:
+    enabled: true
+    job:
+        cron:
+            syncAuth0LogsEvents: 0 0 3 * * ? # Every day at 3:00
+            cleanupAuditEvents: 0 0 4 * * ? # Every day at 00:00
+            taskNotificationReminder: 0 0 10 * * ? # Every day at 10:00
+camunda:
+    bpm:
+        database:
+            type: mysql
+        history-level: AUDIT
+        history-level-default: AUDIT
+        admin-user:
+            id: Admin
+            password: admin
+            first-name: Admin account
+
+openzaak:
+    superSecret: #external
+
+# ==================
+# keycloak server to server config
+# ==================
+keycloak:
+    realm: valtimo
+    auth-server-url:
+    resource: valtimo-user-m2m-client
+    credentials:
+        secret: #external
+
+external:
+    case:
+        links:
+            person:
+                caseKey: portal-person
+                processDefinitionKey: portal-person
+            bezwaar:
+                caseKey: bezwaar
+                processDefinitionKey: bezwaar
+
+reportingcloud:
+    # DON'T USE RITENSE'S KEY FOR OTHER IMPLEMENTATIONS WITHOUT CONSULTATION!
+    # See the notes of the ReportingCloud entry in KeePass.
+    apiKey: #external
+    testMode: true #Setting this to false will cost credits when generating a PDF.

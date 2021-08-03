@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2020 Dimpact.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-rootProject.name = projectName
-include 'app'
-include 'core'
-include 'contract'
-include 'web'
-include 'keycloak-iam'
-include 'audit'
-include 'document'
-include 'process-document'
-include 'form'
-include 'form-link'
-include 'document-generation'
-include 'document-generation:local-document-generation'
-include 'openzaak'
-include 'mail'
-include 'mail:local-mail'
-include 'resource'
-include 'resource:local-resource'
-include 'resource:openzaak-resource'
+package com.ritense.openzaak.service.impl.model.zaak
+
+import java.net.URI
+import java.util.UUID
+
+data class Status(
+    val url: URI,
+    val uuid: UUID,
+    val zaak: URI,
+    val statustype: URI,
+    val datumStatusGezet: String,
+    val statustoelichting: String
+)

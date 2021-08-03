@@ -1,0 +1,60 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2021 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="julia de lozanne" id="1">
+        <sql>
+            UPDATE audit_record
+            SET audit_event = JSON_SET(audit_event, '$.documentId', document_id)
+            WHERE classname in (
+            'com.ritense.valtimo.contract.document.event.documentRelatedFileAddedEvent',
+            'com.ritense.valtimo.contract.document.event.documentRelatedFileSubmittedEvent',
+            'com.ritense.valtimo.contract.document.event.documentRelatedFileRemovedEvent',
+            'com.ritense.document.domain.impl.event.jsonSchemaDocumentCreatedEvent',
+            'com.ritense.document.domain.impl.event.jsonSchemaDocumentModifiedEvent'
+            )
+            AND JSON_EXTRACT(audit_event, '$.documentId') IS NULL
+        </sql>
+    </changeSet>
+    <changeSet author="Ivo Zaal" id="2">
+        <sql>
+            UPDATE audit_record
+            SET audit_event = JSON_SET(audit_event, '$.documentId',
+                LOWER(CONCAT(
+                    SUBSTR(HEX(document_id), 1, 8), '-',
+                    SUBSTR(HEX(document_id), 9, 4), '-',
+                    SUBSTR(HEX(document_id), 13, 4), '-',
+                    SUBSTR(HEX(document_id), 17, 4), '-',
+                    SUBSTR(HEX(document_id), 21)
+                ))
+            )
+            WHERE classname in (
+            'com.ritense.valtimo.contract.document.event.documentRelatedFileAddedEvent',
+            'com.ritense.valtimo.contract.document.event.documentRelatedFileSubmittedEvent',
+            'com.ritense.valtimo.contract.document.event.documentRelatedFileRemovedEvent',
+            'com.ritense.document.domain.impl.event.jsonSchemaDocumentCreatedEvent',
+            'com.ritense.document.domain.impl.event.jsonSchemaDocumentModifiedEvent'
+            )
+            AND (
+                JSON_UNQUOTE(JSON_EXTRACT(audit_event, '$.documentId')) like 'base64%'
+                OR
+                JSON_EXTRACT(audit_event, '$.documentId') IS NULL
+            )
+        </sql>
+    </changeSet>
+</databaseChangeLog>
