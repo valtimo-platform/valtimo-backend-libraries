@@ -55,26 +55,16 @@ public abstract class CamundaFormAssociation implements FormAssociation, Seriali
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof CamundaFormAssociation)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         CamundaFormAssociation that = (CamundaFormAssociation) o;
 
-        if (!id.equals(that.id)) {
-            return false;
-        }
-        return formLink.equals(that.formLink);
+        return formLink.getId().equals(that.formLink.getId());
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + formLink.hashCode();
-        return result;
+        return formLink.getId().hashCode();
     }
-
 }

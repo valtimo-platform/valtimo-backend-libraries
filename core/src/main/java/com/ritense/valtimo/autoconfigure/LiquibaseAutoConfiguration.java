@@ -16,35 +16,20 @@
 
 package com.ritense.valtimo.autoconfigure;
 
-import com.ritense.valtimo.config.LiquibaseRunner;
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 import javax.sql.DataSource;
-import java.util.List;
 
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Configuration
 @ConditionalOnClass(DataSource.class)
-@EnableConfigurationProperties(value = LiquibaseProperties.class)
 public class LiquibaseAutoConfiguration {
-
-    @Bean
-    @ConditionalOnMissingBean(LiquibaseRunner.class)
-    public LiquibaseRunner liquibaseRunner(
-        final List<LiquibaseMasterChangeLogLocation> liquibaseMasterChangeLogLocations,
-        final LiquibaseProperties liquibaseProperties,
-        final DataSource datasource
-    ) {
-        return new LiquibaseRunner(liquibaseMasterChangeLogLocations, liquibaseProperties, datasource);
-    }
 
     @Order(HIGHEST_PRECEDENCE + 1)
     @Bean
@@ -52,5 +37,4 @@ public class LiquibaseAutoConfiguration {
     public LiquibaseMasterChangeLogLocation coreLiquibaseMasterChangeLogLocation() {
         return new LiquibaseMasterChangeLogLocation("config/liquibase/valtimo-master.xml");
     }
-
 }

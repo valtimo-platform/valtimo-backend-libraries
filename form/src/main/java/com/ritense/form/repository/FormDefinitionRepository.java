@@ -16,7 +16,10 @@
 
 package com.ritense.form.repository;
 
+import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.FormIoFormDefinition;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -26,4 +29,6 @@ import java.util.UUID;
 @Repository
 public interface FormDefinitionRepository extends JpaRepository<FormIoFormDefinition, UUID> {
     Optional<FormIoFormDefinition> findByName(String name);
+
+    Page<FormDefinition> findAllByNameContainingIgnoreCase(String name, Pageable pageable);
 }

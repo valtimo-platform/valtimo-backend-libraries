@@ -18,8 +18,6 @@ package com.ritense.resource.autoconfigure
 
 import com.ritense.resource.service.LocalResourceService
 import com.ritense.resource.web.rest.LocalResource
-import com.ritense.resource.web.rest.PublicLocalResource
-import com.ritense.resource.web.rest.PublicResource
 import com.ritense.resource.web.rest.ResourceResource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -38,12 +36,6 @@ class LocalResourceAutoConfiguration {
     @ConditionalOnMissingBean(LocalResource::class)
     fun resourceResource(): ResourceResource {
         return LocalResource()
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(PublicLocalResource::class)
-    fun publicResource(): PublicResource {
-        return PublicLocalResource()
     }
 
 }

@@ -24,8 +24,6 @@ import com.ritense.form.domain.event.FormsAutoDeploymentFinishedEvent;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
@@ -35,6 +33,8 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Slf4j
@@ -50,9 +50,9 @@ public class FormDefinitionDeploymentService {
     void deployAllFromResourceFiles() {
         logger.info("Deploying all forms from {}", PATH);
         ArrayList<FormDefinition> formDefinitions = new ArrayList<>();
-        try {
-            final Resource[] resources = loadResources();
-            for (Resource resource : resources) {
+        final Resource[] resources = loadResources();
+        for (Resource resource : resources) {
+            try {
                 if (resource.getFilename() == null) {
                     continue;
                 }
@@ -61,9 +61,7 @@ public class FormDefinitionDeploymentService {
                 var optionalFormDefinition = formDefinitionRepository.findByName(name);
                 if (optionalFormDefinition.isPresent()) {
                     var existingFormDefinition = optionalFormDefinition.get();
-                    if (rawFormDefinition.equals(existingFormDefinition.getFormDefinition())) {
-                        continue; //Skip unchanged
-                    } else {
+                    if (!rawFormDefinition.equals(existingFormDefinition.getFormDefinition())) {
                         var formDefinition = formDefinitionService.modifyFormDefinition(
                             existingFormDefinition.getId(),
                             name,
@@ -71,7 +69,7 @@ public class FormDefinitionDeploymentService {
                             true
                         );
                         formDefinitions.add(formDefinition);
-                        logger.info("Modified existing form-definition {}", name);
+                        logger.info("Modified existing form definition {}", name);
                     }
                 } else {
                     var formDefinition = formDefinitionService.createFormDefinition(
@@ -84,11 +82,12 @@ public class FormDefinitionDeploymentService {
                     formDefinitions.add(formDefinition);
                     logger.info("Deployed form definition {}", name);
                 }
+            } catch (IOException e) {
+                logger.error("Error while deploying form definition {}", getFormName(resource), e);
             }
-            applicationEventPublisher.publishEvent(new FormsAutoDeploymentFinishedEvent(formDefinitions));
-        } catch (IOException e) {
-            logger.error("Error while deploying form definition's", e);
         }
+
+        applicationEventPublisher.publishEvent(new FormsAutoDeploymentFinishedEvent(formDefinitions));
     }
 
     private JsonNode getJson(String rawJson) throws JsonProcessingException {
@@ -103,8 +102,13 @@ public class FormDefinitionDeploymentService {
         return formName;
     }
 
-    private Resource[] loadResources() throws IOException {
-        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH);
+    private Resource[] loadResources() {
+        try {
+            return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH);
+        } catch( IOException ioe) {
+            logger.error("Failed to load resources from " + PATH, ioe);
+            return new Resource[0];
+        }
     }
 
 }

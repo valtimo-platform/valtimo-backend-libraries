@@ -29,6 +29,8 @@ public interface FormDefinitionService {
 
     Page<? extends FormDefinition> getAll(Pageable pageable);
 
+    Page<? extends FormDefinition> queryFormDefinitions(String searchTerm, Pageable pageable);
+
     Optional<? extends FormDefinition> getFormDefinitionById(UUID id);
 
     Optional<? extends FormDefinition> getFormDefinitionByName(String name);

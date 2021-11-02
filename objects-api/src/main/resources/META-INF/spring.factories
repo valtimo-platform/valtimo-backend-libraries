@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.ritense.objectsapi.autoconfigure.ObjectsApiAutoConfiguration, \
+  com.ritense.objectsapi.autoconfigure.ObjectsApiLiquibaseAutoConfiguration, \
+  com.ritense.objectsapi.autoconfigure.ObjectsApiSecurityAutoConfiguration

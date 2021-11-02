@@ -1,0 +1,70 @@
+spring:
+    datasource:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        hostname: localhost
+        database-name: objects-api-test
+        port: 3306
+        url: jdbc:mysql://localhost:3307/objects-api-test
+        username: valtimo
+        password: password
+        hikari:
+            auto-commit: false
+            maximum-pool-size: 25
+            leak-detection-threshold: 20000
+            connection-timeout: 10000
+            data-source-properties:
+                cachePrepStmts: true
+                prepStmtCacheSize: 500
+                prepStmtCacheSqlLimit: 2048
+                useServerPrepStmts: true
+                characterEncoding: utf8
+                useUnicode: true
+                useLegacyDatetimeCode: false
+                useSSL: false
+                useLocalSessionState: true
+                rewriteBatchedStatements: true
+                cacheResultSetMetadata: true
+                cacheServerConfiguration: true
+                elideSetAutoCommits: true
+                maintainTimeStats: false
+                serverTimezone: UTC
+                allowPublicKeyRetrieval: true
+    liquibase:
+        enabled: false
+        change-log: classpath:/config/liquibase/objects-api-master.xml
+    jpa:
+        database-platform: org.hibernate.dialect.MySQL57Dialect
+        database: mysql
+        show_sql: true
+        open-in-view: false
+        properties:
+            hibernate:
+                hbm2ddl.auto: none
+                generate_statistics: false
+                naming-strategy: org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy
+                cache:
+                    use_second_level_cache: false
+                    use_query_cache: false
+                    region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+                format_sql: true
+                jdbc:
+                    time_zone: UTC
+                connection:
+                    provider_disables_autocommit: true
+        hibernate:
+            ddl-auto: none
+            naming:
+                physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+                implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+            use-new-id-generator-mappings: false
+valtimo:
+    connector-encryption:
+        secret: "0123456789101112"
+
+openzaak:
+    superSecret: "389b9d6077d142e98fa07a587c1ee3cd"
+
+spring-actuator:
+    username: admin
+    password: password

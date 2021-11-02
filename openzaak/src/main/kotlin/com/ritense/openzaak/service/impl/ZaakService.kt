@@ -16,6 +16,7 @@
 
 package com.ritense.openzaak.service.impl
 
+import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
@@ -27,16 +28,17 @@ import com.ritense.openzaak.service.impl.model.catalogi.Catalogus
 import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
 import com.ritense.openzaak.service.impl.model.catalogi.ResultaatType
 import com.ritense.openzaak.service.impl.model.catalogi.StatusType
+import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
 import com.ritense.openzaak.service.impl.model.zaak.Eigenschap
 import com.ritense.openzaak.service.impl.model.zaak.Resultaat
 import com.ritense.openzaak.service.impl.model.zaak.Status
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.springframework.web.client.RestTemplate
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.springframework.web.client.RestTemplate
 
 class ZaakService(
     private val restTemplate: RestTemplate,
@@ -48,6 +50,10 @@ class ZaakService(
 
     override fun createZaakWithLink(delegateExecution: DelegateExecution) {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(delegateExecution.processBusinessKey))
+        createZaakWithLink(documentId)
+    }
+
+    override fun createZaakWithLink(documentId: Document.Id): Zaak {
         val document = documentService.findBy(documentId).orElseThrow()
         val openZaakConfig = openZaakConfigService.get()!!
 
@@ -61,6 +67,7 @@ class ZaakService(
             zaakTypeLink.zaakTypeLinkId,
             ZaakInstanceLink(zaakInstance.url, zaakInstance.uuid, documentId.id)
         )
+        return zaakInstance
     }
 
     override fun createZaak(
@@ -168,6 +175,14 @@ class ZaakService(
             .get()
             .build()
             .executeWrapped(InformatieObjectType::class.java)
+    }
+
+    override fun getInformatieObject(documentId: UUID): InformatieObject {
+        return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
+            .path("/documenten/api/v1/enkelvoudiginformatieobjecten/$documentId")
+            .get()
+            .build()
+            .execute(InformatieObject::class.java)
     }
 
     class Constants {

@@ -85,6 +85,15 @@ public class CamundaFormAssociationResourceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = USER)
+    public void shouldReturn200WithFormDefinitionByFormKey() throws Exception {
+        mockMvc.perform(
+            get("/api/form-association/form-definition/myForm").contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "john@ritense.com", authorities = USER)
     public void shouldReturn200WithStartEventFormDefinitionByProcessDefinitionKey() throws Exception {
         mockMvc.perform(
             get("/api/form-association/form-definition")

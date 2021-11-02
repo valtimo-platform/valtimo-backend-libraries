@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.ritense.connector.autoconfigure.ConnectorAutoConfiguration, \
+  com.ritense.connector.autoconfigure.ConnectorLiquibaseAutoConfiguration, \
+  com.ritense.connector.autoconfigure.ConnectorSecurityAutoConfiguration

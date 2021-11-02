@@ -28,11 +28,11 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 
 public class BpmnElementAngularStateUrlLink extends CamundaBpmnElement implements FormLink {
 
-    private String url;
+    private final String url;
 
     @JsonCreator
-    public BpmnElementAngularStateUrlLink(String id, String url, Boolean isPublic) {
-        super(id, isPublic);
+    public BpmnElementAngularStateUrlLink(String id, String url) {
+        super(id);
         assertArgumentNotEmpty(url, "url cannot be empty");
         assertArgumentLength(url, 512, "url max length is 512");
         this.url = url;

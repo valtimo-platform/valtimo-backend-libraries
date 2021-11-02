@@ -29,5 +29,4 @@ public interface FormAssociation {
 
     @JsonProperty
     FormLink getFormLink();
-
 }

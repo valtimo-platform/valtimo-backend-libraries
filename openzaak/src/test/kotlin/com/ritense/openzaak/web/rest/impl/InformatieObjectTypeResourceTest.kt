@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -53,11 +53,8 @@ internal class InformatieObjectTypeResourceTest {
         whenever(zaakService.getInformatieobjecttypes(eq(catalogus)))
             .thenReturn(listOf(informatieObjectType))
 
-        mockMvc.perform(
-            MockMvcRequestBuilders.get(
-                "/api/openzaak/informatie-object-typen/{catalogus}", catalogus
-            )
-                .accept(MediaType.APPLICATION_JSON_VALUE)
+        mockMvc.perform(get("/api/openzaak/informatie-object-typen/{catalogus}", catalogus)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)

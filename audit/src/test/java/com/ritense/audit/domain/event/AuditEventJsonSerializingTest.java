@@ -18,30 +18,26 @@ package com.ritense.audit.domain.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.audit.AbstractTestHelper;
-import com.ritense.audit.config.JacksonConfiguration;
+import com.ritense.valtimo.contract.json.Mapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = JacksonConfiguration.class)
+@SpringBootTest
 public class AuditEventJsonSerializingTest extends AbstractTestHelper {
 
     private static final String dateString = "2019-03-18T14:17:11.639114";
     private JacksonTester<TestEvent> jacksonTester;
-    private String id = "edb1a672-4ba1-4e79-a5ee-b9658c55fe52";
+    private final String id = "edb1a672-4ba1-4e79-a5ee-b9658c55fe52";
     private String jsonString;
 
-    @Inject
-    @Qualifier("auditObjectMapper")
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = Mapper.INSTANCE.get();
 
     @BeforeEach
     public void setUp() throws IOException {

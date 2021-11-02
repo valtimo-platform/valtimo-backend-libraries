@@ -18,7 +18,6 @@ package com.ritense.formlink.domain.impl.formassociation.formlink;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -31,37 +30,25 @@ public abstract class CamundaBpmnElement implements Serializable {
     @JsonIgnore
     protected String elementId;
 
-    protected Boolean isPublic;
-
     @JsonCreator
-    public CamundaBpmnElement(String elementId, Boolean isPublic) {
+    public CamundaBpmnElement(String elementId) {
         assertArgumentNotEmpty(elementId, "elementId cannot be empty");
         assertArgumentLength(elementId, 64, "elementId max length is 64");
         this.elementId = elementId;
-        this.isPublic = isPublic;
-    }
-
-    @JsonProperty
-    public boolean isPublic() {
-        return isPublic != null ? isPublic : false;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof CamundaBpmnElement)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
         CamundaBpmnElement that = (CamundaBpmnElement) o;
-        return elementId.equals(that.elementId) &&
-            Objects.equals(isPublic, that.isPublic);
+
+        return elementId.equals(that.elementId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(elementId, isPublic);
+        return Objects.hash(elementId);
     }
-
 }

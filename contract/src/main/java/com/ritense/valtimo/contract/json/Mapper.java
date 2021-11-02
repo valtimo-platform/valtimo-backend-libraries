@@ -18,18 +18,24 @@ package com.ritense.valtimo.contract.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.kotlin.KotlinModule;
+
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
 public enum Mapper {
     INSTANCE;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper()
+        .findAndRegisterModules()
+        .registerModule(new KotlinModule());
+
 
     Mapper() {
         // Perform any configuration on the ObjectMapper here.
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.disable(WRITE_DATES_AS_TIMESTAMPS);
     }
 
     public ObjectMapper get() {
         return mapper;
     }
-
 }

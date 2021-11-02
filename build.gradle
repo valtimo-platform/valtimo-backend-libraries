@@ -68,8 +68,8 @@ allprojects {
         imports {
             mavenBom "software.amazon.awssdk:bom:2.15.62"
             mavenBom "org.testcontainers:testcontainers-bom:1.15.1"
-            mavenBom "com.fasterxml.jackson:jackson-bom:2.12.1"
-            mavenBom "org.junit:junit-bom:5.7.0"
+            mavenBom "com.fasterxml.jackson:jackson-bom:2.12.5"
+            mavenBom "org.junit:junit-bom:5.7.2"
         }
     }
 
@@ -101,6 +101,7 @@ subprojects { subproject ->
     apply plugin: "kotlin"
     apply plugin: "kotlin-spring"
     apply plugin: "kotlin-jpa"
+    apply plugin: "kotlin-allopen"
     apply plugin: "io.freefair.lombok"
     apply from: "$rootProject.projectDir/gradle/test.gradle"
 
@@ -165,6 +166,7 @@ subprojects { subproject ->
 
         //Kotlin core
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+        implementation "org.jetbrains.kotlin:kotlin-reflect"
 
         //Logging
         implementation 'io.github.microutils:kotlin-logging:2.0.4'

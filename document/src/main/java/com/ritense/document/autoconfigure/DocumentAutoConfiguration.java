@@ -16,7 +16,6 @@
 
 package com.ritense.document.autoconfigure;
 
-import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerImpl;
 import com.ritense.document.domain.impl.listener.DocumentRelatedFileSubmittedEventListenerImpl;
@@ -29,11 +28,13 @@ import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.DocumentVariableService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionSequenceGeneratorService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSearchService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
+import com.ritense.document.service.impl.JsonSchemaDocumentVariableService;
 import com.ritense.document.service.impl.UndeployJsonSchemaDocumentDefinitionService;
 import com.ritense.document.web.rest.DocumentDefinitionResource;
 import com.ritense.document.web.rest.DocumentResource;
@@ -162,4 +163,9 @@ public class DocumentAutoConfiguration {
         return new JsonSchemaDocumentSearchResource(documentSearchService);
     }
 
+    @Bean
+    @ConditionalOnMissingBean(DocumentVariableService.class)
+    public DocumentVariableService documentVariableService() {
+        return new JsonSchemaDocumentVariableService();
+    }
 }

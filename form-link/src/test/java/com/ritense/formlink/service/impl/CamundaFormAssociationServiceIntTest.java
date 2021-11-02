@@ -103,7 +103,6 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
         assertThat(formAssociation.getFormLink().getId()).isEqualTo(createFormAssociationRequest.getFormLinkRequest().getId());
         assertThat(formAssociation.getFormLink().getFormId()).isEqualTo(modifyFormAssociationRequest.getFormLinkRequest().getFormId());
         assertThat(formAssociation.getFormLink().getFormId()).isNotEqualTo(createFormAssociationRequest.getFormLinkRequest().getFormId());
-        assertThat(formAssociation.getFormLink().isPublic()).isEqualTo(modifyFormAssociationRequest.getFormLinkRequest().isPublic());
     }
 
     @Test
@@ -128,8 +127,7 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
             request.getProcessDefinitionKey(),
             "myForm",
             request.getFormLinkRequest().getId(),
-            request.getFormLinkRequest().getType(),
-            request.getFormLinkRequest().isPublic()
+            request.getFormLinkRequest().getType()
         );
 
         final var formDefinition = formAssociationService

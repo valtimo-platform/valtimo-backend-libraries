@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.document.domain.Document;
 import com.ritense.valtimo.contract.domain.AbstractId;
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -31,6 +32,7 @@ import java.util.UUID;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
+@Data
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class JsonSchemaDocumentId extends AbstractId<JsonSchemaDocumentId> implements Document.Id {
 
@@ -51,31 +53,10 @@ public class JsonSchemaDocumentId extends AbstractId<JsonSchemaDocumentId> imple
         return new JsonSchemaDocumentId(id).newIdentity();
     }
 
-    public UUID getId() {
-        return id;
-    }
-
     @Override
     @JsonProperty
     public String toString() {
         return id.toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof JsonSchemaDocumentId)) {
-            return false;
-        }
-        JsonSchemaDocumentId that = (JsonSchemaDocumentId) o;
-        return id.equals(that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 
 }

@@ -35,7 +35,7 @@ data class OpenZaakRequestBuilder(
     var path: String? = null,
     var method: HttpMethod = HttpMethod.GET,
     private var queryParams: Map<String, String>? = null,
-    private var body: Map<Any, Any>? = null
+    private var body: Any? = null
 ) {
     lateinit var url: String
     lateinit var requestEntity: HttpEntity<Any>
@@ -54,7 +54,7 @@ data class OpenZaakRequestBuilder(
 
     fun queryParams(queryParams: Map<String, String>) = apply { this.queryParams = queryParams }
 
-    fun body(body: Map<Any, Any>) = apply { this.body = body }
+    fun body(body: Any) = apply { this.body = body }
 
     fun build() = apply {
         if (this.config == null) {
@@ -68,10 +68,10 @@ data class OpenZaakRequestBuilder(
             builder.queryParam(it.key, it.value)
         }
         url = builder.build().normalize().toUriString()
-        requestEntity = if (!body.isNullOrEmpty())
-            HttpEntity(Mapper.get().writeValueAsString(body), buildPostHeaders(this.config!!))
-        else
+        requestEntity = if (body == null || (body is Map<*, *> && (body as Map<*, *>).isEmpty()))
             HttpEntity(buildHeaders(this.config!!))
+        else
+            HttpEntity(Mapper.get().writeValueAsString(body), buildPostHeaders(this.config!!))
     }
 
     fun <T> execute(responseClass: Class<out T>): T {

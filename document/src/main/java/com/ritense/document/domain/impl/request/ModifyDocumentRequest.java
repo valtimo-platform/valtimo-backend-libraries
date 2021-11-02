@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ritense.document.domain.Document;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
 
 import javax.validation.constraints.NotNull;
@@ -48,6 +49,14 @@ public class ModifyDocumentRequest {
         this.documentId = documentId;
         this.content = content;
         this.versionBasedOn = versionBasedOn;
+    }
+
+    public static ModifyDocumentRequest create(Document document, JsonNode jsonNode) {
+        return new ModifyDocumentRequest(
+            document.id().toString(),
+            jsonNode,
+            document.version().toString()
+        );
     }
 
     public String documentId() {

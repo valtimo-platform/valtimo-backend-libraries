@@ -16,9 +16,11 @@
 
 package com.ritense.openzaak.service
 
+import com.ritense.document.domain.Document
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.Catalogus
 import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
+import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
 import com.ritense.openzaak.service.impl.model.zaak.Eigenschap
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -29,6 +31,8 @@ import java.util.UUID
 interface ZaakService {
 
     fun createZaakWithLink(delegateExecution: DelegateExecution)
+
+    fun createZaakWithLink(documentId: Document.Id): Zaak
 
     fun createZaak(
         zaaktype: URI,
@@ -51,4 +55,6 @@ interface ZaakService {
     fun getCatalogus(catalogus: UUID): Catalogus
 
     fun getInformatieObjectTypen(catalogus: URI): ResultWrapper<InformatieObjectType>
+
+    fun getInformatieObject(documentId: UUID): InformatieObject
 }

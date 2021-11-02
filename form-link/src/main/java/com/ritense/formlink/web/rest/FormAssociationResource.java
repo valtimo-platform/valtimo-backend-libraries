@@ -18,23 +18,22 @@ package com.ritense.formlink.web.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.formlink.service.result.FormSubmissionResult;
-import org.springframework.http.ResponseEntity;
-
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.http.ResponseEntity;
 
 public interface FormAssociationResource {
 
-    ResponseEntity<JsonNode> getFormDefinitionByFormLinkId(String processDefinitionKey, String formLinkId);
-
-    ResponseEntity<JsonNode> getPreFilledFormDefinitionByFormLinkId(
-        UUID documentId,
+    ResponseEntity<JsonNode> getPreFilledFormDefinition(
         String processDefinitionKey,
         String formLinkId,
+        Optional<UUID> documentId,
         Optional<String> taskInstanceId
     );
 
     ResponseEntity<JsonNode> getStartEventFormDefinitionByProcessDefinitionKey(String processDefinitionKey);
+
+    ResponseEntity<JsonNode> getFormDefinitionByFormKey(String formKey, Optional<UUID> documentId);
 
     ResponseEntity<FormSubmissionResult> handleSubmission(
         String processDefinitionKey,

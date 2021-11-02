@@ -26,6 +26,7 @@ import com.ritense.form.domain.event.FormRegisteredEvent;
 import com.ritense.valtimo.contract.form.ExternalFormFieldType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
@@ -50,6 +51,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 import static com.ritense.valtimo.service.util.DateUtils.getIso8601UtcDateFormat;
 
+@Slf4j
 @Entity
 @Table(name = "form_io_form_definition")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -143,20 +145,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public FormDefinition preFillWith(final String prefix, final Map<String, Object> variableMap) {
         final ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
         final ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
-        variableMap.forEach((name, value) -> {
-                if (value instanceof String) {
-                    objectNode.put(name, (String) value);
-                } else if (value instanceof Boolean) {
-                    objectNode.put(name, (Boolean) value);
-                } else if (value instanceof Integer) {
-                    objectNode.put(name, (Integer) value);
-                } else if (value instanceof Long) {
-                    objectNode.put(name, (Long) value);
-                } else if (value instanceof Date) {
-                    objectNode.put(name, getIso8601UtcDateFormat(value));
-                }
-            }
-        );
+        variableMap.forEach((fieldName, value) -> objectNode.set(fieldName, Mapper.INSTANCE.get().valueToTree(value)));
         rootNode.set(prefix, objectNode);
         return preFill(rootNode);
     }
@@ -186,7 +175,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinition);
         inputFields.forEach(field -> getProcessVar(field)
             .ifPresent(contentItem -> getValueBy(formData, contentItem.getJsonPointer())
-                .ifPresent(valueNode -> processVarFormData.put(contentItem.getName(), valueNode.textValue()))
+                .ifPresent(valueNode -> processVarFormData.put(contentItem.getName(), extractNodeValue(valueNode)))
             ));
         return processVarFormData;
     }
@@ -364,6 +353,19 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         final List<ArrayNode> components = new LinkedList<>();
         addComponents(components, formDefinition);
         return Collections.unmodifiableList(components);
+    }
+
+    private Object extractNodeValue(JsonNode node) {
+        if (node.isValueNode()) {
+            return node.textValue();
+        } else if (node.isArray()) {
+            List<String> values = new ArrayList<>();
+            node.forEach(childNode -> values.add(childNode.textValue()));
+            return values;
+        } else {
+            logger.warn("Submitted form field value to be stored in process variables is of an unsupported type");
+            return null;
+        }
     }
 
     private static void addComponents(List<ArrayNode> components, JsonNode formDefinition) {

@@ -33,7 +33,7 @@ public interface FormLink {
     @JsonProperty
     String getUrl();
 
-    @JsonProperty("isPublic")
-    boolean isPublic();
-
+    default boolean includeFormDefinition() {
+        return false;
+    }
 }

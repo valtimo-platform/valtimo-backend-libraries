@@ -39,24 +39,19 @@ public class FormLinkRequest {
     @JsonProperty
     private UUID formId;
 
-    @JsonProperty
-    private Boolean isPublic;
-
     @JsonCreator
     public FormLinkRequest(
         @JsonProperty(value = "id", required = true) String id,
         @JsonProperty(value = "type", required = true) FormAssociationType type,
         @JsonProperty(value = "formId") UUID formId,
         @JsonProperty(value = "customUrl") String customUrl,
-        @JsonProperty(value = "angularStateUrl") String angularStateUrl,
-        @JsonProperty(value = "isPublic") Boolean isPublic
+        @JsonProperty(value = "angularStateUrl") String angularStateUrl
     ) {
         this.id = id;
         this.type = type;
         this.formId = formId;
         this.customUrl = customUrl;
         this.angularStateUrl = angularStateUrl;
-        this.isPublic = isPublic;
     }
 
     public String getId() {
@@ -77,9 +72,5 @@ public class FormLinkRequest {
 
     public String getAngularStateUrl() {
         return angularStateUrl;
-    }
-
-    public Boolean isPublic() {
-        return isPublic;
     }
 }

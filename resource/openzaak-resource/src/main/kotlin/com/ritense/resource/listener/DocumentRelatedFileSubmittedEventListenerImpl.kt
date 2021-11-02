@@ -16,7 +16,7 @@
 
 package com.ritense.resource.listener
 
-import com.ritense.openzaak.service.impl.DocumentenService
+import com.ritense.openzaak.service.DocumentenService
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent
 import com.ritense.valtimo.contract.listener.DocumentRelatedFileEventListener

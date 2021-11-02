@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.camunda.command;
 
-import com.ritense.valtimo.config.LiquibaseRunner;
+import com.ritense.valtimo.contract.config.LiquibaseRunner;
 import liquibase.exception.DatabaseException;
 import org.camunda.bpm.engine.impl.db.PersistenceSession;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;

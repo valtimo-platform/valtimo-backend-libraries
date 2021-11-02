@@ -26,6 +26,7 @@ import com.ritense.openzaak.repository.InformatieObjectTypeLinkRepository
 import com.ritense.openzaak.repository.OpenZaakConfigRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
 import com.ritense.openzaak.repository.converter.Encryptor
+import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.openzaak.service.impl.DocumentenService
 import com.ritense.openzaak.service.impl.EigenschapService
 import com.ritense.openzaak.service.impl.InformatieObjectTypeLinkService
@@ -171,6 +172,16 @@ class OpenZaakAutoConfiguration {
         informatieObjectTypeLinkRepository: InformatieObjectTypeLinkRepository
     ): InformatieObjectTypeLinkService {
         return InformatieObjectTypeLinkService(informatieObjectTypeLinkRepository)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakRolService::class)
+    fun zaakRolService(
+        restTemplate: RestTemplate,
+        openZaakConfigService: OpenZaakConfigService,
+        tokenGeneratorService: OpenZaakTokenGeneratorService
+    ): ZaakRolService {
+        return com.ritense.openzaak.service.impl.ZaakRolService(restTemplate, openZaakConfigService, tokenGeneratorService)
     }
 
     @Bean

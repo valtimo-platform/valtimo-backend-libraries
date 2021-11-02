@@ -85,7 +85,7 @@ public abstract class BaseTest {
         formAssociations.add(
             new UserTaskFormAssociation(
                 UUID.randomUUID(),
-                new BpmnElementFormIdLink("user-task-id", formId, false)
+                new BpmnElementFormIdLink("user-task-id", formId)
             )
         );
         return formAssociations;
@@ -96,7 +96,7 @@ public abstract class BaseTest {
         formAssociations.add(
             new UserTaskFormAssociation(
                 formAssociationsId,
-                new BpmnElementFormIdLink("user-task-id", formId, false)
+                new BpmnElementFormIdLink("user-task-id", formId)
             )
         );
         return formAssociations;
@@ -110,8 +110,7 @@ public abstract class BaseTest {
                 FormAssociationType.USER_TASK,
                 formId,
                 null,
-                null,
-                false
+                null
             )
         );
     }
@@ -124,8 +123,7 @@ public abstract class BaseTest {
                 FormAssociationType.START_EVENT,
                 formId,
                 null,
-                null,
-                false
+                null
             )
         );
     }
@@ -139,8 +137,7 @@ public abstract class BaseTest {
                 FormAssociationType.USER_TASK,
                 formId,
                 null,
-                null,
-                isPublic
+                null
             )
         );
     }

@@ -17,7 +17,6 @@
 package com.ritense.resource.autoconfigure
 
 import com.ritense.resource.security.LocalResourceHttpSecurityConfigurer
-import com.ritense.resource.security.PublicLocalResourceHttpSecurityConfigurer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -31,13 +30,6 @@ class LocalResourceSecurityAutoConfiguration {
     @ConditionalOnMissingBean(LocalResourceHttpSecurityConfigurer::class)
     fun localResourceHttpSecurityConfigurer(): LocalResourceHttpSecurityConfigurer {
         return LocalResourceHttpSecurityConfigurer()
-    }
-
-    @Order(301)
-    @Bean
-    @ConditionalOnMissingBean(PublicLocalResourceHttpSecurityConfigurer::class)
-    fun publicLocalResourceHttpSecurityConfigurer(): PublicLocalResourceHttpSecurityConfigurer {
-        return PublicLocalResourceHttpSecurityConfigurer()
     }
 
 }
