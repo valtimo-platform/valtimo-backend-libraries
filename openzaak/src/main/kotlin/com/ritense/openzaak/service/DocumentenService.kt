@@ -25,4 +25,6 @@ interface DocumentenService {
     fun createEnkelvoudigInformatieObject(documentDefinitionName: String, multipartFile: MultipartFile): URI
 
     fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, documentId: UUID, documentDefinitionName: String)
+
+    fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, zaak: URI)
 }

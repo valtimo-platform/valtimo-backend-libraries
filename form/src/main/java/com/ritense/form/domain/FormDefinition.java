@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.util.Map;
 import java.util.UUID;
 
 public interface FormDefinition {
@@ -44,6 +45,9 @@ public interface FormDefinition {
 
     @JsonIgnore
     FormDefinition preFill(JsonNode rootNode);
+
+    @JsonIgnore
+    FormDefinition preFillWith(String prefix, Map<String, Object> variableMap);
 
     @JsonIgnore
     void setReadOnly(Boolean value);

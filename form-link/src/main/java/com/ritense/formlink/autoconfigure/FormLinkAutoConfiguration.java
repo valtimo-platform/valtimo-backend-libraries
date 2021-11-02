@@ -19,6 +19,8 @@ package com.ritense.formlink.autoconfigure;
 import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.service.FormDefinitionService;
+import com.ritense.formlink.autodeployment.FormLinkDeploymentService;
+import com.ritense.formlink.autodeployment.FormsAutoDeploymentFinishedEventListener;
 import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.FormAssociationSubmissionService;
@@ -42,6 +44,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.List;
@@ -124,6 +127,23 @@ public class FormLinkAutoConfiguration {
     @ConditionalOnMissingBean(PublicAccessRateLimitInterceptor.class)
     public PublicAccessRateLimitInterceptor publicAccessRateLimitInterceptor() {
         return new PublicAccessRateLimitInterceptor();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormLinkDeploymentService.class)
+    public FormLinkDeploymentService formLinkDeploymentService(
+        ResourceLoader resourceLoader,
+        FormAssociationService formAssociationService
+    ) {
+        return new FormLinkDeploymentService(resourceLoader, formAssociationService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormsAutoDeploymentFinishedEventListener.class)
+    public FormsAutoDeploymentFinishedEventListener formsAutoDeploymentFinishedEventListener(
+        FormLinkDeploymentService formLinkDeploymentService
+    ) {
+        return new FormsAutoDeploymentFinishedEventListener(formLinkDeploymentService);
     }
 
 }

@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -30,9 +31,11 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.exception.DocumentNotFoundException;
+import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.result.error.DocumentOperationError;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
@@ -44,6 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
@@ -58,6 +62,17 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Override
     public Optional<JsonSchemaDocument> findBy(Document.Id documentId) {
         return documentRepository.findById(documentId);
+    }
+
+    @Override
+    public JsonSchemaDocument get(String documentId) {
+        var documentOptional = findBy(
+            JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+        );
+
+        return documentOptional.orElseThrow(
+            () -> new DocumentNotFoundException("Document not found with id " + documentId)
+        );
     }
 
     @Override
@@ -88,8 +103,24 @@ public class JsonSchemaDocumentService implements DocumentService {
             documentSequenceGeneratorService,
             JsonSchemaDocumentRelation.from(newDocumentRequest.documentRelation())
         );
-        result.resultingDocument().ifPresent(documentRepository::saveAndFlush);
+        result.resultingDocument().ifPresent(jsonSchemaDocument -> {
+            newDocumentRequest.getResources()
+                    .stream()
+                    .map(JsonSchemaRelatedFile::from)
+                    .forEach(jsonSchemaDocument::addRelatedFile);
+            documentRepository.saveAndFlush(jsonSchemaDocument);
+        });
         return result;
+    }
+
+    @Override
+    @Transactional
+    public void modifyDocument(Document document, JsonNode jsonNode) {
+        final var documentRequest = ModifyDocumentRequest.create(document, jsonNode);
+        final var modifyResult = modifyDocument(documentRequest);
+        if (modifyResult.errors().size() > 0) {
+            throw new ModifyDocumentException(modifyResult.errors());
+        }
     }
 
     @Override

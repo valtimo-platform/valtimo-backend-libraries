@@ -19,10 +19,10 @@ package com.ritense.audit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.TestConfiguration;
 
-@SpringBootConfiguration
-@EnableAutoConfiguration
+@SpringBootApplication
 public class AuditTestConfiguration {
 
     public static void main(String[] args) {

@@ -19,7 +19,7 @@ package com.ritense.valtimo.security.interceptor;
 import com.ritense.valtimo.contract.utils.IpUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.InetAddress;
+import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,9 +33,9 @@ public class OfficeIpRequest implements RequestInterceptor {
 
     public OfficeIpRequest() {
         try {
-            hostAddresses.add(InetAddress.getByName(KANTOOR_DOMEIN).getHostAddress());
-            hostAddresses.add(InetAddress.getByName(KANTOOR_PRIMARY_DOMEIN).getHostAddress());
-            hostAddresses.add(InetAddress.getByName(KANTOOR_BACKUP_DOMEIN).getHostAddress());
+            hostAddresses.add(Inet4Address.getByName(KANTOOR_DOMEIN).getHostAddress());
+            hostAddresses.add(Inet4Address.getByName(KANTOOR_PRIMARY_DOMEIN).getHostAddress());
+            hostAddresses.add(Inet4Address.getByName(KANTOOR_BACKUP_DOMEIN).getHostAddress());
         } catch (UnknownHostException e) {
             throw new RuntimeException("Failed to get kantoor domain hostaddress", e);
         }
@@ -44,7 +44,7 @@ public class OfficeIpRequest implements RequestInterceptor {
     public boolean check(HttpServletRequest httpServletRequest) {
         return IpUtils.extractSourceIpsFrom(httpServletRequest)
             .stream()
-            .anyMatch(s -> hostAddresses.contains(s));
+            .anyMatch(hostAddresses::contains);
     }
 
 }

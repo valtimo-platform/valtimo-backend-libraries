@@ -18,19 +18,21 @@ package com.ritense.formlink.domain.impl.formassociation.formlink;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ritense.formlink.domain.FormLink;
 
 import java.util.UUID;
 
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BpmnElementFormIdLink extends CamundaBpmnElement implements FormLink {
 
     protected UUID formId;
 
     @JsonCreator
-    public BpmnElementFormIdLink(String id, UUID formId, Boolean isPublic) {
-        super(id, isPublic);
+    public BpmnElementFormIdLink(String id, UUID formId) {
+        super(id);
         assertArgumentNotNull(formId, "formId is required");
         this.formId = formId;
     }
@@ -49,6 +51,11 @@ public class BpmnElementFormIdLink extends CamundaBpmnElement implements FormLin
     @JsonIgnore
     public String getUrl() {
         return null;
+    }
+
+    @Override
+    public boolean includeFormDefinition() {
+        return true;
     }
 
     @Override

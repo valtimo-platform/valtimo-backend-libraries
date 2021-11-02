@@ -46,10 +46,35 @@ public interface FormAssociationService {
         Document.Id documentId, String processDefinitionKey, String formLinkId
     );
 
+    /**
+     * @deprecated - This method will be removed in 11.0.0
+     *  Use {@link #getPreFilledFormDefinitionByFormLinkId(String, String, Optional, Optional)
+     *  getPreFilledFormDefinitionByFormLinkId(String processDefinitionKey, String formLinkId,
+     *  Optional<Document.Id> documentId, Optional<String> taskInstanceId)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "8.11.0")
     Optional<JsonNode> getPreFilledFormDefinitionByFormLinkId(
         Document.Id documentId, String processDefinitionKey, String formLinkId, String taskInstanceId
     );
 
+    Optional<JsonNode> getPreFilledFormDefinitionByFormLinkId(
+        String processDefinitionKey, String formLinkId, Optional<Document.Id> documentId, Optional<String> taskInstanceId
+    );
+
+    Optional<JsonNode> getPreFilledFormDefinitionByFormKey(String formKey, Optional<Document.Id> documentId);
+
+    FormAssociation createFormAssociation(
+        String processDefinitionKey,
+        String formName,
+        String formLinkElementId,
+        FormAssociationType type
+    );
+
+    /**
+     * @deprecated - The isPublic argument will be removed in future version
+     *  Use the createFormAssociation method without the isPublic argument
+     */
+    @Deprecated(forRemoval = true)
     FormAssociation createFormAssociation(
         String processDefinitionKey,
         String formName,

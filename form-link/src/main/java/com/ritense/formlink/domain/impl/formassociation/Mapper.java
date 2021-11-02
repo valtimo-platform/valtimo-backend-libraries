@@ -16,6 +16,7 @@
 
 package com.ritense.formlink.domain.impl.formassociation;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public enum Mapper {
@@ -27,6 +28,7 @@ public enum Mapper {
     }
 
     public ObjectMapper objectMapper() {
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper;
     }
 

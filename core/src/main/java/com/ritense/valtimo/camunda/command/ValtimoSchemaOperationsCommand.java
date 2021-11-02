@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.camunda.command;
 
-import com.ritense.valtimo.config.LiquibaseRunner;
+import com.ritense.valtimo.contract.config.LiquibaseRunner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.SchemaOperationsCommand;

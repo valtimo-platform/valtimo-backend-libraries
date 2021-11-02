@@ -27,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,28 +54,17 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
 
     @Override
     @GetMapping(value = "/form-definition", params = {"processDefinitionKey", "formLinkId"})
-    public ResponseEntity<JsonNode> getFormDefinitionByFormLinkId(
-        @RequestParam String processDefinitionKey,
-        @RequestParam String formLinkId
-    ) {
-        return formAssociationService.getFormDefinitionByFormLinkId(processDefinitionKey, formLinkId)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-    }
-
-    @Override
-    @GetMapping(value = "/form-definition", params = {"documentId", "processDefinitionKey", "formLinkId"})
-    public ResponseEntity<JsonNode> getPreFilledFormDefinitionByFormLinkId(
-        @RequestParam UUID documentId,
+    public ResponseEntity<JsonNode> getPreFilledFormDefinition(
         @RequestParam String processDefinitionKey,
         @RequestParam String formLinkId,
+        @RequestParam(required = false) Optional<UUID> documentId,
         @RequestParam(required = false) Optional<String> taskInstanceId
     ) {
         return formAssociationService.getPreFilledFormDefinitionByFormLinkId(
-            JsonSchemaDocumentId.existingId(documentId),
             processDefinitionKey,
             formLinkId,
-            taskInstanceId.orElse(null)
+            documentId.map(JsonSchemaDocumentId::existingId),
+            taskInstanceId
         ).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
@@ -84,6 +74,17 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
         @RequestParam String processDefinitionKey
     ) {
         return formAssociationService.getStartEventFormDefinition(processDefinitionKey)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Override
+    @GetMapping(value = "/form-definition/{formKey}")
+    public ResponseEntity<JsonNode> getFormDefinitionByFormKey(
+        @PathVariable String formKey,
+        @RequestParam(required = false) Optional<UUID> documentId
+    ) {
+        return formAssociationService.getPreFilledFormDefinitionByFormKey(formKey, documentId.map(JsonSchemaDocumentId::existingId))
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }

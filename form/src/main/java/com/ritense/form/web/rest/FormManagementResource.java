@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,6 +37,9 @@ public interface FormManagementResource {
 
     @GetMapping
     ResponseEntity<Page<? extends FormDefinition>> getAll(Pageable pageable);
+
+    @GetMapping(params = {"searchTerm"})
+    ResponseEntity<Page<? extends FormDefinition>> queryFormDefinitions(@RequestParam("searchTerm") String searchTerm, Pageable pageable);
 
     @GetMapping(value = "/{formDefinitionId}", consumes = MediaType.ALL_VALUE)
     ResponseEntity<? extends FormDefinition> getFormDefinitionById(String formDefinitionId);

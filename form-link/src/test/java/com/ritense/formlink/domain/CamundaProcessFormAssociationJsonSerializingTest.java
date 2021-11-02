@@ -39,8 +39,17 @@ public class CamundaProcessFormAssociationJsonSerializingTest extends BaseTest {
         "\t\"formLink\": {\n" +
         "\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink\",\n" +
         "\t\t\"id\": \"user-task-id\",\n" +
-        "\t\t\"formId\": \"4bd8f762-0f83-42a6-8640-741b3f848754\",\n" +
-        "\t\t\"isPublic\": false\n" +
+        "\t\t\"formId\": \"4bd8f762-0f83-42a6-8640-741b3f848754\"\n" +
+        "\t}\n" +
+        "}]";
+    private static final String JSON_WITH_IS_PUBLIC_STRING_VALUE = "[{\n" +
+        "\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\",\n" +
+        "\t\"id\": \"e407d9a3-5611-48d8-bb91-1f45af5a9967\",\n" +
+        "\t\"formLink\": {\n" +
+        "\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink\",\n" +
+        "\t\t\"id\": \"user-task-id\",\n" +
+        "\t\t\"isPublic\": \"false\",\n" +
+        "\t\t\"formId\": \"4bd8f762-0f83-42a6-8640-741b3f848754\"\n" +
         "\t}\n" +
         "}]";
 
@@ -64,6 +73,17 @@ public class CamundaProcessFormAssociationJsonSerializingTest extends BaseTest {
     }
 
     @Test
+    public void shouldParseJsonWithIsPublic() throws IOException {
+        final var camundaProcessFormAssociation = processFormAssociation(
+            UUID.fromString(UUID_STRING_ID),
+            UUID.fromString(UUID_STRING_FORM_ASSOCIATION_ID),
+            UUID.fromString(UUID_STRING_FORM_ID)
+        );
+
+        assertThat(jacksonTester.parse(JSON_WITH_IS_PUBLIC_STRING_VALUE)).isEqualTo(camundaProcessFormAssociation.getFormAssociations());
+    }
+
+    @Test
     public void shouldMarshalObjectToJson() throws IOException {
         final var camundaProcessFormAssociation = processFormAssociation(
             UUID.fromString(UUID_STRING_ID),
@@ -72,5 +92,4 @@ public class CamundaProcessFormAssociationJsonSerializingTest extends BaseTest {
         );
         assertThat(jacksonTester.write(camundaProcessFormAssociation.getFormAssociations())).isEqualToJson(JSON_STRING_VALUE);
     }
-
 }

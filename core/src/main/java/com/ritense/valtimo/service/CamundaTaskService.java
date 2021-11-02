@@ -19,7 +19,6 @@ package com.ritense.valtimo.service;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
 import com.ritense.valtimo.contract.utils.RequestHelper;
@@ -53,10 +52,8 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -167,13 +164,14 @@ public class CamundaTaskService {
 
             tasksGroupedByAssignee.forEach((assigneeEmail, tasksExtended) -> {
                 if (!assigneeEmail.isEmpty()) {
-                    var user = userManagementService.findByEmail(assigneeEmail).orElseThrow();
-                    final var valtimoUser = new ValtimoUserBuilder()
-                        .id(user.getId())
-                        .firstName(user.getFirstName())
-                        .lastName(user.getLastName())
-                        .build();
-                    tasksExtended.forEach(taskExtended -> taskExtended.setValtimoAssignee(valtimoUser));
+                    userManagementService.findByEmail(assigneeEmail).ifPresent(user -> {
+                        final var valtimoUser = new ValtimoUserBuilder()
+                            .id(user.getId())
+                            .firstName(user.getFirstName())
+                            .lastName(user.getLastName())
+                            .build();
+                        tasksExtended.forEach(taskExtended -> taskExtended.setValtimoAssignee(valtimoUser));
+                    });
                 }
             });
         }
@@ -263,36 +261,9 @@ public class CamundaTaskService {
         return parameters;
     }
 
-    private boolean isAnyGroupsCriteriaPresentInRequiredUserGroups(SearchByUserGroupsCriteria groupsCriteria, String[] roleList) {
-        for (String orQuery : roleList) {
-            if (groupsCriteria.containsRequiredUserGroup(orQuery)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean hasTaskFormData(String taskId) {
         final TaskFormData taskFormData = formService.getTaskFormData(taskId);
-        return taskFormData == null || taskFormData.getFormKey() != null || taskFormData.getFormFields().size() != 0;
-    }
-
-    private SearchByUserGroupsCriteria prepareGroupCriteria(List<String> groupsDbResult) {
-        SearchByUserGroupsCriteria groupsCriteria = new SearchByUserGroupsCriteria();
-        for (String role : groupsDbResult) {
-            String[] roleList = role.split(",");
-            if (roleList.length == 1) {
-                groupsCriteria.addToRequiredUserGroups(roleList[0]);
-            }
-        }
-        for (String role : groupsDbResult) {
-            String[] roleList = role.split(",");
-            if (roleList.length == 1 || isAnyGroupsCriteriaPresentInRequiredUserGroups(groupsCriteria, roleList)) {
-                continue;
-            }
-            groupsCriteria.addToOrUserGroups(new HashSet<>(Arrays.asList(roleList)));
-        }
-        return groupsCriteria;
+        return taskFormData == null || taskFormData.getFormKey() != null || !taskFormData.getFormFields().isEmpty();
     }
 
     /**

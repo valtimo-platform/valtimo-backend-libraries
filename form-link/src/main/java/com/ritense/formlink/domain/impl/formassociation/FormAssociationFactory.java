@@ -17,10 +17,6 @@
 package com.ritense.formlink.domain.impl.formassociation;
 
 import com.ritense.formlink.domain.FormLink;
-import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation;
-import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
-import com.ritense.formlink.domain.impl.formassociation.StartEventFormAssociation;
-import com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementAngularStateUrlLink;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink;
@@ -35,13 +31,12 @@ public class FormAssociationFactory {
         String formLinkElementId,
         UUID formId,
         String customUrl,
-        String angularStateUrl,
-        Boolean isPublic
+        String angularStateUrl
     ) {
         if (type == null) {
             throw new RuntimeException("Cannot determine form association");
         }
-        final FormLink formLink = getFormLink(formLinkElementId, formId, customUrl, angularStateUrl, isPublic);
+        final FormLink formLink = getFormLink(formLinkElementId, formId, customUrl, angularStateUrl);
 
         if (type.equals(FormAssociationType.START_EVENT)) {
             return new StartEventFormAssociation(formAssociationId, formLink);
@@ -55,15 +50,14 @@ public class FormAssociationFactory {
         String formLinkElementId,
         UUID formId,
         String customUrl,
-        String angularStateUrl,
-        Boolean isPublic
+        String angularStateUrl
     ) {
         if (formId != null) {
-            return new BpmnElementFormIdLink(formLinkElementId, formId, isPublic);
+            return new BpmnElementFormIdLink(formLinkElementId, formId);
         } else if (customUrl != null) {
-            return new BpmnElementUrlLink(formLinkElementId, customUrl, isPublic);
+            return new BpmnElementUrlLink(formLinkElementId, customUrl);
         } else if (angularStateUrl != null) {
-            return new BpmnElementAngularStateUrlLink(formLinkElementId, angularStateUrl, isPublic);
+            return new BpmnElementAngularStateUrlLink(formLinkElementId, angularStateUrl);
         }
         throw new RuntimeException("Cannot determine form link");
     }

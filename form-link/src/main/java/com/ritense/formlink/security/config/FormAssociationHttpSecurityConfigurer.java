@@ -34,6 +34,7 @@ public class FormAssociationHttpSecurityConfigurer implements HttpSecurityConfig
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/form-association/form-definition").hasAuthority(USER)
+                .antMatchers(GET, "/api/form-association/form-definition/{formKey}").hasAuthority(USER)
                 .antMatchers(POST, "/api/form-association/form-definition/submission").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

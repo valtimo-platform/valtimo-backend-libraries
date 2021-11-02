@@ -16,6 +16,7 @@
 
 package com.ritense.form.service.impl;
 
+import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
@@ -24,9 +25,9 @@ import com.ritense.form.service.FormDefinitionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import javax.transaction.Transactional;
 import java.util.Optional;
 import java.util.UUID;
+import javax.transaction.Transactional;
 
 public class FormIoFormDefinitionService implements FormDefinitionService {
 
@@ -39,6 +40,11 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     @Override
     public Page<FormIoFormDefinition> getAll(Pageable pageable) {
         return formDefinitionRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<? extends FormDefinition> queryFormDefinitions(String searchTerm, Pageable pageable) {
+        return formDefinitionRepository.findAllByNameContainingIgnoreCase(searchTerm, pageable);
     }
 
     @Override

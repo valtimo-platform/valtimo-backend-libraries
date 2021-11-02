@@ -18,6 +18,7 @@ package com.ritense.valtimo.autoconfigure;
 
 import com.ritense.valtimo.camunda.command.ValtimoSchemaOperationsCommand;
 import com.ritense.valtimo.camunda.processaudit.HistoryEventAuditProcessEnginePlugin;
+import com.ritense.valtimo.camunda.processaudit.TaskEventHandler;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
 import com.ritense.valtimo.camunda.task.service.NotificationService;
 import com.ritense.valtimo.camunda.task.service.ReminderService;
@@ -25,8 +26,8 @@ import com.ritense.valtimo.camunda.task.service.impl.NotificationServiceImpl;
 import com.ritense.valtimo.camunda.task.service.impl.ReminderServiceImpl;
 import com.ritense.valtimo.config.CamundaConfiguration;
 import com.ritense.valtimo.config.CustomFormTypesProcessEnginePlugin;
-import com.ritense.valtimo.config.LiquibaseRunner;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.config.LiquibaseRunner;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
@@ -128,4 +129,9 @@ public class CamundaAutoConfiguration {
         );
     }
 
+    @Bean
+    @ConditionalOnMissingBean(TaskEventHandler.class)
+    public TaskEventHandler taskEventHandler(final ApplicationEventPublisher applicationEventPublisher) {
+        return new TaskEventHandler(applicationEventPublisher);
+    }
 }

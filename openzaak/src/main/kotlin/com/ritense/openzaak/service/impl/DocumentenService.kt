@@ -60,14 +60,17 @@ class DocumentenService(
 
     override fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, documentId: UUID, documentDefinitionName: String) {
         val zaakInstance = zaakTypeLinkService.findBy(documentDefinitionName).getZaakInstanceLink(documentId).zaakInstanceUrl
+        createObjectInformatieObject(enkelvoudigInformatieObject, zaakInstance)
+    }
 
+    override fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, zaak: URI) {
         OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
             .path("/zaken/api/v1/zaakinformatieobjecten")
             .post()
             .body(
                 mapOf(
                     "informatieobject" to enkelvoudigInformatieObject,
-                    "zaak" to zaakInstance,
+                    "zaak" to zaak,
                 )
             )
             .build()

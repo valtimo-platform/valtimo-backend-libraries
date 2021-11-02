@@ -18,6 +18,7 @@ package com.ritense.form.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.form.BaseTest;
@@ -78,6 +79,24 @@ public class FormIoFormDefinitionTest extends BaseTest {
         final Map<String, Object> stringObjectMap = formDefinition.extractProcessVars(formData);
 
         assertThat(stringObjectMap).contains(entry("firstName", "John"));
+    }
+
+    @Test
+    public void shouldExtractProcessVarsArrayValue() throws IOException {
+        final var formDefinition = formDefinitionOf("process-variables-form-example");
+
+        final ObjectNode formData = JsonNodeFactory.instance.objectNode();
+        final ObjectNode processVarsData = JsonNodeFactory.instance.objectNode();
+        final ArrayNode arrayValue = JsonNodeFactory.instance.arrayNode();
+        arrayValue.add("value1");
+        arrayValue.add("value2");
+        processVarsData.set("firstName", arrayValue);
+        formData.set("pv", processVarsData);
+
+        final Map<String, Object> processVars = formDefinition.extractProcessVars(formData);
+
+        List<String> values = (List<String>) processVars.get("firstName");
+        assertThat(values).containsOnly("value1", "value2");
     }
 
     @Test

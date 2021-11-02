@@ -32,8 +32,9 @@ import org.mockito.Mockito.mock
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.net.URI
 import java.nio.charset.StandardCharsets
@@ -75,12 +76,12 @@ internal class InformatieObjectTypeLinkResourceTest {
             )
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
-            .andDo(MockMvcResultHandlers.print())
-            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.informatieObjectType").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.zaakType").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.documentDefinitionName").isNotEmpty)
+            .andDo(print())
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$.informatieObjectType").isNotEmpty)
+            .andExpect(jsonPath("$.zaakType").isNotEmpty)
+            .andExpect(jsonPath("$.documentDefinitionName").isNotEmpty)
     }
 
     @Test
@@ -95,8 +96,8 @@ internal class InformatieObjectTypeLinkResourceTest {
             )
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
-            .andDo(MockMvcResultHandlers.print())
-            .andExpect(MockMvcResultMatchers.status().isNoContent)
+            .andDo(print())
+            .andExpect(status().isNoContent)
     }
 
     @Test
@@ -124,13 +125,13 @@ internal class InformatieObjectTypeLinkResourceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
-            .andDo(MockMvcResultHandlers.print())
-            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.informatieObjectTypeLink.zaakType").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.informatieObjectTypeLink.informatieObjectType").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.informatieObjectTypeLink.documentDefinitionName").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isEmpty)
+            .andDo(print())
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$.informatieObjectTypeLink.zaakType").isNotEmpty)
+            .andExpect(jsonPath("$.informatieObjectTypeLink.informatieObjectType").isNotEmpty)
+            .andExpect(jsonPath("$.informatieObjectTypeLink.documentDefinitionName").isNotEmpty)
+            .andExpect(jsonPath("$.errors").isEmpty)
     }
 
     @Test
@@ -151,9 +152,9 @@ internal class InformatieObjectTypeLinkResourceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
-            .andDo(MockMvcResultHandlers.print())
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isNotEmpty)
+            .andDo(print())
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$.errors").isNotEmpty)
     }
 }

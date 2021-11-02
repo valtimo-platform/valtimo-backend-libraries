@@ -66,6 +66,32 @@ class FormIoFormManagementSecurityResourceTest extends SecuritySpecificEndpointI
     }
 
     @Test
+    @WithMockUser(username = USER_EMAIL, authorities = {USER})
+    void queryFormDefinitionAsUser() throws Exception {
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(GET, "/api/form-management");
+        request.param("searchTerm", "test");
+        request.accept(MediaType.APPLICATION_JSON);
+        request.with(r -> {
+            r.setRemoteAddr("8.8.8.8");
+            return r;
+        });
+        assertHttpStatus(request, FORBIDDEN);
+    }
+
+    @Test
+    @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
+    void queryFormDefinitionAsAdmin() throws Exception {
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(GET, "/api/form-management");
+        request.param("searchTerm", "test");
+        request.accept(MediaType.APPLICATION_JSON);
+        request.with(r -> {
+            r.setRemoteAddr("8.8.8.8");
+            return r;
+        });
+        assertHttpStatus(request, OK);
+    }
+
+    @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void createFormDefinitionAsAdmin() throws Exception {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(POST, "/api/form-management");

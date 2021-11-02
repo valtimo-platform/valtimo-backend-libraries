@@ -13,7 +13,8 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.valtimo.autoconfigure.MailAutoConfiguration, \
   com.ritense.valtimo.autoconfigure.ProcessDefinitionVersionChangeLogAutoConfiguration, \
   com.ritense.valtimo.autoconfigure.ProcessDataObjectAutoConfiguration, \
-  com.ritense.valtimo.autoconfigure.AuthenticationAutoConfiguration
+  com.ritense.valtimo.autoconfigure.AuthenticationAutoConfiguration, \
+  com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 
 
 

@@ -16,8 +16,16 @@
 
 package com.ritense.formlink.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
@@ -30,21 +38,16 @@ import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
-import org.camunda.bpm.engine.TaskService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.camunda.bpm.engine.TaskService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CamundaFormAssociationServiceTest extends BaseTest {
 
@@ -139,7 +142,6 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         assertThat(formAssociation).isNotNull();
         assertThat(formAssociation.getFormLink().getFormId()).isEqualTo(modifyFormAssociationRequest.getFormLinkRequest().getFormId());
         assertThat(formAssociation.getFormLink().getId()).isEqualTo(modifyFormAssociationRequest.getFormLinkRequest().getId());
-        assertThat(formAssociation.getFormLink().isPublic()).isEqualTo(modifyFormAssociationRequest.getFormLinkRequest().isPublic());
     }
 
     @Test
@@ -172,10 +174,59 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         assertThat(form.get().at("/components/1/defaultValue").textValue()).isEqualTo("Jan (OpenZaak)");
     }
 
+    @Test
+    void shouldGetFormDefinitionByFormKey() throws IOException {
+        final var formDefinition = formDefinitionOf("form-open-zaak-variables-example");
+        when(formDefinitionService.getFormDefinitionByName(any())).thenReturn(Optional.of(formDefinition));
+
+        Optional<JsonNode> form = camundaFormAssociationService
+            .getPreFilledFormDefinitionByFormKey("form-example", Optional.empty());
+
+        assertThat(form).isPresent();
+    }
+
+    @Test
+    void shouldGetPrefilledFormDefinitionByFormKey() throws IOException {
+        final var documentId = (Document.Id)JsonSchemaDocumentId.existingId(UUID.randomUUID());
+        final var formDefinition = formDefinitionOf("form-open-zaak-variables-example");
+        when(formDefinitionService.getFormDefinitionByName(any())).thenReturn(Optional.of(formDefinition));
+
+        final var documentContent = documentContent();
+        final var jsonDocumentContent = JsonDocumentContent.build(documentContent);
+        Optional<JsonSchemaDocument> documentOptional = Optional.of(createDocument(jsonDocumentContent));
+
+        Map<String, Object> formFieldData = new HashMap<>();
+        formFieldData.put("voornaam", "test-value");
+
+        when(formFieldDataResolver.supports(any())).thenReturn(true);
+        when(formFieldDataResolver.get(any(), any(), any())).thenReturn(formFieldData);
+        when(documentService.findBy(any())).thenReturn(documentOptional);
+
+        Optional<JsonNode> form = camundaFormAssociationService
+            .getPreFilledFormDefinitionByFormKey("form-example", Optional.of(documentId));
+
+        assertThat(form).isPresent();
+        assertThat(findArrayEntry(form.get().get("components"), "key", "voornaam")
+            .get("defaultValue").textValue()).isEqualTo("Jan");
+        assertThat(findArrayEntry(form.get().get("components"), "key", "oz.voornaam")
+            .get("defaultValue").textValue()).isEqualTo("test-value");
+    }
+
     private ObjectNode documentContent() {
         ObjectNode content = JsonNodeFactory.instance.objectNode();
         content.put("voornaam", "Jan");
         return content;
+    }
+
+    private JsonNode findArrayEntry(JsonNode array, String nodeElementName, String nodeElementValue) {
+        Iterator<JsonNode> children = array.elements();
+        while (children.hasNext()) {
+            JsonNode node = children.next();
+            if (node.get(nodeElementName).textValue().equals(nodeElementValue)) {
+                return node;
+            }
+        }
+        throw new RuntimeException("element not found");
     }
 
 }
