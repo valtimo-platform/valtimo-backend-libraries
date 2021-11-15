@@ -16,6 +16,10 @@
 
 package com.ritense.form.domain;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,32 +28,25 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.form.domain.event.FormRegisteredEvent;
 import com.ritense.valtimo.contract.form.ExternalFormFieldType;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.Type;
-import org.springframework.data.domain.AbstractAggregateRoot;
-import org.springframework.data.domain.Persistable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
-import static com.ritense.valtimo.service.util.DateUtils.getIso8601UtcDateFormat;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Type;
+import org.springframework.data.domain.AbstractAggregateRoot;
+import org.springframework.data.domain.Persistable;
 
 @Slf4j
 @Entity
@@ -76,6 +73,9 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     @Column(name = "read_only", columnDefinition = "BIT")
     private Boolean readOnly = false;
+
+    @Transient
+    private transient JsonNode workingCopy = null;
 
     @Transient
     private transient boolean isNew = false;
@@ -138,7 +138,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         final JsonNode formDefinition = asJson();
         final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinition);
         inputFields.forEach(field -> fill(field, content));
-        this.formDefinition = formDefinition.toString();
         return this;
     }
 
@@ -201,11 +200,14 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     public JsonNode asJson() {
-        try {
-            return Mapper.INSTANCE.get().readTree(formDefinition);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (this.workingCopy == null) {
+            try {
+                this.workingCopy = Mapper.INSTANCE.get().readTree(formDefinition);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
+        return this.workingCopy;
     }
 
     public Optional<ContentItem> getDocumentContentVar(JsonNode field) {
@@ -247,7 +249,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     private void setFormDefinition(String formDefinition) {
         try {
-            Mapper.INSTANCE.get().readTree(formDefinition);
+            this.workingCopy = Mapper.INSTANCE.get().readTree(formDefinition);
         } catch (Exception e) {
             throw new IllegalArgumentException("The formDefinition argument could not be parsed as JSON.", e);
         }

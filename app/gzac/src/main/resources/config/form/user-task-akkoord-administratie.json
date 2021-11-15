@@ -1,0 +1,48 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "placeholder": "Medewerker email",
+            "hideLabel": true,
+            "type": "textfield",
+            "key": "email",
+            "properties": {
+                "container": "/verlofAanvragen/{indexOf(/verlofId)}/"
+            },
+            "input": true
+        },
+        {
+            "placeholder": "Aanvraag periode",
+            "hideLabel": true,
+            "type": "textfield",
+            "key": "periodeOmschrijving",
+            "properties": {
+                "container": "/verlofAanvragen/{indexOf(/verlofId)}/"
+            },
+            "input": true
+        },
+        {
+            "label": "Akkoord met de aanvraag?",
+            "tableView": false,
+            "type": "checkbox",
+            "properties": {
+                "container": "/verlofAanvragen/{indexOf(/verlofId)}/"
+            },
+            "key": "akkoord",
+            "input": true
+        },
+        {
+            "type": "button",
+            "label": "Submit",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true
+        }
+    ]
+}

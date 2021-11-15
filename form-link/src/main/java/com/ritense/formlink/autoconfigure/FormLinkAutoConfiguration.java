@@ -133,9 +133,10 @@ public class FormLinkAutoConfiguration {
     @ConditionalOnMissingBean(FormLinkDeploymentService.class)
     public FormLinkDeploymentService formLinkDeploymentService(
         ResourceLoader resourceLoader,
-        FormAssociationService formAssociationService
+        FormAssociationService formAssociationService,
+        FormDefinitionService formDefinitionService
     ) {
-        return new FormLinkDeploymentService(resourceLoader, formAssociationService);
+        return new FormLinkDeploymentService(resourceLoader, formAssociationService, formDefinitionService);
     }
 
     @Bean

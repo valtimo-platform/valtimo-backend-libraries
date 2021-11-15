@@ -27,7 +27,6 @@ import com.ritense.valtimo.contract.authentication.CurrentUserRepository;
 import com.ritense.valtimo.contract.authentication.CurrentUserService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
-import com.ritense.valtimo.core.listener.TaskCreationListener;
 import com.ritense.valtimo.helper.ActivityHelper;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import com.ritense.valtimo.repository.CamundaReportingRepository;
@@ -113,12 +112,6 @@ public class ValtimoAutoConfiguration {
     @ConditionalOnMissingBean(TaskCompletedListener.class)
     public TaskCompletedListener taskCompletedListener(final ApplicationEventPublisher applicationEventPublisher) {
         return new TaskCompletedListener(applicationEventPublisher);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(TaskCreationListener.class)
-    public TaskCreationListener taskCreationListener(final UserManagementService userManagementService) {
-        return new TaskCreationListener(userManagementService);
     }
 
     @Bean
@@ -278,26 +271,22 @@ public class ValtimoAutoConfiguration {
     @ConditionalOnMissingBean(ProcessResource.class)
     public ProcessResource processResource(
         final TaskService taskService,
-        final FormService formService,
         final HistoryService historyService,
         final RuntimeService runtimeService,
         final RepositoryService repositoryService,
         final CamundaTaskService camundaTaskService,
         final CamundaProcessService camundaProcessService,
         final ProcessShortTimerService processShortTimerService,
-        final CamundaReportingRepository camundaReportingRepository,
         final CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository
     ) {
         return new ProcessResource(
             taskService,
-            formService,
             historyService,
             runtimeService,
             repositoryService,
             camundaTaskService,
             camundaProcessService,
             processShortTimerService,
-            camundaReportingRepository,
             camundaSearchProcessInstanceRepository
         );
     }

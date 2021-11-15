@@ -48,7 +48,7 @@ class ZaakTypeLinkTest {
 
     @BeforeEach
     fun init() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     @Test

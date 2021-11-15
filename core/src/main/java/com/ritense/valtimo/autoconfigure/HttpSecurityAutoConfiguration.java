@@ -34,7 +34,6 @@ import com.ritense.valtimo.security.config.DenyAllHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.EmailNotificationSettingsSecurityConfigurer;
 import com.ritense.valtimo.security.config.ErrorHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.JwtHttpSecurityConfigurer;
-import com.ritense.valtimo.security.config.ProcessDefinitionVersionChangeLogHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ProcessHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ProcessInstanceHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.PublicProcessHttpSecurityConfigurer;
@@ -172,13 +171,6 @@ public class HttpSecurityAutoConfiguration {
     @ConditionalOnMissingBean(ProcessInstanceHttpSecurityConfigurer.class)
     public ProcessInstanceHttpSecurityConfigurer processInstanceHttpSecurityConfigurer() {
         return new ProcessInstanceHttpSecurityConfigurer();
-    }
-
-    @Order(360)
-    @Bean
-    @ConditionalOnMissingBean(ProcessDefinitionVersionChangeLogHttpSecurityConfigurer.class)
-    public ProcessDefinitionVersionChangeLogHttpSecurityConfigurer processDefinitionVersionChangeLogHttpSecurityConfigurer() {
-        return new ProcessDefinitionVersionChangeLogHttpSecurityConfigurer();
     }
 
     @Order(370)

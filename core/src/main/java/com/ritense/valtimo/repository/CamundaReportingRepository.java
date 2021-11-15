@@ -16,24 +16,16 @@
 
 package com.ritense.valtimo.repository;
 
-import com.ritense.valtimo.helper.CamundaOrderByHelper;
 import com.ritense.valtimo.repository.camunda.dto.ChartInstance;
 import com.ritense.valtimo.repository.camunda.dto.ChartInstanceSeries;
 import com.ritense.valtimo.repository.camunda.dto.InstanceCount;
 import com.ritense.valtimo.repository.camunda.dto.InstanceCountChart;
-import com.ritense.valtimo.repository.camunda.dto.ProcessInstance;
 import com.ritense.valtimo.repository.camunda.dto.Serie;
-import com.ritense.valtimo.web.rest.parameters.ProcessVariables;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 import java.sql.Date;
 import java.time.Instant;
@@ -66,174 +58,6 @@ public class CamundaReportingRepository {
         List<ProcessDefinition> deploydDefinitions = processDefinitionQuery.list();
         List<InstanceCount> instanceCounts = session.selectList("com.ritense.valtimo.mapper.getInstanceCount", parameters);
         return new InstanceCountChart(deploydDefinitions, instanceCounts);
-    }
-
-    @Deprecated
-    public Long searchInstancesCount(
-        String processDefinitionName,
-        String searchStatus,
-        Boolean active,
-        LocalDate fromDate,
-        LocalDate toDate,
-        Integer duration,
-        ProcessVariables processVariables,
-        String businessKey
-    ) {
-        var parameters = new ProcessInstanceQueryParameters()
-            .processDefinitionName(processDefinitionName)
-            .searchStatus(searchStatus)
-            .active(active)
-            .fromDate(fromDate)
-            .toDate(toDate)
-            .duration(duration)
-            .businessKey(businessKey)
-            .processVariables(processVariables);
-
-        ListQueryParameterObject queryParameterObject = new ListQueryParameterObject();
-        queryParameterObject.setParameter(parameters.createParameters());
-
-        return session.selectOne("com.ritense.valtimo.mapper.searchInstancesCount", queryParameterObject);
-    }
-
-    @Deprecated
-    public Long searchInstancesCount(String processDefinitionId) {
-        var parameters = new ProcessInstanceQueryParameters()
-            .processDefinitionId(processDefinitionId);
-        ListQueryParameterObject queryParameterObject = new ListQueryParameterObject();
-        queryParameterObject.setParameter(parameters.createParameters());
-        return session.selectOne("com.ritense.valtimo.mapper.searchInstancesCount", queryParameterObject);
-    }
-
-    @Deprecated
-    public Page<ProcessInstance> searchInstances(
-        String processDefinitionName,
-        String searchStatus,
-        Boolean active,
-        LocalDate fromDate,
-        LocalDate toDate,
-        Integer duration,
-        Pageable pageable,
-        ProcessVariables processVariables,
-        String businessKey
-    ) {
-        var parameters = new ProcessInstanceQueryParameters()
-            .processDefinitionName(processDefinitionName)
-            .searchStatus(searchStatus)
-            .active(active)
-            .fromDate(fromDate)
-            .toDate(toDate)
-            .duration(duration)
-            .businessKey(businessKey)
-            .processVariables(processVariables);
-
-        var query = new ListQueryParameterObject(
-            parameters.createParameters(),
-            pageable.getPageNumber() * pageable.getPageSize(),
-            pageable.getPageSize()
-        );
-        query.setOrderingProperties(CamundaOrderByHelper.sortToOrders("HistoricProcessInstance", pageable.getSort()));
-        List<ProcessInstance> processInstances = session.selectList("com.ritense.valtimo.mapper.searchInstances", query);
-        Long processInstanceCount = session.selectOne("com.ritense.valtimo.mapper.searchInstancesCount", query);
-        return new PageImpl<>(processInstances, pageable, processInstanceCount);
-    }
-
-    @Deprecated
-    private class ProcessInstanceQueryParameters {
-        private String processDefinitionName;
-        private String searchStatus;
-        private Boolean active;
-        private LocalDate fromDate;
-        private LocalDate toDate;
-        private Integer duration;
-        private String processDefinitionId;
-        private ProcessVariables processVariables;
-        private String businessKey;
-
-        public ProcessInstanceQueryParameters businessKey(String businessKey) {
-            this.businessKey = businessKey;
-            return this;
-        }
-
-        public ProcessInstanceQueryParameters processDefinitionName(String processDefinitionName) {
-            this.processDefinitionName = processDefinitionName;
-            return this;
-        }
-
-        public ProcessInstanceQueryParameters searchStatus(String searchStatus) {
-            this.searchStatus = searchStatus;
-            return this;
-        }
-
-        public ProcessInstanceQueryParameters active(Boolean active) {
-            this.active = active;
-            return this;
-        }
-
-        public ProcessInstanceQueryParameters fromDate(LocalDate fromDate) {
-            this.fromDate = fromDate;
-            return this;
-        }
-
-        public ProcessInstanceQueryParameters toDate(LocalDate toDate) {
-            this.toDate = toDate;
-            return this;
-        }
-
-        public ProcessInstanceQueryParameters duration(Integer duration) {
-            this.duration = duration;
-            return this;
-        }
-
-
-        public ProcessInstanceQueryParameters processDefinitionId(String processDefinitionId) {
-            this.processDefinitionId = processDefinitionId;
-            return this;
-        }
-
-        public ProcessInstanceQueryParameters processVariables(ProcessVariables processVariables) {
-            this.processVariables = processVariables;
-            return this;
-        }
-
-        public Map<String, Object> createParameters() {
-            Map<String, Object> parameters = new HashMap<>();
-            if (StringUtils.isNotBlank(searchStatus)) {
-                parameters.put("searchStatus", searchStatus);
-            }
-            if (Optional.ofNullable(active).isPresent()) {
-                parameters.put("active", active);
-            }
-            if (fromDate != null) {
-                parameters.put("fromDate", Date.valueOf(fromDate));
-            }
-            if (toDate != null) {
-                parameters.put("toDate", Date.valueOf(toDate));
-            }
-            if (Optional.ofNullable(duration).isPresent()) {
-                LocalDate dayinPast = LocalDate.now().minusDays(duration);
-                parameters.put("dayinPast", Date.valueOf(dayinPast));
-            }
-            if (Optional.ofNullable(processDefinitionName).isPresent()) {
-                parameters.put("processDefinitionName", processDefinitionName);
-            }
-            if (Optional.ofNullable(processDefinitionId).isPresent()) {
-                parameters.put("processDefinitionId", processDefinitionId);
-            }
-            if (processVariables != null && processVariables.getVariables() != null && processVariables.getVariables().size() > 0) {
-                // Create like params
-                Map<String, String> variableParameters = new HashMap<>();
-                processVariables.getVariables()
-                    .entrySet()
-                    .forEach(x -> variableParameters.put(x.getKey(), '%' + x.getValue().toUpperCase() + '%'));
-                parameters.put("variables", variableParameters);
-            }
-            if (Optional.ofNullable(businessKey).isPresent()) {
-                parameters.put("businessKey", businessKey);
-            }
-
-            return parameters;
-        }
-
     }
 
     public ChartInstance getTasksPerRole(String processDefinitionKey, LocalDate begin, LocalDate end) {

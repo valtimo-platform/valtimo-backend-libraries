@@ -67,7 +67,7 @@ abstract class BaseTest {
     lateinit var document: JsonSchemaDocument
 
     fun baseSetUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
 
         whenever(documentSequenceGeneratorService.next(any())).thenReturn(1)
 

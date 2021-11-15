@@ -1,0 +1,43 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "label": "Wat is de naam van de medewerker? (Voor- en achternaam)",
+            "spellcheck": true,
+            "tableView": true,
+            "calculateServer": false,
+            "key": "medewerker.naam",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "required": true
+            }
+        },
+        {
+            "label": "Wat is emailadres van de medewerker?",
+            "spellcheck": true,
+            "tableView": true,
+            "calculateServer": false,
+            "key": "medewerker.email",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "required": true
+            }
+        },
+        {
+            "type": "button",
+            "label": "Submit",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true,
+            "tableView": false
+        }
+    ]
+}

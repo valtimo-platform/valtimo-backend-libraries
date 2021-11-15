@@ -17,7 +17,6 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
-import com.ritense.valtimo.service.dto.ProcessSearchPropertyDTO;
 import com.ritense.valtimo.service.util.FormUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,16 +28,10 @@ import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.camunda.bpm.model.bpmn.BpmnModelInstance;
-import org.camunda.bpm.model.bpmn.instance.ExtensionElements;
-import org.camunda.bpm.model.bpmn.instance.Process;
-import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
-import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -75,31 +68,6 @@ public class CamundaProcessService {
             .createProcessInstanceQuery()
             .processInstanceId(processInstanceId)
             .singleResult());
-    }
-
-    @Deprecated
-    public ProcessSearchPropertyDTO findProcessSearchProperties(String processKey) {
-        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
-            .latestVersion()
-            .processDefinitionKey(processKey)
-            .singleResult();
-
-        BpmnModelInstance bpmnModelInstance = repositoryService.getBpmnModelInstance(processDefinition.getId());
-        Process processInstance = bpmnModelInstance.getModelElementById(processDefinition.getKey());
-
-        Map<String, String> properties = new HashMap<>();
-        ExtensionElements extensionElements = processInstance.getExtensionElements();
-        if (extensionElements != null) {
-            CamundaProperties camundaPropertiesList = processInstance.getExtensionElements()
-                .getElementsQuery()
-                .filterByType(CamundaProperties.class)
-                .singleResult();
-            properties = camundaPropertiesList.getCamundaProperties()
-                .stream()
-                .filter(p -> p.getCamundaValue() != null)
-                .collect(Collectors.toMap(CamundaProperty::getCamundaName, CamundaProperty::getCamundaValue));
-        }
-        return new ProcessSearchPropertyDTO(properties);
     }
 
     public void deleteProcessInstanceById(String processInstanceId, String reason) {

@@ -29,6 +29,7 @@ import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndComplete
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest;
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
 import com.ritense.processdocument.domain.impl.request.NewDocumentForRunningProcessRequest;
+import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest;
 import com.ritense.processdocument.domain.request.Request;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
@@ -40,16 +41,20 @@ import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProces
 import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProcessResultSucceeded;
 import com.ritense.processdocument.service.impl.result.NewDocumentForRunningProcessResultFailed;
 import com.ritense.processdocument.service.impl.result.NewDocumentForRunningProcessResultSucceeded;
+import com.ritense.processdocument.service.impl.result.StartProcessForDocumentResultFailed;
+import com.ritense.processdocument.service.impl.result.StartProcessForDocumentResultSucceeded;
 import com.ritense.processdocument.service.result.DocumentFunctionResult;
 import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskResult;
 import com.ritense.processdocument.service.result.ModifyDocumentAndStartProcessResult;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.processdocument.service.result.NewDocumentForRunningProcessResult;
+import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.task.Task;
@@ -252,6 +257,43 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             return new ModifyDocumentAndStartProcessResultSucceeded(document, camundaProcessInstanceId);
         } catch (RuntimeException ex) {
             return new ModifyDocumentAndStartProcessResultFailed(parseAndLogException(ex));
+        }
+   }
+
+    public StartProcessForDocumentResult startProcessForDocument(StartProcessForDocumentRequest request) {
+        try {
+            //Part 1 find document
+            Optional<? extends Document> optionalDocument = documentService.findBy(request.getDocumentId());
+
+            if (optionalDocument.isEmpty()) {
+                return new StartProcessForDocumentResultFailed(new OperationError.FromString("Document could not be found"));
+            }
+
+            Document document = optionalDocument.get();
+
+            //Part 2 process start
+            final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(document.definitionId());
+            final var processDefinitionKey = new CamundaProcessDefinitionKey(request.getProcessDefinitionKey());
+            final var processDocumentDefinitionId = CamundaProcessJsonSchemaDocumentDefinitionId.existingId(processDefinitionKey, documentDefinitionId);
+            final var processDocumentDefinitionResult = processDocumentAssociationService.getProcessDocumentDefinitionResult(processDocumentDefinitionId);
+
+            if (!processDocumentDefinitionResult.hasResult()) {
+                return new StartProcessForDocumentResultFailed(processDocumentDefinitionResult.errors());
+            }
+
+            final var processInstanceWithDefinition = startProcess(document, processDefinitionKey.toString(), request.getProcessVars());
+            final var camundaProcessInstanceId = new CamundaProcessInstanceId(
+                processInstanceWithDefinition.getProcessInstanceDto().getId()
+            );
+
+            processDocumentAssociationService.createProcessDocumentInstance(
+                camundaProcessInstanceId.toString(),
+                document.id().getId(),
+                processInstanceWithDefinition.getProcessDefinition().getName()
+            );
+            return new StartProcessForDocumentResultSucceeded(document, camundaProcessInstanceId);
+        } catch (RuntimeException ex) {
+            return new StartProcessForDocumentResultFailed(parseAndLogException(ex));
         }
     }
 

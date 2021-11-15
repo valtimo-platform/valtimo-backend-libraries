@@ -31,23 +31,26 @@ import com.ritense.objectsapi.repository.AbonnementLinkRepository
 import com.ritense.objectsapi.service.ObjectTypeConfig
 import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.objectsapi.service.ServerAuthSpecification
+import com.ritense.openzaak.domain.mapping.impl.Operation
+import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.domain.request.CreateOpenZaakConfigRequest
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.OpenZaakConfigService
 import com.ritense.openzaak.service.ZaakTypeLinkService
+import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import java.net.URI
 import java.util.UUID
 import javax.transaction.Transactional
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.fail
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Assert.assertTrue
-import org.junit.Ignore
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -101,6 +104,8 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     lateinit var connectorInstance: ConnectorInstance
     lateinit var abonnementLink: AbonnementLink
     lateinit var executedRequests: MutableList<RecordedRequest>
+
+    lateinit var zaakTypeLinkId: ZaakTypeLinkId
 
     @BeforeEach
     internal fun setUp() {
@@ -263,7 +268,6 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    @Ignore
     fun `should handle ProductAanvraagRequest`() {
         prepareConnectorInstance()
         prepareOpenZaakConfig()
@@ -296,6 +300,45 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         verifyRequestSent(HttpMethod.DELETE, "/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777")
     }
 
+    @Test
+    fun `should be able to use zaak during process when creating dossier with productaanvraag`() {
+        prepareConnectorInstance("test-service-task")
+        prepareOpenZaakConfig()
+        prepareServiceTaskDocumentDefinitionSettings()
+
+        val postBody = """
+            {
+                "kanaal": "objecten",
+                "hoofdObject": "http://localhost:8000/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777",
+                "resource": "object",
+                "resourceUrl": "http://localhost:8000/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777",
+                "actie": "create",
+                "aanmaakdatum": "2021-09-22T21:29:21.541153Z",
+                "kenmerken": {
+                    "objectType": "Objecttypen API: productaanvraag"
+                }
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/notification?connectorId=26141e07-40e4-4a7e-9c78-f7a40db3b3e9")
+                .header("Authorization", "some-key")
+                .content(postBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+
+        verifyRequestSent(HttpMethod.GET, "/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777")
+        verifyRequestSent(HttpMethod.DELETE, "/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777")
+
+        val statusCreationRequest = findRequest(HttpMethod.POST, "/zaken/api/v1/statussen")
+        assertNotNull(statusCreationRequest)
+        val bodyContent = statusCreationRequest.body.readUtf8()
+        assertEquals("${baseUrl}zaken/api/v1/zaken/7413e298-c78b-4ab8-8e8a-a825faed0e7f", JsonPath.read(bodyContent, "$.zaak"))
+        assertEquals("http://example.com/catalogi/api/v1/statustypen/f8c938c1-e2ea-4cad-8025-f68248ad26ac", JsonPath.read(bodyContent, "$.statustype"))
+    }
+
     fun setupMockServer() {
         val dispatcher: Dispatcher = object : Dispatcher() {
             @Throws(InterruptedException::class)
@@ -317,6 +360,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
                         "/zaken/api/v1/zaken" -> handleZaakCreateRequest()
                         "/zaken/api/v1/rollen" -> handleZaakRolCreateRequest()
                         "/zaken/api/v1/zaakinformatieobjecten" -> handleZaakInformatieObjectCreateRequest(request)
+                        "/zaken/api/v1/statussen" -> handleStatusCreateRequest()
                         else -> MockResponse().setResponseCode(404)
                     }
                     "DELETE" -> when (path) {
@@ -606,6 +650,21 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         return mockResponse(body)
     }
 
+    fun handleStatusCreateRequest(): MockResponse {
+        val body = """
+            {
+                "url": "http://example.com",
+                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                "zaak": "http://example.com",
+                "statustype": "http://example.com",
+                "datumStatusGezet": "2019-08-24T14:15:22Z",
+                "statustoelichting": "string"
+            }
+        """.trimIndent()
+
+        return mockResponse(body)
+    }
+
     fun handleGenericDelete(): MockResponse {
         return MockResponse()
             .setResponseCode(204)
@@ -618,7 +677,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
             .setBody("{}")
     }
 
-    fun prepareConnectorInstance() {
+    fun prepareConnectorInstance(processDefinitionKey: String = "test") {
         val connectorInstanceId = ConnectorInstanceId.newId(UUID.fromString("26141e07-40e4-4a7e-9c78-f7a40db3b3e9"))
         connectorInstance = ConnectorInstance(
             connectorInstanceId,
@@ -651,7 +710,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
                     ProductAanvraagTypeMapping(
                         "some-type",
                         "testschema",
-                        "test"
+                        processDefinitionKey
                     )
                 ),
                 "${baseUrl}catalogi/api/v1/roltypen/1c359a1b-c38d-47b8-bed5-994db88ead61"
@@ -676,10 +735,10 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
             "051845623"
         ))
 
-        zaakTypeLinkService.createZaakTypeLink(CreateZaakTypeLinkRequest(
+        zaakTypeLinkId = zaakTypeLinkService.createZaakTypeLink(CreateZaakTypeLinkRequest(
             "testschema",
             URI("${baseUrl}catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773")
-        ))
+        )).zaakTypeLink()?.id!!
     }
 
     fun prepareDocumentDefinitionSettings() {
@@ -688,6 +747,24 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
                 "test",
                 "testschema",
                 true
+            )
+        )
+    }
+
+    fun prepareServiceTaskDocumentDefinitionSettings() {
+        processDocumentAssociationService.createProcessDocumentDefinition(
+            ProcessDocumentDefinitionRequest(
+                "test-service-task",
+                "testschema",
+                true
+            )
+        )
+        zaakTypeLinkService.assignServiceTaskHandler(
+            zaakTypeLinkId,
+            ServiceTaskHandlerRequest(
+                "change-status",
+                Operation.SET_STATUS,
+                URI("http://example.com/catalogi/api/v1/statustypen/f8c938c1-e2ea-4cad-8025-f68248ad26ac")
             )
         )
     }

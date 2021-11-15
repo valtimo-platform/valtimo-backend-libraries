@@ -60,7 +60,8 @@ public abstract class CamundaFormAssociation implements FormAssociation, Seriali
 
         CamundaFormAssociation that = (CamundaFormAssociation) o;
 
-        return formLink.getId().equals(that.formLink.getId());
+        if (!id.equals(that.id)) return false;
+        return formLink.equals(that.formLink);
     }
 
     @Override

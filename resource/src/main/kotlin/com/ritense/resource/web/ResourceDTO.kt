@@ -22,7 +22,8 @@ data class ResourceDTO(
     val id: String? = null,
     val key: String,
     val name: String,
-    val extension: String,
+    val extension: String? = null,
     val sizeInBytes: Long,
-    val createdOn: LocalDateTime? = null
+    val createdOn: LocalDateTime? = null,
+    val content: ByteArray? = null
 )

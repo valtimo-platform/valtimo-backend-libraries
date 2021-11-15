@@ -34,7 +34,7 @@ public class MailTemplateIdentifier extends StringValue {
 
     /**
      * TODO: Decide if this is base functionality, or should we subclass this for Mandrill.
-     * Or have a LanguageEnabledMailTemplateIdentifier with some flags (lang set yes/no -> set default lang if no etc)
+     * Or have a LanguageEnabledMailTemplateIdentifier with some flags (lang set yes/no then set default lang if no etc)
      */
     public MailTemplateIdentifier withLanguageKey(String languageKey) {
         if (languageKey == null || languageKey.isEmpty()) {

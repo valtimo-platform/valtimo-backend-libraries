@@ -16,6 +16,7 @@
 
 package com.ritense.document.web.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
@@ -36,7 +37,6 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;

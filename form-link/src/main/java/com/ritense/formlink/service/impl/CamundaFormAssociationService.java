@@ -16,9 +16,6 @@
 
 package com.ritense.formlink.service.impl;
 
-import static com.ritense.form.domain.FormIoFormDefinition.PROCESS_VAR_PREFIX;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -48,6 +45,10 @@ import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
+import lombok.RequiredArgsConstructor;
+import org.camunda.bpm.engine.TaskService;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,9 +57,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import lombok.RequiredArgsConstructor;
-import org.camunda.bpm.engine.TaskService;
-import org.springframework.transaction.annotation.Transactional;
+
+import static com.ritense.form.domain.FormIoFormDefinition.PROCESS_VAR_PREFIX;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @RequiredArgsConstructor
 public class CamundaFormAssociationService implements FormAssociationService {
@@ -192,6 +193,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
             }
         };
     }
+
     @Override
     @Transactional
     public Optional<JsonNode> getPreFilledFormDefinitionByFormKey(String formKey, Optional<Document.Id> documentId) {
@@ -293,6 +295,25 @@ public class CamundaFormAssociationService implements FormAssociationService {
         camundaProcessFormAssociation.updateFormAssociation(formAssociation);
         processFormAssociationRepository.save(camundaProcessFormAssociation);
         return formAssociation;
+    }
+
+    @Override
+    @Transactional
+    public CamundaFormAssociation upsertFormAssociation(String processDefinitionKey, FormLinkRequest formLinkRequest) {
+        final var formAssociation = getFormAssociationByFormLinkId(
+            processDefinitionKey, formLinkRequest.getId()
+        );
+        return formAssociation.map(
+            camundaFormAssociation -> modifyFormAssociation(new ModifyFormAssociationRequest(
+                    processDefinitionKey,
+                    formAssociation.get().getId(),
+                    formLinkRequest
+                )
+            )
+        ).orElseGet(() -> createFormAssociation(new CreateFormAssociationRequest(
+            processDefinitionKey,
+            formLinkRequest
+        )));
     }
 
     @Override

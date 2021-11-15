@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
+  <bpmn:process id="valtimo-testproces" name="Valtimo Testproces" isExecutable="true" camunda:versionTag="0.1">
+    <bpmn:extensionElements>
+      <camunda:properties>
+        <camunda:property name="listVariables" value="" />
+        <camunda:property name="searchVariables" value="" />
+      </camunda:properties>
+    </bpmn:extensionElements>
+    <bpmn:startEvent id="StartEvent">
+      <bpmn:extensionElements>
+        <camunda:formData businessKey="functie">
+          <camunda:formField id="functie" label="Functie" type="enum" defaultValue="IT-Specialist">
+            <camunda:value id="IT-Specialist" name="IT-Specialist" />
+            <camunda:value id="Administratie" name="Administratie" />
+            <camunda:value id="BPMN-Master" name="BPMN-Master" />
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_1x7vqqh</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="EndEvent">
+      <bpmn:incoming>SequenceFlow_1suvvnr</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Naam" name="Naam" camunda:candidateGroups="ROLE_USER">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="Naam" label="Wat is je naam?" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1x7vqqh</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1ycneo3</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0vjpp0r</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0eclvjr</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Woonplaats" name="Woonplaats" camunda:candidateGroups="ROLE_USER">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="woonplaats" label="Wat is je woonplaats?" type="string" />
+          <camunda:formField id="Naam" label="Naam" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_01994lb</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0twmr8w</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Huisdier" name="Huisdier" camunda:candidateGroups="ROLE_USER">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="huisdier" label="Heb je een huisdier?" type="boolean" defaultValue="1" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1bcmppb</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1suvvnr</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1x7vqqh" sourceRef="StartEvent" targetRef="Naam" />
+    <bpmn:sequenceFlow id="SequenceFlow_1suvvnr" sourceRef="Huisdier" targetRef="EndEvent" />
+    <bpmn:exclusiveGateway id="ExclusiveGateway_03au7e8">
+      <bpmn:incoming>SequenceFlow_0eclvjr</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_01994lb</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1ycneo3</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0eclvjr" sourceRef="Naam" targetRef="ExclusiveGateway_03au7e8" />
+    <bpmn:sequenceFlow id="SequenceFlow_01994lb" sourceRef="ExclusiveGateway_03au7e8" targetRef="Woonplaats">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${Naam == 'ju' }</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1ycneo3" sourceRef="ExclusiveGateway_03au7e8" targetRef="Naam">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${Naam != ' ju'} </bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_1ri4cf6">
+      <bpmn:incoming>SequenceFlow_0twmr8w</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0vjpp0r</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1bcmppb</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0twmr8w" sourceRef="Woonplaats" targetRef="ExclusiveGateway_1ri4cf6" />
+    <bpmn:sequenceFlow id="SequenceFlow_0vjpp0r" sourceRef="ExclusiveGateway_1ri4cf6" targetRef="Naam">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${woonplaats != 'amsterdam'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1bcmppb" sourceRef="ExclusiveGateway_1ri4cf6" targetRef="Huisdier">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${woonplaats == 'amsterdam'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:boundaryEvent id="BoundaryEvent_1x47aa4" attachedToRef="Naam">
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT5M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="BoundaryEvent_16m3nho" cancelActivity="false" attachedToRef="Woonplaats">
+      <bpmn:timerEventDefinition>
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R3/PT4M</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="valtimo-testproces">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent">
+        <dc:Bounds x="168" y="104" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="141" y="140" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0xsfabt_di" bpmnElement="EndEvent">
+        <dc:Bounds x="869" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="842" y="138" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1fh5o5g_di" bpmnElement="Naam">
+        <dc:Bounds x="273" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0gnhexg_di" bpmnElement="Woonplaats">
+        <dc:Bounds x="479" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_015zrxx_di" bpmnElement="Huisdier">
+        <dc:Bounds x="697" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1x7vqqh_di" bpmnElement="SequenceFlow_1x7vqqh">
+        <di:waypoint x="204" y="122" />
+        <di:waypoint x="273" y="121" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="238.5" y="100.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1suvvnr_di" bpmnElement="SequenceFlow_1suvvnr">
+        <di:waypoint x="797" y="120" />
+        <di:waypoint x="869" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="833" y="99" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_03au7e8_di" bpmnElement="ExclusiveGateway_03au7e8" isMarkerVisible="true">
+        <dc:Bounds x="397" y="97" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="422" y="151" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0eclvjr_di" bpmnElement="SequenceFlow_0eclvjr">
+        <di:waypoint x="373" y="121" />
+        <di:waypoint x="397" y="122" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="385" y="100.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_01994lb_di" bpmnElement="SequenceFlow_01994lb">
+        <di:waypoint x="447" y="122" />
+        <di:waypoint x="479" y="121" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="463" y="100.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ycneo3_di" bpmnElement="SequenceFlow_1ycneo3">
+        <di:waypoint x="422" y="147" />
+        <di:waypoint x="422" y="256" />
+        <di:waypoint x="323" y="254" />
+        <di:waypoint x="323" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="372.5" y="234" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1ri4cf6_di" bpmnElement="ExclusiveGateway_1ri4cf6" isMarkerVisible="true">
+        <dc:Bounds x="614" y="97" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="639" y="151" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0twmr8w_di" bpmnElement="SequenceFlow_0twmr8w">
+        <di:waypoint x="579" y="121" />
+        <di:waypoint x="614" y="122" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="596.5" y="100.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0vjpp0r_di" bpmnElement="SequenceFlow_0vjpp0r">
+        <di:waypoint x="639" y="147" />
+        <di:waypoint x="639" y="317" />
+        <di:waypoint x="323" y="317" />
+        <di:waypoint x="323" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="481" y="296" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1bcmppb_di" bpmnElement="SequenceFlow_1bcmppb">
+        <di:waypoint x="664" y="122" />
+        <di:waypoint x="697" y="121" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="680.5" y="100.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BoundaryEvent_0yocx00_di" bpmnElement="BoundaryEvent_1x47aa4">
+        <dc:Bounds x="355" y="62" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="373" y="102" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BoundaryEvent_0d1ly8z_di" bpmnElement="BoundaryEvent_16m3nho">
+        <dc:Bounds x="538" y="62" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="555.2253193960511" y="102" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

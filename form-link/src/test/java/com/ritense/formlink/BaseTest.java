@@ -36,16 +36,12 @@ import com.ritense.formlink.domain.request.ModifyFormAssociationRequest;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.DefaultClaims;
 import org.apache.commons.io.IOUtils;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -60,6 +56,7 @@ public abstract class BaseTest {
     protected DocumentSequenceGeneratorService documentSequenceGeneratorService;
 
     public BaseTest() {
+        MockitoAnnotations.openMocks(this);
         documentSequenceGeneratorService = mock(DocumentSequenceGeneratorService.class);
         when(documentSequenceGeneratorService.next(any())).thenReturn(1L);
     }
@@ -158,13 +155,6 @@ public abstract class BaseTest {
         return new FormIoFormDefinition(UUID.randomUUID(), "form-example", formDefinition, false);
     }
 
-    protected Throwable getRootCause(Throwable throwable) {
-        while (throwable.getCause() != null) {
-            throwable = throwable.getCause();
-        }
-        return throwable;
-    }
-
     protected JsonSchemaDocumentDefinition definition() {
         final var jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("house");
         final var jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
@@ -187,23 +177,6 @@ public abstract class BaseTest {
             false,
             false
         );
-    }
-
-    protected String getForgedTaskToken(String processDefinitionKey, String formLinkId) {
-        final Claims claims = new DefaultClaims();
-
-        claims.setIssuer("ValtimoPublicTask");
-
-        claims.setIssuedAt(new Date());
-        claims.put("process_definition_key", processDefinitionKey);
-        claims.put("FORM_LINK_ID", formLinkId);
-
-        String key = "01234567890123456789012345678901234567890123456789012345678901234567890123456789";
-
-        return Jwts.builder()
-            .addClaims(claims)
-            .signWith(SignatureAlgorithm.HS512, key.getBytes(StandardCharsets.UTF_8))
-            .compact();
     }
 
     public URI path(String name) {

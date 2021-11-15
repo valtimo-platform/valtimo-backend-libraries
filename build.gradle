@@ -15,6 +15,7 @@ plugins {
     id "org.sonarqube" version "2.7"
     id "checkstyle"
     id "jacoco"
+    id "com.avast.gradle.docker-compose" version "0.14.9"
 }
 
 /*
@@ -104,6 +105,7 @@ subprojects { subproject ->
     apply plugin: "kotlin-allopen"
     apply plugin: "io.freefair.lombok"
     apply from: "$rootProject.projectDir/gradle/test.gradle"
+    apply plugin: "com.avast.gradle.docker-compose"
 
     generateLombokConfig.enabled = false // Use root config instead
 
@@ -114,6 +116,20 @@ subprojects { subproject ->
         // from sourceSets.main.allJava
         // Known issue: with Kotlin sources running publishMavenLocal need to run it twice.
         from sourceSets.main.delombokTask
+        classifier "sources"
+    }
+
+    task valtimoJavadocs(type: Javadoc) {
+        source = sourceSets.main.delombokTask
+        classpath = sourceSets.main.runtimeClasspath
+        excludes = ['**/*.kt'] // < ---- Exclude all kotlin files from javadoc file.
+    }
+
+    delombok.dependsOn compileKotlin
+
+    task javadocJar(type: Jar) {
+        from valtimoJavadocs
+        classifier "javadoc"
     }
 
     compileKotlin {
@@ -123,6 +139,7 @@ subprojects { subproject ->
     }
 
     checkstyle {
+        config project.resources.text.fromUri("${ritenseCheckStyleLocation}")
         ignoreFailures = false
         showViolations = true
     }
@@ -180,8 +197,6 @@ subprojects { subproject ->
         testImplementation('org.springframework.boot:spring-boot-starter-test') {
             exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
         }
-        testImplementation "org.testcontainers:junit-jupiter"
-
         //Kotlin test
         testImplementation "org.jetbrains.kotlin:kotlin-test"
     }

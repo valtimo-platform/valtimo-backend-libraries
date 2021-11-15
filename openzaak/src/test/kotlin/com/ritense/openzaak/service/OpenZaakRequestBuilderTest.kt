@@ -38,7 +38,7 @@ class OpenZaakRequestBuilderTest : BaseTest() {
 
     @BeforeEach
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         baseSetUp()
         openZaakRequestBuilder = OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
     }
