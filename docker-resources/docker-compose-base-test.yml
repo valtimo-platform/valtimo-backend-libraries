@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+    db:
+        image: mysql:5.7
+        #ports:
+           # - "3306:3306" #needs overriding "XXXX:3306" XXXX=your-own-port-per-module-test
+        environment:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: valtimo #needs overriding
+            MYSQL_USER: valtimo
+            MYSQL_PASSWORD: password
+            MYSQL_ROOT_HOST: "%"
+        command: [
+            "--default-authentication-plugin=mysql_native_password",
+            "--lower_case_table_names=1",
+            "--collation-server=utf8mb4_unicode_ci",
+            "--character-set-server=utf8mb4",
+            "--explicit_defaults_for_timestamp",
+            "--ssl=false",
+            "--innodb_flush_method=O_DIRECT",
+            "--sql_mode=NO_ENGINE_SUBSTITUTION"
+        ]
+# Ports taken
+#   url: jdbc:mysql://localhost:3301/form-test
+#   url: jdbc:mysql://localhost:3302/form-test-link
+#   url: jdbc:mysql://localhost:3303/document-test
+#   url: jdbc:mysql://localhost:3304/core-test
+#   url: jdbc:mysql://localhost:3305/connector-test
+#   url: jdbc:mysql://localhost:3307/audit-test
+#   url: jdbc:mysql://localhost:3308/objects-api-test
+#   url: jdbc:mysql://localhost:3309/openzaak-test
+#   url: jdbc:mysql://localhost:3310/process-document-test
+#   url: jdbc:mysql://localhost:3311/s3-resource-test
+#   url: jdbc:mysql://localhost:3312/reporting-cloud-test
+#   url: jdbc:mysql://localhost:3313/milestones-test
