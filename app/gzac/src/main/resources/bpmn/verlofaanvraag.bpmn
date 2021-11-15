@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.0.0">
+  <bpmn:collaboration id="Collaboration_0hnixuz">
+    <bpmn:participant id="Participant_0qmyi2o" name="Verlofaanvraag" processRef="verlofaanvraag" />
+  </bpmn:collaboration>
+  <bpmn:process id="verlofaanvraag" name="Verlofaanvraag process" isExecutable="true">
+    <bpmn:laneSet>
+      <bpmn:lane id="Lane_16dqgps" name="Medewerker">
+        <bpmn:flowNodeRef>start-event-verlofaanvraag</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>end-event-verlof-aanvraag</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_0pqzzyu" name="Administratie">
+        <bpmn:flowNodeRef>akkoord-verlof</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="start-event-verlofaanvraag" name="Verlofaanvraag">
+      <bpmn:outgoing>SequenceFlow_15548ln</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="akkoord-verlof" name="Akkoord geven voor verlofaanvraag" camunda:candidateGroups="ROLE_USER">
+      <bpmn:incoming>SequenceFlow_15548ln</bpmn:incoming>
+      <bpmn:outgoing>Flow_094pofq</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="end-event-verlof-aanvraag">
+      <bpmn:incoming>Flow_094pofq</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="TerminateEventDefinition_0cmqaya" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_15548ln" sourceRef="start-event-verlofaanvraag" targetRef="akkoord-verlof" />
+    <bpmn:sequenceFlow id="Flow_094pofq" sourceRef="akkoord-verlof" targetRef="end-event-verlof-aanvraag" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0hnixuz">
+      <bpmndi:BPMNShape id="Participant_0qmyi2o_di" bpmnElement="Participant_0qmyi2o" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="549" height="484" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_16dqgps_di" bpmnElement="Lane_16dqgps" isHorizontal="true">
+        <dc:Bounds x="220" y="80" width="519" height="235" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0pqzzyu_di" bpmnElement="Lane_0pqzzyu" isHorizontal="true">
+        <dc:Bounds x="220" y="315" width="519" height="249" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_15548ln_di" bpmnElement="SequenceFlow_15548ln">
+        <di:waypoint x="333" y="146" />
+        <di:waypoint x="333" y="440" />
+        <di:waypoint x="469" y="440" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="297" y="-143" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_094pofq_di" bpmnElement="Flow_094pofq">
+        <di:waypoint x="569" y="440" />
+        <di:waypoint x="659" y="440" />
+        <di:waypoint x="659" y="146" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start-event-verlofaanvraag">
+        <dc:Bounds x="315" y="110" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="233" y="123" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0klf3tc_di" bpmnElement="akkoord-verlof">
+        <dc:Bounds x="469" y="400" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1mgwy7z_di" bpmnElement="end-event-verlof-aanvraag">
+        <dc:Bounds x="641" y="110" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

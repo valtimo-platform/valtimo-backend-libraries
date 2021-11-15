@@ -19,9 +19,12 @@ package com.ritense.formlink.autodeployment;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.ritense.form.domain.Mapper;
+import com.ritense.form.service.FormDefinitionService;
+import com.ritense.formlink.domain.request.FormLinkRequest;
 import com.ritense.formlink.service.FormAssociationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -36,42 +39,49 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @RequiredArgsConstructor
 public class FormLinkDeploymentService {
 
-    public static final String PATH = "classpath*:config/formlink/*.json";
+    public static final String DEFAULT_PATH = "classpath*:config/formlink/*.json";
     private final ResourceLoader resourceLoader;
     private final FormAssociationService formAssociationService;
+    private final FormDefinitionService formDefinitionService;
 
     void deployAllFromResourceFiles() {
-        logger.info("Deploying all form links from {}", PATH);
+        logger.info("Deploying all form links from {}", DEFAULT_PATH);
         try {
-            final Resource[] resources = loadResources();
-            for (Resource resource: resources){
-                var formLinks = getJson(IOUtils.toString(resource.getInputStream(), UTF_8));
+            final Resource[] resources = loadResources(DEFAULT_PATH);
+            for (Resource resource : resources) {
+                final var formLinkConfigItems = getJson(IOUtils.toString(resource.getInputStream(), UTF_8));
+                final var processDefinitionKeyName = FilenameUtils.removeExtension(resource.getFilename());
 
-                for (SimpleFormLink formLink :formLinks){
-                    formAssociationService.createFormAssociation(
-                        getNameFromFileName(resource.getFilename()),
-                        formLink.getFormName(),
-                        formLink.getFormLinkElementId(),
-                        formLink.getFormAssociationType()
+                formLinkConfigItems.forEach(formLinkConfigItem -> {
+                    final var formDefinition = formDefinitionService.getFormDefinitionByName(
+                        formLinkConfigItem.getFormName()
+                    ).orElseThrow();
+                    final var formLinkRequest = new FormLinkRequest(
+                        formLinkConfigItem.getFormLinkElementId(),
+                        formLinkConfigItem.getFormAssociationType(),
+                        formDefinition.getId(),
+                        null,
+                        null
                     );
-                }
+                    formAssociationService.upsertFormAssociation(
+                        processDefinitionKeyName,
+                        formLinkRequest
+                    );
+                });
             }
         } catch (IOException e) {
             logger.error("Error while deploying form-links", e);
         }
     }
 
-    private List<SimpleFormLink> getJson(String rawJson) throws JsonProcessingException {
-        TypeReference<List<SimpleFormLink>> typeRef = new TypeReference<>() {};
+    private List<FormLinkConfigItem> getJson(String rawJson) throws JsonProcessingException {
+        TypeReference<List<FormLinkConfigItem>> typeRef = new TypeReference<>() {
+        };
         return Mapper.INSTANCE.get().readValue(rawJson, typeRef);
     }
 
-    private String getNameFromFileName(String filename) {
-        return filename.substring(0, filename.length() - 5);
-    }
-
-    private Resource[] loadResources() throws IOException {
-        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH);
+    private Resource[] loadResources(String locationPattern) throws IOException {
+        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(locationPattern);
     }
 
 }

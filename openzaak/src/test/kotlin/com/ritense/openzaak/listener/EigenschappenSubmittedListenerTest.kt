@@ -65,7 +65,7 @@ internal class EigenschappenSubmittedListenerTest {
 
     @BeforeEach
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
 
         event = ExternalDataSubmittedEvent(
             mapOf(ExternalFormFieldType.OZ to mapOf("voornaam" to "Piet")),

@@ -26,10 +26,8 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService;
 import com.ritense.form.service.impl.FormIoFormLoaderService;
 import com.ritense.form.web.rest.FormFileResource;
 import com.ritense.form.web.rest.FormManagementResource;
-import com.ritense.form.web.rest.FormResource;
 import com.ritense.form.web.rest.impl.FormIoFormFileResource;
 import com.ritense.form.web.rest.impl.FormIoFormManagementResource;
-import com.ritense.form.web.rest.impl.FormIoFormResource;
 import com.ritense.resource.service.ResourceService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -80,12 +78,6 @@ public class FormAutoConfiguration {
     @ConditionalOnMissingBean(FormFileResource.class)
     public FormIoFormFileResource formFileResource(ResourceService resourceService) {
         return new FormIoFormFileResource(resourceService);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(FormResource.class)
-    public FormIoFormResource formResource(FormLoaderService formLoaderService) {
-        return new FormIoFormResource(formLoaderService);
     }
 
     @Bean

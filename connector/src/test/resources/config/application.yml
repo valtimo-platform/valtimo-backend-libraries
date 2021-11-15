@@ -2,34 +2,11 @@ spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
-        hostname: localhost
-        database-name: connector-test
-        port: 3306
-        url: jdbc:mysql://localhost:3306/connector-test
+        url: jdbc:mysql://localhost:3305/connector-test
         username: valtimo
         password: password
         hikari:
             auto-commit: false
-            maximum-pool-size: 25
-            leak-detection-threshold: 20000
-            connection-timeout: 10000
-            data-source-properties:
-                cachePrepStmts: true
-                prepStmtCacheSize: 500
-                prepStmtCacheSqlLimit: 2048
-                useServerPrepStmts: true
-                characterEncoding: utf8
-                useUnicode: true
-                useLegacyDatetimeCode: false
-                useSSL: false
-                useLocalSessionState: true
-                rewriteBatchedStatements: true
-                cacheResultSetMetadata: true
-                cacheServerConfiguration: true
-                elideSetAutoCommits: true
-                maintainTimeStats: false
-                serverTimezone: UTC
-                allowPublicKeyRetrieval: true
     liquibase:
         enabled: false
         change-log: classpath:/config/liquibase/connector-master.xml

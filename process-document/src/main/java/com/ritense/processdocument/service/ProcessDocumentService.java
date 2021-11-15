@@ -21,12 +21,14 @@ import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndComplete
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest;
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
 import com.ritense.processdocument.domain.impl.request.NewDocumentForRunningProcessRequest;
+import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest;
 import com.ritense.processdocument.domain.request.Request;
 import com.ritense.processdocument.service.result.DocumentFunctionResult;
 import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskResult;
 import com.ritense.processdocument.service.result.ModifyDocumentAndStartProcessResult;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.processdocument.service.result.NewDocumentForRunningProcessResult;
+import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
 
 public interface ProcessDocumentService {
 
@@ -39,5 +41,7 @@ public interface ProcessDocumentService {
     ModifyDocumentAndCompleteTaskResult modifyDocumentAndCompleteTask(ModifyDocumentAndCompleteTaskRequest request);
 
     ModifyDocumentAndStartProcessResult modifyDocumentAndStartProcess(ModifyDocumentAndStartProcessRequest request);
+
+    StartProcessForDocumentResult startProcessForDocument(StartProcessForDocumentRequest request);
 
 }

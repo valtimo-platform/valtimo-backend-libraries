@@ -18,33 +18,26 @@ package com.ritense.valtimo.web.rest;
 
 import com.ritense.valtimo.contract.exception.DocumentParserException;
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
-import com.ritense.valtimo.repository.CamundaReportingRepository;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
 import com.ritense.valtimo.repository.camunda.dto.ProcessInstance;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
-import com.ritense.valtimo.service.dto.ProcessSearchPropertyDTO;
-import com.ritense.valtimo.service.util.FormUtils;
 import com.ritense.valtimo.web.rest.dto.CommentDto;
 import com.ritense.valtimo.web.rest.dto.FlowNodeMigrationDTO;
 import com.ritense.valtimo.web.rest.dto.HeatmapTaskAverageDurationDTO;
 import com.ritense.valtimo.web.rest.dto.HeatmapTaskCountDTO;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceDiagramDto;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceSearchDTO;
-import com.ritense.valtimo.web.rest.dto.StartFormDto;
-import com.ritense.valtimo.web.rest.parameters.ProcessVariables;
 import com.ritense.valtimo.web.rest.util.PaginationUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.batch.Batch;
-import org.camunda.bpm.engine.form.FormField;
 import org.camunda.bpm.engine.history.HistoricActivityInstance;
 import org.camunda.bpm.engine.history.HistoricActivityInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
@@ -64,9 +57,6 @@ import org.camunda.bpm.engine.rest.dto.task.TaskDto;
 import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
 import org.camunda.bpm.engine.task.Comment;
 import org.camunda.bpm.engine.task.Task;
-import org.camunda.bpm.model.bpmn.instance.FlowElement;
-import org.camunda.bpm.model.bpmn.instance.UserTask;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -85,12 +75,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -105,38 +92,32 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 public class ProcessResource extends AbstractProcessResource {
 
     private final TaskService taskService;
-    private final FormService formService;
     private final HistoryService historyService;
     private final RuntimeService runtimeService;
     private final RepositoryService repositoryService;
     private final CamundaTaskService camundaTaskService;
     private final CamundaProcessService camundaProcessService;
     private final ProcessShortTimerService processShortTimerService;
-    private final CamundaReportingRepository camundaReportingRepository;
     private final CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository;
 
     public ProcessResource(
         final TaskService taskService,
-        final FormService formService,
         final HistoryService historyService,
         final RuntimeService runtimeService,
         final RepositoryService repositoryService,
         final CamundaTaskService camundaTaskService,
         final CamundaProcessService camundaProcessService,
         final ProcessShortTimerService processShortTimerService,
-        final CamundaReportingRepository camundaReportingRepository,
         final CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository
     ) {
         super(historyService, repositoryService, taskService);
         this.taskService = taskService;
-        this.formService = formService;
         this.historyService = historyService;
         this.runtimeService = runtimeService;
         this.repositoryService = repositoryService;
         this.camundaTaskService = camundaTaskService;
         this.camundaProcessService = camundaProcessService;
         this.processShortTimerService = processShortTimerService;
-        this.camundaReportingRepository = camundaReportingRepository;
         this.camundaSearchProcessInstanceRepository = camundaSearchProcessInstanceRepository;
     }
 
@@ -148,12 +129,6 @@ public class ProcessResource extends AbstractProcessResource {
             .map(ProcessDefinitionDto::fromProcessDefinition)
             .collect(Collectors.toList());
         return ResponseEntity.ok(definitions);
-    }
-
-    @Deprecated
-    @GetMapping(value = "/process/definition/{processDefinitionKey}/search-properties")
-    public ResponseEntity<ProcessSearchPropertyDTO> processSearchProperties(@PathVariable String processDefinitionKey) {
-        return ResponseEntity.ok(camundaProcessService.findProcessSearchProperties(processDefinitionKey));
     }
 
     @GetMapping(value = "/process/definition/{processDefinitionKey}")
@@ -180,35 +155,6 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(result);
     }
 
-    /**
-     * Get StartFormDto.
-     *
-     * @param processDefinitionKey The processDefinitionKey
-     * @return StartFormDto startFormDto
-     * @deprecated This method is no longer the preferred way of loading a start form.
-     * <p> Use FormLinkResource#getStartEventFormDefinitionByProcessDefinitionKey(String processDefinitionKey)' </p> instead.
-     */
-    @Deprecated(since = "5.1.0")
-    @GetMapping(value = "/process/definition/{processDefinitionKey}/start-form")
-    public ResponseEntity<StartFormDto> getProcessDefinitionStartFormData(HttpServletRequest request, @PathVariable String processDefinitionKey) {
-        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey)
-            .latestVersion()
-            .singleResult();
-        String startFormKey = formService.getStartFormKey(processDefinition.getId());
-
-        List<FormField> startFormData = new ArrayList<>();
-        String formLocation = "";
-
-        if (StringUtils.isBlank(startFormKey)) {
-            startFormData = formService.getStartFormData(processDefinition.getId()).getFormFields();
-        } else {
-            formLocation = FormUtils.getFormLocation(startFormKey, request);
-        }
-        StartFormDto startFormDto = new StartFormDto(formLocation, startFormData);
-        return ResponseEntity.ok(startFormDto);
-    }
-
     @GetMapping(value = "/process/definition/{processDefinitionId}/xml")
     public ResponseEntity<ProcessDefinitionDiagramDto> getProcessDefinitionXml(@PathVariable String processDefinitionId) {
         try {
@@ -228,22 +174,6 @@ public class ProcessResource extends AbstractProcessResource {
         final Map<String, String> uniqueFlowNodeMap = getUniqueFlowNodeMap(sourceFlowNodeMap, targetFlowNodeMap);
         final FlowNodeMigrationDTO flowNodeMigrationDTO = new FlowNodeMigrationDTO(sourceFlowNodeMap, targetFlowNodeMap, uniqueFlowNodeMap);
         return ResponseEntity.ok(flowNodeMigrationDTO);
-    }
-
-    @Deprecated
-    @GetMapping(value = "/process/definition/{processDefinitionKey}/usertasks")
-    @ResponseBody
-    @Cacheable("ProcessDefinitionTasks")
-    public ResponseEntity<List<String>> getProcessDefinitionTasks(@PathVariable String processDefinitionKey) {
-        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey)
-            .latestVersion()
-            .singleResult();
-        final Collection<UserTask> userTasksElements = repositoryService.getBpmnModelInstance(processDefinition.getId())
-            .getModelElementsByType(UserTask.class);
-
-        List<String> userTasks = userTasksElements.stream().map(FlowElement::getName).collect(Collectors.toList());
-        return ResponseEntity.ok(userTasks);
     }
 
     @GetMapping(value = "/process/definition/{processDefinitionKey}/heatmap/count")
@@ -468,66 +398,6 @@ public class ProcessResource extends AbstractProcessResource {
         List<Comment> processInstanceComments = taskService.getProcessInstanceComments(processInstanceId);
         processInstanceComments.sort((Comment c1, Comment c2) -> c2.getTime().compareTo(c1.getTime()));
         return ResponseEntity.ok(processInstanceComments);
-    }
-
-    @Deprecated
-    @GetMapping(value = "/process/{processDefinitionName}/search")
-    public ResponseEntity<List<ProcessInstance>> searchProcessInstances(
-        @PathVariable String processDefinitionName,
-        @RequestParam(required = false) String searchStatus,
-        @RequestParam(required = false) Boolean active,
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
-        @RequestParam(required = false) Integer duration,
-        @RequestParam(required = false) String businessKey,
-        Pageable pageable,
-        ProcessVariables processVariables
-    ) {
-        final Page<ProcessInstance> page = camundaReportingRepository.searchInstances(
-            processDefinitionName,
-            searchStatus,
-            active,
-            fromDate,
-            toDate,
-            duration,
-            pageable,
-            processVariables,
-            businessKey
-        );
-        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/process/{processDefinitionName}/search");
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
-    }
-
-    @Deprecated
-    @GetMapping(value = "/process/{processDefinitionName}/count")
-    public ResponseEntity<ResultCount> searchProcessInstanceCount(
-        @PathVariable String processDefinitionName,
-        @RequestParam(required = false) String searchStatus,
-        @RequestParam(required = false) Boolean active,
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
-        @RequestParam(required = false) Integer duration,
-        @RequestParam(required = false) String businessKey,
-        ProcessVariables processVariables
-    ) {
-        final Long count = camundaReportingRepository.searchInstancesCount(
-            processDefinitionName,
-            searchStatus,
-            active,
-            fromDate,
-            toDate,
-            duration,
-            processVariables,
-            businessKey
-        );
-        return ResponseEntity.ok(new ResultCount(count));
-    }
-
-    @Deprecated
-    @GetMapping(value = "/process/definition/{processDefinitionId}/count")
-    public ResponseEntity<ResultCount> getProcessInstanceCountForProcessDefinitionId(@PathVariable String processDefinitionId) {
-        final Long count = camundaReportingRepository.searchInstancesCount(processDefinitionId);
-        return ResponseEntity.ok(new ResultCount(count));
     }
 
     @PostMapping(value = "/v2/process/{processDefinitionName}/search")

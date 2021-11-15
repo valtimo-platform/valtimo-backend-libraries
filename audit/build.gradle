@@ -16,6 +16,13 @@
 
 projectVersion = 1.0
 
+dockerCompose {
+    projectName = "audit"
+    isRequiredBy(test)
+    isRequiredBy(checkExtended)
+    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+}
+
 dependencies {
     implementation project(':contract')
 
@@ -28,9 +35,6 @@ dependencies {
     implementation group: 'com.vladmihalcea', name: 'hibernate-types-52', version: '2.12.1'
 
     implementation "org.hibernate:hibernate-core"
-
-    testImplementation "org.testcontainers:mysql"
-    testImplementation "org.testcontainers:junit-jupiter"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 

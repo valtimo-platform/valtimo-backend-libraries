@@ -16,19 +16,24 @@
 
 apply from: 'gradle/liquibase.gradle'
 
+dockerCompose {
+    projectName = "form"
+    isRequiredBy(test)
+    isRequiredBy(checkExtended)
+    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+}
+
 dependencies {
     implementation project(':contract')
     implementation project(':core')
     implementation project(':resource')
     implementation project(':document')
 
-    implementation "org.testcontainers:jdbc"
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation project(path: ":core", configuration: 'testOutput')
-    testImplementation "org.testcontainers:mysql"
     testImplementation "org.springframework.security:spring-security-test"
 
     jar {

@@ -32,6 +32,8 @@ interface ResourceService {
 
     fun store(key: String, multipartFile: MultipartFile, fileStatus: FileStatus): Resource
 
+    fun store(documentDefinitionName: String, name: String, multipartFile: MultipartFile): Resource
+
     fun store(key: String, fileUploadRequest: FileUploadRequest): Resource
 
     fun store(key: String, fileUploadRequest: FileUploadRequest, fileStatus: FileStatus): Resource
@@ -50,7 +52,7 @@ interface ResourceService {
 
     fun getResource(id: UUID): Resource
 
-    fun getResourceByFileName(fileName: String): Resource
+    fun getResourceByKey(fileName: String): Resource
 
     fun activate(id: UUID)
 

@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-plugins {
-    id "com.avast.gradle.docker-compose" version "0.14.9"
-}
-
-dockerCompose.isRequiredBy(test)
-
-dockerCompose {
-    projectName = 'connector'
-}
-
 projectVersion = 1.0
 
 apply from: 'gradle/liquibase.gradle'
+
+dockerCompose {
+    projectName = "connector"
+    isRequiredBy(test)
+    isRequiredBy(checkExtended)
+    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+}
 
 dependencies {
     implementation project(':contract')

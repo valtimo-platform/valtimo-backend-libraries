@@ -16,12 +16,6 @@
 
 package com.ritense.formlink.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -34,10 +28,18 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService;
 import com.ritense.formlink.BaseTest;
 import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociation;
+import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
+import com.ritense.formlink.domain.impl.formassociation.StartEventFormAssociation;
+import com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation;
+import com.ritense.formlink.domain.request.FormLinkRequest;
 import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
+import org.camunda.bpm.engine.TaskService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,9 +47,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import org.camunda.bpm.engine.TaskService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class CamundaFormAssociationServiceTest extends BaseTest {
 
@@ -75,7 +81,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         submissionTransformerService = mock(FormIoJsonPatchSubmissionTransformerService.class);
         formFieldDataResolver = mock(FormFieldDataResolver.class);
 
-        camundaFormAssociationService = new CamundaFormAssociationService(
+        camundaFormAssociationService = spy(new CamundaFormAssociationService(
             formDefinitionService,
             processFormAssociationRepository,
             documentService,
@@ -84,7 +90,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
             taskService,
             submissionTransformerService,
             List.of(formFieldDataResolver)
-        );
+        ));
 
         processFormAssociationId = UUID.randomUUID();
         formId = UUID.randomUUID();
@@ -145,6 +151,53 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
     }
 
     @Test
+    public void shouldUpsertFormAssociation() {
+        when(formDefinitionService.formDefinitionExistsById(any())).thenReturn(true);
+        when(processFormAssociationRepository.saveAndFlush(any())).thenReturn(processFormAssociation);
+
+        final var processDefinitionKey = "aName";
+        final var formId = UUID.randomUUID();
+        final var formLinkRequest = new FormLinkRequest(
+            "id",
+            FormAssociationType.USER_TASK,
+            formId,
+            null,
+            null
+        );
+
+        final var formAssociationCreated = camundaFormAssociationService.upsertFormAssociation(
+            processDefinitionKey,
+            formLinkRequest
+        );
+        assertThat(formAssociationCreated).isNotNull();
+        assertThat(formAssociationCreated).isInstanceOfAny(UserTaskFormAssociation.class);
+        assertThat(formAssociationCreated.getId()).isNotNull();
+        assertThat(formAssociationCreated.getFormLink().getId()).isEqualTo(formLinkRequest.getId());
+        assertThat(formAssociationCreated.getFormLink().getFormId()).isEqualTo(formLinkRequest.getFormId());
+
+        // Now do the update flow
+
+        //Mock the return so the update flow will run
+        when(camundaFormAssociationService.getFormAssociationByFormLinkId(any(), any()))
+            .thenReturn(Optional.of(new UserTaskFormAssociation(formAssociationCreated.getId(), formAssociationCreated.getFormLink())));
+
+        final var formAssociationUpdated = camundaFormAssociationService.upsertFormAssociation(
+            processDefinitionKey,
+            new FormLinkRequest(
+                "id2",
+                FormAssociationType.START_EVENT,
+                UUID.fromString("6ba7b814-9dad-11d1-80b4-00c04fd430c8"),
+                null,
+                null
+            )
+        );
+        assertThat(formAssociationUpdated).isNotNull();
+        assertThat(formAssociationUpdated).isInstanceOfAny(StartEventFormAssociation.class);
+        assertThat(formAssociationUpdated.getFormLink().getId()).isEqualTo("id2");
+        assertThat(formAssociationUpdated.getFormLink().getFormId()).isEqualTo(UUID.fromString("6ba7b814-9dad-11d1-80b4-00c04fd430c8"));
+    }
+
+    @Test
     public void shouldGetPreFilledFormDefinitionByFormLinkId() throws IOException {
         //given
         when(formDefinitionService.formDefinitionExistsById(any())).thenReturn(true);
@@ -187,7 +240,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
 
     @Test
     void shouldGetPrefilledFormDefinitionByFormKey() throws IOException {
-        final var documentId = (Document.Id)JsonSchemaDocumentId.existingId(UUID.randomUUID());
+        final var documentId = (Document.Id) JsonSchemaDocumentId.existingId(UUID.randomUUID());
         final var formDefinition = formDefinitionOf("form-open-zaak-variables-example");
         when(formDefinitionService.getFormDefinitionByName(any())).thenReturn(Optional.of(formDefinition));
 

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_0gp0rtt" name="DRD" namespace="http://camunda.org/schema/1.0/dmn">
+  <decision id="Evenementenvergunning-risico" name="Decision 1">
+    <decisionTable id="decisionTable_1">
+      <input id="input_1" label="grootte" camunda:inputVariable="size">
+        <inputExpression id="inputExpression_1" typeRef="integer">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="output_1" label="risico" name="risico" typeRef="string" />
+      <rule id="DecisionRule_10kyw3j">
+        <inputEntry id="UnaryTests_0kr1kou">
+          <text>[1..20]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_13aq0ox">
+          <text>"Laag"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0xb9lek">
+        <inputEntry id="UnaryTests_12g4z5o">
+          <text>[21..50]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_02jtusu">
+          <text>"Laag"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_18kayfx">
+        <inputEntry id="UnaryTests_04f3vp3">
+          <text>[51..100]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1lbzmek">
+          <text>"Medium"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0qrhlpr">
+        <inputEntry id="UnaryTests_1jkox7c">
+          <text>[101..250]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0uvbx4a">
+          <text>"Medium"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_04u7aq0">
+        <inputEntry id="UnaryTests_11ml2ef">
+          <text>[251..1000]</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0h2a5fw">
+          <text>"Hoog"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_06gt9ba">
+        <inputEntry id="UnaryTests_1n3ipjb">
+          <text>&gt; 1000</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1pr906f">
+          <text>"Hoog"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

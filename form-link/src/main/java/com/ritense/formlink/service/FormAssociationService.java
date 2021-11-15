@@ -22,6 +22,7 @@ import com.ritense.formlink.domain.FormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
 import com.ritense.formlink.domain.request.CreateFormAssociationRequest;
+import com.ritense.formlink.domain.request.FormLinkRequest;
 import com.ritense.formlink.domain.request.ModifyFormAssociationRequest;
 
 import java.util.Optional;
@@ -48,9 +49,8 @@ public interface FormAssociationService {
 
     /**
      * @deprecated - This method will be removed in 11.0.0
-     *  Use {@link #getPreFilledFormDefinitionByFormLinkId(String, String, Optional, Optional)
-     *  getPreFilledFormDefinitionByFormLinkId(String processDefinitionKey, String formLinkId,
-     *  Optional<Document.Id> documentId, Optional<String> taskInstanceId)} instead.
+     * Use {@link #getPreFilledFormDefinitionByFormLinkId(String, String, Optional, Optional)}
+     * instead.
      */
     @Deprecated(forRemoval = true, since = "8.11.0")
     Optional<JsonNode> getPreFilledFormDefinitionByFormLinkId(
@@ -86,6 +86,8 @@ public interface FormAssociationService {
     FormAssociation createFormAssociation(CreateFormAssociationRequest request);
 
     FormAssociation modifyFormAssociation(ModifyFormAssociationRequest request);
+
+    FormAssociation upsertFormAssociation(String processDefinitionKey, FormLinkRequest formLinkRequest);
 
     void deleteFormAssociation(String processDefinitionKey, UUID formAssociationId);
 

@@ -40,7 +40,7 @@ public class Sender {
 
     public static Sender from(EmailAddress emailAddress, SimpleName name) {
         if (!emailAddress.isPresent() || emailAddress.get().length() == 0) {
-            throw new IllegalArgumentException("EmailAddress cannot be none");
+            throw new IllegalArgumentException("Sender email address cannot be none");
         }
 
         return new Sender(emailAddress, name);

@@ -19,17 +19,17 @@ package com.ritense.objectsapi.opennotificaties
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.domain.ProductAanvraag
 import com.ritense.objectsapi.domain.request.HandleNotificationRequest
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagConnector
-import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagTypeMapping
 import com.ritense.openzaak.service.DocumentenService
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
-import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
+import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.resource.domain.ResourceId
@@ -38,9 +38,11 @@ import com.ritense.valtimo.contract.resource.Resource
 import java.net.URI
 import java.time.LocalDateTime
 import java.util.UUID
+import mu.KotlinLogging
 
 class OpenNotificatieService(
     val processDocumentService: ProcessDocumentService,
+    val documentService: DocumentService,
     val zaakService: ZaakService,
     val documentenService: DocumentenService,
     val connectorService: ConnectorService,
@@ -76,6 +78,7 @@ class OpenNotificatieService(
         val informatieObjecten = getInformatieObjecten(productAanvraag.getAllFiles())
         val document = createDocumentAndProcess(productAanvraag, typeMapping, informatieObjecten)
         createZaak(productAanvraag, document, aanvragerRolTypeUrl, informatieObjecten)
+        startProcess(document.id(), typeMapping)
     }
 
     private fun createDocumentAndProcess(
@@ -85,14 +88,29 @@ class OpenNotificatieService(
     ): Document {
         val newDocumentRequest = NewDocumentRequest(typeMapping.caseDefinitionKey, productAanvraag.data)
             .withResources(getResources(informatieObjecten))
-        val newDocumentAndStartProcessRequest = NewDocumentAndStartProcessRequest(
-            typeMapping.processDefinitionKey,
-            newDocumentRequest
-        )
-        val document = processDocumentService
-            .newDocumentAndStartProcess(newDocumentAndStartProcessRequest).resultingDocument().orElseThrow()
+
+        val documentResult = documentService.createDocument(newDocumentRequest);
+
+        if (documentResult.resultingDocument().isEmpty) {
+            logger.error { "Errors occurred during creation of dossier for productaanvraag: ${documentResult.errors()}" }
+        }
+
+        val document = documentResult.resultingDocument().orElseThrow()
 
         return document
+    }
+
+    private fun startProcess(
+        documentId: Document.Id,
+        typeMapping: ProductAanvraagTypeMapping
+    ) {
+        val startProcessRequest = StartProcessForDocumentRequest(documentId, typeMapping.processDefinitionKey, null);
+
+        val processStartResult = processDocumentService.startProcessForDocument(startProcessRequest)
+
+        if (processStartResult.resultingDocument().isEmpty) {
+            logger.error { "Errors occurred during starting of process for productaanvraag: ${processStartResult.errors()}" }
+        }
     }
 
     private fun createZaak(
@@ -144,5 +162,9 @@ class OpenNotificatieService(
             LocalDateTime.now()
         )
         return openZaakResourceRepository.save(openZaakResource)
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }

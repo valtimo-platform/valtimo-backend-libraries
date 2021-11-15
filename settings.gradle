@@ -15,23 +15,30 @@
  */
 
 rootProject.name = projectName
-include 'app'
-include 'core'
-include 'contract'
-include 'web'
-include 'keycloak-iam'
-include 'audit'
-include 'document'
-include 'process-document'
-include 'form'
-include 'form-link'
-include 'document-generation'
-include 'document-generation:local-document-generation'
-include 'openzaak'
-include 'mail'
-include 'mail:local-mail'
-include 'resource'
-include 'resource:local-resource'
-include 'resource:openzaak-resource'
-include 'connector'
-include 'objects-api'
+include(
+    "app",
+    "app:gzac",
+    "app:valtimo-core",
+    "core",
+    "contract",
+    "web",
+    "keycloak-iam",
+    "milestones",
+    "view-configurator",
+    "audit",
+    "document",
+    "process-document",
+    "form",
+    "form-link",
+    "document-generation",
+    "document-generation:local-document-generation",
+    "openzaak",
+    "mail",
+    "mail:local-mail",
+    "resource",
+    "resource:local-resource",
+    "resource:openzaak-resource",
+    "external-event",
+    "connector",
+    "objects-api"
+)

@@ -1,33 +1,12 @@
 spring:
     datasource:
-        driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-        url: jdbc:tc:mysql:5.7://localhost:3306/valtimo-test?TC_MY_CNF=config/mysql
-        name: valtimo-test
-        username: mysql
-        password:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3301/form-test
+        username: valtimo
+        password: password
         hikari:
-            poolName: "valtimo-test-pool"
             auto-commit: false
-            maximum-pool-size: 25
-            leak-detection-threshold: 20000
-            connection-timeout: 10000
-            data-source-properties:
-                cachePrepStmts: true
-                prepStmtCacheSize: 500
-                prepStmtCacheSqlLimit: 2048
-                useServerPrepStmts: true
-                characterEncoding: utf8
-                useUnicode: true
-                useLegacyDatetimeCode: false
-                useSSL: false
-                useLocalSessionState: true
-                rewriteBatchedStatements: true
-                cacheResultSetMetadata: true
-                cacheServerConfiguration: true
-                elideSetAutoCommits: true
-                maintainTimeStats: false
-                serverTimezone: UTC
-                allowPublicKeyRetrieval: true
     liquibase:
         enabled: false #relies on core so liquibase is already done
     jpa:

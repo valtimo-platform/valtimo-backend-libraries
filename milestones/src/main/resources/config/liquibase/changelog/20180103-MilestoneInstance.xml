@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2"/>
+    <property name="now" value="current_timestamp" dbms="postgresql"/>
+    <property name="now" value="sysdate" dbms="oracle"/>
+
+    <property name="autoIncrement" value="true" dbms="mysql,h2,postgresql,oracle"/>
+
+    <property name="floatType" value="float4" dbms="postgresql, h2"/>
+    <property name="floatType" value="float" dbms="mysql, oracle"/>
+
+    <changeSet id="0" author="Frits Bakker">
+        <createTable tableName="milestone_instance">
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="process_definition_key" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="task_definition_key" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="planned_interval" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="color" type="int unsigned">
+                <constraints nullable="false" />
+            </column>
+            <column name="previous_milestone_instance_id" type="bigint">
+            </column>
+            <column name="process_instance_id" type="varchar(64)">
+                <constraints nullable="false" />
+            </column>
+            <column name="reference_date" type="datetime">
+                <constraints nullable="false" />
+            </column>
+            <column name="reached" type="boolean">
+                <constraints nullable="false" />
+            </column>
+            <column name="reached_in_time" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="expected_date" type="datetime">
+                <constraints nullable="false" />
+            </column>
+            <column name="reached_date" type="datetime">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="previous_milestone_instance_id"
+                                 baseTableName="milestone_instance"
+                                 constraintName="fk_milestone_instance_previous_milestone_instance"
+                                 referencedColumnNames="id"
+                                 referencedTableName="milestone_instance" />
+    </changeSet>
+
+    <changeSet id="2" author="Ivar Koreman">
+        <modifyDataType tableName="milestone_instance" columnName="reference_date" newDataType="date"/>
+        <modifyDataType tableName="milestone_instance" columnName="expected_date" newDataType="date"/>
+    </changeSet>
+
+    <changeSet id="3" author="Ivar Koreman">
+        <dropForeignKeyConstraint baseTableName="milestone_instance"
+                                  constraintName="fk_milestone_instance_previous_milestone_instance"/>
+
+        <dropColumn columnName="previous_milestone_instance_id"
+                    tableName="milestone_instance"/>
+    </changeSet>
+</databaseChangeLog>

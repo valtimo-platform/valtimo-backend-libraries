@@ -1,0 +1,6 @@
+# AutoConfigurations
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.ritense.valtimo.milestones.autoconfigure.MilestonesAutoConfiguration, \
+  com.ritense.valtimo.milestones.autoconfigure.SecurityAutoConfiguration, \
+  com.ritense.valtimo.milestones.autoconfigure.LiquibaseAutoConfiguration
+

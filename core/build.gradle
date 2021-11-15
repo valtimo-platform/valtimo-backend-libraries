@@ -16,6 +16,13 @@
 
 apply from: 'gradle/liquibase.gradle'
 
+dockerCompose {
+    projectName = "core"
+    isRequiredBy(test)
+    isRequiredBy(checkExtended)
+    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+}
+
 dependencies {
     implementation project(":contract")
     implementation project(":web")
@@ -84,8 +91,6 @@ dependencies {
 
     // Camunda test
     testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.14.0")
-    testImplementation "org.testcontainers:mysql"
-    testImplementation "org.testcontainers:junit-jupiter"
     testImplementation "org.springframework.security:spring-security-test"
 
 }

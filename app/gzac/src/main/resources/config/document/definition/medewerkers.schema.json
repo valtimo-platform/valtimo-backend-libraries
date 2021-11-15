@@ -1,0 +1,56 @@
+{
+    "$id": "medewerkers.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Medewerkers",
+    "definitions": {
+        "medewerker": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "naam": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                }
+            },
+            "required": ["naam", "email"]
+        },
+        "verlofAanvraag": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "periodeOmschrijving": {
+                    "type": "string"
+                },
+                "akkoord": {
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "required": ["email", "periodeOmschrijving"]
+        }
+    },
+    "type": "object",
+    "properties": {
+        "medewerker" : {
+            "$ref": "#/definitions/medewerker"
+        },
+        "verlofAanvragen": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/verlofAanvraag",
+                "uniqueItems": true
+            },
+            "default": []
+        }
+    },
+    "additionalProperties": false
+}

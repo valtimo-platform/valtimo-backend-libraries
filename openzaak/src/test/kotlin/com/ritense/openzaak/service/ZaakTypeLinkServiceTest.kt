@@ -58,7 +58,7 @@ class ZaakTypeLinkServiceTest {
 
     @BeforeEach
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
 
         zaakTypeLinkService = ZaakTypeLinkService(zaakTypeLinkRepositoryRepository, processDocumentAssociationService)
         zaakTypeLinkId = ZaakTypeLinkId.newId(UUID.randomUUID())

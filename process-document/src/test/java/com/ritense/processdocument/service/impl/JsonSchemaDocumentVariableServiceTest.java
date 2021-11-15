@@ -26,18 +26,13 @@ import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.service.impl.JsonSchemaDocumentVariableService;
 import com.ritense.processdocument.BaseTest;
-import com.ritense.processdocument.domain.delegate.DocumentVariableDelegate;
-import com.ritense.processdocument.domain.impl.delegate.DocumentVariableDelegateImpl;
-import com.ritense.processdocument.exception.UnknownProcessDefinitionException;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

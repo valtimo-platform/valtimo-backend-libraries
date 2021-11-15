@@ -16,6 +16,9 @@
 
 package com.ritense.formlink.service.impl;
 
+import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowRemovalOperations;
+import static com.ritense.form.domain.FormIoFormDefinition.PROPERTY_KEY;
+
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -26,12 +29,8 @@ import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.List;
-
-import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowRemovalOperations;
-import static com.ritense.form.domain.FormIoFormDefinition.PROPERTY_KEY;
+import org.apache.commons.lang3.StringUtils;
 
 public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTransformerService<FormIoFormDefinition> {
 
@@ -44,6 +43,7 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
     public void prePreFillTransform(FormIoFormDefinition formDefinition, JsonNode placeholders, JsonNode source) {
         final JsonNode formDefinitionData = formDefinition.getFormDefinition();
         final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionData);
+        final ObjectNode dataToPreFill = JsonNodeFactory.instance.objectNode();
 
         inputFields.forEach(field -> {
             if (field.has(CUSTOM_PROPERTIES) && !field.get(CUSTOM_PROPERTIES).isEmpty()) {
@@ -67,16 +67,14 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
                             arrayPointer + "/" + calculatedArrayItemIndex + "/" + propertyName
                         );
 
-                        field.set(DEFAULT_VALUE_FIELD, source.at(arrayItemForSourceJsonPointer));
+                        dataToPreFill.set(propertyName, source.at(arrayItemForSourceJsonPointer));
                         ObjectNode customPropertiesObject = (ObjectNode) field.get(CUSTOM_PROPERTIES);
                         customPropertiesObject.remove(CONTAINER_KEY);
                     }
                 }
             }
         });
-        formDefinition.isWriting();
-        formDefinition.changeDefinition(formDefinitionData.toString());
-        formDefinition.doneWriting();
+        formDefinition.preFill(dataToPreFill);
     }
 
     /**
@@ -86,9 +84,9 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
      *     Adding a new array item - configuration:
      *     {
      *          "label": "Bread name",
-     *          "key": "name", -> Name of the property to ADD a value to, this should match object property name of an array item.
+     *          "key": "name", -{@literal >} Name of the property to ADD a value to, this should match object property name of an array item.
      *          "properties": {
-     *              "container": "/favorites/-/" -> indicating an new item should be added at the end of the array
+     *              "container": "/favorites/-/" -{@literal >} indicating an new item should be added at the end of the array
      *          },
      *          "type": "textfield",
      *          "input": true
@@ -97,9 +95,9 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
      *     Update existing array item - configuration:
      *     {
      *          "label": "Bread name",
-     *          "key": "name",  -> Name of the property to REPLACE it's value, this should match object property name of an array item.
+     *          "key": "name",  -{@literal >} Name of the property to REPLACE its value, this should match object property name of an array item.
      *          "properties": {
-     *              "container": "/favorites/{indexOf(/pv/breadId)}/" -> indicating an existing items location to be modified
+     *              "container": "/favorites/{indexOf(/pv/breadId)}/" -{@literal >} indicating an existing items location to be modified
      *          },
      *          "type": "textfield",
      *          "input": true

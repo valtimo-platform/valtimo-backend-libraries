@@ -1,0 +1,5 @@
+# AutoConfigurations
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.ritense.mail.autoconfigure.MandrillMailAutoConfiguration, \
+  com.ritense.mail.autoconfigure.MandrillMailSecurityAutoConfiguration, \
+  com.ritense.mail.autoconfigure.MandrillMailLiquibaseAutoConfiguration

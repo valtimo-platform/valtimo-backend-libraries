@@ -65,6 +65,7 @@ class ObjectsApiAutoConfiguration {
     @Bean
     fun openNotificationService(
         processDocumentService: ProcessDocumentService,
+        documentService: DocumentService,
         zaakService: ZaakService,
         documentenService: DocumentenService,
         connectorService: ConnectorService,
@@ -73,6 +74,7 @@ class ObjectsApiAutoConfiguration {
     ): OpenNotificatieService {
         return OpenNotificatieService(
             processDocumentService,
+            documentService,
             zaakService,
             documentenService,
             connectorService,
