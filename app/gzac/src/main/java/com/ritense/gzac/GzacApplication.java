@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.document.domain.listener;
+package com.ritense.gzac;
 
-import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent;
-import org.springframework.context.event.EventListener;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-public interface DocumentRelatedFileEventListener {
-    @EventListener(DocumentRelatedFileSubmittedEvent.class)
-    void handle(DocumentRelatedFileSubmittedEvent event);
+@SpringBootApplication(scanBasePackages = "com.ritense.*")
+public class GzacApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(GzacApplication.class, args);
+    }
 }

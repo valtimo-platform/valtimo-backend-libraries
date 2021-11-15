@@ -2,7 +2,7 @@
 
 This is a Valtimo for local development.
 
-CLone external git repo https://github.com/valtimo-platform/valtimo-docker-profiles
+Clone external git repo https://github.com/valtimo-platform/valtimo-docker-profiles
 
 ####1 Docker-compose up
 

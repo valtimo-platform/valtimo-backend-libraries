@@ -144,7 +144,7 @@ valtimo:
     hardening:
         removeStacktracesFromReturnedExceptions: true
         allowStacktraceOnIps:
-            - 213.127.182.74
+            - 127.0.0.1
     swagger:
         enabled: false
         title: Valtimo Implementation API
@@ -156,11 +156,6 @@ valtimo:
         contactEmail:
         license:
         licenseUrl:
-    #auth0:
-    #    enabled: false
-    #    domain: ritense.eu.auth0.com
-    #    issuer: https://ritense.eu.auth0.com/
-    #    managementTokenApiClientSecret: #external
     portal:
         hostname: localhost:4201
         scheme: http
@@ -177,16 +172,6 @@ valtimo:
                     - "*"
             paths:
                 - "/**"
-
-aws:
-    #profile: ritense
-    #region: eu-central-1
-    #s3:
-    #    bucketRegion: eu-central-1
-    ssm:
-        enabled: false
-        #region: eu-central-1
-        #projectName: Valtimo-Implementation
 
 spring-actuator:
     username: admin

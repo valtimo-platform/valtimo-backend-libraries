@@ -141,7 +141,7 @@ valtimo:
     hardening:
         removeStacktracesFromReturnedExceptions: true
         allowStacktraceOnIps:
-            - 213.127.182.74
+            - 127.0.0.1
     swagger:
         enabled: false
         title: Valtimo Implementation API
@@ -169,16 +169,6 @@ valtimo:
                     - "*"
             paths:
                 - "/**"
-
-aws:
-    #profile: ritense
-    #region: eu-central-1
-    #s3:
-    #    bucketRegion: eu-central-1
-    ssm:
-        enabled: false
-        #region: eu-central-1
-        #projectName: Valtimo-Implementation
 
 spring-actuator:
     username: admin
@@ -231,9 +221,3 @@ external:
             bezwaar:
                 caseKey: bezwaar
                 processDefinitionKey: bezwaar
-
-#reportingcloud:
-    ## DON'T USE RITENSE'S KEY FOR OTHER IMPLEMENTATIONS WITHOUT CONSULTATION!
-    ## See the notes of the ReportingCloud entry in KeePass.
-    #apiKey: #external
-    #testMode: true #Setting this to false will cost credits when generating a PDF.

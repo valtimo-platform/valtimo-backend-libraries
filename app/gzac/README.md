@@ -3,7 +3,7 @@
 This is a GZAC - Valtimo edition for local development.
 Includes an array of additional services for OpenZaak/OpenFormulieren
 
-CLone external git repo https://github.com/valtimo-platform/valtimo-docker-profiles
+Clone external git repo https://github.com/valtimo-platform/valtimo-docker-profiles
 
 ####1 Docker-compose up
 
