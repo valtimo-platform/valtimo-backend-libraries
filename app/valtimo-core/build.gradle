@@ -16,3 +16,10 @@ dependencies {
     implementation(project(":external-event"))
     implementation(project(":connector"))
 }
+
+tasks.withType(PublishToMavenRepository) {
+    enabled = false
+}
+tasks.withType(PublishToMavenLocal) {
+    enabled = false
+}
