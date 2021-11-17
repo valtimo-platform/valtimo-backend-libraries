@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.ritense.document.export.autoconfigure.DocumentExportAutoConfiguration, \
+  com.ritense.document.export.autoconfigure.DocumentExportLiquibaseAutoConfiguration, \
+  com.ritense.document.export.autoconfigure.DocumentExportSecurityAutoConfiguration
