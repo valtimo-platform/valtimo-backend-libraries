@@ -21,12 +21,8 @@ dependencies {
     implementation project(':process-document')
     implementation project(':resource')
 
-    testImplementation "org.testcontainers:mysql"
-    testImplementation "org.testcontainers:junit-jupiter"
-
     testImplementation "org.springframework.security:spring-security-test"
 
     testImplementation "org.camunda.bpm.extension:camunda-bpm-assert:1.2"
     testImplementation "org.camunda.bpm.extension:camunda-bpm-assert-scenario:0.2"
-
 }
