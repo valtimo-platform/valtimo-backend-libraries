@@ -14,32 +14,10 @@
  * limitations under the License.
  */
 
-rootProject.name = projectName
-include(
-    "app",
-    "app:gzac",
-    "app:valtimo-core",
-    "core",
-    "contract",
-    "web",
-    "keycloak-iam",
-    "milestones",
-    "view-configurator",
-    "audit",
-    "document",
-    "process-document",
-    "form",
-    "form-link",
-    "document-generation",
-    "document-generation:local-document-generation",
-    "openzaak",
-    "mail",
-    "mail:local-mail",
-    "resource",
-    "resource:local-resource",
-    "resource:openzaak-resource",
-    "external-event",
-    "connector",
-    "objects-api",
-    "document-export"
-)
+dependencies {
+    implementation project(':contract')
+    implementation project(':document')
+    implementation project(':resource')
+
+    testImplementation "org.springframework.security:spring-security-test"
+}

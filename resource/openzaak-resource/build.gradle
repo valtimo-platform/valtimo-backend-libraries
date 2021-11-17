@@ -29,8 +29,6 @@ dependencies {
     testImplementation group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.3.3'
     testImplementation group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
 
-    testImplementation "org.testcontainers:mysql"
-    testImplementation "org.testcontainers:junit-jupiter"
     testImplementation "org.springframework.security:spring-security-test"
 
     //Kotlin
