@@ -11,7 +11,7 @@ plugins {
 
     id "org.liquibase.gradle" version "2.0.4"
     id "com.github.ben-manes.versions" version "0.20.0"
-    id "io.freefair.lombok" version "5.3.3.3"
+    id "io.freefair.lombok" version "6.3.0"
     id "org.sonarqube" version "2.7"
     id "checkstyle"
     id "jacoco"
@@ -74,10 +74,6 @@ allprojects {
         }
     }
 
-    lombok {
-        version = "1.18.20"
-    }
-
     bootJar.enabled = false
 
     sourceCompatibility = JavaVersion.VERSION_13
@@ -107,8 +103,6 @@ subprojects { subproject ->
     apply from: "$rootProject.projectDir/gradle/test.gradle"
     apply plugin: "com.avast.gradle.docker-compose"
 
-    generateLombokConfig.enabled = false // Use root config instead
-
     task allDeps(type: DependencyReportTask) {}
 
     task sourceJar(type: Jar) {
@@ -121,7 +115,7 @@ subprojects { subproject ->
 
     task valtimoJavadocs(type: Javadoc) {
         source = sourceSets.main.delombokTask
-        classpath = sourceSets.main.runtimeClasspath
+        classpath = sourceSets.main.runtimeClasspath + delombok.classpath
         excludes = ['**/*.kt'] // < ---- Exclude all kotlin files from javadoc file.
     }
 
@@ -201,4 +195,11 @@ subprojects { subproject ->
         testImplementation "org.jetbrains.kotlin:kotlin-test"
     }
 
+}
+
+tasks.withType(PublishToMavenRepository) {
+    enabled = false
+}
+tasks.withType(PublishToMavenLocal) {
+    enabled = false
 }
