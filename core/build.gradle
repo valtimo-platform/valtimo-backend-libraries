@@ -107,3 +107,5 @@ task jarTest (type: Jar, dependsOn: testClasses) {
 artifacts {
     testOutput jarTest
 }
+
+apply from: "gradle/publishing.gradle"

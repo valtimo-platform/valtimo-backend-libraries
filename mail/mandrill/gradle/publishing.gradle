@@ -1,0 +1,17 @@
+publishing {
+    publications {
+        maven(MavenPublication) {
+            pom {
+                name = 'Mandrill module'
+                description = 'The mandrill module implements mail-sending following the mail module interface'
+                developers {
+                    developer {
+                        id = "team-valtimo"
+                        name = "Team Valtimo"
+                        email = "team-valtimo@ritense.com"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -101,7 +101,7 @@ public class MailingProperties {
      * Filters with a higher priority will get executed later.
      *
      * @return the priority of the WhitelistFilter
-     * @see com.ritense.valtimo.mail.filters.WhitelistFilter
+     * @see com.ritense.mail.domain.filters.WhitelistFilter
      */
     public int getWhitelistedPriority() {
         return whitelistedPriority;
@@ -116,7 +116,7 @@ public class MailingProperties {
      * Filters with a higher priority will get executed later.
      *
      * @return the priority of the RedirectToFilter
-     * @see com.ritense.valtimo.mail.filters.RedirectToFilter
+     * @see com.ritense.mail.domain.filters.RedirectToFilter
      */
     public int getRedirectAllMailsPriority() {
         return redirectAllMailsPriority;

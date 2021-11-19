@@ -21,9 +21,4 @@ dependencies {
     implementation "mysql:mysql-connector-java"
 }
 
-tasks.withType(PublishToMavenRepository) {
-    enabled = false
-}
-tasks.withType(PublishToMavenLocal) {
-    enabled = false
-}
+apply from: "gradle/publishing.gradle"

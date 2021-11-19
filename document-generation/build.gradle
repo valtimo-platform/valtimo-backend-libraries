@@ -26,3 +26,5 @@ dependencies {
     testImplementation "org.camunda.bpm.extension:camunda-bpm-assert:1.2"
     testImplementation "org.camunda.bpm.extension:camunda-bpm-assert-scenario:0.2"
 }
+
+apply from: "gradle/publishing.gradle"
