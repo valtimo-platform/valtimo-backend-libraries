@@ -82,12 +82,13 @@ class ZaakTypeLinkTest {
     @Test
     fun `should assign service task handler`() {
         val zaaktypeLink = zaakTypeLink()
-        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_STATUS, URI.create("http://example.com"))
+        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_STATUS, URI.create("http://example.com"))
 
         zaaktypeLink.assignZaakServiceHandler(serviceTaskHandlerRequest)
 
         assertThat(zaaktypeLink.serviceTaskHandlers).contains(
             ServiceTaskHandler(
+                serviceTaskHandlerRequest.processDefinitionKey,
                 serviceTaskHandlerRequest.serviceTaskId,
                 serviceTaskHandlerRequest.operation,
                 serviceTaskHandlerRequest.parameter
@@ -98,14 +99,15 @@ class ZaakTypeLinkTest {
     @Test
     fun `should update service task handler`() {
         val zaaktypeLink = zaakTypeLink()
-        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_STATUS, URI.create("http://example.com"))
-        val newServiceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_RESULTAAT, URI.create("http://newexample.com"))
+        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_STATUS, URI.create("http://example.com"))
+        val newServiceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_RESULTAAT, URI.create("http://newexample.com"))
 
         zaaktypeLink.assignZaakServiceHandler(serviceTaskHandlerRequest)
         zaaktypeLink.assignZaakServiceHandler(newServiceTaskHandlerRequest)
 
         assertThat(zaaktypeLink.serviceTaskHandlers).contains(
             ServiceTaskHandler(
+                newServiceTaskHandlerRequest.processDefinitionKey,
                 newServiceTaskHandlerRequest.serviceTaskId,
                 newServiceTaskHandlerRequest.operation,
                 newServiceTaskHandlerRequest.parameter
@@ -113,6 +115,7 @@ class ZaakTypeLinkTest {
         )
         assertThat(zaaktypeLink.serviceTaskHandlers).doesNotContain(
             ServiceTaskHandler(
+                newServiceTaskHandlerRequest.processDefinitionKey,
                 serviceTaskHandlerRequest.serviceTaskId,
                 serviceTaskHandlerRequest.operation,
                 serviceTaskHandlerRequest.parameter

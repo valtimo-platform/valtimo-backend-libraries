@@ -45,6 +45,7 @@ import com.ritense.openzaak.web.rest.impl.StatusResource
 import com.ritense.openzaak.web.rest.impl.ZaakTypeLinkResource
 import com.ritense.openzaak.web.rest.impl.ZaakTypeResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -188,9 +189,10 @@ class OpenZaakAutoConfiguration {
     @ConditionalOnMissingBean(ServiceTaskListener::class)
     fun serviceTaskListener(
         zaakTypeLinkService: ZaakTypeLinkService,
-        documentService: DocumentService
+        documentService: DocumentService,
+        repositoryService: RepositoryService
     ): ServiceTaskListener {
-        return ServiceTaskListener(zaakTypeLinkService, documentService)
+        return ServiceTaskListener(zaakTypeLinkService, documentService, repositoryService)
     }
 
     @Bean

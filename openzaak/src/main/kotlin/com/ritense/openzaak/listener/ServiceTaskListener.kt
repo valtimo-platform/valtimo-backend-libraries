@@ -19,6 +19,7 @@ package com.ritense.openzaak.listener
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.service.ZaakTypeLinkService
+import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.ExecutionListener
 import org.camunda.bpm.extension.reactor.bus.CamundaSelector
@@ -29,17 +30,19 @@ import java.util.UUID
 @CamundaSelector(type = "serviceTask", event = ExecutionListener.EVENTNAME_START)
 open class ServiceTaskListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
-    private val documentService: DocumentService
+    private val documentService: DocumentService,
+    private val repositoryService: RepositoryService
 ) : ReactorExecutionListener() {
 
     @Transactional
     override fun notify(execution: DelegateExecution) {
         val processBusinessKey = execution.processBusinessKey
+        val processDefinitionKey = repositoryService.getProcessDefinition(execution.processDefinitionId).key
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(processBusinessKey))
         val document = documentService.findBy(documentId).orElseThrow()
         val zaakTypeLink = zaakTypeLinkService.get(document.definitionId().name())
         if (zaakTypeLink != null) {
-            zaakTypeLink.handleServiceTask(execution, documentId.id)
+            zaakTypeLink.handleServiceTask(execution, processDefinitionKey, documentId.id)
             zaakTypeLinkService.modify(zaakTypeLink)
         }
     }

@@ -89,12 +89,19 @@ data class ZaakTypeLink(
     }
 
     fun assignZaakServiceHandler(request: ServiceTaskHandlerRequest) {
-        serviceTaskHandlers.removeIf { zsh -> zsh.serviceTaskId == request.serviceTaskId }
-        serviceTaskHandlers.plusAssign(ServiceTaskHandler(request.serviceTaskId, request.operation, request.parameter))
+        serviceTaskHandlers.removeIf { zsh -> zsh.processDefinitionKey == request.processDefinitionKey && zsh.serviceTaskId == request.serviceTaskId }
+        serviceTaskHandlers.plusAssign(
+            ServiceTaskHandler(
+                request.processDefinitionKey,
+                request.serviceTaskId,
+                request.operation,
+                request.parameter
+            )
+        )
     }
 
-    fun removeZaakServiceHandler(serviceTaskId: String) {
-        serviceTaskHandlers.removeIf { zsh -> zsh.serviceTaskId == serviceTaskId }
+    fun removeZaakServiceHandler(processDefinitionKey: String, serviceTaskId: String) {
+        serviceTaskHandlers.removeIf { zsh -> zsh.processDefinitionKey == processDefinitionKey && zsh.serviceTaskId == serviceTaskId }
     }
 
     @JsonIgnore
@@ -137,14 +144,14 @@ data class ZaakTypeLink(
     }
 
     @JsonIgnore
-    private fun getServiceTaskHandlerBy(serviceTaskId: String): ServiceTaskHandler? {
-        return serviceTaskHandlers.find { sth -> sth.serviceTaskId == serviceTaskId }
+    private fun getServiceTaskHandlerBy(processDefinitionKey: String, serviceTaskId: String): ServiceTaskHandler? {
+        return serviceTaskHandlers.find { sth -> sth.processDefinitionKey == processDefinitionKey && sth.serviceTaskId == serviceTaskId }
     }
 
     @JsonIgnore
-    fun handleServiceTask(execution: DelegateExecution, id: UUID) {
+    fun handleServiceTask(execution: DelegateExecution, processDefinitionKey: String, documentId: UUID) {
         val serviceTaskId = execution.currentActivityId
-        val serviceTaskHandler = getServiceTaskHandlerBy(serviceTaskId)
+        val serviceTaskHandler = getServiceTaskHandlerBy(processDefinitionKey, serviceTaskId)
 
         if (serviceTaskHandler != null) {
             when (serviceTaskHandler.operation) {
@@ -152,10 +159,10 @@ data class ZaakTypeLink(
                     createZaak(execution)
                 }
                 Operation.SET_STATUS -> {
-                    assignZaakInstanceStatus(id, serviceTaskHandler.parameter)
+                    assignZaakInstanceStatus(documentId, serviceTaskHandler.parameter)
                 }
                 Operation.SET_RESULTAAT -> {
-                    assignZaakInstanceResultaat(id, serviceTaskHandler.parameter)
+                    assignZaakInstanceResultaat(documentId, serviceTaskHandler.parameter)
                 }
             }
         }
