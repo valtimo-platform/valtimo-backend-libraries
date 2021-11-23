@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            pom {
-                name = 'Core module'
-                description = 'The core module is a wrapper around the BPMN engine, allowing you to launch' +
-                    ' and control business process models'
-                developers {
-                    developer {
-                        id = "team-valtimo"
-                        name = "Team Valtimo"
-                        email = "team-valtimo@ritense.com"
+pluginManager.withPlugin('maven-publish') {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                pom {
+                    name = 'Core module'
+                    description = 'The core module is a wrapper around the BPMN engine, allowing you to launch' +
+                        ' and control business process models'
+                    developers {
+                        developer {
+                            id = "team-valtimo"
+                            name = "Team Valtimo"
+                            email = "team-valtimo@ritense.com"
+                        }
                     }
                 }
             }

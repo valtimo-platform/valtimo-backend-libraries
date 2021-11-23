@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            pom {
-                name = 'Document generation module'
-                description = 'The document generation module allows you to generate a file (e.g. pdf) using process data'
-                developers {
-                    developer {
-                        id = "team-valtimo"
-                        name = "Team Valtimo"
-                        email = "team-valtimo@ritense.com"
+pluginManager.withPlugin('maven-publish') {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                pom {
+                    name = 'Document generation module'
+                    description = 'The document generation module allows you to generate a file (e.g. pdf) using process data'
+                    developers {
+                        developer {
+                            id = "team-valtimo"
+                            name = "Team Valtimo"
+                            email = "team-valtimo@ritense.com"
+                        }
                     }
                 }
             }

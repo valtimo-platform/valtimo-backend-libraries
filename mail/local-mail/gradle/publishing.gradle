@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            pom {
-                name = 'Local mail module'
-                description = 'The local mail module is a no-op implementation of the interface the mail module exposes'
-                developers {
-                    developer {
-                        id = "team-valtimo"
-                        name = "Team Valtimo"
-                        email = "team-valtimo@ritense.com"
+pluginManager.withPlugin('maven-publish') {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                pom {
+                    name = 'Local mail module'
+                    description = 'The local mail module is a no-op implementation of the interface the mail module exposes'
+                    developers {
+                        developer {
+                            id = "team-valtimo"
+                            name = "Team Valtimo"
+                            email = "team-valtimo@ritense.com"
+                        }
                     }
                 }
             }
