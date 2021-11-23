@@ -34,6 +34,7 @@ include(
     "document-generation:local-document-generation",
     "openzaak",
     "mail",
+    "mail:flowmailer",
     "mail:local-mail",
     "mail:mandrill",
     "resource",
@@ -44,3 +45,6 @@ include(
     "objects-api",
     "document-export"
 )
+include 'mail:flowmailer'
+findProject(':mail:flowmailer')?.name = 'flowmailer'
+
