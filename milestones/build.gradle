@@ -45,3 +45,4 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
 }
 
+apply from: "gradle/publishing.gradle"

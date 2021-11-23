@@ -108,3 +108,4 @@ artifacts {
     testOutput jarTest
 }
 
+apply from: "gradle/publishing.gradle"
