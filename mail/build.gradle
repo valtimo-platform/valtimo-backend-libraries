@@ -20,3 +20,4 @@ dependencies {
     testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.15.0")
 }
 
+apply from: "gradle/publishing.gradle"

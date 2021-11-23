@@ -49,3 +49,4 @@ test {
     useJUnitPlatform()
 }
 
+apply from: "gradle/publishing.gradle"
