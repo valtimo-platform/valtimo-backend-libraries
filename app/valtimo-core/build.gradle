@@ -17,4 +17,3 @@ dependencies {
     implementation(project(":connector"))
 }
 
-apply from: "gradle/publishing.gradle"

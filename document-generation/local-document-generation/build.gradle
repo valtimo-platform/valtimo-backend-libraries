@@ -23,4 +23,3 @@ dependencies {
     api project(':document-generation')
 }
 
-apply from: "gradle/publishing.gradle"
