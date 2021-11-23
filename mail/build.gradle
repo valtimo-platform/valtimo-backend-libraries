@@ -17,6 +17,6 @@
 dependencies {
     api project(":contract")
     implementation "org.camunda.bpm:camunda-engine:7.14.0"
-    testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.14.0")
+    testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.15.0")
 }
 
