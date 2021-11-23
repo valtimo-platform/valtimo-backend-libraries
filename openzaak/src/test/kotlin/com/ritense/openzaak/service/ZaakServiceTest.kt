@@ -105,20 +105,6 @@ class ZaakServiceTest : BaseTest() {
         )
     }
 
-
-      // TODO [RV] - Fix test
-//    @Test
-//    fun `should get zaak by documentId`() {
-//        whenever(zaakService.getZaak(UUID.fromString(UUID_STRING))).thenReturn(createZaak())
-//
-//        var result = zaakService.getZaakByDocumentId(document.id!!.id)
-//
-//        verify(zaakService).getZaak(UUID.fromString(UUID_STRING))
-//
-//        assertThat(result).isNotNull
-//        assertThat(result.url).isEqualTo(zaakInstanceUrl)
-//    }
-
     @Test
     fun `should get list of informatieobjecttype`() {
         httpGetCatalogus()

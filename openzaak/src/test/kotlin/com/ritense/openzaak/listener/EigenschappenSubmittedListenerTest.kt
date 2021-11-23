@@ -23,6 +23,7 @@ import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.service.impl.EigenschapService
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
+import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.EigenschapType
@@ -53,6 +54,10 @@ internal class EigenschappenSubmittedListenerTest {
     @Mock
     lateinit var zaakInstanceLink: ZaakInstanceLink
 
+    // This mock is not used in the code but required for the MockInject of eigenschappenSubmittedListener
+    @Mock
+    lateinit var zaakService: ZaakService
+
     lateinit var event: ExternalDataSubmittedEvent
 
     @Mock
@@ -74,7 +79,6 @@ internal class EigenschappenSubmittedListenerTest {
         )
     }
 
-    // TODO [RV] - Fix test
     @Test
     fun `handle incoming eigenschappen submitted event`() {
         whenever(zaakTypeLinkService.findBy(eq(documentDefinition))).thenReturn(zaakTypeLink)
