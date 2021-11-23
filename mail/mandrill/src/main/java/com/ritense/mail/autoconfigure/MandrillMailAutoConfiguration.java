@@ -16,6 +16,7 @@
 
 package com.ritense.mail.autoconfigure;
 
+import com.ritense.mail.MailDispatcher;
 import com.ritense.mail.config.MailingProperties;
 import com.ritense.mail.config.MandrillProperties;
 import com.ritense.mail.domain.filters.BlacklistFilter;
@@ -25,11 +26,10 @@ import com.ritense.mail.repository.BlacklistRepository;
 import com.ritense.mail.service.BlacklistService;
 import com.ritense.mail.service.MailMessageConverter;
 import com.ritense.mail.service.MandrillHealthIndicator;
-import com.ritense.mail.service.MandrillMailSender;
+import com.ritense.mail.service.MandrillMailDispatcher;
 import com.ritense.mail.service.WebhookService;
 import com.ritense.mail.web.rest.WebhookResource;
 import com.ritense.valtimo.contract.mail.MailFilter;
-import com.ritense.valtimo.contract.mail.MailSender;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -64,13 +64,13 @@ public class MandrillMailAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(MailSender.class)
-    public MailSender mailSender(
+    @ConditionalOnMissingBean(MailDispatcher.class)
+    public MailDispatcher mailDispatcher(
         final MandrillProperties mandrillProperties,
         final MailMessageConverter mailMessageConverter,
         final Collection<MailFilter> mailFilters
     ) {
-        return new MandrillMailSender(mandrillProperties, mailMessageConverter, mailFilters);
+        return new MandrillMailDispatcher(mandrillProperties, mailMessageConverter, mailFilters);
     }
 
     @Bean

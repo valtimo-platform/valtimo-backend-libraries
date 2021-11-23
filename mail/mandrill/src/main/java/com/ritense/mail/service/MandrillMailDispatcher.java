@@ -20,6 +20,7 @@ import com.microtripit.mandrillapp.lutung.MandrillApi;
 import com.microtripit.mandrillapp.lutung.model.MandrillApiError;
 import com.microtripit.mandrillapp.lutung.view.MandrillMessage;
 import com.microtripit.mandrillapp.lutung.view.MandrillMessageStatus;
+import com.ritense.mail.MailDispatcher;
 import com.ritense.mail.config.MandrillProperties;
 import com.ritense.valtimo.contract.basictype.EmailAddress;
 import com.ritense.valtimo.contract.mail.MailFilter;
@@ -45,7 +46,7 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public class MandrillMailSender implements MailSender {
+public class MandrillMailDispatcher implements MailDispatcher {
 
     //see: https://mandrill.zendesk.com/hc/en-us/articles/205582407-Does-Mandrill-Support-Attachments-
     private static final int MAX_SIZE_ATTACHMENTS = 16250000;
@@ -53,9 +54,8 @@ public class MandrillMailSender implements MailSender {
     private final DateFormat dateFormat;
     private final MandrillProperties mandrillProperties;
     private final MailMessageConverter mailMessageConverter;
-    private final Collection<MailFilter> mailFilters;
 
-    public MandrillMailSender(
+    public MandrillMailDispatcher(
         MandrillProperties mandrillProperties,
         MailMessageConverter mailMessageConverter,
         Collection<MailFilter> mailFilters
@@ -63,7 +63,6 @@ public class MandrillMailSender implements MailSender {
         this.mandrillProperties = mandrillProperties;
         this.mailMessageConverter = mailMessageConverter;
         this.dateFormat = new SimpleDateFormat(mandrillProperties.getDateFormat());
-        this.mailFilters = mailFilters;
     }
 
     @Override

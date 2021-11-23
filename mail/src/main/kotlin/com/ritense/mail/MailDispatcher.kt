@@ -16,5 +16,16 @@
 
 package com.ritense.mail
 
-interface MailProvider {
+import com.ritense.valtimo.contract.mail.model.MailMessageStatus
+import com.ritense.valtimo.contract.mail.model.RawMailMessage
+import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
+
+interface MailDispatcher {
+
+    fun send(rawMailMessage: RawMailMessage): MutableList<MailMessageStatus>
+
+    fun send(templatedMailMessage: TemplatedMailMessage): MutableList<MailMessageStatus>
+
+    fun getMaximumSizeAttachments(): Int
+
 }
