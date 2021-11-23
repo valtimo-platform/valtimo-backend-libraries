@@ -16,13 +16,11 @@
 
 package com.ritense.openzaak.service
 
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.openzaak.BaseTest
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinks
+import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.service.impl.ZaakService
@@ -36,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.contains
+import org.mockito.Mockito.verify
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -47,8 +46,9 @@ import java.util.UUID
 class ZaakServiceTest : BaseTest() {
 
     private val UUID_STRING = "91e750e1-53ab-4922-9979-6a2dacd009cf"
+    val zaakInstanceUrl = URI.create("http://zaak.instanceUrl.com")
     val zaaktypeLinkId = ZaakTypeLinkId.existingId(UUID.randomUUID())
-    val zaakType = URI.create("http://example.com")
+    val zaakTypeUrl = URI.create("http://example.com")
     val catalogusUuid = UUID.randomUUID()
     val informatieobjecttype = URI.create("http://informatieobjecttypeUri.com")
     val informatieobjecttype1 = URI.create("http://informatieobjecttype2Uri.com")
@@ -60,9 +60,18 @@ class ZaakServiceTest : BaseTest() {
             ZaakTypeLink(
                 zaaktypeLinkId,
                 "house",
-                zaakType,
-                ZaakInstanceLinks(),
+                zaakTypeUrl,
                 ServiceTaskHandlers()
+            )
+        )
+
+        whenever(zaakInstanceLinkService.getByDocumentId(document.id!!.id)).thenReturn(
+            ZaakInstanceLink(
+                ZaakInstanceLinkId.newId(UUID.randomUUID()),
+                zaakInstanceUrl,
+                UUID.fromString(UUID_STRING),
+                document.id!!.id,
+                zaakTypeUrl
             )
         )
 
@@ -71,7 +80,8 @@ class ZaakServiceTest : BaseTest() {
             openZaakConfigService,
             openZaakTokenGeneratorService,
             zaakTypeLinkService,
-            documentService
+            documentService,
+            zaakInstanceLinkService
         )
     }
 
@@ -87,11 +97,27 @@ class ZaakServiceTest : BaseTest() {
         zaakService.createZaakWithLink(delegateExecutionFake)
 
         //then
-        verify(zaakTypeLinkService).assignZaakInstance(
-            eq(zaaktypeLinkId),
-            eq(ZaakInstanceLink(URI.create("http://example.com"), UUID.fromString(UUID_STRING), document.id!!.id))
+        verify(zaakInstanceLinkService).createZaakInstanceLink(
+            zaakInstanceUrl,
+            UUID.fromString(UUID_STRING),
+            document.id!!.id,
+            zaakTypeUrl
         )
     }
+
+
+      // TODO [RV] - Fix test
+//    @Test
+//    fun `should get zaak by documentId`() {
+//        whenever(zaakService.getZaak(UUID.fromString(UUID_STRING))).thenReturn(createZaak())
+//
+//        var result = zaakService.getZaakByDocumentId(document.id!!.id)
+//
+//        verify(zaakService).getZaak(UUID.fromString(UUID_STRING))
+//
+//        assertThat(result).isNotNull
+//        assertThat(result.url).isEqualTo(zaakInstanceUrl)
+//    }
 
     @Test
     fun `should get list of informatieobjecttype`() {
@@ -118,44 +144,7 @@ class ZaakServiceTest : BaseTest() {
 
     private fun httpZaakCreated() {
         val responseEntity = ResponseEntity(
-            Zaak(
-                URI.create("http://example.com"),
-                UUID.fromString(UUID_STRING),
-                "",
-                "",
-                "",
-                "",
-                URI.create("http://example.com"),
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                listOf(URI.create("http://example.com")),
-                "",
-                "",
-                "",
-                "",
-                Zaak.Zaakgeometrie("", listOf(1)),
-                Zaak.Verlenging("",""),
-                Zaak.Opschorting(true,""),
-                URI.create("http://example.com"),
-                URI.create("http://example.com"),
-                listOf(URI.create("http://example.com")),
-                listOf(Zaak.RelevanteAndereZaken(URI.create("http://example.com"),"")),
-                listOf(URI.create("http://example.com")),
-                URI.create("http://example.com"),
-                "",
-                listOf(Zaak.Kenmerken("","")),
-                "",
-                "",
-                "",
-                URI.create("http://example.com"),
-                ""
-                ),
+            createZaak(),
             httpHeaders(),
             HttpStatus.OK
         )
@@ -167,6 +156,47 @@ class ZaakServiceTest : BaseTest() {
                 any(ParameterizedTypeReference::class.java)
             )
         ).thenReturn(responseEntity)
+    }
+
+    private fun createZaak(): Zaak {
+        return Zaak(
+            zaakInstanceUrl,
+            UUID.fromString(UUID_STRING),
+            "",
+            "",
+            "",
+            "",
+            URI.create("http://example.com"),
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            listOf(URI.create("http://example.com")),
+            "",
+            "",
+            "",
+            "",
+            Zaak.Zaakgeometrie("", listOf(1)),
+            Zaak.Verlenging("",""),
+            Zaak.Opschorting(true,""),
+            URI.create("http://example.com"),
+            URI.create("http://example.com"),
+            listOf(URI.create("http://example.com")),
+            listOf(Zaak.RelevanteAndereZaken(URI.create("http://example.com"),"")),
+            listOf(URI.create("http://example.com")),
+            URI.create("http://example.com"),
+            "",
+            listOf(Zaak.Kenmerken("","")),
+            "",
+            "",
+            "",
+            URI.create("http://example.com"),
+            ""
+        )
     }
 
     private fun httpGetCatalogus() {

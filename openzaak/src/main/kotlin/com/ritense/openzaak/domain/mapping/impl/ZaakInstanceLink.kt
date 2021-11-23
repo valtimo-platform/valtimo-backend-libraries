@@ -16,13 +16,51 @@
 
 package com.ritense.openzaak.domain.mapping.impl
 
-import com.ritense.openzaak.domain.mapping.ZaakInstanceLink
-import java.io.Serializable
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.ritense.openzaak.repository.converter.UriAttributeConverter
+import com.ritense.valtimo.contract.validation.Validatable
+import org.springframework.data.domain.Persistable
 import java.net.URI
 import java.util.UUID
+import javax.persistence.Column
+import javax.persistence.Convert
+import javax.persistence.EmbeddedId
+import javax.persistence.Entity
+import javax.persistence.Table
 
+@Entity
+@Table(name = "zaak_instance_link")
 data class ZaakInstanceLink(
+
+    @EmbeddedId
+    @JsonProperty("id")
+    val zaakInstanceLinkId: ZaakInstanceLinkId,
+
+    @Convert(converter = UriAttributeConverter::class)
+    @Column(name = "zaak_instance_url", columnDefinition = "VARCHAR(255)", nullable = false)
     val zaakInstanceUrl: URI,
+
+    @Column(name = "zaak_instance_id", columnDefinition = "BINARY(16)", nullable = false)
     val zaakInstanceId: UUID,
-    val documentId: UUID
-) : ZaakInstanceLink, Serializable
+
+
+    @Column(name = "document_id", columnDefinition = "BINARY(16)", nullable = false)
+    val documentId: UUID,
+
+    @Convert(converter = UriAttributeConverter::class)
+    @Column(name = "zaak_type_url", columnDefinition = "VARCHAR(255)", nullable = false)
+    val zaakTypeUrl: URI
+) : Persistable<ZaakInstanceLinkId>, Validatable {
+
+    init {
+        validate()
+    }
+
+    override fun getId(): ZaakInstanceLinkId {
+        return zaakInstanceLinkId
+    }
+
+    override fun isNew(): Boolean {
+        return zaakInstanceLinkId.isNew
+    }
+}
