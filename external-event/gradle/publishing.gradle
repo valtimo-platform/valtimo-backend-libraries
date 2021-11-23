@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            pom {
-                name = 'External event module'
-                description = 'The external event module publishes and consumes events to and from an external bus or queue'
-                developers {
-                    developer {
-                        id = "team-valtimo"
-                        name = "Team Valtimo"
-                        email = "team-valtimo@ritense.com"
+pluginManager.withPlugin('maven-publish') {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                pom {
+                    name = 'External event module'
+                    description = 'The external event module publishes and consumes events to and from an external bus or queue'
+                    developers {
+                        developer {
+                            id = "team-valtimo"
+                            name = "Team Valtimo"
+                            email = "team-valtimo@ritense.com"
+                        }
                     }
                 }
             }
