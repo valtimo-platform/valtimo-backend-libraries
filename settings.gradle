@@ -45,6 +45,3 @@ include(
     "objects-api",
     "document-export"
 )
-include 'mail:flowmailer'
-findProject(':mail:flowmailer')?.name = 'flowmailer'
-
