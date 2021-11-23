@@ -34,6 +34,7 @@ include(
     "document-generation:local-document-generation",
     "openzaak",
     "mail",
+    "mail:flowmailer",
     "mail:local-mail",
     "mail:mandrill",
     "resource",
