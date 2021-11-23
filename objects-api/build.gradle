@@ -49,4 +49,3 @@ dependencies {
     }
 }
 
-apply from: "gradle/publishing.gradle"

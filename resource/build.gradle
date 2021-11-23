@@ -18,4 +18,3 @@ dependencies {
     api project(':contract')
 }
 
-apply from: "gradle/publishing.gradle"
