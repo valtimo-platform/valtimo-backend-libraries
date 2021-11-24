@@ -20,7 +20,6 @@ import com.ritense.mail.config.MailingProperties
 import com.ritense.valtimo.contract.mail.MailFilter
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
-import com.ritense.valtimo.contract.mail.model.value.Recipient
 
 class RedirectToFilter(
     private val mailingProperties: MailingProperties
