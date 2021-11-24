@@ -48,4 +48,5 @@ class BlacklistFilter(
     override fun getPriority(): Int {
         return mailingProperties.blacklistFilterPriority
     }
+
 }
