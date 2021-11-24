@@ -19,9 +19,18 @@ package com.ritense.mail.flowmailer
 import com.ritense.mail.flowmailer.autoconfigure.FlowmailerAutoConfiguration
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import org.springframework.boot.test.context.TestConfiguration
 
-@SpringBootApplication(scanBasePackageClasses = [FlowmailerAutoConfiguration::class])
+@SpringBootApplication(
+    scanBasePackageClasses = [FlowmailerAutoConfiguration::class],
+    exclude = [
+    DataSourceAutoConfiguration::class,
+    DataSourceTransactionManagerAutoConfiguration::class,
+    HibernateJpaAutoConfiguration::class
+])
 class FlowmailerTestConfiguration {
 
     fun main(args: Array<String>) {

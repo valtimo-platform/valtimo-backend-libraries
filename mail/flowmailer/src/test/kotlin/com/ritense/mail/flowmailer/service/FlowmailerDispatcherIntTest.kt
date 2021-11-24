@@ -25,11 +25,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import javax.inject.Inject
 
-@SpringBootApplication(exclude = [
-    DataSourceAutoConfiguration::class,
-    DataSourceTransactionManagerAutoConfiguration::class,
-    HibernateJpaAutoConfiguration::class
-])
 internal class FlowmailerDispatcherIntTest: BaseIntegrationTest() {
 
     @Inject
