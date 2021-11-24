@@ -16,6 +16,7 @@
 
 package com.ritense.mail.autoconfigure
 
+import com.ritense.mail.MailDispatcher
 import com.ritense.mail.service.FilteredMailSender
 import com.ritense.mail.service.MailService
 import com.ritense.valtimo.contract.mail.MailSender
@@ -34,8 +35,8 @@ class MailAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(FilteredMailSender::class)
-    fun filteredMailService(mailSender: MailSender): FilteredMailSender {
-        return FilteredMailSender(mailSender)
+    fun filteredMailService(mailDispatcher: MailDispatcher): FilteredMailSender {
+        return FilteredMailSender(mailDispatcher)
     }
 
 }

@@ -26,7 +26,7 @@ import java.util.Optional
 import kotlin.streams.toList
 
 class FilteredMailSender(
-    private val mailDispatcher: MailDispatcher,
+    private val mailDispatcher: MailDispatcher
     //private val filters: Collection<MailFilter>?
 ) : MailSender {
 

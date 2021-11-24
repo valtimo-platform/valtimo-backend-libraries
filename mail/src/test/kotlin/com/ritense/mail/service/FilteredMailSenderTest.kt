@@ -19,21 +19,22 @@ package com.ritense.mail.service
 import com.ritense.mail.MailDispatcher
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
+import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
+import com.ritense.valtimo.contract.mail.model.value.MailBody
 import com.ritense.valtimo.contract.mail.model.value.MailTemplateIdentifier
 import com.ritense.valtimo.contract.mail.model.value.Recipient
+import com.ritense.valtimo.contract.mail.model.value.RecipientCollection
 import com.ritense.valtimo.contract.mail.model.value.Sender
 import com.ritense.valtimo.contract.mail.model.value.Subject
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 
 internal class FilteredMailSenderTest {
 
-    lateinit var filteredMailSender: FilteredMailSender
+    private lateinit var filteredMailSender: FilteredMailSender
     lateinit var mailDispatcher: MailDispatcher
 
     @BeforeEach
@@ -43,44 +44,41 @@ internal class FilteredMailSenderTest {
     }
 
     @Test
-    fun shouldSendFiltered() {
-        val mail = TemplatedMailMessage.with(
+    fun shouldSendTemplatedMailMessageFiltered() {
+        val templatedMailMessage = templatedMailMessage(
             Recipient.to(
                 EmailAddress.from("user@test,com"),
                 SimpleName.from("User")
-            ), MailTemplateIdentifier.from("Template"))
+            )
+        )
+
+        filteredMailSender.send(templatedMailMessage)
+
+        verify(mailDispatcher).send(templatedMailMessage)
+    }
+
+    @Test
+    fun shouldSendRawMailMessageFiltered() {
+        val rawMailMessage = rawMailMessage(Recipient.to(
+            EmailAddress.from("user@test,com"),
+            SimpleName.from("User")
+        ))
+
+        filteredMailSender.send(rawMailMessage)
+
+        verify(mailDispatcher).send(rawMailMessage)
+    }
+
+    private fun rawMailMessage(recipient: Recipient): RawMailMessage {
+        val recipients = RecipientCollection.fromSingle(recipient)
+        return RawMailMessage.with(recipients, MailBody.of(MailBody.MailBodyText.empty())).build()
+    }
+
+    private fun templatedMailMessage(recipient: Recipient): TemplatedMailMessage {
+        return TemplatedMailMessage.with(recipient, MailTemplateIdentifier.from("Template"))
             .subject(Subject.from("Subject"))
             .sender(Sender.from(EmailAddress.from("sender@test.com")))
             .build()
-
-        filteredMailSender.send(mail)
-
-        val argumentCaptor = ArgumentCaptor.forClass(TemplatedMailMessage::class.java)
-        verify(mailDispatcher).send(argumentCaptor.capture())
-
-        assertThat(argumentCaptor.value.subject.toString()).isEqualTo(mail.subject)
-        //assertThat(argumentCaptor.value.sender.email.toString()).isEqualTo("sender@domain.com")
-        //assertThat(argumentCaptor.value.templateIdentifier.toString()).isEqualTo("Mail template identifier")
-        //assertThat(argumentCaptor.value.recipients.get().first().email.toString()).isEqualTo("Jan Jansen")
-        //assertThat(argumentCaptor.value.recipients.get().first().type).isEqualTo(Recipient.Type.To)
     }
-
-    /* @Test
-     fun shouldCreateMailSettingsFromMap() {
-         val mailSettings = MailService.MailSettings(
-             mapOf(
-                 "mailSendTaskTo" to "mailSendTaskTo",
-                 "mailSendTaskFrom" to "mailSendTaskFrom",
-                 "mailSendTaskSubject" to "mailSendTaskSubject",
-                 "mailSendTaskTemplate" to "mailSendTaskTemplate"
-             ),
-             delegateExecution
-         )
-         assertThat(mailSettings).isNotNull
-         assertThat(mailSettings.mailSendTaskTo).isEqualTo("mailSendTaskTo")
-         assertThat(mailSettings.mailSendTaskFrom).isEqualTo("mailSendTaskFrom")
-         assertThat(mailSettings.mailSendTaskSubject).isEqualTo("mailSendTaskSubject")
-         assertThat(mailSettings.mailSendTaskTemplate).isEqualTo("mailSendTaskTemplate")
-     }*/
 
 }
