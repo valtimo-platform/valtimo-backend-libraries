@@ -24,9 +24,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import org.springframework.boot.test.context.TestConfiguration
 
-@SpringBootApplication(
-    scanBasePackageClasses = [FlowmailerAutoConfiguration::class],
-    exclude = [
+@SpringBootApplication(exclude = [
     DataSourceAutoConfiguration::class,
     DataSourceTransactionManagerAutoConfiguration::class,
     HibernateJpaAutoConfiguration::class
