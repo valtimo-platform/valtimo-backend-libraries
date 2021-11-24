@@ -33,9 +33,9 @@ import java.util.Optional;
  * @see TemplatedMailMessage
  */
 public interface MailFilter {
-    Optional<RawMailMessage> doFilter(RawMailMessage rawMailMessage);
+    RawMailMessage apply(RawMailMessage rawMailMessage);
 
-    Optional<TemplatedMailMessage> doFilter(TemplatedMailMessage templatedMailMessage);
+    TemplatedMailMessage apply(TemplatedMailMessage templatedMailMessage);
 
     boolean isEnabled();
 

@@ -91,30 +91,4 @@ public class MandrillMailAutoConfiguration {
         return new WebhookResource(webhookService);
     }
 
-    //filters
-
-    @Bean
-    @ConditionalOnMissingBean(BlacklistFilter.class)
-    public BlacklistFilter blacklistFilter(
-        final BlacklistService blacklistService,
-        final MailingProperties mailingProperties
-    ) {
-        return new BlacklistFilter(blacklistService, mailingProperties);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(RedirectToFilter.class)
-    public RedirectToFilter redirectToFilter(
-        final MailingProperties mailingProperties
-    ) {
-        return new RedirectToFilter(mailingProperties);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(WhitelistFilter.class)
-    public WhitelistFilter whitelistFilter(
-        final MailingProperties mailingProperties
-    ) {
-        return new WhitelistFilter(mailingProperties);
-    }
 }

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.mail.domain.filter
+package com.ritense.mail.repository
 
-class BlacklistFilter {
+import com.ritense.mail.domain.blacklist.BlacklistedEmail
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface BlacklistRepository : JpaRepository<BlacklistedEmail, String> {
+    fun findByEmailAddress(email: String): BlacklistedEmail?
 }
