@@ -44,7 +44,7 @@ class FilteredMailSender(
         return mailDispatcher.getMaximumSizeAttachments()
     }
 
-    //TODO FIX
+    //TODO implement
     /*private fun applyFilters(rawMailMessage: RawMailMessage): RawMailMessage? {
         var filteredRawMailMessage = rawMailMessage
         val enabledMailFiltersSortedByPriority = getEnabledMailFiltersSortedByPriority()
@@ -59,7 +59,7 @@ class FilteredMailSender(
         return filteredRawMailMessage
     }
 
-    //TODO FIX
+    //TODO implement
     private fun applyFilters(templatedMailMessage: TemplatedMailMessage): TemplatedMailMessage? {
         var filteredTemplatedMailMessage = templatedMailMessage
         val enabledMailFiltersSortedByPriority = getEnabledMailFiltersSortedByPriority()
@@ -74,7 +74,7 @@ class FilteredMailSender(
         return filteredTemplatedMailMessage
     }
 
-    //TODO FIX
+    //TODO implement
     private fun getEnabledMailFiltersSortedByPriority(): Collection<MailFilter> {
         return filters!!.stream()
             .filter { it.isEnabled }

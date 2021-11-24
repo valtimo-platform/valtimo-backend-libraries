@@ -23,8 +23,6 @@ import com.microtripit.mandrillapp.lutung.view.MandrillMessageStatus;
 import com.ritense.mail.MailDispatcher;
 import com.ritense.mail.config.MandrillProperties;
 import com.ritense.valtimo.contract.basictype.EmailAddress;
-import com.ritense.valtimo.contract.mail.MailFilter;
-import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.contract.mail.model.MailMessageStatus;
 import com.ritense.valtimo.contract.mail.model.RawMailMessage;
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
@@ -35,15 +33,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 public class MandrillMailDispatcher implements MailDispatcher {
@@ -56,9 +49,8 @@ public class MandrillMailDispatcher implements MailDispatcher {
     private final MailMessageConverter mailMessageConverter;
 
     public MandrillMailDispatcher(
-        MandrillProperties mandrillProperties,
-        MailMessageConverter mailMessageConverter,
-        Collection<MailFilter> mailFilters
+        final MandrillProperties mandrillProperties,
+        final MailMessageConverter mailMessageConverter
     ) {
         this.mandrillProperties = mandrillProperties;
         this.mailMessageConverter = mailMessageConverter;
@@ -66,17 +58,10 @@ public class MandrillMailDispatcher implements MailDispatcher {
     }
 
     @Override
-    public Optional<List<MailMessageStatus>> send(RawMailMessage rawMailMessage) {
-        Optional<RawMailMessage> optionalMailMessage = applyFilters(rawMailMessage);
-        if (optionalMailMessage.isEmpty()) {
-            logger.info("Mail message could not be sent; one or more filters caused the rawMailMessage to be invalid");
-            return Optional.empty();
-        }
-
-        var mailMessage = optionalMailMessage.get();
-        var mandrillMessage = mailMessageConverter.convert(mailMessage);
+    public List<MailMessageStatus> send(RawMailMessage rawMailMessage) {
+        var mandrillMessage = mailMessageConverter.convert(rawMailMessage);
         var mandrillApi = getMandrillApi(rawMailMessage.isTest);
-        Optional<List<MailMessageStatus>> mailStatus = Optional.empty();
+        List<MailMessageStatus> mailStatus = new ArrayList();
 
         try {
             var mandrillMessageStatuses = mandrillApi.messages().send(mandrillMessage, true);
@@ -92,12 +77,7 @@ public class MandrillMailDispatcher implements MailDispatcher {
     }
 
     @Override
-    public Optional<List<MailMessageStatus>> send(TemplatedMailMessage templatedMailMessage) {
-        Optional<TemplatedMailMessage> optionalMailMessage = applyFilters(templatedMailMessage);
-        if (optionalMailMessage.isEmpty()) {
-            logger.info("Mail message could not be sent; one or more filters caused the templatedMailMessage to be invalid");
-            return Optional.empty();
-        }
+    public List<MailMessageStatus> send(TemplatedMailMessage templatedMailMessage) {
         var mandrillMessage = mailMessageConverter.convert(templatedMailMessage);
         var mandrillApi = getMandrillApi(templatedMailMessage.isTest);
         var mergeVars = getMergeVars(templatedMailMessage);
@@ -105,7 +85,7 @@ public class MandrillMailDispatcher implements MailDispatcher {
         mandrillMessage.setMerge(true);
         mandrillMessage.setMergeVars(mergeVarsPerRecipient);
 
-        Optional<List<MailMessageStatus>> mailStatus = Optional.empty();
+        List<MailMessageStatus> mailStatus = new ArrayList();
 
         try {
             MandrillMessageStatus[] mandrillMessageStatuses = mandrillApi.messages()
@@ -119,7 +99,6 @@ public class MandrillMailDispatcher implements MailDispatcher {
             logger.error("MandrillMailService IO exception {}", e.getMessage());
             throw new IllegalStateException(e);
         }
-
     }
 
     @Override
@@ -142,51 +121,6 @@ public class MandrillMailDispatcher implements MailDispatcher {
         return new MandrillApi(mandrillApiKey);
     }
 
-    private Optional<RawMailMessage> applyFilters(RawMailMessage rawMailMessage) {
-        RawMailMessage filteredRawMailMessage = rawMailMessage;
-
-        Collection<MailFilter> enabledMailFiltersSortedByPriority = getEnabledMailFiltersSortedByPriority();
-
-        for (MailFilter mailFilter : enabledMailFiltersSortedByPriority) {
-            Optional<RawMailMessage> optionalFilteredRawMailMessage = mailFilter.doFilter(filteredRawMailMessage);
-
-            if (optionalFilteredRawMailMessage.isPresent()) {
-                filteredRawMailMessage = optionalFilteredRawMailMessage.get();
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        return Optional.of(filteredRawMailMessage);
-    }
-
-    private Optional<TemplatedMailMessage> applyFilters(TemplatedMailMessage templatedMailMessage) {
-        TemplatedMailMessage filteredTemplatedMailMessage = templatedMailMessage;
-
-        Collection<MailFilter> enabledMailFiltersSortedByPriority = getEnabledMailFiltersSortedByPriority();
-
-        for (MailFilter mailFilter : enabledMailFiltersSortedByPriority) {
-            Optional<TemplatedMailMessage> optionalFilteredTemplatedMailMessage = mailFilter.doFilter(filteredTemplatedMailMessage);
-
-            if (optionalFilteredTemplatedMailMessage.isPresent()) {
-                filteredTemplatedMailMessage = optionalFilteredTemplatedMailMessage.get();
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        return Optional.of(filteredTemplatedMailMessage);
-    }
-
-    private Collection<MailFilter> getEnabledMailFiltersSortedByPriority() {
-        Collection<MailFilter> enabledMailFiltersSortedByPriority = mailFilters.stream()
-            .filter(MailFilter::isEnabled)
-            .sorted(comparing(MailFilter::getPriority))
-            .collect(toList());
-
-        return enabledMailFiltersSortedByPriority;
-    }
-
     private List<MandrillMessage.MergeVar> getMergeVars(TemplatedMailMessage templatedMailMessage) {
         formatDateVariables(templatedMailMessage.placeholders);
         return templatedMailMessage.placeholders.entrySet()
@@ -206,8 +140,8 @@ public class MandrillMailDispatcher implements MailDispatcher {
         return mergeVarsPerRecipient;
     }
 
-    private Optional<List<MailMessageStatus>> appendMailStatusus(
-        Optional<List<MailMessageStatus>> mailStatus,
+    private List<MailMessageStatus> appendMailStatusus(
+        List<MailMessageStatus> mailStatus,
         MandrillMessageStatus[] mandrillMessageStatuses
     ) {
         List<MailMessageStatus> mailMessageStatusList = new ArrayList<>();
@@ -221,7 +155,7 @@ public class MandrillMailDispatcher implements MailDispatcher {
             mailMessageStatusList.add(builder.build());
         }
         if (!mailMessageStatusList.isEmpty()) {
-            mailStatus = Optional.of(mailMessageStatusList);
+            mailStatus = mailMessageStatusList;
         }
         return mailStatus;
     }
