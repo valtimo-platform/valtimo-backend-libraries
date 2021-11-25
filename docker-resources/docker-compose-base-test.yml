@@ -33,3 +33,4 @@ services:
 #   url: jdbc:mysql://localhost:3311/s3-resource-test
 #   url: jdbc:mysql://localhost:3312/reporting-cloud-test
 #   url: jdbc:mysql://localhost:3313/milestones-test
+#   url: jdbc:mysql://localhost:3314/mail-test

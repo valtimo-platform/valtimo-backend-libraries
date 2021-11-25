@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.mail.flowmailer.config
+package com.ritense.mail
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Configuration
+import com.ritense.valtimo.contract.junit.extension.LiquibaseRunnerExtension
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
-@Configuration
-@ConfigurationProperties(prefix = "valtimo.flowmailer")
-class FlowmailerProperties
+@SpringBootTest
+@ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
+@Tag("integration")
+abstract class BaseIntegrationTest {
+
+    @MockBean
+    lateinit var mailDispatcher: MailDispatcher
+}
