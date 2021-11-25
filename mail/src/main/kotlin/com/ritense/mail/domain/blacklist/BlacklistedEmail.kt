@@ -12,13 +12,13 @@ import javax.persistence.Table
 data class BlacklistedEmail(
     @Id
     @Column(name = "email", columnDefinition = "VARCHAR(500)")
-    private var emailAddress: String,
+    val emailAddress: String,
 
     @Column(name = "date_created", columnDefinition = "DATETIME", nullable = false)
-    private val dateCreated: LocalDateTime,
+    val dateCreated: LocalDateTime,
 
     @Column(name = "cause", columnDefinition = "VARCHAR(500)")
-    private val cause: String? = null
+    val cause: String? = null
 ) : Validatable {
 
     init {

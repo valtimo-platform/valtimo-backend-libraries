@@ -18,16 +18,16 @@ internal class WhitelistFilterTest : BaseTest() {
     @BeforeEach
     internal fun setUp() {
         testRecipient = Recipient.to(EmailAddress.from("test@ritense.com"), SimpleName.from("test"))
-        whitelistRecipient = Recipient.to(EmailAddress.from("redirectUser@ritense.com"), SimpleName.from("Redirected"))
+        whitelistRecipient = Recipient.to(EmailAddress.from("WhitelistUser@ritense.com"), SimpleName.from("Mr Whitelist"))
     }
 
     @Test
     fun shouldFilterOutRecipientNotOnWhitelist() {
-        val redirectToFilter = WhitelistFilter(
+        val whitelistFilter = WhitelistFilter(
             MailingProperties(whitelistedEmailAddresses = listOf(whitelistRecipient.email.get()))
         )
         val rawMailMessageTest: RawMailMessage = rawMailMessage(testRecipient)
-        redirectToFilter.apply(rawMailMessageTest)
+        whitelistFilter.apply(rawMailMessageTest)
 
         assertThat(rawMailMessageTest.recipients.isPresent).isFalse
         assertThat(rawMailMessageTest.recipients.get()).isEmpty()
@@ -35,11 +35,11 @@ internal class WhitelistFilterTest : BaseTest() {
 
     @Test
     fun shouldContainWhitelistRecipient() {
-        val redirectToFilter = WhitelistFilter(
+        val whitelistFilter = WhitelistFilter(
             MailingProperties(whitelistedEmailAddresses = listOf(whitelistRecipient.email.get()))
         )
         val rawMailMessageTest: RawMailMessage = rawMailMessage(whitelistRecipient)
-        redirectToFilter.apply(rawMailMessageTest)
+        whitelistFilter.apply(rawMailMessageTest)
 
         assertThat(rawMailMessageTest.recipients.isPresent).isTrue
         assertThat(rawMailMessageTest.recipients.get()).containsOnly(whitelistRecipient)
@@ -47,21 +47,20 @@ internal class WhitelistFilterTest : BaseTest() {
 
     @Test
     fun filterShouldDefaultBeDisabled() {
-        val redirectToFilter = WhitelistFilter(MailingProperties())
-
-        assertThat(redirectToFilter.isEnabled).isFalse
+        val whitelistFilter = WhitelistFilter(MailingProperties())
+        assertThat(whitelistFilter.isEnabled).isFalse
     }
 
     @Test
     fun filterShouldBeEnabledWhenIsOnlyAllowWhitelistedRecipientsIsTrue() {
-        val redirectToFilter = WhitelistFilter(MailingProperties(isOnlyAllowWhitelistedRecipients = true))
-        assertThat(redirectToFilter.isEnabled).isTrue
+        val whitelistFilter = WhitelistFilter(MailingProperties(isOnlyAllowWhitelistedRecipients = true))
+        assertThat(whitelistFilter.isEnabled).isTrue
     }
 
     @Test
     fun filterPriorityShouldDefaultMinus1() {
-        val redirectToFilter = WhitelistFilter(MailingProperties())
-        assertThat(redirectToFilter.priority).isEqualTo(-1)
+        val whitelistFilter = WhitelistFilter(MailingProperties())
+        assertThat(whitelistFilter.priority).isEqualTo(-1)
     }
 
     @Test

@@ -52,7 +52,6 @@ internal class RedirectToFilterTest : BaseTest() {
     @Test
     fun filterShouldDefaultBeDisabled() {
         val redirectToFilter = RedirectToFilter(MailingProperties())
-
         assertThat(redirectToFilter.isEnabled).isFalse
     }
 
