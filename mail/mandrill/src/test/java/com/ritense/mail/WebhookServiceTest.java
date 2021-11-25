@@ -94,6 +94,8 @@ public class WebhookServiceTest {
             emailAddress,
             "sender",
             "state",
-            "description");
+            "description"
+        );
     }
+
 }
