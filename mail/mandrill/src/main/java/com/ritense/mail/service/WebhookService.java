@@ -19,6 +19,7 @@ package com.ritense.mail.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.mail.config.MandrillProperties;
+import com.ritense.mail.domain.blacklist.event.EmailBlacklistedEvent;
 import com.ritense.mail.domain.webhook.MandrillMessageEvent;
 import com.ritense.mail.domain.webhook.MandrillSyncEvent;
 import com.ritense.mail.domain.webhook.MandrillWebhookRequest;
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.MultiValueMap;
 
@@ -43,7 +45,7 @@ import static com.ritense.mail.domain.webhook.SyncEventEnum.BLACKLIST;
 @RequiredArgsConstructor
 public class WebhookService {
 
-    private final BlacklistService blacklistService;
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final MandrillProperties mandrillProperties;
 
     public boolean isRequestValid(String authenticationKey, MultiValueMap<String, String> body) {
@@ -82,7 +84,7 @@ public class WebhookService {
             if (messageEvent.triggersBlacklisting()) {
                 EmailAddress mailToBlacklist = EmailAddress.from(messageEvent.getMessage().getEmail());
                 String cause = String.format("Mandrill{%s}", messageEvent);
-                blacklistService.blacklist(mailToBlacklist.get(), LocalDateTime.now(), cause);
+                applicationEventPublisher.publishEvent(new EmailBlacklistedEvent(mailToBlacklist.get(), LocalDateTime.now(), cause));
                 logger.debug("{} added to mandrill blacklist with cause: {}", mailToBlacklist, cause);
             }
         });
@@ -92,7 +94,7 @@ public class WebhookService {
             if (syncEvent.triggersBlacklisting()) {
                 EmailAddress mailToBlacklist = EmailAddress.from(syncEvent.getReject().getEmail());
                 String cause = String.format("Mandrill{%s}", syncEvent);
-                blacklistService.blacklist(mailToBlacklist.get(), LocalDateTime.now(), cause);
+                applicationEventPublisher.publishEvent(new EmailBlacklistedEvent(mailToBlacklist.get(), LocalDateTime.now(), cause));
                 logger.debug("{} added to mandrill blacklist with cause: {}", mailToBlacklist, cause);
             }
         });

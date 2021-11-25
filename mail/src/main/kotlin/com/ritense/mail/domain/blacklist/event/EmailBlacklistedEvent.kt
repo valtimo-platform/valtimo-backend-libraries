@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-test {
-    //dependsOn cleanTest
+package com.ritense.mail.domain.blacklist.event
 
-    testLogging {
-        events("passed", "skipped", "failed", "standardError")
-    }
+import java.time.LocalDateTime
 
-    useJUnitPlatform {
-        excludeTags "security"
-    }
-}
-
-def checkExtended = tasks.register("checkExtended", Test) {
-    dependsOn check
-    useJUnitPlatform {
-        includeTags "security"
-    }
-}
+data class EmailBlacklistedEvent(
+    val emailAddress: String,
+    val blacklistedOn: LocalDateTime,
+    val cause: String
+)

@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-test {
-    //dependsOn cleanTest
-
-    testLogging {
-        events("passed", "skipped", "failed", "standardError")
-    }
-
-    useJUnitPlatform {
-        excludeTags "security"
-    }
+//Jacoco
+jacoco {
+    toolVersion = "0.8.7"
 }
 
-def checkExtended = tasks.register("checkExtended", Test) {
-    dependsOn check
-    useJUnitPlatform {
-        includeTags "security"
-    }
+test {
+    finalizedBy jacocoTestReport // report is always generated after tests run
+}
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
 }

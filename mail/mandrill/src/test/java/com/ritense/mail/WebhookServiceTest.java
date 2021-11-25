@@ -17,14 +17,14 @@
 package com.ritense.mail;
 
 import com.ritense.mail.config.MandrillProperties;
+import com.ritense.mail.domain.blacklist.event.EmailBlacklistedEvent;
 import com.ritense.mail.domain.webhook.MandrillMessageEvent;
 import com.ritense.mail.domain.webhook.MandrillMessageEventMessage;
 import com.ritense.mail.domain.webhook.MandrillWebhookRequest;
-import com.ritense.mail.service.BlacklistService;
 import com.ritense.mail.service.WebhookService;
-import com.ritense.valtimo.contract.basictype.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.IOException;
 
@@ -32,7 +32,6 @@ import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.HARD_BOUNC
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.SOFT_BOUNCE;
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.UNSUB;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -40,7 +39,7 @@ import static org.mockito.Mockito.verify;
 
 public class WebhookServiceTest {
 
-    private BlacklistService blacklistService;
+    private ApplicationEventPublisher applicationEventPublisher;
     private MandrillProperties mandrillProperties;
     private WebhookService webhookService;
 
@@ -51,18 +50,18 @@ public class WebhookServiceTest {
 
     @BeforeEach
     public void setUp() {
-        blacklistService = mock(BlacklistService.class);
+        applicationEventPublisher = mock(ApplicationEventPublisher.class);
         mandrillProperties = mock(MandrillProperties.class);
-        webhookService = new WebhookService(blacklistService, mandrillProperties);
+        webhookService = new WebhookService(applicationEventPublisher, mandrillProperties);
     }
 
     @Test
     public void shouldHandleSyncAndMessageEvents() throws IOException {
-        doNothing().when(blacklistService).blacklist(any(EmailAddress.class), anyString());
+        doNothing().when(applicationEventPublisher).publishEvent(any(EmailBlacklistedEvent.class));
 
         webhookService.handleMandrillEvents(getMandrillEvents());
 
-        verify(blacklistService, times(2)).blacklist(any(EmailAddress.class), anyString());
+        verify(applicationEventPublisher, times(2)).publishEvent(any(EmailBlacklistedEvent.class));
     }
 
     private MandrillWebhookRequest getMandrillEvents() {

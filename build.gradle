@@ -34,16 +34,6 @@ plugins {
  * limitations under the License.
  */
 
-//Jacoco
-jacoco {
-    toolVersion = "0.8.3"
-}
-
-def allTestCoverageFile = "${rootProject.buildDir}/jacoco/allTestCoverage.exec"
-task jacocoMerge(type: JacocoMerge, group: 'verification') {
-    destinationFile = file(allTestCoverageFile)
-    executionData = project.fileTree(dir: '.', include: '**/build/jacoco/test.exec')
-}
 
 //Sonarqube
 sonarqube {
@@ -126,7 +116,7 @@ subprojects { subproject ->
         classifier "javadoc"
     }
 
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    compileKotlin {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_13
         }
@@ -149,8 +139,6 @@ subprojects { subproject ->
             property "sonar.jacoco.reportPaths", allTestCoverageFile
         }
     }
-
-    test.finalizedBy(jacocoMerge)
 
     jar {
         enabled = true
