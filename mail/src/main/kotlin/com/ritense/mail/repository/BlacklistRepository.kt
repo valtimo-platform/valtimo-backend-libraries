@@ -19,6 +19,4 @@ package com.ritense.mail.repository
 import com.ritense.mail.domain.blacklist.BlacklistedEmail
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface BlacklistRepository : JpaRepository<BlacklistedEmail, String> {
-    fun findByEmailAddress(email: String): BlacklistedEmail?
-}
+interface BlacklistRepository : JpaRepository<BlacklistedEmail, String>
