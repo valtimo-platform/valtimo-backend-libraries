@@ -34,6 +34,16 @@ plugins {
  * limitations under the License.
  */
 
+//Jacoco
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+def allTestCoverageFile = "${rootProject.buildDir}/jacoco/allTestCoverage.exec"
+task jacocoMerge(type: JacocoMerge, group: 'verification') {
+    destinationFile = file(allTestCoverageFile)
+    executionData = project.fileTree(dir: '.', include: '**/build/jacoco/test.exec')
+}
 
 //Sonarqube
 sonarqube {
@@ -139,6 +149,8 @@ subprojects { subproject ->
             property "sonar.jacoco.reportPaths", allTestCoverageFile
         }
     }
+
+    test.finalizedBy(jacocoMerge)
 
     jar {
         enabled = true
