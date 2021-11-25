@@ -47,9 +47,7 @@ class MailAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(BlacklistService::class)
-    fun blacklistService(
-        blacklistRepository: BlacklistRepository
-    ): BlacklistService {
+    fun blacklistService(blacklistRepository: BlacklistRepository): BlacklistService {
         return BlacklistService(blacklistRepository)
     }
 
@@ -65,17 +63,13 @@ class MailAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(RedirectToFilter::class)
-    fun redirectToFilter(
-        mailingProperties: MailingProperties
-    ): RedirectToFilter {
+    fun redirectToFilter(mailingProperties: MailingProperties): RedirectToFilter {
         return RedirectToFilter(mailingProperties)
     }
 
     @Bean
     @ConditionalOnMissingBean(WhitelistFilter::class)
-    fun whitelistFilter(
-        mailingProperties: MailingProperties
-    ): WhitelistFilter {
+    fun whitelistFilter(mailingProperties: MailingProperties): WhitelistFilter {
         return WhitelistFilter(mailingProperties)
     }
 
