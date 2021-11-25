@@ -35,7 +35,7 @@ internal class BlacklistServiceTest : BaseTest() {
 
     lateinit var blacklistRepository: BlacklistRepository
     lateinit var blacklistService: BlacklistService
-    val emailTest: String = "test@test.com"
+    private val emailTest: String = "test@test.com"
 
     @BeforeEach
     fun setUp() {
