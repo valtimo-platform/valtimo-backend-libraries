@@ -34,9 +34,6 @@ data class MailingProperties(
      * @return the priority of the WhitelistFilter
      * @see com.ritense.mail.domain.filters.WhitelistFilter
      */
-    /**
-     * Filters with a higher priority will get executed later.
-     */
     var whitelistedPriority: Int = -1,
     var whitelistedEmailAddresses: Collection<String> = emptyList(),
     var whitelistedDomains: Collection<String> = emptyList(),
@@ -48,9 +45,6 @@ data class MailingProperties(
      * @return the priority of the RedirectToFilter
      * @see com.ritense.mail.domain.filters.RedirectToFilter
      */
-    /**
-     * Filters with a higher priority will get executed later.
-     */
     var redirectAllMailsPriority: Int = -1,
     var sendRedirectedMailsTo: Collection<Recipient> = emptyList(),
 
@@ -61,9 +55,6 @@ data class MailingProperties(
      *
      * @return the priority of the BlacklistFilter
      * @see com.ritense.mail.domain.filters.BlacklistFilter
-     */
-    /**
-     * Filters with a higher priority will get executed later.
      */
     var blacklistFilterPriority: Int = 10,
     var isBlacklistFilter: Boolean = true
