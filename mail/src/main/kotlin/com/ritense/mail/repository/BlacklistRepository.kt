@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.mail.repository;
+package com.ritense.mail.repository
 
-import com.ritense.mail.domain.blacklist.BlacklistedEmail;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.ritense.mail.domain.blacklist.BlacklistedEmail
+import org.springframework.data.jpa.repository.JpaRepository
 
-import java.util.Optional;
-
-@Repository
-public interface BlacklistRepository extends JpaRepository<BlacklistedEmail, String> {
-
-    Optional<BlacklistedEmail> findByEmailAddress(String email);
-
-}
+interface BlacklistRepository : JpaRepository<BlacklistedEmail, String>

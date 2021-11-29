@@ -33,13 +33,13 @@ import com.ritense.connector.web.rest.result.ModifyConnectorInstanceResult
 import com.ritense.connector.web.rest.result.ModifyConnectorInstanceResultFailed
 import com.ritense.connector.web.rest.result.ModifyConnectorInstanceResultSucceeded
 import com.ritense.valtimo.contract.result.OperationError
-import java.util.UUID
-import javax.transaction.Transactional
-import javax.validation.ConstraintViolationException
 import org.springframework.context.ApplicationContext
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.interceptor.TransactionAspectSupport
+import java.util.UUID
+import javax.transaction.Transactional
+import javax.validation.ConstraintViolationException
 
 @Transactional
 open class ConnectorService(
@@ -144,7 +144,7 @@ open class ConnectorService(
      */
     open fun load(name: String): Connector {
         val connectorTypeInstance = connectorTypeInstanceRepository.findByName(name)
-        requireNotNull(connectorTypeInstance) { "ConnectorTypeInstance was not found with name: ${name}" }
+        requireNotNull(connectorTypeInstance) { "ConnectorTypeInstance was not found with name: $name" }
         return load(connectorTypeInstance)
     }
 

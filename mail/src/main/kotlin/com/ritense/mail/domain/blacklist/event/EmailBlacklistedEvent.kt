@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.mail.flowmailer.config
+package com.ritense.mail.domain.blacklist.event
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Configuration
+import java.time.LocalDateTime
 
-@Configuration
-@ConfigurationProperties(prefix = "valtimo.flowmailer")
-class FlowmailerProperties
+data class EmailBlacklistedEvent(
+    val emailAddress: String,
+    val blacklistedOn: LocalDateTime,
+    val cause: String
+)

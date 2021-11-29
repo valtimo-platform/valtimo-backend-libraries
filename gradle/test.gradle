@@ -24,7 +24,6 @@ test {
     useJUnitPlatform {
         excludeTags "security"
     }
-
 }
 
 def checkExtended = tasks.register("checkExtended", Test) {

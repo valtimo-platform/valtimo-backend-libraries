@@ -16,23 +16,17 @@
 
 package com.ritense.mail.service
 
+import com.ritense.mail.BaseTest
 import com.ritense.mail.MailDispatcher
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
-import com.ritense.valtimo.contract.mail.model.RawMailMessage
-import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
-import com.ritense.valtimo.contract.mail.model.value.MailBody
-import com.ritense.valtimo.contract.mail.model.value.MailTemplateIdentifier
 import com.ritense.valtimo.contract.mail.model.value.Recipient
-import com.ritense.valtimo.contract.mail.model.value.RecipientCollection
-import com.ritense.valtimo.contract.mail.model.value.Sender
-import com.ritense.valtimo.contract.mail.model.value.Subject
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 
-internal class FilteredMailSenderTest {
+internal class FilteredMailSenderTest : BaseTest() {
 
     private lateinit var filteredMailSender: FilteredMailSender
     lateinit var mailDispatcher: MailDispatcher
@@ -44,7 +38,7 @@ internal class FilteredMailSenderTest {
     }
 
     @Test
-    fun shouldSendTemplatedMailMessageFiltered() {
+    fun `should send templated mail message filtered`() {
         val templatedMailMessage = templatedMailMessage(
             Recipient.to(
                 EmailAddress.from("user@test,com"),
@@ -58,7 +52,7 @@ internal class FilteredMailSenderTest {
     }
 
     @Test
-    fun shouldSendRawMailMessageFiltered() {
+    fun `should send raw mail message filtered`() {
         val rawMailMessage = rawMailMessage(Recipient.to(
             EmailAddress.from("user@test,com"),
             SimpleName.from("User")
@@ -67,18 +61,6 @@ internal class FilteredMailSenderTest {
         filteredMailSender.send(rawMailMessage)
 
         verify(mailDispatcher).send(rawMailMessage)
-    }
-
-    private fun rawMailMessage(recipient: Recipient): RawMailMessage {
-        val recipients = RecipientCollection.fromSingle(recipient)
-        return RawMailMessage.with(recipients, MailBody.of(MailBody.MailBodyText.empty())).build()
-    }
-
-    private fun templatedMailMessage(recipient: Recipient): TemplatedMailMessage {
-        return TemplatedMailMessage.with(recipient, MailTemplateIdentifier.from("Template"))
-            .subject(Subject.from("Subject"))
-            .sender(Sender.from(EmailAddress.from("sender@test.com")))
-            .build()
     }
 
 }

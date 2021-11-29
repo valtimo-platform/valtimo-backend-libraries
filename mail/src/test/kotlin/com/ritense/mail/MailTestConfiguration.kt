@@ -14,32 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.mail.flowmailer
+package com.ritense.mail
 
-import com.ritense.mail.autoconfigure.MailAutoConfiguration
-import com.ritense.mail.autoconfigure.MailLiquibaseAutoConfiguration
+import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import org.springframework.boot.test.context.TestConfiguration
 
-@SpringBootApplication(exclude = [
-    DataSourceAutoConfiguration::class,
-    DataSourceTransactionManagerAutoConfiguration::class,
-    HibernateJpaAutoConfiguration::class,
-    MailAutoConfiguration::class,
-    MailLiquibaseAutoConfiguration::class
-])
-class FlowmailerTestConfiguration {
+@SpringBootApplication(scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class])
+class MailTestConfiguration {
 
     fun main(args: Array<String>) {
-        SpringApplication.run(FlowmailerTestConfiguration::class.java, *args)
+        SpringApplication.run(MailTestConfiguration::class.java, *args)
     }
 
     @TestConfiguration
     class TestConfig { //Beans extra
-
     }
 }

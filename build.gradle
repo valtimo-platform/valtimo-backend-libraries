@@ -36,7 +36,7 @@ plugins {
 
 //Jacoco
 jacoco {
-    toolVersion = "0.8.3"
+    toolVersion = "0.8.7"
 }
 
 def allTestCoverageFile = "${rootProject.buildDir}/jacoco/allTestCoverage.exec"
@@ -126,7 +126,7 @@ subprojects { subproject ->
         classifier "javadoc"
     }
 
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    compileKotlin {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_13
         }
