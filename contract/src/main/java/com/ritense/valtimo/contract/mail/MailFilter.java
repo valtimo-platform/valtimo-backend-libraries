@@ -26,16 +26,16 @@ import java.util.Optional;
  * you need to expand MailingProperties in mail-module with the
  * corresponding properties.
  *
- * <p>As is the case for all filters, when a message is no longer valid, the
+ * <p>As is the case for all filters, when a message is no longer valid (meaning empty Optional), the
  * message will not be sent.</p>
  *
  * @see RawMailMessage
  * @see TemplatedMailMessage
  */
 public interface MailFilter {
-    RawMailMessage apply(RawMailMessage rawMailMessage);
+    Optional<RawMailMessage> doFilter(RawMailMessage rawMailMessage);
 
-    TemplatedMailMessage apply(TemplatedMailMessage templatedMailMessage);
+    Optional<TemplatedMailMessage> doFilter(TemplatedMailMessage templatedMailMessage);
 
     boolean isEnabled();
 
