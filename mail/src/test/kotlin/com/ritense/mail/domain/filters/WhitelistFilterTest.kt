@@ -38,7 +38,7 @@ internal class WhitelistFilterTest : BaseTest() {
     }
 
     @Test
-    fun shouldFilterOutRecipientNotOnWhitelist() {
+    fun `should filter out recipient not on whitelist`() {
         val whitelistFilter = WhitelistFilter(
             MailingProperties(whitelistedEmailAddresses = listOf(whitelistRecipient.email.get()))
         )
@@ -50,7 +50,7 @@ internal class WhitelistFilterTest : BaseTest() {
     }
 
     @Test
-    fun shouldContainWhitelistRecipient() {
+    fun `should contain whitelist recipient`() {
         val whitelistFilter = WhitelistFilter(
             MailingProperties(whitelistedEmailAddresses = listOf(whitelistRecipient.email.get()))
         )
@@ -62,25 +62,25 @@ internal class WhitelistFilterTest : BaseTest() {
     }
 
     @Test
-    fun filterShouldDefaultBeDisabled() {
+    fun `filter should default be disabled`() {
         val whitelistFilter = WhitelistFilter(MailingProperties())
         assertThat(whitelistFilter.isEnabled).isFalse
     }
 
     @Test
-    fun filterShouldBeEnabledWhenIsOnlyAllowWhitelistedRecipientsIsTrue() {
+    fun `filter should be enabled when isOnlyAllowWhitelistedRecipients property is true`() {
         val whitelistFilter = WhitelistFilter(MailingProperties(isOnlyAllowWhitelistedRecipients = true))
         assertThat(whitelistFilter.isEnabled).isTrue
     }
 
     @Test
-    fun filterPriorityShouldDefaultMinus1() {
+    fun `filter priority should default minus one`() {
         val whitelistFilter = WhitelistFilter(MailingProperties())
         assertThat(whitelistFilter.priority).isEqualTo(-1)
     }
 
     @Test
-    fun filterPriorityShouldBe1() {
+    fun `filter priority should be one`() {
         val redirectToFilter = WhitelistFilter(MailingProperties(whitelistedPriority = 1))
         assertThat(redirectToFilter.priority).isEqualTo(1)
     }

@@ -45,7 +45,7 @@ internal class BlacklistServiceTest : BaseTest() {
     }
 
     @Test
-    fun shouldBlacklistEmailAddress() {
+    fun `should blacklist email address`() {
         `when`(blacklistRepository.existsById(emailTest)).thenReturn(false)
         val blacklistedOn = LocalDateTime.now()
         blacklistService.blacklist(emailTest, blacklistedOn, "test reason")
@@ -59,14 +59,14 @@ internal class BlacklistServiceTest : BaseTest() {
     }
 
     @Test
-    fun shouldNotBlacklistEmailAddressForDuplicateEmailAddress() {
+    fun `should not blacklist email address for duplicate email address`() {
         `when`(blacklistRepository.existsById(emailTest)).thenReturn(true)
         blacklistService.blacklist(emailTest, LocalDateTime.now(), "test reason")
         verify(blacklistRepository, times(0)).save(any())
     }
 
     @Test
-    fun isAlreadyBlacklistShouldReturnTrue() {
+    fun `is already blacklisted should return true`() {
         `when`(blacklistRepository.existsById(emailTest)).thenReturn(true)
         blacklistService.blacklist(emailTest, LocalDateTime.now(), "test reason")
 
@@ -75,7 +75,7 @@ internal class BlacklistServiceTest : BaseTest() {
     }
 
     @Test
-    fun isNotBlacklistShouldReturnFalse() {
+    fun `is not blacklisted should return false`() {
         `when`(blacklistRepository.existsById(emailTest)).thenReturn(false)
         blacklistService.blacklist(emailTest, LocalDateTime.now(), "test reason")
 

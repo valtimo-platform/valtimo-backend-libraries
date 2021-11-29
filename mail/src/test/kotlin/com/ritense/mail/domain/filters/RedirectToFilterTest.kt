@@ -38,7 +38,7 @@ internal class RedirectToFilterTest : BaseTest() {
     }
 
     @Test
-    fun shouldContainRecipientBecauseRedirectUserMatched() {
+    fun `should contain recipient because redirect user matched`() {
         val rawMailMessageTest: RawMailMessage = rawMailMessage(testRecipient)
 
         val redirectToFilter = RedirectToFilter(
@@ -52,7 +52,7 @@ internal class RedirectToFilterTest : BaseTest() {
     }
 
     @Test
-    fun shouldNotContainRecipientBecauseRedirectUserDoesntMatch() {
+    fun `should not contain recipient because redirect user doesnt match`() {
         val rawMailMessageTest: RawMailMessage = rawMailMessage(testRecipient)
 
         val redirectToFilter = RedirectToFilter(
@@ -66,25 +66,25 @@ internal class RedirectToFilterTest : BaseTest() {
     }
 
     @Test
-    fun filterShouldDefaultBeDisabled() {
+    fun `filter should default be disabled`() {
         val redirectToFilter = RedirectToFilter(MailingProperties())
         assertThat(redirectToFilter.isEnabled).isFalse
     }
 
     @Test
-    fun filterShouldBeEnabledWhenRedirectAllMailIsTrue() {
+    fun `filter should be enabled when redirectAllMail property is true`() {
         val redirectToFilter = RedirectToFilter(MailingProperties(isRedirectAllMails = true))
         assertThat(redirectToFilter.isEnabled).isTrue
     }
 
     @Test
-    fun filterPriorityShouldDefaultMinus1() {
+    fun `filter priority should default minus one`() {
         val redirectToFilter = RedirectToFilter(MailingProperties())
         assertThat(redirectToFilter.priority).isEqualTo(-1)
     }
 
     @Test
-    fun filterPriorityShouldBe1() {
+    fun `filterPriorityShouldBe1`() {
         val redirectToFilter = RedirectToFilter(MailingProperties(redirectAllMailsPriority = 1))
         assertThat(redirectToFilter.priority).isEqualTo(1)
     }

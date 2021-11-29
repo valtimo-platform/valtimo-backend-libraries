@@ -43,7 +43,7 @@ internal class BlacklistFilterTest : BaseTest() {
     }
 
     @Test
-    fun shouldFilterOutBlacklistedRecipient() {
+    fun `should filter blacklisted recipient`() {
         `when`(blacklistService.isBlacklisted(testRecipient.email.get())).thenReturn(true)
         val blacklistFilter = BlacklistFilter(MailingProperties(), blacklistService)
         val rawMailMessageTest: RawMailMessage = rawMailMessage(testRecipient)
@@ -54,7 +54,7 @@ internal class BlacklistFilterTest : BaseTest() {
     }
 
     @Test
-    fun shouldNotFilterOutRecipient() {
+    fun `should not filter recipient`() {
         `when`(blacklistService.isBlacklisted(testRecipient.email.get())).thenReturn(false)
         val blacklistFilter = BlacklistFilter(MailingProperties(), blacklistService)
         val rawMailMessageTest: RawMailMessage = rawMailMessage(blacklistedRecipient)
@@ -65,25 +65,25 @@ internal class BlacklistFilterTest : BaseTest() {
     }
 
     @Test
-    fun filterShouldDefaultBeEnabled() {
+    fun `filter should default be enabled`() {
         val blacklistFilter = BlacklistFilter(MailingProperties(), blacklistService)
         assertThat(blacklistFilter.isEnabled).isTrue
     }
 
     @Test
-    fun filterShouldBeDisabledWhenIsBlacklistFilterIsFalse() {
+    fun `filter should be disabled when isblacklist property is false`() {
         val blacklistFilter = BlacklistFilter(MailingProperties(isBlacklistFilter = false), blacklistService)
         assertThat(blacklistFilter.isEnabled).isFalse
     }
 
     @Test
-    fun filterPriorityShouldDefaultMinus1() {
+    fun `filter priority should default minus one`() {
         val blacklistFilter = BlacklistFilter(MailingProperties(), blacklistService)
         assertThat(blacklistFilter.priority).isEqualTo(10)
     }
 
     @Test
-    fun filterPriorityShouldBe1() {
+    fun `filter priority should be one`() {
         val blacklistFilter = BlacklistFilter(MailingProperties(blacklistFilterPriority = 1), blacklistService)
         assertThat(blacklistFilter.priority).isEqualTo(1)
     }

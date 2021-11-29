@@ -38,7 +38,7 @@ internal class FilteredMailSenderTest : BaseTest() {
     }
 
     @Test
-    fun shouldSendTemplatedMailMessageFiltered() {
+    fun `should send templated mail message filtered`() {
         val templatedMailMessage = templatedMailMessage(
             Recipient.to(
                 EmailAddress.from("user@test,com"),
@@ -52,7 +52,7 @@ internal class FilteredMailSenderTest : BaseTest() {
     }
 
     @Test
-    fun shouldSendRawMailMessageFiltered() {
+    fun `should send raw mail message filtered`() {
         val rawMailMessage = rawMailMessage(Recipient.to(
             EmailAddress.from("user@test,com"),
             SimpleName.from("User")
