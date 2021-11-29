@@ -84,7 +84,7 @@ internal class RedirectToFilterTest : BaseTest() {
     }
 
     @Test
-    fun `filterPriorityShouldBe1`() {
+    fun `filter priority should be one`() {
         val redirectToFilter = RedirectToFilter(MailingProperties(redirectAllMailsPriority = 1))
         assertThat(redirectToFilter.priority).isEqualTo(1)
     }
