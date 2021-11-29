@@ -21,24 +21,25 @@ import com.ritense.mail.service.BlacklistService
 import com.ritense.valtimo.contract.mail.MailFilter
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
+import java.util.Optional
 
 class BlacklistFilter(
     private val mailingProperties: MailingProperties,
     private val blacklistService: BlacklistService
 ) : MailFilter {
 
-    override fun apply(rawMailMessage: RawMailMessage): RawMailMessage {
+    override fun doFilter(rawMailMessage: RawMailMessage): Optional<RawMailMessage> {
         rawMailMessage
             .recipients
             .filterBy { !blacklistService.isBlacklisted(it.email.get()) }
-        return rawMailMessage
+        return Optional.of(rawMailMessage)
     }
 
-    override fun apply(templatedMailMessage: TemplatedMailMessage): TemplatedMailMessage {
+    override fun doFilter(templatedMailMessage: TemplatedMailMessage): Optional<TemplatedMailMessage> {
         templatedMailMessage
             .recipients
             .filterBy { !blacklistService.isBlacklisted(it.email.get()) }
-        return templatedMailMessage
+        return Optional.of(templatedMailMessage)
     }
 
     override fun isEnabled(): Boolean {

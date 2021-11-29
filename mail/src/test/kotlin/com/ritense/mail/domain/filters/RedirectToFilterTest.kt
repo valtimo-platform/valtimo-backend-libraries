@@ -45,7 +45,7 @@ internal class RedirectToFilterTest : BaseTest() {
             MailingProperties(sendRedirectedMailsTo = listOf(testRecipient))
         )
 
-        redirectToFilter.apply(rawMailMessageTest)
+        redirectToFilter.doFilter(rawMailMessageTest)
 
         assertThat(rawMailMessageTest.recipients.isPresent).isTrue
         assertThat(rawMailMessageTest.recipients.get()).containsOnly(testRecipient)
@@ -59,7 +59,7 @@ internal class RedirectToFilterTest : BaseTest() {
             MailingProperties(sendRedirectedMailsTo = listOf(redirectRecipient))
         )
 
-        redirectToFilter.apply(rawMailMessageTest)
+        redirectToFilter.doFilter(rawMailMessageTest)
 
         assertThat(rawMailMessageTest.recipients.isPresent).isFalse
         assertThat(rawMailMessageTest.recipients.get()).isEmpty()
