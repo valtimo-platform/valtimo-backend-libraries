@@ -4,7 +4,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
 
-    <changeSet id="1" author="Rick Veenstra" runAlways="true" failOnError="true">
+    <changeSet id="1" author="Rick Veenstra" failOnError="true">
         <customChange class="com.ritense.openzaak.liquibase.changelog.ChangeLog20211126"/>
     </changeSet>
 
