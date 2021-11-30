@@ -26,9 +26,16 @@ test {
     }
 }
 
-def checkExtended = tasks.register("checkExtended", Test) {
+def securityTesting = tasks.register("securityTesting", Test) {
     dependsOn check
     useJUnitPlatform {
         includeTags "security"
+    }
+}
+
+def integrationTesting = tasks.register("integrationTesting", Test) {
+    dependsOn check
+    useJUnitPlatform {
+        includeTags "integration"
     }
 }
