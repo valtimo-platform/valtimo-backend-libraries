@@ -22,14 +22,7 @@ test {
     }
 
     useJUnitPlatform {
-        excludeTags "security","integration"
-    }
-}
-
-def securityTesting = tasks.register("securityTesting", Test) {
-    dependsOn check
-    useJUnitPlatform {
-        includeTags "security"
+        excludeTags "security", "integration"
     }
 }
 
@@ -37,5 +30,15 @@ def integrationTesting = tasks.register("integrationTesting", Test) {
     dependsOn check
     useJUnitPlatform {
         includeTags "integration"
+        excludeTags "security"
     }
 }
+
+def securityTesting = tasks.register("securityTesting", Test) {
+    dependsOn check
+    useJUnitPlatform {
+        includeTags "security"
+        excludeTags "integration"
+    }
+}
+
