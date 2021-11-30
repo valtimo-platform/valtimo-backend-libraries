@@ -35,10 +35,12 @@ include(
     "openzaak",
     "mail",
     "mail:local-mail",
+    "mail:mandrill",
     "resource",
     "resource:local-resource",
     "resource:openzaak-resource",
     "external-event",
     "connector",
-    "objects-api"
+    "objects-api",
+    "document-export"
 )

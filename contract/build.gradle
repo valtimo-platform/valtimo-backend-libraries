@@ -32,3 +32,5 @@ dependencies {
         exclude(module: 'jetty-servlet')
     }
 }
+
+apply from: "gradle/publishing.gradle"

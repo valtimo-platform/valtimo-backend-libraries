@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.health.Health;
 
 import static com.ritense.mail.service.MandrillHealthIndicator.PONG;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;

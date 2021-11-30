@@ -16,3 +16,5 @@ dependencies {
     implementation(project(":external-event"))
     implementation(project(":connector"))
 }
+
+apply from: "gradle/publishing.gradle"
