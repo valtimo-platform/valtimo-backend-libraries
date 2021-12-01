@@ -43,7 +43,7 @@ class WhitelistFilter(
     }
 
     override fun isEnabled(): Boolean {
-        return mailingProperties.isOnlyAllowWhitelistedRecipients
+        return mailingProperties.onlyAllowWhitelistedRecipients
     }
 
     override fun getPriority(): Int {

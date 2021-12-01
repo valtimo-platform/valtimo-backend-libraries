@@ -43,7 +43,7 @@ class BlacklistFilter(
     }
 
     override fun isEnabled(): Boolean {
-        return mailingProperties.isBlacklistFilter
+        return mailingProperties.blacklistFilter
     }
 
     override fun getPriority(): Int {

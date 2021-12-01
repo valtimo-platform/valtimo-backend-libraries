@@ -42,7 +42,7 @@ internal class RedirectToFilterTest : BaseTest() {
         val rawMailMessageTest: RawMailMessage = rawMailMessage(testRecipient)
 
         val redirectToFilter = RedirectToFilter(
-            MailingProperties(sendRedirectedMailsTo = listOf(testRecipient))
+            MailingProperties(sendRedirectedMailsTo = listOf(testRecipient.email.get()))
         )
 
         redirectToFilter.doFilter(rawMailMessageTest)
@@ -56,7 +56,7 @@ internal class RedirectToFilterTest : BaseTest() {
         val rawMailMessageTest: RawMailMessage = rawMailMessage(testRecipient)
 
         val redirectToFilter = RedirectToFilter(
-            MailingProperties(sendRedirectedMailsTo = listOf(redirectRecipient))
+            MailingProperties(sendRedirectedMailsTo = listOf(redirectRecipient.email.get()))
         )
 
         redirectToFilter.doFilter(rawMailMessageTest)
@@ -73,7 +73,7 @@ internal class RedirectToFilterTest : BaseTest() {
 
     @Test
     fun `filter should be enabled when redirectAllMail property is true`() {
-        val redirectToFilter = RedirectToFilter(MailingProperties(isRedirectAllMails = true))
+        val redirectToFilter = RedirectToFilter(MailingProperties(redirectAllMails = true))
         assertThat(redirectToFilter.isEnabled).isTrue
     }
 

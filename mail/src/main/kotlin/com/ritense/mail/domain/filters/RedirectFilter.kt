@@ -29,19 +29,19 @@ class RedirectToFilter(
     override fun doFilter(rawMailMessage: RawMailMessage): Optional<RawMailMessage> {
         rawMailMessage
             .recipients
-            .filterBy(mailingProperties.sendRedirectedMailsTo::contains)
+            .filterBy { mailingProperties.sendRedirectedMailsTo.contains(it.email.get()) }
         return Optional.of(rawMailMessage)
     }
 
     override fun doFilter(templatedMailMessage: TemplatedMailMessage): Optional<TemplatedMailMessage> {
         templatedMailMessage
             .recipients
-            .filterBy(mailingProperties.sendRedirectedMailsTo::contains)
+            .filterBy { mailingProperties.sendRedirectedMailsTo.contains(it.email.get()) }
         return Optional.of(templatedMailMessage)
     }
 
     override fun isEnabled(): Boolean {
-        return mailingProperties.isRedirectAllMails
+        return mailingProperties.redirectAllMails
     }
 
     override fun getPriority(): Int {

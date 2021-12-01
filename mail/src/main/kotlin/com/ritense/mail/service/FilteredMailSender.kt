@@ -53,8 +53,8 @@ class FilteredMailSender(
     private fun applyFilters(rawMailMessage: RawMailMessage): Optional<RawMailMessage> {
         var filteredRawMailMessage = rawMailMessage;
         val filters = prioritizedFilters()
-        for (filter in filters) {
-            val filteredMailMessageOptional = filter.doFilter(filteredRawMailMessage)
+        filters.forEach {
+            val filteredMailMessageOptional = it.doFilter(filteredRawMailMessage)
             if (filteredMailMessageOptional.isPresent) {
                 filteredRawMailMessage = filteredMailMessageOptional.get()
             } else {
@@ -67,8 +67,8 @@ class FilteredMailSender(
     private fun applyFilters(templatedMailMessage: TemplatedMailMessage): Optional<TemplatedMailMessage> {
         var filteredTemplatedMailMessage = templatedMailMessage;
         val filters = prioritizedFilters()
-        for (filter in filters) {
-            val filteredMailMessageOptional = filter.doFilter(filteredTemplatedMailMessage)
+        filters.forEach {
+            val filteredMailMessageOptional = it.doFilter(filteredTemplatedMailMessage)
             if (filteredMailMessageOptional.isPresent) {
                 filteredTemplatedMailMessage = filteredMailMessageOptional.get()
             } else {

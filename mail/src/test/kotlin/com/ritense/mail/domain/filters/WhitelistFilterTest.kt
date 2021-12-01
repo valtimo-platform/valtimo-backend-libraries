@@ -69,7 +69,7 @@ internal class WhitelistFilterTest : BaseTest() {
 
     @Test
     fun `filter should be enabled when isOnlyAllowWhitelistedRecipients property is true`() {
-        val whitelistFilter = WhitelistFilter(MailingProperties(isOnlyAllowWhitelistedRecipients = true))
+        val whitelistFilter = WhitelistFilter(MailingProperties(onlyAllowWhitelistedRecipients = true))
         assertThat(whitelistFilter.isEnabled).isTrue
     }
 

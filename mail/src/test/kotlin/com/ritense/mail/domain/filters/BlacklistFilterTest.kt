@@ -72,7 +72,7 @@ internal class BlacklistFilterTest : BaseTest() {
 
     @Test
     fun `filter should be disabled when isblacklist property is false`() {
-        val blacklistFilter = BlacklistFilter(MailingProperties(isBlacklistFilter = false), blacklistService)
+        val blacklistFilter = BlacklistFilter(MailingProperties(blacklistFilter = false), blacklistService)
         assertThat(blacklistFilter.isEnabled).isFalse
     }
 
