@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            pom {
-                name = 'Openzaak resource module'
-                description = "The openzaak resource module is an implementation of the resource module's interface " +
-                    " allowing you to store resources at Commoun Ground Openzaak"
-                developers {
-                    developer {
-                        id = "johnd"
-                        name = "John Doe"
-                        email = "john.doe@example.com"
+pluginManager.withPlugin('maven-publish') {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                pom {
+                    name = 'Openzaak resource module'
+                    description = "The openzaak resource module is an implementation of the resource module's interface " +
+                        " allowing you to store resources at Commoun Ground Openzaak"
+                    developers {
+                        developer {
+                            id = "team-valtimo"
+                            name = "Team Valtimo"
+                            email = "team-valtimo@ritense.com"
+                        }
                     }
                 }
             }

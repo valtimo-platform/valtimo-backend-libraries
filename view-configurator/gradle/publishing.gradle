@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            pom {
-                name = 'View configurator module'
-                description = 'The view configurator module allows you to set up workspaces for grouping of business' +
-                    ' processes and documents in the front end UI'
-                developers {
-                    developer {
-                        id = "team-valtimo"
-                        name = "Team Valtimo"
-                        email = "team-valtimo@ritense.com"
+pluginManager.withPlugin('maven-publish') {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                pom {
+                    name = 'View configurator module'
+                    description = 'The view configurator module allows you to set up workspaces for grouping of business' +
+                        ' processes and documents in the front end UI'
+                    developers {
+                        developer {
+                            id = "team-valtimo"
+                            name = "Team Valtimo"
+                            email = "team-valtimo@ritense.com"
+                        }
                     }
                 }
             }
