@@ -16,6 +16,8 @@
 
 package com.ritense.mail.autoconfigure
 
+import com.ritense.mail.MailDispatcher
+import com.ritense.mail.service.LocalMailDispatcher
 import com.ritense.mail.service.LocalMailSender
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -28,6 +30,12 @@ class LocalMailAutoConfiguration {
     @ConditionalOnMissingBean(LocalMailSender::class)
     fun mailSender(): LocalMailSender {
         return LocalMailSender()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(LocalMailDispatcher::class)
+    fun mailDispatcher(): MailDispatcher {
+        return LocalMailDispatcher()
     }
 
 }
