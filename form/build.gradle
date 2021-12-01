@@ -18,8 +18,8 @@ apply from: 'gradle/liquibase.gradle'
 
 dockerCompose {
     projectName = "form"
-    isRequiredBy(test)
-    isRequiredBy(checkExtended)
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
     useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
 }
 
@@ -43,10 +43,6 @@ dependencies {
             attributes("Implementation-Version": projectVersion)
         }
     }
-}
-
-test {
-    useJUnitPlatform()
 }
 
 apply from: "gradle/publishing.gradle"

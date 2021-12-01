@@ -16,17 +16,13 @@
 
 package com.ritense.mail.config
 
-import com.ritense.valtimo.contract.basictype.EmailAddress
-import com.ritense.valtimo.contract.basictype.SimpleName
-import com.ritense.valtimo.contract.mail.model.value.Recipient
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Configuration
-import kotlin.streams.toList
+import org.springframework.boot.context.properties.ConstructorBinding
 
-@Configuration
+@ConstructorBinding
 @ConfigurationProperties(prefix = "mailing", ignoreUnknownFields = false)
 data class MailingProperties(
-    var isOnlyAllowWhitelistedRecipients: Boolean = false,
+    var onlyAllowWhitelistedRecipients: Boolean = false,
     /**
      * The priority determines the order in which filters will get executed.
      * Filters with a higher priority will get executed later.
@@ -37,7 +33,7 @@ data class MailingProperties(
     var whitelistedPriority: Int = -1,
     var whitelistedEmailAddresses: Collection<String> = emptyList(),
     var whitelistedDomains: Collection<String> = emptyList(),
-    var isRedirectAllMails: Boolean = false,
+    var redirectAllMails: Boolean = false,
     /**
      * The priority determines the order in which filters will get executed.
      * Filters with a higher priority will get executed later.
@@ -46,9 +42,7 @@ data class MailingProperties(
      * @see com.ritense.mail.domain.filters.RedirectToFilter
      */
     var redirectAllMailsPriority: Int = -1,
-    var sendRedirectedMailsTo: Collection<Recipient> = emptyList(),
-
-
+    var sendRedirectedMailsTo: Collection<String> = emptyList(),
     /**
      * The priority determines the order in which filters will get executed.
      * Filters with a higher priority will get executed later.
@@ -57,15 +51,5 @@ data class MailingProperties(
      * @see com.ritense.mail.domain.filters.BlacklistFilter
      */
     var blacklistFilterPriority: Int = 10,
-    var isBlacklistFilter: Boolean = true
-) {
-
-    fun setSendRedirectedMailsTo(sendRedirectedMailsTo: List<String>) {
-        val redirectRecipients = sendRedirectedMailsTo
-            .stream()
-            .map { mailto: String? -> Recipient.to(EmailAddress.from(mailto), SimpleName.none()) }
-            .toList()
-        this.sendRedirectedMailsTo = redirectRecipients
-    }
-
-}
+    var blacklistFilter: Boolean = true
+)

@@ -25,6 +25,7 @@ import com.ritense.mail.repository.BlacklistRepository
 import com.ritense.mail.service.BlacklistService
 import com.ritense.mail.service.FilteredMailSender
 import com.ritense.mail.service.MailService
+import com.ritense.valtimo.contract.mail.MailFilter
 import com.ritense.valtimo.contract.mail.MailSender
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -47,8 +48,8 @@ class MailAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(FilteredMailSender::class)
-    fun filteredMailService(mailDispatcher: MailDispatcher): FilteredMailSender {
-        return FilteredMailSender(mailDispatcher)
+    fun filteredMailService(mailDispatcher: MailDispatcher, filters: Collection<MailFilter>): FilteredMailSender {
+        return FilteredMailSender(mailDispatcher, filters)
     }
 
     @Bean

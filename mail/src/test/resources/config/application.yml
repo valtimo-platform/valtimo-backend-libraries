@@ -35,3 +35,17 @@ spring:
                 physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
                 implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
             use-new-id-generator-mappings: false
+
+mailing:
+    onlyAllowWhitelistedRecipients: true
+    whitelistedPriority: 10
+    whitelistedEmailAddresses:
+        - test@test.com
+    whitelistedDomains:
+        - test.com
+    redirectAllMails: true
+    redirectAllMailsPriority: 20
+    blacklistFilterPriority: 30
+    blacklistFilter: true
+    sendRedirectedMailsTo:
+        - test2@test.com

@@ -22,13 +22,25 @@ test {
     }
 
     useJUnitPlatform {
-        excludeTags "security"
+        excludeTags "security", "integration"
     }
 }
 
-def checkExtended = tasks.register("checkExtended", Test) {
-    dependsOn check
+tasks.register("integrationTesting", Test) {
+    group = 'verification'
+    useJUnitPlatform {
+        includeTags "integration"
+        excludeTags "security"
+    }
+    mustRunAfter check
+}
+
+tasks.register("securityTesting", Test) {
+    group = 'verification'
     useJUnitPlatform {
         includeTags "security"
+        excludeTags "integration"
     }
+    mustRunAfter check
 }
+

@@ -26,60 +26,63 @@ import java.util.Optional
 import kotlin.streams.toList
 
 class FilteredMailSender(
-    private val mailDispatcher: MailDispatcher
-    //private val filters: Collection<MailFilter>?
+    private val mailDispatcher: MailDispatcher,
+    private val filters: Collection<MailFilter>
 ) : MailSender {
 
     override fun send(rawMailMessage: RawMailMessage): Optional<MutableList<MailMessageStatus>> {
-        //TODO apply Filters extract from mandrill module
-        return Optional.of(mailDispatcher.send(rawMailMessage))
+        val optionalMessage = applyFilters(rawMailMessage)
+        if (optionalMessage.isPresent) {
+            return Optional.of(mailDispatcher.send(rawMailMessage))
+        }
+        return Optional.empty()
     }
 
     override fun send(templatedMailMessage: TemplatedMailMessage): Optional<MutableList<MailMessageStatus>> {
-        //TODO apply Filters extract from mandrill module
-        return Optional.of(mailDispatcher.send(templatedMailMessage))
+        val optionalMessage = applyFilters(templatedMailMessage)
+        if (optionalMessage.isPresent) {
+            return Optional.of(mailDispatcher.send(templatedMailMessage))
+        }
+        return Optional.empty()
     }
 
     override fun getMaximumSizeAttachments(): Int {
         return mailDispatcher.getMaximumSizeAttachments()
     }
 
-    //TODO implement
-    /*private fun applyFilters(rawMailMessage: RawMailMessage): RawMailMessage? {
-        var filteredRawMailMessage = rawMailMessage
-        val enabledMailFiltersSortedByPriority = getEnabledMailFiltersSortedByPriority()
-        for (mailFilter in enabledMailFiltersSortedByPriority) {
-            val optionalFilteredRawMailMessage = mailFilter.doFilter(filteredRawMailMessage)
-            filteredRawMailMessage = if (optionalFilteredRawMailMessage.isPresent) {
-                optionalFilteredRawMailMessage.get()
+    private fun applyFilters(rawMailMessage: RawMailMessage): Optional<RawMailMessage> {
+        var filteredRawMailMessage = rawMailMessage;
+        val filters = prioritizedFilters()
+        filters.forEach {
+            val filteredMailMessageOptional = it.doFilter(filteredRawMailMessage)
+            if (filteredMailMessageOptional.isPresent) {
+                filteredRawMailMessage = filteredMailMessageOptional.get()
             } else {
-                return null
+                return Optional.empty()
             }
         }
-        return filteredRawMailMessage
+        return Optional.of(filteredRawMailMessage)
     }
 
-    //TODO implement
-    private fun applyFilters(templatedMailMessage: TemplatedMailMessage): TemplatedMailMessage? {
-        var filteredTemplatedMailMessage = templatedMailMessage
-        val enabledMailFiltersSortedByPriority = getEnabledMailFiltersSortedByPriority()
-        for (mailFilter in enabledMailFiltersSortedByPriority) {
-            val optionalFilteredTemplatedMailMessage = mailFilter.doFilter(filteredTemplatedMailMessage)
-            filteredTemplatedMailMessage = if (optionalFilteredTemplatedMailMessage.isPresent) {
-                optionalFilteredTemplatedMailMessage.get()
+    private fun applyFilters(templatedMailMessage: TemplatedMailMessage): Optional<TemplatedMailMessage> {
+        var filteredTemplatedMailMessage = templatedMailMessage;
+        val filters = prioritizedFilters()
+        filters.forEach {
+            val filteredMailMessageOptional = it.doFilter(filteredTemplatedMailMessage)
+            if (filteredMailMessageOptional.isPresent) {
+                filteredTemplatedMailMessage = filteredMailMessageOptional.get()
             } else {
-                return null
+                return Optional.empty()
             }
         }
-        return filteredTemplatedMailMessage
+        return Optional.of(filteredTemplatedMailMessage)
     }
 
-    //TODO implement
-    private fun getEnabledMailFiltersSortedByPriority(): Collection<MailFilter> {
-        return filters!!.stream()
+    private fun prioritizedFilters(): Collection<MailFilter> {
+        return filters.stream()
             .filter { it.isEnabled }
             .sorted(compareBy { it.priority })
             .toList()
-    }*/
+    }
 
 }
