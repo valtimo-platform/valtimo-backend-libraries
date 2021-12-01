@@ -89,7 +89,7 @@ data class ZaakTypeLink(
     }
 
     fun assignZaakServiceHandler(request: ServiceTaskHandlerRequest) {
-        serviceTaskHandlers.removeIf { zsh -> zsh.processDefinitionKey == request.processDefinitionKey && zsh.serviceTaskId == request.serviceTaskId }
+        serviceTaskHandlers.removeIf { handler -> handler.processDefinitionKey == request.processDefinitionKey && handler.serviceTaskId == request.serviceTaskId }
         serviceTaskHandlers.plusAssign(
             ServiceTaskHandler(
                 request.processDefinitionKey,
@@ -101,7 +101,7 @@ data class ZaakTypeLink(
     }
 
     fun removeZaakServiceHandler(processDefinitionKey: String, serviceTaskId: String) {
-        serviceTaskHandlers.removeIf { zsh -> zsh.processDefinitionKey == processDefinitionKey && zsh.serviceTaskId == serviceTaskId }
+        serviceTaskHandlers.removeIf { handler -> handler.processDefinitionKey == processDefinitionKey && handler.serviceTaskId == serviceTaskId }
     }
 
     @JsonIgnore
@@ -145,7 +145,7 @@ data class ZaakTypeLink(
 
     @JsonIgnore
     private fun getServiceTaskHandlerBy(processDefinitionKey: String, serviceTaskId: String): ServiceTaskHandler? {
-        return serviceTaskHandlers.find { sth -> sth.processDefinitionKey == processDefinitionKey && sth.serviceTaskId == serviceTaskId }
+        return serviceTaskHandlers.find { handler -> handler.processDefinitionKey == processDefinitionKey && handler.serviceTaskId == serviceTaskId }
     }
 
     @JsonIgnore
