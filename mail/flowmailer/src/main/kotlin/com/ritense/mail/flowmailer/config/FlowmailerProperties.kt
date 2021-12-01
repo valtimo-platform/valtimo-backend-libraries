@@ -17,8 +17,13 @@
 package com.ritense.mail.flowmailer.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.context.annotation.Configuration
 
-@Configuration
+@ConstructorBinding
 @ConfigurationProperties(prefix = "valtimo.flowmailer")
-class FlowmailerProperties
+data class FlowmailerProperties(
+    val clientId: String,
+    val clientSecret: String,
+    val accountId: String
+)

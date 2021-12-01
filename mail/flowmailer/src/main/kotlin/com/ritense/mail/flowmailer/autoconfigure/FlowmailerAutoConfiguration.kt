@@ -16,23 +16,47 @@
 
 package com.ritense.mail.flowmailer.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.mail.MailDispatcher
+import com.ritense.mail.config.MailingProperties
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
+import com.ritense.mail.flowmailer.service.FlowmailerTokenService
+import com.ritense.mail.flowmailer.service.MailMessageConverter
+import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.http.HttpHeaders
+import org.springframework.web.client.RestTemplate
 
 @Configuration
 @EnableConfigurationProperties(value = [FlowmailerProperties::class])
 class FlowmailerAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(RestTemplate::class)
+    fun restTemplate(): RestTemplate {
+        return RestTemplateBuilder().build()
+    }
+
+    @Bean
     @ConditionalOnMissingBean(MailDispatcher::class)
     fun mailDispatcher(
-        flowmailerProperties: FlowmailerProperties
+        flowmailerProperties: FlowmailerProperties,
+        flowmailerTokenService: FlowmailerTokenService,
+        restTemplate: RestTemplate
     ): MailDispatcher {
-        return FlowmailerMailDispatcher(flowmailerProperties)
+        return FlowmailerMailDispatcher(flowmailerProperties,flowmailerTokenService, restTemplate)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FlowmailerTokenService::class)
+    fun flowmailerTokenService(
+        flowmailerProperties: FlowmailerProperties,
+        restTemplate: RestTemplate
+    ): FlowmailerTokenService {
+        return FlowmailerTokenService(flowmailerProperties, restTemplate)
     }
 }

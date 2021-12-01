@@ -16,11 +16,33 @@
 
 package com.ritense.mail.flowmailer
 
+import com.ritense.valtimo.contract.basictype.EmailAddress
+import com.ritense.valtimo.contract.basictype.SimpleName
+import com.ritense.valtimo.contract.mail.model.RawMailMessage
+import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
+import com.ritense.valtimo.contract.mail.model.value.MailBody
+import com.ritense.valtimo.contract.mail.model.value.MailTemplateIdentifier
+import com.ritense.valtimo.contract.mail.model.value.Recipient
+import com.ritense.valtimo.contract.mail.model.value.RecipientCollection
+import com.ritense.valtimo.contract.mail.model.value.Sender
+import com.ritense.valtimo.contract.mail.model.value.Subject
 import org.mockito.MockitoAnnotations
 
 abstract class BaseTest {
 
     fun baseSetUp() {
         MockitoAnnotations.openMocks(this)
+    }
+
+    fun rawMailMessage(recipient: Recipient): RawMailMessage {
+        val recipients = RecipientCollection.fromSingle(recipient)
+        return RawMailMessage.with(recipients, MailBody.of(MailBody.MailBodyText.empty())).build()
+    }
+
+    fun templatedMailMessage(recipient: Recipient): TemplatedMailMessage {
+        return TemplatedMailMessage.with(recipient, MailTemplateIdentifier.from("Template"))
+            .subject(Subject.from("Subject"))
+            .sender(Sender.from(EmailAddress.from("sender@test.com"), SimpleName.from("Piet")))
+            .build()
     }
 }

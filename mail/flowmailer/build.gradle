@@ -18,14 +18,19 @@ dependencies {
     implementation project(":mail")
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
+    implementation "com.vladmihalcea:hibernate-types-52:2.12.1"
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
+    testImplementation project(":mail")
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.13.0"
 
     //Kotlin
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation 'org.mockito:mockito-inline:4.0.0'
 
     jar {
         enabled = true
