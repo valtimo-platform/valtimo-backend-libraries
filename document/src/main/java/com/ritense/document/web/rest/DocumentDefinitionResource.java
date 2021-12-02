@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-import static org.springframework.data.domain.Sort.Direction.DESC;
+import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -44,7 +44,7 @@ public interface DocumentDefinitionResource {
 
     @GetMapping(value = "/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
-        @PageableDefault(sort = {"createdOn"}, direction = DESC) Pageable pageable
+        @PageableDefault(sort = {"id.name"}, direction = ASC) Pageable pageable
     );
 
     @GetMapping(value = "/document-definition/{name}")
