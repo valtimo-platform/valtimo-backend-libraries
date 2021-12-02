@@ -16,8 +16,8 @@
 
 package com.ritense.mail.flowmailer.service
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.convertValue
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.domain.OauthTokenResponse
 import org.springframework.http.HttpEntity
@@ -28,7 +28,6 @@ import org.springframework.http.MediaType
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
 
 class FlowmailerTokenService(
@@ -48,17 +47,18 @@ class FlowmailerTokenService(
         params.add("grant_type", "client_credentials")
 
         val httpEntity = HttpEntity(params, httpHeaders)
-        val flowmailerToken = restTemplate.exchange(
+        val response = restTemplate.exchange(
             tokenUrl,
             HttpMethod.POST,
             httpEntity,
             OauthTokenResponse::class.java
         )
-        if (flowmailerToken.statusCode == HttpStatus.ACCEPTED) {
-            return objectMapper.readValue(flowmailerToken.body.accessToken, String::class.java)
+        if (response.statusCode == HttpStatus.ACCEPTED) {
+            val result = objectMapper.convertValue<OauthTokenResponse>(response.body)
+            return result.accessToken
         } else {
             throw HttpClientErrorException(
-                flowmailerToken.statusCode,
+                response.statusCode,
                 "No token received"
             )
         }
