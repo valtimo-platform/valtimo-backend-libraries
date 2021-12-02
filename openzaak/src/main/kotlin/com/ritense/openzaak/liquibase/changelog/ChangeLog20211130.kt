@@ -31,26 +31,6 @@ class ChangeLog20211130 : CustomTaskChange {
 
     override fun execute(database: Database?) {
         val connection = database!!.connection as JdbcConnection
-
-
-
-        val q =
-            connection.prepareStatement("INSERT INTO zaak_type_link (zaak_type_link_id, document_definition_name, zaak_type_url, zaak_instance_links, service_task_handlers) VALUES (?, ?, ?, ?, ?)")
-        q.setBytes(1, "úõà¥íÿH~".toByteArray())
-        q.setString(2, "test")
-        q.setString(3, "http://example.com")
-        q.setString(
-            4,
-            "[{\"className\": \"com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink\", \"documentId\": \"5d9c7aa5-1616-4dc2-81db-ef4de0d3a3ef\", \"zaakInstanceId\": \"238790f2-da53-437c-9278-f350c2c3a630\", \"zaakInstanceUrl\": \"http://example.com\"}]"
-        )
-        q.setString(
-            5,
-            "[{\"className\": \"com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandler\", \"operation\": \"SET_RESULTAAT\", \"parameter\": \"www.resultaattype.com\", \"serviceTaskId\": \"Task_1edg42x\"}]"
-        )
-        q.execute()
-
-
-
         val taskToProcessMap = getServiceTaskIdToProcessDefinitionKeyMap(connection)
 
         var statement = connection.prepareStatement("SELECT zaak_type_link_id, service_task_handlers FROM zaak_type_link")
