@@ -30,7 +30,7 @@ class FilteredMailSender(
     private val filters: Collection<MailFilter>
 ) : MailSender {
 
-    override fun send(rawMailMessage: RawMailMessage): Optional<MutableList<MailMessageStatus>> {
+    override fun send(rawMailMessage: RawMailMessage): Optional<List<MailMessageStatus>> {
         val optionalMessage = applyFilters(rawMailMessage)
         if (optionalMessage.isPresent) {
             return Optional.of(mailDispatcher.send(rawMailMessage))
@@ -38,7 +38,7 @@ class FilteredMailSender(
         return Optional.empty()
     }
 
-    override fun send(templatedMailMessage: TemplatedMailMessage): Optional<MutableList<MailMessageStatus>> {
+    override fun send(templatedMailMessage: TemplatedMailMessage): Optional<List<MailMessageStatus>> {
         val optionalMessage = applyFilters(templatedMailMessage)
         if (optionalMessage.isPresent) {
             return Optional.of(mailDispatcher.send(templatedMailMessage))

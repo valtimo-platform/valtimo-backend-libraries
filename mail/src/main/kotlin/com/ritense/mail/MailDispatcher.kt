@@ -22,9 +22,9 @@ import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 
 interface MailDispatcher {
 
-    fun send(rawMailMessage: RawMailMessage): MutableList<MailMessageStatus>
+    fun send(rawMailMessage: RawMailMessage): List<MailMessageStatus>
 
-    fun send(templatedMailMessage: TemplatedMailMessage): MutableList<MailMessageStatus>
+    fun send(templatedMailMessage: TemplatedMailMessage): List<MailMessageStatus>
 
     fun getMaximumSizeAttachments(): Int
 
