@@ -19,10 +19,6 @@ package com.ritense.mail.flowmailer.service
 import com.ritense.mail.flowmailer.BaseIntegrationTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import javax.inject.Inject
 
 internal class FlowmailerDispatcherIntTest: BaseIntegrationTest() {
@@ -32,7 +28,6 @@ internal class FlowmailerDispatcherIntTest: BaseIntegrationTest() {
 
     @Test
     fun `should instantiate FlowmailerDispatcher bean`() {
-
         assertThat(flowmailerMailDispatcher).isNotNull
     }
 }

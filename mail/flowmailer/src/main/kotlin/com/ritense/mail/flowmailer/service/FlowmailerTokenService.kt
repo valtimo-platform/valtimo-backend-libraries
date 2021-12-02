@@ -19,32 +19,49 @@ package com.ritense.mail.flowmailer.service
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
+import com.ritense.mail.flowmailer.domain.OauthTokenResponse
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
 
 class FlowmailerTokenService(
     private val flowmailerProperties: FlowmailerProperties,
-    private val restTemplate: RestTemplate
+    private val restTemplate: RestTemplate,
+    private val objectMapper: ObjectMapper
 ) {
+
     fun getFlowmailerToken(): String? {
-        val objectMapper = ObjectMapper()
         val httpHeaders = HttpHeaders()
 
         httpHeaders.contentType = MediaType.APPLICATION_FORM_URLENCODED
 
-        val params = mapOf( //TODO: was MultiValueMap. Is that necessary?
-            ("client_id" to flowmailerProperties.clientId),
-            ("client_secret" to flowmailerProperties.clientSecret),
-            ("grant_type" to "client_credentials")
-        )
-        val httpEntity = HttpEntity(params, httpHeaders)
-        val flowmailerToken = restTemplate.exchange(tokenUrl, HttpMethod.POST, httpEntity, String::class.java)
-        val typeRef = object : TypeReference<Map<String, String>>() {}
+        val params: MultiValueMap<String, String> = LinkedMultiValueMap()
+        params.add("client_id", flowmailerProperties.clientId)
+        params.add("client_secret", flowmailerProperties.clientSecret)
+        params.add("grant_type", "client_credentials")
 
-        return objectMapper.readValue(flowmailerToken.body, typeRef)["access_token"]
+        val httpEntity = HttpEntity(params, httpHeaders)
+        val flowmailerToken = restTemplate.exchange(
+            tokenUrl,
+            HttpMethod.POST,
+            httpEntity,
+            OauthTokenResponse::class.java
+        )
+        if (flowmailerToken.statusCode == HttpStatus.ACCEPTED) {
+            return objectMapper.readValue(flowmailerToken.body.accessToken, String::class.java)
+        } else {
+            throw HttpClientErrorException(
+                flowmailerToken.statusCode,
+                "No token received"
+            )
+        }
     }
 
     companion object {

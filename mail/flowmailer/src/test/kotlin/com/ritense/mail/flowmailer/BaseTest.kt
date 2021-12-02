@@ -27,6 +27,8 @@ import com.ritense.valtimo.contract.mail.model.value.RecipientCollection
 import com.ritense.valtimo.contract.mail.model.value.Sender
 import com.ritense.valtimo.contract.mail.model.value.Subject
 import org.mockito.MockitoAnnotations
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 
 abstract class BaseTest {
 
@@ -44,5 +46,13 @@ abstract class BaseTest {
             .subject(Subject.from("Subject"))
             .sender(Sender.from(EmailAddress.from("sender@test.com"), SimpleName.from("Piet")))
             .build()
+    }
+
+    fun getHttpHeaders(): HttpHeaders {
+        val httpHeaders = HttpHeaders()
+        httpHeaders["Authorization"] = "Bearer " + "token"
+        httpHeaders.contentType = MediaType.valueOf("application/vnd.flowmailer.v1.12+json;charset=UTF-8")
+        httpHeaders.accept = listOf(MediaType.valueOf("application/vnd.flowmailer.v1.12+json;charset=UTF-8"))
+        return httpHeaders
     }
 }

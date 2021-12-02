@@ -38,6 +38,4 @@ class SubmitMessageTest: BaseTest() {
 
         assertThat(submitMessages[0].flowSelector).isEqualTo(templatedMailMessage.templateIdentifier.get())
     }
-
-
 }

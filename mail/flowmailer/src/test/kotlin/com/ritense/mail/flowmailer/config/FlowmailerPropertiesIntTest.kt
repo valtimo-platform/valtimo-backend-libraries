@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import javax.inject.Inject
 
-internal class FlowmailerPropertiesTest: BaseIntegrationTest() {
+internal class FlowmailerPropertiesIntTest: BaseIntegrationTest() {
 
     @Inject
     lateinit var flowmailerProperties: FlowmailerProperties

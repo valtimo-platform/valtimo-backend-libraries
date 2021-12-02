@@ -125,12 +125,4 @@ class FlowmailerDispatcherTest : BaseTest() {
 
         return templatedMailMessage
     }
-
-    private fun getHttpHeaders(): HttpHeaders {
-        val httpHeaders = HttpHeaders()
-        httpHeaders["Authorization"] = "Bearer " + "token"
-        httpHeaders.contentType = MediaType.valueOf("application/vnd.flowmailer.v1.12+json;charset=UTF-8")
-        httpHeaders.accept = listOf(MediaType.valueOf("application/vnd.flowmailer.v1.12+json;charset=UTF-8"))
-        return httpHeaders
-    }
 }
