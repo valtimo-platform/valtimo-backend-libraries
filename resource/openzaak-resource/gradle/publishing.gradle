@@ -24,9 +24,9 @@ pluginManager.withPlugin('maven-publish') {
                         " allowing you to store resources at Commoun Ground Openzaak"
                     developers {
                         developer {
-                            id = "johnd"
-                            name = "John Doe"
-                            email = "john.doe@example.com"
+                            id = "team-valtimo"
+                            name = "Team Valtimo"
+                            email = "team-valtimo@ritense.com"
                         }
                     }
                 }
