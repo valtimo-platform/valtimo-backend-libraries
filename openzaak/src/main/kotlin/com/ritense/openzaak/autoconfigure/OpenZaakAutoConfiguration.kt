@@ -26,6 +26,8 @@ import com.ritense.openzaak.repository.InformatieObjectTypeLinkRepository
 import com.ritense.openzaak.repository.OpenZaakConfigRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
 import com.ritense.openzaak.repository.converter.Encryptor
+import com.ritense.openzaak.service.OpenZaakConnector
+import com.ritense.openzaak.service.OpenZaakProperties
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.openzaak.service.impl.DocumentenService
 import com.ritense.openzaak.service.impl.EigenschapService
@@ -46,11 +48,13 @@ import com.ritense.openzaak.web.rest.impl.ZaakTypeLinkResource
 import com.ritense.openzaak.web.rest.impl.ZaakTypeResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Scope
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.web.client.RestTemplate
 
@@ -233,6 +237,23 @@ class OpenZaakAutoConfiguration {
             informatieObjectTypeLinkService,
             zaakTypeLinkService
         )
+    }
+
+    // Connector
+    @Bean
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    fun openzaakProperties(
+    ) : OpenZaakProperties {
+        return OpenZaakProperties()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(OpenZaakConnector::class)
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    fun openzaakConnector(
+        openZaakProperties: OpenZaakProperties
+    ) : OpenZaakConnector {
+        return OpenZaakConnector(openZaakProperties)
     }
 
     //Resources

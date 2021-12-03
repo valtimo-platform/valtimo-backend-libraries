@@ -33,13 +33,13 @@ import com.ritense.connector.web.rest.result.ModifyConnectorInstanceResult
 import com.ritense.connector.web.rest.result.ModifyConnectorInstanceResultFailed
 import com.ritense.connector.web.rest.result.ModifyConnectorInstanceResultSucceeded
 import com.ritense.valtimo.contract.result.OperationError
-import java.util.UUID
-import javax.transaction.Transactional
-import javax.validation.ConstraintViolationException
 import org.springframework.context.ApplicationContext
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.interceptor.TransactionAspectSupport
+import java.util.UUID
+import javax.transaction.Transactional
+import javax.validation.ConstraintViolationException
 
 @Transactional
 open class ConnectorService(
@@ -68,10 +68,10 @@ open class ConnectorService(
         typeId: UUID,
         name: String,
         connectorProperties: ConnectorProperties
-    ): ConnectorInstance {
+    ): CreateConnectorInstanceResult {
         return createConnectorInstance(
             CreateConnectorInstanceRequest(typeId, name, connectorProperties)
-        ).connectorTypeInstance()!!
+        )
     }
 
     open fun createConnectorInstance(
@@ -82,6 +82,12 @@ open class ConnectorService(
                 !connectorTypeInstanceRepository.existsConnectorTypeInstanceByName(createConnectorInstanceRequest.name)
             ) { "connectorTypeInstance already exists under same name" }
             val connectorType = connectorTypeRepository.findById(ConnectorTypeId.existingId(createConnectorInstanceRequest.typeId))
+            if (connectorType.isPresent && !connectorType.get().allowMultipleConnectorInstances) {
+                // Check if the same connectorType has been used before
+                require(
+                    !connectorTypeInstanceRepository.existsConnectorTypeInstanceByType(connectorType.get())
+                ) { "Only one '${connectorType.get().name}' connector is allowed" }
+            }
             val connectorInstance = connectorTypeInstanceRepository.save(
                 ConnectorInstance(
                     ConnectorInstanceId.newId(UUID.randomUUID()),

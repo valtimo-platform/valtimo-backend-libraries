@@ -45,7 +45,7 @@ class ApplicationReadyEventListener(
                     )
                     val configResult = objectSyncService.createObjectSyncConfig(
                         request = CreateObjectSyncConfigRequest(
-                            connectorInstanceId = result.id.id,
+                            connectorInstanceId = result.connectorTypeInstance()!!.id.id,
                             enabled = true,
                             documentDefinitionName = "leningen",
                             objectTypeId = UUID.fromString("3a82fb7f-fc9b-4104-9804-993f639d6d0d")

@@ -33,6 +33,7 @@ class ConnectorDeploymentService(
         connectors.forEach {
             val connectorTypeAnnotation = it.javaClass.getAnnotation(com.ritense.connector.domain.meta.ConnectorType::class.java)
             val name = connectorTypeAnnotation.name
+            val allowMultipleConnectors = connectorTypeAnnotation.allowMultipleConnectors
             var connectorType = connectorTypeRepository.findByName(name)
             val simpleClassName = it.javaClass.simpleName.replaceFirstChar { it.lowercase(Locale.getDefault()) }
             if (connectorType == null) {
@@ -41,7 +42,8 @@ class ConnectorDeploymentService(
                     id = ConnectorTypeId.newId(UUID.randomUUID()),
                     name = name,
                     className = simpleClassName,
-                    connectorProperties = it.getProperties()
+                    connectorProperties = it.getProperties(),
+                    allowMultipleConnectorInstances = allowMultipleConnectors
                 )
                 connectorTypeRepository.save(connectorType)
             } else {
@@ -49,6 +51,7 @@ class ConnectorDeploymentService(
                 connectorType.name = name
                 connectorType.className = simpleClassName
                 connectorType.connectorProperties = it.getProperties()
+                connectorType.allowMultipleConnectorInstances = allowMultipleConnectors
             }
             connectorTypes.add(connectorType)
         }
