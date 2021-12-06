@@ -44,7 +44,7 @@ class SubmitMessageTest : BaseTest() {
         assertThat(submitMessages[0].headerFromName).isEqualTo(templatedMailMessage.sender.name.get())
         assertThat(submitMessages[0].headerToAddress).isEqualTo(templatedMailMessage.recipients.get().first().email.get())
         assertThat(submitMessages[0].headerToName).isEqualTo(templatedMailMessage.recipients.get().first().name.get())
-//        assertThat(submitMessages[0].messageType).isEqualTo(templatedMailMessage.templateIdentifier.get()) //TODO: waar in templatedMailMessage?
+        assertThat(submitMessages[0].messageType).isEqualTo(SubmitMessage.MessageType.EMAIL)
         assertThat(submitMessages[0].recipientAddress).isEqualTo(templatedMailMessage.recipients.get().first().email.get())
         assertThat(submitMessages[0].senderAddress).isEqualTo(templatedMailMessage.sender.email.get())
         assertThat(submitMessages[0].subject).isEqualTo(templatedMailMessage.subject.get())
