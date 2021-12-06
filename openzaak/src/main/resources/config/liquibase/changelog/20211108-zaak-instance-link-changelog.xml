@@ -28,7 +28,7 @@
             <column name="zaak_instance_link_id" type="BINARY(16)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="zaak_instance_linkPK"/>
             </column>
-            <column name="zaak_instance_url" type="VARCHAR(255)">
+            <column name="zaak_instance_url" type="VARCHAR(512)">
                 <constraints nullable="false"/>
             </column>
             <column name="zaak_instance_id" type="BINARY(16)">
@@ -37,9 +37,17 @@
             <column name="document_id" type="BINARY(16)">
                 <constraints nullable="false"/>
             </column>
-            <column name="zaak_type_url" type="VARCHAR(255)">
+            <column name="zaak_type_url" type="VARCHAR(512)">
                 <constraints nullable="true"/>
             </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="Rick Veenstra" failOnError="true">
+        <customChange class="com.ritense.openzaak.liquibase.changelog.ChangeLog20211126"/>
+    </changeSet>
+
+    <changeSet id="3" author="Rick Veenstra">
+        <dropColumn tableName="zaak_type_link" columnName="zaak_instance_links"/>
     </changeSet>
 </databaseChangeLog>

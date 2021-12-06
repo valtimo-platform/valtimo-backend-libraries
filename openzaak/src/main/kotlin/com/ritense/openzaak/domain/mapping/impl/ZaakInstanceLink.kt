@@ -37,7 +37,7 @@ data class ZaakInstanceLink(
     val zaakInstanceLinkId: ZaakInstanceLinkId,
 
     @Convert(converter = UriAttributeConverter::class)
-    @Column(name = "zaak_instance_url", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "zaak_instance_url", columnDefinition = "VARCHAR(512)", nullable = false)
     val zaakInstanceUrl: URI,
 
     @Column(name = "zaak_instance_id", columnDefinition = "BINARY(16)", nullable = false)
@@ -48,7 +48,7 @@ data class ZaakInstanceLink(
     val documentId: UUID,
 
     @Convert(converter = UriAttributeConverter::class)
-    @Column(name = "zaak_type_url", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "zaak_type_url", columnDefinition = "VARCHAR(512)", nullable = false)
     val zaakTypeUrl: URI
 ) : Persistable<ZaakInstanceLinkId>, Validatable {
 
