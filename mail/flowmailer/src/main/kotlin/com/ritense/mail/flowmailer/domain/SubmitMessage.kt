@@ -69,9 +69,9 @@ data class SubmitMessage(
                 val submitMessage = SubmitMessage(
                     flowSelector = templatedMailMessage.templateIdentifier.get(),
                     headerFromAddress = templatedMailMessage.sender.email.get(),
-                    headerFromName = templatedMailMessage.sender.name.get(),
+                    headerFromName = templatedMailMessage.sender.name.get().orEmpty(),
                     headerToAddress = it.email.get(),
-                    headerToName = it.name.get(),
+                    headerToName = it.name.get().orEmpty(),
                     messageType = MessageType.EMAIL,
                     recipientAddress = it.email.get(),
                     senderAddress = templatedMailMessage.sender.email.get(),
