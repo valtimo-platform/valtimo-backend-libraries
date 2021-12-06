@@ -21,17 +21,21 @@ import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.domain.SubmitMessage
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
+import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.mail.model.MailMessageStatus
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.Recipient
 import org.apache.commons.lang3.NotImplementedException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -43,20 +47,19 @@ import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
 
-@ExtendWith(MockitoExtension::class)
 class FlowmailerDispatcherTest : BaseTest() {
-
-    @Mock
     lateinit var flowmailerProperties: FlowmailerProperties
-
-    @Mock
     lateinit var flowmailerTokenService: FlowmailerTokenService
-
-    @Mock
     lateinit var restTemplate: RestTemplate
-
-    @InjectMocks
     lateinit var flowmailerMailDispatcher: FlowmailerMailDispatcher
+
+    @BeforeEach
+    internal fun setUp() {
+        flowmailerProperties = mock(FlowmailerProperties::class.java)
+        flowmailerTokenService = mock(FlowmailerTokenService::class.java)
+        restTemplate = mock(RestTemplate::class.java)
+        flowmailerMailDispatcher = FlowmailerMailDispatcher(flowmailerProperties, flowmailerTokenService, restTemplate)
+    }
 
     @Test
     fun `should throw NotImplementedException`() {
@@ -81,6 +84,7 @@ class FlowmailerDispatcherTest : BaseTest() {
         assertThat(mailMessageStatus).isNotNull
         assertThat(mailMessageStatus[0]).isInstanceOf(MailMessageStatus::class.java)
         assertThat(mailMessageStatus[0].status).isEqualTo("SENT")
+        assertThat(mailMessageStatus[0].email).isEqualTo(templatedMailMessage.recipients)
     }
 
     @Test

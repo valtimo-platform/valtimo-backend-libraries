@@ -48,7 +48,8 @@ class FlowmailerMailDispatcher(
         val messages = SubmitMessage.from(templatedMailMessage)
         val submitMessageURI = "/${flowmailerProperties.accountId}/messages/submit"
         messages.forEach { message ->
-            mailMessageStatusList.add(submitMessage(baseUrl + submitMessageURI, message))
+            val mailMessageStatus = submitMessage(baseUrl + submitMessageURI, message)
+            mailMessageStatusList.add(mailMessageStatus)
         }
         return mailMessageStatusList
     }
@@ -64,7 +65,7 @@ class FlowmailerMailDispatcher(
             restTemplate.exchange(url, HttpMethod.POST, httpEntity, String::class.java)
         if (flowmailerResponseStatus.statusCode.is2xxSuccessful) {
             val builder = MailMessageStatus.with(
-                EmailAddress.from(message.senderAddress),
+                EmailAddress.from(message.recipientAddress),
                 "SENT",
                 "" //TODO id extraheren https://api.flowmailer.net/520/messages/202106110944460bfd0ca81fd281ef9e
             )

@@ -46,7 +46,7 @@ class FlowmailerAutoConfiguration {
         flowmailerTokenService: FlowmailerTokenService,
         restTemplate: RestTemplate
     ): MailDispatcher {
-        return FlowmailerMailDispatcher(flowmailerProperties,flowmailerTokenService, restTemplate)
+        return FlowmailerMailDispatcher(flowmailerProperties, flowmailerTokenService, restTemplate)
     }
 
     @Bean
