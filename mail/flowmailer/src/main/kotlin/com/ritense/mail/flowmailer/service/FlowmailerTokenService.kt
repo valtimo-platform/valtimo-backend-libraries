@@ -18,6 +18,7 @@ package com.ritense.mail.flowmailer.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.domain.OauthTokenResponse
 import org.springframework.http.HttpEntity
@@ -36,7 +37,7 @@ class FlowmailerTokenService(
     private val objectMapper: ObjectMapper
 ) {
 
-    fun getFlowmailerToken(): String? {
+    fun getFlowmailerToken(): String {
         val httpHeaders = HttpHeaders()
 
         httpHeaders.contentType = MediaType.APPLICATION_FORM_URLENCODED
@@ -51,10 +52,10 @@ class FlowmailerTokenService(
             tokenUrl,
             HttpMethod.POST,
             httpEntity,
-            OauthTokenResponse::class.java
+            String::class.java
         )
         if (response.statusCode == HttpStatus.OK) {
-            val result = objectMapper.convertValue<OauthTokenResponse>(response.body)
+            val result: OauthTokenResponse = objectMapper.readValue(response.body as String)
             return result.accessToken
         } else {
             throw HttpClientErrorException(

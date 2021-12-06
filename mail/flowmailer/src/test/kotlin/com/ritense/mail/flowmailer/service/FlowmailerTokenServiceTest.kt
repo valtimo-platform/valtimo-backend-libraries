@@ -17,6 +17,7 @@
 package com.ritense.mail.flowmailer.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.convertValue
 import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.domain.OauthTokenResponse
@@ -85,6 +86,7 @@ class FlowmailerTokenServiceTest : BaseTest() {
             scope = "api",
             tokenType = "testToken"
         )
+        val responseAsString = objectMapper.writeValueAsString(response)
         val url = "https://login.flowmailer.net/oauth/token"
 
         val httpHeaders = HttpHeaders()
@@ -95,11 +97,11 @@ class FlowmailerTokenServiceTest : BaseTest() {
         params.add("grant_type", "client_credentials")
         val httpEntity = HttpEntity(params, httpHeaders)
 
-        val responseEntity = ResponseEntity(response, null, status)
+        val responseEntity = ResponseEntity(responseAsString, null, status)
 
         `when`(flowmailerProperties.clientId).thenReturn("clientId")
         `when`(flowmailerProperties.clientSecret).thenReturn("clientSecret")
-        `when`(restTemplate.exchange(url, HttpMethod.POST, httpEntity, OauthTokenResponse::class.java))
+        `when`(restTemplate.exchange(url, HttpMethod.POST, httpEntity, String::class.java))
             .thenReturn(responseEntity)
     }
 }
