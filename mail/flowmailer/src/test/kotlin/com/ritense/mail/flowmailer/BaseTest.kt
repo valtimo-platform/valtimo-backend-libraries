@@ -20,6 +20,7 @@ import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
+import com.ritense.valtimo.contract.mail.model.value.Attachment
 import com.ritense.valtimo.contract.mail.model.value.MailBody
 import com.ritense.valtimo.contract.mail.model.value.MailTemplateIdentifier
 import com.ritense.valtimo.contract.mail.model.value.Recipient
@@ -45,6 +46,14 @@ abstract class BaseTest {
         return TemplatedMailMessage.with(recipient, MailTemplateIdentifier.from("Template"))
             .subject(Subject.from("Subject"))
             .sender(Sender.from(EmailAddress.from("sender@test.com"), SimpleName.from("Piet")))
+            .build()
+    }
+
+    fun templatedMailMessage(recipient: Recipient, attachment: Attachment): TemplatedMailMessage {
+        return TemplatedMailMessage.with(recipient, MailTemplateIdentifier.from("Template"))
+            .subject(Subject.from("Subject"))
+            .sender(Sender.from(EmailAddress.from("sender@test.com"), SimpleName.from("Piet")))
+            .attachment(attachment)
             .build()
     }
 
