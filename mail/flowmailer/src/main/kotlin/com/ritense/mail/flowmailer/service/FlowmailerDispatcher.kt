@@ -93,6 +93,6 @@ class FlowmailerMailDispatcher(
 
     companion object {
         private const val baseUrl = "https://api.flowmailer.net"
-        const val MAX_SIZE_ATTACHMENTS: Int = 16250000
+        const val MAX_SIZE_ATTACHMENTS: Int = 16250000 //TODO: What is the actual max size in Flowmailer?
     }
 }

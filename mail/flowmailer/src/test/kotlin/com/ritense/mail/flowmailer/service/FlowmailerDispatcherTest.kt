@@ -43,9 +43,12 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 class FlowmailerDispatcherTest : BaseTest() {
     lateinit var flowmailerProperties: FlowmailerProperties
@@ -120,7 +123,9 @@ class FlowmailerDispatcherTest : BaseTest() {
         val message = SubmitMessage.from(templatedMailMessage).first()
         val url = "https://api.flowmailer.net/accountId/messages/submit"
         val httpEntity = HttpEntity(message.toString(), getHttpHeaders())
-        val responseEntity = ResponseEntity<String>(status)
+        val location: MultiValueMap<String, String> = LinkedMultiValueMap()
+        location.add("Location", "https://api.flowmailer.net/520/messages/202106110944460bfd0ca81fd281ef9e")
+        val responseEntity = ResponseEntity<String>(location, status)
 
         `when`(flowmailerProperties.accountId).thenReturn("accountId")
         `when`(flowmailerTokenService.getFlowmailerToken()).thenReturn("token")

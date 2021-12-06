@@ -26,15 +26,18 @@ import org.junit.jupiter.api.Test
 class OauthTokenResponseTest: BaseTest() {
 
     @Test
-    fun `should make instance of OauthTokenResponse`() {  //TODO: make
-        val templatedMailMessage = templatedMailMessage(
-            Recipient.to(
-                EmailAddress.from("test@test.com"),
-                SimpleName.from("testman")
-            )
+    fun `should make instance of OauthTokenResponse`() {
+        val oauthTokenResponse = OauthTokenResponse(
+            accessToken = "accessToken",
+            expiresIn = 1,
+            scope = "scope",
+            tokenType = "tokenType"
         )
-        val submitMessages = SubmitMessage.from(templatedMailMessage)
-
-        assertThat(submitMessages[0].flowSelector).isEqualTo(templatedMailMessage.templateIdentifier.get())
+        assertThat(oauthTokenResponse).isNotNull
+        assertThat(oauthTokenResponse).isInstanceOf(OauthTokenResponse::class.java)
+        assertThat(oauthTokenResponse.accessToken).isEqualTo("accessToken")
+        assertThat(oauthTokenResponse.expiresIn).isEqualTo(1)
+        assertThat(oauthTokenResponse.scope).isEqualTo("scope")
+        assertThat(oauthTokenResponse.tokenType).isEqualTo("tokenType")
     }
 }
