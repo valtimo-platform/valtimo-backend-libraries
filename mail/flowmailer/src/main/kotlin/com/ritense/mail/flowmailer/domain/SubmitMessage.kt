@@ -21,7 +21,7 @@ import java.util.Base64
 import java.util.Date
 
 data class SubmitMessage(
-    val attachments: List<Attachment>? = null,
+    val attachments: MutableList<Attachment> = mutableListOf(),
     val data: Map<String, String>? = null,
     val deliveryNotificationType: String? = null,
     val flowSelector: String, //link to flow with template
@@ -42,12 +42,16 @@ data class SubmitMessage(
 ) {
 
     data class Attachment(
-        val content: Base64,
-        val contentId: String,
+        val content: ByteArray,
+        val contentId: String? = null,
         val contentType: String,
-        val disposition: String,
+        val disposition: Disposition = Disposition.attachment,
         val fileName: String
     )
+
+    enum class Disposition {
+        attachment, inline, related
+    }
 
     enum class MessageType {
         EMAIL, SMS, LETTER
@@ -62,7 +66,7 @@ data class SubmitMessage(
         fun from(templatedMailMessage: TemplatedMailMessage): List<SubmitMessage> {
             val messageList = mutableListOf<SubmitMessage>()
             templatedMailMessage.recipients.get().forEach {
-                messageList.add(SubmitMessage(
+                val submitMessage = SubmitMessage(
                     flowSelector = templatedMailMessage.templateIdentifier.get(),
                     headerFromAddress = templatedMailMessage.sender.email.get(),
                     headerFromName = templatedMailMessage.sender.name.get(),
@@ -71,8 +75,21 @@ data class SubmitMessage(
                     messageType = MessageType.EMAIL,
                     recipientAddress = it.email.get(),
                     senderAddress = templatedMailMessage.sender.email.get(),
-                    subject = templatedMailMessage.subject.get()
-                ))
+                    subject = templatedMailMessage.subject.get(),
+                )
+
+                if (templatedMailMessage.attachments.isPresent) {
+                    templatedMailMessage.attachments.get().forEach { attachment ->
+                        submitMessage.attachments.add(
+                            Attachment(
+                                content = attachment.content.get(),
+                                contentType = attachment.type.get(),
+                                fileName = attachment.name.get()
+                            )
+                        )
+                    }
+                }
+                messageList.add(submitMessage)
             }
             return messageList
         }

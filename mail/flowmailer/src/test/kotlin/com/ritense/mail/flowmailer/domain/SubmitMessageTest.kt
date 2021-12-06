@@ -16,16 +16,19 @@
 
 package com.ritense.mail.flowmailer.domain
 
+
 import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
+import com.ritense.valtimo.contract.mail.model.value.Attachment
 import com.ritense.valtimo.contract.mail.model.value.Recipient
+import com.ritense.valtimo.contract.mail.model.value.attachment.Content
+import com.ritense.valtimo.contract.mail.model.value.attachment.Name
+import com.ritense.valtimo.contract.mail.model.value.attachment.Type
 import org.assertj.core.api.Assertions.assertThat
-
-
 import org.junit.jupiter.api.Test
 
-class SubmitMessageTest: BaseTest() {
+class SubmitMessageTest : BaseTest() {
 
     @Test
     fun `should make instance of SubmitMessage`() {
@@ -37,5 +40,27 @@ class SubmitMessageTest: BaseTest() {
         val submitMessages = SubmitMessage.from(templatedMailMessage)
 
         assertThat(submitMessages[0].flowSelector).isEqualTo(templatedMailMessage.templateIdentifier.get())
+    }
+
+    @Test
+    fun `should create SubmitMessage with attachments`() {
+        val attachment = Attachment.from(
+            Name.from("my-attachment"),
+            Type.from("aType"),
+            Content.from(ByteArray(100))
+        )
+        val templatedMailMessage = templatedMailMessage(
+            Recipient.to(
+                EmailAddress.from("test@test.com"),
+                SimpleName.from("testman")
+            ),
+            attachment
+        )
+
+        val submitMessages = SubmitMessage.from(templatedMailMessage)
+
+        assertThat(submitMessages[0].attachments[0].fileName).isEqualTo(attachment.name.get())
+        assertThat(submitMessages[0].attachments[0].contentType).isEqualTo(attachment.type.get())
+        assertThat(submitMessages[0].attachments[0].content).isNotNull
     }
 }
