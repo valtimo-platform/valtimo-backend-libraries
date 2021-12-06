@@ -35,7 +35,8 @@ data class OpenZaakRequestBuilder(
     var path: String? = null,
     var method: HttpMethod = HttpMethod.GET,
     private var queryParams: Map<String, String>? = null,
-    private var body: Any? = null
+    private var body: Any? = null,
+    private var acceptHeader: List<MediaType>? = null,
 ) {
     lateinit var url: String
     lateinit var requestEntity: HttpEntity<Any>
@@ -55,6 +56,8 @@ data class OpenZaakRequestBuilder(
     fun queryParams(queryParams: Map<String, String>) = apply { this.queryParams = queryParams }
 
     fun body(body: Any) = apply { this.body = body }
+
+    fun acceptHeader(acceptHeader: List<MediaType>) = apply { this.acceptHeader = acceptHeader }
 
     fun build() = apply {
         if (this.config == null) {
@@ -143,7 +146,11 @@ data class OpenZaakRequestBuilder(
             openZaakConfig.clientId
         )
         val headers = HttpHeaders()
-        headers.accept = listOf(MediaType.APPLICATION_JSON)
+        if (this.acceptHeader == null) {
+            headers.accept = listOf(MediaType.APPLICATION_JSON)
+        } else {
+            headers.accept = this.acceptHeader
+        }
         headers.set("Accept-Crs", "EPSG:4326")
         headers.set("Content-Crs", "EPSG:4326")
         headers.setBearerAuth(generatedToken)
@@ -156,7 +163,11 @@ data class OpenZaakRequestBuilder(
             openZaakConfig.clientId
         )
         val headers = HttpHeaders()
-        headers.accept = listOf(MediaType.APPLICATION_JSON)
+        if (this.acceptHeader == null) {
+            headers.accept = listOf(MediaType.APPLICATION_JSON)
+        } else {
+            headers.accept = this.acceptHeader
+        }
         headers.contentType = MediaType.APPLICATION_JSON
         headers.set("Accept-Crs", "EPSG:4326")
         headers.set("Content-Crs", "EPSG:4326")

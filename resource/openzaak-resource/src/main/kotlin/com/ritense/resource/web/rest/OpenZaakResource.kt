@@ -1,10 +1,11 @@
 package com.ritense.resource.web.rest
 
-import com.ritense.resource.domain.OpenZaakResource
-import com.ritense.resource.service.OpenZaakService
+import com.ritense.resource.service.ResourceService
 import com.ritense.resource.web.ObjectUrlDTO
 import com.ritense.resource.web.ResourceDTO
 import com.ritense.valtimo.contract.resource.Resource
+import java.net.URLConnection
+import java.util.UUID
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -12,21 +13,29 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 
 class OpenZaakResource(
-    val openZaakService: OpenZaakService
+    val resourceService: ResourceService
 ) : ResourceResource {
 
-    @PostMapping(value = ["/resource/upload-open-zaak"], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun uploadOpenZaakFile(
-        @RequestParam("file") file: MultipartFile,
-        @RequestParam("documentDefinitionName") documentDefinitionName: String
-    ): ResponseEntity<out Resource> {
-        val storedResource: OpenZaakResource =
-            openZaakService.store(documentDefinitionName, file.originalFilename!!, file)
-        return ResponseEntity.ok(storedResource)
+    override fun get(resourceId: String): ResponseEntity<ObjectUrlDTO> {
+        return ResponseEntity.ok(resourceService.getResourceUrl(UUID.fromString(resourceId)))
     }
 
-    override fun get(resourceId: String): ResponseEntity<ObjectUrlDTO> {
-        TODO("Not yet implemented") //valtimo url
+    override fun getContent(resourceId: String): ResponseEntity<ByteArray> {
+        val resourceContent = resourceService.getResourceContent(UUID.fromString(resourceId))
+
+        // try to guess content type for file
+        var fileMediaType: MediaType;
+        try {
+            val contentType = URLConnection.guessContentTypeFromName(resourceContent.resource.name)
+            fileMediaType = MediaType.valueOf(contentType)
+        } catch(exception: RuntimeException) {
+            // when unable to determine media type default to application/octet-stream
+            fileMediaType = MediaType.APPLICATION_OCTET_STREAM
+        }
+
+        return ResponseEntity.ok()
+            .contentType(fileMediaType)
+            .body(resourceContent.content)
     }
 
     override fun register(resourceDTO: ResourceDTO): ResponseEntity<ResourceDTO> {

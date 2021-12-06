@@ -72,7 +72,12 @@ class OpenNotificatieConnector(
     fun deleteAbonnement(connectorId: ConnectorInstanceId) {
         val abonnementLink = abonnementLinkRepository.findById(connectorId)
         abonnementLink.ifPresent {
-            openNotificatieClient.deleteAbonnement(it.abonnementId)
+            try {
+                openNotificatieClient.deleteAbonnement(it.abonnementId)
+            } catch(e: Exception) {
+                // abonnement might have been deleted remotely. should not block deletion on this end
+                logger.warn(e) { "abonnement could not be deleted in open notificaties" }
+            }
             abonnementLinkRepository.deleteById(it.connectorId)
         }
     }
@@ -101,5 +106,6 @@ class OpenNotificatieConnector(
 
     companion object {
         const val OBJECTEN_KANAAL_NAME = "objecten"
+        val logger = KotlinLogging.logger {}
     }
 }
