@@ -26,3 +26,5 @@ dependencies {
     testImplementation "io.jsonwebtoken:jjwt-impl:0.11.2"
 
 }
+
+apply from: "gradle/publishing.gradle"

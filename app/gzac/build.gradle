@@ -20,3 +20,5 @@ dependencies {
     // Database
     implementation "mysql:mysql-connector-java"
 }
+
+apply from: "gradle/publishing.gradle"
