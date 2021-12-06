@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpEntity
@@ -59,25 +60,12 @@ class FlowmailerTokenServiceTest : BaseTest() {
 
     @Test
     fun `should return a token`() {
-        templatedMailSenderSimulation(HttpStatus.ACCEPTED)
+        templatedMailSenderSimulation(HttpStatus.OK)
 
         val token = flowmailerTokenService.getFlowmailerToken()
 
         assertThat(token).isNotNull
         assertThat(token).isEqualTo("testToken")
-    }
-
-    @Test
-    fun `should get token out of the responseEntity`() {
-        val response = OauthTokenResponse(
-            accessToken = "testToken",
-            expiresIn = 1,
-            scope = "api",
-            tokenType = "testToken"
-        )
-        val responseEntity = ResponseEntity(response, null, HttpStatus.ACCEPTED)
-//        val actualResponse = objectMapper.readValue(responseEntity.body, OauthTokenResponse::class.java)
-//        assertThat(actualResponse).isEqualTo("testToken")
     }
 
     @Test
@@ -109,11 +97,9 @@ class FlowmailerTokenServiceTest : BaseTest() {
 
         val responseEntity = ResponseEntity(response, null, status)
 
-        Mockito.`when`(flowmailerProperties.clientId).thenReturn("clientId")
-        Mockito.`when`(flowmailerProperties.clientSecret).thenReturn("clientSecret")
-        Mockito.`when`(restTemplate.exchange(url, HttpMethod.POST, httpEntity, OauthTokenResponse::class.java))
+        `when`(flowmailerProperties.clientId).thenReturn("clientId")
+        `when`(flowmailerProperties.clientSecret).thenReturn("clientSecret")
+        `when`(restTemplate.exchange(url, HttpMethod.POST, httpEntity, OauthTokenResponse::class.java))
             .thenReturn(responseEntity)
-//        Mockito.`when`(objectMapper.readValue(response.accessToken, String::class.java))
-//            .thenReturn("testToken")
     }
 }

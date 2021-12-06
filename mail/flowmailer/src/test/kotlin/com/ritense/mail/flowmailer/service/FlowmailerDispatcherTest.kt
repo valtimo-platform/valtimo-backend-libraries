@@ -69,7 +69,6 @@ class FlowmailerDispatcherTest : BaseTest() {
                 SimpleName.from("testman")
             )
         )
-
         val exception = assertThrows(NotImplementedException::class.java) {
             flowmailerMailDispatcher.send(rawMailMessage)
         }
@@ -84,7 +83,7 @@ class FlowmailerDispatcherTest : BaseTest() {
         assertThat(mailMessageStatus).isNotNull
         assertThat(mailMessageStatus[0]).isInstanceOf(MailMessageStatus::class.java)
         assertThat(mailMessageStatus[0].status).isEqualTo("SENT")
-        assertThat(mailMessageStatus[0].email).isEqualTo(templatedMailMessage.recipients)
+        assertThat(mailMessageStatus[0].email.toString()).isEqualTo(templatedMailMessage.recipients.get().first().email.get())
     }
 
     @Test
@@ -108,7 +107,7 @@ class FlowmailerDispatcherTest : BaseTest() {
     @Test
     fun `should return maxSizeAttachments`() {
         val actual = flowmailerMailDispatcher.getMaximumSizeAttachments()
-        assertThat(actual).isEqualTo(16250000)
+        assertThat(actual).isEqualTo(FlowmailerMailDispatcher.MAX_SIZE_ATTACHMENTS)
     }
 
     private fun templatedMailSenderSimulation(status: HttpStatus): TemplatedMailMessage {

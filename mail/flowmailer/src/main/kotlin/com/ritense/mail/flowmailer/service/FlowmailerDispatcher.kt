@@ -55,19 +55,19 @@ class FlowmailerMailDispatcher(
     }
 
     override fun getMaximumSizeAttachments(): Int {
-        return maxSizeAttachments
+        return MAX_SIZE_ATTACHMENTS
     }
 
     private fun submitMessage(url: String, message: SubmitMessage): MailMessageStatus {
         val httpEntity = HttpEntity(message.toString(), getHttpHeaders())
 
-        val flowmailerResponseStatus: ResponseEntity<String> =
-            restTemplate.exchange(url, HttpMethod.POST, httpEntity, String::class.java)
+        val flowmailerResponseStatus = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String::class.java)
         if (flowmailerResponseStatus.statusCode.is2xxSuccessful) {
             val builder = MailMessageStatus.with(
                 EmailAddress.from(message.recipientAddress),
                 "SENT",
-                "" //TODO id extraheren https://api.flowmailer.net/520/messages/202106110944460bfd0ca81fd281ef9e
+                //should get the id from header format "location": "https://api.flowmailer.net/520/messages/202106110944460bfd0ca81fd281ef9e"
+                flowmailerResponseStatus.headers.location.path.split("/").last()
             )
             return builder.build()
         } else if (flowmailerResponseStatus.statusCode.is4xxClientError) {
@@ -93,6 +93,6 @@ class FlowmailerMailDispatcher(
 
     companion object {
         private const val baseUrl = "https://api.flowmailer.net"
-        private const val maxSizeAttachments: Int = 16250000
+        const val MAX_SIZE_ATTACHMENTS: Int = 16250000
     }
 }

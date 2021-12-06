@@ -53,7 +53,7 @@ class FlowmailerTokenService(
             httpEntity,
             OauthTokenResponse::class.java
         )
-        if (response.statusCode == HttpStatus.ACCEPTED) {
+        if (response.statusCode == HttpStatus.OK) {
             val result = objectMapper.convertValue<OauthTokenResponse>(response.body)
             return result.accessToken
         } else {
