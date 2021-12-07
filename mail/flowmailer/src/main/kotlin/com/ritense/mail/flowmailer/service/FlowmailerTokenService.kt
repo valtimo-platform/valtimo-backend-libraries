@@ -16,15 +16,13 @@
 
 package com.ritense.mail.flowmailer.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.convertValue
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.domain.OauthTokenResponse
+import org.springframework.core.ParameterizedTypeReference
+import org.springframework.core.ResolvableType
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
@@ -33,11 +31,10 @@ import org.springframework.web.client.RestTemplate
 
 class FlowmailerTokenService(
     private val flowmailerProperties: FlowmailerProperties,
-    private val restTemplate: RestTemplate,
-    private val objectMapper: ObjectMapper
+    private val restTemplate: RestTemplate
 ) {
 
-    fun getFlowmailerToken(): String {
+    fun getToken(): String {
         val httpHeaders = HttpHeaders()
 
         httpHeaders.contentType = MediaType.APPLICATION_FORM_URLENCODED
@@ -49,14 +46,13 @@ class FlowmailerTokenService(
 
         val httpEntity = HttpEntity(params, httpHeaders)
         val response = restTemplate.exchange(
-            tokenUrl,
+            TOKEN_URL,
             HttpMethod.POST,
             httpEntity,
-            String::class.java
+            getType(OauthTokenResponse::class.java)
         )
-        if (response.statusCode == HttpStatus.OK) {
-            val result: OauthTokenResponse = objectMapper.readValue(response.body as String)
-            return result.accessToken
+        if (response.statusCode.is2xxSuccessful) {
+            return response.body.accessToken
         } else {
             throw HttpClientErrorException(
                 response.statusCode,
@@ -65,8 +61,14 @@ class FlowmailerTokenService(
         }
     }
 
-    companion object {
+    fun <T> getType(responseClass: Class<out T>): ParameterizedTypeReference<T> {
+        val type: ParameterizedTypeReference<T> = ParameterizedTypeReference.forType(
+            ResolvableType.forClass(responseClass).type
+        )
+        return type
+    }
 
-        private const val tokenUrl = "https://login.flowmailer.net/oauth/token"
+    companion object {
+        private const val TOKEN_URL = "https://login.flowmailer.net/oauth/token"
     }
 }

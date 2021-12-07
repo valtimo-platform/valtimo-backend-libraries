@@ -18,7 +18,6 @@ package com.ritense.mail.flowmailer.service
 
 import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
-import com.ritense.mail.flowmailer.domain.SubmitMessage
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
 import com.ritense.valtimo.contract.json.Mapper
@@ -30,25 +29,20 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.Mockito
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
-import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 class FlowmailerDispatcherTest : BaseTest() {
     lateinit var flowmailerProperties: FlowmailerProperties
@@ -61,7 +55,12 @@ class FlowmailerDispatcherTest : BaseTest() {
         flowmailerProperties = mock(FlowmailerProperties::class.java)
         flowmailerTokenService = mock(FlowmailerTokenService::class.java)
         restTemplate = mock(RestTemplate::class.java)
-        flowmailerMailDispatcher = FlowmailerMailDispatcher(flowmailerProperties, flowmailerTokenService, restTemplate)
+        flowmailerMailDispatcher = FlowmailerMailDispatcher(
+            flowmailerProperties,
+            flowmailerTokenService,
+            restTemplate,
+            Mapper.INSTANCE.get()
+        )
     }
 
     @Test
@@ -120,16 +119,18 @@ class FlowmailerDispatcherTest : BaseTest() {
                 SimpleName.from("testman")
             )
         )
-        val message = SubmitMessage.from(templatedMailMessage).first()
-        val url = "https://api.flowmailer.net/accountId/messages/submit"
-        val httpEntity = HttpEntity(message.toString(), getHttpHeaders())
         val location: MultiValueMap<String, String> = LinkedMultiValueMap()
         location.add("Location", "https://api.flowmailer.net/520/messages/202106110944460bfd0ca81fd281ef9e")
         val responseEntity = ResponseEntity<String>(location, status)
 
         `when`(flowmailerProperties.accountId).thenReturn("accountId")
-        `when`(flowmailerTokenService.getFlowmailerToken()).thenReturn("token")
-        `when`(restTemplate.exchange(url, HttpMethod.POST, httpEntity, String::class.java)).thenReturn(responseEntity)
+        `when`(flowmailerTokenService.getToken()).thenReturn("token")
+        `when`(restTemplate.exchange(
+            anyString(),
+            any(HttpMethod::class.java),
+            any(HttpEntity::class.java),
+            eq(String::class.java),
+        )).thenReturn(responseEntity)
 
         return templatedMailMessage
     }

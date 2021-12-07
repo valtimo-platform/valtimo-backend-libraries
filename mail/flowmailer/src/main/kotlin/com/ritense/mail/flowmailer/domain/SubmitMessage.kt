@@ -17,12 +17,11 @@
 package com.ritense.mail.flowmailer.domain
 
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
-import java.util.Base64
 import java.util.Date
 
 data class SubmitMessage(
     val attachments: MutableList<Attachment> = mutableListOf(),
-    val data: Map<String, String>? = null,
+    val data: MutableMap<String, Any>,
     val deliveryNotificationType: String? = null,
     val flowSelector: String, //link to flow with template
     val headerFromAddress: String,
@@ -31,8 +30,7 @@ data class SubmitMessage(
     val headerToName: String,
     val headers: List<Header>? = null,
     val html: String? = null,
-    val messageType: MessageType,
-    val mimeData: Base64? = null,
+    val messageType: MessageType = MessageType.EMAIL,
     val recipientAddress: String,
     val scheduleAt: Date? = null,
     val senderAddress: String,
@@ -72,10 +70,10 @@ data class SubmitMessage(
                     headerFromName = templatedMailMessage.sender.name.get().orEmpty(),
                     headerToAddress = it.email.get(),
                     headerToName = it.name.get().orEmpty(),
-                    messageType = MessageType.EMAIL,
                     recipientAddress = it.email.get(),
                     senderAddress = templatedMailMessage.sender.email.get(),
                     subject = templatedMailMessage.subject.get(),
+                    data = templatedMailMessage.placeholders
                 )
 
                 if (templatedMailMessage.attachments.isPresent) {

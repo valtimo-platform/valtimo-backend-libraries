@@ -16,6 +16,7 @@
 
 package com.ritense.mail.flowmailer.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.mail.MailDispatcher
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.domain.SubmitMessage
@@ -23,24 +24,24 @@ import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.mail.model.MailMessageStatus
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
+import org.apache.commons.lang3.NotImplementedException
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
-import org.springframework.web.client.RestTemplate
-import org.apache.commons.lang3.NotImplementedException
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.RestTemplate
 
 class FlowmailerMailDispatcher(
     private val flowmailerProperties: FlowmailerProperties,
     private val flowmailerTokenService: FlowmailerTokenService,
-    private val restTemplate: RestTemplate
+    private val restTemplate: RestTemplate,
+    private val objectMapper: ObjectMapper
 ) : MailDispatcher {
 
     override fun send(rawMailMessage: RawMailMessage): MutableList<MailMessageStatus> {
-            throw NotImplementedException("Send has not been implemented with RawMailMessage")
+        throw NotImplementedException("Send has not been implemented with RawMailMessage")
     }
 
     override fun send(templatedMailMessage: TemplatedMailMessage): MutableList<MailMessageStatus> {
@@ -58,34 +59,35 @@ class FlowmailerMailDispatcher(
         return MAX_SIZE_ATTACHMENTS
     }
 
-    private fun submitMessage(url: String, message: SubmitMessage): MailMessageStatus {
-        val httpEntity = HttpEntity(message.toString(), getHttpHeaders())
-
-        val flowmailerResponseStatus = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String::class.java)
-        if (flowmailerResponseStatus.statusCode.is2xxSuccessful) {
+    private fun submitMessage(url: String, submitMessage: SubmitMessage): MailMessageStatus {
+        val token = flowmailerTokenService.getToken()
+        val httpEntity = HttpEntity(objectMapper.writeValueAsString(submitMessage), getHttpHeaders(token))
+        val response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String::class.java)
+        if (response.statusCode.is2xxSuccessful) {
             val builder = MailMessageStatus.with(
-                EmailAddress.from(message.recipientAddress),
+                EmailAddress.from(submitMessage.recipientAddress),
                 "SENT",
-                //should get the id from header format "location": "https://api.flowmailer.net/520/messages/202106110944460bfd0ca81fd281ef9e"
-                flowmailerResponseStatus.headers.location.path.split("/").last()
+                // Get id from header "location":
+                // "https://api.flowmailer.net/520/messages/202106110944460bfd0ca81fd281ef9e"
+                response.headers.location.path.split("/").last()
             )
             return builder.build()
-        } else if (flowmailerResponseStatus.statusCode.is4xxClientError) {
+        } else if (response.statusCode.is4xxClientError) {
             throw HttpClientErrorException(
-                flowmailerResponseStatus.statusCode,
+                response.statusCode,
                 "Message has not been sent due to client side error"
             )
         } else {
             throw HttpServerErrorException(
-                flowmailerResponseStatus.statusCode,
+                response.statusCode,
                 "Message has not been sent due to server side error"
             )
         }
     }
 
-    private fun getHttpHeaders(): HttpHeaders {
+    private fun getHttpHeaders(bearerToken: String): HttpHeaders {
         val httpHeaders = HttpHeaders()
-        httpHeaders["Authorization"] = "Bearer " + flowmailerTokenService.getFlowmailerToken()
+        httpHeaders.setBearerAuth(bearerToken)
         httpHeaders.contentType = MediaType.valueOf("application/vnd.flowmailer.v1.12+json;charset=UTF-8")
         httpHeaders.accept = listOf(MediaType.valueOf("application/vnd.flowmailer.v1.12+json;charset=UTF-8"))
         return httpHeaders

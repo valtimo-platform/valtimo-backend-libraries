@@ -16,14 +16,13 @@
 
 package com.ritense.mail.flowmailer.domain
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.mail.flowmailer.BaseTest
-import com.ritense.valtimo.contract.basictype.EmailAddress
-import com.ritense.valtimo.contract.basictype.SimpleName
-import com.ritense.valtimo.contract.mail.model.value.Recipient
+import com.ritense.valtimo.contract.json.Mapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class OauthTokenResponseTest: BaseTest() {
+class OauthTokenResponseTest : BaseTest() {
 
     @Test
     fun `should make instance of OauthTokenResponse`() {
@@ -40,4 +39,15 @@ class OauthTokenResponseTest: BaseTest() {
         assertThat(oauthTokenResponse.scope).isEqualTo("scope")
         assertThat(oauthTokenResponse.tokenType).isEqualTo("tokenType")
     }
+
+    @Test
+    fun `should make instance of OauthTokenResponse from Json`() {
+        val response = """
+        {"access_token":"abc","token_type":"bearer","expires_in":59,"scope":"api"}
+        """.trimIndent()
+
+        val oauthTokenResponse: OauthTokenResponse = Mapper.INSTANCE.get().readValue(response)
+        assertThat(oauthTokenResponse).isNotNull
+    }
+
 }

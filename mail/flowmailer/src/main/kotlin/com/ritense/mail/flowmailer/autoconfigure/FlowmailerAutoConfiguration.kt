@@ -44,18 +44,18 @@ class FlowmailerAutoConfiguration {
     fun mailDispatcher(
         flowmailerProperties: FlowmailerProperties,
         flowmailerTokenService: FlowmailerTokenService,
-        restTemplate: RestTemplate
+        restTemplate: RestTemplate,
+        objectMapper: ObjectMapper = Mapper.INSTANCE.get()
     ): MailDispatcher {
-        return FlowmailerMailDispatcher(flowmailerProperties, flowmailerTokenService, restTemplate)
+        return FlowmailerMailDispatcher(flowmailerProperties, flowmailerTokenService, restTemplate, objectMapper)
     }
 
     @Bean
     @ConditionalOnMissingBean(FlowmailerTokenService::class)
     fun flowmailerTokenService(
         flowmailerProperties: FlowmailerProperties,
-        restTemplate: RestTemplate,
-        objectMapper: ObjectMapper = Mapper.INSTANCE.get()
+        restTemplate: RestTemplate
     ): FlowmailerTokenService {
-        return FlowmailerTokenService(flowmailerProperties, restTemplate, objectMapper)
+        return FlowmailerTokenService(flowmailerProperties, restTemplate)
     }
 }

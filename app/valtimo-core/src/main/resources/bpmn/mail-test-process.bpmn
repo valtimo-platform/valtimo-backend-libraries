@@ -10,6 +10,7 @@
     <bpmn:sequenceFlow id="Flow_1nhmmh4" sourceRef="start-event" targetRef="send-emai-service-task">
       <bpmn:extensionElements>
         <camunda:executionListener expression="${execution.setVariable(&#34;email&#34;,documentVariableDelegate.findValueByJsonPointer(&#34;/emailadres&#34;,execution))}" event="take" />
+        <camunda:executionListener expression="${execution.setVariable(&#34;taaknaam&#34;, &#34;Dit is een taaknaam&#34;)}" event="take" />
       </bpmn:extensionElements>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0kd8x0x" sourceRef="send-emai-service-task" targetRef="Event_1iw08yn" />
@@ -17,7 +18,7 @@
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="mailSendTaskFrom" value="test@valtimo.nl" />
-          <camunda:property name="mailSendTaskTemplate" value="Taaknotificatie" />
+          <camunda:property name="mailSendTaskTemplate" value="SUSWRYRS" />
           <camunda:property name="mailSendTaskSubject" value="Test email" />
           <camunda:property name="mailSendTaskTo" value="${email}" />
         </camunda:properties>

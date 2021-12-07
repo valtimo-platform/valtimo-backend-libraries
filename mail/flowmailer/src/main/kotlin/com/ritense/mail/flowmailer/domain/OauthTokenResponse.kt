@@ -16,9 +16,11 @@
 
 package com.ritense.mail.flowmailer.domain
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class OauthTokenResponse(
-    val accessToken: String,
-    val expiresIn: Int,
-    val scope: String,
-    val tokenType: String
+    @JsonProperty("access_token") val accessToken: String,
+    @JsonProperty("expires_in") val expiresIn: Int,
+    @JsonProperty("scope") val scope: String,
+    @JsonProperty("token_type") val tokenType: String
 )

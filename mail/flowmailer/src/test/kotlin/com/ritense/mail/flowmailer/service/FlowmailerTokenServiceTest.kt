@@ -16,25 +16,22 @@
 
 package com.ritense.mail.flowmailer.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.domain.OauthTokenResponse
-import com.ritense.valtimo.contract.json.Mapper
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.util.LinkedMultiValueMap
-import org.springframework.util.MultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 
@@ -42,22 +39,20 @@ class FlowmailerTokenServiceTest : BaseTest() {
 
     lateinit var flowmailerProperties: FlowmailerProperties
     lateinit var restTemplate: RestTemplate
-    lateinit var objectMapper: ObjectMapper
     lateinit var flowmailerTokenService: FlowmailerTokenService
 
     @BeforeEach
     internal fun setUp() {
         flowmailerProperties = mock(FlowmailerProperties::class.java)
         restTemplate = mock(RestTemplate::class.java)
-        objectMapper = Mapper.INSTANCE.get()
-        flowmailerTokenService = FlowmailerTokenService(flowmailerProperties, restTemplate, objectMapper)
+        flowmailerTokenService = FlowmailerTokenService(flowmailerProperties, restTemplate)
     }
 
     @Test
     fun `should return a token`() {
         templatedMailSenderSimulation(HttpStatus.OK)
 
-        val token = flowmailerTokenService.getFlowmailerToken()
+        val token = flowmailerTokenService.getToken()
 
         assertThat(token).isNotNull
         assertThat(token).isEqualTo("testToken")
@@ -67,8 +62,8 @@ class FlowmailerTokenServiceTest : BaseTest() {
     fun `should throw exception when no token is returned`() {
         templatedMailSenderSimulation(HttpStatus.BAD_REQUEST)
 
-        val exception = Assertions.assertThrows(HttpClientErrorException::class.java) {
-            flowmailerTokenService.getFlowmailerToken()
+        val exception = assertThrows(HttpClientErrorException::class.java) {
+            flowmailerTokenService.getToken()
         }
         assertThat(exception).hasMessageContaining("No token received")
     }
@@ -80,22 +75,16 @@ class FlowmailerTokenServiceTest : BaseTest() {
             scope = "api",
             tokenType = "testToken"
         )
-        val responseAsString = objectMapper.writeValueAsString(response)
-        val url = "https://login.flowmailer.net/oauth/token"
-
-        val httpHeaders = HttpHeaders()
-        httpHeaders.contentType = MediaType.APPLICATION_FORM_URLENCODED
-        val params: MultiValueMap<String, String> = LinkedMultiValueMap()
-        params.add("client_id", "clientId")
-        params.add("client_secret", "clientSecret")
-        params.add("grant_type", "client_credentials")
-        val httpEntity = HttpEntity(params, httpHeaders)
-
-        val responseEntity = ResponseEntity(responseAsString, null, status)
-
+        val responseEntity = ResponseEntity(response, null, status)
         `when`(flowmailerProperties.clientId).thenReturn("clientId")
         `when`(flowmailerProperties.clientSecret).thenReturn("clientSecret")
-        `when`(restTemplate.exchange(url, HttpMethod.POST, httpEntity, String::class.java))
-            .thenReturn(responseEntity)
+        `when`(
+            restTemplate.exchange(
+                anyString(),
+                any(HttpMethod::class.java),
+                any(HttpEntity::class.java),
+                any(ParameterizedTypeReference::class.java)
+            )
+        ).thenReturn(responseEntity)
     }
 }
