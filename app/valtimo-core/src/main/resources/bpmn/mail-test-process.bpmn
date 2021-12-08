@@ -16,7 +16,7 @@
       </bpmn:extensionElements>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0kd8x0x" sourceRef="send-emai-service-task" targetRef="Event_1iw08yn" />
-    <bpmn:serviceTask id="send-emai-service-task" name="Send email" camunda:expression="${mailService.sendElementTemplateTaskMail(execution)}">
+    <bpmn:serviceTask id="send-emai-service-task" name="Send email" camunda:expression="${mailTester.sendEmail(execution)}">
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="mailSendTaskFrom" value="flowmailertest@ritense.com" />

@@ -22,7 +22,6 @@ import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.mail.model.MailMessageStatus
-import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.Recipient
 import org.apache.commons.lang3.NotImplementedException
 import org.assertj.core.api.Assertions.assertThat
@@ -79,7 +78,14 @@ class FlowmailerDispatcherTest : BaseTest() {
 
     @Test
     fun `should send templatedMail and receive mailMessageStatus`() {
-        val templatedMailMessage = templatedMailSenderSimulation(HttpStatus.ACCEPTED)
+        templatedMailSenderSimulation(HttpStatus.ACCEPTED)
+
+        val templatedMailMessage = templatedMailMessage(
+            Recipient.to(
+                EmailAddress.from("test@test.com"),
+                SimpleName.from("testman")
+            )
+        )
 
         val mailMessageStatus = flowmailerMailDispatcher.send(templatedMailMessage)
         assertThat(mailMessageStatus).isNotNull
@@ -90,20 +96,32 @@ class FlowmailerDispatcherTest : BaseTest() {
 
     @Test
     fun `should throw HttpClientErrorException when 4XX`() {
-        val templatedMailMessage = templatedMailSenderSimulation(HttpStatus.BAD_REQUEST)
-        val exception = assertThrows(HttpClientErrorException::class.java) {
+        templatedMailSenderErrorSimulation(HttpStatus.BAD_REQUEST)
+
+        val templatedMailMessage = templatedMailMessage(
+            Recipient.to(
+                EmailAddress.from("test@test.com"),
+                SimpleName.from("testman")
+            )
+        )
+        assertThrows(HttpClientErrorException::class.java) {
             flowmailerMailDispatcher.send(templatedMailMessage)
         }
-        assertThat(exception).hasMessageContaining("Message has not been sent due to client side error")
     }
 
     @Test
     fun `should throw HttpServerErrorException when 5XX`() {
-        val templatedMailMessage = templatedMailSenderSimulation(HttpStatus.SERVICE_UNAVAILABLE)
-        val exception = assertThrows(HttpServerErrorException::class.java) {
+        templatedMailSenderErrorSimulation(HttpStatus.SERVICE_UNAVAILABLE)
+
+        val templatedMailMessage = templatedMailMessage(
+            Recipient.to(
+                EmailAddress.from("test@test.com"),
+                SimpleName.from("testman")
+            )
+        )
+        assertThrows(HttpServerErrorException::class.java) {
             flowmailerMailDispatcher.send(templatedMailMessage)
         }
-        assertThat(exception).hasMessageContaining("Message has not been sent due to server side error")
     }
 
     @Test
@@ -112,13 +130,7 @@ class FlowmailerDispatcherTest : BaseTest() {
         assertThat(actual).isEqualTo(FlowmailerMailDispatcher.MAX_SIZE_ATTACHMENTS)
     }
 
-    private fun templatedMailSenderSimulation(status: HttpStatus): TemplatedMailMessage {
-        val templatedMailMessage = templatedMailMessage(
-            Recipient.to(
-                EmailAddress.from("test@test.com"),
-                SimpleName.from("testman")
-            )
-        )
+    private fun templatedMailSenderSimulation(status: HttpStatus) {
         val location: MultiValueMap<String, String> = LinkedMultiValueMap()
         location.add("Location", "https://api.flowmailer.net/520/messages/202106110944460bfd0ca81fd281ef9e")
         val responseEntity = ResponseEntity<String>(location, status)
@@ -131,7 +143,17 @@ class FlowmailerDispatcherTest : BaseTest() {
             any(HttpEntity::class.java),
             eq(String::class.java),
         )).thenReturn(responseEntity)
-
-        return templatedMailMessage
     }
+
+    private fun templatedMailSenderErrorSimulation(status: HttpStatus) {
+        `when`(flowmailerProperties.accountId).thenReturn("accountId")
+        `when`(flowmailerTokenService.getToken()).thenReturn("token")
+        `when`(restTemplate.exchange(
+            anyString(),
+            any(HttpMethod::class.java),
+            any(HttpEntity::class.java),
+            eq(String::class.java),
+        )).thenThrow(HttpClientErrorException(status, "Error"))
+    }
+
 }

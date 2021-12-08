@@ -25,8 +25,8 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.util.LinkedMultiValueMap
-import org.springframework.util.MultiValueMap
 import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
 
 class FlowmailerTokenService(
@@ -35,29 +35,25 @@ class FlowmailerTokenService(
 ) {
 
     fun getToken(): String {
-        val httpHeaders = HttpHeaders()
+        try {
+            val httpHeaders = HttpHeaders()
+            httpHeaders.contentType = MediaType.APPLICATION_FORM_URLENCODED
 
-        httpHeaders.contentType = MediaType.APPLICATION_FORM_URLENCODED
+            val params = LinkedMultiValueMap<String, String>()
+            params.add("client_id", flowmailerProperties.clientId)
+            params.add("client_secret", flowmailerProperties.clientSecret)
+            params.add("grant_type", "client_credentials")
 
-        val params: MultiValueMap<String, String> = LinkedMultiValueMap()
-        params.add("client_id", flowmailerProperties.clientId)
-        params.add("client_secret", flowmailerProperties.clientSecret)
-        params.add("grant_type", "client_credentials")
-
-        val httpEntity = HttpEntity(params, httpHeaders)
-        val response = restTemplate.exchange(
-            TOKEN_URL,
-            HttpMethod.POST,
-            httpEntity,
-            getType(OauthTokenResponse::class.java)
-        )
-        if (response.statusCode.is2xxSuccessful) {
-            return response.body.accessToken
-        } else {
-            throw HttpClientErrorException(
-                response.statusCode,
-                "No token received"
+            val httpEntity = HttpEntity(params, httpHeaders)
+            val response = restTemplate.exchange(
+                TOKEN_URL,
+                HttpMethod.POST,
+                httpEntity,
+                getType(OauthTokenResponse::class.java)
             )
+            return response.body.accessToken
+        } catch (e: HttpStatusCodeException) {
+            throw HttpClientErrorException(e.statusCode, "No token received")
         }
     }
 

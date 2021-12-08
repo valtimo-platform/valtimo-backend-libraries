@@ -60,12 +60,11 @@ class FlowmailerTokenServiceTest : BaseTest() {
 
     @Test
     fun `should throw exception when no token is returned`() {
-        templatedMailSenderSimulation(HttpStatus.BAD_REQUEST)
+        templatedMailSenderErrorSimulation(HttpStatus.BAD_REQUEST)
 
-        val exception = assertThrows(HttpClientErrorException::class.java) {
+        assertThrows(HttpClientErrorException::class.java) {
             flowmailerTokenService.getToken()
         }
-        assertThat(exception).hasMessageContaining("No token received")
     }
 
     private fun templatedMailSenderSimulation(status: HttpStatus) {
@@ -86,5 +85,18 @@ class FlowmailerTokenServiceTest : BaseTest() {
                 any(ParameterizedTypeReference::class.java)
             )
         ).thenReturn(responseEntity)
+    }
+
+    private fun templatedMailSenderErrorSimulation(status: HttpStatus) {
+        `when`(flowmailerProperties.clientId).thenReturn("clientId")
+        `when`(flowmailerProperties.clientSecret).thenReturn("clientSecret")
+        `when`(
+            restTemplate.exchange(
+                anyString(),
+                any(HttpMethod::class.java),
+                any(HttpEntity::class.java),
+                any(ParameterizedTypeReference::class.java)
+            )
+        ).thenThrow(HttpClientErrorException(status, "Error"))
     }
 }

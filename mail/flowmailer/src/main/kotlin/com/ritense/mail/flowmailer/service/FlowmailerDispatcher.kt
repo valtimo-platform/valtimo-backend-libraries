@@ -31,6 +31,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
 
 class FlowmailerMailDispatcher(
@@ -60,28 +61,29 @@ class FlowmailerMailDispatcher(
     }
 
     private fun submitMessage(url: String, submitMessage: SubmitMessage): MailMessageStatus {
-        val token = flowmailerTokenService.getToken()
-        val httpEntity = HttpEntity(objectMapper.writeValueAsString(submitMessage), getHttpHeaders(token))
-        val response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String::class.java)
-        if (response.statusCode.is2xxSuccessful) {
-            val builder = MailMessageStatus.with(
+        try {
+            val token = flowmailerTokenService.getToken()
+            val httpEntity = HttpEntity(objectMapper.writeValueAsString(submitMessage), getHttpHeaders(token))
+            val response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String::class.java)
+            return MailMessageStatus.with(
                 EmailAddress.from(submitMessage.recipientAddress),
                 "SENT",
                 // Get id from header "location":
                 // "https://api.flowmailer.net/520/messages/202106110944460bfd0ca81fd281ef9e"
                 response.headers.location.path.split("/").last()
-            )
-            return builder.build()
-        } else if (response.statusCode.is4xxClientError) {
-            throw HttpClientErrorException(
-                response.statusCode,
-                "Message has not been sent due to client side error"
-            )
-        } else {
-            throw HttpServerErrorException(
-                response.statusCode,
-                "Message has not been sent due to server side error"
-            )
+            ).build()
+        } catch (e: HttpStatusCodeException) {
+            if (e.statusCode.is4xxClientError) {
+                throw HttpClientErrorException(
+                    e.statusCode,
+                    "Message has not been sent due to client side error"
+                )
+            } else {
+                throw HttpServerErrorException(
+                    e.statusCode,
+                    "Message has not been sent due to server side error"
+                )
+            }
         }
     }
 
