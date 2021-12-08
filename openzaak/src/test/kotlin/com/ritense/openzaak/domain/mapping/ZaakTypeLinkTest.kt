@@ -181,6 +181,39 @@ class ZaakTypeLinkTest {
         )
     }
 
+    @Test
+    fun `should pick correct serviceTaskHandler when handeling task`() {
+        val delegateExecutionFake = DelegateExecutionFake().withCurrentActivityId("taskA")
+        val documentId = UUID.randomUUID()
+        val zaakTypeLink = zaakTypeLink()
+        zaakTypeLink.assignZaakInstance(zaakInstanceLink(documentId))
+        zaakTypeLink.assignZaakServiceHandler(
+            ServiceTaskHandlerRequest(
+                "process1",
+                "taskA",
+                Operation.SET_STATUS,
+                URI.create("www.statusTypeUrl1.nl")
+            )
+        )
+        zaakTypeLink.assignZaakServiceHandler(
+            ServiceTaskHandlerRequest(
+                "process2",
+                "taskA",
+                Operation.SET_STATUS,
+                URI.create("www.statusTypeUrl2.nl")
+            )
+        )
+
+        zaakTypeLink.handleServiceTask(delegateExecutionFake, "process2", documentId)
+
+        assertThat(zaakTypeLink.domainEvents()).contains(
+            StatusSetEvent(
+                URI.create("www.zaakUrl.nl"),
+                URI.create("www.statusTypeUrl2.nl")
+            )
+        )
+    }
+
     private fun zaakInstanceLink(documentId: UUID): ZaakInstanceLink {
         return ZaakInstanceLink(
             URI.create("www.zaakUrl.nl"),
