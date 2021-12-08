@@ -83,7 +83,6 @@ class DocumentenService(
 
     override fun getObjectInformatieObject(enkelvoudigInformatieObject: URI): ByteArray {
         val id = extractId(enkelvoudigInformatieObject)
-        //TODO: kijken of streamen mogelijk is
 
         try {
             return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
