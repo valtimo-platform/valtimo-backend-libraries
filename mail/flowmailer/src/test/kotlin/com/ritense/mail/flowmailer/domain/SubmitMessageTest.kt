@@ -67,7 +67,7 @@ class SubmitMessageTest : BaseTest() {
 
         val submitMessages = SubmitMessage.from(templatedMailMessage)
 
-        assertThat(submitMessages[0].attachments[0].fileName).isEqualTo(attachment.name.get())
+        assertThat(submitMessages[0].attachments[0].filename).isEqualTo(attachment.name.get())
         assertThat(submitMessages[0].attachments[0].contentType).isEqualTo(attachment.type.get())
         assertThat(submitMessages[0].attachments[0].content).isNotNull
     }

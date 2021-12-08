@@ -44,8 +44,6 @@ public class MailTester {
                 )
             )
             .build();
-
-
         mailDispatcher.send(templatedMailMessage);
     }
 

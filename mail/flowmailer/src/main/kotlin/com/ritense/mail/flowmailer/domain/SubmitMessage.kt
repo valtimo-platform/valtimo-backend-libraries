@@ -17,12 +17,12 @@
 package com.ritense.mail.flowmailer.domain
 
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
+import org.apache.tika.Tika
 import java.util.Date
 
 data class SubmitMessage(
     val attachments: MutableList<Attachment> = mutableListOf(),
     val data: MutableMap<String, Any>,
-    val deliveryNotificationType: String? = null,
     val flowSelector: String, //link to flow with template
     val headerFromAddress: String,
     val headerFromName: String,
@@ -41,10 +41,9 @@ data class SubmitMessage(
 
     data class Attachment(
         val content: ByteArray,
-        val contentId: String? = null,
-        val contentType: String,
+        val contentType: String, //MimeType
         val disposition: Disposition = Disposition.attachment,
-        val fileName: String
+        val filename: String
     )
 
     enum class Disposition {
@@ -81,8 +80,8 @@ data class SubmitMessage(
                         submitMessage.attachments.add(
                             Attachment(
                                 content = attachment.content.get(),
-                                contentType = attachment.type.get(),
-                                fileName = attachment.name.get()
+                                contentType = Tika().detect(attachment.content.get()),
+                                filename = attachment.name.get()
                             )
                         )
                     }

@@ -24,5 +24,4 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @Tag("integration")
-abstract class BaseIntegrationTest {
-}
+abstract class BaseIntegrationTest
