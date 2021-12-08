@@ -20,7 +20,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="1" author="Klaas Schuijtemaker">
-        <customChange class="com.ritense.openzaak.liquibase.changelog.ChangeLog20211130"/>
+        <customChange class="com.ritense.openzaak.liquibase.changelog.ChangeLog20211130AddProcessDefinitionKeyToServiceTaskHandler"/>
     </changeSet>
 
 </databaseChangeLog>

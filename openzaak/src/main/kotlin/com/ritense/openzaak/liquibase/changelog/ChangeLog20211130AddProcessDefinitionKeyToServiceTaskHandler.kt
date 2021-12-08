@@ -27,7 +27,7 @@ import liquibase.exception.CustomChangeException
 import liquibase.exception.ValidationErrors
 import liquibase.resource.ResourceAccessor
 
-class ChangeLog20211130 : CustomTaskChange {
+class ChangeLog20211130AddProcessDefinitionKeyToServiceTaskHandler : CustomTaskChange {
 
     override fun execute(database: Database?) {
         val connection = database!!.connection as JdbcConnection
