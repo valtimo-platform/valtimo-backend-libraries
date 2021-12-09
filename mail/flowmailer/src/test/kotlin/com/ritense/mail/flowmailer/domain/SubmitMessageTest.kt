@@ -16,7 +16,6 @@
 
 package com.ritense.mail.flowmailer.domain
 
-
 import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
@@ -25,6 +24,7 @@ import com.ritense.valtimo.contract.mail.model.value.Recipient
 import com.ritense.valtimo.contract.mail.model.value.attachment.Content
 import com.ritense.valtimo.contract.mail.model.value.attachment.Name
 import com.ritense.valtimo.contract.mail.model.value.attachment.Type
+import org.apache.tika.Tika
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -68,7 +68,7 @@ class SubmitMessageTest : BaseTest() {
         val submitMessages = SubmitMessage.from(templatedMailMessage)
 
         assertThat(submitMessages[0].attachments[0].filename).isEqualTo(attachment.name.get())
-        assertThat(submitMessages[0].attachments[0].contentType).isEqualTo(attachment.type.get())
+        assertThat(submitMessages[0].attachments[0].contentType).isEqualTo(Tika().detect(attachment.content.get()))
         assertThat(submitMessages[0].attachments[0].content).isNotNull
     }
 }
