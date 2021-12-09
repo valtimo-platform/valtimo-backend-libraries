@@ -20,7 +20,6 @@ import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinks
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
@@ -49,7 +48,7 @@ class ZaakTypeLinkServiceTest {
     lateinit var zaakTypeLinkId: ZaakTypeLinkId
 
     @Mock
-    lateinit var zaakTypeLinkRepositoryRepository: ZaakTypeLinkRepository
+    lateinit var zaakTypeLinkRepository: ZaakTypeLinkRepository
 
     @Mock
     lateinit var processDocumentAssociationService: CamundaProcessJsonSchemaDocumentAssociationService
@@ -60,23 +59,22 @@ class ZaakTypeLinkServiceTest {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
-        zaakTypeLinkService = ZaakTypeLinkService(zaakTypeLinkRepositoryRepository, processDocumentAssociationService)
+        zaakTypeLinkService = ZaakTypeLinkService(zaakTypeLinkRepository, processDocumentAssociationService)
         zaakTypeLinkId = ZaakTypeLinkId.newId(UUID.randomUUID())
 
         zaakTypeLink = ZaakTypeLink(
             zaakTypeLinkId,
             documentDefinitionName,
             zaakTypeUrl,
-            ZaakInstanceLinks(),
             ServiceTaskHandlers()
         )
-        whenever(zaakTypeLinkRepositoryRepository.findById(zaakTypeLinkId)).thenReturn(Optional.of(zaakTypeLink))
+        whenever(zaakTypeLinkRepository.findById(zaakTypeLinkId)).thenReturn(Optional.of(zaakTypeLink))
 
     }
 
     @Test
     fun `should return entity`() {
-        whenever(zaakTypeLinkRepositoryRepository.findByDocumentDefinitionName("documentDefinitionName")).thenReturn(zaakTypeLink)
+        whenever(zaakTypeLinkRepository.findByDocumentDefinitionName("documentDefinitionName")).thenReturn(zaakTypeLink)
 
         val result = zaakTypeLinkService.get("documentDefinitionName")
 
@@ -143,7 +141,7 @@ class ZaakTypeLinkServiceTest {
                 )
             ))
 
-        whenever(zaakTypeLinkRepositoryRepository.findByDocumentDefinitionNameIn(
+        whenever(zaakTypeLinkRepository.findByDocumentDefinitionNameIn(
             eq(listOf("documentDefinitionId", "documentDefinitionId2")))
         ).thenReturn(listOf(
             zaakTypeLink

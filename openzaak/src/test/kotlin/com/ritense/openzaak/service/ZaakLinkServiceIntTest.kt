@@ -17,13 +17,11 @@
 package com.ritense.openzaak.service
 
 import com.ritense.openzaak.BaseIntegrationTest
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.net.URI
-import java.util.UUID
 import javax.inject.Inject
 import javax.transaction.Transactional
 
@@ -44,23 +42,6 @@ class ZaakLinkServiceIntTest : BaseIntegrationTest() {
         assertThat(result.zaakTypeLink()).isNotNull
         assertThat(result.zaakTypeLink()!!.documentDefinitionName).isEqualTo("test")
         assertThat(result.zaakTypeLink()!!.zaakTypeUrl).isEqualTo(zaakType)
-    }
-
-    @Test
-    fun `should create zaaktypeLink and assign zaakInstance`() {
-        val result = zaakTypeLinkService.createZaakTypeLink(
-            CreateZaakTypeLinkRequest("test", zaakType)
-        )
-
-        val zaakInstanceLink = ZaakInstanceLink(URI.create("http://example.com"), UUID.randomUUID(), UUID.randomUUID())
-
-        val zaaktypeLink = zaakTypeLinkService.assignZaakInstance(
-            result.zaakTypeLink()!!.zaakTypeLinkId,
-            zaakInstanceLink
-        )
-
-        assertThat(zaaktypeLink).isNotNull
-        assertThat(zaaktypeLink.zaakInstanceLinks).contains(zaakInstanceLink)
     }
 
 }
