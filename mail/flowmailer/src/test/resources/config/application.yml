@@ -1,0 +1,8 @@
+###
+# Flowmailer configuration
+##
+valtimo:
+    flowmailer:
+        client-id: clientId
+        client-secret: clientSecret
+        account-id: accountId

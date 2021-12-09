@@ -18,13 +18,17 @@ package com.ritense.mail.flowmailer
 
 import com.ritense.mail.autoconfigure.MailAutoConfiguration
 import com.ritense.mail.autoconfigure.MailLiquibaseAutoConfiguration
+import com.ritense.mail.flowmailer.autoconfigure.FlowmailerAutoConfiguration
+import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.TestConfiguration
 
+@EnableConfigurationProperties(FlowmailerProperties::class)
 @SpringBootApplication(exclude = [
     DataSourceAutoConfiguration::class,
     DataSourceTransactionManagerAutoConfiguration::class,

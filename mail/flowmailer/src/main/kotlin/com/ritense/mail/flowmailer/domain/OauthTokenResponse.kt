@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.mail.flowmailer
+package com.ritense.mail.flowmailer.domain
 
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringExtension
+import com.fasterxml.jackson.annotation.JsonProperty
 
-@SpringBootTest
-@ExtendWith(SpringExtension::class)
-@Tag("integration")
-abstract class BaseIntegrationTest
+data class OauthTokenResponse(
+    @JsonProperty("access_token") val accessToken: String,
+    @JsonProperty("expires_in") val expiresIn: Int,
+    @JsonProperty("scope") val scope: String,
+    @JsonProperty("token_type") val tokenType: String
+)

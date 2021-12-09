@@ -10,14 +10,17 @@
     <bpmn:sequenceFlow id="Flow_1nhmmh4" sourceRef="start-event" targetRef="send-emai-service-task">
       <bpmn:extensionElements>
         <camunda:executionListener expression="${execution.setVariable(&#34;email&#34;,documentVariableDelegate.findValueByJsonPointer(&#34;/emailadres&#34;,execution))}" event="take" />
+        <camunda:executionListener expression="${execution.setVariable(&#34;taaknaam&#34;, &#34;Dit is een taaknaam&#34;)}" event="take" />
+        <camunda:executionListener expression="${execution.setVariable(&#34;voornaam&#34;, &#34;Dit is een voornaam&#34;)}" event="take" />
+        <camunda:executionListener expression="${execution.setVariable(&#34;taaklink&#34;, &#34;Dit is een taaklink&#34;)}" event="take" />
       </bpmn:extensionElements>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0kd8x0x" sourceRef="send-emai-service-task" targetRef="Event_1iw08yn" />
-    <bpmn:serviceTask id="send-emai-service-task" name="Send email" camunda:expression="${mailService.sendElementTemplateTaskMail(execution)}">
+    <bpmn:serviceTask id="send-emai-service-task" name="Send email" camunda:expression="${mailTester.sendEmail(execution)}">
       <bpmn:extensionElements>
         <camunda:properties>
-          <camunda:property name="mailSendTaskFrom" value="test@valtimo.nl" />
-          <camunda:property name="mailSendTaskTemplate" value="testFlow" />
+          <camunda:property name="mailSendTaskFrom" value="flowmailertest@ritense.com" />
+          <camunda:property name="mailSendTaskTemplate" value="SUSWRYRS" />
           <camunda:property name="mailSendTaskSubject" value="Test email" />
           <camunda:property name="mailSendTaskTo" value="${email}" />
         </camunda:properties>

@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.mail.flowmailer
+package com.ritense.mail.flowmailer.config
 
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringExtension
+import com.ritense.mail.flowmailer.BaseIntegrationTest
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import javax.inject.Inject
 
-@SpringBootTest
-@ExtendWith(SpringExtension::class)
-@Tag("integration")
-abstract class BaseIntegrationTest
+internal class FlowmailerPropertiesIntTest: BaseIntegrationTest() {
+
+    @Inject
+    lateinit var flowmailerProperties: FlowmailerProperties
+
+    @Test
+    fun `should create a FlowmailerProperties bean`() {
+        assertThat(flowmailerProperties).isNotNull
+        assertThat(flowmailerProperties.accountId).isEqualTo("accountId")
+    }
+}
