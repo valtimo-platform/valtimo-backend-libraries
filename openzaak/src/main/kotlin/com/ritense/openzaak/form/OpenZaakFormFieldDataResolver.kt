@@ -18,15 +18,15 @@ package com.ritense.openzaak.form
 
 import com.ritense.openzaak.exception.UnmappableOpenZaakPropertyException
 import com.ritense.openzaak.exception.ZaakInstanceNotFoundException
+import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
-import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.valtimo.contract.form.ExternalFormFieldType
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
 import java.util.UUID
 
 class OpenZaakFormFieldDataResolver(
     private val zaakService: ZaakService,
-    private val zaakTypeLinkService: ZaakTypeLinkService
+    private val zaakInstanceLinkService: ZaakInstanceLinkService
 ) : FormFieldDataResolver {
 
     override fun supports(externalFormFieldType: ExternalFormFieldType): Boolean {
@@ -34,10 +34,9 @@ class OpenZaakFormFieldDataResolver(
     }
 
     override fun get(documentDefinitionName: String, documentId: UUID, vararg varNames: String): Map<String, Any> {
-        val zaakTypeLink = zaakTypeLinkService.findBy(documentDefinitionName)
         val result = mutableMapOf<String, String>()
         try {
-            val zaakInstanceLink = zaakTypeLink.getZaakInstanceLink(documentId)
+            val zaakInstanceLink = zaakInstanceLinkService.getByDocumentId(documentId)
             val eigenschappen = zaakService.getZaakEigenschappen(zaakInstanceLink.zaakInstanceId)
 
             if (eigenschappen.isNotEmpty()) {

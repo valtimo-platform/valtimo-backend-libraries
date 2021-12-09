@@ -18,6 +18,7 @@ package com.ritense.openzaak.listener
 
 import com.ritense.openzaak.exception.UnmappableOpenZaakPropertyException
 import com.ritense.openzaak.service.impl.EigenschapService
+import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
@@ -28,7 +29,8 @@ import java.net.URI
 class EigenschappenSubmittedListener(
     val zaakTypeLinkService: ZaakTypeLinkService,
     val eigenschapService: EigenschapService,
-    val zaakService: ZaakService
+    val zaakService: ZaakService,
+    val zaakInstanceLinkService: ZaakInstanceLinkService
 ) {
 
     @EventListener(ExternalDataSubmittedEvent::class)
@@ -36,6 +38,7 @@ class EigenschappenSubmittedListener(
         event.data[ExternalFormFieldType.OZ]?.let {
             val mappedEigenschappen: MutableMap<URI, String> = mutableMapOf()
             val zaakTypeLink = zaakTypeLinkService.findBy(event.documentDefinition)
+            val zaakInstanceLink = zaakInstanceLinkService.getByDocumentId(event.documentId)
             val eigenschappen = eigenschapService.getEigenschappen(zaakTypeLink.zaakTypeUrl).results
             if (eigenschappen.isNotEmpty()) {
                 it.forEach { (key, value) ->
@@ -46,7 +49,7 @@ class EigenschappenSubmittedListener(
                     }
                 }
                 if (mappedEigenschappen.isNotEmpty()) {
-                    zaakTypeLink.assignZaakInstanceEigenschappen(event.documentId, mappedEigenschappen)
+                    zaakTypeLink.assignZaakInstanceEigenschappen(zaakInstanceLink, mappedEigenschappen)
                 }
                 zaakTypeLinkService.modify(zaakTypeLink)
             } else

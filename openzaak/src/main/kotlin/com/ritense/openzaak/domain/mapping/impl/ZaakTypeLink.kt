@@ -21,8 +21,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.openzaak.domain.event.EigenschappenSetEvent
 import com.ritense.openzaak.domain.event.ResultaatSetEvent
 import com.ritense.openzaak.domain.event.StatusSetEvent
-import com.ritense.openzaak.domain.event.ZaakCreatedEvent
-import com.ritense.openzaak.exception.ZaakInstanceNotFoundException
 import com.ritense.openzaak.repository.converter.UriAttributeConverter
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.valtimo.contract.domain.AggregateRoot
@@ -33,7 +31,6 @@ import org.hibernate.annotations.Type
 import org.hibernate.validator.constraints.Length
 import org.springframework.data.domain.Persistable
 import java.net.URI
-import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Convert
 import javax.persistence.EmbeddedId
@@ -59,10 +56,6 @@ data class ZaakTypeLink(
     var zaakTypeUrl: URI,
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
-    @Column(name = "zaak_instance_links", columnDefinition = "json")
-    var zaakInstanceLinks: ZaakInstanceLinks,
-
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
     @Column(name = "service_task_handlers", columnDefinition = "json")
     var serviceTaskHandlers: ServiceTaskHandlers
 
@@ -76,18 +69,6 @@ data class ZaakTypeLink(
         this.zaakTypeUrl = zaakTypeUrl
     }
 
-    fun assignZaakInstance(zaakInstanceLink: ZaakInstanceLink) {
-        zaakInstanceLinks.plusAssign(zaakInstanceLink)
-    }
-
-    fun getZaakInstanceLink(documentId: UUID): ZaakInstanceLink {
-        try {
-           return zaakInstanceLinks.single { it.documentId == documentId }
-        } catch (e: Exception) {
-            throw ZaakInstanceNotFoundException("No zaak instance link has been found", e)
-        }
-    }
-
     fun assignZaakServiceHandler(request: ServiceTaskHandlerRequest) {
         serviceTaskHandlers.removeIf { zsh -> zsh.serviceTaskId == request.serviceTaskId }
         serviceTaskHandlers.plusAssign(ServiceTaskHandler(request.serviceTaskId, request.operation, request.parameter))
@@ -98,25 +79,17 @@ data class ZaakTypeLink(
     }
 
     @JsonIgnore
-    fun createZaak(execution: DelegateExecution) {
-        registerEvent(ZaakCreatedEvent(execution))
-    }
-
-    @JsonIgnore
-    fun assignZaakInstanceStatus(documentId: UUID, statusType: URI) {
-        val zaakInstanceUrl = getZaakInstanceLink(documentId).zaakInstanceUrl
+    fun assignZaakInstanceStatus(zaakInstanceUrl: URI, statusType: URI) {
         registerEvent(StatusSetEvent(zaakInstanceUrl, statusType))
     }
 
     @JsonIgnore
-    fun assignZaakInstanceResultaat(documentId: UUID, resultaatType: URI) {
-        val zaakInstanceUrl = getZaakInstanceLink(documentId).zaakInstanceUrl
+    fun assignZaakInstanceResultaat(zaakInstanceUrl: URI, resultaatType: URI) {
         registerEvent(ResultaatSetEvent(zaakInstanceUrl, resultaatType))
     }
 
     @JsonIgnore
-    fun assignZaakInstanceEigenschappen(documentId: UUID, eigenschappen: MutableMap<URI, String>) {
-        val zaakInstanceLink = getZaakInstanceLink(documentId)
+    fun assignZaakInstanceEigenschappen(zaakInstanceLink:ZaakInstanceLink, eigenschappen: MutableMap<URI, String>) {
         registerEvent(
             EigenschappenSetEvent(
                 zaakInstanceLink.zaakInstanceUrl,
@@ -142,23 +115,28 @@ data class ZaakTypeLink(
     }
 
     @JsonIgnore
-    fun handleServiceTask(execution: DelegateExecution, id: UUID) {
+    fun handleServiceTask(execution: DelegateExecution, zaakInstanceUrl: URI?) {
         val serviceTaskId = execution.currentActivityId
         val serviceTaskHandler = getServiceTaskHandlerBy(serviceTaskId)
 
         if (serviceTaskHandler != null) {
             when (serviceTaskHandler.operation) {
-                Operation.CREATE_ZAAK -> {
-                    createZaak(execution)
-                }
                 Operation.SET_STATUS -> {
-                    assignZaakInstanceStatus(id, serviceTaskHandler.parameter)
+                    assignZaakInstanceStatus(zaakInstanceUrl!!, serviceTaskHandler.parameter)
                 }
                 Operation.SET_RESULTAAT -> {
-                    assignZaakInstanceResultaat(id, serviceTaskHandler.parameter)
+                    assignZaakInstanceResultaat(zaakInstanceUrl!!, serviceTaskHandler.parameter)
                 }
             }
         }
+    }
+
+    @JsonIgnore
+    fun isCreateZaakTask(execution:DelegateExecution): Boolean {
+        val serviceTaskId = execution.currentActivityId
+        val serviceTaskHandler = getServiceTaskHandlerBy(serviceTaskId) ?: return false
+
+        return serviceTaskHandler.operation == Operation.CREATE_ZAAK
     }
 
 }
