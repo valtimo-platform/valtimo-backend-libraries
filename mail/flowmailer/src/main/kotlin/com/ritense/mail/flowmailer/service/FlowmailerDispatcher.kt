@@ -50,7 +50,7 @@ class FlowmailerMailDispatcher(
         val messages = SubmitMessage.from(templatedMailMessage)
         val submitMessageURI = "/${flowmailerProperties.accountId}/messages/submit"
         messages.forEach { message ->
-            val mailMessageStatus = submitMessage(baseUrl + submitMessageURI, message)
+            val mailMessageStatus = submitMessage(BASE_URL + submitMessageURI, message)
             mailMessageStatusList.add(mailMessageStatus)
         }
         return mailMessageStatusList
@@ -96,7 +96,7 @@ class FlowmailerMailDispatcher(
     }
 
     companion object {
-        private const val baseUrl = "https://api.flowmailer.net"
+        private const val BASE_URL = "https://api.flowmailer.net"
         const val MAX_SIZE_ATTACHMENTS: Int = 16250000 //TODO: What is the actual max size in Flowmailer?
     }
 }
