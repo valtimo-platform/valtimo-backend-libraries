@@ -27,4 +27,6 @@ interface DocumentenService {
     fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, documentId: UUID, documentDefinitionName: String)
 
     fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, zaak: URI)
+
+    fun getObjectInformatieObject(enkelvoudigInformatieObject: URI): ByteArray
 }

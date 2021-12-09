@@ -16,7 +16,7 @@
 
 package com.ritense.resource.service
 
-import com.ritense.openzaak.service.impl.DocumentenService
+import com.ritense.openzaak.service.DocumentenService
 import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.resource.domain.ResourceId
 import com.ritense.resource.repository.OpenZaakResourceRepository
@@ -30,11 +30,13 @@ import com.ritense.valtimo.contract.resource.Resource
 import java.net.URL
 import java.time.LocalDateTime
 import java.util.UUID
+import javax.servlet.http.HttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 
 class OpenZaakService(
     val documentenService: DocumentenService,
-    val openZaakResourceRepository: OpenZaakResourceRepository
+    val openZaakResourceRepository: OpenZaakResourceRepository,
+    val request: HttpServletRequest
 ): ResourceService {
 
     override fun store(key: String, multipartFile: MultipartFile): Resource {
@@ -42,7 +44,21 @@ class OpenZaakService(
     }
 
     override fun store(key: String, multipartFile: MultipartFile, fileStatus: FileStatus): Resource {
-        TODO("Not yet implemented")
+
+        val informatieObjectUrl =
+            documentenService.createEnkelvoudigInformatieObject(key, multipartFile)
+
+        val uploadRequest = MultipartFileUploadRequest.from(multipartFile)
+
+        val openZaakResource = OpenZaakResource(
+            ResourceId.newId(UUID.randomUUID()),
+            informatieObjectUrl,
+            key,
+            uploadRequest.getExtension(),
+            uploadRequest.getSize(),
+            LocalDateTime.now()
+        )
+        return openZaakResourceRepository.saveAndFlush(openZaakResource)
     }
 
     override fun store(documentDefinitionName: String, name: String, multipartFile: MultipartFile): OpenZaakResource {
@@ -71,7 +87,19 @@ class OpenZaakService(
     }
 
     override fun getResourceUrl(id: UUID): ObjectUrlDTO {
-        TODO("Not yet implemented")
+        val resource = openZaakResourceRepository.getById(ResourceId.existingId(id))
+
+        return ObjectUrlDTO(
+            getDownloadUrl(resource),
+            ResourceDTO(
+                resource.id.id.toString(),
+                resource.name(),
+                resource.name(),
+                resource.extension,
+                resource.sizeInBytes,
+                resource.createdOn
+            )
+        )
     }
 
     override fun getResourceUrl(fileName: String): URL {
@@ -79,7 +107,19 @@ class OpenZaakService(
     }
 
     override fun getResourceContent(id: UUID): ObjectContentDTO {
-        TODO("Not yet implemented")
+        val resource = openZaakResourceRepository.getById(ResourceId.existingId(id))
+        return ObjectContentDTO(
+            getDownloadUrl(resource),
+            ResourceDTO(
+                resource.id.id.toString(),
+                resource.name(),
+                resource.name(),
+                resource.extension,
+                resource.sizeInBytes,
+                resource.createdOn
+            ),
+            documentenService.getObjectInformatieObject(resource.informatieObjectUrl)
+        )
     }
 
     override fun removeResource(id: UUID) {
@@ -108,5 +148,10 @@ class OpenZaakService(
 
     override fun pending(id: UUID) {
         TODO("Not yet implemented")
+    }
+
+    private fun getDownloadUrl(resource: OpenZaakResource): URL {
+        val currentRequestUrl = URL(request.requestURL.toString())
+        return URL(currentRequestUrl, "/api/resource/${resource.resourceId.id}/download")
     }
 }
