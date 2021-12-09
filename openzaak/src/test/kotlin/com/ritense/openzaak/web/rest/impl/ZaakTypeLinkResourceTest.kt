@@ -21,7 +21,6 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandler
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinks
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
@@ -77,7 +76,6 @@ internal class ZaakTypeLinkResourceTest {
             zaaktypeLinkId,
             "documentDefinitionName",
             URI.create("zaakTypeUrl"),
-            ZaakInstanceLinks(),
             serviceTaskHandlers
         )
 
@@ -109,7 +107,6 @@ internal class ZaakTypeLinkResourceTest {
             zaaktypeLinkId,
             "documentDefinitionName",
             URI.create("zaakTypeUrl"),
-            ZaakInstanceLinks(),
             serviceTaskHandlers
         )
 

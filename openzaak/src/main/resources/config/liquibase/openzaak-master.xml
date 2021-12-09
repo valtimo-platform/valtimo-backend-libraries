@@ -23,5 +23,5 @@
     <include file="changelog/20200906-open-zaak-config-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20201006-zaaktype-link-domain-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20211802-informatieobjecttype-link-changelog.xml" relativeToChangelogFile="true"/>
-
+    <include file="changelog/20211108-zaak-instance-link-changelog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
