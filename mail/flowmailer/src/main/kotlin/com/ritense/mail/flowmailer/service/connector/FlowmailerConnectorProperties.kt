@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ritense.mail.flowmailer.service.connector
 
-dockerCompose {
-    projectName = "mail"
-    isRequiredBy(integrationTesting)
-    isRequiredBy(securityTesting)
-    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
-}
+import com.ritense.connector.domain.ConnectorProperties
+import com.ritense.mail.flowmailer.config.FlowmailerProperties
 
-dependencies {
-    api project(":contract")
-    api project(":connector")
-    implementation "org.camunda.bpm:camunda-engine:7.14.0"
-    testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.15.0")
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
-}
-
-apply from: "gradle/publishing.gradle"
+class FlowmailerConnectorProperties(
+    private val flowmailerProperties: FlowmailerProperties
+) : ConnectorProperties
