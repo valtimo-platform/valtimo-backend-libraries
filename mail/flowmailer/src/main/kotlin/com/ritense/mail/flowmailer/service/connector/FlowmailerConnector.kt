@@ -18,11 +18,20 @@ package com.ritense.mail.flowmailer.service.connector
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
+import com.ritense.mail.MailDispatcher
+import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
+import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 
 @ConnectorType(name = "Flowmailer")
 class FlowmailerConnector(
-    private var flowmailerConnectorProperties: FlowmailerConnectorProperties
+    private var flowmailerConnectorProperties: FlowmailerConnectorProperties,
+    private val mailDispatcher: MailDispatcher
 ) : Connector {
+
+    fun sendEmail(templatedMailMessage: TemplatedMailMessage) {
+        mailDispatcher.send(templatedMailMessage)
+    }
+
     override fun getProperties(): ConnectorProperties {
         return flowmailerConnectorProperties
     }

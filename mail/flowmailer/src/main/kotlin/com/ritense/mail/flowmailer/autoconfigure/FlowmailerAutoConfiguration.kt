@@ -17,16 +17,21 @@
 package com.ritense.mail.flowmailer.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.connector.domain.Connector
 import com.ritense.mail.MailDispatcher
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
 import com.ritense.mail.flowmailer.service.FlowmailerTokenService
+import com.ritense.mail.flowmailer.service.connector.FlowmailerConnector
+import com.ritense.mail.flowmailer.service.connector.FlowmailerConnectorProperties
 import com.ritense.valtimo.contract.json.Mapper
+import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Scope
 import org.springframework.web.client.RestTemplate
 
 @Configuration
@@ -57,5 +62,25 @@ class FlowmailerAutoConfiguration {
         restTemplate: RestTemplate
     ): FlowmailerTokenService {
         return FlowmailerTokenService(flowmailerProperties, restTemplate)
+    }
+
+    //Connector
+
+    @Bean
+    @ConditionalOnMissingBean(FlowmailerConnector::class)
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    fun flowmailerConnector(
+        flowmailerConnectorProperties: FlowmailerConnectorProperties,
+        mailDispatcher: MailDispatcher
+    ): Connector {
+        return FlowmailerConnector(flowmailerConnectorProperties, mailDispatcher)
+    }
+
+    @Bean
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    fun flowmailerConnectorProperties(
+        flowmailerProperties: FlowmailerProperties
+    ): FlowmailerConnectorProperties {
+        return FlowmailerConnectorProperties(flowmailerProperties)
     }
 }
