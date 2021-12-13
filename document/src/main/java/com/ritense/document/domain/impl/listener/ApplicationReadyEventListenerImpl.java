@@ -28,7 +28,7 @@ public class ApplicationReadyEventListenerImpl implements ApplicationReadyEventL
     }
 
     public void handle() {
-        documentDefinitionService.deployAll();
+        documentDefinitionService.deployAll(true, true);
     }
 
 }

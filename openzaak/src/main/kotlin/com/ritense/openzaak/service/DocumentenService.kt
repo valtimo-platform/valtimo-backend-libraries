@@ -24,7 +24,14 @@ interface DocumentenService {
 
     fun createEnkelvoudigInformatieObject(documentDefinitionName: String, multipartFile: MultipartFile): URI
 
+    @Deprecated(
+        message = "Deprecated since 9.0.0, use the new function createObjectInformatieObject(URI, UUID)",
+        replaceWith = ReplaceWith("createObjectInformatieObject(enkelvoudigInformatieObject, documentId"),
+        DeprecationLevel.WARNING
+    )
     fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, documentId: UUID, documentDefinitionName: String)
+
+    fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, documentId: UUID)
 
     fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, zaak: URI)
 }

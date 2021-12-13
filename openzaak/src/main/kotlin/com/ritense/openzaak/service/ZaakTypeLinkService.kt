@@ -16,7 +16,6 @@
 
 package com.ritense.openzaak.service
 
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
@@ -35,8 +34,6 @@ interface ZaakTypeLinkService {
     fun createZaakTypeLink(request: CreateZaakTypeLinkRequest): CreateZaakTypeLinkResult
 
     fun deleteZaakTypeLinkBy(documentDefinitionName: String)
-
-    fun assignZaakInstance(id: ZaakTypeLinkId, zaakInstanceLink: ZaakInstanceLink): ZaakTypeLink
 
     fun assignServiceTaskHandler(zaakTypeLinkId: ZaakTypeLinkId, request: ServiceTaskHandlerRequest): CreateServiceTaskHandlerResult
 

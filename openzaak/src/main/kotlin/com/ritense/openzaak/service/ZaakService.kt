@@ -42,6 +42,8 @@ interface ZaakService {
 
     fun getZaak(id: UUID): Zaak
 
+    fun getZaakByDocumentId(documentId: UUID): Zaak
+
     fun getZaakEigenschappen(id: UUID): Collection<Eigenschap>
 
     fun setZaakStatus(zaak: URI, statusType: URI, datumStatusGezet: LocalDateTime)
