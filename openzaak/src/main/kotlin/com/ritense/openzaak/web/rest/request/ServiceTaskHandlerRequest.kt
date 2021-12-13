@@ -19,7 +19,8 @@ package com.ritense.openzaak.web.rest.request
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import java.net.URI
 
-data class ServiceTaskHandlerRequest (
+data class ServiceTaskHandlerRequest(
+    val processDefinitionKey: String,
     val serviceTaskId: String,
     val operation: Operation,
     val parameter: URI

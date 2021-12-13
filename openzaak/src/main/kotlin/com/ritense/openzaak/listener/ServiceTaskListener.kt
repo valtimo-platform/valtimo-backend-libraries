@@ -21,6 +21,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
+import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.ExecutionListener
 import org.camunda.bpm.extension.reactor.bus.CamundaSelector
@@ -33,24 +34,26 @@ open class ServiceTaskListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
     private val documentService: DocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
-    private val zaakService: ZaakService
+    private val zaakService: ZaakService,
+    private val repositoryService: RepositoryService
 ) : ReactorExecutionListener() {
 
     @Transactional
     override fun notify(execution: DelegateExecution) {
         val processBusinessKey = execution.processBusinessKey
+        val processDefinitionKey = repositoryService.getProcessDefinition(execution.processDefinitionId).key
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(processBusinessKey))
         val document = documentService.findBy(documentId).orElseThrow()
         val zaakTypeLink = zaakTypeLinkService.get(document.definitionId().name())
 
         if (zaakTypeLink != null) {
-            if (zaakTypeLink.isCreateZaakTask(execution)) {
+            if (zaakTypeLink.isCreateZaakTask(execution, processDefinitionKey)) {
                 zaakService.createZaakWithLink(execution)
                 return
             }
 
             val zaakInstanceUrl = zaakInstanceLinkService.getByDocumentId(documentId.id).zaakInstanceUrl
-            zaakTypeLink.handleServiceTask(execution, zaakInstanceUrl)
+            zaakTypeLink.handleServiceTask(execution, processDefinitionKey, zaakInstanceUrl)
             zaakTypeLinkService.modify(zaakTypeLink)
         }
     }
