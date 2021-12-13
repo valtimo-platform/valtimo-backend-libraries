@@ -139,9 +139,9 @@ data class ZaakTypeLink(
     }
 
     @JsonIgnore
-    fun isCreateZaakTask(execution:DelegateExecution): Boolean {
+    fun isCreateZaakTask(execution: DelegateExecution, processDefinitionKey: String): Boolean {
         val serviceTaskId = execution.currentActivityId
-        val serviceTaskHandler = getServiceTaskHandlerBy(serviceTaskId) ?: return false
+        val serviceTaskHandler = getServiceTaskHandlerBy(serviceTaskId, processDefinitionKey) ?: return false
 
         return serviceTaskHandler.operation == Operation.CREATE_ZAAK
     }
