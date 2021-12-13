@@ -20,5 +20,5 @@ import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 
 class FlowmailerConnectorProperties(
-    private val flowmailerProperties: FlowmailerProperties
+    val flowmailerProperties: FlowmailerProperties
 ) : ConnectorProperties

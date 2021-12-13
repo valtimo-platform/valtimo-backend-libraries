@@ -26,6 +26,7 @@ import com.ritense.mail.flowmailer.service.connector.FlowmailerConnector
 import com.ritense.mail.flowmailer.service.connector.FlowmailerConnectorProperties
 import com.ritense.valtimo.contract.json.Mapper
 import org.springframework.beans.factory.config.BeanDefinition
+import org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -68,7 +69,7 @@ class FlowmailerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(FlowmailerConnector::class)
-    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    @Scope(SCOPE_PROTOTYPE)
     fun flowmailerConnector(
         flowmailerConnectorProperties: FlowmailerConnectorProperties,
         mailDispatcher: MailDispatcher
@@ -77,7 +78,7 @@ class FlowmailerAutoConfiguration {
     }
 
     @Bean
-    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    @Scope(SCOPE_PROTOTYPE)
     fun flowmailerConnectorProperties(
         flowmailerProperties: FlowmailerProperties
     ): FlowmailerConnectorProperties {

@@ -16,6 +16,7 @@
 
 package com.ritense.mail.flowmailer.service.connector
 
+import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
@@ -65,11 +66,15 @@ class FlowmailerConnectorTest: BaseTest() {
             clientSecret = "clientSecret",
             accountId = "accountId"
         )
+        val flowmailerConnectorProperties = FlowmailerConnectorProperties(flowmailerProperties)
         //when
         flowmailerConnector.setProperties(flowmailerConnectorProperties)
         val properties = flowmailerConnector.getProperties()
         //then
-        assertThat(properties).isNotNull  //TODO: how to check the clientId from a ConnectorProperties?
+        assertThat(properties).isNotNull
+        assertThat(properties).isInstanceOf(FlowmailerConnectorProperties::class.java)
+        properties as FlowmailerConnectorProperties
+        assertThat(properties.flowmailerProperties.clientId).isEqualTo(flowmailerProperties.clientId)
     }
 
     @Test
@@ -86,5 +91,4 @@ class FlowmailerConnectorTest: BaseTest() {
         //Then
         verify(flowmailerMailDispatcher, times(1)).send(templatedMailMessage)
     }
-
 }
