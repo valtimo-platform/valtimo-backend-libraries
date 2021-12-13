@@ -47,7 +47,7 @@ open class ServiceTaskListener(
         val zaakTypeLink = zaakTypeLinkService.get(document.definitionId().name())
 
         if (zaakTypeLink != null) {
-            if (zaakTypeLink.isCreateZaakTask(execution)) {
+            if (zaakTypeLink.isCreateZaakTask(execution, processDefinitionKey)) {
                 zaakService.createZaakWithLink(execution)
                 return
             }

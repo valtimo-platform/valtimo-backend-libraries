@@ -35,6 +35,7 @@ import org.mockito.MockitoAnnotations
 import java.net.URI
 import java.util.UUID
 import javax.validation.ConstraintViolationException
+import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake
 
 class ZaakTypeLinkTest {
 
@@ -167,9 +168,8 @@ class ZaakTypeLinkTest {
     @Test
     fun `should pick correct serviceTaskHandler when handeling task`() {
         val delegateExecutionFake = DelegateExecutionFake().withCurrentActivityId("taskA")
-        val documentId = UUID.randomUUID()
+        val zaakInstanceUrl = URI.create("www.zaakUrl.nl")
         val zaakTypeLink = zaakTypeLink()
-        zaakTypeLink.assignZaakInstance(zaakInstanceLink(documentId))
         zaakTypeLink.assignZaakServiceHandler(
             ServiceTaskHandlerRequest(
                 "process1",
@@ -187,7 +187,7 @@ class ZaakTypeLinkTest {
             )
         )
 
-        zaakTypeLink.handleServiceTask(delegateExecutionFake, "process2", documentId)
+        zaakTypeLink.handleServiceTask(delegateExecutionFake, "process2", zaakInstanceUrl)
 
         assertThat(zaakTypeLink.domainEvents()).contains(
             StatusSetEvent(
