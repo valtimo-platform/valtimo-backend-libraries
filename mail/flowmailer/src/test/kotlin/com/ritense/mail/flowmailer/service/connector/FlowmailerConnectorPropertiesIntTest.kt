@@ -5,13 +5,13 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import javax.inject.Inject
 
-internal class FlowmailerConnectorIntTest: BaseIntegrationTest() {
+internal class FlowmailerConnectorPropertiesIntTest: BaseIntegrationTest() {
 
     @Inject
-    lateinit var flowmailerConnector: FlowmailerConnector
+    lateinit var flowmailerConnectorProperties: FlowmailerConnectorProperties
 
     @Test
     fun `should instantiate FlowmailerConnector bean`() {
-        Assertions.assertThat(flowmailerConnector).isNotNull
+        Assertions.assertThat(flowmailerConnectorProperties).isNotNull
     }
 }
