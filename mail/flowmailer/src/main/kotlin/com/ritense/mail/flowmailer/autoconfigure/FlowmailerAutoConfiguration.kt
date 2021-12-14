@@ -18,14 +18,14 @@ package com.ritense.mail.flowmailer.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.connector.domain.Connector
+import com.ritense.document.service.DocumentService
 import com.ritense.mail.MailDispatcher
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
+import com.ritense.mail.flowmailer.connector.FlowmailerConnector
+import com.ritense.mail.flowmailer.connector.FlowmailerConnectorProperties
 import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
 import com.ritense.mail.flowmailer.service.FlowmailerTokenService
-import com.ritense.mail.flowmailer.service.connector.FlowmailerConnector
-import com.ritense.mail.flowmailer.service.connector.FlowmailerConnectorProperties
 import com.ritense.valtimo.contract.json.Mapper
-import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Scope
 import org.springframework.web.client.RestTemplate
 
 @Configuration
-@EnableConfigurationProperties(value = [FlowmailerProperties::class])
+@EnableConfigurationProperties(FlowmailerProperties::class)
 class FlowmailerAutoConfiguration {
 
     @Bean
@@ -68,13 +68,14 @@ class FlowmailerAutoConfiguration {
     //Connector
 
     @Bean
-    @ConditionalOnMissingBean(FlowmailerConnector::class)
+    //@ConditionalOnMissingBean(FlowmailerConnector::class)
     @Scope(SCOPE_PROTOTYPE)
     fun flowmailerConnector(
         flowmailerConnectorProperties: FlowmailerConnectorProperties,
-        mailDispatcher: MailDispatcher
+        mailDispatcher: MailDispatcher,
+        documentService: DocumentService
     ): Connector {
-        return FlowmailerConnector(flowmailerConnectorProperties, mailDispatcher)
+        return FlowmailerConnector(flowmailerConnectorProperties, mailDispatcher, documentService)
     }
 
     @Bean

@@ -14,29 +14,33 @@
  * limitations under the License.
  */
 
-package com.ritense.mail.flowmailer.service.connector
+package com.ritense.mail.flowmailer.connector
 
-import com.ritense.connector.domain.ConnectorProperties
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.nhaarman.mockitokotlin2.any
+import com.ritense.document.service.DocumentService
 import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
-import com.ritense.valtimo.contract.basictype.EmailAddress
-import com.ritense.valtimo.contract.basictype.SimpleName
-import com.ritense.valtimo.contract.mail.model.value.Recipient
+import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentCaptor
+import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
+import java.util.UUID
 
-class FlowmailerConnectorTest: BaseTest() {
+class FlowmailerConnectorTest : BaseTest() {
     lateinit var flowmailerConnectorProperties: FlowmailerConnectorProperties
     lateinit var flowmailerMailDispatcher: FlowmailerMailDispatcher
     lateinit var flowmailerConnector: FlowmailerConnector
+    lateinit var documentService: DocumentService
 
     @BeforeEach
     fun setup() {
+        super.baseSetUp()
         val flowmailerProperties = FlowmailerProperties(
             clientId = "clientId",
             clientSecret = "clientSecret",
@@ -44,9 +48,11 @@ class FlowmailerConnectorTest: BaseTest() {
         )
         flowmailerConnectorProperties = FlowmailerConnectorProperties(flowmailerProperties)
         flowmailerMailDispatcher = mock(FlowmailerMailDispatcher::class.java)
+        documentService = mock(DocumentService::class.java)
         flowmailerConnector = FlowmailerConnector(
             flowmailerConnectorProperties = flowmailerConnectorProperties,
-            mailDispatcher = flowmailerMailDispatcher
+            mailDispatcher = flowmailerMailDispatcher,
+            documentService = documentService
         )
     }
 
@@ -78,17 +84,33 @@ class FlowmailerConnectorTest: BaseTest() {
     }
 
     @Test
-    fun `should call the send method from the FlowmailerDispatcher`() {
+    fun `should build TemplatedMailMessage and call the send method in the FlowmailerDispatcher`() {
         //Given
-        val templatedMailMessage = templatedMailMessage(
-            Recipient.to(
-                EmailAddress.from("test@test.com"),
-                SimpleName.from("testman")
-            )
-        )
+        val rootNode = ObjectMapper().createObjectNode()
+        val recipient = ObjectMapper().createObjectNode().put("email", "recipient@example.com")
+        val arrayNode = ObjectMapper().createArrayNode().add(recipient)
+        rootNode.replace("members", arrayNode)
+
+        val documentOptional = documentOptional(rootNode.toPrettyString())
+        `when`(documentService.findBy(any())).thenReturn(documentOptional)
+
+        flowmailerConnector.sender("a@a.com")
+        flowmailerConnector.subject("aSubject")
+        flowmailerConnector.templateIdentifier("aIdentifier")
+        flowmailerConnector.recipients("/members", "email", UUID.randomUUID().toString())
+        flowmailerConnector.placeholders(mutableMapOf("key" to "value"))
+
         //When
-        flowmailerConnector.sendEmail(templatedMailMessage)
+        flowmailerConnector.sendEmail()
+
         //Then
-        verify(flowmailerMailDispatcher, times(1)).send(templatedMailMessage)
+        val captor: ArgumentCaptor<TemplatedMailMessage> = ArgumentCaptor.forClass(TemplatedMailMessage::class.java)
+        verify(flowmailerMailDispatcher).send(capture(captor))
+        assertThat(captor.value.sender.email.get()).isEqualTo("a@a.com")
+        assertThat(captor.value.subject.get()).isEqualTo("aSubject")
+        assertThat(captor.value.templateIdentifier.get()).isEqualTo("aIdentifier")
+        assertThat(captor.value.recipients.get().first().email.get()).isEqualTo("recipient@example.com")
+        assertThat(captor.value.placeholders["key"]).isEqualTo("value")
     }
+
 }

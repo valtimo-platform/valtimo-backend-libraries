@@ -15,7 +15,7 @@
  */
 
 dependencies {
-    api project(":mail")
+    implementation project(":mail")
     implementation project(":connector")
     implementation project(":document")
 
@@ -27,7 +27,7 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation project(":mail")
-    testImplementation project(":connector")
+    testImplementation project(':resource')
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.13.0"
 
@@ -42,3 +42,6 @@ dependencies {
         }
     }
 }
+
+//TODO
+//apply from: "gradle/publishing.gradle"

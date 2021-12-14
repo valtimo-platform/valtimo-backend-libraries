@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ritense.mail.flowmailer.connector
 
-package com.ritense.document.autoconfigure;
+import com.ritense.connector.domain.ConnectorProperties
+import com.ritense.mail.flowmailer.config.FlowmailerProperties
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.retry.annotation.EnableRetry;
-
-@Configuration
-@EnableRetry
-public class RetryAutoConfiguration {
-}
+class FlowmailerConnectorProperties(
+    val flowmailerProperties: FlowmailerProperties
+) : ConnectorProperties

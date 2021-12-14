@@ -1,4 +1,4 @@
-package com.ritense.mail.flowmailer.service.connector
+package com.ritense.mail.flowmailer.connector
 
 import com.ritense.mail.flowmailer.BaseIntegrationTest
 import org.assertj.core.api.Assertions
