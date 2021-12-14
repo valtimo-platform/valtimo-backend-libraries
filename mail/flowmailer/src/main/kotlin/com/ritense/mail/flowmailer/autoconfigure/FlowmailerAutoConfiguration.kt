@@ -68,7 +68,7 @@ class FlowmailerAutoConfiguration {
     //Connector
 
     @Bean
-    //@ConditionalOnMissingBean(FlowmailerConnector::class)
+    @ConditionalOnMissingBean(FlowmailerConnector::class)
     @Scope(SCOPE_PROTOTYPE)
     fun flowmailerConnector(
         flowmailerConnectorProperties: FlowmailerConnectorProperties,
