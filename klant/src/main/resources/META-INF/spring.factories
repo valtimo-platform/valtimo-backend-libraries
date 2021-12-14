@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.valtimo.portal.klant.autoconfiguration.KlantAutoConfiguration
-
+  com.ritense.klant.autoconfiguration.KlantAutoConfiguration
