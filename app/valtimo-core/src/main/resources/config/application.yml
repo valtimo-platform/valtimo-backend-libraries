@@ -126,6 +126,10 @@ mailing:
 valtimo:
     app:
         scheme: http
+    flowmailer:
+        client-id: 800be2ee51a31132c8436c15ef67febebf2ff802
+        client-secret: 2b53b71a5acb2cbde286724e37364d9c9c8f72a1
+        account-id: 3028
     #mandrill:
     #    apiKey: #external
     #    dateFormat: dd-MM-yyyy

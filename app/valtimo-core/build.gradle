@@ -12,7 +12,7 @@ dependencies {
     implementation(project(":form-link"))
     implementation(project(":document-generation:local-document-generation"))
     implementation(project(":resource:local-resource"))
-    implementation(project(":mail:local-mail"))
+    implementation(project(":mail:flowmailer"))
     implementation(project(":external-event"))
     implementation(project(":connector"))
 }
