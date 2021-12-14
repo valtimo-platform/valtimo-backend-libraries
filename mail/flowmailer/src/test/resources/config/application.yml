@@ -6,3 +6,5 @@ valtimo:
         client-id: clientId
         client-secret: clientSecret
         account-id: accountId
+    connector-encryption:
+        secret: "0123456789101112"

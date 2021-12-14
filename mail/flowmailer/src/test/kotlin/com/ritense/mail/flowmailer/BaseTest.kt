@@ -16,6 +16,13 @@
 
 package com.ritense.mail.flowmailer
 
+import com.nhaarman.mockitokotlin2.any
+import com.ritense.document.domain.impl.JsonDocumentContent
+import com.ritense.document.domain.impl.JsonSchema
+import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
+import com.ritense.document.service.DocumentSequenceGeneratorService
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
@@ -27,14 +34,23 @@ import com.ritense.valtimo.contract.mail.model.value.Recipient
 import com.ritense.valtimo.contract.mail.model.value.RecipientCollection
 import com.ritense.valtimo.contract.mail.model.value.Sender
 import com.ritense.valtimo.contract.mail.model.value.Subject
+import org.mockito.ArgumentCaptor
+import org.mockito.Mock
+import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import java.net.URI
+import java.util.Optional
 
 abstract class BaseTest {
 
+    @Mock
+    lateinit var documentSequenceGeneratorService: DocumentSequenceGeneratorService
+
     fun baseSetUp() {
         MockitoAnnotations.openMocks(this)
+        `when`(documentSequenceGeneratorService.next(any())).thenReturn(1)
     }
 
     fun rawMailMessage(recipient: Recipient): RawMailMessage {
@@ -64,4 +80,28 @@ abstract class BaseTest {
         httpHeaders.accept = listOf(MediaType.valueOf("application/vnd.flowmailer.v1.12+json;charset=UTF-8"))
         return httpHeaders
     }
+
+    fun documentOptional(json: String): Optional<JsonSchemaDocument> {
+        return JsonSchemaDocument.create(
+            definition(),
+            JsonDocumentContent(json),
+            "USERNAME",
+            documentSequenceGeneratorService,
+            null
+        ).resultingDocument()
+    }
+
+    fun definition(): JsonSchemaDocumentDefinition {
+        val jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("house")
+        val jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()))
+        return JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema)
+    }
+
+    fun path(name: String): URI {
+        return URI.create(String.format("config/document/definition/%s.json", "$name.schema"))
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> capture(captor: ArgumentCaptor<T>): T = captor.capture()
+
 }

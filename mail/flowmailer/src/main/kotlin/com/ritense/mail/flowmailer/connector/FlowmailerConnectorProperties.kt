@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ritense.mail.flowmailer.connector
 
-package com.ritense.mail.flowmailer
+import com.ritense.connector.domain.ConnectorProperties
+import com.ritense.mail.flowmailer.config.FlowmailerProperties
 
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringExtension
-
-@SpringBootTest
-@ExtendWith(value = [SpringExtension::class])
-@Tag("integration")
-abstract class BaseIntegrationTest
+class FlowmailerConnectorProperties(
+    val flowmailerProperties: FlowmailerProperties
+) : ConnectorProperties

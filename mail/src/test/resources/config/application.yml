@@ -9,7 +9,6 @@ spring:
             auto-commit: false
     liquibase:
         enabled: false
-        change-log: classpath:/config/liquibase/mail-master.xml
     jpa:
         database-platform: org.hibernate.dialect.MySQL57Dialect
         database: mysql

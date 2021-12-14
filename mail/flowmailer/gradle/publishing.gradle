@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            pom {
-                name = 'Flowmailer module'
-                description = 'The flowmailer module implements mail-sending following the mail module interface'
-                developers {
-                    developer {
-                        id = "team-valtimo"
-                        name = "Team Valtimo"
-                        email = "team-valtimo@ritense.com"
+pluginManager.withPlugin('maven-publish') {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                pom {
+                    name = 'Flowmailer module'
+                    description = 'The flowmailer module implements mail-sending following the mail module interface'
+                    developers {
+                        developer {
+                            id = "team-valtimo"
+                            name = "Team Valtimo"
+                            email = "team-valtimo@ritense.com"
+                        }
                     }
                 }
             }

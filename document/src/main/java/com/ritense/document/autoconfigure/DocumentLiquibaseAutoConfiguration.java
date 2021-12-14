@@ -29,7 +29,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Configuration
 @ConditionalOnClass(DataSource.class)
-public class LiquibaseAutoConfiguration {
+public class DocumentLiquibaseAutoConfiguration {
 
     @Order(HIGHEST_PRECEDENCE + 8)
     @Bean

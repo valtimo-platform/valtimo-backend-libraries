@@ -17,20 +17,26 @@
 package com.ritense.mail.flowmailer.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.connector.domain.Connector
+import com.ritense.document.service.DocumentService
 import com.ritense.mail.MailDispatcher
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
+import com.ritense.mail.flowmailer.connector.FlowmailerConnector
+import com.ritense.mail.flowmailer.connector.FlowmailerConnectorProperties
 import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
 import com.ritense.mail.flowmailer.service.FlowmailerTokenService
 import com.ritense.valtimo.contract.json.Mapper
+import org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Scope
 import org.springframework.web.client.RestTemplate
 
 @Configuration
-@EnableConfigurationProperties(value = [FlowmailerProperties::class])
+@EnableConfigurationProperties(FlowmailerProperties::class)
 class FlowmailerAutoConfiguration {
 
     @Bean
@@ -57,5 +63,26 @@ class FlowmailerAutoConfiguration {
         restTemplate: RestTemplate
     ): FlowmailerTokenService {
         return FlowmailerTokenService(flowmailerProperties, restTemplate)
+    }
+
+    //Connector
+
+    @Bean
+    @ConditionalOnMissingBean(FlowmailerConnector::class)
+    @Scope(SCOPE_PROTOTYPE)
+    fun flowmailerConnector(
+        flowmailerConnectorProperties: FlowmailerConnectorProperties,
+        mailDispatcher: MailDispatcher,
+        documentService: DocumentService
+    ): Connector {
+        return FlowmailerConnector(flowmailerConnectorProperties, mailDispatcher, documentService)
+    }
+
+    @Bean
+    @Scope(SCOPE_PROTOTYPE)
+    fun flowmailerConnectorProperties(
+        flowmailerProperties: FlowmailerProperties
+    ): FlowmailerConnectorProperties {
+        return FlowmailerConnectorProperties(flowmailerProperties)
     }
 }
