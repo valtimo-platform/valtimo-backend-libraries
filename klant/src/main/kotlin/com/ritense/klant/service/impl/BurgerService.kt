@@ -19,9 +19,6 @@ package com.ritense.klant.service.impl
 import com.ritense.klant.client.OpenKlantClient
 import com.ritense.klant.service.BurgerService
 
-class BurgerService(
-    val openKlantClient: OpenKlantClient
-) : BurgerService {
-
+class BurgerService(private val openKlantClient: OpenKlantClient) : BurgerService {
     override fun getBurger(bsn: String) = openKlantClient.getKlant(bsn)
 }
