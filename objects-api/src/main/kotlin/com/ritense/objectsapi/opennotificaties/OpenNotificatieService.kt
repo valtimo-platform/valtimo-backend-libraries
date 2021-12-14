@@ -16,6 +16,8 @@
 
 package com.ritense.objectsapi.opennotificaties
 
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -35,10 +37,10 @@ import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.resource.domain.ResourceId
 import com.ritense.resource.repository.OpenZaakResourceRepository
 import com.ritense.valtimo.contract.resource.Resource
+import mu.KotlinLogging
 import java.net.URI
 import java.time.LocalDateTime
 import java.util.UUID
-import mu.KotlinLogging
 
 class OpenNotificatieService(
     val processDocumentService: ProcessDocumentService,
@@ -56,6 +58,9 @@ class OpenNotificatieService(
             val productAanvraag = connector.getProductAanvraag(productAanvraagId)
             val typeMapping = connector.getTypeMapping(productAanvraag.type)
             val aanvragerRolTypeUrl = connector.getAanvragerRolTypeUrl()
+
+            //TODO: TP32743 Redflag needs to be refactored ASAP
+            (productAanvraag.data as ObjectNode).set<TextNode>("\$bsn", TextNode(productAanvraag.bsn))
 
             createDossier(productAanvraag, typeMapping, aanvragerRolTypeUrl)
             connector.deleteProductAanvraag(notification.getObjectId())
