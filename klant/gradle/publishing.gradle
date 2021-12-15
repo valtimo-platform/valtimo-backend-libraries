@@ -19,7 +19,7 @@ pluginManager.withPlugin('maven-publish') {
         publications {
             maven(MavenPublication) {
                 pom {
-                    name = 'Connector module'
+                    name = 'Klant module'
                     description = 'The Klant module is client for OpenKlant'
                     developers {
                         developer {
