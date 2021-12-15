@@ -17,7 +17,7 @@
 package com.ritense.klant.autoconfiguration
 
 import com.ritense.klant.client.OpenKlantClient
-import com.ritense.klant.client.OpenKlantClientConfig
+import com.ritense.klant.client.OpenKlantClientProperties
 import com.ritense.klant.client.OpenKlantTokenGenerator
 import com.ritense.klant.service.impl.BurgerService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-@EnableConfigurationProperties(OpenKlantClientConfig::class)
+@EnableConfigurationProperties(OpenKlantClientProperties::class)
 class KlantAutoConfiguration {
 
     @Bean
@@ -42,10 +42,10 @@ class KlantAutoConfiguration {
 
     @Bean
     fun openKlantClient(
-        openKlantClientConfig: OpenKlantClientConfig,
+        openKlantClientProperties: OpenKlantClientProperties,
         openKlantTokenGenerator: OpenKlantTokenGenerator
     ): OpenKlantClient {
-        return OpenKlantClient(openKlantClientConfig, openKlantTokenGenerator)
+        return OpenKlantClient(openKlantClientProperties, openKlantTokenGenerator)
     }
 
 }

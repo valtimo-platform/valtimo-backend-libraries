@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.klant.domain.klanten
+package com.ritense.klant.domain
 
 data class Klant(
     val url: String?,
     val telefoonnummer: String?,
-    val emailadres: String?,
+    val emailadres: String?
 )

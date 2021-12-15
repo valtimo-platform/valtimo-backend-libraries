@@ -1,7 +1,7 @@
 package com.ritense.klant.service.impl
 
 import com.ritense.klant.client.OpenKlantClient
-import com.ritense.klant.domain.klanten.Klant
+import com.ritense.klant.domain.Klant
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock

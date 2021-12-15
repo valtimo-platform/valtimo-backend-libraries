@@ -16,22 +16,22 @@
 
 package com.ritense.klant.client
 
-import com.ritense.klant.domain.klanten.Klant
+import com.ritense.klant.domain.Klant
 
 class OpenKlantClient(
-    private val openKlantClientConfig: OpenKlantClientConfig,
+    private val openKlantClientProperties: OpenKlantClientProperties,
     private val openKlantTokenGenerator: OpenKlantTokenGenerator
 ) {
     fun getKlant(bsn: String): Klant {
         val token = openKlantTokenGenerator.generateTokenForBsn(
-            openKlantClientConfig.secret,
-            openKlantClientConfig.clientId,
+            openKlantClientProperties.secret,
+            openKlantClientProperties.clientId,
             bsn
         )
         val klantPage = RequestBuilder
             .builder()
             .get()
-            .baseUrl(openKlantClientConfig.url)
+            .baseUrl(openKlantClientProperties.url)
             .path("/klanten/api/v1/klanten")
             .queryParam("subjectNatuurlijkPersoon__inpBsn", bsn)
             .queryParam("page", 1)
