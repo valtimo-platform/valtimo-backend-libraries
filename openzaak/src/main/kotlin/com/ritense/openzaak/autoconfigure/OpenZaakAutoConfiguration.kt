@@ -24,6 +24,7 @@ import com.ritense.openzaak.listener.OpenZaakUndeployDocumentDefinitionEventList
 import com.ritense.openzaak.listener.ServiceTaskListener
 import com.ritense.openzaak.repository.InformatieObjectTypeLinkRepository
 import com.ritense.openzaak.repository.OpenZaakConfigRepository
+import com.ritense.openzaak.repository.ZaakInstanceLinkRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
 import com.ritense.openzaak.repository.converter.Encryptor
 import com.ritense.openzaak.service.ZaakRolService
@@ -32,6 +33,7 @@ import com.ritense.openzaak.service.impl.EigenschapService
 import com.ritense.openzaak.service.impl.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.impl.OpenZaakConfigService
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
+import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakResultaatService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakStatusService
@@ -45,6 +47,7 @@ import com.ritense.openzaak.web.rest.impl.StatusResource
 import com.ritense.openzaak.web.rest.impl.ZaakTypeLinkResource
 import com.ritense.openzaak.web.rest.impl.ZaakTypeResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -76,9 +79,9 @@ class OpenZaakAutoConfiguration {
     @ConditionalOnMissingBean(OpenZaakFormFieldDataResolver::class)
     fun openZaakFormFieldDataResolver(
         zaakService: ZaakService,
-        zaakTypeLinkService: ZaakTypeLinkService
+        zaakInstanceLinkService: ZaakInstanceLinkService
     ): OpenZaakFormFieldDataResolver {
-        return OpenZaakFormFieldDataResolver(zaakService, zaakTypeLinkService)
+        return OpenZaakFormFieldDataResolver(zaakService, zaakInstanceLinkService)
     }
 
     //Services
@@ -106,15 +109,25 @@ class OpenZaakAutoConfiguration {
         openZaakConfigService: OpenZaakConfigService,
         tokenGeneratorService: OpenZaakTokenGeneratorService,
         zaakTypeLinkService: ZaakTypeLinkService,
-        documentService: DocumentService
+        documentService: DocumentService,
+        zaakInstanceLinkService: ZaakInstanceLinkService
     ): ZaakService {
         return ZaakService(
             restTemplate,
             openZaakConfigService,
             tokenGeneratorService,
             zaakTypeLinkService,
-            documentService
+            documentService,
+            zaakInstanceLinkService
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakInstanceLinkService::class)
+    fun zaakInstanceLinkService(
+        zaakInstanceLinkRepository: ZaakInstanceLinkRepository
+    ): ZaakInstanceLinkService {
+        return ZaakInstanceLinkService(zaakInstanceLinkRepository)
     }
 
     @Bean
@@ -188,9 +201,12 @@ class OpenZaakAutoConfiguration {
     @ConditionalOnMissingBean(ServiceTaskListener::class)
     fun serviceTaskListener(
         zaakTypeLinkService: ZaakTypeLinkService,
-        documentService: DocumentService
+        documentService: DocumentService,
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        zaakService: ZaakService,
+        repositoryService: RepositoryService
     ): ServiceTaskListener {
-        return ServiceTaskListener(zaakTypeLinkService, documentService)
+        return ServiceTaskListener(zaakTypeLinkService, documentService, zaakInstanceLinkService, zaakService, repositoryService)
     }
 
     @Bean
@@ -204,9 +220,10 @@ class OpenZaakAutoConfiguration {
     fun eigenschappenSubmittedListener(
         zaakTypeLinkService: ZaakTypeLinkService,
         eigenschapService: EigenschapService,
-        zaakService: ZaakService
+        zaakService: ZaakService,
+        zaakInstanceLinkService: ZaakInstanceLinkService
     ): EigenschappenSubmittedListener {
-        return EigenschappenSubmittedListener(zaakTypeLinkService, eigenschapService, zaakService)
+        return EigenschappenSubmittedListener(zaakTypeLinkService, eigenschapService, zaakService, zaakInstanceLinkService)
     }
 
     @Bean
@@ -224,14 +241,14 @@ class OpenZaakAutoConfiguration {
         openZaakConfigService: OpenZaakConfigService,
         openZaakTokenGeneratorService: OpenZaakTokenGeneratorService,
         informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
-        zaakTypeLinkService: ZaakTypeLinkService
+        zaakInstanceLinkService: ZaakInstanceLinkService
     ): DocumentenService {
         return com.ritense.openzaak.service.impl.DocumentenService(
             restTemplate,
             openZaakConfigService,
             openZaakTokenGeneratorService,
             informatieObjectTypeLinkService,
-            zaakTypeLinkService
+            zaakInstanceLinkService
         )
     }
 

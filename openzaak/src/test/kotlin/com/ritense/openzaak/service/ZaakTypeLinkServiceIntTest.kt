@@ -19,14 +19,12 @@ package com.ritense.openzaak.service
 import com.ritense.openzaak.BaseIntegrationTest
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandler
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.net.URI
-import java.util.UUID
 import javax.inject.Inject
 import javax.transaction.Transactional
 
@@ -49,26 +47,6 @@ class ZaakTypeLinkServiceIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should create zaaktypeLink and assign zaakInstance`() {
-        val result = zaakTypeLinkService.createZaakTypeLink(
-            CreateZaakTypeLinkRequest("test", zaakUrl)
-        )
-        val zaakInstanceLink = ZaakInstanceLink(
-            URI.create("http://example.com"),
-            UUID.randomUUID(),
-            UUID.randomUUID()
-        )
-
-        val zaaktypeLink = zaakTypeLinkService.assignZaakInstance(
-            result.zaakTypeLink()!!.zaakTypeLinkId,
-            zaakInstanceLink
-        )
-
-        assertThat(zaaktypeLink).isNotNull
-        assertThat(zaaktypeLink.zaakInstanceLinks).contains(zaakInstanceLink)
-    }
-
-    @Test
     fun `should assign service task handler`() {
         //given
         val zaakTypeLink = zaakTypeLinkService.createZaakTypeLink(
@@ -76,7 +54,7 @@ class ZaakTypeLinkServiceIntTest : BaseIntegrationTest() {
         )
         val zaakTypeLinkId = zaakTypeLink.zaakTypeLink()!!.zaakTypeLinkId
 
-        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_STATUS, URI.create("www.statustype.com"))
+        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_STATUS, URI.create("www.statustype.com"))
 
         //when
         val createServiceTaskHandlerResult = zaakTypeLinkService.assignServiceTaskHandler(zaakTypeLinkId, serviceTaskHandlerRequest)
@@ -85,6 +63,7 @@ class ZaakTypeLinkServiceIntTest : BaseIntegrationTest() {
         assertThat(createServiceTaskHandlerResult).isNotNull
         assertThat(createServiceTaskHandlerResult.zaakTypeLink()?.serviceTaskHandlers).contains(
             ServiceTaskHandler(
+                serviceTaskHandlerRequest.processDefinitionKey,
                 serviceTaskHandlerRequest.serviceTaskId,
                 serviceTaskHandlerRequest.operation,
                 serviceTaskHandlerRequest.parameter
@@ -100,8 +79,8 @@ class ZaakTypeLinkServiceIntTest : BaseIntegrationTest() {
         )
         val zaakTypeLinkId = zaakTypeLink.zaakTypeLink()!!.zaakTypeLinkId
 
-        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_STATUS, URI.create("www.statustype.com"))
-        val newServiceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_RESULTAAT, URI.create("www.resultaattype.com"))
+        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_STATUS, URI.create("www.statustype.com"))
+        val newServiceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_RESULTAAT, URI.create("www.resultaattype.com"))
 
         zaakTypeLinkService.assignServiceTaskHandler(zaakTypeLinkId, serviceTaskHandlerRequest)
 
@@ -112,6 +91,7 @@ class ZaakTypeLinkServiceIntTest : BaseIntegrationTest() {
         assertThat(modifyServiceTaskHandlerResult).isNotNull
         assertThat(modifyServiceTaskHandlerResult.zaakTypeLink()?.serviceTaskHandlers).contains(
             ServiceTaskHandler(
+                newServiceTaskHandlerRequest.processDefinitionKey,
                 newServiceTaskHandlerRequest.serviceTaskId,
                 newServiceTaskHandlerRequest.operation,
                 newServiceTaskHandlerRequest.parameter
@@ -119,6 +99,7 @@ class ZaakTypeLinkServiceIntTest : BaseIntegrationTest() {
         )
         assertThat(modifyServiceTaskHandlerResult.zaakTypeLink()?.serviceTaskHandlers).doesNotContain(
             ServiceTaskHandler(
+                serviceTaskHandlerRequest.processDefinitionKey,
                 serviceTaskHandlerRequest.serviceTaskId,
                 serviceTaskHandlerRequest.operation,
                 serviceTaskHandlerRequest.parameter
