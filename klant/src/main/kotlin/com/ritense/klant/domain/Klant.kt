@@ -14,34 +14,10 @@
  * limitations under the License.
  */
 
-rootProject.name = projectName
-include(
-    "app",
-    "app:gzac",
-    "app:valtimo-core",
-    "core",
-    "contract",
-    "web",
-    "keycloak-iam",
-    "milestones",
-    "view-configurator",
-    "audit",
-    "document",
-    "process-document",
-    "form",
-    "form-link",
-    "document-generation",
-    "document-generation:local-document-generation",
-    "openzaak",
-    "mail",
-    "mail:local-mail",
-    "mail:mandrill",
-    "resource",
-    "resource:local-resource",
-    "resource:openzaak-resource",
-    "external-event",
-    "connector",
-    "objects-api",
-    "document-export",
-    "klant"
+package com.ritense.klant.domain
+
+data class Klant(
+    val url: String?,
+    val telefoonnummer: String?,
+    val emailadres: String?
 )
