@@ -52,7 +52,7 @@ internal class FlowmailerDispatcherIntTest : BaseIntegrationTest() {
 
         val templatedMailMessage = TemplatedMailMessage.with(
             Recipient.to(
-                EmailAddress.from("tom.bokma@ritense.com"),
+                EmailAddress.from("tom.bokma@gmail.com"),
                 SimpleName.from("Tom Bokma")
             ),
             MailTemplateIdentifier.from("SUSWRYRS")
@@ -70,7 +70,6 @@ internal class FlowmailerDispatcherIntTest : BaseIntegrationTest() {
                 Attachment.from(
                     Name.from(resource.filename),
                     Type.from(FilenameUtils.getExtension(resource.filename)),
-                    //Content.from(getEncoder().encode(resource.inputStream.readAllBytes()))
                     Content.from(resource.inputStream.readAllBytes())
                 )
             )

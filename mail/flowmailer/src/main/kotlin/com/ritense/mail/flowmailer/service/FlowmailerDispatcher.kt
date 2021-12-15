@@ -65,6 +65,8 @@ class FlowmailerMailDispatcher(
             val token = flowmailerTokenService.getToken()
             val httpEntity = HttpEntity(objectMapper.writeValueAsString(submitMessage), getHttpHeaders(token))
             val response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String::class.java)
+
+            //TODO check max size of entire email
             return MailMessageStatus.with(
                 EmailAddress.from(submitMessage.recipientAddress),
                 "SENT",
@@ -96,7 +98,7 @@ class FlowmailerMailDispatcher(
     }
 
     companion object {
-        private const val BASE_URL = "https://api.flowmailer.net"
-        const val MAX_SIZE_ATTACHMENTS: Int = 16250000 //TODO: What is the actual max size in Flowmailer?
+        private const val BASE_URL = "http://api.flowmailer.net"
+        const val MAX_SIZE_ATTACHMENTS: Int = 16250000 //TODO: 25 entire email plus attachment (10 mb becomes 13.3 mb base64)
     }
 }
