@@ -32,6 +32,7 @@ class OpenZaakResourceHttpSecurityConfigurer : HttpSecurityConfigurer {
             http.authorizeRequests()
                 .antMatchers(POST, "/api/resource/upload-open-zaak").hasAnyAuthority(USER)
                 .antMatchers(GET, "/api/resource/{resourceId}").hasAuthority(USER)
+                .antMatchers(GET, "/api/resource/{resourceId}/download").hasAuthority(USER)
                 .antMatchers(DELETE, "/api/resource/{resourceId}").hasAuthority(USER)
                 .antMatchers(PUT, "/api/resource").hasAuthority(USER);
         } catch (e: Exception) {
