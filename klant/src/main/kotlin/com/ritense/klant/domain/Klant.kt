@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.mapping
+package com.ritense.klant.domain
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
-interface ZaakInstanceLink
+data class Klant(
+    val url: String?,
+    val telefoonnummer: String?,
+    val emailadres: String?
+)

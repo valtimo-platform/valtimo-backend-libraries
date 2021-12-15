@@ -102,6 +102,7 @@ subprojects { subproject ->
     apply plugin: "io.freefair.lombok"
     apply from: "$rootProject.projectDir/gradle/test.gradle"
     apply plugin: "com.avast.gradle.docker-compose"
+    apply plugin: "maven-publish"
 
     task allDeps(type: DependencyReportTask) {}
 

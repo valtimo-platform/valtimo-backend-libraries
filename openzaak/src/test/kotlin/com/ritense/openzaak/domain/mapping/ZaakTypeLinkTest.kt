@@ -19,17 +19,15 @@ package com.ritense.openzaak.domain.mapping
 import com.ritense.openzaak.domain.event.EigenschappenSetEvent
 import com.ritense.openzaak.domain.event.ResultaatSetEvent
 import com.ritense.openzaak.domain.event.StatusSetEvent
-import com.ritense.openzaak.domain.event.ZaakCreatedEvent
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandler
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinks
+import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -37,6 +35,7 @@ import org.mockito.MockitoAnnotations
 import java.net.URI
 import java.util.UUID
 import javax.validation.ConstraintViolationException
+import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake
 
 class ZaakTypeLinkTest {
 
@@ -58,7 +57,6 @@ class ZaakTypeLinkTest {
                 id,
                 "definitelywaymorecharactersthanallowedforadocumentdefinitionname",
                 zaaktypeId,
-                ZaakInstanceLinks(),
                 ServiceTaskHandlers()
             )
         }
@@ -70,7 +68,6 @@ class ZaakTypeLinkTest {
             id,
             documentDefinitionName,
             zaaktypeId,
-            ZaakInstanceLinks(),
             ServiceTaskHandlers()
         )
 
@@ -82,12 +79,13 @@ class ZaakTypeLinkTest {
     @Test
     fun `should assign service task handler`() {
         val zaaktypeLink = zaakTypeLink()
-        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_STATUS, URI.create("http://example.com"))
+        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_STATUS, URI.create("http://example.com"))
 
         zaaktypeLink.assignZaakServiceHandler(serviceTaskHandlerRequest)
 
         assertThat(zaaktypeLink.serviceTaskHandlers).contains(
             ServiceTaskHandler(
+                serviceTaskHandlerRequest.processDefinitionKey,
                 serviceTaskHandlerRequest.serviceTaskId,
                 serviceTaskHandlerRequest.operation,
                 serviceTaskHandlerRequest.parameter
@@ -98,14 +96,15 @@ class ZaakTypeLinkTest {
     @Test
     fun `should update service task handler`() {
         val zaaktypeLink = zaakTypeLink()
-        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_STATUS, URI.create("http://example.com"))
-        val newServiceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_RESULTAAT, URI.create("http://newexample.com"))
+        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_STATUS, URI.create("http://example.com"))
+        val newServiceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_RESULTAAT, URI.create("http://newexample.com"))
 
         zaaktypeLink.assignZaakServiceHandler(serviceTaskHandlerRequest)
         zaaktypeLink.assignZaakServiceHandler(newServiceTaskHandlerRequest)
 
         assertThat(zaaktypeLink.serviceTaskHandlers).contains(
             ServiceTaskHandler(
+                newServiceTaskHandlerRequest.processDefinitionKey,
                 newServiceTaskHandlerRequest.serviceTaskId,
                 newServiceTaskHandlerRequest.operation,
                 newServiceTaskHandlerRequest.parameter
@@ -113,6 +112,7 @@ class ZaakTypeLinkTest {
         )
         assertThat(zaaktypeLink.serviceTaskHandlers).doesNotContain(
             ServiceTaskHandler(
+                newServiceTaskHandlerRequest.processDefinitionKey,
                 serviceTaskHandlerRequest.serviceTaskId,
                 serviceTaskHandlerRequest.operation,
                 serviceTaskHandlerRequest.parameter
@@ -121,25 +121,14 @@ class ZaakTypeLinkTest {
     }
 
     @Test
-    fun `should register ZaakCreatedEvent`() {
-        val zaaktypeLink = zaakTypeLink()
-        val delegateExecutionFake = DelegateExecutionFake()
-
-        zaaktypeLink.createZaak(delegateExecutionFake)
-
-        assertThat(zaaktypeLink.domainEvents()).contains(ZaakCreatedEvent(delegateExecutionFake))
-    }
-
-    @Test
     fun `should register StatuSetEvent`() {
         val documentId = UUID.randomUUID()
         val zaakInstanceLink = zaakInstanceLink(documentId)
         val zaakTypeLink = zaakTypeLink()
-        zaakTypeLink.assignZaakInstance(zaakInstanceLink)
 
         val statusType = URI.create("statustype")
 
-        zaakTypeLink.assignZaakInstanceStatus(documentId, statusType)
+        zaakTypeLink.assignZaakInstanceStatus(zaakInstanceLink.zaakInstanceUrl, statusType)
 
         assertThat(zaakTypeLink.domainEvents()).contains(StatusSetEvent(zaakInstanceLink.zaakInstanceUrl, statusType))
     }
@@ -149,11 +138,10 @@ class ZaakTypeLinkTest {
         val documentId = UUID.randomUUID()
         val zaakInstanceLink = zaakInstanceLink(documentId)
         val zaakTypeLink = zaakTypeLink()
-        zaakTypeLink.assignZaakInstance(zaakInstanceLink)
 
         val resultaatType = URI.create("resultaatType")
 
-        zaakTypeLink.assignZaakInstanceResultaat(documentId, resultaatType)
+        zaakTypeLink.assignZaakInstanceResultaat(zaakInstanceLink.zaakInstanceUrl, resultaatType)
 
         assertThat(zaakTypeLink.domainEvents()).contains(ResultaatSetEvent(zaakInstanceLink.zaakInstanceUrl, resultaatType))
     }
@@ -163,11 +151,10 @@ class ZaakTypeLinkTest {
         val documentId = UUID.randomUUID()
         val zaakInstanceLink = zaakInstanceLink(documentId)
         val zaakTypeLink = zaakTypeLink()
-        zaakTypeLink.assignZaakInstance(zaakInstanceLink)
 
         val eigenschappen = mutableMapOf(URI.create("eigenschapUri") to "value")
 
-        zaakTypeLink.assignZaakInstanceEigenschappen(documentId, eigenschappen)
+        zaakTypeLink.assignZaakInstanceEigenschappen(zaakInstanceLink, eigenschappen)
 
         assertThat(zaakTypeLink.domainEvents()).contains(
             EigenschappenSetEvent(
@@ -178,11 +165,45 @@ class ZaakTypeLinkTest {
         )
     }
 
+    @Test
+    fun `should pick correct serviceTaskHandler when handeling task`() {
+        val delegateExecutionFake = DelegateExecutionFake().withCurrentActivityId("taskA")
+        val zaakInstanceUrl = URI.create("www.zaakUrl.nl")
+        val zaakTypeLink = zaakTypeLink()
+        zaakTypeLink.assignZaakServiceHandler(
+            ServiceTaskHandlerRequest(
+                "process1",
+                "taskA",
+                Operation.SET_STATUS,
+                URI.create("www.statusTypeUrl1.nl")
+            )
+        )
+        zaakTypeLink.assignZaakServiceHandler(
+            ServiceTaskHandlerRequest(
+                "process2",
+                "taskA",
+                Operation.SET_STATUS,
+                URI.create("www.statusTypeUrl2.nl")
+            )
+        )
+
+        zaakTypeLink.handleServiceTask(delegateExecutionFake, "process2", zaakInstanceUrl)
+
+        assertThat(zaakTypeLink.domainEvents()).contains(
+            StatusSetEvent(
+                URI.create("www.zaakUrl.nl"),
+                URI.create("www.statusTypeUrl2.nl")
+            )
+        )
+    }
+
     private fun zaakInstanceLink(documentId: UUID): ZaakInstanceLink {
         return ZaakInstanceLink(
+            ZaakInstanceLinkId.newId(UUID.randomUUID()),
             URI.create("www.zaakUrl.nl"),
             UUID.randomUUID(),
-            documentId
+            documentId,
+            URI.create("www.zaakType.nl")
         )
     }
 
@@ -191,7 +212,6 @@ class ZaakTypeLinkTest {
             id,
             documentDefinitionName,
             zaaktypeId,
-            ZaakInstanceLinks(),
             ServiceTaskHandlers()
         )
     }

@@ -762,6 +762,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         zaakTypeLinkService.assignServiceTaskHandler(
             zaakTypeLinkId,
             ServiceTaskHandlerRequest(
+                "test-service-task",
                 "change-status",
                 Operation.SET_STATUS,
                 URI("http://example.com/catalogi/api/v1/statustypen/f8c938c1-e2ea-4cad-8025-f68248ad26ac")

@@ -43,6 +43,12 @@ public interface DocumentDefinitionService {
 
     void deploy(InputStream inputStream) throws IOException;
 
+    void deployAll(boolean readOnly, boolean force);
+
+    DeployDocumentDefinitionResult deploy(String schema, boolean readOnly, boolean force);
+
+    void deploy(InputStream inputStream, boolean readOnly, boolean force) throws IOException;
+
     void store(JsonSchemaDocumentDefinition documentDefinition);
 
     void removeDocumentDefinition(String documentDefinitionName);

@@ -79,12 +79,27 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public void deployAll() {
+        deployAll(true, false);
+    }
+
+    @Override
+    public void deploy(InputStream inputStream) throws IOException {
+        deploy(inputStream, true, false);
+    }
+
+    @Override
+    public DeployDocumentDefinitionResult deploy(String schema) {
+        return deploy(schema, false, false);
+    }
+
+    @Override
+    public void deployAll(boolean readOnly, boolean force) {
         logger.info("Deploy all schema's");
         try {
             final Resource[] resources = loadResources();
             for (Resource resource : resources) {
                 if (resource.getFilename() != null) {
-                    deploy(resource.getInputStream());
+                    deploy(resource.getInputStream(), readOnly, force);
                 }
             }
         } catch (Exception ex) {
@@ -93,23 +108,23 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
-    public void deploy(InputStream inputStream) throws IOException {
+    public void deploy(InputStream inputStream, boolean readOnly, boolean force) throws IOException {
         var jsonSchema = JsonSchema.fromString(StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8));
-        deploy(jsonSchema, true);
+        deploy(jsonSchema, readOnly, force);
     }
 
     @Override
-    public DeployDocumentDefinitionResult deploy(String schema) {
+    public DeployDocumentDefinitionResult deploy(String schema, boolean readOnly, boolean force) {
         try {
             var jsonSchema = JsonSchema.fromString(schema);
-            return deploy(jsonSchema, false);
+            return deploy(jsonSchema, readOnly, force);
         } catch (Exception ex) {
             DocumentDefinitionError error = ex::getMessage;
             return new DeployDocumentDefinitionResultFailed(List.of(error));
         }
     }
 
-    private DeployDocumentDefinitionResult deploy(JsonSchema jsonSchema, boolean readOnly) {
+    private DeployDocumentDefinitionResult deploy(JsonSchema jsonSchema, boolean readOnly, boolean force) {
         try {
             var documentDefinitionName = jsonSchema.getSchema().getId().replace(".schema", "");
             var existingDefinition = findLatestByName(documentDefinitionName);
@@ -119,7 +134,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                 var existingDocumentDefinition = existingDefinition.get();
 
                 // Check read-only of previous definition
-                if (existingDocumentDefinition.isReadOnly()) {
+                if (existingDocumentDefinition.isReadOnly() && !force) {
                     DocumentDefinitionError error = () -> "This schema cannot be updated, because its readonly in previous versions";
                     return new DeployDocumentDefinitionResultFailed(List.of(error));
                 }
