@@ -36,11 +36,6 @@ class KlantAutoConfiguration {
     }
 
     @Bean
-    fun openKlantClientConfig(): OpenKlantClientConfig {
-        return OpenKlantClientConfig()
-    }
-
-    @Bean
     fun openKlantTokenGenerator(): OpenKlantTokenGenerator {
         return OpenKlantTokenGenerator()
     }
@@ -52,4 +47,5 @@ class KlantAutoConfiguration {
     ): OpenKlantClient {
         return OpenKlantClient(openKlantClientConfig, openKlantTokenGenerator)
     }
+
 }
