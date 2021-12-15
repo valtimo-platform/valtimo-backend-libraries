@@ -28,13 +28,13 @@ internal class DocumentenServiceTest {
     val openZaakConfigService = mock(OpenZaakConfigService::class.java)
     val openZaakTokenGeneratorService = mock(OpenZaakTokenGeneratorService::class.java)
     val informatieObjectTypeLinkService = mock(InformatieObjectTypeLinkService::class.java)
-    val zaakTypeLinkService = mock(ZaakTypeLinkService::class.java)
+    val zaakInstanceLinkService = mock(ZaakInstanceLinkService::class.java)
     val service = DocumentenService(
         restTemplate,
         openZaakConfigService,
         openZaakTokenGeneratorService,
         informatieObjectTypeLinkService,
-        zaakTypeLinkService
+        zaakInstanceLinkService
     )
 
     @Test
