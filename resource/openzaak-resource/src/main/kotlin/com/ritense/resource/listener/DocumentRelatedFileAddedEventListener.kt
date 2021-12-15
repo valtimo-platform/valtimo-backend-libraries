@@ -18,21 +18,20 @@ package com.ritense.resource.listener
 
 import com.ritense.openzaak.service.DocumentenService
 import com.ritense.resource.service.OpenZaakService
-import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent
-import com.ritense.valtimo.contract.listener.DocumentRelatedFileEventListener
+import com.ritense.valtimo.contract.document.event.DocumentRelatedFileAddedEvent
+import org.springframework.context.event.EventListener
 
-class DocumentRelatedFileSubmittedEventListenerImpl(
+class DocumentRelatedFileAddedEventListener(
     private val openZaakService: OpenZaakService,
     private val documentenService: DocumentenService
-) : DocumentRelatedFileEventListener {
-
-    override fun handle(event: DocumentRelatedFileSubmittedEvent) {
+) {
+    @EventListener(DocumentRelatedFileAddedEvent::class)
+    fun handle(event: DocumentRelatedFileAddedEvent) {
         if (event.documentId != null) {
-            val resource = openZaakService.getResource(event.resourceId)
+            val resource = openZaakService.getResource(event.fileId)
             documentenService.createObjectInformatieObject(
                 resource.informatieObjectUrl,
                 event.documentId,
-                event.documentDefinitionName
             )
         }
     }
