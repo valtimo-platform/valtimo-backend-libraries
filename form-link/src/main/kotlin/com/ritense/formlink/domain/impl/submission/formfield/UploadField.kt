@@ -62,17 +62,7 @@ data class UploadField(
             logger.debug { "skipping pre-processing already processed" }
             return
         }
-        val document = documentSupplier()
-        if (document != null) {
-            value.forEach {
-                val resourceId = getResourceId(it)
-                logger.debug { "file $resourceId" }
-                applicationEventPublisher.publishEvent(
-                    DocumentRelatedFileSubmittedEvent(document.id()?.id, resourceId, document.definitionId().name())
-                )
-            }
-            processed = true
-        }
+        processResource()
     }
 
     override fun postProcess() {
@@ -81,6 +71,10 @@ data class UploadField(
             logger.debug { "skipping post-processing already processed" }
             return
         }
+        processResource()
+    }
+
+    private fun processResource() {
         val document = documentSupplier()
         if (document != null) {
             value.forEach {

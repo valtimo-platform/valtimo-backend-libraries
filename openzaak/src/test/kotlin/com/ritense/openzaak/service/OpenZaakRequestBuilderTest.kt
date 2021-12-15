@@ -31,6 +31,8 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.net.URI
+import kotlin.test.assertTrue
+import org.springframework.http.MediaType
 
 class OpenZaakRequestBuilderTest : BaseTest() {
 
@@ -108,6 +110,18 @@ class OpenZaakRequestBuilderTest : BaseTest() {
         assertThat(result).hasSize(1)
         assertThat(result.first()["url"]).isEqualTo("http://example.com")
     }
+
+    @Test
+    fun `should add content type to request`() {
+        //when
+        val builder = openZaakRequestBuilder
+            .path("aPath")
+            .acceptHeader(listOf(MediaType.TEXT_PLAIN))
+            .build()
+
+        assertTrue(builder.requestEntity.headers.accept.contains(MediaType.TEXT_PLAIN))
+    }
+
 
     private fun http500(builder: OpenZaakRequestBuilder) {
         val responseEntity: ResponseEntity<Any> = ResponseEntity(
