@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.repository
+package com.ritense.klant.domain
 
-import com.ritense.resource.domain.OpenZaakResource
-import com.ritense.resource.domain.ResourceId
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.Optional
+import java.net.URI
 
-interface OpenZaakResourceRepository : JpaRepository<OpenZaakResource, ResourceId> {
-
-    override fun findById(id: ResourceId): Optional<OpenZaakResource>
-
+data class ResultPage<T>(
+    val count: Int,
+    val next: URI? = null,
+    val previous: URI? = null,
+    val results: List<T>
+) {
+    fun getNextPageNumber(): Int? {
+        return next
+            ?.query
+            ?.split("&")
+            ?.map { Pair(it.substringBefore("="), it.substringAfter("=")) }
+            ?.filter { it.first.equals("page") }
+            ?.map { it.second }
+            ?.map { it.toInt() }
+            ?.single()
+    }
 }

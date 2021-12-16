@@ -25,6 +25,10 @@ class LocalResource : ResourceResource {
         return ResponseEntity.noContent().build()
     }
 
+    override fun getContent(resourceId: String): ResponseEntity<ByteArray> {
+        return ResponseEntity.noContent().build()
+    }
+
     override fun register(resourceDTO: ResourceDTO): ResponseEntity<ResourceDTO> {
         return ResponseEntity.noContent().build()
     }

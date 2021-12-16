@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.repository
+package com.ritense.klant.client
 
-import com.ritense.resource.domain.OpenZaakResource
-import com.ritense.resource.domain.ResourceId
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.Optional
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.ConstructorBinding
 
-interface OpenZaakResourceRepository : JpaRepository<OpenZaakResource, ResourceId> {
-
-    override fun findById(id: ResourceId): Optional<OpenZaakResource>
-
-}
+@ConstructorBinding
+@ConfigurationProperties(prefix = "valtimo.openklant")
+data class OpenKlantClientProperties(
+    val url: String,
+    val clientId: String,
+    val secret: String
+)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.repository
+package com.ritense.klant.domain
 
-import com.ritense.resource.domain.OpenZaakResource
-import com.ritense.resource.domain.ResourceId
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.Optional
-
-interface OpenZaakResourceRepository : JpaRepository<OpenZaakResource, ResourceId> {
-
-    override fun findById(id: ResourceId): Optional<OpenZaakResource>
-
-}
+data class Klant(
+    val url: String?,
+    val telefoonnummer: String?,
+    val emailadres: String?
+)

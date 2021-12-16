@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.repository
+package com.ritense.klant.service.impl
 
-import com.ritense.resource.domain.OpenZaakResource
-import com.ritense.resource.domain.ResourceId
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.Optional
+import com.ritense.klant.client.OpenKlantClient
+import com.ritense.klant.service.BurgerService
 
-interface OpenZaakResourceRepository : JpaRepository<OpenZaakResource, ResourceId> {
-
-    override fun findById(id: ResourceId): Optional<OpenZaakResource>
-
+class BurgerService(private val openKlantClient: OpenKlantClient) : BurgerService {
+    override fun getBurger(bsn: String) = openKlantClient.getKlant(bsn)
 }

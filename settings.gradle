@@ -42,5 +42,6 @@ include(
     "external-event",
     "connector",
     "objects-api",
-    "document-export"
+    "document-export",
+    "klant"
 )
