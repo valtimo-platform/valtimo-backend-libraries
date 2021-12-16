@@ -57,7 +57,7 @@ class FlowmailerMailDispatcher(
     }
 
     override fun getMaximumSizeAttachments(): Int {
-        return MAX_SIZE_ATTACHMENTS_IN_BYTES
+        return MAX_SIZE_EMAIL_BODY_IN_BYTES // Flowmailer checks the entire body size
     }
 
     private fun submitMessage(url: String, submitMessage: SubmitMessage): MailMessageStatus {
@@ -66,7 +66,7 @@ class FlowmailerMailDispatcher(
             val httpEntity = HttpEntity(objectMapper.writeValueAsString(submitMessage), getHttpHeaders(token))
             val response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String::class.java)
 
-            if (httpEntity.body.encodeToByteArray().size > MAX_SIZE_ATTACHMENTS_IN_BYTES) {
+            if (httpEntity.body.encodeToByteArray().size > MAX_SIZE_EMAIL_BODY_IN_BYTES) {
                 throw IllegalStateException("Email exceeds max size of 25 mb")
             }
             return MailMessageStatus.with(
@@ -101,7 +101,7 @@ class FlowmailerMailDispatcher(
 
     companion object {
         private const val BASE_URL = "https://api.flowmailer.net"
-        const val MAX_SIZE_ATTACHMENTS_IN_BYTES: Int = 25000000  // 25mb
+        const val MAX_SIZE_EMAIL_BODY_IN_BYTES: Int = 25000000  // 25mb
 
     }
 }
