@@ -21,7 +21,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import javax.inject.Inject
 
-internal class FlowmailerDispatcherIntTest: BaseIntegrationTest() {
+internal class FlowmailerDispatcherIntTest : BaseIntegrationTest() {
 
     @Inject
     lateinit var flowmailerMailDispatcher: FlowmailerMailDispatcher
@@ -30,4 +30,5 @@ internal class FlowmailerDispatcherIntTest: BaseIntegrationTest() {
     fun `should instantiate FlowmailerDispatcher bean`() {
         assertThat(flowmailerMailDispatcher).isNotNull
     }
+
 }

@@ -127,7 +127,7 @@ class FlowmailerDispatcherTest : BaseTest() {
     @Test
     fun `should return maxSizeAttachments`() {
         val actual = flowmailerMailDispatcher.getMaximumSizeAttachments()
-        assertThat(actual).isEqualTo(FlowmailerMailDispatcher.MAX_SIZE_ATTACHMENTS)
+        assertThat(actual).isEqualTo(FlowmailerMailDispatcher.MAX_SIZE_EMAIL_BODY_IN_BYTES)
     }
 
     private fun templatedMailSenderSimulation(status: HttpStatus) {

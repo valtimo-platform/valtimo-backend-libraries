@@ -18,7 +18,6 @@ package com.ritense.mail.flowmailer.domain
 
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import org.apache.tika.Tika
-import java.util.Date
 
 data class SubmitMessage(
     val attachments: MutableList<Attachment> = mutableListOf(),
@@ -28,15 +27,11 @@ data class SubmitMessage(
     val headerFromName: String,
     val headerToAddress: String,
     val headerToName: String,
-    val headers: List<Header>? = null,
-    val html: String? = null,
+    val html: String = "",
     val messageType: MessageType = MessageType.EMAIL,
     val recipientAddress: String,
-    val scheduleAt: Date? = null,
     val senderAddress: String,
     val subject: String,
-    val tags: List<String>? = null,
-    val text: String? = null
 ) {
 
     data class Attachment(
