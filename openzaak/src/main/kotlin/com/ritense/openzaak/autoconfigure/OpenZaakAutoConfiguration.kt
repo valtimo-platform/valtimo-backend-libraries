@@ -31,7 +31,7 @@ import com.ritense.openzaak.repository.ZaakInstanceLinkRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
 import com.ritense.openzaak.repository.converter.Encryptor
 import com.ritense.openzaak.service.ZaakRolService
-import com.ritense.openzaak.service.impl.DocumentenService
+import com.ritense.openzaak.service.DocumentenService
 import com.ritense.openzaak.service.impl.EigenschapService
 import com.ritense.openzaak.service.impl.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.impl.OpenZaakConfigService
@@ -246,7 +246,7 @@ class OpenZaakAutoConfiguration {
         informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
         zaakInstanceLinkService: ZaakInstanceLinkService
     ): DocumentenService {
-        return DocumentenService(
+        return com.ritense.openzaak.service.impl.DocumentenService(
             restTemplate,
             openZaakConfigService,
             openZaakTokenGeneratorService,
