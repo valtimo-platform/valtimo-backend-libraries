@@ -86,7 +86,7 @@ open class ConnectorService(
                 // Check if the same connectorType has been used before
                 require(
                     !connectorTypeInstanceRepository.existsConnectorTypeInstanceByType(connectorType.get())
-                ) { "Only one '${connectorType.get().name}' connector is allowed" }
+                ) { "Only one ${connectorType.get().name} connector is allowed" }
             }
             val connectorInstance = connectorTypeInstanceRepository.save(
                 ConnectorInstance(

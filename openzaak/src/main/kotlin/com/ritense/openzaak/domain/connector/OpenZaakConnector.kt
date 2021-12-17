@@ -1,4 +1,4 @@
-package com.ritense.openzaak.service
+package com.ritense.openzaak.domain.connector
 
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
@@ -14,5 +14,9 @@ class OpenZaakConnector(
 
     override fun setProperties(connectorProperties: ConnectorProperties) {
         openZaakProperties = connectorProperties as OpenZaakProperties
+    }
+
+    fun getName(): String {
+        return "OpenZaak"
     }
 }

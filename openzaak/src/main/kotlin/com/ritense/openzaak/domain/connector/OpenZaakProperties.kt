@@ -1,4 +1,4 @@
-package com.ritense.openzaak.service
+package com.ritense.openzaak.domain.connector
 
 import com.ritense.connector.domain.ConnectorProperties
 

@@ -44,7 +44,7 @@ class DocumentenService(
             .post()
             .body(
                 mapOf(
-                    "bronorganisatie" to openZaakConfigService.get()!!.rsin.value,
+                    "bronorganisatie" to openZaakConfigService.getOpenZaakConfig()!!.rsin,
                     "creatiedatum" to LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     "titel" to multipartFile.originalFilename,
                     "auteur" to SecurityUtils.getCurrentUserLogin(),

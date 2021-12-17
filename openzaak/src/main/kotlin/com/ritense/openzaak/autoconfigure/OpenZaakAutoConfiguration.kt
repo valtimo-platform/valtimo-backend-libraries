@@ -16,19 +16,20 @@
 
 package com.ritense.openzaak.autoconfigure
 
+import com.ritense.connector.repository.ConnectorTypeInstanceRepository
+import com.ritense.connector.repository.ConnectorTypeRepository
 import com.ritense.document.service.DocumentService
+import com.ritense.openzaak.domain.connector.OpenZaakConnector
+import com.ritense.openzaak.domain.connector.OpenZaakProperties
 import com.ritense.openzaak.form.OpenZaakFormFieldDataResolver
 import com.ritense.openzaak.listener.EigenschappenSubmittedListener
 import com.ritense.openzaak.listener.GlobalZaakEventListener
 import com.ritense.openzaak.listener.OpenZaakUndeployDocumentDefinitionEventListener
 import com.ritense.openzaak.listener.ServiceTaskListener
 import com.ritense.openzaak.repository.InformatieObjectTypeLinkRepository
-import com.ritense.openzaak.repository.OpenZaakConfigRepository
 import com.ritense.openzaak.repository.ZaakInstanceLinkRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
 import com.ritense.openzaak.repository.converter.Encryptor
-import com.ritense.openzaak.service.OpenZaakConnector
-import com.ritense.openzaak.service.OpenZaakProperties
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.openzaak.service.impl.DocumentenService
 import com.ritense.openzaak.service.impl.EigenschapService
@@ -98,11 +99,11 @@ class OpenZaakAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(OpenZaakConfigService::class)
     fun openZaakConfigService(
-        openZaakConfigRepository: OpenZaakConfigRepository,
-        tokenGeneratorService: OpenZaakTokenGeneratorService,
-        restTemplate: RestTemplate
+        connectorTypeInstanceRepository: ConnectorTypeInstanceRepository,
+        connectorTypeRepository: ConnectorTypeRepository,
+        openZaakProperties: OpenZaakProperties
     ): OpenZaakConfigService {
-        return OpenZaakConfigService(openZaakConfigRepository, tokenGeneratorService, restTemplate)
+        return OpenZaakConfigService(connectorTypeInstanceRepository, connectorTypeRepository, openZaakProperties)
     }
 
     @Bean
