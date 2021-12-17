@@ -41,6 +41,6 @@ interface ZaakTypeLinkService {
 
     fun modify(zaakTypeLink: ZaakTypeLink)
 
-    fun removeServiceTaskHandler(zaakTypeLinkId: ZaakTypeLinkId, serviceTaskId: String): RemoveServiceTaskHandlerResult
+    fun removeServiceTaskHandler(zaakTypeLinkId: ZaakTypeLinkId, processDefinitionKey: String, serviceTaskId: String): RemoveServiceTaskHandlerResult
 
 }

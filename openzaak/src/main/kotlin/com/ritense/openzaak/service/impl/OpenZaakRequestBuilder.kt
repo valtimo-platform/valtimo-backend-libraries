@@ -154,8 +154,6 @@ data class OpenZaakRequestBuilder(
         headers.set("Accept-Crs", HEADER_DATA)
         headers.set("Content-Crs", HEADER_DATA)
 
-        headers.set("Accept-Crs", "EPSG:4326")
-        headers.set("Content-Crs", "EPSG:4326")
         headers.setBearerAuth(generatedToken)
         return headers
     }

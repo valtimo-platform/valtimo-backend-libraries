@@ -68,7 +68,7 @@ internal class ZaakTypeLinkResourceTest {
     fun `should create service task handler`() {
         val id = UUID.randomUUID()
         val zaaktypeLinkId = ZaakTypeLinkId.existingId(id)
-        val serviceTaskHandler = ServiceTaskHandler("taskId", Operation.SET_STATUS, URI.create("http://example.com"))
+        val serviceTaskHandler = ServiceTaskHandler("processKey", "taskId", Operation.SET_STATUS, URI.create("http://example.com"))
         val serviceTaskHandlers = ServiceTaskHandlers()
         serviceTaskHandlers.add(serviceTaskHandler)
 
@@ -79,7 +79,7 @@ internal class ZaakTypeLinkResourceTest {
             serviceTaskHandlers
         )
 
-        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_STATUS, URI.create("http://example.com"))
+        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_STATUS, URI.create("http://example.com"))
 
         whenever(zaakTypeLinkService.assignServiceTaskHandler(eq(zaaktypeLinkId), eq(serviceTaskHandlerRequest)))
             .thenReturn(CreateServiceTaskHandlerResultSucceeded(zaaktypeLink))
@@ -99,7 +99,7 @@ internal class ZaakTypeLinkResourceTest {
     fun `should update service task handler`() {
         val id = UUID.randomUUID()
         val zaaktypeLinkId = ZaakTypeLinkId.existingId(id)
-        val serviceTaskHandler = ServiceTaskHandler("taskId", Operation.SET_STATUS, URI.create("http://example.com"))
+        val serviceTaskHandler = ServiceTaskHandler("processKey", "taskId", Operation.SET_STATUS, URI.create("http://example.com"))
         val serviceTaskHandlers = ServiceTaskHandlers()
         serviceTaskHandlers.add(serviceTaskHandler)
 
@@ -110,7 +110,7 @@ internal class ZaakTypeLinkResourceTest {
             serviceTaskHandlers
         )
 
-        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_STATUS, URI.create("http://example.com"))
+        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_STATUS, URI.create("http://example.com"))
         whenever(zaakTypeLinkService.modifyServiceTaskHandler(eq(zaaktypeLinkId), eq(serviceTaskHandlerRequest)))
             .thenReturn(ModifyServiceTaskHandlerResultSucceeded(zaaktypeLink))
 

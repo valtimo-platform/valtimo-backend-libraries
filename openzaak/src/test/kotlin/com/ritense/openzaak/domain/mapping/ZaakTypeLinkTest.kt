@@ -35,6 +35,7 @@ import org.mockito.MockitoAnnotations
 import java.net.URI
 import java.util.UUID
 import javax.validation.ConstraintViolationException
+import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake
 
 class ZaakTypeLinkTest {
 
@@ -78,12 +79,13 @@ class ZaakTypeLinkTest {
     @Test
     fun `should assign service task handler`() {
         val zaaktypeLink = zaakTypeLink()
-        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_STATUS, URI.create("http://example.com"))
+        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_STATUS, URI.create("http://example.com"))
 
         zaaktypeLink.assignZaakServiceHandler(serviceTaskHandlerRequest)
 
         assertThat(zaaktypeLink.serviceTaskHandlers).contains(
             ServiceTaskHandler(
+                serviceTaskHandlerRequest.processDefinitionKey,
                 serviceTaskHandlerRequest.serviceTaskId,
                 serviceTaskHandlerRequest.operation,
                 serviceTaskHandlerRequest.parameter
@@ -94,14 +96,15 @@ class ZaakTypeLinkTest {
     @Test
     fun `should update service task handler`() {
         val zaaktypeLink = zaakTypeLink()
-        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_STATUS, URI.create("http://example.com"))
-        val newServiceTaskHandlerRequest = ServiceTaskHandlerRequest("taskId", Operation.SET_RESULTAAT, URI.create("http://newexample.com"))
+        val serviceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_STATUS, URI.create("http://example.com"))
+        val newServiceTaskHandlerRequest = ServiceTaskHandlerRequest("processKey", "taskId", Operation.SET_RESULTAAT, URI.create("http://newexample.com"))
 
         zaaktypeLink.assignZaakServiceHandler(serviceTaskHandlerRequest)
         zaaktypeLink.assignZaakServiceHandler(newServiceTaskHandlerRequest)
 
         assertThat(zaaktypeLink.serviceTaskHandlers).contains(
             ServiceTaskHandler(
+                newServiceTaskHandlerRequest.processDefinitionKey,
                 newServiceTaskHandlerRequest.serviceTaskId,
                 newServiceTaskHandlerRequest.operation,
                 newServiceTaskHandlerRequest.parameter
@@ -109,6 +112,7 @@ class ZaakTypeLinkTest {
         )
         assertThat(zaaktypeLink.serviceTaskHandlers).doesNotContain(
             ServiceTaskHandler(
+                newServiceTaskHandlerRequest.processDefinitionKey,
                 serviceTaskHandlerRequest.serviceTaskId,
                 serviceTaskHandlerRequest.operation,
                 serviceTaskHandlerRequest.parameter
@@ -157,6 +161,38 @@ class ZaakTypeLinkTest {
                 zaakInstanceLink.zaakInstanceUrl,
                 zaakInstanceLink.zaakInstanceId,
                 eigenschappen
+            )
+        )
+    }
+
+    @Test
+    fun `should pick correct serviceTaskHandler when handeling task`() {
+        val delegateExecutionFake = DelegateExecutionFake().withCurrentActivityId("taskA")
+        val zaakInstanceUrl = URI.create("www.zaakUrl.nl")
+        val zaakTypeLink = zaakTypeLink()
+        zaakTypeLink.assignZaakServiceHandler(
+            ServiceTaskHandlerRequest(
+                "process1",
+                "taskA",
+                Operation.SET_STATUS,
+                URI.create("www.statusTypeUrl1.nl")
+            )
+        )
+        zaakTypeLink.assignZaakServiceHandler(
+            ServiceTaskHandlerRequest(
+                "process2",
+                "taskA",
+                Operation.SET_STATUS,
+                URI.create("www.statusTypeUrl2.nl")
+            )
+        )
+
+        zaakTypeLink.handleServiceTask(delegateExecutionFake, "process2", zaakInstanceUrl)
+
+        assertThat(zaakTypeLink.domainEvents()).contains(
+            StatusSetEvent(
+                URI.create("www.zaakUrl.nl"),
+                URI.create("www.statusTypeUrl2.nl")
             )
         )
     }
