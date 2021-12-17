@@ -27,6 +27,7 @@ internal class DocumentenServiceTest {
     val openZaakTokenGeneratorService = mock(OpenZaakTokenGeneratorService::class.java)
     val informatieObjectTypeLinkService = mock(InformatieObjectTypeLinkService::class.java)
     val zaakInstanceLinkService = mock(ZaakInstanceLinkService::class.java)
+
     val service = DocumentenService(
         restTemplate,
         openZaakConfigService,
@@ -56,8 +57,7 @@ internal class DocumentenServiceTest {
             "client",
             "secret",
             Rsin("051845623")
-        )
-        )
+        ))
 
         `when`(openZaakTokenGeneratorService.generateToken("secret", "client"))
             .thenReturn("some-token")
