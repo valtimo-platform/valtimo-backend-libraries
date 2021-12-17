@@ -121,10 +121,11 @@ class ZaakTypeLinkService(
 
     override fun removeServiceTaskHandler(
         zaakTypeLinkId: ZaakTypeLinkId,
+        processDefinitionKey: String,
         serviceTaskId: String
     ): RemoveServiceTaskHandlerResult {
         val zaakTypeLink = findBy(zaakTypeLinkId)
-        zaakTypeLink.removeZaakServiceHandler(serviceTaskId)
+        zaakTypeLink.removeZaakServiceHandler(processDefinitionKey, serviceTaskId)
         zaakTypeLinkRepository.save(zaakTypeLink)
         return RemoveServiceTaskHandlerResultSucceeded(zaakTypeLink)
     }

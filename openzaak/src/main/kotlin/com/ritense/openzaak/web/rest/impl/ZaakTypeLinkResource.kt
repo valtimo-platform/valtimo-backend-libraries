@@ -86,10 +86,10 @@ class ZaakTypeLinkResource(
 
     }
 
-    override fun removeServiceTaskHandler(id: UUID, serviceTaskId: String): ResponseEntity<RemoveServiceTaskHandlerResult> {
+    override fun removeServiceTaskHandler(id: UUID, processDefinitionKey: String, serviceTaskId: String): ResponseEntity<RemoveServiceTaskHandlerResult> {
         val zaakTypeLinkId = ZaakTypeLinkId.existingId(id)
 
-        val result = zaakTypeLinkService.removeServiceTaskHandler(zaakTypeLinkId, serviceTaskId)
+        val result = zaakTypeLinkService.removeServiceTaskHandler(zaakTypeLinkId, processDefinitionKey, serviceTaskId)
         return when (result.zaakTypeLink()) {
             null -> ResponseEntity.badRequest().body(result)
             else -> ok(result)

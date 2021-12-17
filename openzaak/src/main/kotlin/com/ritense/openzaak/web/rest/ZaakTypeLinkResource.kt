@@ -64,9 +64,10 @@ interface ZaakTypeLinkResource {
         @Valid @RequestBody request: ServiceTaskHandlerRequest
     ): ResponseEntity<ModifyServiceTaskHandlerResult>
 
-    @DeleteMapping(value = ["/{id}/service-handler/{serviceTaskId}"])
+    @DeleteMapping(value = ["/{id}/service-handler/{processDefinitionKey}/{serviceTaskId}"])
     fun removeServiceTaskHandler(
         @PathVariable(name = "id") id: UUID,
+        @PathVariable(name = "processDefinitionKey") processDefinitionKey: String,
         @PathVariable(name = "serviceTaskId") serviceTaskId: String
     ): ResponseEntity<RemoveServiceTaskHandlerResult>
 }

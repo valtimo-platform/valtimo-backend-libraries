@@ -70,12 +70,19 @@ data class ZaakTypeLink(
     }
 
     fun assignZaakServiceHandler(request: ServiceTaskHandlerRequest) {
-        serviceTaskHandlers.removeIf { zsh -> zsh.serviceTaskId == request.serviceTaskId }
-        serviceTaskHandlers.plusAssign(ServiceTaskHandler(request.serviceTaskId, request.operation, request.parameter))
+        serviceTaskHandlers.removeIf { handler -> handler.processDefinitionKey == request.processDefinitionKey && handler.serviceTaskId == request.serviceTaskId }
+        serviceTaskHandlers.plusAssign(
+            ServiceTaskHandler(
+                request.processDefinitionKey,
+                request.serviceTaskId,
+                request.operation,
+                request.parameter
+            )
+        )
     }
 
-    fun removeZaakServiceHandler(serviceTaskId: String) {
-        serviceTaskHandlers.removeIf { zsh -> zsh.serviceTaskId == serviceTaskId }
+    fun removeZaakServiceHandler(processDefinitionKey: String, serviceTaskId: String) {
+        serviceTaskHandlers.removeIf { handler -> handler.processDefinitionKey == processDefinitionKey && handler.serviceTaskId == serviceTaskId }
     }
 
     @JsonIgnore
@@ -110,14 +117,14 @@ data class ZaakTypeLink(
     }
 
     @JsonIgnore
-    private fun getServiceTaskHandlerBy(serviceTaskId: String): ServiceTaskHandler? {
-        return serviceTaskHandlers.find { sth -> sth.serviceTaskId == serviceTaskId }
+    private fun getServiceTaskHandlerBy(processDefinitionKey: String, serviceTaskId: String): ServiceTaskHandler? {
+        return serviceTaskHandlers.find { handler -> handler.processDefinitionKey == processDefinitionKey && handler.serviceTaskId == serviceTaskId }
     }
 
     @JsonIgnore
-    fun handleServiceTask(execution: DelegateExecution, zaakInstanceUrl: URI?) {
+    fun handleServiceTask(execution: DelegateExecution, processDefinitionKey: String, zaakInstanceUrl: URI?) {
         val serviceTaskId = execution.currentActivityId
-        val serviceTaskHandler = getServiceTaskHandlerBy(serviceTaskId)
+        val serviceTaskHandler = getServiceTaskHandlerBy(processDefinitionKey, serviceTaskId)
 
         if (serviceTaskHandler != null) {
             when (serviceTaskHandler.operation) {
@@ -132,9 +139,9 @@ data class ZaakTypeLink(
     }
 
     @JsonIgnore
-    fun isCreateZaakTask(execution:DelegateExecution): Boolean {
+    fun isCreateZaakTask(execution: DelegateExecution, processDefinitionKey: String): Boolean {
         val serviceTaskId = execution.currentActivityId
-        val serviceTaskHandler = getServiceTaskHandlerBy(serviceTaskId) ?: return false
+        val serviceTaskHandler = getServiceTaskHandlerBy(serviceTaskId, processDefinitionKey) ?: return false
 
         return serviceTaskHandler.operation == Operation.CREATE_ZAAK
     }
