@@ -76,7 +76,8 @@ class ZaakTypeLinkService(
                     ZaakTypeLinkId.newId(UUID.randomUUID()),
                     request.documentDefinitionName,
                     request.zaakTypeUrl,
-                    ServiceTaskHandlers()
+                    ServiceTaskHandlers(),
+                    request.createWithDossier ?: false
                 )
             } else {
                 zaakTypeLink.changeZaakTypeUrl(request.zaakTypeUrl)

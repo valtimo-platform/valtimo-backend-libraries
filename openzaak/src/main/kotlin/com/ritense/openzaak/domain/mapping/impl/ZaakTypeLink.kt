@@ -57,8 +57,10 @@ data class ZaakTypeLink(
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
     @Column(name = "service_task_handlers", columnDefinition = "json")
-    var serviceTaskHandlers: ServiceTaskHandlers
+    var serviceTaskHandlers: ServiceTaskHandlers,
 
+    @Column(name = "create_with_dossier", columnDefinition = "BOOLEAN", nullable = false)
+    var createWithDossier: Boolean = false
 ) : Persistable<ZaakTypeLinkId>, Validatable, AggregateRoot<DomainEvent>() {
 
     init {
