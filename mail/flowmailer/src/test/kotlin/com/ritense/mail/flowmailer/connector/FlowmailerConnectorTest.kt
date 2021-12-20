@@ -22,21 +22,23 @@ import com.ritense.document.service.DocumentService
 import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
+import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import org.assertj.core.api.Assertions.assertThat
+import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
-import java.util.UUID
 
 class FlowmailerConnectorTest : BaseTest() {
     lateinit var flowmailerConnectorProperties: FlowmailerConnectorProperties
     lateinit var flowmailerMailDispatcher: FlowmailerMailDispatcher
     lateinit var flowmailerConnector: FlowmailerConnector
     lateinit var documentService: DocumentService
+    lateinit var resourceService: ResourceService
 
     @BeforeEach
     fun setup() {
@@ -49,10 +51,12 @@ class FlowmailerConnectorTest : BaseTest() {
         flowmailerConnectorProperties = FlowmailerConnectorProperties(flowmailerProperties)
         flowmailerMailDispatcher = mock(FlowmailerMailDispatcher::class.java)
         documentService = mock(DocumentService::class.java)
+        resourceService = mock(ResourceService::class.java)
         flowmailerConnector = FlowmailerConnector(
             flowmailerConnectorProperties = flowmailerConnectorProperties,
             mailDispatcher = flowmailerMailDispatcher,
-            documentService = documentService
+            documentService = documentService,
+            resourceService = resourceService
         )
     }
 
@@ -97,8 +101,12 @@ class FlowmailerConnectorTest : BaseTest() {
         flowmailerConnector.sender("a@a.com")
         flowmailerConnector.subject("aSubject")
         flowmailerConnector.templateIdentifier("aIdentifier")
-        flowmailerConnector.recipients("/members", "email", UUID.randomUUID().toString())
-        flowmailerConnector.placeholders(mutableMapOf("key" to "value"))
+        flowmailerConnector.recipients(
+            DelegateExecutionFake().withBusinessKey(documentOptional.get().id.id.toString()),
+            "/members",
+            "email"
+        )
+        flowmailerConnector.placeholder("key", "value")
 
         //When
         flowmailerConnector.sendEmail()

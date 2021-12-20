@@ -140,7 +140,7 @@ class FlowmailerConnector(
         key: String,
         value: Any
     ): FlowmailerConnector {
-        this.placeholders + Pair(key, value)
+        this.placeholders += Pair(key, value)
         return this
     }
 
