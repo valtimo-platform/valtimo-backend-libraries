@@ -22,17 +22,18 @@ import com.ritense.document.domain.Document;
 import com.ritense.valtimo.contract.domain.AbstractId;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.util.Objects;
 import java.util.UUID;
 
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class JsonSchemaDocumentId extends AbstractId<JsonSchemaDocumentId> implements Document.Id {
 

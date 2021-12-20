@@ -17,6 +17,7 @@
 package com.ritense.document.domain.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ritense.document.config.SpringContextHelper;
 import com.ritense.document.domain.Document;
 
 import java.util.List;
@@ -27,5 +28,19 @@ public interface DocumentModifiedEvent {
     Document.Id documentId();
 
     List<? extends DocumentFieldChangedEvent> changes();
+
+    @JsonProperty(value = "changes")
+    default List<? extends DocumentFieldChangedEvent> registeredChanges() {
+        List<? extends DocumentFieldChangedEvent> changes = null;
+
+        Boolean registerDocumentChanges = SpringContextHelper
+            .getProperty("valtimo.audit.auditDocumentChanges", Boolean.class);
+
+        if (registerDocumentChanges != null && registerDocumentChanges) {
+            changes = changes();
+        }
+
+        return changes;
+    }
 
 }
