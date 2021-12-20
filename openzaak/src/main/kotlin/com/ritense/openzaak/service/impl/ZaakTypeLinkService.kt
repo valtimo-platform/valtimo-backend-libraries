@@ -80,7 +80,7 @@ class ZaakTypeLinkService(
                     request.createWithDossier ?: false
                 )
             } else {
-                zaakTypeLink.changeZaakTypeUrl(request.zaakTypeUrl)
+                zaakTypeLink.processUpdateRequest(request)
             }
             zaakTypeLinkRepository.save(zaakTypeLink)
             return CreateZaaktypeLinkResultSucceeded(zaakTypeLink)

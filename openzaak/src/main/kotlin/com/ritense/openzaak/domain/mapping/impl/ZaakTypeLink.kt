@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.openzaak.domain.event.EigenschappenSetEvent
 import com.ritense.openzaak.domain.event.ResultaatSetEvent
 import com.ritense.openzaak.domain.event.StatusSetEvent
+import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.repository.converter.UriAttributeConverter
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.valtimo.contract.domain.AggregateRoot
@@ -67,8 +68,9 @@ data class ZaakTypeLink(
         validate()
     }
 
-    fun changeZaakTypeUrl(zaakTypeUrl: URI) {
-        this.zaakTypeUrl = zaakTypeUrl
+    fun processUpdateRequest(request: CreateZaakTypeLinkRequest) {
+        this.zaakTypeUrl = request.zaakTypeUrl
+        request.createWithDossier?.let { this.createWithDossier = it }
     }
 
     fun assignZaakServiceHandler(request: ServiceTaskHandlerRequest) {
