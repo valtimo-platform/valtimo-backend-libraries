@@ -37,7 +37,7 @@ open class ContactMomentClient(
     suspend fun createContactMoment(request: CreateContactMomentRequest): ContactMoment {
         return webClient()
             .post()
-            .uri("/api/v1/contactmomenten")
+            .uri("/contactmomenten/api/v1/contactmomenten")
             .bodyValue(request)
             .retrieve()
             .awaitBody()

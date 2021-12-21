@@ -1,8 +1,8 @@
 {
-  "url": "http://example.com",
-  "vorigContactmoment": "http://example.com",
-  "volgendContactmoment": "http://example.com",
-  "bronorganisatie": "string",
+  "url": "http://localhost:8006/contactmomenten/api/v1/contactmomenten/4e517f3f-1f2c-41cb-bf11-75c86c7ca51b",
+  "vorigContactmoment": null,
+  "volgendContactmoment": null,
+  "bronorganisatie": "051845623",
   "registratiedatum": "2019-08-24T14:15:22Z",
   "kanaal": "string",
   "voorkeurskanaal": "string",
@@ -18,5 +18,7 @@
     "achternaam": "string",
     "voorletters": "string",
     "voorvoegselAchternaam": "string"
-  }
+  },
+  "klantcontactmomenten": [],
+  "objectcontactmomenten": []
 }

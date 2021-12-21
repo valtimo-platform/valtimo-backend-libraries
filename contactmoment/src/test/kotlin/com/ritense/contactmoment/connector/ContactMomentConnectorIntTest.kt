@@ -94,13 +94,13 @@ class ContactMomentConnectorIntTest : BaseIntegrationTest() {
                 "string",
                 "string",
                 "string"
-
             )
         )
 
         val contactMoment = (contactMomentConnector as ContactMomentConnector).createContactMoment(request)
 
-        Assertions.assertThat(contactMoment.url).isEqualTo("http://example.com")
+        Assertions.assertThat(contactMoment.url)
+            .isEqualTo("http://localhost:8006/contactmomenten/api/v1/contactmomenten/4e517f3f-1f2c-41cb-bf11-75c86c7ca51b")
     }
 
     fun startMockServer() {
@@ -108,7 +108,7 @@ class ContactMomentConnectorIntTest : BaseIntegrationTest() {
             @Throws(InterruptedException::class)
             override fun dispatch(request: RecordedRequest): MockResponse {
                 val response = when (request.path?.substringBefore('?')) {
-                    "/api/v1/contactmomenten" -> mockResponseFromFile("/data/post-contact-moment.json")
+                    "/contactmomenten/api/v1/contactmomenten" -> mockResponseFromFile("/data/post-contact-moment.json")
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
