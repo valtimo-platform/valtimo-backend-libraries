@@ -13,7 +13,7 @@
       </bpmn:extensionElements>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0kd8x0x" sourceRef="send-emai-service-task" targetRef="Event_1iw08yn" />
-    <bpmn:serviceTask id="send-emai-service-task" name="Send email" camunda:expression="${connectorFluentBuilder.builder().withConnector(&#34;flowmailerInstance&#34;).sender(&#34;flowmailertest@ritense.com&#34;).templateIdentifier(&#34;SUSWRYRS&#34;).recipients(execution, &#34;/&#34;, &#34;emailadres&#34;).attachments(execution, &#34;resourceIds&#34;).placeholder(&#34;taaknaam&#34;, delegateTask.getName()).placeholder(execution, &#34;voornaam&#34;, &#34;/voornaam&#34;).placeholder(execution, &#34;taaklink&#34;) .sendEmail()}">
+    <bpmn:serviceTask id="send-emai-service-task" name="Send email" camunda:expression="${connectorFluentBuilder.builder().withConnector(&#34;flowmailerInstance&#34;).sender(&#34;flowmailertest@ritense.com&#34;).templateIdentifier(&#34;SUSWRYRS&#34;).recipients(execution, &#34;/&#34;, &#34;emailadres&#34;).attachments(execution, &#34;resourceIds&#34;).placeholder(&#34;taaknaam&#34;, delegateTask.getName()).placeholder(execution, &#34;voornaam&#34;, &#34;/voornaam&#34;).placeholder(execution, &#34;taaklink&#34;).sendEmail()}">
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="mailSendTaskFrom" value="flowmailertest@ritense.com" />
@@ -33,6 +33,10 @@
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="mail-process">
+      <bpmndi:BPMNEdge id="Flow_0y7kdns_di" bpmnElement="Flow_0y7kdns">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="310" y="117" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0kd8x0x_di" bpmnElement="Flow_0kd8x0x">
         <di:waypoint x="620" y="117" />
         <di:waypoint x="682" y="117" />
@@ -40,10 +44,6 @@
       <bpmndi:BPMNEdge id="Flow_1nhmmh4_di" bpmnElement="Flow_1nhmmh4">
         <di:waypoint x="410" y="117" />
         <di:waypoint x="520" y="117" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0y7kdns_di" bpmnElement="Flow_0y7kdns">
-        <di:waypoint x="215" y="117" />
-        <di:waypoint x="310" y="117" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start-event">
         <dc:Bounds x="179" y="99" width="36" height="36" />
