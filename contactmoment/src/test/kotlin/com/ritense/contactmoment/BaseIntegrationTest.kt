@@ -16,13 +16,26 @@
 
 package com.ritense.contactmoment
 
+import com.ritense.connector.autodeployment.ConnectorApplicationReadyEventListener
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.junit.extension.LiquibaseRunnerExtension
+import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
 @ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
 abstract class BaseIntegrationTest : BaseTest() {
+
+    @MockBean
+    lateinit var userManagementService: UserManagementService
+
+    @MockBean
+    lateinit var mailSender: MailSender
+
+    @MockBean
+    lateinit var connectorApplicationReadyEventListener: ConnectorApplicationReadyEventListener
 
 }

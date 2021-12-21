@@ -68,7 +68,6 @@ class ContactMomentConnectorIntTest : BaseIntegrationTest() {
     internal fun setUp() {
         startMockServer()
         setupConnector()
-        //
     }
 
     @AfterEach
