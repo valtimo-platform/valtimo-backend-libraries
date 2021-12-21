@@ -22,6 +22,18 @@ import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import java.util.Optional
 
+/**
+ * This class consists of one filter that redirects all mails to
+ * one or more email addresses, instead of sending them to the original
+ * email addresses one for RawMailMessages and one for TemplatedMailMessages.
+ *
+ * <p>As is the case for all filters, when a message is no longer valid, the
+ * message will not be sent.</p>
+ *
+ * @see MailFilter
+ * @see RawMailMessage
+ * @see TemplatedMailMessage
+ */
 class RedirectToFilter(
     private val mailingProperties: MailingProperties
 ) : MailFilter {

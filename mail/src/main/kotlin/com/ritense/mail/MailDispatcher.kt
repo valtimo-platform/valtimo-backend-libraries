@@ -20,6 +20,14 @@ import com.ritense.valtimo.contract.mail.model.MailMessageStatus
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 
+/**
+ * This interface implements 2 ways of sending an email, either templated or raw.
+ * No filtering is applied please use FilteredMailSender instead.
+ *
+ * @see FilteredMailSender
+ * @see RawMailMessage
+ * @see TemplatedMailMessage
+ */
 interface MailDispatcher {
 
     fun send(rawMailMessage: RawMailMessage): List<MailMessageStatus>
