@@ -1,0 +1,22 @@
+{
+  "url": "http://example.com",
+  "vorigContactmoment": "http://example.com",
+  "volgendContactmoment": "http://example.com",
+  "bronorganisatie": "string",
+  "registratiedatum": "2019-08-24T14:15:22Z",
+  "kanaal": "string",
+  "voorkeurskanaal": "string",
+  "voorkeurstaal": "str",
+  "tekst": "string",
+  "onderwerpLinks": [
+    "http://example.com"
+  ],
+  "initiatiefnemer": "gemeente",
+  "medewerker": "http://example.com",
+  "medewerkerIdentificatie": {
+    "identificatie": "string",
+    "achternaam": "string",
+    "voorletters": "string",
+    "voorvoegselAchternaam": "string"
+  }
+}

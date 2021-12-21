@@ -1,6 +1,7 @@
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation(project(":app"))
+    implementation(project(":contactmoment"))
     implementation(project(":contract"))
     implementation(project(":core"))
     implementation(project(":keycloak-iam"))

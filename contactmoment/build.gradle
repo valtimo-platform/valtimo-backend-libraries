@@ -1,0 +1,58 @@
+/*
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+projectVersion = 1.0
+
+apply from: 'gradle/liquibase.gradle'
+
+dockerCompose {
+    projectName = "contactmoment"
+    isRequiredBy(test)
+    isRequiredBy(checkExtended)
+    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+}
+
+dependencies {
+    implementation project(':contract')
+    implementation project(':connector')
+    implementation project(':resource')
+    implementation "org.springframework.boot:spring-boot-autoconfigure"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.5.2"
+    implementation "io.jsonwebtoken:jjwt-api:0.11.2"
+    implementation "io.jsonwebtoken:jjwt-impl:0.11.2"
+    implementation "io.jsonwebtoken:jjwt-jackson:0.11.2"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2"
+    testImplementation "com.squareup.okhttp3:mockwebserver:4.9.3"
+    testImplementation "com.squareup.okhttp3:okhttp:4.9.3"
+
+
+    jar {
+        enabled = true
+        manifest {
+            attributes("Implementation-Title": "Ritense Contactmomenten-API spring boot starter")
+            attributes("Implementation-Version": projectVersion)
+        }
+    }
+}
+
+apply from: "gradle/publishing.gradle"
