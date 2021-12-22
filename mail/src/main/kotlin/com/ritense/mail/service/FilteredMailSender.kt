@@ -25,6 +25,11 @@ import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import java.util.Optional
 import kotlin.streams.toList
 
+/**
+ * This class is the replacement of the previous MailSender.class
+ * In this class filtering is done based on mailfilters.
+ * Defacto this is new main class for sending emails.
+ */
 class FilteredMailSender(
     private val mailDispatcher: MailDispatcher,
     private val filters: Collection<MailFilter>

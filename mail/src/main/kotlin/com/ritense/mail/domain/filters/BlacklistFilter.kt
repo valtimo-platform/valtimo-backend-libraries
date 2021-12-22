@@ -23,6 +23,18 @@ import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import java.util.Optional
 
+/**
+ * This class consists of two different filters that both perform
+ * blacklisting based on email addresses, one for RawMailMessages
+ * and one for TemplatedMailMessages.
+ *
+ * <p>As is the case for all filters, when a message is no longer valid, the
+ * message will not be sent.</p>
+ *
+ * @see MailFilter
+ * @see RawMailMessage
+ * @see TemplatedMailMessage
+ */
 class BlacklistFilter(
     private val mailingProperties: MailingProperties,
     private val blacklistService: BlacklistService
