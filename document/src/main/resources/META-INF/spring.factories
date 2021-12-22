@@ -1,6 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.document.autoconfigure.DocumentAutoConfiguration, \
   com.ritense.document.autoconfigure.DocumentSnapshotAutoConfiguration, \
-  com.ritense.document.autoconfigure.SecurityAutoConfiguration, \
-  com.ritense.document.autoconfigure.LiquibaseAutoConfiguration, \
-  com.ritense.document.autoconfigure.RetryAutoConfiguration
+  com.ritense.document.autoconfigure.DocumentSecurityAutoConfiguration, \
+  com.ritense.document.autoconfigure.DocumentLiquibaseAutoConfiguration, \
+  com.ritense.document.autoconfigure.DocumentRetryAutoConfiguration

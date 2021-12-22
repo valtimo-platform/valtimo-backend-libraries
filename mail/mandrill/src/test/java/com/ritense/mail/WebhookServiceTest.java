@@ -22,7 +22,6 @@ import com.ritense.mail.domain.webhook.MandrillMessageEventMessage;
 import com.ritense.mail.domain.webhook.MandrillWebhookRequest;
 import com.ritense.mail.service.BlacklistService;
 import com.ritense.mail.service.WebhookService;
-import com.ritense.valtimo.contract.basictype.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -53,16 +52,16 @@ public class WebhookServiceTest {
     public void setUp() {
         blacklistService = mock(BlacklistService.class);
         mandrillProperties = mock(MandrillProperties.class);
-        webhookService = new WebhookService(blacklistService, mandrillProperties);
+        webhookService = new WebhookService(mandrillProperties, blacklistService);
     }
 
     @Test
     public void shouldHandleSyncAndMessageEvents() throws IOException {
-        doNothing().when(blacklistService).blacklist(any(EmailAddress.class), anyString());
+        doNothing().when(blacklistService).blacklist(anyString(), any(), anyString());
 
         webhookService.handleMandrillEvents(getMandrillEvents());
 
-        verify(blacklistService, times(2)).blacklist(any(EmailAddress.class), anyString());
+        verify(blacklistService, times(2)).blacklist(anyString(), any(), anyString());
     }
 
     private MandrillWebhookRequest getMandrillEvents() {
@@ -95,6 +94,8 @@ public class WebhookServiceTest {
             emailAddress,
             "sender",
             "state",
-            "description");
+            "description"
+        );
     }
+
 }
