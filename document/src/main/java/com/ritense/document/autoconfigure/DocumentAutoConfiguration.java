@@ -172,7 +172,7 @@ public class DocumentAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(SpringContextHelper.class)
-    public SpringContextHelper springContextHelper() {
+    public SpringContextHelper springContextHelper2() {
         return new SpringContextHelper();
     }
 }
