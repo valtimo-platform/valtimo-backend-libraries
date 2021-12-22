@@ -145,8 +145,7 @@ class ObjectsApiAutoConfiguration {
 
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    fun productAanvraagProperties(
-    ): ProductAanvraagProperties {
+    fun productAanvraagProperties(): ProductAanvraagProperties {
         return ProductAanvraagProperties()
     }
 }
