@@ -77,26 +77,7 @@ class ContactMomentConnectorIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should create contactmoment`() {
-        val request = CreateContactMomentRequest(
-            "http://example.com",
-            "string",
-            "2019-08-24T14:15:22Z",
-            "string",
-            "string",
-            "str",
-            "string",
-            listOf("http://example.com"),
-            "gemeente",
-            "http://example.com",
-            CreateContactMomentRequest.MedewerkerIdentificatieRequest(
-                "string",
-                "string",
-                "string",
-                "string"
-            )
-        )
-
-        val contactMoment = (contactMomentConnector as ContactMomentConnector).createContactMoment(request)
+        val contactMoment = (contactMomentConnector as ContactMomentConnector).createContactMoment("Hello, ...", "mail")
 
         Assertions.assertThat(contactMoment.url)
             .isEqualTo("http://localhost:8006/contactmomenten/api/v1/contactmomenten/4e517f3f-1f2c-41cb-bf11-75c86c7ca51b")
