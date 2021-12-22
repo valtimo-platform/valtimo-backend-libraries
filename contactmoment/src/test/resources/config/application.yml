@@ -2,7 +2,7 @@ spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3314/contactmoment-test
+        url: jdbc:mysql://localhost:3315/contactmoment-test
         username: valtimo
         password: password
         hikari:
