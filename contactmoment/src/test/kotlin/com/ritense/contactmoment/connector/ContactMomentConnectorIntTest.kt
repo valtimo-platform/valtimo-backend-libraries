@@ -24,7 +24,6 @@ import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorFluentBuilder
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.BaseIntegrationTest
-import com.ritense.contactmoment.domain.request.CreateContactMomentRequest
 import java.util.UUID
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -44,7 +43,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 class ContactMomentConnectorIntTest : BaseIntegrationTest() {
 
     @Autowired
-    @Qualifier("contactMomentConnector")
     lateinit var contactMomentConnector: Connector
 
     @Autowired

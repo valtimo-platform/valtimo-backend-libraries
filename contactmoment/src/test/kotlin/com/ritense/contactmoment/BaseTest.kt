@@ -16,18 +16,8 @@
 
 package com.ritense.contactmoment
 
-import okhttp3.mockwebserver.MockResponse
-
 abstract class BaseTest {
 
-    fun mockResponseFromFile(fileName: String): MockResponse {
-        return MockResponse()
-            .addHeader("Content-Type", "application/json; charset=utf-8")
-            .setResponseCode(200)
-            .setBody(readFileAsString(fileName))
-    }
-
-    private fun readFileAsString(fileName: String): String =
-        this::class.java.getResource(fileName).readText(Charsets.UTF_8)
+    fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName).readText(Charsets.UTF_8)
 
 }

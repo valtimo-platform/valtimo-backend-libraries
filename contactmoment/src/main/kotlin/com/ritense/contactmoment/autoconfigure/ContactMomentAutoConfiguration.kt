@@ -40,7 +40,6 @@ class ContactMomentAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(WebClient.Builder::class)
-    @Qualifier("contactMomentWebClientBuilder")
     fun contactMomentWebClientBuilder(): WebClient.Builder {
         return WebClient.builder().clientConnector(
             ReactorClientHttpConnector(
@@ -58,7 +57,7 @@ class ContactMomentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ContactMomentClient::class)
     fun contactMomentClient(
-        @Qualifier("contactMomentWebClientBuilder") contactMomentWebClientBuilder: WebClient.Builder,
+        contactMomentWebClientBuilder: WebClient.Builder,
         contactMomentTokenGenerator: ContactMomentTokenGenerator,
     ): ContactMomentClient {
         return ContactMomentClient(contactMomentWebClientBuilder, contactMomentTokenGenerator)

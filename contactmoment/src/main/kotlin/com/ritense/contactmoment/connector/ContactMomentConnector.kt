@@ -22,6 +22,7 @@ import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.contactmoment.client.ContactMomentClient
 import com.ritense.contactmoment.domain.ContactMoment
 import com.ritense.contactmoment.domain.request.CreateContactMomentRequest
+import com.ritense.valtimo.contract.utils.SecurityUtils
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.runBlocking
@@ -35,20 +36,23 @@ class ContactMomentConnector(
     /**
      * Create a ContactMoment
      *
-     * @param request the <code>CreateContactMomentRequest</code> to use when creating new requests
+     * @param text An explanation that substantively describes the customer interaction of the customer.
+     * @param kanaal The communication channel through which the CONTACT MOMENT is conducted.
      */
     fun createContactMoment(text: String, kanaal: String): ContactMoment {
+
+        // TODO Remove mock data from contactmoment
         val request = CreateContactMomentRequest(
             vorigContactmoment = null,
             bronorganisatie = contactMomentProperties.rsin,
             registratiedatum = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
             kanaal = kanaal,
-            voorkeurskanaal = null,
+            voorkeurskanaal = "mail",
             voorkeurstaal = "nld",
             tekst = text,
-            onderwerpLinks = null,
+            onderwerpLinks = listOf("http://example.com/valtimo-onderwerp"),
             initiatiefnemer = "gemeente",
-            medewerker = null,
+            medewerker = "http://example.com/${SecurityUtils.getCurrentUserLogin()}",
             medewerkerIdentificatie = null
         )
         return runBlocking { contactMomentClient.createContactMoment(request) }
