@@ -17,7 +17,7 @@
 package com.ritense.resource.autoconfigure
 
 import com.ritense.openzaak.service.DocumentenService
-import com.ritense.resource.listener.DocumentRelatedFileSubmittedEventListenerImpl
+import com.ritense.resource.listener.DocumentRelatedFileAddedEventListener
 import com.ritense.resource.repository.OpenZaakResourceRepository
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.resource.web.rest.OpenZaakResource
@@ -57,11 +57,11 @@ class OpenZaakResourceAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(DocumentRelatedFileSubmittedEventListenerImpl::class)
-    fun documentRelatedFileSubmittedEventListenerImpl(
+    @ConditionalOnMissingBean(DocumentRelatedFileAddedEventListener::class)
+    fun documentRelatedFileAddedEventListener(
         openZaakService: OpenZaakService,
         documentenService: DocumentenService
-    ): DocumentRelatedFileSubmittedEventListenerImpl {
-        return DocumentRelatedFileSubmittedEventListenerImpl(openZaakService, documentenService)
+    ): DocumentRelatedFileAddedEventListener {
+        return DocumentRelatedFileAddedEventListener(openZaakService, documentenService)
     }
 }

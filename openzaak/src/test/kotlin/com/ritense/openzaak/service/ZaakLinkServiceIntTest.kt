@@ -19,11 +19,11 @@ package com.ritense.openzaak.service
 import com.ritense.openzaak.BaseIntegrationTest
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
 import java.net.URI
 import javax.inject.Inject
 import javax.transaction.Transactional
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 
 @Transactional
 class ZaakLinkServiceIntTest : BaseIntegrationTest() {
@@ -34,7 +34,7 @@ class ZaakLinkServiceIntTest : BaseIntegrationTest() {
     val zaakType = URI.create("test")
 
     @Test
-    fun `should create zaaktypeLink`() {
+    fun `should create zaaktypeLink without createWithDossier`() {
         val result = zaakTypeLinkService.createZaakTypeLink(
             CreateZaakTypeLinkRequest("test", zaakType)
         )
@@ -42,6 +42,19 @@ class ZaakLinkServiceIntTest : BaseIntegrationTest() {
         assertThat(result.zaakTypeLink()).isNotNull
         assertThat(result.zaakTypeLink()!!.documentDefinitionName).isEqualTo("test")
         assertThat(result.zaakTypeLink()!!.zaakTypeUrl).isEqualTo(zaakType)
+        assertThat(result.zaakTypeLink()!!.createWithDossier).isEqualTo(false)
+    }
+
+    @Test
+    fun `should create zaaktypeLink with createWithDossier`() {
+        val result = zaakTypeLinkService.createZaakTypeLink(
+            CreateZaakTypeLinkRequest("test", zaakType, true)
+        )
+
+        assertThat(result.zaakTypeLink()).isNotNull
+        assertThat(result.zaakTypeLink()!!.documentDefinitionName).isEqualTo("test")
+        assertThat(result.zaakTypeLink()!!.zaakTypeUrl).isEqualTo(zaakType)
+        assertThat(result.zaakTypeLink()!!.createWithDossier).isEqualTo(true)
     }
 
 }
