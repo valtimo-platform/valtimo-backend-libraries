@@ -49,7 +49,6 @@ class ContactMomentConnector(
             tekst = text,
             medewerkerIdentificatie = CreateContactMomentRequest.MedewerkerIdentificatieRequest(
                 identificatie = medewerker.id,
-                voorletters = medewerker.firstName?.substring(0, 1),
                 achternaam = medewerker.lastName,
             )
         )
