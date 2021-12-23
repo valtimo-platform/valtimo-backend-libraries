@@ -21,8 +21,8 @@ import com.ritense.contactmoment.client.ContactMomentClient
 import com.ritense.contactmoment.client.ContactMomentTokenGenerator
 import com.ritense.contactmoment.connector.ContactMomentConnector
 import com.ritense.contactmoment.connector.ContactMomentProperties
+import com.ritense.valtimo.service.CurrentUserService
 import io.netty.handler.logging.LogLevel
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -75,8 +75,9 @@ class ContactMomentAutoConfiguration {
     fun contactMomentConnector(
         contactMomentProperties: ContactMomentProperties,
         contactMomentClient: ContactMomentClient,
+        currentUserService: CurrentUserService,
     ): Connector {
-        return ContactMomentConnector(contactMomentProperties, contactMomentClient)
+        return ContactMomentConnector(contactMomentProperties, contactMomentClient, currentUserService)
     }
 
     @Bean

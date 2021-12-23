@@ -16,23 +16,28 @@
 
 package com.ritense.contactmoment.domain.request
 
+import com.fasterxml.jackson.annotation.JsonInclude
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class CreateContactMomentRequest(
-    val vorigContactmoment: String?,
+    val vorigContactmoment: String? = null,
     val bronorganisatie: String,
-    val registratiedatum: String?,
-    val kanaal: String?,
-    val voorkeurskanaal: String?,
-    val voorkeurstaal: String?,
-    val tekst: String?,
-    val onderwerpLinks: List<String>?,
-    val initiatiefnemer: String?,
-    val medewerker: String?,
-    val medewerkerIdentificatie: MedewerkerIdentificatieRequest?,
+    val registratiedatum: String? = null,
+    val kanaal: String? = null,
+    val voorkeurskanaal: String? = null,
+    val voorkeurstaal: String? = null,
+    val tekst: String? = null,
+    val onderwerpLinks: List<String>? = null,
+    val initiatiefnemer: String? = null,
+    val medewerker: String? = null,
+    val medewerkerIdentificatie: MedewerkerIdentificatieRequest? = null,
 ) {
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     data class MedewerkerIdentificatieRequest(
-        val identificatie: String?,
-        val achternaam: String?,
-        val voorletters: String?,
-        val voorvoegselAchternaam: String?,
+        val identificatie: String? = null,
+        val achternaam: String? = null,
+        val voorletters: String? = null,
+        val voorvoegselAchternaam: String? = null,
     )
 }

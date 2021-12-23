@@ -24,6 +24,7 @@ import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorFluentBuilder
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.BaseIntegrationTest
+import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import java.util.UUID
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -34,8 +35,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 
 @AutoConfigureWebTestClient(timeout = "36000")
@@ -75,6 +76,8 @@ class ContactMomentConnectorIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should create contactmoment`() {
+        `when`(currentUserService.currentUser).thenReturn(ValtimoUser())
+
         val contactMoment = (contactMomentConnector as ContactMomentConnector).createContactMoment("Hello, ...", "mail")
 
         Assertions.assertThat(contactMoment.url)

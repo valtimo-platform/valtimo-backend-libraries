@@ -22,7 +22,7 @@ import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.contactmoment.client.ContactMomentClient
 import com.ritense.contactmoment.domain.ContactMoment
 import com.ritense.contactmoment.domain.request.CreateContactMomentRequest
-import com.ritense.valtimo.contract.utils.SecurityUtils
+import com.ritense.valtimo.service.CurrentUserService
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.runBlocking
@@ -31,6 +31,7 @@ import kotlinx.coroutines.runBlocking
 class ContactMomentConnector(
     private var contactMomentProperties: ContactMomentProperties,
     private var contactMomentClient: ContactMomentClient,
+    private var currentUserService: CurrentUserService,
 ) : Connector {
 
     /**
@@ -39,21 +40,18 @@ class ContactMomentConnector(
      * @param text An explanation that substantively describes the customer interaction of the customer.
      * @param kanaal The communication channel through which the CONTACT MOMENT is conducted.
      */
-    fun createContactMoment(text: String, kanaal: String): ContactMoment {
-
-        // TODO Remove mock data from contactmoment
+    fun createContactMoment(kanaal: String, text: String): ContactMoment {
+        val medewerker = currentUserService.currentUser
         val request = CreateContactMomentRequest(
-            vorigContactmoment = null,
             bronorganisatie = contactMomentProperties.rsin,
             registratiedatum = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
             kanaal = kanaal,
-            voorkeurskanaal = "mail",
-            voorkeurstaal = "nld",
             tekst = text,
-            onderwerpLinks = listOf("http://example.com/valtimo-onderwerp"),
-            initiatiefnemer = "gemeente",
-            medewerker = "http://example.com/${SecurityUtils.getCurrentUserLogin()}",
-            medewerkerIdentificatie = null
+            medewerkerIdentificatie = CreateContactMomentRequest.MedewerkerIdentificatieRequest(
+                identificatie = medewerker.id,
+                voorletters = medewerker.firstName?.substring(0, 1),
+                achternaam = medewerker.lastName,
+            )
         )
         return runBlocking { contactMomentClient.createContactMoment(request) }
     }
