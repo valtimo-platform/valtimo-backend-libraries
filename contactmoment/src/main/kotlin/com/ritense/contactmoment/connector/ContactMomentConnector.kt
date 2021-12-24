@@ -22,6 +22,7 @@ import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.contactmoment.client.ContactMomentClient
 import com.ritense.contactmoment.domain.ContactMoment
 import com.ritense.contactmoment.domain.request.CreateContactMomentRequest
+import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import com.ritense.valtimo.service.CurrentUserService
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -48,11 +49,21 @@ class ContactMomentConnector(
             kanaal = kanaal,
             tekst = text,
             medewerkerIdentificatie = CreateContactMomentRequest.MedewerkerIdentificatieRequest(
-                identificatie = medewerker.id,
+                identificatie = getMedewerkerIdentificatie(medewerker),
                 achternaam = medewerker.lastName,
             )
         )
         return runBlocking { contactMomentClient.createContactMoment(request) }
+    }
+
+    private fun getMedewerkerIdentificatie(valtimoUser: ValtimoUser): String {
+        // TODO: valtimoUser.id is an email address retrieved from JWT. Find proper solution
+        return if (valtimoUser.id.length > 24) {
+            val idHash = valtimoUser.id.hashCode().toString()
+            valtimoUser.id.substring(0, 24 - idHash.length) + idHash
+        } else {
+            valtimoUser.id
+        }
     }
 
     override fun getProperties(): ConnectorProperties {
