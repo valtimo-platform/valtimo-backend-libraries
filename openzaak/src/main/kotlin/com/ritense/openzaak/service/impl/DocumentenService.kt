@@ -55,8 +55,9 @@ class DocumentenService(
                     "taal" to "nld",
                     "inhoud" to Base64.getEncoder().encodeToString(multipartFile.bytes),
                     "informatieobjecttype" to informatieObjectTypeLink.informatieObjectType,
-                    "status" to "definitief"
-                )
+                    "status" to "definitief",
+                    "indicatiegebruiksrecht" to true
+                    )
             )
             .build()
             .execute(DocumentCreatedResult::class.java).url
