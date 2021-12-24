@@ -20,6 +20,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
+    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
+    <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
+
     <include file="changelog/20200224-form-definitions.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200330-remove-name-unique-constraint-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200408-add-storage-type.xml" relativeToChangelogFile="true"/>

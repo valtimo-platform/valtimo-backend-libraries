@@ -33,6 +33,9 @@ public class ValtimoSchemaOperationsCommand implements SchemaOperationsCommand {
     public Void execute(CommandContext commandContext) {
         PersistenceSession persistenceSession = commandContext.getSession(PersistenceSession.class);
         persistenceSession.dbSchemaUpdate();
+        persistenceSession.flush();
+        persistenceSession.flushOperations();
+        persistenceSession.commit();
         persistenceSession.close();
         try {
             liquibaseRunner.run();

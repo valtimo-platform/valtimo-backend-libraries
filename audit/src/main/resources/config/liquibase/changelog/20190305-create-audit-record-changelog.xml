@@ -37,22 +37,103 @@
         </createTable>
     </changeSet>
     <changeSet author="tom (generated)" id="1551802246513-2">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createIndex indexName="created_on_index" tableName="audit_record">
             <column name="created_on"/>
         </createIndex>
     </changeSet>
     <changeSet author="tom (generated)" id="1551802246513-3">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createIndex indexName="occurred_on_index" tableName="audit_record">
             <column name="occurred_on"/>
         </createIndex>
     </changeSet>
     <changeSet author="tom (generated)" id="1551802246513-4">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createIndex indexName="origin_index" tableName="audit_record">
             <column name="origin"/>
         </createIndex>
     </changeSet>
     <changeSet author="tom (generated)" id="1551802246513-5">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createIndex indexName="user_index" tableName="audit_record">
+            <column name="user"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="Ivo Zaal" id="1551802246513-6">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <createIndex indexName="created_on_index" tableName="audit_record">
+            <column name="created_on"/>
+        </createIndex>
+        <sql>
+            ALTER TABLE audit_record RENAME INDEX created_on_index TO ix_audit_record_created_on
+        </sql>
+    </changeSet>
+    <changeSet author="Ivo Zaal" id="1551802246513-7">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            ALTER TABLE audit_record RENAME INDEX occurred_on_index TO ix_audit_record_occurred_on
+        </sql>
+    </changeSet>
+    <changeSet author="Ivo Zaal" id="1551802246513-8">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            ALTER TABLE audit_record RENAME INDEX origin_index TO ix_audit_record_origin
+        </sql>
+    </changeSet>
+    <changeSet author="Ivo Zaal" id="1551802246513-9">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            ALTER TABLE audit_record RENAME INDEX user_index TO ix_audit_record_user
+        </sql>
+    </changeSet>
+
+    <changeSet author="tom (generated)" id="1551802246513-10">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <createIndex indexName="ix_audit_record_created_on" tableName="audit_record">
+            <column name="created_on"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="tom (generated)" id="1551802246513-11">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <createIndex indexName="ix_audit_record_occurred_on" tableName="audit_record">
+            <column name="occurred_on"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="tom (generated)" id="1551802246513-12">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <createIndex indexName="ix_audit_record_origin" tableName="audit_record">
+            <column name="origin"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="tom (generated)" id="1551802246513-13">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <createIndex indexName="ix_audit_record_user" tableName="audit_record">
             <column name="user"/>
         </createIndex>
     </changeSet>

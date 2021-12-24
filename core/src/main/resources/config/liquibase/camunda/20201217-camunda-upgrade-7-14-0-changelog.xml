@@ -20,10 +20,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <property name="now" value="now()" dbms="mysql,h2"/>
-    <property name="autoIncrement" value="true" dbms="mysql"/>
-    <property name="floatType" value="float" dbms="mysql, oracle"/>
-
     <changeSet id="1" author="Tom Bokma">
         <preConditions onFail="MARK_RAN">
             <dbms type="mysql"/>
@@ -32,7 +28,7 @@
             </not>
         </preConditions>
         <comment>mysql_engine_7.10_patch_7.10.5_to_7.10.6.sql</comment>
-        <sqlFile path="mysql_engine_7.10_patch_7.10.5_to_7.10.6.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.10_patch_7.10.5_to_7.10.6.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="2" author="Tom Bokma">
@@ -43,7 +39,7 @@
             </not>
         </preConditions>
         <comment>mysql_engine_7.10_patch_7.10.6_to_7.10.7.sql</comment>
-        <sqlFile path="mysql_engine_7.10_patch_7.10.6_to_7.10.7.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.10_patch_7.10.6_to_7.10.7.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="3" author="Tom Bokma">
@@ -54,7 +50,7 @@
             </not>
         </preConditions>
         <comment>mysql_engine_7.10_patch_7.10.13_to_7.10.14</comment>
-        <sqlFile path="mysql_engine_7.10_patch_7.10.13_to_7.10.14.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.10_patch_7.10.13_to_7.10.14.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="4" author="Tom Bokma">
@@ -197,7 +193,7 @@
             </and>
         </preConditions>
         <comment>Camunda 7.10 upgrade to 7.11</comment>
-        <sqlFile path="mysql_engine_7.10_to_7.11.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.10_to_7.11.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="5" author="Tom Bokma">
@@ -229,7 +225,7 @@
         </and>
         </preConditions>
         <comment>mysql_engine_7.11_patch_7.11.18_to_7.11.19.sql</comment>
-        <sqlFile path="mysql_engine_7.11_patch_7.11.18_to_7.11.19.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.11_patch_7.11.18_to_7.11.19.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="6" author="Tom Bokma">
@@ -269,7 +265,7 @@
             </and>
         </preConditions>
         <comment>mysql_engine_7.11_to_7.12.sql</comment>
-        <sqlFile path="mysql_engine_7.11_to_7.12.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.11_to_7.12.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="7" author="Tom Bokma">
@@ -287,7 +283,7 @@
             </and>
         </preConditions>
         <comment>mysql_engine_7.12_patch_7.12.10_to_7.12.11.sql</comment>
-        <sqlFile path="mysql_engine_7.12_patch_7.12.10_to_7.12.11.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.12_patch_7.12.10_to_7.12.11.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="8" author="Tom Bokma">
@@ -390,7 +386,7 @@
             </and>
         </preConditions>
         <comment>mysql_engine_7.12_to_7.13.sql</comment>
-        <sqlFile path="mysql_engine_7.12_to_7.13.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.12_to_7.13.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="9" author="Tom Bokma">
@@ -401,7 +397,7 @@
             </not>
         </preConditions>
         <comment>mysql_engine_7.13_patch_7.13.4_to_7.13.5_1.sql</comment>
-        <sqlFile path="mysql_engine_7.13_patch_7.13.4_to_7.13.5_1.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.13_patch_7.13.4_to_7.13.5_1.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="10" author="Tom Bokma">
@@ -433,7 +429,7 @@
             </and>
         </preConditions>
         <comment>mysql_engine_7.13_to_7.14.sql</comment>
-        <sqlFile path="mysql_engine_7.13_to_7.14.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.13_to_7.14.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
 </databaseChangeLog>

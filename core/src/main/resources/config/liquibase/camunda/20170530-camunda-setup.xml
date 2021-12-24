@@ -31,7 +31,7 @@
             </and>
         </preConditions>
         <comment>Camunda 7.5 upgrade to 7.6</comment>
-        <sqlFile path="20170530-mysql_engine_7.5_to_7.6.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.5_to_7.6.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="3" author="Ivo Zaal">
@@ -48,7 +48,7 @@
             </and>
         </preConditions>
         <comment>Camunda 7.6 upgrade to 7.6.1</comment>
-        <sqlFile path="mysql_engine_7.6_patch_7.6.0_to_7.6.1.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.6_patch_7.6.0_to_7.6.1.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="4" author="Ivo Zaal">
@@ -59,7 +59,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.6.2 upgrade to 7.6.3</comment>
-        <sqlFile path="mysql_engine_7.6_patch_7.6.2_to_7.6.3.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.6_patch_7.6.2_to_7.6.3.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="5" author="Ivo Zaal">
@@ -70,7 +70,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.6 upgrade to 7.7</comment>
-        <sqlFile path="mysql_engine_7.6_to_7.7.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.6_to_7.7.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="6" author="Ivo Zaal">
@@ -86,7 +86,7 @@
             </and>
         </preConditions>
         <comment>Camunda 7.7.3 upgrade to 7.7.4</comment>
-        <sqlFile path="mysql_engine_7.7_patch_7.7.3_to_7.7.4.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.7_patch_7.7.3_to_7.7.4.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="7" author="Ivo Zaal">
@@ -97,7 +97,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.7.4 upgrade to 7.7.5(1)</comment>
-        <sqlFile path="mysql_engine_7.7_patch_7.7.4_to_7.7.5_1.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.7_patch_7.7.4_to_7.7.5_1.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="8" author="Ivo Zaal">
@@ -114,7 +114,7 @@
             </and>
         </preConditions>
         <comment>Camunda 7.7.4 upgrade to 7.7.5(2)</comment>
-        <sqlFile path="mysql_engine_7.7_patch_7.7.4_to_7.7.5_2.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.7_patch_7.7.4_to_7.7.5_2.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="9" author="Ivo Zaal">
@@ -125,7 +125,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.7.5 upgrade to 7.7.6</comment>
-        <sqlFile path="mysql_engine_7.7_patch_7.7.5_to_7.7.6.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.7_patch_7.7.5_to_7.7.6.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="10" author="Ivo Zaal">
@@ -136,7 +136,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.7.8 upgrade to 7.7.9(1)</comment>
-        <sqlFile path="mysql_engine_7.7_patch_7.7.8_to_7.7.9_1.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.7_patch_7.7.8_to_7.7.9_1.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="11" author="Ivo Zaal">
@@ -147,7 +147,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.7.8 upgrade to 7.7.9(2)</comment>
-        <sqlFile path="mysql_engine_7.7_patch_7.7.8_to_7.7.9_2.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.7_patch_7.7.8_to_7.7.9_2.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="12" author="Ivo Zaal">
@@ -164,7 +164,7 @@
             </and>
         </preConditions>
         <comment>Camunda 7.7 upgrade to 7.8</comment>
-        <sqlFile path="mysql_engine_7.7_to_7.8.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.7_to_7.8.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="13" author="Ivo Zaal">
@@ -175,7 +175,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.8.0 upgrade to 7.8.1</comment>
-        <sqlFile path="mysql_engine_7.8_patch_7.8.0_to_7.8.1.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.8_patch_7.8.0_to_7.8.1.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="14" author="Ivo Zaal">
@@ -186,7 +186,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.8.4 upgrade to 7.8.5</comment>
-        <sqlFile path="mysql_engine_7.8_patch_7.8.4_to_7.8.5.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.8_patch_7.8.4_to_7.8.5.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="15" author="Ivo Zaal">
@@ -197,7 +197,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.8.7 upgrade to 7.8.8</comment>
-        <sqlFile path="mysql_engine_7.8_patch_7.8.7_to_7.8.8.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.8_patch_7.8.7_to_7.8.8.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="16" author="Ivo Zaal">
@@ -208,7 +208,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.8.11 upgrade to 7.8.12</comment>
-        <sqlFile path="mysql_engine_7.8_patch_7.8.11_to_7.8.12.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.8_patch_7.8.11_to_7.8.12.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="17" author="Ivo Zaal">
@@ -219,7 +219,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.8.12 upgrade to 7.8.13(1)</comment>
-        <sqlFile path="mysql_engine_7.8_patch_7.8.12_to_7.8.13_1.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.8_patch_7.8.12_to_7.8.13_1.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="18" author="Ivo Zaal">
@@ -230,7 +230,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.8.12 upgrade to 7.8.13(2)</comment>
-        <sqlFile path="mysql_engine_7.8_patch_7.8.12_to_7.8.13_2.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.8_patch_7.8.12_to_7.8.13_2.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="19" author="Ivo Zaal">
@@ -247,7 +247,7 @@
             </and>
         </preConditions>
         <comment>Camunda 7.8 upgrade to 7.9</comment>
-        <sqlFile path="mysql_engine_7.8_to_7.9.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.8_to_7.9.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="20" author="Ivo Zaal">
@@ -258,7 +258,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.9.0 upgrade to 7.9.1</comment>
-        <sqlFile path="mysql_engine_7.9_patch_7.9.0_to_7.9.1.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.9_patch_7.9.0_to_7.9.1.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="21" author="Ivo Zaal">
@@ -269,7 +269,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.9.1 upgrade to 7.9.2</comment>
-        <sqlFile path="mysql_engine_7.9_patch_7.9.1_to_7.9.2.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.9_patch_7.9.1_to_7.9.2.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="22" author="Ivo Zaal">
@@ -280,7 +280,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.9.5 upgrade to 7.9.6</comment>
-        <sqlFile path="mysql_engine_7.9_patch_7.9.5_to_7.9.6.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.9_patch_7.9.5_to_7.9.6.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="23" author="Ivo Zaal">
@@ -291,7 +291,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.9.6 upgrade to 7.9.7(1)</comment>
-        <sqlFile path="mysql_engine_7.9_patch_7.9.6_to_7.9.7_1.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.9_patch_7.9.6_to_7.9.7_1.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="24" author="Ivo Zaal">
@@ -302,7 +302,7 @@
             </not>
         </preConditions>
         <comment>Camunda 7.9.6 upgrade to 7.9.7(2)</comment>
-        <sqlFile path="mysql_engine_7.9_patch_7.9.6_to_7.9.7_2.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.9_patch_7.9.6_to_7.9.7_2.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="25" author="Ivo Zaal">
@@ -319,7 +319,7 @@
             </and>
         </preConditions>
         <comment>Camunda 7.9 upgrade to 7.10</comment>
-        <sqlFile path="mysql_engine_7.9_to_7.10.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="mysql/mysql_engine_7.9_to_7.10.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
 </databaseChangeLog>
