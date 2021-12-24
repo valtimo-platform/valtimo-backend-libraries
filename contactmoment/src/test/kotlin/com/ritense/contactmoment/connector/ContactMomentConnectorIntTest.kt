@@ -76,7 +76,9 @@ class ContactMomentConnectorIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should create contactmoment`() {
-        `when`(currentUserService.currentUser).thenReturn(ValtimoUser())
+        val medewerker = ValtimoUser()
+        medewerker.id = "test-id"
+        `when`(currentUserService.currentUser).thenReturn(medewerker)
 
         val contactMoment = (contactMomentConnector as ContactMomentConnector).createContactMoment("Hello, ...", "mail")
 
