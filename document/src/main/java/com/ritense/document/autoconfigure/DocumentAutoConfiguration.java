@@ -170,7 +170,7 @@ public class DocumentAutoConfiguration {
         return new JsonSchemaDocumentVariableService();
     }
 
-    @Bean
+    @Bean("documentSpringContextHelper")
     @ConditionalOnMissingBean(SpringContextHelper.class)
     public SpringContextHelper springContextHelper() {
         return new SpringContextHelper();
