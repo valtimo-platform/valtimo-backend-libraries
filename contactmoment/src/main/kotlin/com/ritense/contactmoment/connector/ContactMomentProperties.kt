@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.mail.repository
+package com.ritense.contactmoment.connector
 
-import com.ritense.mail.domain.blacklist.BlacklistedEmail
-import java.util.Optional
-import org.springframework.data.jpa.repository.JpaRepository
+import com.ritense.connector.domain.ConnectorProperties
 
-interface BlacklistRepository : JpaRepository<BlacklistedEmail, String> {
-    @Deprecated("This method will be removed from 10.x",
-        ReplaceWith("findById(email)"))
-    fun findByEmailAddress(email: String): Optional<BlacklistedEmail> {
-        return findById(email)
-    }
-}
+data class ContactMomentProperties(
+    var url: String = "",
+    var clientId: String = "",
+    var secret: String = "",
+    var rsin: String = "",
+) : ConnectorProperties

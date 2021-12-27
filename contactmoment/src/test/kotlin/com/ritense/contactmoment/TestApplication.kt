@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.mail.repository
+package com.ritense.contactmoment
 
-import com.ritense.mail.domain.blacklist.BlacklistedEmail
-import java.util.Optional
-import org.springframework.data.jpa.repository.JpaRepository
+import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
-interface BlacklistRepository : JpaRepository<BlacklistedEmail, String> {
-    @Deprecated("This method will be removed from 10.x",
-        ReplaceWith("findById(email)"))
-    fun findByEmailAddress(email: String): Optional<BlacklistedEmail> {
-        return findById(email)
+@SpringBootApplication(scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class])
+class TestApplication {
+
+    fun main(args: Array<String>) {
+        runApplication<TestApplication>(*args)
     }
 }

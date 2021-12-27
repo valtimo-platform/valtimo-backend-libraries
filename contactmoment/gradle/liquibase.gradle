@@ -1,0 +1,66 @@
+/*
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import org.gradle.internal.os.OperatingSystem
+
+configurations.create("liquibase")
+
+dependencies {
+    implementation "org.liquibase.ext:liquibase-hibernate5:4.3.3"
+}
+
+if (OperatingSystem.current().isWindows()) {
+    task pathingLiquibaseJar(type: Jar) {
+        dependsOn configurations.liquibase
+        appendix = 'pathingLiquibase'
+
+        doFirst {
+            manifest {
+                def classpath = sourceSets.main.runtimeClasspath.plus(configurations.liquibase)
+                attributes "Class-Path": classpath.collect { f -> f.toURI().toString() }.join(" ")
+            }
+        }
+    }
+}
+
+task liquibaseDiffChangelog(dependsOn: compileJava, type: JavaExec) {
+    group = "liquibase"
+
+    if (OperatingSystem.current().isWindows()) {
+        dependsOn pathingLiquibaseJar
+        doFirst {
+            classpath = files(pathingLiquibaseJar.archivePath)
+        }
+    } else {
+        classpath sourceSets.main.runtimeClasspath
+        classpath configurations.liquibase
+    }
+    main = "liquibase.integration.commandline.Main"
+
+    args "--changeLogFile=src/main/resources/config/liquibase/changelog/" + buildTimestamp() + "-changelog.xml"
+    args "--referenceUrl=hibernate:spring:com.ritense.contactmoment.domain?dialect=org.hibernate.dialect.MySQL57Dialect&hibernate.ejb.naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy"
+    args "--username=dev-valtimo"
+    args "--password="
+    args "--url=jdbc:h2:file:./target/h2db/db/bpmnserver"
+    args "--driver=org.h2.Driver"
+    args "diffChangeLog"
+}
+
+def buildTimestamp() {
+    def date = new Date()
+    def formattedDate = date.format('yyyyMMdd')
+    return formattedDate
+}
