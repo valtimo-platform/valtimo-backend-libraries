@@ -56,7 +56,7 @@ class DocumentenService(
                     "inhoud" to Base64.getEncoder().encodeToString(multipartFile.bytes),
                     "informatieobjecttype" to informatieObjectTypeLink.informatieObjectType,
                     "status" to "definitief",
-                    "indicatiegebruiksrecht" to false
+                    "indicatieGebruiksrecht" to false
                     )
             )
             .build()
