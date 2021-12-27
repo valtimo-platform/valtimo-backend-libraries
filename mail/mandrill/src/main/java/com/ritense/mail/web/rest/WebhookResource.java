@@ -58,7 +58,6 @@ public class WebhookResource {
         String json = body.getFirst("mandrill_events");
         MandrillWebhookRequest mandrillWebhookRequest = webhookService.getMandrillEventsFromJson(json);
         webhookService.handleMandrillEvents(mandrillWebhookRequest);
-
         return ResponseEntity.ok().build();
     }
 

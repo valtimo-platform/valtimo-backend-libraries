@@ -18,8 +18,8 @@ apply from: 'gradle/liquibase.gradle'
 
 dockerCompose {
     projectName = "document"
-    isRequiredBy(test)
-    isRequiredBy(checkExtended)
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
     useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
 }
 

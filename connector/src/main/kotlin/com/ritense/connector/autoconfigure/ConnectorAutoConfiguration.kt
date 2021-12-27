@@ -67,11 +67,11 @@ class ConnectorAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ConnectorService::class)
     fun connectorService(
-        context: ApplicationContext,
+        applicationContext: ApplicationContext,
         connectorTypeInstanceRepository: ConnectorTypeInstanceRepository,
         connectorTypeRepository: ConnectorTypeRepository
     ): ConnectorService {
-        return ConnectorService(context, connectorTypeInstanceRepository, connectorTypeRepository)
+        return ConnectorService(applicationContext, connectorTypeInstanceRepository, connectorTypeRepository)
     }
 
     @Bean

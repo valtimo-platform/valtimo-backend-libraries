@@ -22,6 +22,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.domain.connector.OpenZaakConnector
 import com.ritense.openzaak.domain.connector.OpenZaakProperties
 import com.ritense.openzaak.form.OpenZaakFormFieldDataResolver
+import com.ritense.openzaak.listener.DocumentCreatedListener
 import com.ritense.openzaak.listener.EigenschappenSubmittedListener
 import com.ritense.openzaak.listener.GlobalZaakEventListener
 import com.ritense.openzaak.listener.OpenZaakUndeployDocumentDefinitionEventListener
@@ -237,6 +238,15 @@ class OpenZaakAutoConfiguration {
         zaakTypeLinkService: ZaakTypeLinkService
     ): OpenZaakUndeployDocumentDefinitionEventListener {
         return OpenZaakUndeployDocumentDefinitionEventListener(zaakTypeLinkService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentCreatedListener::class)
+    fun openZaakDocumentCreatedListener(
+        zaakTypeLinkService: ZaakTypeLinkService,
+        zaakService: ZaakService
+    ): DocumentCreatedListener {
+        return DocumentCreatedListener(zaakService, zaakTypeLinkService)
     }
 
     @Bean

@@ -80,7 +80,7 @@ internal class MailServiceTest {
     }
 
     @Test
-    fun shouldSendTemplatedMail() {
+    fun `should send templated mail`() {
         mailService.sendElementTemplateTaskMail(delegateExecution)
 
         val argumentCaptor = ArgumentCaptor.forClass(TemplatedMailMessage::class.java)
@@ -94,7 +94,7 @@ internal class MailServiceTest {
     }
 
     @Test
-    fun shouldCreateMailSettingsFromMap() {
+    fun `should create mail settings from map`() {
         val mailSettings = MailService.MailSettings(
             mapOf(
                 "mailSendTaskTo" to "mailSendTaskTo",

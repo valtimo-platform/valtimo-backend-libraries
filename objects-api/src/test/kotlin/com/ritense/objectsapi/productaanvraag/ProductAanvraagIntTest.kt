@@ -753,7 +753,8 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
 
         zaakTypeLinkId = zaakTypeLinkService.createZaakTypeLink(CreateZaakTypeLinkRequest(
             "testschema",
-            URI("${baseUrl}catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773")
+            URI("${baseUrl}catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773"),
+            true
         )).zaakTypeLink()?.id!!
     }
 

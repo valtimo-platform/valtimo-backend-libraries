@@ -20,5 +20,6 @@ import java.net.URI
 
 data class CreateZaakTypeLinkRequest(
     val documentDefinitionName: String,
-    val zaakTypeUrl: URI
+    val zaakTypeUrl: URI,
+    val createWithDossier: Boolean? = false
 )

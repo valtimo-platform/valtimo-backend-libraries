@@ -110,7 +110,7 @@ abstract class BaseTest {
         return header
     }
 
-    open fun path(name: String): URI {
+    fun path(name: String): URI {
         return URI.create(String.format("config/document/definition/%s.json", "$name.schema"))
     }
 

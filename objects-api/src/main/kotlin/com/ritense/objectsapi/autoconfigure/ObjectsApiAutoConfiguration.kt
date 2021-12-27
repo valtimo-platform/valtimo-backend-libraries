@@ -33,7 +33,7 @@ import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.objectsapi.web.rest.OpenNotificatieResource
 import com.ritense.objectsapi.web.rest.impl.ObjectSyncConfigResource
 import com.ritense.objectsapi.web.rest.impl.OpenNotificatieResourceImpl
-import com.ritense.openzaak.service.DocumentenService
+import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -67,19 +67,19 @@ class ObjectsApiAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         documentService: DocumentService,
         zaakService: ZaakService,
-        documentenService: DocumentenService,
         connectorService: ConnectorService,
         openZaakResourceRepository: OpenZaakResourceRepository,
-        zaakRolService: ZaakRolService
+        zaakRolService: ZaakRolService,
+        zaakInstanceLinkService: ZaakInstanceLinkService
     ): OpenNotificatieService {
         return OpenNotificatieService(
             processDocumentService,
             documentService,
             zaakService,
-            documentenService,
             connectorService,
             openZaakResourceRepository,
-            zaakRolService
+            zaakRolService,
+            zaakInstanceLinkService
         )
     }
 
@@ -145,8 +145,7 @@ class ObjectsApiAutoConfiguration {
 
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    fun productAanvraagProperties(
-    ): ProductAanvraagProperties {
+    fun productAanvraagProperties(): ProductAanvraagProperties {
         return ProductAanvraagProperties()
     }
 }

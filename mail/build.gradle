@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
+dockerCompose {
+    projectName = "mail"
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
+    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+}
+
 dependencies {
     api project(":contract")
     implementation "org.camunda.bpm:camunda-engine:7.14.0"
-    testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.14.0")
+    testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.15.0")
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 }
 
 apply from: "gradle/publishing.gradle"
