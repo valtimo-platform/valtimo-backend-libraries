@@ -28,7 +28,7 @@ import javax.persistence.Table
 import javax.validation.constraints.NotBlank
 
 @Entity
-@Table(name = "connector_type", indexes = [Index(name = "ct_name_i", columnList = "name")])
+@Table(name = "connector_type")
 data class ConnectorType(
     @EmbeddedId
     val id: ConnectorTypeId,
@@ -43,7 +43,7 @@ data class ConnectorType(
     @field:NotBlank
     var className: String,
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "connector_properties", columnDefinition = "json")
     @JsonProperty("properties")
     var connectorProperties: ConnectorProperties

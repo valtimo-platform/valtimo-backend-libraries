@@ -23,6 +23,9 @@
     <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
     <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
 
+    <property name="jsonType" value="JSON" dbms="mysql"/>
+    <property name="jsonType" value="JSONB" dbms="postgresql"/>
+
     <include file="changelog/20200224-form-definitions.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200330-remove-name-unique-constraint-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200408-add-storage-type.xml" relativeToChangelogFile="true"/>

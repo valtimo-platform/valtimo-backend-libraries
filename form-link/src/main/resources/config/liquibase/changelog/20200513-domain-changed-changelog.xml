@@ -20,6 +20,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet author="tom (generated)" id="1589455015624-1">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createTable tableName="process_form_association">
             <column name="process_form_association_id" type="BINARY(16)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="process_form_associationPK"/>
@@ -37,6 +40,19 @@
 
     <changeSet author="tom (generated)" id="1589455015624-3">
         <dropTable tableName="form_io_form_link" cascadeConstraints="true"/>
+    </changeSet>
+
+    <changeSet author="tom (generated)" id="1589455015624-1">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <createTable tableName="process_form_association">
+            <column name="process_form_association_id" type="${uuidType}">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="process_form_associationPK"/>
+            </column>
+            <column name="form_associations" type="${jsonType}"/>
+            <column name="process_definition_key" type="VARCHAR(64)"/>
+        </createTable>
     </changeSet>
 
 </databaseChangeLog>

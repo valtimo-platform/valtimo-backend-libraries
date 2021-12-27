@@ -18,11 +18,31 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
     <changeSet author="Ivo Zaal" id="1">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createTable tableName="opennotificatie_abonnement_link">
             <column name="connector_instance_id" type="BINARY(16)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="opennotificatie_abonnement_linkPK"/>
             </column>
             <column name="abonnement_id" type="BINARY(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="auth_key" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Ivo Zaal" id="2">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <createTable tableName="opennotificatie_abonnement_link">
+            <column name="connector_instance_id" type="${uuidType}">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="opennotificatie_abonnement_linkPK"/>
+            </column>
+            <column name="abonnement_id" type="${uuidType}">
                 <constraints nullable="false"/>
             </column>
             <column name="auth_key" type="VARCHAR(50)">

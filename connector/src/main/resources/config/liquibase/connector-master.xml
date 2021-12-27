@@ -23,6 +23,9 @@
     <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
     <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
 
+    <property name="jsonType" value="JSON" dbms="mysql"/>
+    <property name="jsonType" value="JSONB" dbms="postgresql"/>
+
     <include file="changelog/20210804-connector-changelog.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

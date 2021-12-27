@@ -23,11 +23,12 @@ import com.ritense.valtimo.contract.domain.AbstractId
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Embeddable
+import org.hibernate.annotations.Type
 
 @Embeddable
 class ZaakInstanceLinkId (
 
-    @Column(name = "zaak_instance_link_id", columnDefinition = "BINARY(16)")
+    @Column(name = "zaak_instance_link_id")
     @JsonValue
     val id: UUID
 

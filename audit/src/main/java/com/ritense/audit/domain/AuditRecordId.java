@@ -34,7 +34,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 public final class AuditRecordId extends AbstractId<AuditRecordId> {
 
     @JsonView(AuditView.Public.class)
-    @Column(name = "audit_record_id", columnDefinition = "BINARY(16)", updatable = false)
+    @Column(name = "audit_record_id", updatable = false)
     private UUID id;
 
     private AuditRecordId(UUID id) {

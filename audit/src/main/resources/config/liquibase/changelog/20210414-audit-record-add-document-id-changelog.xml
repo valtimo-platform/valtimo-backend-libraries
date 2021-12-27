@@ -19,11 +19,27 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
     <changeSet author="ivozaal" id="audit-record-add-document-id">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <addColumn tableName="audit_record">
             <column name="document_id" type="BINARY(16)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="ivozaal" id="audit-record-add-document-id-no-mysql">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <addColumn tableName="audit_record">
+            <column name="document_id" type="${uuidType}"/>
+        </addColumn>
+    </changeSet>
+
     <changeSet author="ivozaal" id="audit-record-fill-document-id" context="!unit-test">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <sql>
             UPDATE  audit_record
             SET     document_id =
@@ -70,15 +86,22 @@
         </sql>
     </changeSet>
     <changeSet author="ivozaal" id="audit-record-add-classname">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <sql>
             ALTER TABLE audit_record
             ADD classname VARCHAR(512) GENERATED ALWAYS AS (audit_event ->> '$.className') STORED NULL;
         </sql>
     </changeSet>
     <changeSet author="ivozaal" id="audit-record-add-index-document-id-classname">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createIndex indexName="idx_document_id_classname" tableName="audit_record">
             <column name="document_id"/>
             <column name="classname"/>
         </createIndex>
     </changeSet>
+    <!-- TODO: index document_id + classname for postgres -->
 </databaseChangeLog>

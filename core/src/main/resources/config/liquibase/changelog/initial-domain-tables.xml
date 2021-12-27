@@ -150,7 +150,7 @@
         <addDefaultValue tableName="choice_field_values" columnName="deprecated" defaultValueBoolean="false"></addDefaultValue>
     </changeSet>
 
-<!--    <changeSet id="10.1" author="Ivo Zaal">
+<!-- TODO:    <changeSet id="10.1" author="Ivo Zaal">
         <preConditions onFail="MARK_RAN">
             <dbms type="postgresql"/>
             <sqlCheck expectedResult="0">

@@ -19,8 +19,37 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet author="Julia" id="1">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createTable tableName="open_zaak_resource">
             <column name="id" type="BINARY(16)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="open_zaak_resourcePK"/>
+            </column>
+            <column name="informatie_object_url" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="extension" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="size_in_bytes" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_on" type="DATETIME(6)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Ivo Zaal" id="2">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <createTable tableName="open_zaak_resource">
+            <column name="id" type="${uuidType}">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="open_zaak_resourcePK"/>
             </column>
             <column name="informatie_object_url" type="VARCHAR(512)">

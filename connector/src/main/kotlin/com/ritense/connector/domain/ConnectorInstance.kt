@@ -45,7 +45,7 @@ data class ConnectorInstance(
     @field:NotBlank
     var name: String,
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "connector_properties", columnDefinition = "json")
     @JsonProperty("properties")
     var connectorProperties: ConnectorProperties

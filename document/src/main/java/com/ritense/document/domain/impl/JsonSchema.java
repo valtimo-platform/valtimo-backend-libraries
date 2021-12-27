@@ -28,6 +28,7 @@ import org.everit.json.schema.Schema;
 import org.everit.json.schema.Validator;
 import org.everit.json.schema.loader.SchemaClient;
 import org.everit.json.schema.loader.SchemaLoader;
+import org.hibernate.annotations.Type;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.springframework.core.io.ClassPathResource;
@@ -64,6 +65,7 @@ public final class JsonSchema {
         .draftV7Support()
         .addFormatValidator(new UuidValidator());
 
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "json_schema", columnDefinition = "json")
     private String schema;
 

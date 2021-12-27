@@ -19,6 +19,9 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
     <changeSet author="tom (generated)" id="1586788628344-1">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <addColumn tableName="form_io_form_link">
             <column name="form_association" type="JSON"/>
         </addColumn>
@@ -35,4 +38,14 @@
             <column name="form_association_type" type="VARCHAR(64)"/>
         </dropColumn>
     </changeSet>
+
+    <changeSet author="Ivo Zaal" id="1586788628344-4">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <addColumn tableName="form_io_form_link">
+            <column name="form_association" type="${jsonType}"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

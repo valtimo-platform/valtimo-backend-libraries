@@ -20,6 +20,12 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
+    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
+    <property name="uuidType" value="uuid" dbms="postgresql"/>
+
+    <property name="jsonType" value="JSON" dbms="mysql"/>
+    <property name="jsonType" value="JSONB" dbms="postgresql"/>
+
     <include file="changelog/20190305-create-audit-record-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20210414-audit-record-add-document-id-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20210708-update-document-id-audit-event.xml" relativeToChangelogFile="true"/>

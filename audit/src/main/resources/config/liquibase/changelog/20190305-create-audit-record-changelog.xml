@@ -19,6 +19,9 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
     <changeSet author="tom (generated)" id="1551802246513-1">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createTable tableName="audit_record">
             <column name="audit_record_id" type="BINARY(16)">
                 <constraints primaryKey="true" primaryKeyName="audit_recordPK"/>
@@ -73,9 +76,6 @@
         <preConditions onFail="MARK_RAN">
             <dbms type="mysql"/>
         </preConditions>
-        <createIndex indexName="created_on_index" tableName="audit_record">
-            <column name="created_on"/>
-        </createIndex>
         <sql>
             ALTER TABLE audit_record RENAME INDEX created_on_index TO ix_audit_record_created_on
         </sql>
@@ -109,11 +109,33 @@
         <preConditions onFail="MARK_RAN">
             <dbms type="postgresql"/>
         </preConditions>
+        <createTable tableName="audit_record">
+            <column name="audit_record_id" type="${uuidType}">
+                <constraints primaryKey="true" primaryKeyName="audit_recordPK"/>
+            </column>
+            <column name="created_on" type="datetime(6)"/>
+            <column name="audit_event" type="${jsonType}"/>
+            <column name="occurred_on" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="origin" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="tom (generated)" id="1551802246513-11">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
         <createIndex indexName="ix_audit_record_created_on" tableName="audit_record">
             <column name="created_on"/>
         </createIndex>
     </changeSet>
-    <changeSet author="tom (generated)" id="1551802246513-11">
+    <changeSet author="tom (generated)" id="1551802246513-12">
         <preConditions onFail="MARK_RAN">
             <dbms type="postgresql"/>
         </preConditions>
@@ -121,7 +143,7 @@
             <column name="occurred_on"/>
         </createIndex>
     </changeSet>
-    <changeSet author="tom (generated)" id="1551802246513-12">
+    <changeSet author="tom (generated)" id="1551802246513-13">
         <preConditions onFail="MARK_RAN">
             <dbms type="postgresql"/>
         </preConditions>
@@ -129,7 +151,7 @@
             <column name="origin"/>
         </createIndex>
     </changeSet>
-    <changeSet author="tom (generated)" id="1551802246513-13">
+    <changeSet author="tom (generated)" id="1551802246513-14">
         <preConditions onFail="MARK_RAN">
             <dbms type="postgresql"/>
         </preConditions>

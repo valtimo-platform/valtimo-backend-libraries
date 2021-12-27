@@ -102,7 +102,7 @@
             <column name="name" type="VARCHAR(512)">
                 <constraints nullable="false"/>
             </column>
-            <column name="connector_properties" type="JSON"/>
+            <column name="connector_properties" type="${jsonType}"/>
         </createTable>
     </changeSet>
     <changeSet author="Ivo Zaal" id="1628085538996-8">
@@ -117,7 +117,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="connector_type_id" type="${uuidType}"/>
-            <column name="connector_properties" type="JSON"/>
+            <column name="connector_properties" type="${jsonType}"/>
         </createTable>
     </changeSet>
 

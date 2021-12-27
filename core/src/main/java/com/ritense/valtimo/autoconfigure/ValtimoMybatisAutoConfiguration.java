@@ -45,7 +45,11 @@ public class ValtimoMybatisAutoConfiguration {
         databaseSpecificTruncDatepart2.put(DbSqlSessionFactory.H2, ",'dd-MM-yyyy'),'dd-MM-yyyy')");
         databaseSpecificTruncDatepart1.put(DbSqlSessionFactory.ORACLE, "TRUNC(");
         databaseSpecificTruncDatepart2.put(DbSqlSessionFactory.ORACLE, ",')");
-        for (String mysqlLikeDatabase : Arrays.asList(DbSqlSessionFactory.MYSQL, DbSqlSessionFactory.MARIADB)) {
+        for (String mysqlLikeDatabase : Arrays.asList(
+            DbSqlSessionFactory.MYSQL,
+            DbSqlSessionFactory.MARIADB,
+            DbSqlSessionFactory.POSTGRES
+        )) {
             databaseSpecificTruncDatepart1.put(mysqlLikeDatabase, "date(");
             databaseSpecificTruncDatepart2.put(mysqlLikeDatabase, ")");
         }

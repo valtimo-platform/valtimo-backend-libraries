@@ -43,7 +43,7 @@
                 <constraints primaryKey="true" />
             </column>
             <column name="name" type="VARCHAR(255)" />
-            <column name="form_definition" type="JSON" />
+            <column name="form_definition" type="${jsonType}" />
         </createTable>
     </changeSet>
 
