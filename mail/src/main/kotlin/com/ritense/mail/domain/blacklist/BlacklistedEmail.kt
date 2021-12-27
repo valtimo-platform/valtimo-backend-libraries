@@ -29,4 +29,5 @@ data class BlacklistedEmail(
         validate()
     }
 
+    constructor(emailAddress: String, cause: String?) : this(emailAddress, LocalDateTime.now(), cause)
 }
