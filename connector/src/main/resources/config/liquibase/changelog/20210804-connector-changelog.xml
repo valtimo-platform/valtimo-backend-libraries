@@ -55,7 +55,7 @@
     </changeSet>
     <changeSet author="Rick Veenstra" id="1628085538996-5">
         <addColumn tableName="connector_type">
-            <column name="allow_multiple" type="BIT"/>
+            <column name="allow_multiple" type="BIT" defaultValueBoolean="true"/>
         </addColumn>
     </changeSet>
 

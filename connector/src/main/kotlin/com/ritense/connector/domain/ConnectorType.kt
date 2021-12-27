@@ -56,8 +56,4 @@ data class ConnectorType(
     init {
         validate()
     }
-
-    fun isMultipleInstancesAllowed(): Boolean {
-        return allowMultipleConnectorInstances
-    }
 }
