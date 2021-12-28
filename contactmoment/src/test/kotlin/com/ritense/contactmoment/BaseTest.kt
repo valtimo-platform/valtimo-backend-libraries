@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.mail.repository
+package com.ritense.contactmoment
 
-import com.ritense.mail.domain.blacklist.BlacklistedEmail
-import java.util.Optional
-import org.springframework.data.jpa.repository.JpaRepository
+abstract class BaseTest {
 
-interface BlacklistRepository : JpaRepository<BlacklistedEmail, String> {
-    @Deprecated("This method will be removed from 10.x",
-        ReplaceWith("findById(email)"))
-    fun findByEmailAddress(email: String): Optional<BlacklistedEmail> {
-        return findById(email)
-    }
+    fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName).readText(Charsets.UTF_8)
+
 }
