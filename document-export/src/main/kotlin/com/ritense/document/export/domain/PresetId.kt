@@ -16,17 +16,15 @@
 
 package com.ritense.document.export.domain
 
-import com.fasterxml.jackson.annotation.JsonValue
 import com.ritense.valtimo.contract.domain.AbstractId
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Embeddable
 
 @Embeddable
-data class PresetId(
+class PresetId(
 
-    @Column(name = "preset_id", columnDefinition = "BINARY(16)")
-    @JsonValue
+    @Column(name = "preset_id")
     val id: UUID
 
 ) : AbstractId<PresetId>() {

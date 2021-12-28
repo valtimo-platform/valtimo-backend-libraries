@@ -25,7 +25,7 @@ import javax.persistence.Embeddable
 class Status(
 
     @Column(name = "state", columnDefinition = "VARCHAR(9)", nullable = false)
-    private val state: PresetState
+    private val state: PresetState = PresetState.OPEN
 
 ) : Serializable, Validatable {
 

@@ -24,13 +24,13 @@ import javax.persistence.Embeddable
 data class Tree(
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
     @Column(name = "nodes", columnDefinition = "json")
-    val nodes: List<Node>? = null
+    val nodes: List<Node>
 ) {
 
     companion object {
 
         fun fromDocumentDefinition(definition: String): Tree {
-            return Tree()
+            return Tree(emptyList())
         }
 
     }

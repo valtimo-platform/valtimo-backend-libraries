@@ -19,6 +19,7 @@ package com.ritense.document.export.domain
 import com.fasterxml.jackson.core.JsonPointer
 import com.ritense.document.export.domain.type.ExportType
 import com.ritense.valtimo.contract.validation.Validatable
+import java.io.Serializable
 import java.util.UUID
 
 data class Node(
@@ -28,8 +29,8 @@ data class Node(
     val colour: String, // color for Excel column
     val type: ExportType, // orb / star / key
     var order: Int, // position column in export
-    var filters : List<Filter> // filter used on pointer as where clause(s)
-) : Validatable {
+    var filters: List<Filter> // filter used on pointer as where clause(s)
+) : Validatable, Serializable {
 
     init {
         validate()

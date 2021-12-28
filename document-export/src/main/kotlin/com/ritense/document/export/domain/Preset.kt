@@ -16,11 +16,9 @@
 
 package com.ritense.document.export.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.ritense.valtimo.contract.domain.AggregateRoot
 import com.ritense.valtimo.contract.validation.Validatable
 import org.springframework.data.domain.Persistable
-import java.util.UUID
 import javax.persistence.Embedded
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
@@ -28,10 +26,9 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "preset")
-data class Preset(
+class Preset(
 
     @EmbeddedId
-    @JsonProperty("id")
     val presetId: PresetId,
 
     @Embedded
@@ -40,19 +37,25 @@ data class Preset(
     @Embedded
     var tree: Tree
 
-) : Persistable<PresetId>, Validatable {
+) : Persistable<PresetId>, Validatable, AggregateRoot<Preset>() {
 
     init {
         validate()
     }
 
+    fun load() {
+        //TODO
+    }
+
+    fun reset() {
+        //TODO reset tree
+    }
+
     /*Persistable related*/
-    @JsonIgnore
     override fun getId(): PresetId {
         return presetId
     }
 
-    @JsonIgnore
     override fun isNew(): Boolean {
         return presetId.isNew
     }
