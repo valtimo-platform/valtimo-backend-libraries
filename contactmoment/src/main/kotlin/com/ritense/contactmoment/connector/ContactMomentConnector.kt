@@ -22,7 +22,10 @@ import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.contactmoment.client.ContactMomentClient
 import com.ritense.contactmoment.domain.ContactMoment
 import com.ritense.contactmoment.domain.request.CreateContactMomentRequest
+import com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
+import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
+import com.ritense.valtimo.contract.utils.SecurityUtils
 import com.ritense.valtimo.service.CurrentUserService
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -42,7 +45,7 @@ class ContactMomentConnector(
      * @param kanaal The communication channel through which the CONTACT MOMENT is conducted.
      */
     fun createContactMoment(kanaal: String, text: String): ContactMoment {
-        val medewerker = currentUserService.currentUser
+        val medewerker = getCurrentMedewerker()
         val request = CreateContactMomentRequest(
             bronorganisatie = contactMomentProperties.rsin,
             registratiedatum = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
@@ -54,6 +57,14 @@ class ContactMomentConnector(
             )
         )
         return runBlocking { contactMomentClient.createContactMoment(request) }
+    }
+
+    private fun getCurrentMedewerker(): ValtimoUser {
+        return if (SecurityUtils.getCurrentUserAuthentication() != null) {
+            currentUserService.currentUser
+        } else {
+            ValtimoUserBuilder().id(SYSTEM_ACCOUNT).lastName(SYSTEM_ACCOUNT).build()
+        }
     }
 
     private fun getMedewerkerIdentificatie(valtimoUser: ValtimoUser): String {
