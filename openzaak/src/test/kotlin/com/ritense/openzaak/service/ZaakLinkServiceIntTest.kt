@@ -17,15 +17,13 @@
 package com.ritense.openzaak.service
 
 import com.ritense.openzaak.BaseIntegrationTest
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
 import java.net.URI
-import java.util.UUID
 import javax.inject.Inject
 import javax.transaction.Transactional
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 
 @Transactional
 class ZaakLinkServiceIntTest : BaseIntegrationTest() {
@@ -36,7 +34,7 @@ class ZaakLinkServiceIntTest : BaseIntegrationTest() {
     val zaakType = URI.create("test")
 
     @Test
-    fun `should create zaaktypeLink`() {
+    fun `should create zaaktypeLink without createWithDossier`() {
         val result = zaakTypeLinkService.createZaakTypeLink(
             CreateZaakTypeLinkRequest("test", zaakType)
         )
@@ -44,23 +42,19 @@ class ZaakLinkServiceIntTest : BaseIntegrationTest() {
         assertThat(result.zaakTypeLink()).isNotNull
         assertThat(result.zaakTypeLink()!!.documentDefinitionName).isEqualTo("test")
         assertThat(result.zaakTypeLink()!!.zaakTypeUrl).isEqualTo(zaakType)
+        assertThat(result.zaakTypeLink()!!.createWithDossier).isEqualTo(false)
     }
 
     @Test
-    fun `should create zaaktypeLink and assign zaakInstance`() {
+    fun `should create zaaktypeLink with createWithDossier`() {
         val result = zaakTypeLinkService.createZaakTypeLink(
-            CreateZaakTypeLinkRequest("test", zaakType)
+            CreateZaakTypeLinkRequest("test", zaakType, true)
         )
 
-        val zaakInstanceLink = ZaakInstanceLink(URI.create("http://example.com"), UUID.randomUUID(), UUID.randomUUID())
-
-        val zaaktypeLink = zaakTypeLinkService.assignZaakInstance(
-            result.zaakTypeLink()!!.zaakTypeLinkId,
-            zaakInstanceLink
-        )
-
-        assertThat(zaaktypeLink).isNotNull
-        assertThat(zaaktypeLink.zaakInstanceLinks).contains(zaakInstanceLink)
+        assertThat(result.zaakTypeLink()).isNotNull
+        assertThat(result.zaakTypeLink()!!.documentDefinitionName).isEqualTo("test")
+        assertThat(result.zaakTypeLink()!!.zaakTypeUrl).isEqualTo(zaakType)
+        assertThat(result.zaakTypeLink()!!.createWithDossier).isEqualTo(true)
     }
 
 }

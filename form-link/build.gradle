@@ -18,8 +18,8 @@ apply from: 'gradle/liquibase.gradle'
 
 dockerCompose {
     projectName = "form-link"
-    isRequiredBy(test)
-    isRequiredBy(checkExtended)
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
     useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
 }
 
@@ -52,3 +52,5 @@ dependencies {
         }
     }
 }
+
+apply from: "gradle/publishing.gradle"

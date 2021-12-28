@@ -22,3 +22,5 @@ dependencies {
     implementation project(':resource')
     api project(':document-generation')
 }
+
+apply from: "gradle/publishing.gradle"

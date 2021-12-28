@@ -22,6 +22,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.service.impl.EigenschapService
+import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
@@ -48,10 +49,14 @@ internal class EigenschappenSubmittedListenerTest {
     lateinit var eigenschapService: EigenschapService
 
     @Mock
-    lateinit var zaakService: ZaakService
+    lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
 
     @Mock
     lateinit var zaakInstanceLink: ZaakInstanceLink
+
+    // This mock is not used in the code but required for the MockInject of eigenschappenSubmittedListener
+    @Mock
+    lateinit var zaakService: ZaakService
 
     lateinit var event: ExternalDataSubmittedEvent
 
@@ -79,7 +84,7 @@ internal class EigenschappenSubmittedListenerTest {
         whenever(zaakTypeLinkService.findBy(eq(documentDefinition))).thenReturn(zaakTypeLink)
 
         whenever(zaakTypeLink.zaakTypeUrl).thenReturn(zaakTypeUrl)
-        whenever(zaakTypeLink.getZaakInstanceLink(eq(documentId))).thenReturn(zaakInstanceLink)
+        whenever(zaakInstanceLinkService.getByDocumentId(documentId)).thenReturn(zaakInstanceLink)
 
         whenever(eigenschapService.getEigenschappen(eq(zaakTypeUrl))).thenReturn(
             ResultWrapper(
@@ -98,7 +103,7 @@ internal class EigenschappenSubmittedListenerTest {
         )
         eigenschappenSubmittedListener.handle(event)
 
-        verify(zaakTypeLink).assignZaakInstanceEigenschappen(eq(documentId), eq(mutableMapOf(uriVoornaam to "Piet")))
+        verify(zaakTypeLink).assignZaakInstanceEigenschappen(eq(zaakInstanceLink), eq(mutableMapOf(uriVoornaam to "Piet")))
     }
 
 }

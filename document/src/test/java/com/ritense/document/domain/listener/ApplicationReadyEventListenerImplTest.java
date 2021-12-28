@@ -39,7 +39,7 @@ public class ApplicationReadyEventListenerImplTest {
     @Test
     public void handle() {
         applicationReadyEventListener.handle();
-        verify(documentDefinitionService).deployAll();
+        verify(documentDefinitionService).deployAll(true, true);
     }
 
 }

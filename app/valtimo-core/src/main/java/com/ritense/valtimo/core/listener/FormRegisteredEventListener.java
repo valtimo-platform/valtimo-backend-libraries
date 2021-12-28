@@ -48,6 +48,12 @@ public class FormRegisteredEventListener {
             "akkoord-op-lening-task", // id of xml element
             FormAssociationType.USER_TASK
         );
+        formAssociationService.createFormAssociation(
+            "mail-process",
+            "input-email-user-task", // name of form
+            "start-event", // id of xml element
+            FormAssociationType.START_EVENT
+        );
 
         ////////////////
         // Medewerker //

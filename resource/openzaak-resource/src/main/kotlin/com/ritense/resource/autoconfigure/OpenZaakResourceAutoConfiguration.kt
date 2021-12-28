@@ -16,11 +16,14 @@
 
 package com.ritense.resource.autoconfigure
 
-import com.ritense.openzaak.service.impl.DocumentenService
-import com.ritense.resource.listener.DocumentRelatedFileSubmittedEventListenerImpl
+import com.ritense.openzaak.service.DocumentenService
+import com.ritense.resource.listener.DocumentRelatedFileAddedEventListener
 import com.ritense.resource.repository.OpenZaakResourceRepository
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.resource.web.rest.OpenZaakResource
+import com.ritense.resource.web.rest.OpenZaakUploadResource
+import com.ritense.resource.web.rest.ResourceResource
+import javax.servlet.http.HttpServletRequest
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
@@ -36,23 +39,29 @@ class OpenZaakResourceAutoConfiguration {
     @ConditionalOnMissingBean(OpenZaakService::class)
     fun openZaakService(
         documentenService: DocumentenService,
-        openZaakResourceRepository: OpenZaakResourceRepository
+        openZaakResourceRepository: OpenZaakResourceRepository,
+        request: HttpServletRequest
     ): OpenZaakService {
-        return OpenZaakService(documentenService, openZaakResourceRepository)
+        return OpenZaakService(documentenService, openZaakResourceRepository, request)
     }
 
     @Bean
-    @ConditionalOnMissingBean(OpenZaakResource::class)
-    fun openZaakResource(openZaakService: OpenZaakService): OpenZaakResource {
+    @ConditionalOnMissingBean(ResourceResource::class)
+    fun openZaakResource(openZaakService: OpenZaakService): ResourceResource {
         return OpenZaakResource(openZaakService)
     }
 
     @Bean
-    @ConditionalOnMissingBean(DocumentRelatedFileSubmittedEventListenerImpl::class)
-    fun documentRelatedFileSubmittedEventListenerImpl(
+    fun openZaakUploadResource(openZaakService: OpenZaakService): OpenZaakUploadResource {
+        return OpenZaakUploadResource(openZaakService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentRelatedFileAddedEventListener::class)
+    fun documentRelatedFileAddedEventListener(
         openZaakService: OpenZaakService,
         documentenService: DocumentenService
-    ): DocumentRelatedFileSubmittedEventListenerImpl {
-        return DocumentRelatedFileSubmittedEventListenerImpl(openZaakService, documentenService)
+    ): DocumentRelatedFileAddedEventListener {
+        return DocumentRelatedFileAddedEventListener(openZaakService, documentenService)
     }
 }

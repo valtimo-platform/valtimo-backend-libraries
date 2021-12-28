@@ -16,6 +16,7 @@
 
 package com.ritense.openzaak.service
 
+import com.ritense.document.domain.Document
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.StatusType
 import java.net.URI
@@ -24,4 +25,5 @@ interface ZaakStatusService {
 
     fun getStatusTypes(zaaktype: URI): ResultWrapper<StatusType>
 
+    fun setStatus(documentId: Document.Id, status: String)
 }

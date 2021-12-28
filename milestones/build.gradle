@@ -16,8 +16,8 @@
 
 dockerCompose {
     projectName = "milestones"
-    isRequiredBy(test)
-    isRequiredBy(checkExtended)
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
     useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
 }
 
@@ -44,3 +44,5 @@ dependencies {
 
     testImplementation "org.springframework.security:spring-security-test"
 }
+
+apply from: "gradle/publishing.gradle"

@@ -31,6 +31,7 @@ import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.openzaak.domain.configuration.Secret
 import com.ritense.openzaak.service.impl.OpenZaakConfigService
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
+import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import org.mockito.Mock
@@ -60,6 +61,9 @@ abstract class BaseTest {
 
     @Mock
     lateinit var zaakTypeLinkService: ZaakTypeLinkService
+
+    @Mock
+    lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
 
     @Mock
     lateinit var documentService: DocumentService
@@ -110,7 +114,7 @@ abstract class BaseTest {
         return header
     }
 
-    open fun path(name: String): URI {
+    fun path(name: String): URI {
         return URI.create(String.format("config/document/definition/%s.json", "$name.schema"))
     }
 

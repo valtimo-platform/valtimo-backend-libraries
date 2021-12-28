@@ -35,6 +35,9 @@ interface ResourceResource {
     @GetMapping(value = ["/resource/{resourceId}"])
     fun get(@PathVariable(name = "resourceId") resourceId: String): ResponseEntity<ObjectUrlDTO>
 
+    @GetMapping(value = ["/resource/{resourceId}/download"])
+    fun getContent(@PathVariable(name = "resourceId") resourceId: String): ResponseEntity<ByteArray>
+
     @PutMapping(value = ["/resource"], consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun register(@RequestBody resourceDTO: ResourceDTO): ResponseEntity<ResourceDTO>
 

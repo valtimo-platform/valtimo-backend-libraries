@@ -18,8 +18,8 @@ apply from: 'gradle/liquibase.gradle'
 
 dockerCompose {
     projectName = "core"
-    isRequiredBy(test)
-    isRequiredBy(checkExtended)
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
     useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
 }
 
@@ -27,7 +27,6 @@ dependencies {
     implementation project(":contract")
     implementation project(":web")
     implementation project(":resource")
-    implementation project(":mail")
 
     implementation "org.testcontainers:jdbc"
 
@@ -107,3 +106,5 @@ task jarTest (type: Jar, dependsOn: testClasses) {
 artifacts {
     testOutput jarTest
 }
+
+apply from: "gradle/publishing.gradle"

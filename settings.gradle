@@ -20,6 +20,7 @@ include(
     "app:gzac",
     "app:valtimo-core",
     "core",
+    "contactmoment",
     "contract",
     "web",
     "keycloak-iam",
@@ -34,12 +35,15 @@ include(
     "document-generation:local-document-generation",
     "openzaak",
     "mail",
+    "mail:flowmailer",
     "mail:local-mail",
+    "mail:mandrill",
     "resource",
     "resource:local-resource",
     "resource:openzaak-resource",
     "external-event",
     "connector",
     "objects-api",
-    "document-export"
+    "document-export",
+    "klant"
 )
