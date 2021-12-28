@@ -28,8 +28,9 @@ import com.ritense.openzaak.repository.OpenZaakConfigRepository
 import com.ritense.openzaak.repository.ZaakInstanceLinkRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
 import com.ritense.openzaak.repository.converter.Encryptor
-import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.openzaak.service.DocumentenService
+import com.ritense.openzaak.service.ZaakProcessService
+import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.openzaak.service.impl.EigenschapService
 import com.ritense.openzaak.service.impl.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.impl.OpenZaakConfigService
@@ -146,9 +147,19 @@ class OpenZaakAutoConfiguration {
     fun zaakStatusService(
         restTemplate: RestTemplate,
         openZaakConfigService: OpenZaakConfigService,
-        tokenGeneratorService: OpenZaakTokenGeneratorService
+        tokenGeneratorService: OpenZaakTokenGeneratorService,
+        documentService: DocumentService,
+        zaakTypeLinkService: com.ritense.openzaak.service.ZaakTypeLinkService,
+        zaakInstanceLinkService: com.ritense.openzaak.service.ZaakInstanceLinkService
     ): ZaakStatusService {
-        return ZaakStatusService(restTemplate, openZaakConfigService, tokenGeneratorService)
+        return ZaakStatusService(
+            restTemplate,
+            openZaakConfigService,
+            tokenGeneratorService,
+            documentService,
+            zaakTypeLinkService,
+            zaakInstanceLinkService
+        )
     }
 
     @Bean
@@ -317,6 +328,12 @@ class OpenZaakAutoConfiguration {
         zaakService: ZaakService
     ): InformatieObjectTypeResource {
         return InformatieObjectTypeResource(zaakService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakProcessService::class)
+    fun zaakProcessService(zaakStatusService: com.ritense.openzaak.service.ZaakStatusService): ZaakProcessService {
+        return com.ritense.openzaak.service.impl.ZaakProcessService(zaakStatusService)
     }
 
 }

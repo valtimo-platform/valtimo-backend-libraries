@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,8 @@
 
 package com.ritense.openzaak.service
 
-import com.ritense.document.domain.Document
-import com.ritense.openzaak.service.impl.model.ResultWrapper
-import com.ritense.openzaak.service.impl.model.catalogi.StatusType
-import java.net.URI
+import org.camunda.bpm.engine.delegate.DelegateExecution
 
-interface ZaakStatusService {
-
-    fun getStatusTypes(zaaktype: URI): ResultWrapper<StatusType>
-
-    fun setStatus(documentId: Document.Id, status: String)
+interface ZaakProcessService {
+    fun setStatus(execution: DelegateExecution, status: String)
 }

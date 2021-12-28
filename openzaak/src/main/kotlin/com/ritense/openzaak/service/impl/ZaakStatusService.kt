@@ -16,16 +16,23 @@
 
 package com.ritense.openzaak.service.impl
 
+import com.ritense.document.domain.Document
+import com.ritense.document.service.DocumentService
+import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.openzaak.service.ZaakStatusService
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.StatusType
-import org.springframework.web.client.RestTemplate
 import java.net.URI
+import org.springframework.web.client.RestTemplate
 
 class ZaakStatusService(
     private val restTemplate: RestTemplate,
     private val openZaakConfigService: OpenZaakConfigService,
-    private val tokenGeneratorService: OpenZaakTokenGeneratorService
+    private val tokenGeneratorService: OpenZaakTokenGeneratorService,
+    private val documentService: DocumentService,
+    private val zaakTypeLinkService: ZaakTypeLinkService,
+    private val zaakInstanceLinkService: ZaakInstanceLinkService
 ) : ZaakStatusService {
 
     override fun getStatusTypes(zaaktype: URI): ResultWrapper<StatusType> {
@@ -37,4 +44,18 @@ class ZaakStatusService(
             .executeWrapped(StatusType::class.java)
     }
 
+    override fun setStatus(documentId: Document.Id, status: String) {
+        val document = documentService.findBy(documentId).orElseThrow()
+        val zaakTypeLink = zaakTypeLinkService.findBy(document.definitionId().name())
+        val zaakInstanceUrl = zaakInstanceLinkService.getByDocumentId(documentId.id).zaakInstanceUrl
+        val statusUri = getStatusTypeByOmschrijving(zaakTypeLink.zaakTypeUrl, status).url!!
+        zaakTypeLink.assignZaakInstanceStatus(zaakInstanceUrl, statusUri)
+        zaakTypeLinkService.modify(zaakTypeLink)
+    }
+
+    private fun getStatusTypeByOmschrijving(zaaktype: URI, omschrijving: String): StatusType {
+        return getStatusTypes(zaaktype).results.stream()
+            .filter { it.omschrijving == omschrijving }
+            .findFirst().get()
+    }
 }
