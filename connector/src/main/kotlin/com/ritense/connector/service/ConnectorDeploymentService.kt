@@ -21,7 +21,6 @@ import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.domain.ConnectorTypeId
 import com.ritense.connector.repository.ConnectorTypeRepository
 import mu.KotlinLogging
-import java.util.Locale
 import java.util.UUID
 
 class ConnectorDeploymentService(
@@ -34,7 +33,7 @@ class ConnectorDeploymentService(
             val connectorTypeAnnotation = it.javaClass.getAnnotation(com.ritense.connector.domain.meta.ConnectorType::class.java)
             val name = connectorTypeAnnotation.name
             var connectorType = connectorTypeRepository.findByName(name)
-            val simpleClassName = it.javaClass.simpleName.replaceFirstChar { it.lowercase(Locale.getDefault()) }
+            val simpleClassName = ConnectorType.getNameFromClass(it.javaClass)
             if (connectorType == null) {
                 logger.info { "creating new connectorType $name" }
                 connectorType = ConnectorType(

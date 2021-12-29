@@ -1,0 +1,31 @@
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "url": "http://localhost:8006/contactmomenten/api/v1/contactmomenten/8ee627ff-c406-4e84-b87e-3b58047bacfe",
+      "vorigContactmoment": null,
+      "volgendContactmoment": null,
+      "bronorganisatie": "051845623",
+      "registratiedatum": "2019-08-24T14:15:22Z",
+      "kanaal": "string",
+      "voorkeurskanaal": "string",
+      "voorkeurstaal": "str",
+      "tekst": "content-1",
+      "onderwerpLinks": [
+        "http://example.com"
+      ],
+      "initiatiefnemer": "gemeente",
+      "medewerker": "http://example.com",
+      "medewerkerIdentificatie": {
+        "identificatie": "string",
+        "achternaam": "string",
+        "voorletters": "string",
+        "voorvoegselAchternaam": "string"
+      },
+      "klantcontactmomenten": [],
+      "objectcontactmomenten": []
+    }
+  ]
+}

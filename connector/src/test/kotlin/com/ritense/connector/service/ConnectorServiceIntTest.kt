@@ -155,6 +155,20 @@ class ConnectorServiceIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    fun `should load connector with dependencies by class name`() {
+        val objectApiConnectorType = ObjectApiConnectorType(ObjectApiProperties(), DummyDependency())
+        val connectorType = connectorDeploymentService.deployAll(listOf(objectApiConnectorType))[0]
+        val properties = ObjectApiProperties(NestedObject("aCustomProperty"))
+        connectorService.createConnectorInstance(connectorType.id.id, "aCustomName", properties)
+
+        val connector = connectorService.loadByClassName(ObjectApiConnectorType::class.java)
+
+        assertThat(connector).isNotNull
+        assertThat(connector.getProperties()).isEqualTo(properties)
+        assertThat(connector.getProperties()).isInstanceOf(ObjectApiProperties::class.java)
+    }
+
+    @Test
     fun `should find connectorInstances`() {
         connectorService.createConnectorInstance(
             connectorTypeId.id,
