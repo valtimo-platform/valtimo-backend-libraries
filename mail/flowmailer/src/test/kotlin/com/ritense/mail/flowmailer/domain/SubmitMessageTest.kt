@@ -19,8 +19,11 @@ package com.ritense.mail.flowmailer.domain
 import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
+import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.Attachment
+import com.ritense.valtimo.contract.mail.model.value.MailTemplateIdentifier
 import com.ritense.valtimo.contract.mail.model.value.Recipient
+import com.ritense.valtimo.contract.mail.model.value.Subject
 import com.ritense.valtimo.contract.mail.model.value.attachment.Content
 import com.ritense.valtimo.contract.mail.model.value.attachment.Name
 import com.ritense.valtimo.contract.mail.model.value.attachment.Type
@@ -71,4 +74,26 @@ class SubmitMessageTest : BaseTest() {
         assertThat(submitMessages[0].attachments[0].contentType).isEqualTo(Tika().detect(attachment.content.get()))
         assertThat(submitMessages[0].attachments[0].content).isNotNull
     }
+
+    @Test
+    fun `should create SubmitMessage with default empty values`() {
+        val templatedMailMessage = TemplatedMailMessage.with(
+            Recipient.to(
+                EmailAddress.from("emailAddress"),
+                SimpleName.from("name")
+            ),
+            MailTemplateIdentifier.from("templateIdentifier"))
+            .placeholders(emptyMap())
+            .subject(Subject.none())
+            .build()
+
+        val submitMessages = SubmitMessage.from(templatedMailMessage)
+
+        assertThat(submitMessages[0]).isNotNull
+        assertThat(submitMessages[0].senderAddress).isEmpty()
+        assertThat(submitMessages[0].subject).isEmpty()
+        assertThat(submitMessages[0].headerFromAddress).isEmpty()
+        assertThat(submitMessages[0].data).isEmpty()
+    }
+
 }
