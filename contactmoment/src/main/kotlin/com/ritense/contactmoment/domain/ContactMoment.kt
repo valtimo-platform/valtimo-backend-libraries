@@ -17,17 +17,8 @@
 package com.ritense.contactmoment.domain
 
 data class ContactMoment(
-    val url: String?,
-    val vorigContactmoment: String?,
-    val volgendContactmoment: String?,
-    val bronorganisatie: String?,
     val registratiedatum: String?,
     val kanaal: String?,
-    val voorkeurskanaal: String?,
-    val voorkeurstaal: String?,
     val tekst: String?,
-    val onderwerpLinks: List<String>?,
-    val initiatiefnemer: String?,
-    val medewerker: String?,
     val medewerkerIdentificatie: MedewerkerIdentificatie?,
 )

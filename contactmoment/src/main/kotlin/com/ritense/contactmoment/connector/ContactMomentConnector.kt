@@ -36,6 +36,13 @@ class ContactMomentConnector(
 ) : Connector {
 
     /**
+     * Get a list of ContactMomenten
+     */
+    fun getContactMomenten(page: Int): List<ContactMoment> {
+        return runBlocking { contactMomentClient.getContactMomenten(1).results }
+    }
+
+    /**
      * Create a ContactMoment
      *
      * @param text An explanation that substantively describes the customer interaction of the customer.
