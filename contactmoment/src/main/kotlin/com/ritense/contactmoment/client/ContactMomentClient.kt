@@ -38,6 +38,7 @@ open class ContactMomentClient(
             .get()
             .uri {
                 it.path("/contactmomenten/api/v1/contactmomenten")
+                    .queryParam("ordering", "-registratiedatum")
                     .queryParam("page", page).build()
             }
             .retrieve()
