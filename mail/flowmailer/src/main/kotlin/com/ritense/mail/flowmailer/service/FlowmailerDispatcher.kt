@@ -85,7 +85,7 @@ class FlowmailerMailDispatcher(
             } else {
                 throw HttpServerErrorException(
                     e.statusCode,
-                    "Message has not been sent due to server side error: : ${e.message}"
+                    "Message has not been sent due to server side error: ${e.message}"
                 )
             }
         }
