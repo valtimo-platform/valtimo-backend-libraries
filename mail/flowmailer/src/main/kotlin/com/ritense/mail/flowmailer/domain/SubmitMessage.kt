@@ -60,13 +60,13 @@ data class SubmitMessage(
             templatedMailMessage.recipients.get().forEach {
                 val submitMessage = SubmitMessage(
                     flowSelector = templatedMailMessage.templateIdentifier.get(),
-                    headerFromAddress = templatedMailMessage.sender.email.get(),
+                    headerFromAddress = templatedMailMessage.sender.email.get().orEmpty(),
                     headerFromName = templatedMailMessage.sender.name.get().orEmpty(),
                     headerToAddress = it.email.get(),
                     headerToName = it.name.get().orEmpty(),
                     recipientAddress = it.email.get(),
-                    senderAddress = templatedMailMessage.sender.email.get(),
-                    subject = templatedMailMessage.subject.get(),
+                    senderAddress = templatedMailMessage.sender.email.get().orEmpty(),
+                    subject = templatedMailMessage.subject.get().orEmpty(),
                     data = templatedMailMessage.placeholders
                 )
 

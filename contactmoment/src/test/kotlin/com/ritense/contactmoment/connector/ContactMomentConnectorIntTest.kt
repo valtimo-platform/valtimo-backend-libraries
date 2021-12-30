@@ -75,15 +75,23 @@ class ContactMomentConnectorIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    fun `should get list of contactmomenten`() {
+
+        val contactMomenten = (contactMomentConnector as ContactMomentConnector).getContactMomenten(1)
+
+        Assertions.assertThat(contactMomenten).hasSize(1)
+        Assertions.assertThat(contactMomenten[0].tekst).isEqualTo("content-1")
+    }
+
+    @Test
     fun `should create contactmoment`() {
         val medewerker = ValtimoUser()
         medewerker.id = "test-id"
         `when`(currentUserService.currentUser).thenReturn(medewerker)
 
-        val contactMoment = (contactMomentConnector as ContactMomentConnector).createContactMoment("Hello, ...", "mail")
+        val contactMoment = (contactMomentConnector as ContactMomentConnector).createContactMoment("mail", "content-2")
 
-        Assertions.assertThat(contactMoment.url)
-            .isEqualTo("http://localhost:8006/contactmomenten/api/v1/contactmomenten/4e517f3f-1f2c-41cb-bf11-75c86c7ca51b")
+        Assertions.assertThat(contactMoment.tekst).isEqualTo("content-2")
     }
 
     fun startMockServer() {
@@ -91,7 +99,11 @@ class ContactMomentConnectorIntTest : BaseIntegrationTest() {
             @Throws(InterruptedException::class)
             override fun dispatch(request: RecordedRequest): MockResponse {
                 val response = when (request.path?.substringBefore('?')) {
-                    "/contactmomenten/api/v1/contactmomenten" -> mockResponseFromFile("/data/post-contact-moment.json")
+                    "/contactmomenten/api/v1/contactmomenten" -> when (request.method) {
+                        "GET" -> mockResponseFromFile("/data/get-contactmoment.json")
+                        "POST" -> mockResponseFromFile("/data/post-contactmoment.json")
+                        else -> MockResponse().setResponseCode(404)
+                    }
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
@@ -118,8 +130,6 @@ class ContactMomentConnectorIntTest : BaseIntegrationTest() {
         )
         connectorTypeInstanceRepository.save(connectorInstance)
 
-        contactMomentConnector = connectorFluentBuilder
-            .builder()
-            .withConnector(connectorInstance.name) as ContactMomentConnector
+        contactMomentConnector = connectorService.loadByClassName(ContactMomentConnector::class.java)
     }
 }
