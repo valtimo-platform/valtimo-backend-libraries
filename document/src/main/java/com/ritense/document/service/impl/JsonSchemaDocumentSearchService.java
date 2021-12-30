@@ -20,8 +20,8 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.service.DocumentSearchService;
+import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,9 +47,9 @@ import org.springframework.data.domain.Sort;
 @Transactional
 public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
-    private static final String LOWER_CASE_FUNTION = "lower";
-
     private final EntityManager entityManager;
+
+    private final QueryDialectHelper queryDialectHelper;
 
     @Override
     public Page<JsonSchemaDocument> search(
@@ -132,29 +132,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     private Predicate findJsonPathValue(CriteriaBuilder cb, Root<JsonSchemaDocument> root, String path, String value) {
-        return cb.isNotNull(
-            cb.function(
-                "JSON_SEARCH",
-                JsonSchemaDocument.class,
-                cb.function(LOWER_CASE_FUNTION, String.class, root.get("content").get("content")),
-                cb.literal("all"),
-                cb.function(LOWER_CASE_FUNTION, String.class, cb.literal("%" + value.trim() + "%")),
-                cb.nullLiteral(String.class),
-                cb.function(LOWER_CASE_FUNTION, String.class, cb.literal(path))
-            )
-        );
+        return queryDialectHelper.getJsonValueExistsInPathExpression(cb, root.get("content").get("content"), path, value);
     }
 
     private Predicate findJsonValue(CriteriaBuilder cb, Root<JsonSchemaDocument> root, String value) {
-        return cb.isNotNull(
-            cb.function(
-                "JSON_SEARCH",
-                JsonSchemaDocument.class,
-                cb.function(LOWER_CASE_FUNTION, String.class, root.get("content").get("content")),
-                cb.literal("all"),
-                cb.function(LOWER_CASE_FUNTION, String.class, cb.literal("%" + value.trim() + "%"))
-            )
-        );
+        return queryDialectHelper.getJsonValueExistsExpression(cb, root.get("content").get("content"), value);
     }
 
     private List<Order> getOrderBy(CriteriaBuilder cb, Root<JsonSchemaDocument> root, Sort sort) {
@@ -162,13 +144,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             .map(order -> {
                 if (order.getProperty().startsWith("$.")) {
                     return new OrderImpl(
-                        cb.function(LOWER_CASE_FUNTION, String.class,
-                            cb.function(
-                                "JSON_EXTRACT",
-                                JsonSchemaDocument.class,
-                                root.get("content"),
-                                cb.literal(order.getProperty()))
-                        ),
+                        queryDialectHelper.getJsonValueExpression(cb, root.get("content"), order.getProperty()),
                         order.getDirection().isAscending());
                 } else {
                     return new OrderImpl(

@@ -94,14 +94,19 @@
             ADD classname VARCHAR(512) GENERATED ALWAYS AS (audit_event ->> '$.className') STORED NULL;
         </sql>
     </changeSet>
-    <changeSet author="ivozaal" id="audit-record-add-index-document-id-classname">
+    <changeSet author="ivozaal" id="audit-record-add-classname-postgres">
         <preConditions onFail="MARK_RAN">
-            <dbms type="mysql"/>
+            <dbms type="postgresql"/>
         </preConditions>
+        <sql>
+            ALTER TABLE audit_record
+            ADD classname VARCHAR(512) GENERATED ALWAYS AS (audit_event ->> 'className') STORED NULL;
+        </sql>
+    </changeSet>
+    <changeSet author="ivozaal" id="audit-record-add-index-document-id-classname">
         <createIndex indexName="idx_document_id_classname" tableName="audit_record">
             <column name="document_id"/>
             <column name="classname"/>
         </createIndex>
     </changeSet>
-    <!-- TODO: index document_id + classname for postgres -->
 </databaseChangeLog>

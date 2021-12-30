@@ -9,3 +9,6 @@ camunda:
     bpm:
         database:
             type: postgres
+
+valtimo:
+    database: postgres

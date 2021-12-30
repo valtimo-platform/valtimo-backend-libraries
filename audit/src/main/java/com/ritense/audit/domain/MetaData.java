@@ -42,7 +42,7 @@ public class MetaData {
     private LocalDateTime occurredOn;
 
     @JsonView(AuditView.Public.class)
-    @Column(name = "user", nullable = false, updatable = false)
+    @Column(name = "`user`", nullable = false, updatable = false)
     private String user;
 
     public MetaData(String origin, LocalDateTime occurredOn, String user) {

@@ -150,7 +150,7 @@
         <addDefaultValue tableName="choice_field_values" columnName="deprecated" defaultValueBoolean="false"></addDefaultValue>
     </changeSet>
 
-<!-- TODO:    <changeSet id="10.1" author="Ivo Zaal">
+    <changeSet id="10.1" author="Ivo Zaal">
         <preConditions onFail="MARK_RAN">
             <dbms type="postgresql"/>
             <sqlCheck expectedResult="0">
@@ -162,9 +162,9 @@
                 AND TABLE_SCHEMA in (select current_database())
             </sqlCheck>
         </preConditions>
-        <addNotNullConstraint tableName="choice_field_values" columnName="deprecated" defaultNullValue="false" columnDataType="bit"></addNotNullConstraint>
-        <addDefaultValue tableName="choice_field_values" columnName="deprecated" defaultValueBoolean="0"></addDefaultValue>
-    </changeSet>-->
+        <addNotNullConstraint tableName="choice_field_values" columnName="deprecated" defaultNullValue="0" columnDataType="bit"></addNotNullConstraint>
+        <addDefaultValue tableName="choice_field_values" columnName="deprecated" defaultValue="0"></addDefaultValue>
+    </changeSet>
 
     <changeSet id="11" author="Niels Leemburg">
         <preConditions onFail="MARK_RAN">

@@ -16,28 +16,28 @@
 
 package com.ritense.audit.service.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.ritense.audit.domain.AuditRecord;
+import com.ritense.audit.domain.AuditRecordId;
 import com.ritense.audit.domain.MetaData;
 import com.ritense.audit.domain.MetaDataBuilder;
 import com.ritense.audit.exception.AuditRecordAlreadyProcessedException;
 import com.ritense.audit.exception.AuditRuntimeException;
-import com.ritense.audit.repository.impl.AuditRecordImplRepository;
+import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.audit.service.AuditEventProcessor;
 import com.ritense.valtimo.contract.audit.AuditEvent;
+import java.sql.SQLIntegrityConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLIntegrityConstraintViolationException;
-
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
-
 @Slf4j
 @RequiredArgsConstructor
 public class AuditEventProcessorImpl implements AuditEventProcessor {
 
-    private final AuditRecordImplRepository auditRecordRepository;
+    private final AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository;
 
     @Override
     @Transactional
