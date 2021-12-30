@@ -16,7 +16,11 @@
 
 package com.ritense.document.export.domain
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.networknt.schema.JsonSchemaFactory
+import com.networknt.schema.SchemaValidatorsConfig
 import org.hibernate.annotations.Type
+import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Embeddable
 
@@ -29,8 +33,41 @@ data class Tree(
 
     companion object {
 
-        fun fromDocumentDefinition(definition: String): Tree {
-            return Tree(emptyList())
+        fun init(schema: JsonNode): Tree {
+            val config = SchemaValidatorsConfig()
+            val propertyWalkListener = PropertyWalkListener()
+            config.addPropertyWalkListener(propertyWalkListener)
+            val jsonSchema2 = JsonSchemaFactory
+                .getInstance()//SpecVersion.VersionFlag.V7
+                .getSchema(schema, config)
+
+            val result = jsonSchema2.walk(null, false)
+            val nodes = mutableListOf<Node>()
+            propertyWalkListener.events.forEach { walkEvent ->
+                //val node = nodes.find { walkEvent.at.startsWith(it.path) }
+                val node = nodes.find { walkEvent.at.startsWith(it.path) }
+
+                if (node == null) {
+                    nodes.add(
+                        Node(
+                            id = UUID.randomUUID(),
+                            name = walkEvent.at.substringAfterLast("."),
+                            path = walkEvent.at,
+                            parent = null
+                        )
+                    )
+                } else {
+                    node.childs.add(
+                        Node(
+                            id = UUID.randomUUID(),
+                            name = walkEvent.at.substringAfterLast("."),
+                            path = walkEvent.at,
+                            parent = node
+                        )
+                    )
+                }
+            }
+            return Tree(nodes)
         }
 
     }

@@ -16,51 +16,34 @@
 
 package com.ritense.document.export.domain
 
-import com.ritense.valtimo.contract.domain.AggregateRoot
+import com.ritense.valtimo.contract.utils.SecurityUtils
 import com.ritense.valtimo.contract.validation.Validatable
-import org.springframework.data.domain.Persistable
-import javax.persistence.Embedded
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
+import org.hibernate.validator.constraints.Length
+import java.io.Serializable
+import javax.persistence.Column
+import javax.persistence.Embeddable
+import javax.validation.constraints.NotBlank
 
-@Entity
-@Table(name = "preset")
-class Preset(
+@Embeddable
+class UserId(
 
-    @EmbeddedId
-    val presetId: PresetId,
+    @Column(name = "user_id", columnDefinition = "VARCHAR(255)", nullable = false)
+    @field:Length(max = 255)
+    @field:NotBlank
+    private val userId: String
 
-    @Embedded
-    val status: Status,
-
-    @Embedded
-    val tree: Tree,
-
-    @Embedded
-    val userId: UserId
-
-) : Persistable<PresetId>, Validatable, AggregateRoot<Preset>() {
+) : Serializable, Validatable {
 
     init {
         validate()
     }
 
-    fun load() {
-        //TODO
-    }
+    companion object {
 
-    fun reset() {
-        //TODO reset tree
-    }
+        fun fromAuthentication(): UserId {
+            return UserId((SecurityUtils.getCurrentUserAuthentication().name))
+        }
 
-    /*Persistable related*/
-    override fun getId(): PresetId {
-        return presetId
-    }
-
-    override fun isNew(): Boolean {
-        return presetId.isNew
     }
 
 }

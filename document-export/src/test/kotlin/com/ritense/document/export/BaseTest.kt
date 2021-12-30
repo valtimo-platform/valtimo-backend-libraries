@@ -17,11 +17,16 @@
 package com.ritense.document.export
 
 import org.mockito.MockitoAnnotations
+import java.net.URI
 
 abstract class BaseTest {
 
     fun baseSetUp() {
         MockitoAnnotations.openMocks(this)
+    }
+
+    fun path(name: String): URI {
+        return URI.create(String.format("config/document/definition/%s.json", "$name.schema"))
     }
 
 }

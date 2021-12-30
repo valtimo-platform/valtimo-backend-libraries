@@ -14,31 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.document.export.domain
+package com.ritense.document.export.repository
 
-import com.ritense.valtimo.contract.validation.Validatable
-import java.io.Serializable
-import javax.persistence.Column
-import javax.persistence.Embeddable
+import com.ritense.document.export.domain.Preset
+import com.ritense.document.export.domain.PresetId
+import org.springframework.data.jpa.repository.JpaRepository
 
-@Embeddable
-class Status(
-
-    @Column(name = "state", columnDefinition = "VARCHAR(9)", nullable = false)
-    private val state: PresetState
-
-) : Serializable, Validatable {
-
-    init {
-        validate()
-    }
-
-    companion object {
-
-        fun open(): Status {
-            return Status(state = PresetState.OPEN)
-        }
-
-    }
-
-}
+interface PresetRepository : JpaRepository<Preset, PresetId>
