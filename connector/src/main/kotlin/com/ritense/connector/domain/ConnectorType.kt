@@ -18,14 +18,15 @@ package com.ritense.connector.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.valtimo.contract.validation.Validatable
-import org.hibernate.annotations.Type
-import org.hibernate.validator.constraints.Length
+import java.util.Locale
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 import javax.persistence.Index
 import javax.persistence.Table
 import javax.validation.constraints.NotBlank
+import org.hibernate.annotations.Type
+import org.hibernate.validator.constraints.Length
 
 @Entity
 @Table(name = "connector_type", indexes = [Index(name = "ct_name_i", columnList = "name")])
@@ -55,5 +56,11 @@ data class ConnectorType(
 
     init {
         validate()
+    }
+
+    companion object {
+        fun <T> getNameFromClass(clazz: Class<T>): String {
+            return clazz.simpleName.replaceFirstChar { it.lowercase(Locale.getDefault()) }
+        }
     }
 }

@@ -151,9 +151,19 @@ class OpenZaakAutoConfiguration {
     fun zaakStatusService(
         restTemplate: RestTemplate,
         openZaakConfigService: OpenZaakConfigService,
-        tokenGeneratorService: OpenZaakTokenGeneratorService
+        tokenGeneratorService: OpenZaakTokenGeneratorService,
+        documentService: DocumentService,
+        zaakTypeLinkService: com.ritense.openzaak.service.ZaakTypeLinkService,
+        zaakInstanceLinkService: com.ritense.openzaak.service.ZaakInstanceLinkService
     ): ZaakStatusService {
-        return ZaakStatusService(restTemplate, openZaakConfigService, tokenGeneratorService)
+        return ZaakStatusService(
+            restTemplate,
+            openZaakConfigService,
+            tokenGeneratorService,
+            documentService,
+            zaakTypeLinkService,
+            zaakInstanceLinkService
+        )
     }
 
     @Bean
@@ -339,6 +349,12 @@ class OpenZaakAutoConfiguration {
         zaakService: ZaakService
     ): InformatieObjectTypeResource {
         return InformatieObjectTypeResource(zaakService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakProcessService::class)
+    fun zaakProcessService(zaakStatusService: com.ritense.openzaak.service.ZaakStatusService): ZaakProcessService {
+        return com.ritense.openzaak.service.impl.ZaakProcessService(zaakStatusService)
     }
 
 }

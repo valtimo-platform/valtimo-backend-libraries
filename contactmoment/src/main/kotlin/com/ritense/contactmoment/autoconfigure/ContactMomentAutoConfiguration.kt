@@ -17,10 +17,12 @@
 package com.ritense.contactmoment.autoconfigure
 
 import com.ritense.connector.domain.Connector
+import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.client.ContactMomentClient
 import com.ritense.contactmoment.client.ContactMomentTokenGenerator
 import com.ritense.contactmoment.connector.ContactMomentConnector
 import com.ritense.contactmoment.connector.ContactMomentProperties
+import com.ritense.contactmoment.web.rest.ContactMomentResource
 import com.ritense.valtimo.service.CurrentUserService
 import io.netty.handler.logging.LogLevel
 import org.springframework.beans.factory.config.BeanDefinition
@@ -86,6 +88,12 @@ class ContactMomentAutoConfiguration {
     fun contactMomentProperties(
     ): ContactMomentProperties {
         return ContactMomentProperties()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ContactMomentResource::class)
+    fun contactMomentResource(connectorService: ConnectorService): ContactMomentResource {
+        return com.ritense.contactmoment.web.rest.impl.ContactMomentResource(connectorService)
     }
 
 }

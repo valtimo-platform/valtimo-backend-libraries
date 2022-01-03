@@ -18,6 +18,7 @@ package com.ritense.contactmoment.client
 
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.contactmoment.domain.ContactMoment
+import com.ritense.contactmoment.domain.ResultPage
 import com.ritense.contactmoment.domain.request.CreateContactMomentRequest
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
@@ -28,6 +29,21 @@ open class ContactMomentClient(
 ) {
 
     var contactMomentProperties: ContactMomentProperties? = null
+
+    /**
+     * Get a list of ContactMomenten
+     */
+    suspend fun getContactMomenten(page: Int): ResultPage<ContactMoment> {
+        return webClient()
+            .get()
+            .uri {
+                it.path("/contactmomenten/api/v1/contactmomenten")
+                    .queryParam("ordering", "-registratiedatum")
+                    .queryParam("page", page).build()
+            }
+            .retrieve()
+            .awaitBody()
+    }
 
     /**
      * Create a ContactMoment

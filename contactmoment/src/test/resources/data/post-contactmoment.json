@@ -7,7 +7,7 @@
   "kanaal": "string",
   "voorkeurskanaal": "string",
   "voorkeurstaal": "str",
-  "tekst": "string",
+  "tekst": "content-2",
   "onderwerpLinks": [
     "http://example.com"
   ],

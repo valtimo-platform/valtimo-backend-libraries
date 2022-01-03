@@ -27,9 +27,11 @@ class DocumentCreatedListener(
 ) {
     @EventListener(DocumentCreatedEvent::class)
     fun handle(event: DocumentCreatedEvent) {
-        val zaakTypeLink = zaakTypeLinkService.findBy(event.definitionId().name())
-        if (zaakTypeLink.createWithDossier) {
-            zaakService.createZaakWithLink(event.documentId())
+        val zaakTypeLink = zaakTypeLinkService.get(event.definitionId().name())
+        zaakTypeLink?.let {
+            if (it.createWithDossier) {
+                zaakService.createZaakWithLink(event.documentId())
+            }
         }
     }
 }

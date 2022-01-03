@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.contactmoment.domain
 
-data class MedewerkerIdentificatie(
-    val achternaam: String?,
-)
+package com.ritense.openzaak.service
+
+import org.camunda.bpm.engine.delegate.DelegateExecution
+
+interface ZaakProcessService {
+    fun setStatus(execution: DelegateExecution, status: String)
+}

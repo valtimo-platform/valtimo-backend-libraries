@@ -96,7 +96,9 @@ class OpenNotificatieService(
         val documentResult = documentService.createDocument(newDocumentRequest)
 
         if (documentResult.resultingDocument().isEmpty) {
-            logger.error { "Errors occurred during creation of dossier for productaanvraag: ${documentResult.errors()}" }
+            var logMessage = "Errors occurred during creation of dossier for productaanvraag:"
+            documentResult.errors().forEach { logMessage += "\n - " + it.asString() }
+            logger.error { logMessage }
         }
 
         val document = documentResult.resultingDocument().orElseThrow()
@@ -113,7 +115,9 @@ class OpenNotificatieService(
         val processStartResult = processDocumentService.startProcessForDocument(startProcessRequest)
 
         if (processStartResult.resultingDocument().isEmpty) {
-            logger.error { "Errors occurred during starting of process for productaanvraag: ${processStartResult.errors()}" }
+            var logMessage = "Errors occurred during starting of process for productaanvraag:"
+            processStartResult.errors().forEach { logMessage += "\n - " + it.asString() }
+            logger.error { logMessage }
         }
     }
 
