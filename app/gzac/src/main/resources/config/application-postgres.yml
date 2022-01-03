@@ -5,10 +5,5 @@ spring:
     jpa:
         database-platform: org.hibernate.dialect.PostgreSQLDialect
 
-camunda:
-    bpm:
-        database:
-            type: postgres
-
 valtimo:
     database: postgres
