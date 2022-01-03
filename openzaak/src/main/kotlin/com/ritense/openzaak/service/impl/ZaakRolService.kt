@@ -30,11 +30,11 @@ class ZaakRolService(
     private val tokenGeneratorService: OpenZaakTokenGeneratorService
 ): ZaakRolService {
 
-    override fun addNatuurlijkPersoon(zaak: Zaak, roltoelichting: String, roltype: URI, bsn: String) {
+    override fun addNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, bsn: String) {
         OpenZaakRequestBuilder(restTemplate, openZaakConfigService, tokenGeneratorService)
             .path("zaken/api/v1/rollen")
             .body(Rol(
-                zaak.url,
+                zaakUrl,
                 BetrokkeneType.NATUURLIJK_PERSOON,
                 roltype,
                 roltoelichting,

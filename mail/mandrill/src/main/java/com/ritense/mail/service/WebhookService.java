@@ -31,6 +31,7 @@ import org.springframework.util.Base64Utils;
 import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -42,8 +43,8 @@ import static com.ritense.mail.domain.webhook.SyncEventEnum.BLACKLIST;
 @RequiredArgsConstructor
 public class WebhookService {
 
-    private final BlacklistService blacklistService;
     private final MandrillProperties mandrillProperties;
+    private final BlacklistService blacklistService;
 
     public boolean isRequestValid(String authenticationKey, MultiValueMap<String, String> body) {
         String url = mandrillProperties.getWebhookUrl();
@@ -81,7 +82,7 @@ public class WebhookService {
             if (messageEvent.triggersBlacklisting()) {
                 EmailAddress mailToBlacklist = EmailAddress.from(messageEvent.getMessage().getEmail());
                 String cause = String.format("Mandrill{%s}", messageEvent);
-                blacklistService.blacklist(mailToBlacklist, cause);
+                blacklistService.blacklist(mailToBlacklist.get(), LocalDateTime.now(), cause);
                 logger.debug("{} added to mandrill blacklist with cause: {}", mailToBlacklist, cause);
             }
         });
@@ -91,7 +92,7 @@ public class WebhookService {
             if (syncEvent.triggersBlacklisting()) {
                 EmailAddress mailToBlacklist = EmailAddress.from(syncEvent.getReject().getEmail());
                 String cause = String.format("Mandrill{%s}", syncEvent);
-                blacklistService.blacklist(mailToBlacklist, cause);
+                blacklistService.blacklist(mailToBlacklist.get(), LocalDateTime.now(), cause);
                 logger.debug("{} added to mandrill blacklist with cause: {}", mailToBlacklist, cause);
             }
         });

@@ -1,1 +1,3 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.ritense.mail.autoconfigure.MailAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.ritense.mail.autoconfigure.MailAutoConfiguration, \
+  com.ritense.mail.autoconfigure.MailLiquibaseAutoConfiguration

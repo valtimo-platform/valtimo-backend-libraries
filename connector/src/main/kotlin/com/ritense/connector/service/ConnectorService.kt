@@ -150,7 +150,7 @@ open class ConnectorService(
      */
     open fun load(name: String): Connector {
         val connectorTypeInstance = connectorTypeInstanceRepository.findByName(name)
-        requireNotNull(connectorTypeInstance) { "ConnectorTypeInstance was not found with name: ${name}" }
+        requireNotNull(connectorTypeInstance) { "ConnectorTypeInstance was not found with name: $name" }
         return load(connectorTypeInstance)
     }
 
