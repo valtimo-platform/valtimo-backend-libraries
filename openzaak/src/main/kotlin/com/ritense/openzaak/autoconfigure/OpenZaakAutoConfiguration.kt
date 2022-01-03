@@ -38,6 +38,7 @@ import com.ritense.openzaak.service.impl.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.impl.OpenZaakConfigService
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
+import com.ritense.openzaak.service.impl.ZaakProcessService
 import com.ritense.openzaak.service.impl.ZaakResultaatService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakStatusService
@@ -354,7 +355,7 @@ class OpenZaakAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ZaakProcessService::class)
     fun zaakProcessService(zaakStatusService: com.ritense.openzaak.service.ZaakStatusService): ZaakProcessService {
-        return com.ritense.openzaak.service.impl.ZaakProcessService(zaakStatusService)
+        return ZaakProcessService(zaakStatusService)
     }
 
 }
