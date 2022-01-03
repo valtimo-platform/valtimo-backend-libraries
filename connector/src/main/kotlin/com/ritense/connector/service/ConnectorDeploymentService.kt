@@ -45,7 +45,6 @@ class ConnectorDeploymentService(
                     connectorProperties = it.getProperties(),
                     allowMultipleConnectorInstances = allowMultipleConnectors
                 )
-                connectorTypeRepository.save(connectorType)
             } else {
                 logger.info { "connectorType already deployed updating existing $name" }
                 connectorType.name = name
@@ -53,6 +52,7 @@ class ConnectorDeploymentService(
                 connectorType.connectorProperties = it.getProperties()
                 connectorType.allowMultipleConnectorInstances = allowMultipleConnectors
             }
+            connectorTypeRepository.save(connectorType)
             connectorTypes.add(connectorType)
         }
         return connectorTypes

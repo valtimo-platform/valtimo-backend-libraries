@@ -50,4 +50,10 @@
             columnName="organisation">
         </dropColumn>
     </changeSet>
+    <changeSet author="Rick Veenstra" id="1599414709479-4">
+        <customChange class="com.ritense.openzaak.liquibase.changelog.ChangeLog20211217OpenZaakDataToConnector"/>
+    </changeSet>
+    <changeSet author="Rick Veenstra" id="1599414709479-5">
+        <dropTable tableName="open_zaak_config"/>
+    </changeSet>
 </databaseChangeLog>

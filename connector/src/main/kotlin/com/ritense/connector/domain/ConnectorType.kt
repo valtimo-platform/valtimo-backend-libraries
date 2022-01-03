@@ -48,16 +48,12 @@ data class ConnectorType(
     @JsonProperty("properties")
     var connectorProperties: ConnectorProperties,
 
-    @Column(name="allow_multiple", columnDefinition = "BIT")
+    @Column(name="allow_multiple", columnDefinition = "boolean", nullable = false)
     var allowMultipleConnectorInstances: Boolean = true
 
 ) : Validatable {
 
     init {
         validate()
-    }
-
-    fun isMultipleInstancesAllowed(): Boolean {
-        return allowMultipleConnectorInstances
     }
 }
