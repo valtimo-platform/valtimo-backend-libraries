@@ -28,8 +28,6 @@ dependencies {
     implementation project(":web")
     implementation project(":resource")
 
-    implementation "org.testcontainers:jdbc"
-
     // Camunda
     api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter:7.14.0"
     api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:7.14.0"

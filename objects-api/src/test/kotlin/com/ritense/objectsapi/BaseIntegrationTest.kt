@@ -17,7 +17,7 @@
 package com.ritense.objectsapi
 
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.junit.extension.LiquibaseRunnerExtension
+import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
