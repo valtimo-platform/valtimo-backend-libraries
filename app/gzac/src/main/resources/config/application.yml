@@ -192,8 +192,6 @@ scheduling:
             taskNotificationReminder: 0 0 10 * * ? # Every day at 10:00
 camunda:
     bpm:
-        database:
-            type: mysql
         history-level: AUDIT
         history-level-default: AUDIT
         admin-user:
