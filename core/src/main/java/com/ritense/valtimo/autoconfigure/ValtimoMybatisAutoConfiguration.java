@@ -23,6 +23,7 @@ import org.camunda.bpm.engine.impl.db.sql.DbSqlSessionFactory;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +37,9 @@ import java.util.Properties;
 @Configuration
 public class ValtimoMybatisAutoConfiguration {
 
+    @Value("${valtimo.database}")
+    private String valtimoDatabaseType;
+
     public static final Map<String, String> databaseSpecificTruncDatepart1 = new HashMap<>();
     public static final Map<String, String> databaseSpecificTruncDatepart2 = new HashMap<>();
 
@@ -45,7 +49,11 @@ public class ValtimoMybatisAutoConfiguration {
         databaseSpecificTruncDatepart2.put(DbSqlSessionFactory.H2, ",'dd-MM-yyyy'),'dd-MM-yyyy')");
         databaseSpecificTruncDatepart1.put(DbSqlSessionFactory.ORACLE, "TRUNC(");
         databaseSpecificTruncDatepart2.put(DbSqlSessionFactory.ORACLE, ",')");
-        for (String mysqlLikeDatabase : Arrays.asList(DbSqlSessionFactory.MYSQL, DbSqlSessionFactory.MARIADB)) {
+        for (String mysqlLikeDatabase : Arrays.asList(
+            DbSqlSessionFactory.MYSQL,
+            DbSqlSessionFactory.MARIADB,
+            DbSqlSessionFactory.POSTGRES
+        )) {
             databaseSpecificTruncDatepart1.put(mysqlLikeDatabase, "date(");
             databaseSpecificTruncDatepart2.put(mysqlLikeDatabase, ")");
         }
@@ -82,7 +90,15 @@ public class ValtimoMybatisAutoConfiguration {
     private Properties getProps(ProcessEngineConfigurationImpl conf) {
         Properties properties = new Properties();
         properties.put("prefix", conf.getDatabaseTablePrefix());
-        ProcessEngineConfigurationImpl.initSqlSessionFactoryProperties(properties, conf.getDatabaseTablePrefix(), conf.getDatabaseType());
+
+        String dbmsToUse;
+        if (conf.getDatabaseType() == null || conf.getDatabaseType().isEmpty())
+            dbmsToUse = valtimoDatabaseType;
+        else{
+            dbmsToUse = conf.getDatabaseType();
+        }
+
+        ProcessEngineConfigurationImpl.initSqlSessionFactoryProperties(properties, conf.getDatabaseTablePrefix(), dbmsToUse);
         // Add database specific trunc date function
         properties.put("truncDatepart1", databaseSpecificTruncDatepart1.get(conf.getDatabaseType()));
         properties.put("truncDatepart2", databaseSpecificTruncDatepart2.get(conf.getDatabaseType()));

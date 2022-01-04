@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi.domain
+package com.ritense.valtimo.contract.database;
 
-import com.ritense.connector.domain.ConnectorInstanceId
-import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 
-@Entity
-@Table(name = "opennotificatie_abonnement_link")
-data class AbonnementLink(
-    @EmbeddedId
-    var connectorId: ConnectorInstanceId,
+public interface QueryDialectHelper {
 
-    @Column(name = "abonnement_id")
-    var abonnementId: UUID,
+    Expression<?> getJsonValueExpression(CriteriaBuilder cb, Path column, String path);
 
-    @Column(name = "auth_key")
-    var key: String
-)
+    Predicate getJsonValueExistsExpression(CriteriaBuilder cb, Path column, String value);
+
+    Predicate getJsonValueExistsInPathExpression(CriteriaBuilder cb, Path column, String path, String value);
+
+}

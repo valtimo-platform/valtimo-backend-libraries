@@ -20,6 +20,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet id="1" author="Ivar Koreman">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <addColumn tableName="form_io_form_definition">
             <column name="storage_type"
                     type="enum('MIXED', 'PROCESS_VARS')"
@@ -30,6 +33,9 @@
     </changeSet>
 
     <changeSet id="2" author="Ivar Koreman">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <dropDefaultValue tableName="form_io_form_definition"
                           columnDataType="enum('MIXED', 'PROCESS_VARS')"
                           columnName="storage_type"/>

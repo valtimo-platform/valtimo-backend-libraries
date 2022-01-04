@@ -34,7 +34,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 public class CamundaProcessFormAssociationId extends AbstractId<CamundaProcessFormAssociationId>
     implements ProcessFormAssociation.Id {
 
-    @Column(name = "process_form_association_id", columnDefinition = "BINARY(16)")
+    @Column(name = "process_form_association_id")
     private UUID id;
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)

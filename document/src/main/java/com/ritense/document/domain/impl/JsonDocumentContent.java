@@ -29,6 +29,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 import java.util.Optional;
+import org.hibernate.annotations.Type;
 
 import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowArrayRemovalOperations;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
@@ -38,6 +39,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonDocumentContent implements DocumentContent {
 
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "json_document_content", columnDefinition = "json")
     private String content;
 

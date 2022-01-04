@@ -36,53 +36,29 @@ import java.util.List;
 public interface AuditRecordRepository<T extends AuditRecord, ID extends AuditRecordId>
     extends JpaRepository<T, ID> {
 
-    @Query(" SELECT  ar " +
-        "    FROM    AuditRecord ar " +
-        "    WHERE   className = :className ")
-    List<AuditRecord> findAuditRecordsByEvent(@Param("className") String className);
+    List<AuditRecord> findAuditRecordsByEvent(String className);
 
-    @Query(" SELECT  ar " +
-        "    FROM    AuditRecord ar " +
-        "    WHERE   className = :className " +
-        "    AND     JSON_EXTRACT(ar.auditEvent, CONCAT('$.',:key)) = :value ")
     List<AuditRecord> findAuditRecordsByEventAndProperty(
-        @Param("className") String className,
-        @Param("key") String key,
-        @Param("value") Object value
+        String className,
+        String key,
+        Object value
     );
 
-    @Query(" SELECT  ar " +
-        "    FROM    AuditRecord ar " +
-        "    WHERE   className IN (:eventTypes) " +
-        "    AND     documentId = :documentId " +
-        "    ORDER BY ar.metaData.occurredOn DESC")
     Page<AuditRecord> findByEventAndDocumentId(
         List<Class<? extends AuditEvent>> eventTypes,
         UUID documentId,
         Pageable pageable
     );
 
-    @Query(" SELECT  ar " +
-        "    FROM    AuditRecord ar " +
-        "    WHERE   className = :className " +
-        "    AND     ar.metaData.occurredOn BETWEEN :from AND :until")
     List<AuditRecord> findByEventAndOccurredBetween(
-        @Param("className") String className,
-        @Param("from") LocalDateTime from,
-        @Param("until") LocalDateTime until,
+        String className,
+        LocalDateTime from,
+        LocalDateTime until,
         Pageable pageable
     );
 
-    @Query(" SELECT      ar " +
-        "    FROM        AuditRecord ar " +
-        "    WHERE       JSON_EXTRACT(ar.auditEvent, CONCAT('$.',?1)) = ?2 ")
     Page<AuditRecord> findAuditRecordsByProperty(String key, Object value, Pageable pageable);
 
-    @Modifying
-    @Transactional
-    @Query(" DELETE " +
-        "    FROM    AuditRecord ar " +
-        "    WHERE   ar.createdOn < :date")
-    void deleteAllBefore(@Param("date") LocalDateTime date);
+    void deleteAllBefore(LocalDateTime date);
 
 }

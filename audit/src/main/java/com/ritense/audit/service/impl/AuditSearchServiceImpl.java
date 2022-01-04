@@ -18,6 +18,7 @@ package com.ritense.audit.service.impl;
 
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.service.AuditSearchService;
+import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -38,6 +39,8 @@ import java.util.stream.Collectors;
 public class AuditSearchServiceImpl implements AuditSearchService {
 
     private final EntityManager entityManager;
+
+    private final QueryDialectHelper queryDialectHelper;
 
     @Override
     public Page<AuditRecord> search(List<SearchCriteria> criteriaList, Pageable pageable) {
@@ -65,32 +68,9 @@ public class AuditSearchServiceImpl implements AuditSearchService {
 
         return new PageImpl<>(typedQuery.getResultList());
     }
-
-    private Predicate getEqualPredicate(CriteriaBuilder builder, Root<AuditRecord> root, String path, String value) {
-        return builder.equal(
-            builder.function(
-                "JSON_EXTRACT",
-                AuditRecord.class,
-                root.get("auditEvent"),
-                builder.literal(path)
-            ),
-            value
-        );
-    }
-
+    
     private Predicate isNotNull(CriteriaBuilder cb, Root<AuditRecord> root, String path, String value) {
-        return cb.isNotNull(
-            cb.function(
-                "JSON_SEARCH",
-                AuditRecord.class,
-                cb.function("lower", String.class, root.get("auditEvent")),
-                cb.literal("all"),
-                cb.function("lower", String.class, cb.literal(value)),
-                cb.nullLiteral(String.class),
-                cb.function("lower", String.class, cb.literal(path))
-            )
-        );
-
+        return queryDialectHelper.getJsonValueExistsInPathExpression(cb, root.get("auditEvent"), path, value);
     }
 
 }

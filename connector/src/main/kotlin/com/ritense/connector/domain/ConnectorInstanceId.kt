@@ -25,7 +25,7 @@ import javax.persistence.Embeddable
 @Embeddable
 data class ConnectorInstanceId(
 
-    @Column(name = "connector_instance_id", columnDefinition = "BINARY(16)")
+    @Column(name = "connector_instance_id", updatable = false)
     @JsonValue
     val id: UUID
 

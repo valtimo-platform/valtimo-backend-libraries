@@ -35,7 +35,7 @@ import java.util.UUID;
 public class JsonSchemaDocumentSnapshotId extends AbstractId<JsonSchemaDocumentSnapshotId> implements DocumentSnapshot.Id {
 
     @NonNull
-    @Column(name = "json_schema_document_snapshot_id", columnDefinition = "BINARY(16)", unique = true, nullable = false, updatable = false)
+    @Column(name = "json_schema_document_snapshot_id", unique = true, nullable = false, updatable = false)
     private UUID id;
 
     public static JsonSchemaDocumentSnapshotId existingId(UUID id) {

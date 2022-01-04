@@ -50,7 +50,7 @@ public class CamundaProcessFormAssociation implements ProcessFormAssociation, Pe
     private String processDefinitionKey;
 
     @Column(name = "form_associations", columnDefinition = "json")
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     private FormAssociations formAssociations;
 
     public CamundaProcessFormAssociation(CamundaProcessFormAssociationId id, String processDefinitionKey, FormAssociations formAssociations) {

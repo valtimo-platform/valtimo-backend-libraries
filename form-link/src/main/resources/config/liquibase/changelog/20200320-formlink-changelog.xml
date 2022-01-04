@@ -20,11 +20,28 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet author="tom (generated)" id="1584713259344-1">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createTable tableName="form_io_form_link">
             <column name="id" type="BINARY(16)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="form_io_user_task_form_linkPK"/>
             </column>
             <column name="form_id" type="BINARY(16)"/>
+            <column name="form_association_id" type="VARCHAR(64)"/>
+            <column name="form_association_type" type="VARCHAR(64)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="tom (generated)" id="1584713259344-2">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <createTable tableName="form_io_form_link">
+            <column name="id" type="${uuidType}">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="form_io_user_task_form_linkPK"/>
+            </column>
+            <column name="form_id" type="${uuidType}"/>
             <column name="form_association_id" type="VARCHAR(64)"/>
             <column name="form_association_type" type="VARCHAR(64)"/>
         </createTable>

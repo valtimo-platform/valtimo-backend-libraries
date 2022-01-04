@@ -45,7 +45,6 @@ spring:
         enabled: false
     jpa:
         database-platform: org.hibernate.dialect.MySQL57Dialect
-        database: mysql
         show_sql: false
         open-in-view: false
         properties:
@@ -193,8 +192,6 @@ scheduling:
             taskNotificationReminder: 0 0 10 * * ? # Every day at 10:00
 camunda:
     bpm:
-        database:
-            type: mysql
         history-level: AUDIT
         history-level-default: AUDIT
         admin-user:

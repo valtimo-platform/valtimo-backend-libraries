@@ -25,7 +25,7 @@ import javax.persistence.Embeddable
 @Embeddable
 data class ObjectSyncConfigId(
 
-    @Column(name = "object_sync_config_id", columnDefinition = "BINARY(16)")
+    @Column(name = "object_sync_config_id")
     @JsonValue
     val id: UUID
 

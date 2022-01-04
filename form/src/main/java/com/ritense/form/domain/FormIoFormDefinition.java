@@ -61,14 +61,14 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String PROCESS_VAR_PREFIX = "pv";
 
     @Id
-    @Column(name = "id", columnDefinition = "BINARY(16)", updatable = false)
+    @Column(name = "id", updatable = false)
     private UUID id;
 
     @Column(name = "name", columnDefinition = "VARCHAR(255)")
     private String name;
 
     @Column(name = "form_definition", columnDefinition = "json")
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     private String formDefinition;
 
     @Column(name = "read_only", columnDefinition = "BIT")
