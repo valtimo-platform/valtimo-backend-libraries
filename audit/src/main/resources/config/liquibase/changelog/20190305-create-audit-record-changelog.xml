@@ -72,39 +72,6 @@
         </createIndex>
     </changeSet>
 
-    <changeSet author="Ivo Zaal" id="1551802246513-6">
-        <preConditions onFail="MARK_RAN">
-            <dbms type="mysql"/>
-        </preConditions>
-        <sql>
-            ALTER TABLE audit_record RENAME INDEX created_on_index TO ix_audit_record_created_on
-        </sql>
-    </changeSet>
-    <changeSet author="Ivo Zaal" id="1551802246513-7">
-        <preConditions onFail="MARK_RAN">
-            <dbms type="mysql"/>
-        </preConditions>
-        <sql>
-            ALTER TABLE audit_record RENAME INDEX occurred_on_index TO ix_audit_record_occurred_on
-        </sql>
-    </changeSet>
-    <changeSet author="Ivo Zaal" id="1551802246513-8">
-        <preConditions onFail="MARK_RAN">
-            <dbms type="mysql"/>
-        </preConditions>
-        <sql>
-            ALTER TABLE audit_record RENAME INDEX origin_index TO ix_audit_record_origin
-        </sql>
-    </changeSet>
-    <changeSet author="Ivo Zaal" id="1551802246513-9">
-        <preConditions onFail="MARK_RAN">
-            <dbms type="mysql"/>
-        </preConditions>
-        <sql>
-            ALTER TABLE audit_record RENAME INDEX user_index TO ix_audit_record_user
-        </sql>
-    </changeSet>
-
     <changeSet author="tom (generated)" id="1551802246513-10">
         <preConditions onFail="MARK_RAN">
             <dbms type="postgresql"/>

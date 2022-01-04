@@ -27,5 +27,6 @@
     <property name="jsonType" value="JSONB" dbms="postgresql"/>
 
     <include file="changelog/20210804-connector-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20220104-rename-connector-indexes.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

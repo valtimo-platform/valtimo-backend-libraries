@@ -69,25 +69,6 @@
         </createIndex>
     </changeSet>
 
-    <!-- postgres does't support using the same index name so we have to rename them for mysql instances -->
-    <changeSet author="Ivo Zaal" id="1628085538996-5">
-        <preConditions onFail="MARK_RAN">
-            <dbms type="mysql"/>
-        </preConditions>
-        <sql>
-            ALTER TABLE connector_type RENAME INDEX ct_name_i TO ix_connector_type_name
-        </sql>
-    </changeSet>
-
-    <changeSet author="Ivo Zaal" id="1628085538996-6">
-        <preConditions onFail="MARK_RAN">
-            <dbms type="mysql"/>
-        </preConditions>
-        <sql>
-            ALTER TABLE connector_instance RENAME INDEX ct_name_i TO ix_connector_instance_name
-        </sql>
-    </changeSet>
-
     <changeSet author="Ivo Zaal" id="1628085538996-7">
         <preConditions onFail="MARK_RAN">
             <dbms type="postgresql"/>
