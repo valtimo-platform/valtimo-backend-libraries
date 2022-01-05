@@ -21,13 +21,13 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class StringProcessVariableDTOV2Test {
+class StringProcessVariableDTOV2Test {
 
     private static final String NAME = "some-name";
     private static final String VALUE = "some-value";
 
     @Test
-    public void stringProcessVariableDTO() {
+    void stringProcessVariableDTO() {
         StringProcessVariableDTOV2 stringProcessVariableDTOV2 = new StringProcessVariableDTOV2(NAME, VALUE);
 
         assertEquals(NAME, stringProcessVariableDTOV2.getName());
@@ -35,12 +35,12 @@ public class StringProcessVariableDTOV2Test {
     }
 
     @Test
-    public void stringProcessVariableDTOValueNull() {
+    void stringProcessVariableDTOValueNull() {
         assertThrows(NullPointerException.class, () -> new StringProcessVariableDTOV2(NAME, null));
     }
 
     @Test
-    public void stringProcessVariableDTONameNull() {
+    void stringProcessVariableDTONameNull() {
         assertThrows(NullPointerException.class, () -> new StringProcessVariableDTOV2(null, VALUE));
     }
 }

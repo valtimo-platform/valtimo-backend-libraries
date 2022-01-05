@@ -28,13 +28,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class VersionResourceTest {
+class VersionResourceTest {
 
     private MockMvc mockMvc;
     private VersionResource versionResource;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         versionResource = new VersionResource();
         mockMvc = MockMvcBuilders
             .standaloneSetup(versionResource)
@@ -43,7 +43,7 @@ public class VersionResourceTest {
     }
 
     @Test
-    public void getValtimoVersion() throws Exception {
+    void getValtimoVersion() throws Exception {
         mockMvc.perform(get("/api/valtimo/version")
             .accept(APPLICATION_JSON_VALUE)
             .contentType(APPLICATION_JSON_VALUE))

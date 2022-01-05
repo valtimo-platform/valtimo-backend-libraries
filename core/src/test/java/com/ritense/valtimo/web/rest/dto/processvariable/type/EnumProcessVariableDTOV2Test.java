@@ -17,7 +17,7 @@
 package com.ritense.valtimo.web.rest.dto.processvariable.type;
 
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -26,12 +26,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class EnumProcessVariableDTOV2Test {
+class EnumProcessVariableDTOV2Test {
     private static final String NAME = "some-name";
     private static final List<String> VALUES = new ArrayList<>();
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         VALUES.add("value1");
         VALUES.add("value2");
         VALUES.add("value3");
@@ -40,19 +40,19 @@ public class EnumProcessVariableDTOV2Test {
     }
 
     @Test
-    public void enumProcessVariableDTOV2() {
+    void enumProcessVariableDTOV2() {
         EnumProcessVariableDTOV2 enumProcessVariableDTOV2 = new EnumProcessVariableDTOV2(NAME, VALUES);
         assertEquals(NAME, enumProcessVariableDTOV2.getName());
         assertEquals(VALUES, enumProcessVariableDTOV2.getValues());
     }
 
     @Test
-    public void enumProcessVariableDTOV2ValuesNull() {
+    void enumProcessVariableDTOV2ValuesNull() {
         assertThrows(NullPointerException.class, () -> new EnumProcessVariableDTOV2(NAME, null));
     }
 
     @Test
-    public void enumProcessVariableDTOV2NameNull() {
+    void enumProcessVariableDTOV2NameNull() {
         assertThrows(NullPointerException.class, () -> new EnumProcessVariableDTOV2(null, VALUES));
     }
 

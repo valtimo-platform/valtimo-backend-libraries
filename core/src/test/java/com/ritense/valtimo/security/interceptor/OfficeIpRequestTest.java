@@ -25,20 +25,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class OfficeIpRequestTest {
+class OfficeIpRequestTest {
 
     private static final String OFFICE_IP = "213.127.182.74";
     private OfficeIpRequest officeIpRequest;
     private HttpServletRequest httpServletRequest;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         officeIpRequest = new OfficeIpRequest();
         httpServletRequest = mock(HttpServletRequest.class);
     }
 
     @Test
-    public void shouldReturnTrueWhenIpFromOffice() {
+    void shouldReturnTrueWhenIpFromOffice() {
         when(httpServletRequest.getRemoteAddr()).thenReturn(OFFICE_IP);
 
         final boolean result = officeIpRequest.check(httpServletRequest);
@@ -46,7 +46,7 @@ public class OfficeIpRequestTest {
     }
 
     @Test
-    public void shouldReturnFalseWhenEmpty() {
+    void shouldReturnFalseWhenEmpty() {
         when(httpServletRequest.getRemoteAddr()).thenReturn("");
 
         final boolean result = officeIpRequest.check(httpServletRequest);
@@ -54,7 +54,7 @@ public class OfficeIpRequestTest {
     }
 
     @Test
-    public void shouldReturnFalseWhenNonOfficIp() {
+    void shouldReturnFalseWhenNonOfficIp() {
         when(httpServletRequest.getRemoteAddr()).thenReturn("127.0.0.1");
 
         final boolean result = officeIpRequest.check(httpServletRequest);

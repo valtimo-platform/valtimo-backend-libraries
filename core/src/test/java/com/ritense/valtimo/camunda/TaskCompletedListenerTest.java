@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class TaskCompletedListenerTest {
+class TaskCompletedListenerTest {
 
     private ApplicationEventPublisher applicationEventPublisher;
     private TaskCompletedListener taskCompletedListener;
@@ -40,7 +40,7 @@ public class TaskCompletedListenerTest {
     private DelegateTask delegateTask;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
         taskCompletedListener = new TaskCompletedListener(applicationEventPublisher);
         taskCompletedEventCaptor = ArgumentCaptor.forClass(TaskCompletedEvent.class);
@@ -56,7 +56,7 @@ public class TaskCompletedListenerTest {
     }
 
     @Test
-    public void shouldPublishTaskCompletedEventWhenDelegateTaskIsCompleted() {
+    void shouldPublishTaskCompletedEventWhenDelegateTaskIsCompleted() {
         taskCompletedListener.notify(delegateTask);
         verify(applicationEventPublisher, times(1)).publishEvent(taskCompletedEventCaptor.capture());
     }

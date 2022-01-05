@@ -21,20 +21,20 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LongProcessVariableQueryParameterV2Test {
+class LongProcessVariableQueryParameterV2Test {
 
     private static final String NAME = "some-name";
     private static final Long VALUE = 1L;
 
     @Test
-    public void longProcessVariableQueryParameter() {
+    void longProcessVariableQueryParameter() {
         LongProcessVariableQueryParameterV2 longProcessVariableQueryParameter = longProcessVariableQueryParameterV2();
         assertEquals(NAME, longProcessVariableQueryParameter.name);
         assertEquals(VALUE, longProcessVariableQueryParameter.value);
     }
 
     @Test
-    public void longType() {
+    void longType() {
         LongProcessVariableQueryParameterV2 longProcessVariableQueryParameter = longProcessVariableQueryParameterV2();
         assertTrue(longProcessVariableQueryParameter.isVariableLong());
     }

@@ -28,8 +28,6 @@ dependencies {
     implementation project(":web")
     implementation project(":resource")
 
-    implementation "org.testcontainers:jdbc"
-
     // Camunda
     api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter:7.14.0"
     api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:7.14.0"
@@ -89,8 +87,9 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-jackson:0.11.2"
 
     // Camunda test
-    testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.14.0")
+    testImplementation "org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.14.0"
     testImplementation "org.springframework.security:spring-security-test"
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
 
 }
 

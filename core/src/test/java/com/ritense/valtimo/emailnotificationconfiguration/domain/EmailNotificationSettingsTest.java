@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class EmailNotificationSettingsTest {
+class EmailNotificationSettingsTest {
 
     private final String correctJson = " {" +
         "\"emailNotifications\": true, " +
@@ -55,17 +55,17 @@ public class EmailNotificationSettingsTest {
     private ObjectMapper mapper;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         mapper = new ObjectMapper();
     }
 
     @Test
-    public void shouldDeserializeCorrectJson() throws IOException {
+    void shouldDeserializeCorrectJson() throws IOException {
         mapper.reader().forType(EmailNotificationSettingsRequestImpl.class).readValue(correctJson);
     }
 
     @Test
-    public void shouldNotDeserializeCorruptJson() {
+    void shouldNotDeserializeCorruptJson() {
         assertThrows(JsonParseException.class, () -> {
             mapper.reader().forType(EmailNotificationSettingsRequestImpl.class).readValue(inCorrectJson);
         });

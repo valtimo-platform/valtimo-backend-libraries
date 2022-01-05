@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.mockito.internal.util.JavaEightUtil.emptyOptional;
 
-public class ReminderNotificationTest {
+class ReminderNotificationTest {
 
     private ReminderNotification reminderNotification;
     private final String email = "test@test.com";
@@ -42,26 +42,26 @@ public class ReminderNotificationTest {
     private List<RoleBasedTask> roleBasedTasks;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         reminderNotification = new ReminderNotification(email, "template", name);
         assignedTasks = List.of(getAssignedTask());
         roleBasedTasks = List.of(getRoleBasedTask());
     }
 
     @Test
-    public void shouldAssignAssignedTasks() {
+    void shouldAssignAssignedTasks() {
         reminderNotification.assignAssignedTasks(assignedTasks);
         assertThat(reminderNotification.getAssignedTasks(), is(assignedTasks));
     }
 
     @Test
-    public void assignRoleBasedTasks() {
+    void assignRoleBasedTasks() {
         reminderNotification.assignRoleBasedTasks(roleBasedTasks);
         assertThat(reminderNotification.getRoleBasedTasks(), is(roleBasedTasks));
     }
 
     @Test
-    public void shouldReturnAsEmailWithTasks() {
+    void shouldReturnAsEmailWithTasks() {
         reminderNotification.assignRoleBasedTasks(roleBasedTasks);
         Optional<TemplatedMailMessage> mailMessage = reminderNotification.asTemplatedMailMessage();
 
@@ -69,7 +69,7 @@ public class ReminderNotificationTest {
     }
 
     @Test
-    public void shouldReturnEmptyOptionalWithoutTasks() {
+    void shouldReturnEmptyOptionalWithoutTasks() {
         Optional<TemplatedMailMessage> mailMessage = reminderNotification.asTemplatedMailMessage();
 
         assertThat(mailMessage, is(emptyOptional()));
