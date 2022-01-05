@@ -30,7 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 @Tag("integration")
-public class ProcessInstanceEventHandlerIntTest extends BaseIntegrationTest {
+class ProcessInstanceEventHandlerIntTest extends BaseIntegrationTest {
 
     @Autowired
     private RuntimeService runtimeService;
@@ -40,7 +40,7 @@ public class ProcessInstanceEventHandlerIntTest extends BaseIntegrationTest {
 
     @Test
     @Disabled
-    public void shouldNotFindSearchMatch() {
+    void shouldNotFindSearchMatch() {
         runtimeService.startProcessInstanceByKey("test-process");
 
         verify(auditEventListener).handle(any(ProcessStartedEvent.class));

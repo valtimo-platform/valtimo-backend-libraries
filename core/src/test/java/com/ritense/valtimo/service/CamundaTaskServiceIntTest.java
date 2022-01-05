@@ -33,7 +33,7 @@ import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.U
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
-public class CamundaTaskServiceIntTest extends BaseIntegrationTest {
+class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Inject
     private CamundaTaskService camundaTaskService;
@@ -47,7 +47,7 @@ public class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     private final String businessKey = "some-id";
 
     @BeforeEach
-    public void setUp() throws IllegalAccessException {
+    void setUp() throws IllegalAccessException {
         processInstanceWithDefinition = camundaProcessService.startProcess(
             processDefinitionKey,
             businessKey,
@@ -58,7 +58,7 @@ public class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = USER)
-    public void getProcessInstanceTasks() {
+    void getProcessInstanceTasks() {
         final var processInstance = camundaProcessService
             .findProcessInstanceById(processInstanceWithDefinition.getProcessInstanceDto().getId()).orElseThrow();
         final var processInstanceTasks = camundaTaskService
@@ -72,7 +72,7 @@ public class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = USER)
-    public void shouldFindTasksFiltered() throws IllegalAccessException {
+    void shouldFindTasksFiltered() throws IllegalAccessException {
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
             PageRequest.of(0, 5)
@@ -86,7 +86,7 @@ public class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = USER)
-    public void shouldFind10TasksFiltered() throws IllegalAccessException {
+    void shouldFind10TasksFiltered() throws IllegalAccessException {
         for (int i = 0; i < 9; i++) {
             camundaProcessService.startProcess(
                 processDefinitionKey,
@@ -108,7 +108,7 @@ public class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = USER)
-    public void shouldFindCandidateUsers() throws IllegalAccessException {
+    void shouldFindCandidateUsers() throws IllegalAccessException {
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
             PageRequest.of(0, 20)

@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.mail
+dependencies {
+    implementation project(':contract')
 
-import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.test.context.junit.jupiter.SpringExtension
+    implementation('org.liquibase:liquibase-core') {
+        exclude(module: 'jetty-servlet')
+    }
 
-@SpringBootTest
-@ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
-@Tag("integration")
-abstract class BaseIntegrationTest {
-
-    @MockBean
-    lateinit var mailDispatcher: MailDispatcher
+    implementation group: 'org.springframework', name: 'spring-test'
+    implementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
 }
+
+apply from: "gradle/publishing.gradle"

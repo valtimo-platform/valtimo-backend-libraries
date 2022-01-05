@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AuthorityServiceTest {
+class AuthorityServiceTest {
 
     private AuthorityRepository authorityRepository;
     private AuthorizedUsersService authorizedUsersService;
@@ -48,7 +48,7 @@ public class AuthorityServiceTest {
     }
 
     @Test
-    public void shouldCreateAndReturnAuthority() {
+    void shouldCreateAndReturnAuthority() {
         when(authorityRepository.findById(any())).thenReturn(Optional.empty());
 
         final AuthorityRequest authorityRequest = new AuthorityRequest("role_name", BigDecimal.TEN);
@@ -60,7 +60,7 @@ public class AuthorityServiceTest {
     }
 
     @Test
-    public void shouldUpdateAndReturnAuthority() {
+    void shouldUpdateAndReturnAuthority() {
         Authority authority = new Authority("role_name", BigDecimal.TEN, false);
         when(authorityRepository.findById(any())).thenReturn(Optional.of(authority));
 
@@ -73,7 +73,7 @@ public class AuthorityServiceTest {
     }
 
     @Test
-    public void shouldDeleteAuthority() throws IllegalAccessException {
+    void shouldDeleteAuthority() throws IllegalAccessException {
         Authority authority = new Authority("role_name", BigDecimal.TEN, false);
         when(authorityRepository.findById(any())).thenReturn(Optional.of(authority));
         when(authorizedUsersService.isRoleInUse(any())).thenReturn(false);

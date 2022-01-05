@@ -21,24 +21,24 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class FileUploadProcessVariableDTOV2Test {
+class FileUploadProcessVariableDTOV2Test {
     private static final String NAME = "some-name";
     private static final Boolean VALUE = true;
 
     @Test
-    public void fileUploadProcessVariableDTOV2() {
+    void fileUploadProcessVariableDTOV2() {
         FileUploadProcessVariableDTOV2 fileUploadProcessVariable = new FileUploadProcessVariableDTOV2(NAME, VALUE);
         assertEquals(NAME, fileUploadProcessVariable.getName());
         assertEquals(VALUE, fileUploadProcessVariable.getValue());
     }
 
     @Test
-    public void fileUploadProcessVariableDTOV2ValueNull() {
+    void fileUploadProcessVariableDTOV2ValueNull() {
         assertThrows(NullPointerException.class, () -> new FileUploadProcessVariableDTOV2(NAME, null));
     }
 
     @Test
-    public void fileUploadProcessVariableDTOV2NameNull() {
+    void fileUploadProcessVariableDTOV2NameNull() {
         assertThrows(NullPointerException.class, () -> new FileUploadProcessVariableDTOV2(null, VALUE));
     }
 

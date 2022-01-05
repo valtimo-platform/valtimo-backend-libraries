@@ -18,7 +18,7 @@ package com.ritense.contactmoment
 
 import com.ritense.connector.autodeployment.ConnectorApplicationReadyEventListener
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.junit.extension.LiquibaseRunnerExtension
+import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.mail.MailSender
 import com.ritense.valtimo.service.CurrentUserService
 import okhttp3.mockwebserver.MockResponse

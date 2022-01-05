@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.junit.extension;
+package com.ritense.testutilscommon.junit.extension;
 
 import com.ritense.valtimo.contract.config.LiquibaseRunner;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class LiquibaseRunnerExtension
 
     private static boolean started = false;
     // Gate keeper to prevent multiple Threads within the same routine
-    final static Lock lock = new ReentrantLock();
+    static final Lock lock = new ReentrantLock();
 
     @Override
     public void beforeAll(final ExtensionContext extensionContext) throws Exception {

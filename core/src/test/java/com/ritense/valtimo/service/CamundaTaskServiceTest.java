@@ -49,7 +49,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class CamundaTaskServiceTest {
+class CamundaTaskServiceTest {
     private static final String TASK_ID = "task";
     private static final String ASSIGNEE = "theAssignee";
     private Task task;
@@ -63,7 +63,7 @@ public class CamundaTaskServiceTest {
     private UserManagementService userManagementService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         taskService = mock(TaskService.class, RETURNS_DEEP_STUBS);
         formService = mock(FormService.class);
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
@@ -89,19 +89,19 @@ public class CamundaTaskServiceTest {
     }
 
     @Test
-    public void findTaskById_taskDoesNotExists() {
+    void findTaskById_taskDoesNotExists() {
         when(taskService.createTaskQuery().taskId(TASK_ID).initializeFormKeys().singleResult()).thenReturn(null);
         assertThrows(TaskNotFoundException.class, () -> camundaTaskService.findTaskById(TASK_ID));
     }
 
     @Test
-    public void claimTask_taskDoesNotExist() {
+    void claimTask_taskDoesNotExist() {
         when(taskService.createTaskQuery().taskId(anyString()).initializeFormKeys().singleResult()).thenThrow(new ProcessEngineException());
         assertThrows(IllegalStateException.class, () -> camundaTaskService.findTaskById(TASK_ID));
     }
 
     @Test
-    public void claimTask_taskClaimedDoesntExist() {
+    void claimTask_taskClaimedDoesntExist() {
         //when
         when(taskService.createTaskQuery().taskId(TASK_ID).initializeFormKeys().singleResult()).thenReturn(task);
         doThrow(new ProcessEngineException()).when(taskService).setAssignee(eq(TASK_ID), eq(ASSIGNEE));
@@ -111,34 +111,34 @@ public class CamundaTaskServiceTest {
     }
 
     @Test
-    public void claimTask_taskClaimedWithNoPermissions() {
+    void claimTask_taskClaimedWithNoPermissions() {
         when(taskService.createTaskQuery().taskId(TASK_ID).initializeFormKeys().singleResult()).thenReturn(task);
         doThrow(new AuthorizationException("some reason")).when(taskService).setAssignee(eq(TASK_ID), eq(ASSIGNEE));
         assertThrows(IllegalStateException.class, () -> camundaTaskService.assign(TASK_ID, ASSIGNEE));
     }
 
     @Test
-    public void unclaimTask_taskDoesNotExist() {
+    void unclaimTask_taskDoesNotExist() {
         doThrow(new IllegalStateException()).when(camundaTaskService).findTaskById(TASK_ID);
         assertThrows(IllegalStateException.class, () -> camundaTaskService.unassign(TASK_ID));
     }
 
     @Test
-    public void unclaimTask_taskUnclaimedDoesntExist() {
+    void unclaimTask_taskUnclaimedDoesntExist() {
         when(taskService.createTaskQuery().taskId(TASK_ID).initializeFormKeys().singleResult()).thenReturn(task);
         doThrow(new ProcessEngineException()).when(taskService).setAssignee(eq(TASK_ID), isNull());
         assertThrows(IllegalStateException.class, () -> camundaTaskService.unassign(TASK_ID));
     }
 
     @Test
-    public void unclaimTask_taskClaimedWithNoPermissions() {
+    void unclaimTask_taskClaimedWithNoPermissions() {
         when(taskService.createTaskQuery().taskId(TASK_ID).initializeFormKeys().singleResult()).thenReturn(task);
         doThrow(new AuthorizationException("some reason")).when(taskService).setAssignee(eq(TASK_ID), isNull());
         assertThrows(IllegalStateException.class, () -> camundaTaskService.unassign(TASK_ID));
     }
 
     @Test
-    public void taskComplete_withVariablesAndValidationException() {
+    void taskComplete_withVariablesAndValidationException() {
         final HashMap<String, Object> variables = new HashMap<>();
         variables.put("test", "test");
 
@@ -149,7 +149,7 @@ public class CamundaTaskServiceTest {
     }
 
     @Test
-    public void taskComplete_withoutVariablesSuccessfully() {
+    void taskComplete_withoutVariablesSuccessfully() {
         //initialize own taskService here because we need to override the complete method
         TaskService taskService = mock(TaskService.class, RETURNS_DEEP_STUBS);
         CamundaTaskService camundaTaskService = spy(new CamundaTaskService(taskService, null, null, delegateTaskHelper, null, null,
@@ -164,14 +164,14 @@ public class CamundaTaskServiceTest {
     }
 
     @Test
-    public void taskComplete_withoutVariablesAndNoAuthorization() {
+    void taskComplete_withoutVariablesAndNoAuthorization() {
         when(taskService.createTaskQuery().taskId(TASK_ID).initializeFormKeys().singleResult()).thenReturn(task);
         doThrow(new AuthorizationException("some reason")).when(taskService).complete(anyString());
         assertThrows(IllegalStateException.class, () -> camundaTaskService.completeTask(TASK_ID, null));
     }
 
     @Test
-    public void taskComplete_withoutVariablesAndProcessEngineException() {
+    void taskComplete_withoutVariablesAndProcessEngineException() {
         when(taskService.createTaskQuery().taskId(TASK_ID).initializeFormKeys().singleResult()).thenReturn(task);
         doThrow(new ProcessEngineException()).when(taskService).complete(anyString());
         assertThrows(IllegalStateException.class, () -> camundaTaskService.completeTask(TASK_ID, null));
