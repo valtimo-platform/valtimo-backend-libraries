@@ -34,13 +34,13 @@ class ContextSecurityResourceTest extends SecuritySpecificEndpointIntegrationTes
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = ADMIN)
-    public void updateContextAsAdmin() throws Exception {
+    void updateContextAsAdmin() throws Exception {
         assertHttpStatus(PUT, "/api/contexts", BAD_REQUEST);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = USER)
-    public void updateContextAsUser() throws Exception {
+    void updateContextAsUser() throws Exception {
         assertHttpStatus(PUT, "/api/contexts", FORBIDDEN);
     }
 

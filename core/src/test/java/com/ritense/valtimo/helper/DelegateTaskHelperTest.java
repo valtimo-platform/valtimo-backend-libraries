@@ -30,12 +30,12 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.ritense.valtimo.helper.DelegateTaskHelper.PUBLIC_TASK_PROPERTY_NAME;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DelegateTaskHelperTest {
+class DelegateTaskHelperTest {
 
     private static final String TASK_IS_PUBLIC_PROPERTY_VALUE = "true";
     private UserManagementService userManagementService;
@@ -51,7 +51,7 @@ public class DelegateTaskHelperTest {
     private org.camunda.bpm.engine.task.Task taskInterface;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         userManagementService = mock(UserManagementService.class);
         activityHelper = mock(ActivityHelper.class);
         bpmnModelService = mock(BpmnModelService.class);
@@ -66,7 +66,7 @@ public class DelegateTaskHelperTest {
     }
 
     @Test
-    public void taskIsNotPublicDelegateTask() {
+    void taskIsNotPublicDelegateTask() {
         //given
         when(camundaProperty.getCamundaValue()).thenReturn(null);
         when(activityHelper.getCamundaProperties(delegateTask, PUBLIC_TASK_PROPERTY_NAME)).thenReturn(camundaProperties);
@@ -79,7 +79,7 @@ public class DelegateTaskHelperTest {
     }
 
     @Test
-    public void taskIsPublicDelegateTask() {
+    void taskIsPublicDelegateTask() {
         //given
         when(camundaProperty.getCamundaValue()).thenReturn(TASK_IS_PUBLIC_PROPERTY_VALUE);
         when(activityHelper.getCamundaProperties(delegateTask, PUBLIC_TASK_PROPERTY_NAME)).thenReturn(camundaProperties);
@@ -92,7 +92,7 @@ public class DelegateTaskHelperTest {
     }
 
     @Test
-    public void taskIsNotPublicTask() {
+    void taskIsNotPublicTask() {
         //given
         when(camundaProperty.getCamundaValue()).thenReturn(null);
         when(activityHelper.getCamundaProperties(task, TASK_IS_PUBLIC_PROPERTY_VALUE)).thenReturn(camundaProperties);
@@ -105,7 +105,7 @@ public class DelegateTaskHelperTest {
     }
 
     @Test
-    public void taskIsPublicTask() {
+    void taskIsPublicTask() {
         //given
         when(camundaProperty.getCamundaValue()).thenReturn(TASK_IS_PUBLIC_PROPERTY_VALUE);
         when(activityHelper.getCamundaProperties(task, PUBLIC_TASK_PROPERTY_NAME)).thenReturn(camundaProperties);
@@ -118,7 +118,7 @@ public class DelegateTaskHelperTest {
     }
 
     @Test
-    public void taskIsNotPublicHistoricTaskDtoInstance() {
+    void taskIsNotPublicHistoricTaskDtoInstance() {
         //given
         when(camundaProperty.getCamundaValue()).thenReturn(null);
         when(activityHelper.getCamundaProperties(historicTaskInstanceDto, PUBLIC_TASK_PROPERTY_NAME)).thenReturn(camundaProperties);
@@ -131,7 +131,7 @@ public class DelegateTaskHelperTest {
     }
 
     @Test
-    public void taskIsPublicHistoricTaskDto() {
+    void taskIsPublicHistoricTaskDto() {
         //given
         when(camundaProperty.getCamundaValue()).thenReturn(TASK_IS_PUBLIC_PROPERTY_VALUE);
         when(activityHelper.getCamundaProperties(historicTaskInstanceDto, PUBLIC_TASK_PROPERTY_NAME)).thenReturn(camundaProperties);
@@ -144,7 +144,7 @@ public class DelegateTaskHelperTest {
     }
 
     @Test
-    public void taskIsNotPublicHistoricTaskInstance() {
+    void taskIsNotPublicHistoricTaskInstance() {
         //given
         when(camundaProperty.getCamundaValue()).thenReturn(null);
         when(activityHelper.getCamundaProperties(historicTaskInstance, PUBLIC_TASK_PROPERTY_NAME)).thenReturn(camundaProperties);
@@ -157,7 +157,7 @@ public class DelegateTaskHelperTest {
     }
 
     @Test
-    public void taskIsPublicHistoricTaskInstance() {
+    void taskIsPublicHistoricTaskInstance() {
         //given
         when(camundaProperty.getCamundaValue()).thenReturn(TASK_IS_PUBLIC_PROPERTY_VALUE);
         when(activityHelper.getCamundaProperties(historicTaskInstance, PUBLIC_TASK_PROPERTY_NAME)).thenReturn(camundaProperties);
@@ -170,7 +170,7 @@ public class DelegateTaskHelperTest {
     }
 
     @Test
-    public void taskIsNotPublicTaskInterfaceInstance() {
+    void taskIsNotPublicTaskInterfaceInstance() {
         //given
         when(camundaProperty.getCamundaValue()).thenReturn(null);
         when(activityHelper.getCamundaProperties(task, PUBLIC_TASK_PROPERTY_NAME)).thenReturn(camundaProperties);
@@ -183,7 +183,7 @@ public class DelegateTaskHelperTest {
     }
 
     @Test
-    public void taskIsPublicTaskInterfaceInstance() {
+    void taskIsPublicTaskInterfaceInstance() {
         //given
         when(camundaProperty.getCamundaValue()).thenReturn(TASK_IS_PUBLIC_PROPERTY_VALUE);
         when(bpmnModelService.getTask(taskInterface)).thenReturn(task);

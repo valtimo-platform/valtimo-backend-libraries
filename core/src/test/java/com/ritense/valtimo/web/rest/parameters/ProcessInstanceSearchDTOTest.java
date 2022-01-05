@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.web.rest.parameters;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ritense.valtimo.domain.util.Jsr310DateTimeSerializer;
@@ -38,9 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-
-public class ProcessInstanceSearchDTOTest {
+class ProcessInstanceSearchDTOTest {
 
     private static final String BUSINESS_KEY = "1";
     private static final Boolean ACTIVE = false;
@@ -58,7 +58,7 @@ public class ProcessInstanceSearchDTOTest {
     private ObjectMapper mapper;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         mapper = new ObjectMapper();
         JavaTimeModule module = new JavaTimeModule();
         module.addSerializer(OffsetDateTime.class, Jsr310DateTimeSerializer.INSTANCE);
@@ -70,7 +70,7 @@ public class ProcessInstanceSearchDTOTest {
     }
 
     @Test
-    public void processInstanceSearchDto() throws IOException {
+    void processInstanceSearchDto() throws IOException {
         List<ProcessVariableDTOV2> processVariables = new ArrayList<>();
 
         LongProcessVariableDTOV2 longProcessVariableDTOV2 = new LongProcessVariableDTOV2(LONG_NAME, LONG_VALUE);

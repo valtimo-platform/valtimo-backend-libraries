@@ -21,14 +21,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DateProcessVariableQueryParameterV2Test {
+class DateProcessVariableQueryParameterV2Test {
 
     private static final String NAME = "some-name";
     private static final Long FROM = 1L;
     private static final Long TO = 2L;
 
     @Test
-    public void dateProcessVariableQueryParameter() {
+    void dateProcessVariableQueryParameter() {
         DateProcessVariableQueryParameterV2 dateProcessVariableQueryParameter = dateProcessVariableQueryParameterV2();
         assertEquals(NAME, dateProcessVariableQueryParameter.name);
         assertEquals(FROM, dateProcessVariableQueryParameter.from);
@@ -36,7 +36,7 @@ public class DateProcessVariableQueryParameterV2Test {
     }
 
     @Test
-    public void dateType() {
+    void dateType() {
         DateProcessVariableQueryParameterV2 dateProcessVariableQueryParameter = dateProcessVariableQueryParameterV2();
         assertTrue(dateProcessVariableQueryParameter.isVariableDate());
     }

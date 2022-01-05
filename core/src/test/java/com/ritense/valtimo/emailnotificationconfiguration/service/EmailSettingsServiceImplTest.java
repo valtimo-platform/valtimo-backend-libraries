@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.util.JavaEightUtil.emptyOptional;
 
-public class EmailSettingsServiceImplTest {
+class EmailSettingsServiceImplTest {
 
     private EmailNotificationSettingsService emailNotificationService;
     private EmailNotificationSettingsRepository repository;
@@ -43,19 +43,19 @@ public class EmailSettingsServiceImplTest {
     private String emailAddress = "test@test.com";
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         repository = mock(EmailNotificationSettingsRepository.class);
         emailNotificationService = new EmailNotificationSettingsServiceImpl(repository);
     }
 
     @Test
-    public void shouldGetEmptyConfigurationForUser() {
+    void shouldGetEmptyConfigurationForUser() {
         Optional<EmailNotificationSettings> configuration = emailNotificationService.getSettingsFor(emailAddress);
         assertThat(configuration, is(emptyOptional()));
     }
 
     @Test
-    public void shouldGetConfigurationForUser() {
+    void shouldGetConfigurationForUser() {
         Optional<EmailNotificationSettings> configurationOfUser = EmailNotificationSettingsHelper.enabledEmailNotificationSettings();
         when(repository.findByEmailAddress(anyString())).thenReturn(configurationOfUser);
         Optional<EmailNotificationSettings> configuration = emailNotificationService.getSettingsFor(emailAddress);
@@ -63,7 +63,7 @@ public class EmailSettingsServiceImplTest {
     }
 
     @Test
-    public void shouldStoreConfigurationAfterSettingChanges() {
+    void shouldStoreConfigurationAfterSettingChanges() {
         EmailNotificationSettings newSettings = EmailNotificationSettingsHelper.enabledEmailNotificationSettings().get();
         when(repository.saveAndFlush(any(EmailNotificationSettings.class))).thenReturn(newSettings);
         EmailNotificationSettings emailNotificationSettings = emailNotificationService.process(requestEnabled(), emailAddress);

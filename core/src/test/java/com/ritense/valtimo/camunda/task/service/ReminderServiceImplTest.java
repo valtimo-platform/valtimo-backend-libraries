@@ -42,7 +42,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ReminderServiceImplTest {
+class ReminderServiceImplTest {
 
     private ReminderService reminderService;
     private TaskService taskService;
@@ -53,7 +53,7 @@ public class ReminderServiceImplTest {
     private TaskQuery taskQuery;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         taskService = mock(TaskService.class);
         emailNotificationService = mock(EmailNotificationSettingsService.class);
         mailSender = mock(MailSender.class);
@@ -70,7 +70,7 @@ public class ReminderServiceImplTest {
     }
 
     @Test
-    public void shouldNotifyThreeUsersWithRoleBasedAndAssignedTasks() {
+    void shouldNotifyThreeUsersWithRoleBasedAndAssignedTasks() {
         when(emailNotificationService.findAllUsersWithReminderNotificationsEnabledForToday()).thenReturn(users());
 
         when(userManagementService.findByEmail(anyString()))
@@ -93,7 +93,7 @@ public class ReminderServiceImplTest {
     }
 
     @Test
-    public void shouldNotifyZeroUsersNoOpenTasks() {
+    void shouldNotifyZeroUsersNoOpenTasks() {
         when(emailNotificationService.findAllUsersWithReminderNotificationsEnabledForToday()).thenReturn(users());
 
         when(userManagementService.findByEmail(anyString()))
@@ -116,7 +116,7 @@ public class ReminderServiceImplTest {
     }
 
     @Test
-    public void shouldNotifyOneUserWithAssignedTasksOnly() {
+    void shouldNotifyOneUserWithAssignedTasksOnly() {
         when(emailNotificationService.findAllUsersWithReminderNotificationsEnabledForToday()).thenReturn(users());
 
         when(userManagementService.findByEmail(anyString()))
@@ -140,7 +140,7 @@ public class ReminderServiceImplTest {
     }
 
     @Test
-    public void shouldNotifyZeroUsersNoUsers() {
+    void shouldNotifyZeroUsersNoUsers() {
         when(emailNotificationService.findAllUsersWithReminderNotificationsEnabledForToday()).thenReturn(null);
 
         ReflectionTestUtils.setField(reminderService, "reminderTemplate", "template");

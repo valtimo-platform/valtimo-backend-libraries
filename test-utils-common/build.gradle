@@ -17,6 +17,10 @@
 dependencies {
     implementation project(':contract')
 
+    implementation('org.liquibase:liquibase-core') {
+        exclude(module: 'jetty-servlet')
+    }
+
     implementation group: 'org.springframework', name: 'spring-test'
     implementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
 }
