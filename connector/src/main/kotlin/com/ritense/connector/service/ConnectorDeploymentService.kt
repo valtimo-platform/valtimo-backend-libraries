@@ -32,6 +32,7 @@ class ConnectorDeploymentService(
         connectors.forEach {
             val connectorTypeAnnotation = it.javaClass.getAnnotation(com.ritense.connector.domain.meta.ConnectorType::class.java)
             val name = connectorTypeAnnotation.name
+            val allowMultipleConnectors = connectorTypeAnnotation.allowMultipleConnectors
             var connectorType = connectorTypeRepository.findByName(name)
             val simpleClassName = ConnectorType.getNameFromClass(it.javaClass)
             if (connectorType == null) {
@@ -40,15 +41,17 @@ class ConnectorDeploymentService(
                     id = ConnectorTypeId.newId(UUID.randomUUID()),
                     name = name,
                     className = simpleClassName,
-                    connectorProperties = it.getProperties()
+                    connectorProperties = it.getProperties(),
+                    allowMultipleConnectorInstances = allowMultipleConnectors
                 )
-                connectorTypeRepository.save(connectorType)
             } else {
                 logger.info { "connectorType already deployed updating existing $name" }
                 connectorType.name = name
                 connectorType.className = simpleClassName
                 connectorType.connectorProperties = it.getProperties()
+                connectorType.allowMultipleConnectorInstances = allowMultipleConnectors
             }
+            connectorTypeRepository.save(connectorType)
             connectorTypes.add(connectorType)
         }
         return connectorTypes

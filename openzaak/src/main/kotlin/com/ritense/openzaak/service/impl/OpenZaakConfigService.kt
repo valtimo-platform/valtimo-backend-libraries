@@ -16,92 +16,43 @@
 
 package com.ritense.openzaak.service.impl
 
-import com.ritense.openzaak.domain.configuration.OpenZaakConfig
-import com.ritense.openzaak.domain.configuration.OpenZaakConfigId
-import com.ritense.openzaak.domain.configuration.Rsin
-import com.ritense.openzaak.domain.configuration.Secret
-import com.ritense.openzaak.domain.request.CreateOpenZaakConfigRequest
-import com.ritense.openzaak.domain.request.ModifyOpenZaakConfigRequest
-import com.ritense.openzaak.repository.OpenZaakConfigRepository
+import com.ritense.connector.repository.ConnectorTypeInstanceRepository
+import com.ritense.connector.repository.ConnectorTypeRepository
+import com.ritense.openzaak.domain.connector.OpenZaakConfig
+import com.ritense.openzaak.domain.connector.OpenZaakConnector
+import com.ritense.openzaak.domain.connector.OpenZaakProperties
 import com.ritense.openzaak.service.OpenZaakConfigService
-import com.ritense.openzaak.service.impl.result.CreateOpenZaakConfigResultFailed
-import com.ritense.openzaak.service.impl.result.CreateOpenZaakConfigResultSucceeded
-import com.ritense.openzaak.service.impl.result.ModifyOpenZaakConfigResultFailed
-import com.ritense.openzaak.service.impl.result.ModifyOpenZaakConfigResultSucceeded
-import com.ritense.openzaak.service.result.CreateOpenZaakConfigResult
-import com.ritense.openzaak.service.result.ModifyOpenZaakConfigResult
-import com.ritense.valtimo.contract.result.OperationError
-import org.springframework.web.client.RestTemplate
-import java.util.UUID
-import javax.validation.ConstraintViolationException
 
 class OpenZaakConfigService(
-    private val openZaakConfigRepository: OpenZaakConfigRepository,
-    private val tokenGeneratorService: OpenZaakTokenGeneratorService,
-    private val restTemplate: RestTemplate
+    private val connectorTypeInstanceRepository: ConnectorTypeInstanceRepository,
+    private val connectorTypeRepository: ConnectorTypeRepository,
+    private val openZaakProperties: OpenZaakProperties
 ) : OpenZaakConfigService {
 
-    override fun get(): OpenZaakConfig? {
-        return openZaakConfigRepository.findAll().firstOrNull()
+    override fun getOpenZaakConfig(): OpenZaakConfig? {
+        val connectorType = connectorTypeRepository.findByName(OpenZaakConnector(openZaakProperties).getName())
+            ?: return null
+        val connectorInstance = connectorTypeInstanceRepository.findByType(connectorType!!)
+
+        return (connectorInstance.connectorProperties as OpenZaakProperties).openZaakConfig
     }
 
-    override fun createOpenZaakConfig(request: CreateOpenZaakConfigRequest): CreateOpenZaakConfigResult {
-        return try {
-            if (get() != null) {
-                throw IllegalStateException("Only one Open Zaak config is allowed")
-            }
-            val openZaakConfig = OpenZaakConfig(
-                OpenZaakConfigId.newId(UUID.randomUUID()),
-                request.url,
-                request.clientId,
-                Secret(request.secret),
-                Rsin(request.rsin)
-            )
-            testConnection(openZaakConfig)
-            openZaakConfigRepository.save(openZaakConfig)
-            return CreateOpenZaakConfigResultSucceeded(openZaakConfig)
-        } catch (ex: ConstraintViolationException) {
-            val errors: List<OperationError> = ex.constraintViolations.map { OperationError.FromString(it.message) }
-            CreateOpenZaakConfigResultFailed(errors)
-        } catch (ex: IllegalStateException) {
-            CreateOpenZaakConfigResultFailed(listOf(OperationError.FromException(ex)))
-        } catch (ex: IllegalArgumentException) {
-            CreateOpenZaakConfigResultFailed(listOf(OperationError.FromException(ex)))
+    override fun hasOpenZaakConfig(): Boolean {
+        return when (getOpenZaakConfig()) {
+            null -> false
+            else -> true
         }
     }
 
-    override fun modifyOpenZaakConfig(request: ModifyOpenZaakConfigRequest): ModifyOpenZaakConfigResult {
-        return try {
-            val openZaakConfig = get() ?: throw IllegalStateException("Open Zaak config is not found")
-            openZaakConfig.changeConfig(request)
-            testConnection(openZaakConfig)
-            openZaakConfigRepository.save(openZaakConfig)
-            return ModifyOpenZaakConfigResultSucceeded(openZaakConfig)
-        } catch (ex: ConstraintViolationException) {
-            val errors: List<OperationError> = ex.constraintViolations.map { OperationError.FromString(it.message) }
-            ModifyOpenZaakConfigResultFailed(errors)
-        } catch (ex: IllegalStateException) {
-            ModifyOpenZaakConfigResultFailed(listOf(OperationError.FromException(ex)))
-        } catch (ex: IllegalArgumentException) {
-            ModifyOpenZaakConfigResultFailed(listOf(OperationError.FromException(ex)))
-        }
-    }
-
-    override fun removeOpenZaakConfig() {
-        val openZaakConfig = get() ?: throw IllegalStateException("Open Zaak config is not found")
-        openZaakConfigRepository.delete(openZaakConfig)
-    }
-
-    private fun testConnection(openZaakConfig: OpenZaakConfig) {
-        try {
-            OpenZaakRequestBuilder(restTemplate, this, tokenGeneratorService)
-                .config(openZaakConfig)
-                .path("catalogi/api/v1/zaaktypen")
-                .build()
-                .execute(String::class.java)
-        } catch (ex: Exception) {
-            throw IllegalStateException("Testing connection failed")
-        }
-    }
-
+//    override fun testConnection(openZaakConfig: OpenZaakConfig) {
+//        try {
+//            OpenZaakRequestBuilder(restTemplate, this, tokenGeneratorService)
+//                .config(openZaakConfig)
+//                .path("catalogi/api/v1/zaaktypen")
+//                .build()
+//                .execute(String::class.java)
+//        } catch (ex: Exception) {
+//            throw IllegalStateException("Testing connection failed")
+//        }
+//    }
 }

@@ -68,10 +68,10 @@ open class ConnectorService(
         typeId: UUID,
         name: String,
         connectorProperties: ConnectorProperties
-    ): ConnectorInstance {
+    ): CreateConnectorInstanceResult {
         return createConnectorInstance(
             CreateConnectorInstanceRequest(typeId, name, connectorProperties)
-        ).connectorTypeInstance()!!
+        )
     }
 
     open fun createConnectorInstance(
@@ -82,6 +82,12 @@ open class ConnectorService(
                 !connectorTypeInstanceRepository.existsConnectorTypeInstanceByName(createConnectorInstanceRequest.name)
             ) { "connectorTypeInstance already exists under same name" }
             val connectorType = connectorTypeRepository.findById(ConnectorTypeId.existingId(createConnectorInstanceRequest.typeId))
+            if (connectorType.isPresent && !connectorType.get().allowMultipleConnectorInstances) {
+                // Check if the same connectorType has been used before
+                require(
+                    !connectorTypeInstanceRepository.existsConnectorTypeInstanceByType(connectorType.get())
+                ) { "Only one ${connectorType.get().name} connector is allowed" }
+            }
             val connectorInstance = connectorTypeInstanceRepository.save(
                 ConnectorInstance(
                     ConnectorInstanceId.newId(UUID.randomUUID()),

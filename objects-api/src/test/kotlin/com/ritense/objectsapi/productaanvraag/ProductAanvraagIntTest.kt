@@ -31,26 +31,21 @@ import com.ritense.objectsapi.repository.AbonnementLinkRepository
 import com.ritense.objectsapi.service.ObjectTypeConfig
 import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.objectsapi.service.ServerAuthSpecification
+import com.ritense.openzaak.domain.configuration.Rsin
+import com.ritense.openzaak.domain.connector.OpenZaakConfig
+import com.ritense.openzaak.domain.connector.OpenZaakProperties
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
-import com.ritense.openzaak.domain.request.CreateOpenZaakConfigRequest
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
-import com.ritense.openzaak.service.OpenZaakConfigService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
-import java.net.URI
-import java.util.UUID
-import javax.transaction.Transactional
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.fail
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.junit.Assert.assertTrue
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -64,6 +59,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import java.net.URI
+import java.util.UUID
+import javax.transaction.Transactional
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.fail
 
 @Transactional
 class ProductAanvraagIntTest : BaseIntegrationTest() {
@@ -71,6 +72,10 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     @Autowired
     @Qualifier("productAanvraagConnector")
     lateinit var productAanvraagConnector: Connector
+
+    @Autowired
+    @Qualifier("openZaakConnector")
+    lateinit var openZaakConnector: Connector
 
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext
@@ -83,9 +88,6 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var connectorService: ConnectorService
-
-    @Autowired
-    lateinit var openZaakConfigService: OpenZaakConfigService
 
     @Autowired
     lateinit var zaakTypeLinkService: ZaakTypeLinkService
@@ -101,7 +103,8 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     lateinit var baseUrl: String
 
     lateinit var connectorType: ConnectorType
-    lateinit var connectorInstance: ConnectorInstance
+    lateinit var productAanvraagConnectorInstance: ConnectorInstance
+    lateinit var openZaakConnectorInstance: ConnectorInstance
     lateinit var abonnementLink: AbonnementLink
     lateinit var executedRequests: MutableList<RecordedRequest>
 
@@ -114,9 +117,9 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         setupMockServer()
         server.start()
         baseUrl = server.url("/").toString()
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
 
-        connectorDeploymentService.deployAll(listOf(productAanvraagConnector))
+        connectorDeploymentService.deployAll(listOf(productAanvraagConnector, openZaakConnector))
         connectorType = connectorService.getConnectorTypes()
             .filter { it.name.equals("ProductAanvragen") }
             .first()
@@ -193,7 +196,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
 
         val putBody = """
             {
-                "id": "${connectorInstance.id.id}",
+                "id": "${productAanvraagConnectorInstance.id.id}",
                 "typeId": "${connectorType.id.id}",
                 "name": "Productaanvragen",
                 "connectorProperties":{
@@ -257,7 +260,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         prepareConnectorInstance()
 
         mockMvc.perform(
-            MockMvcRequestBuilders.delete("/api/connector/instance/${connectorInstance.id.id}")
+            MockMvcRequestBuilders.delete("/api/connector/instance/${productAanvraagConnectorInstance.id.id}")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
@@ -679,7 +682,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
 
     fun prepareConnectorInstance(processDefinitionKey: String = "test") {
         val connectorInstanceId = ConnectorInstanceId.newId(UUID.fromString("26141e07-40e4-4a7e-9c78-f7a40db3b3e9"))
-        connectorInstance = ConnectorInstance(
+        productAanvraagConnectorInstance = ConnectorInstance(
             connectorInstanceId,
             connectorType,
             "test-connector",
@@ -716,7 +719,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
                 "${baseUrl}catalogi/api/v1/roltypen/1c359a1b-c38d-47b8-bed5-994db88ead61"
             )
         )
-        connectorTypeInstanceRepository.save(connectorInstance)
+        connectorTypeInstanceRepository.save(productAanvraagConnectorInstance)
 
         abonnementLink = AbonnementLink(
             connectorInstanceId,
@@ -728,12 +731,25 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     }
 
     fun prepareOpenZaakConfig() {
-        openZaakConfigService.createOpenZaakConfig(CreateOpenZaakConfigRequest(
-            baseUrl,
-            "test-client",
-            "711de9a3-1af6-4196-b4dd-e8a2e2ade17c",
-            "051845623"
-        ))
+        val connectorInstanceId = ConnectorInstanceId.newId(UUID.fromString("26141e07-40e4-4a7e-9c78-f7a40db3b3f0"))
+        val openZaakConnectorType = connectorService.getConnectorTypes()
+            .filter { it.name.equals("OpenZaak") }
+            .first()
+
+        openZaakConnectorInstance = ConnectorInstance(
+            connectorInstanceId,
+            openZaakConnectorType,
+            "OpenZaakConnector",
+            OpenZaakProperties(
+                OpenZaakConfig(
+                    baseUrl,
+                    "test-client",
+                    "711de9a3-1af6-4196-b4dd-e8a2e2ade17c",
+                    Rsin("051845623")
+                )
+            )
+        )
+        connectorTypeInstanceRepository.save(openZaakConnectorInstance)
 
         zaakTypeLinkId = zaakTypeLinkService.createZaakTypeLink(CreateZaakTypeLinkRequest(
             "testschema",

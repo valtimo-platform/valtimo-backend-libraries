@@ -93,7 +93,7 @@ class OpenNotificatieService(
         val newDocumentRequest = NewDocumentRequest(typeMapping.caseDefinitionKey, productAanvraag.data)
             .withResources(getResources(informatieObjecten))
 
-        val documentResult = documentService.createDocument(newDocumentRequest);
+        val documentResult = documentService.createDocument(newDocumentRequest)
 
         if (documentResult.resultingDocument().isEmpty) {
             var logMessage = "Errors occurred during creation of dossier for productaanvraag:"
@@ -110,7 +110,7 @@ class OpenNotificatieService(
         documentId: Document.Id,
         typeMapping: ProductAanvraagTypeMapping
     ) {
-        val startProcessRequest = StartProcessForDocumentRequest(documentId, typeMapping.processDefinitionKey, null);
+        val startProcessRequest = StartProcessForDocumentRequest(documentId, typeMapping.processDefinitionKey, null)
 
         val processStartResult = processDocumentService.startProcessForDocument(startProcessRequest)
 
