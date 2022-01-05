@@ -21,6 +21,6 @@ import java.net.URI
 
 interface ZaakRolService {
 
-    fun addNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, bsn: String)
+    fun addNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, bsn: String, betrokkene: URI?)
 
 }

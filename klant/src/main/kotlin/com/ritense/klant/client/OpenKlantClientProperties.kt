@@ -24,5 +24,6 @@ import org.springframework.boot.context.properties.ConstructorBinding
 data class OpenKlantClientProperties(
     val url: String,
     val clientId: String,
-    val secret: String
+    val secret: String,
+    val rsin: String
 )

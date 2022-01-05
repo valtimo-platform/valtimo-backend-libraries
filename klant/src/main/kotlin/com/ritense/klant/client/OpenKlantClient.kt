@@ -17,31 +17,42 @@
 package com.ritense.klant.client
 
 import com.ritense.klant.domain.Klant
+import com.ritense.klant.domain.KlantCreationRequest
 
 class OpenKlantClient(
     private val openKlantClientProperties: OpenKlantClientProperties,
     private val openKlantTokenGenerator: OpenKlantTokenGenerator
 ) {
-    fun getKlant(bsn: String): Klant {
-        val token = openKlantTokenGenerator.generateTokenForBsn(
-            openKlantClientProperties.secret,
-            openKlantClientProperties.clientId,
-            bsn
-        )
-        val klantPage = RequestBuilder
-            .builder()
-            .get()
-            .baseUrl(openKlantClientProperties.url)
+    fun getKlant(bsn: String): Klant? {
+        val klantPage = requestBuilder()
             .path("/klanten/api/v1/klanten")
             .queryParam("subjectNatuurlijkPersoon__inpBsn", bsn)
             .queryParam("page", 1)
-            .token(token)
             .executePaged(Klant::class.java)
         if (klantPage.results.size > 1) {
             throw IllegalStateException("Too many klanten found for bsn $bsn")
         }
 
         return klantPage.results.firstOrNull()
-            ?: throw IllegalStateException("No klant found for bsn $bsn!")
+    }
+
+    fun postKlant(klant: KlantCreationRequest): Klant {
+        return requestBuilder()
+            .post()
+            .path("/klanten/api/v1/klanten")
+            .body(klant)
+            .execute(Klant::class.java)
+    }
+
+    fun requestBuilder() : RequestBuilder.Builder {
+        val token = openKlantTokenGenerator.generateTokenForBsn(
+            openKlantClientProperties.secret,
+            openKlantClientProperties.clientId
+        )
+        return RequestBuilder
+            .builder()
+            .get()
+            .baseUrl(openKlantClientProperties.url)
+            .token(token)
     }
 }

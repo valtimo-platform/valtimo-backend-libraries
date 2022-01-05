@@ -54,6 +54,7 @@ import org.junit.Assert.assertTrue
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpMethod
@@ -298,6 +299,8 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
 
         verifyRequestSent(HttpMethod.GET, "/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777")
         verifyRequestSent(HttpMethod.DELETE, "/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777")
+
+        verify(burgerService).ensureBurgerExists("051845623")
     }
 
     @Test

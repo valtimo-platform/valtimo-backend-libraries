@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,19 @@
 
 package com.ritense.klant.service
 
-import com.ritense.klant.domain.Klant
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+import org.springframework.boot.test.context.TestConfiguration
 
-interface BurgerService {
-    fun getBurger(bsn: String): Klant?
+@SpringBootApplication(exclude = [DataSourceAutoConfiguration::class])
+class KlantTestConfiguration {
 
-    fun createBurger(bsn: String): Klant
+    fun main(args: Array<String>) {
+        SpringApplication.run(KlantTestConfiguration::class.java, *args)
+    }
 
-    fun ensureBurgerExists(bsn: String): Klant
+    @TestConfiguration
+    class TestConfig { //Beans extra
+    }
 }

@@ -172,6 +172,7 @@ valtimo:
                     - "*"
             paths:
                 - "/**"
+    openklant:
 
 spring-actuator:
     username: admin

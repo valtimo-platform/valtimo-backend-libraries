@@ -31,8 +31,11 @@ class KlantAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(BurgerService::class)
-    fun burgerService(openKlantClient: OpenKlantClient): BurgerService {
-        return BurgerService(openKlantClient)
+    fun burgerService(
+        openKlantClientProperties: OpenKlantClientProperties,
+        openKlantClient: OpenKlantClient
+    ): BurgerService {
+        return BurgerService(openKlantClientProperties, openKlantClient)
     }
 
     @Bean

@@ -14,37 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi
+package com.ritense.klant.service
 
-import com.ritense.klant.service.BurgerService
-import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.junit.extension.LiquibaseRunnerExtension
-import com.ritense.valtimo.contract.mail.MailSender
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
-@ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
+@ExtendWith(value = [SpringExtension::class])
 @Tag("integration")
 abstract class BaseIntegrationTest {
 
-    @MockBean
-    lateinit var userManagementService: UserManagementService
-
-    @MockBean
-    lateinit var burgerService: BurgerService
-
-    @MockBean
-    lateinit var mailSender: MailSender
-
-    companion object {
-        @BeforeAll
-        @JvmStatic
-        internal fun beforeAll() {
-        }
-    }
 }
