@@ -21,7 +21,6 @@ import com.ritense.klant.client.OpenKlantClient
 import com.ritense.klant.domain.KlantCreationRequest
 import com.ritense.klant.domain.SubjectIdentificatie
 import com.ritense.klant.service.BaseIntegrationTest
-import javax.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.fail
@@ -32,10 +31,10 @@ import okhttp3.mockwebserver.RecordedRequest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
 
-@Transactional
 class OpenKlantClientIT : BaseIntegrationTest() {
 
     @Autowired
@@ -52,6 +51,11 @@ class OpenKlantClientIT : BaseIntegrationTest() {
         setupMockServer()
         server.start()
         baseUrl = server.url("/").toString()
+
+        `when`(openKlantClientProperties.url).thenReturn(baseUrl)
+        `when`(openKlantClientProperties.clientId).thenReturn("test")
+        `when`(openKlantClientProperties.secret).thenReturn("TpT22_J>qy2cJj}=^a9K4EMZ/9K-ZAacP")
+        `when`(openKlantClientProperties.rsin).thenReturn("051845623")
     }
 
     @AfterEach
