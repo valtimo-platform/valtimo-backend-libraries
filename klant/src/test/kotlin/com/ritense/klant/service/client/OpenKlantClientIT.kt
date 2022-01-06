@@ -19,6 +19,7 @@ package com.ritense.klant.service.client
 import com.jayway.jsonpath.JsonPath
 import com.ritense.klant.client.OpenKlantClient
 import com.ritense.klant.domain.KlantCreationRequest
+import com.ritense.klant.domain.KlantSearchFilter
 import com.ritense.klant.domain.SubjectIdentificatie
 import com.ritense.klant.service.BaseIntegrationTest
 import kotlin.test.assertEquals
@@ -28,6 +29,11 @@ import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.hasItem
+import org.hamcrest.Matchers.hasProperty
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -100,6 +106,38 @@ class OpenKlantClientIT : BaseIntegrationTest() {
         assertEquals("0123456789", klant?.telefoonnummer)
     }
 
+    @Test
+    fun `searchKlant should search klanten by properties in filter`() {
+        openKlantClient.searchKlanten(KlantSearchFilter(
+            bsn = "123",
+            klantnummer = "456",
+            page = 1
+        ))
+
+        verifyRequestSent(HttpMethod.GET, "/klanten/api/v1/klanten")
+        val request = findRequest(HttpMethod.GET, "/klanten/api/v1/klanten")
+        val params = extractQueryParams(request!!)
+
+        assertThat(params, hasItem<Pair<String, String>>(
+            allOf(
+                hasProperty("first", `is`("subjectNatuurlijkPersoon__inpBsn")),
+                hasProperty("second", `is`("123"))
+            )
+        ))
+        assertThat(params, hasItem<Pair<String, String>>(
+            allOf(
+                hasProperty("first", `is`("klantnummer")),
+                hasProperty("second", `is`("456"))
+            )
+        ))
+        assertThat(params, hasItem<Pair<String, String>>(
+            allOf(
+                hasProperty("first", `is`("page")),
+                hasProperty("second", `is`("1"))
+            )
+        ))
+    }
+
 
     fun setupMockServer() {
         val dispatcher: Dispatcher = object : Dispatcher() {
@@ -137,6 +175,14 @@ class OpenKlantClientIT : BaseIntegrationTest() {
         if (request == null){
             fail("Request with method $method and path $path was not sent")
         }
+    }
+
+    fun extractQueryParams(request: RecordedRequest): List<Pair<String, String>> {
+        val queryParams = request.path!!.substringAfter('?').split('&')
+        val params: List<Pair<String, String>> = queryParams.map {
+            Pair(it.substringBefore('='), it.substringAfter('='))
+        }
+        return params
     }
 
     fun handleKlantSearchRequest(): MockResponse {

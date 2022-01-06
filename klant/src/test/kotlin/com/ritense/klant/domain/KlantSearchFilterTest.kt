@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.ritense.klant.domain
 
-data class KlantCreationRequest(
-    val bronorganisatie: String,
-    val klantnummer: String,
-    val websiteUrl: String,
-    val subjectType: String,
-    val subjectIdentificatie: SubjectIdentificatie
-)
+import org.junit.jupiter.api.Assertions.*
+
+import org.junit.jupiter.api.Test
+
+class KlantSearchFilterTest {
+
+    @Test
+    fun `toMap should only include properties that have been set`() {
+        val filter = KlantSearchFilter(bsn = "123")
+
+        val map = filter.toMap()
+
+        assertEquals("123", map["subjectNatuurlijkPersoon__inpBsn"])
+        assertFalse(map.containsKey("klantnummer"))
+    }
+}

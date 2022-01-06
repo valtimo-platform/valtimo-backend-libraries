@@ -20,6 +20,7 @@ import com.ritense.klant.client.OpenKlantClient
 import com.ritense.klant.client.OpenKlantClientProperties
 import com.ritense.klant.domain.Klant
 import com.ritense.klant.domain.KlantCreationRequest
+import com.ritense.klant.domain.KlantSearchFilter
 import com.ritense.klant.domain.SubjectIdentificatie
 import com.ritense.klant.service.BurgerService
 import kotlin.random.Random
@@ -34,7 +35,7 @@ class BurgerService(
         val klantRequest = KlantCreationRequest(
             openKlantClientProperties.rsin,
             generateKlantNummer(),
-            "http://www.invalid-url.com/", // TODO: retrieve websiteUrl
+            "http://example.org",
             "natuurlijk_persoon",
             SubjectIdentificatie(
                 bsn
@@ -53,7 +54,21 @@ class BurgerService(
     }
 
     private fun generateKlantNummer(): String {
-        // generate 8 digit random number
-        return Random.nextInt(10000000, 99999999).toString()
+        var klantnummerValid = false
+        var klantnummer = ""
+        while (!klantnummerValid) {
+            klantnummer = Random.nextInt(10000000, 99999999).toString()
+            klantnummerValid = validateKlantnummerNotTaken(klantnummer)
+        }
+        return klantnummer
     }
+
+    private fun validateKlantnummerNotTaken(klantnummer: String): Boolean {
+        val klantPage = openKlantClient.searchKlanten(KlantSearchFilter(
+            klantnummer = klantnummer
+        ))
+        return klantPage.results.size == 0
+    }
+
+
 }
