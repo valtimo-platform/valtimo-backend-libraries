@@ -17,7 +17,7 @@
 package com.ritense.openzaak.service.result
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.ritense.openzaak.domain.configuration.OpenZaakConfig
+import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import com.ritense.valtimo.contract.result.OperationError
 
 interface OpenZaakConfigResult {

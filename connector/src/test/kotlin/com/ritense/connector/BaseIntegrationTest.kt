@@ -18,7 +18,7 @@ package com.ritense.connector
 
 import com.ritense.connector.autodeployment.ConnectorApplicationReadyEventListener
 import com.ritense.connector.domain.Connector
-import com.ritense.valtimo.contract.junit.extension.LiquibaseRunnerExtension
+import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest

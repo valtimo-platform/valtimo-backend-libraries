@@ -22,24 +22,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class StringProcessVariableQueryParameterV2Test {
+class StringProcessVariableQueryParameterV2Test {
     private static final String NAME = "some-name";
     private static final String VALUE = "some-value";
 
     @Test
-    public void stringProcessVariableQueryParameter() {
+    void stringProcessVariableQueryParameter() {
         StringProcessVariableQueryParameterV2 stringProcessVariableQueryParameter = stringProcessVariableQueryParameterV2();
         assertEquals(NAME, stringProcessVariableQueryParameter.name);
         assertEquals(VALUE, stringProcessVariableQueryParameter.value);
     }
 
     @Test
-    public void stringProcessVariableQueryParameterNull() {
+    void stringProcessVariableQueryParameterNull() {
         assertThrows(NullPointerException.class, () -> new StringProcessVariableQueryParameterV2(NAME, null));
     }
 
     @Test
-    public void stringType() {
+    void stringType() {
         StringProcessVariableQueryParameterV2 stringProcessVariableQueryParameter = stringProcessVariableQueryParameterV2();
         assertTrue(stringProcessVariableQueryParameter.isVariableString());
     }

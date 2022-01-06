@@ -27,38 +27,38 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CustomFormTypesProcessEnginePluginTest {
+class CustomFormTypesProcessEnginePluginTest {
 
     CustomFormTypesProcessEnginePlugin customFormTypesProcessEnginePlugin = new CustomFormTypesProcessEnginePlugin();
     ProcessEngineConfigurationImpl processEngineConfiguration = mock(ProcessEngineConfigurationImpl.class);
     List<AbstractFormFieldType> formTypes;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         formTypes = new ArrayList();
         when(processEngineConfiguration.getCustomFormTypes()).thenReturn(formTypes);
     }
 
     @Test
-    public void shouldAddFileUploadFormFieldTypeOnPreInit() {
+    void shouldAddFileUploadFormFieldTypeOnPreInit() {
         customFormTypesProcessEnginePlugin.preInit(processEngineConfiguration);
         assertThat(formTypes, hasItem(isA(FileUploadFormFieldType.class)));
     }
 
     @Test
-    public void shouldAddTextAreaFormFieldTypeOnPreInit() {
+    void shouldAddTextAreaFormFieldTypeOnPreInit() {
         customFormTypesProcessEnginePlugin.preInit(processEngineConfiguration);
         assertThat(formTypes, hasItem(isA(TextAreaFormFieldType.class)));
     }
 
     @Test
-    public void shouldAddChoiceFieldFormFieldTypeOnPreInit() {
+    void shouldAddChoiceFieldFormFieldTypeOnPreInit() {
         customFormTypesProcessEnginePlugin.preInit(processEngineConfiguration);
         assertThat(formTypes, hasItem(isA(ChoiceFieldFormFieldType.class)));
     }

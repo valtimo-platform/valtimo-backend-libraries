@@ -23,12 +23,12 @@ import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CamundaOrderByHelperTest {
+class CamundaOrderByHelperTest {
 
     private Sort validSortAscendingForHistoricProcessInstance;
     private Sort validSortDescendingForHistoricProcessInstanceWithTwoProperties;
@@ -36,7 +36,7 @@ public class CamundaOrderByHelperTest {
     private Sort invalidSortDescendingForHistoricProcessInstance;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         validSortAscendingForHistoricProcessInstance = Sort.by(Sort.Direction.ASC, "START_TIME_");
         validSortDescendingForHistoricProcessInstanceWithTwoProperties = Sort.by(Sort.Direction.DESC, "START_TIME_", "END_TIME_");
         invalidSortAscendingForHistoricProcessInstance = Sort.by(Sort.Direction.ASC, "contains_invalid_characters <>,.");
@@ -44,7 +44,7 @@ public class CamundaOrderByHelperTest {
     }
 
     @Test
-    public void testSortToOrdersHappyPathWithOneProperty() {
+    void testSortToOrdersHappyPathWithOneProperty() {
 
         List<QueryOrderingProperty> queryOrderingProperties = CamundaOrderByHelper
             .sortToOrders("HistoricProcessInstance", validSortAscendingForHistoricProcessInstance);
@@ -55,7 +55,7 @@ public class CamundaOrderByHelperTest {
     }
 
     @Test
-    public void testSortToOrdersHappyPathWithMultipleProperties() {
+    void testSortToOrdersHappyPathWithMultipleProperties() {
 
         List<QueryOrderingProperty> queryOrderingProperties = CamundaOrderByHelper
             .sortToOrders("HistoricProcessInstance", validSortDescendingForHistoricProcessInstanceWithTwoProperties);
@@ -68,7 +68,7 @@ public class CamundaOrderByHelperTest {
     }
 
     @Test
-    public void testSortToOrdersWithInvalidCamundaEntityName() {
+    void testSortToOrdersWithInvalidCamundaEntityName() {
         assertThrows(IllegalArgumentException.class, () -> {
             CamundaOrderByHelper
                 .sortToOrders("not a valid value", validSortAscendingForHistoricProcessInstance);
@@ -76,21 +76,21 @@ public class CamundaOrderByHelperTest {
     }
 
     @Test
-    public void testSortToOrdersWithSortPropertyContainingDisallowedCharacters() {
+    void testSortToOrdersWithSortPropertyContainingDisallowedCharacters() {
         assertThrows(IllegalArgumentException.class, () -> {
             CamundaOrderByHelper.sortToOrders("HistoricProcessInstance", invalidSortAscendingForHistoricProcessInstance);
         });
     }
 
     @Test
-    public void testSortToOrdersWithUnrecognizedSortProperty() {
+    void testSortToOrdersWithUnrecognizedSortProperty() {
         assertThrows(IllegalArgumentException.class, () -> {
             CamundaOrderByHelper.sortToOrders("HistoricProcessInstance", invalidSortDescendingForHistoricProcessInstance);
         });
     }
 
     @Test
-    public void testOrderByHappyPathWithContainedProperty() {
+    void testOrderByHappyPathWithContainedProperty() {
         List<QueryOrderingProperty> queryOrderingProperties = CamundaOrderByHelper
             .sortToOrders("HistoricProcessInstance", validSortAscendingForHistoricProcessInstance);
         String orderBy = CamundaOrderByHelper.orderBy(queryOrderingProperties.get(0), "tableAlias");
@@ -99,7 +99,7 @@ public class CamundaOrderByHelperTest {
     }
 
     @Test
-    public void testOrderByHappyPathWithNoncontainedProperty() {
+    void testOrderByHappyPathWithNoncontainedProperty() {
 
         List<QueryOrderingProperty> queryOrderingProperties = CamundaOrderByHelper
             .sortToOrders("HistoricProcessInstance", validSortAscendingForHistoricProcessInstance);

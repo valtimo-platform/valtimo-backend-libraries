@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class NotificationServiceImplTest {
+class NotificationServiceImplTest {
 
     private EmailNotificationSettingsService emailNotificationService;
     private MailSender mailSender;
@@ -49,7 +49,7 @@ public class NotificationServiceImplTest {
     private NotificationService notificationService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         emailNotificationService = mock(EmailNotificationSettingsService.class);
         mailSender = mock(MailSender.class);
         valtimoProperties = mock(ValtimoProperties.class, RETURNS_DEEP_STUBS);
@@ -66,7 +66,7 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void shouldSendNotification() {
+    void shouldSendNotification() {
         //when
         DelegateTaskFake task = mockTask("id");
 

@@ -19,10 +19,7 @@ package com.ritense.openzaak.security.config
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
-import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
-import org.springframework.http.HttpMethod.POST
-import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
 class OpenZaakConfigHttpSecurityConfigurer : HttpSecurityConfigurer {
@@ -31,9 +28,6 @@ class OpenZaakConfigHttpSecurityConfigurer : HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/openzaak/config").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/openzaak/config").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/openzaak/config").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/openzaak/config").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

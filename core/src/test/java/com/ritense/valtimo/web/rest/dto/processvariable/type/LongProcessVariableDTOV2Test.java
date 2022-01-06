@@ -21,24 +21,24 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class LongProcessVariableDTOV2Test {
+class LongProcessVariableDTOV2Test {
     private static final String NAME = "some-name";
     private static final Long VALUE = 1L;
 
     @Test
-    public void longProcessVariableDTOV2() {
+    void longProcessVariableDTOV2() {
         LongProcessVariableDTOV2 longProcessVariableDTOV2 = new LongProcessVariableDTOV2(NAME, VALUE);
         assertEquals(NAME, longProcessVariableDTOV2.getName());
         assertEquals(VALUE, longProcessVariableDTOV2.getValue());
     }
 
     @Test
-    public void longProcessVariableDTOV2ValueNull() {
+    void longProcessVariableDTOV2ValueNull() {
         assertThrows(NullPointerException.class, () -> new LongProcessVariableDTOV2(NAME, null));
     }
 
     @Test
-    public void longProcessVariableDTOV2NameNull() {
+    void longProcessVariableDTOV2NameNull() {
         assertThrows(NullPointerException.class, () -> new LongProcessVariableDTOV2(null, VALUE));
     }
 

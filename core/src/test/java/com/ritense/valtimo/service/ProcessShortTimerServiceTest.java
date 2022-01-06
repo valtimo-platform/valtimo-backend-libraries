@@ -37,19 +37,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ProcessShortTimerServiceTest {
+class ProcessShortTimerServiceTest {
 
     private ProcessShortTimerService processShortTimerService;
     private RepositoryService repositoryService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         repositoryService = mock(RepositoryService.class);
         processShortTimerService = new ProcessShortTimerService(repositoryService);
     }
 
     @Test
-    public void processModelChangeTimersToOneMinuteTestWithCorrectId() throws ProcessNotFoundException, DocumentParserException {
+    void processModelChangeTimersToOneMinuteTestWithCorrectId() throws ProcessNotFoundException, DocumentParserException {
 
         //Given
         FileInputStream fileInputStream = getFileInputStream("camundaProcessModelTest.xml");
@@ -68,17 +68,17 @@ public class ProcessShortTimerServiceTest {
     }
 
     @Test
-    public void processModelChangeTimersToOneMinuteInvalidId() {
+    void processModelChangeTimersToOneMinuteInvalidId() {
         assertThrows(ProcessNotFoundException.class, () -> processShortTimerService.processModelChangeTimersToOneMinute("0"));
     }
 
     @Test
-    public void processModelChangeTimersToOneMinuteNullId() {
+    void processModelChangeTimersToOneMinuteNullId() {
         assertThrows(ProcessNotFoundException.class, () -> processShortTimerService.processModelChangeTimersToOneMinute(null));
     }
 
     @Test
-    public void whenParsingInvalidXmlShouldThrowException() throws ProcessNotFoundException, DocumentParserException {
+    void whenParsingInvalidXmlShouldThrowException() throws ProcessNotFoundException, DocumentParserException {
 
         //Given
         FileInputStream fileInputStream = getFileInputStream("invalid.xml");

@@ -16,7 +16,7 @@
 
 package com.ritense.mail
 
-import com.ritense.valtimo.contract.junit.extension.LiquibaseRunnerExtension
+import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest

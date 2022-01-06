@@ -21,24 +21,24 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class BooleanProcessVariableDTOV2Test {
+class BooleanProcessVariableDTOV2Test {
     private static final String NAME = "some-name";
     private static final Boolean VALUE = true;
 
     @Test
-    public void booleanProcessVariableDTOV2() {
+    void booleanProcessVariableDTOV2() {
         BooleanProcessVariableDTOV2 booleanProcessVariableDTOV2 = new BooleanProcessVariableDTOV2(NAME, VALUE);
         assertEquals(NAME, booleanProcessVariableDTOV2.getName());
         assertEquals(VALUE, booleanProcessVariableDTOV2.getValue());
     }
 
     @Test
-    public void booleanProcessVariableDTOV2ValueNull() {
+    void booleanProcessVariableDTOV2ValueNull() {
         assertThrows(NullPointerException.class, () -> new BooleanProcessVariableDTOV2(NAME, null));
     }
 
     @Test
-    public void booleanProcessVariableDTOV2NameNull() {
+    void booleanProcessVariableDTOV2NameNull() {
         assertThrows(NullPointerException.class, () -> new BooleanProcessVariableDTOV2(null, VALUE));
     }
 }

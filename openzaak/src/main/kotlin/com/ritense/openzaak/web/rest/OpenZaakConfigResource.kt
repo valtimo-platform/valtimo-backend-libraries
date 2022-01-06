@@ -16,21 +16,12 @@
 
 package com.ritense.openzaak.web.rest
 
-import com.ritense.openzaak.domain.configuration.OpenZaakConfig
-import com.ritense.openzaak.domain.request.CreateOpenZaakConfigRequest
-import com.ritense.openzaak.domain.request.ModifyOpenZaakConfigRequest
-import com.ritense.openzaak.service.result.CreateOpenZaakConfigResult
-import com.ritense.openzaak.service.result.ModifyOpenZaakConfigResult
+import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import javax.validation.Valid
 
 @RestController
 @RequestMapping(value = ["/api/openzaak/config"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -38,13 +29,4 @@ interface OpenZaakConfigResource {
 
     @GetMapping
     fun getConfig(): ResponseEntity<OpenZaakConfig>
-
-    @PostMapping
-    fun createConfig(@Valid @RequestBody request: CreateOpenZaakConfigRequest): ResponseEntity<CreateOpenZaakConfigResult>
-
-    @PutMapping
-    fun modifyConfig(@Valid @RequestBody request: ModifyOpenZaakConfigRequest): ResponseEntity<ModifyOpenZaakConfigResult>
-
-    @DeleteMapping
-    fun deleteConfig(): ResponseEntity<Void>
 }

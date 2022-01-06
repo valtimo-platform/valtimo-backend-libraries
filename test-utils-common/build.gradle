@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.request
+dependencies {
+    implementation project(':contract')
 
-data class CreateOpenZaakConfigRequest(
-    val url: String,
-    val clientId: String,
-    val secret: String,
-    val rsin: String
-)
+    implementation('org.liquibase:liquibase-core') {
+        exclude(module: 'jetty-servlet')
+    }
+
+    implementation group: 'org.springframework', name: 'spring-test'
+    implementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
+}
+
+apply from: "gradle/publishing.gradle"

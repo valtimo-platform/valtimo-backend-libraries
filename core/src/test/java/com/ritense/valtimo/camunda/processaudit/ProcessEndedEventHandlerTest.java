@@ -32,20 +32,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-public class ProcessEndedEventHandlerTest {
+class ProcessEndedEventHandlerTest {
 
     private ApplicationEventPublisher applicationEventPublisher;
 
     private ProcessEndedEventHandler processEndedEventHandler;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
         processEndedEventHandler = new ProcessEndedEventHandler(applicationEventPublisher);
     }
 
     @Test
-    public void shouldPublishEvent() {
+    void shouldPublishEvent() {
         String origin = RequestHelper.getOrigin();
         String user = AuditHelper.getActor();
         String processDefinitionId = "prodDefId";
@@ -74,7 +74,7 @@ public class ProcessEndedEventHandlerTest {
 
 
     @Test
-    public void shouldNotPublishEventIncorrectEventClass() {
+    void shouldNotPublishEventIncorrectEventClass() {
         HistoryEvent historyEvent = new HistoricTaskInstanceEventEntity();
 
         processEndedEventHandler.handleEvent(historyEvent);
@@ -83,7 +83,7 @@ public class ProcessEndedEventHandlerTest {
     }
 
     @Test
-    public void shouldNotPublishEventIncorrectEventType() {
+    void shouldNotPublishEventIncorrectEventType() {
         HistoryEvent historyEvent = new HistoricProcessInstanceEventEntity();
         historyEvent.setEventType("start");
 
