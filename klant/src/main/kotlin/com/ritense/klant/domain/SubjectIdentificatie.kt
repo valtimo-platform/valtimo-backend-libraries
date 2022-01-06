@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.klant.service
+package com.ritense.klant.domain
 
-import com.ritense.klant.domain.Klant
-
-interface BurgerService {
-    fun getBurger(bsn: String): Klant?
-
-    fun createBurger(bsn: String): Klant
-
-    fun ensureBurgerExists(bsn: String): Klant
-}
+data class SubjectIdentificatie(
+    val inpBsn: String
+)

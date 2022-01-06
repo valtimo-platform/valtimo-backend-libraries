@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.klant.service
+package com.ritense.klant.domain
 
-import com.ritense.klant.domain.Klant
-
-interface BurgerService {
-    fun getBurger(bsn: String): Klant?
-
-    fun createBurger(bsn: String): Klant
-
-    fun ensureBurgerExists(bsn: String): Klant
+data class KlantSearchFilter(
+    val bsn: String? = null,
+    val klantnummer: String? = null,
+    val page: Int? = null
+) {
+    fun toMap(): MutableMap<String, Any> {
+        val map = mutableMapOf<String, Any>()
+        bsn?.let { map.put("subjectNatuurlijkPersoon__inpBsn", it) }
+        klantnummer?.let { map.put("klantnummer", it) }
+        page?.let { map.put("page", it) }
+        return map
+    }
 }

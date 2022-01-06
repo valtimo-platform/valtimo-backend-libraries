@@ -32,6 +32,7 @@ dependencies {
     implementation project(':process-document')
     implementation project(':resource')
     implementation project(':openzaak')
+    implementation project(':klant')
     implementation project(':resource:openzaak-resource')
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"

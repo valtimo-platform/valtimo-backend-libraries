@@ -25,7 +25,7 @@ import java.util.Date
 
 class OpenKlantTokenGenerator {
 
-    fun generateTokenForBsn(secretKey: String, clientId: String, bsn: String): String {
+    fun generateTokenForBsn(secretKey: String, clientId: String): String {
         if (secretKey.length < 32) {
             throw IllegalStateException("SecretKey needs to be at least 32 in length")
         }
@@ -37,15 +37,15 @@ class OpenKlantTokenGenerator {
             .setIssuedAt(Date())
             .claim("client_id", clientId)
 
-        appendUserInfoForBsn(jwtBuilder, bsn)
+        appendUserInfoForBsn(jwtBuilder)
         return jwtBuilder
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact()
     }
 
-    private fun appendUserInfoForBsn(jwtBuilder: JwtBuilder, bsn: String): JwtBuilder {
+    private fun appendUserInfoForBsn(jwtBuilder: JwtBuilder): JwtBuilder {
         return jwtBuilder
-            .claim("user_id", bsn)
-            .claim("user_representation", "BSN:$bsn")
+            .claim("user_id", "valtimo")
+            .claim("user_representation", "Valtimo")
     }
 }

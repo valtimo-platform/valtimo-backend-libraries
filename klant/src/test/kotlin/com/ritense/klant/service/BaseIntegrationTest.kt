@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,19 @@
 
 package com.ritense.klant.service
 
-import com.ritense.klant.domain.Klant
+import com.ritense.klant.client.OpenKlantClientProperties
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
-interface BurgerService {
-    fun getBurger(bsn: String): Klant?
+@SpringBootTest
+@ExtendWith(value = [SpringExtension::class])
+@Tag("integration")
+abstract class BaseIntegrationTest {
 
-    fun createBurger(bsn: String): Klant
+    @MockBean
+    lateinit var openKlantClientProperties: OpenKlantClientProperties
 
-    fun ensureBurgerExists(bsn: String): Klant
 }

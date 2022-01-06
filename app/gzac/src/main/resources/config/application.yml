@@ -172,6 +172,11 @@ valtimo:
                     - "*"
             paths:
                 - "/**"
+    openklant:
+        url: "http://localhost:8006"
+        clientId: "valtimo_client"
+        secret: "e09b8bc5-5831-4618-ab28-41411304309d"
+        rsin: "051845623"
 
 spring-actuator:
     username: admin

@@ -24,6 +24,7 @@ import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
 import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorService
+import com.ritense.klant.domain.Klant
 import com.ritense.objectsapi.BaseIntegrationTest
 import com.ritense.objectsapi.domain.AbonnementLink
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
@@ -49,6 +50,8 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpMethod
@@ -276,6 +279,12 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         prepareOpenZaakConfig()
         prepareDocumentDefinitionSettings()
 
+        `when`(burgerService.ensureBurgerExists("051845623")).thenReturn(Klant(
+            "http://www.example.com/some-id",
+            "0123456789",
+            "test@example.com"
+        ))
+
         val postBody = """
             {
                 "kanaal": "objecten",
@@ -301,6 +310,8 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
 
         verifyRequestSent(HttpMethod.GET, "/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777")
         verifyRequestSent(HttpMethod.DELETE, "/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777")
+
+        verify(burgerService).ensureBurgerExists("051845623")
     }
 
     @Test
@@ -308,6 +319,12 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         prepareConnectorInstance("test-service-task")
         prepareOpenZaakConfig()
         prepareServiceTaskDocumentDefinitionSettings()
+
+        `when`(burgerService.ensureBurgerExists("051845623")).thenReturn(Klant(
+            "http://www.example.com/some-id",
+            "0123456789",
+            "test@example.com"
+        ))
 
         val postBody = """
             {

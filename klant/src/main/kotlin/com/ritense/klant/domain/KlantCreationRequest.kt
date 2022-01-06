@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ritense.klant.domain
 
-package com.ritense.klant.service
-
-import com.ritense.klant.domain.Klant
-
-interface BurgerService {
-    fun getBurger(bsn: String): Klant?
-
-    fun createBurger(bsn: String): Klant
-
-    fun ensureBurgerExists(bsn: String): Klant
-}
+data class KlantCreationRequest(
+    val bronorganisatie: String,
+    val klantnummer: String,
+    val websiteUrl: String,
+    val subjectType: String,
+    val subjectIdentificatie: SubjectIdentificatie
+)
