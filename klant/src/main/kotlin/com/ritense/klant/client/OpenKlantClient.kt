@@ -20,6 +20,7 @@ import com.ritense.klant.domain.Klant
 import com.ritense.klant.domain.KlantCreationRequest
 import com.ritense.klant.domain.KlantSearchFilter
 import com.ritense.klant.domain.ResultPage
+import java.util.UUID
 
 class OpenKlantClient(
     private val openKlantClientProperties: OpenKlantClientProperties,
@@ -36,6 +37,12 @@ class OpenKlantClient(
         }
 
         return klantPage.results.firstOrNull()
+    }
+
+    fun getKlant(id: UUID): Klant {
+        return requestBuilder()
+            .path("/klanten/api/v1/klanten/${id}")
+            .execute(Klant::class.java)
     }
 
     fun searchKlanten(filter: KlantSearchFilter): ResultPage<Klant> {
