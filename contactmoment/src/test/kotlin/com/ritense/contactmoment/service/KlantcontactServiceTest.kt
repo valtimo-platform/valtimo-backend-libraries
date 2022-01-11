@@ -77,6 +77,7 @@ internal class KlantcontactServiceTest {
         assertThat(sentMessage.templateIdentifier.get(), equalTo("template"))
         assertThat(sentMessage.subject.get(), equalTo("subject"))
         assertThat(sentMessage.placeholders, hasEntry("bodyText", "text"))
+        assertThat(sentMessage.placeholders, hasEntry("subject", "subject"))
     }
 }
 

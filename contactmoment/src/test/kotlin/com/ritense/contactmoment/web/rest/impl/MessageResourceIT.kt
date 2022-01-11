@@ -19,7 +19,7 @@ package com.ritense.contactmoment.web.rest.impl
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import com.ritense.contactmoment.BaseIntegrationTest
+import com.ritense.contactmoment.BaseContactMomentIntegrationTest
 import com.ritense.klant.domain.Klant
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.Recipient
@@ -39,7 +39,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 
-internal class MessageResourceIT: BaseIntegrationTest() {
+internal class MessageResourceIT: BaseContactMomentIntegrationTest() {
 
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext
@@ -47,12 +47,13 @@ internal class MessageResourceIT: BaseIntegrationTest() {
     lateinit var mockMvc: MockMvc
 
     @BeforeEach
-    internal fun setUp() {
+    override fun setUp() {
+        super.setUp()
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
     }
 
     @Test
-    fun getKlantcontactService() {
+    fun `sendMessage sends message and stores contactmoment`() {
         val documentId = UUID.randomUUID()
         val postBody = """
             {
@@ -93,6 +94,7 @@ internal class MessageResourceIT: BaseIntegrationTest() {
         assertThat(sentMessage.templateIdentifier.get(), equalTo("test-template"))
         assertThat(sentMessage.subject.get(), equalTo("some-subject"))
         assertThat(sentMessage.placeholders, hasEntry("bodyText", "some-body"))
+        assertThat(sentMessage.placeholders, hasEntry("subject", "some-subject"))
     }
 
 }

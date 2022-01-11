@@ -29,6 +29,7 @@ class ContactMomentHttpSecurityConfigurer : HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/contactmoment").hasAuthority(USER)
+                .antMatchers(GET, "/api/document/{documentId}/message").hasAuthority(USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

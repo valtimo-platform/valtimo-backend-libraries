@@ -44,13 +44,15 @@ class KlantcontactService(
         val builder = TemplatedMailMessage
             .with(recipient, MailTemplateIdentifier.from(templateName))
             .placeholders(mapOf(
-                "bodyText" to message.bodyText
+                "bodyText" to message.bodyText,
+                "subject" to message.subject
             ))
             .subject(Subject.from(message.subject))
 
         mailSender.send(builder.build())
 
         contactMomentConnector.createContactMoment(MESSAGE_KANAAL, message.bodyText)
+
     }
 
     companion object {
