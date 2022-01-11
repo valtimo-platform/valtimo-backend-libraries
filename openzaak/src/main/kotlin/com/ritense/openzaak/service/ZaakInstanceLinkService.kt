@@ -30,4 +30,6 @@ interface ZaakInstanceLinkService {
     fun findById(zaakInstanceLinkId: ZaakInstanceLinkId): ZaakInstanceLink
 
     fun getByDocumentId(documentId: UUID): ZaakInstanceLink
+
+    fun getByZaakInstanceUrl(zaakInstanceUrl: URI): ZaakInstanceLink
 }
