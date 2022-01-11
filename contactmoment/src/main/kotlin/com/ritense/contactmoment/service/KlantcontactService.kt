@@ -40,6 +40,11 @@ class KlantcontactService(
         val contactMomentConnector = connectorService.loadByClassName(ContactMomentConnector::class.java)
 
         val klant = klantService.getKlantForDocument(documentId)
+
+        if (klant.emailadres == null) {
+            throw IllegalStateException("emailaddress was not available for klant")
+        }
+
         val recipient = Recipient.to(EmailAddress.from(klant.emailadres), SimpleName.from(klant.emailadres))
         val builder = TemplatedMailMessage
             .with(recipient, MailTemplateIdentifier.from(templateName))

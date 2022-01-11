@@ -32,6 +32,7 @@ import java.util.UUID
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.hasEntry
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -79,5 +80,34 @@ internal class KlantcontactServiceTest {
         assertThat(sentMessage.placeholders, hasEntry("bodyText", "text"))
         assertThat(sentMessage.placeholders, hasEntry("subject", "subject"))
     }
+
+    @Test
+    fun `sendMessage should throw exception when emailadress is null`() {
+        val mailSender = mock<MailSender>()
+        val klantService = mock<KlantService>()
+        val connectorService = mock<ConnectorService>()
+        val template = "template"
+        val service = KlantcontactService(mailSender, klantService, connectorService, template)
+
+        val documentId = UUID.randomUUID()
+        val request = SendMessageRequest("subject", "text")
+
+        val connector = mock<ContactMomentConnector>()
+        whenever(connectorService.loadByClassName(ContactMomentConnector::class.java)).thenReturn(connector)
+        whenever(klantService.getKlantForDocument(documentId)).thenReturn(
+            Klant(
+                "http://example.org",
+                "0612345678",
+                null
+            )
+        )
+
+        val exception = Assertions.assertThrows(IllegalStateException::class.java, {
+            service.sendMessage(documentId, request)
+        })
+
+        Assertions.assertEquals("emailaddress was not available for klant", exception.message)
+    }
+
 }
 
