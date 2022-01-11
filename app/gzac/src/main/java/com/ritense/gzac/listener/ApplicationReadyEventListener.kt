@@ -6,6 +6,9 @@ import com.ritense.objectsapi.service.ObjectTypeConfig
 import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.objectsapi.service.ServerAuthSpecification
 import com.ritense.objectsapi.web.rest.request.CreateObjectSyncConfigRequest
+import com.ritense.openzaak.domain.configuration.Rsin
+import com.ritense.openzaak.domain.connector.OpenZaakConfig
+import com.ritense.openzaak.domain.connector.OpenZaakProperties
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -22,10 +25,24 @@ class ApplicationReadyEventListener(
     fun handle() {
         connectorService.getConnectorTypes().forEach {
             try {
+                if (it.name == "OpenZaak") {
+                    connectorService.createConnectorInstance(
+                        typeId = it.id.id,
+                        name = "OpenZaakInstance",
+                        connectorProperties = OpenZaakProperties(
+                            OpenZaakConfig(
+                                "http://localhost:8001",
+                                "valtimo_client",
+                                "e09b8bc5-5831-4618-ab28-41411304309d",
+                                Rsin("051845623")
+                            )
+                        )
+                    )
+                }
                 if (it.name == "ObjectsApi") {
                     val result = connectorService.createConnectorInstance(
                         typeId = it.id.id,
-                        name = it.name.replace("\\s".toRegex(), "") + "Instance",
+                        name = "ObjectsApiInstance",
                         connectorProperties = ObjectsApiProperties(
                             objectsApi = ServerAuthSpecification(
                                 "http://localhost:8000",
