@@ -19,7 +19,10 @@ package com.ritense.klant.autoconfiguration
 import com.ritense.klant.client.OpenKlantClient
 import com.ritense.klant.client.OpenKlantClientProperties
 import com.ritense.klant.client.OpenKlantTokenGenerator
+import com.ritense.klant.service.KlantService
 import com.ritense.klant.service.impl.BurgerService
+import com.ritense.openzaak.service.ZaakInstanceLinkService
+import com.ritense.openzaak.service.ZaakRolService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -36,6 +39,22 @@ class KlantAutoConfiguration {
         openKlantClient: OpenKlantClient
     ): BurgerService {
         return BurgerService(openKlantClientProperties, openKlantClient)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(KlantService::class)
+    fun klantService(
+        openKlantClientProperties: OpenKlantClientProperties,
+        openKlantClient: OpenKlantClient,
+        zaakRolService: ZaakRolService,
+        zaakInstanceLinkService: ZaakInstanceLinkService
+    ): KlantService {
+        return com.ritense.klant.service.impl.KlantService(
+            openKlantClientProperties,
+            openKlantClient,
+            zaakRolService,
+            zaakInstanceLinkService
+        )
     }
 
     @Bean

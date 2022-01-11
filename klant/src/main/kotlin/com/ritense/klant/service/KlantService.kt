@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.service
+package com.ritense.klant.service
 
-import com.ritense.openzaak.service.impl.model.ResultWrapper
-import com.ritense.openzaak.service.impl.model.zaak.Rol
-import java.net.URI
+import com.ritense.klant.domain.Klant
+import java.util.UUID
 
-interface ZaakRolService {
+interface KlantService {
 
-    fun addNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, bsn: String, betrokkene: URI?)
-
-    fun getZaakInitator(zaakUrl: URI): ResultWrapper<Rol>
+    fun getKlantForDocument(documentId: UUID): Klant
 
 }

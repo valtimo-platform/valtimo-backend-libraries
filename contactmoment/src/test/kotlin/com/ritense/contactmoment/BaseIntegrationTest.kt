@@ -17,6 +17,8 @@
 package com.ritense.contactmoment
 
 import com.ritense.connector.autodeployment.ConnectorApplicationReadyEventListener
+import com.ritense.klant.service.BurgerService
+import com.ritense.klant.service.KlantService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.mail.MailSender
@@ -41,6 +43,9 @@ abstract class BaseIntegrationTest : BaseTest() {
 
     @MockBean
     lateinit var userManagementService: UserManagementService
+
+    @MockBean
+    lateinit var klantService: KlantService
 
     @MockBean
     lateinit var currentUserService: CurrentUserService
