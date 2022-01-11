@@ -44,6 +44,17 @@ class ZaakStatusService(
             .executeWrapped(StatusType::class.java)
     }
 
+    override fun getStatusType(statusTypeUrl: URI): StatusType? {
+        val statusTypePath = openZaakConfigService.getOpenZaakConfig()?.let { statusTypeUrl.toString().replace(it.url, "") }
+        return statusTypePath?.let {
+            OpenZaakRequestBuilder(restTemplate, openZaakConfigService, tokenGeneratorService)
+                .path(it)
+                .get()
+                .build()
+                .execute(StatusType::class.java)
+        }
+    }
+
     override fun setStatus(documentId: Document.Id, status: String) {
         val document = documentService.findBy(documentId).orElseThrow()
         val zaakTypeLink = zaakTypeLinkService.findBy(document.definitionId().name())

@@ -48,13 +48,13 @@ class ZaakStatusServiceTest : BaseTest() {
             zaakTypeLinkService,
             zaakInstanceLinkService
         )
-        httpGetZaakstatusTypes()
     }
 
     @Test
     fun `should get zaakstatussen`() {
         //given
         val zaaktype = URI("http://example.com")
+        httpGetZaakstatusTypes()
 
         //when
         val result = zaakStatusService.getStatusTypes(zaaktype)
@@ -71,32 +71,74 @@ class ZaakStatusServiceTest : BaseTest() {
         assertThat(zaakstatus.informeren).isEqualTo(true)
     }
 
+    @Test
+    fun `should get zaak status type by url`() {
+        //given
+        val statusTypeUrl = URI("http://localhost:8001/catalogi/api/v1/statustypen/0641e9db-7eac-47b6-b60d-d741ed2b5c16")
+        httpGetZaakstatusType()
+
+        //when
+        val zaakstatus = zaakStatusService.getStatusType(statusTypeUrl)!!
+
+        //then
+        assertThat(zaakstatus.url).isEqualTo(URI("http://example.com"))
+        assertThat(zaakstatus.omschrijving).isEqualTo("aOmschrijving")
+        assertThat(zaakstatus.omschrijvingGeneriek).isEqualTo("aOmschrijvingGeneriek")
+        assertThat(zaakstatus.statustekst).isEqualTo("aStatusTekst")
+        assertThat(zaakstatus.zaaktype).isEqualTo(URI("http://example.com"))
+        assertThat(zaakstatus.volgnummer).isEqualTo(1)
+        assertThat(zaakstatus.isEindstatus).isEqualTo(true)
+        assertThat(zaakstatus.informeren).isEqualTo(true)
+    }
+
     private fun httpGetZaakstatusTypes() {
         val responseEntity = ResponseEntity(
             ResultWrapper(
                 1,
                 URI.create("http://example.com"),
                 URI.create("http://example.com"),
-                listOf(StatusType(
-                    URI.create("http://example.com"),
-                    "aOmschrijving",
-                    "aOmschrijvingGeneriek",
-                    "aStatusTekst",
-                    URI.create("http://example.com"),
-                    1,
-                    isEindstatus = true,
-                    informeren = true
-                ))
+                listOf(exampleStatusType())
             ),
             httpHeaders(),
             HttpStatus.OK
         )
-        whenever(restTemplate.exchange(
-            anyString(),
-            any(HttpMethod::class.java),
-            any(HttpEntity::class.java),
-            any(ParameterizedTypeReference::class.java)
-        )).thenReturn(responseEntity)
+        whenever(
+            restTemplate.exchange(
+                anyString(),
+                any(HttpMethod::class.java),
+                any(HttpEntity::class.java),
+                any(ParameterizedTypeReference::class.java)
+            )
+        ).thenReturn(responseEntity)
+    }
+
+    private fun httpGetZaakstatusType() {
+        val responseEntity = ResponseEntity(
+            exampleStatusType(),
+            httpHeaders(),
+            HttpStatus.OK
+        )
+        whenever(
+            restTemplate.exchange(
+                anyString(),
+                any(HttpMethod::class.java),
+                any(HttpEntity::class.java),
+                any(ParameterizedTypeReference::class.java)
+            )
+        ).thenReturn(responseEntity)
+    }
+
+    private fun exampleStatusType(): StatusType {
+        return StatusType(
+            URI.create("http://example.com"),
+            "aOmschrijving",
+            "aOmschrijvingGeneriek",
+            "aStatusTekst",
+            URI.create("http://example.com"),
+            1,
+            isEindstatus = true,
+            informeren = true
+        )
     }
 
 }

@@ -25,5 +25,7 @@ interface ZaakStatusService {
 
     fun getStatusTypes(zaaktype: URI): ResultWrapper<StatusType>
 
+    fun getStatusType(statusType: URI): StatusType?
+
     fun setStatus(documentId: Document.Id, status: String)
 }
