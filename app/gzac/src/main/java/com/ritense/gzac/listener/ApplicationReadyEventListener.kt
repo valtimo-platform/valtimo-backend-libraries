@@ -28,7 +28,7 @@ class ApplicationReadyEventListener(
                 if (it.name == "OpenZaak") {
                     connectorService.createConnectorInstance(
                         typeId = it.id.id,
-                        name = it.name.replace("\\s".toRegex(), "") + "Instance",
+                        name = "OpenZaakInstance",
                         connectorProperties = OpenZaakProperties(
                             OpenZaakConfig(
                                 "http://localhost:8001",
@@ -42,7 +42,7 @@ class ApplicationReadyEventListener(
                 if (it.name == "ObjectsApi") {
                     val result = connectorService.createConnectorInstance(
                         typeId = it.id.id,
-                        name = it.name.replace("\\s".toRegex(), "") + "Instance",
+                        name = "ObjectsApiInstance",
                         connectorProperties = ObjectsApiProperties(
                             objectsApi = ServerAuthSpecification(
                                 "http://localhost:8000",
