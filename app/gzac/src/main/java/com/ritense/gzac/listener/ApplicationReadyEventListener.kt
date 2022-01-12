@@ -39,6 +39,20 @@ class ApplicationReadyEventListener(
                         )
                     )
                 }
+                if (it.name == "ContactMoment") {
+                    connectorService.createConnectorInstance(
+                        typeId = it.id.id,
+                        name = "ContactMomentInstance",
+                        connectorProperties = OpenZaakProperties(
+                            OpenZaakConfig(
+                                "http://localhost:8006",
+                                "valtimo_client",
+                                "e09b8bc5-5831-4618-ab28-41411304309d",
+                                Rsin("051845623")
+                            )
+                        )
+                    )
+                }
                 if (it.name == "ObjectsApi") {
                     val result = connectorService.createConnectorInstance(
                         typeId = it.id.id,

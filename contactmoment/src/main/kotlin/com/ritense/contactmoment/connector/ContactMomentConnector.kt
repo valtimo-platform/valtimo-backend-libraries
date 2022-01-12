@@ -23,7 +23,8 @@ import com.ritense.contactmoment.client.ContactMomentClient
 import com.ritense.contactmoment.domain.ContactMoment
 import com.ritense.contactmoment.domain.request.CreateContactMomentRequest
 import com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT
-import com.ritense.valtimo.contract.authentication.model.ValtimoUser
+import com.ritense.valtimo.contract.authentication.ManageableUser
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import com.ritense.valtimo.service.CurrentUserService
@@ -36,6 +37,7 @@ class ContactMomentConnector(
     private var contactMomentProperties: ContactMomentProperties,
     private var contactMomentClient: ContactMomentClient,
     private var currentUserService: CurrentUserService,
+    private var userManagementService: UserManagementService,
 ) : Connector {
 
     /**
@@ -66,21 +68,22 @@ class ContactMomentConnector(
         return runBlocking { contactMomentClient.createContactMoment(request) }
     }
 
-    private fun getCurrentMedewerker(): ValtimoUser {
+    private fun getCurrentMedewerker(): ManageableUser {
         return if (SecurityUtils.getCurrentUserAuthentication() != null) {
-            currentUserService.currentUser
+            userManagementService.findByEmail(currentUserService.currentUser.email)
+                .orElseThrow { IllegalStateException("No user found for email: ${currentUserService.currentUser.email}") }
         } else {
             ValtimoUserBuilder().id(SYSTEM_ACCOUNT).lastName(SYSTEM_ACCOUNT).build()
         }
     }
 
-    private fun getMedewerkerIdentificatie(valtimoUser: ValtimoUser): String {
-        // TODO: valtimoUser.id is an email address retrieved from JWT. Find proper solution
-        return if (valtimoUser.id.length > 24) {
-            val idHash = valtimoUser.id.hashCode().toString()
-            valtimoUser.id.substring(0, 24 - idHash.length) + idHash
+    private fun getMedewerkerIdentificatie(user: ManageableUser): String {
+        // TODO: Contactmomenten doesn't allow an id greater than 24 chars. Find proper solution
+        return if (user.id.length > 24) {
+            val idHash = user.id.hashCode().toString()
+            user.id.substring(0, 24 - idHash.length) + idHash
         } else {
-            valtimoUser.id
+            user.id
         }
     }
 
