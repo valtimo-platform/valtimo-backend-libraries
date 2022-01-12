@@ -17,6 +17,5 @@
 package com.ritense.contactmoment.web.rest.request
 
 data class CreateContactMomentRequest(
-    val kanaal: String,
     val tekst: String,
 )

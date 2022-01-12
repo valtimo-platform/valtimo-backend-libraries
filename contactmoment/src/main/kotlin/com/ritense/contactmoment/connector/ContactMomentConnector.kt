@@ -21,6 +21,7 @@ import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.contactmoment.client.ContactMomentClient
 import com.ritense.contactmoment.domain.ContactMoment
+import com.ritense.contactmoment.domain.Kanaal
 import com.ritense.contactmoment.domain.request.CreateContactMomentRequest
 import com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT
 import com.ritense.valtimo.contract.authentication.ManageableUser
@@ -53,12 +54,12 @@ class ContactMomentConnector(
      * @param text An explanation that substantively describes the customer interaction of the customer.
      * @param kanaal The communication channel through which the CONTACT MOMENT is conducted.
      */
-    fun createContactMoment(kanaal: String, text: String): ContactMoment {
+    fun createContactMoment(kanaal: Kanaal, text: String): ContactMoment {
         val medewerker = getCurrentMedewerker()
         val request = CreateContactMomentRequest(
             bronorganisatie = contactMomentProperties.rsin,
             registratiedatum = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            kanaal = kanaal,
+            kanaal = kanaal.name.lowercase(),
             tekst = text,
             medewerkerIdentificatie = CreateContactMomentRequest.MedewerkerIdentificatieRequest(
                 identificatie = getMedewerkerIdentificatie(medewerker),

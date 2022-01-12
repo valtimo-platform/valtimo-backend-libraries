@@ -48,7 +48,6 @@ internal class ContactMomentResourceIT : BaseContactMomentIntegrationTest() {
         mockUser(lastName = "Miller")
         val postBody = """
             {
-                "kanaal": "string",
                 "tekst": "content-2"
             }
         """.trimIndent()
@@ -62,7 +61,6 @@ internal class ContactMomentResourceIT : BaseContactMomentIntegrationTest() {
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
             .andExpect(MockMvcResultMatchers.jsonPath("$.registratiedatum").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.kanaal").value("string"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.tekst").value("content-2"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.medewerkerIdentificatie.achternaam").value("Miller"))
             .andReturn()
