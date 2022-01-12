@@ -15,7 +15,7 @@
   "medewerker": "http://example.com",
   "medewerkerIdentificatie": {
     "identificatie": "string",
-    "achternaam": "string",
+    "achternaam": "Miller",
     "voorletters": "string",
     "voorvoegselAchternaam": "string"
   },

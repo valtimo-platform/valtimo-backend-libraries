@@ -16,10 +16,7 @@
 
 package com.ritense.contactmoment.web.rest.impl
 
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.contactmoment.BaseContactMomentIntegrationTest
-import com.ritense.valtimo.contract.authentication.model.ValtimoUser
-import java.util.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,11 +43,9 @@ internal class ContactMomentResourceIT : BaseContactMomentIntegrationTest() {
     }
 
     @Test
-    @WithMockUser(username = "user@valtimo.nl")
+    @WithMockUser
     fun `sendMessage sends message and stores contactmoment`() {
-        val user = ValtimoUser()
-        user.lastName = "Miller"
-        whenever(userManagementService.findByEmail("user@valtimo.nl")).thenReturn(Optional.of(user))
+        mockUser(lastName = "Miller")
         val postBody = """
             {
                 "kanaal": "string",

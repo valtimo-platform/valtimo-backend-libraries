@@ -16,6 +16,7 @@
 
 package com.ritense.contactmoment
 
+import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.connector.domain.ConnectorInstanceId
@@ -24,6 +25,9 @@ import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentConnector
 import com.ritense.contactmoment.connector.ContactMomentProperties
+import com.ritense.valtimo.contract.authentication.ManageableUser
+import com.ritense.valtimo.contract.authentication.model.ValtimoUser
+import java.util.Optional
 import java.util.UUID
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -61,6 +65,20 @@ class BaseContactMomentIntegrationTest : BaseIntegrationTest() {
     @AfterEach
     internal fun tearDown() {
         server.shutdown()
+    }
+
+    fun mockUser(
+        id: String = UUID.randomUUID().toString(),
+        email: String = "john.doe@valtimo.nl",
+        lastName: String = "Doe"
+    ): ManageableUser {
+        val user = ValtimoUser()
+        user.id = id
+        user.email = email
+        user.lastName = lastName
+        whenever(currentUserService.currentUser).thenReturn(user)
+        whenever(userManagementService.findByEmail(email)).thenReturn(Optional.of(user))
+        return user
     }
 
     fun startMockServer() {
