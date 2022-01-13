@@ -15,12 +15,12 @@
  */
 
 package com.ritense.audit.service.impl;
+
 import com.ritense.audit.BaseIntegrationTest;
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.domain.event.TestEvent;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +30,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Tag("integration")
 public class AuditSearchServiceImplIntTest extends BaseIntegrationTest {
 
     @BeforeEach

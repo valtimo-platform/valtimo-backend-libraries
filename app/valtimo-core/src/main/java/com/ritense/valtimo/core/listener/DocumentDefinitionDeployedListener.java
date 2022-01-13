@@ -36,18 +36,24 @@ public class DocumentDefinitionDeployedListener {
     @EventListener(DocumentDefinitionDeployedEvent.class)
     public void handle(DocumentDefinitionDeployedEvent documentDefinitionDeployedEvent) {
         if (documentDefinitionDeployedEvent.documentDefinition().id().name().equals("leningen")) {
-            var request = new ProcessDocumentDefinitionRequest(
-                "lening-aanvragen",
-                "leningen",
-                true
+            processDocumentAssociationService.createProcessDocumentDefinition(
+                new ProcessDocumentDefinitionRequest(
+                    "lening-aanvragen",
+                    "leningen",
+                    true
+                )
             );
-            processDocumentAssociationService.createProcessDocumentDefinition(request);
+            processDocumentAssociationService.createProcessDocumentDefinition(
+                new ProcessDocumentDefinitionRequest(
+                    "mail-process",
+                    "leningen",
+                    true
+                )
+            );
             contextService.findAll(Pageable.unpaged()).stream().forEach(context -> {
                 final var loanProcessDemo = new ContextProcess("lening-aanvragen", true);
                 context.addProcess(loanProcessDemo);
-                final var bigExample = new ContextProcess("big-example", true);
-                context.addProcess(bigExample);
-                final var processVars = new ContextProcess("process-vars", true);
+                final var processVars = new ContextProcess("mail-process", true);
                 context.addProcess(processVars);
                 contextService.save(context);
             });

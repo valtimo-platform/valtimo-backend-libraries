@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CamundaCollectionHelperTest {
+class CamundaCollectionHelperTest {
 
     private static final String COLLECTION_NAME = "collection";
     private static final String ELEMENT_NAME = "element";
@@ -48,7 +48,7 @@ public class CamundaCollectionHelperTest {
     private CamundaCollectionHelper camundaCollectionHelper = new CamundaCollectionHelper();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         delegateTask = mock(DelegateTask.class);
         collection = Lists.newArrayList(COLLECTION_ELEMENT_STRING, COLLECTION_ELEMENT_INTEGER, COLLECTION_ELEMENT_BOOLEAN);
         variableMap = new HashMap();
@@ -59,7 +59,7 @@ public class CamundaCollectionHelperTest {
     }
 
     @Test
-    public void shouldUpdateList() {
+    void shouldUpdateList() {
         camundaCollectionHelper.updateListElement(delegateTask, COLLECTION_NAME, ELEMENT_NAME);
 
         assertThat(collection.get(0)).isEqualTo(COLLECTION_ELEMENT_STRING);
@@ -68,17 +68,17 @@ public class CamundaCollectionHelperTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenCollectionDoesntExist() {
+    void shouldThrowExceptionWhenCollectionDoesntExist() {
         assertThrows(NullPointerException.class, () -> camundaCollectionHelper.updateListElement(delegateTask, "fake_collection_key", ELEMENT_NAME));
     }
 
     @Test
-    public void shouldThrowExceptionWhenElementDoesntExist() {
+    void shouldThrowExceptionWhenElementDoesntExist() {
         assertThrows(NullPointerException.class, () -> camundaCollectionHelper.updateListElement(delegateTask, COLLECTION_NAME, "fake_element_key"));
     }
 
     @Test
-    public void shouldthrowExceptionWhenLoopcounterDoesntExist() {
+    void shouldthrowExceptionWhenLoopcounterDoesntExist() {
         variableMap.remove(LOOP_COUNTER_NAME);
         assertThrows(NullPointerException.class, () -> camundaCollectionHelper.updateListElement(delegateTask, COLLECTION_NAME, ELEMENT_NAME));
     }

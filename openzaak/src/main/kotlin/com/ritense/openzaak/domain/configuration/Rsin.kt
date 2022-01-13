@@ -1,25 +1,24 @@
 package com.ritense.openzaak.domain.configuration
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import com.ritense.valtimo.contract.validation.Validatable
-import org.hibernate.validator.constraints.Length
-import java.io.Serializable
-import javax.persistence.Column
-import javax.persistence.Embeddable
-import javax.validation.constraints.NotBlank
 
-@Embeddable
-class Rsin(
-    @Column(name = "rsin", columnDefinition = "CHAR(9)", nullable = false)
-    @field:Length(min = 9, max = 9)
-    @field:NotBlank
+data class Rsin(private val value: String) : Validatable {
+    companion object {
+        @JvmStatic
+        @JsonCreator
+        fun create(value: String) = value
+    }
+
     @JsonValue
-    val value: String
-) : Serializable, Validatable {
+    override fun toString() = value
 
     init {
         validate()
-        require(isValidBsn(value)) { "Invalid RSIN (BSN rules)" }
+        if (value.isNotEmpty()) {
+            require(isValidBsn(value)) { "Invalid RSIN (BSN rules)" }
+        }
     }
 
     /*
@@ -42,5 +41,4 @@ class Rsin(
         }
         return result % 11 == 0
     }
-
 }

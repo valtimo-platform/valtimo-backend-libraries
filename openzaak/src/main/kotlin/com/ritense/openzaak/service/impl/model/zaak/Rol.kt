@@ -16,10 +16,13 @@
 
 package com.ritense.openzaak.service.impl.model.zaak
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import java.net.URI
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class Rol(
     val zaak: URI,
+    val betrokkene: URI?,
     val betrokkeneType: BetrokkeneType,
     val roltype: URI,
     val roltoelichting: String,

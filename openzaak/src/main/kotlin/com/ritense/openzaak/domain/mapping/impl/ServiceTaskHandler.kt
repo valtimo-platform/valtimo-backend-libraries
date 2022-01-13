@@ -21,6 +21,7 @@ import java.io.Serializable
 import java.net.URI
 
 data class ServiceTaskHandler(
+    val processDefinitionKey: String,
     val serviceTaskId: String,
     val operation: Operation,
     val parameter: URI

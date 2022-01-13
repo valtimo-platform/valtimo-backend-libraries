@@ -20,8 +20,8 @@ apply from: 'gradle/liquibase.gradle'
 
 dockerCompose {
     projectName = "connector"
-    isRequiredBy(test)
-    isRequiredBy(checkExtended)
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
     useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
 }
 
@@ -30,6 +30,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "com.vladmihalcea:hibernate-types-52:2.12.1"
+
+    testImplementation project(':test-utils-common')
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 

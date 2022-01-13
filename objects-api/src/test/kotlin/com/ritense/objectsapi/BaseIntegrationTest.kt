@@ -16,8 +16,9 @@
 
 package com.ritense.objectsapi
 
+import com.ritense.klant.service.BurgerService
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.junit.extension.LiquibaseRunnerExtension
+import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
@@ -33,6 +34,9 @@ abstract class BaseIntegrationTest {
 
     @MockBean
     lateinit var userManagementService: UserManagementService
+
+    @MockBean
+    lateinit var burgerService: BurgerService
 
     @MockBean
     lateinit var mailSender: MailSender

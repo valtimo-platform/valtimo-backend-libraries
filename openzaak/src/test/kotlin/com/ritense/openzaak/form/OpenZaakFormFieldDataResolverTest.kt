@@ -20,7 +20,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.openzaak.BaseTest
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinks
+import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.service.impl.ZaakService
@@ -53,20 +53,23 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
             zaaktypeLinkId,
             "house",
             zaakType,
-            ZaakInstanceLinks(),
             ServiceTaskHandlers()
-        )
-        zaakTypeLink.assignZaakInstance(
-            ZaakInstanceLink(
-                URI.create("http://example.com"),
-                UUID.randomUUID(),
-                document.id.id
-            )
         )
 
         whenever(zaakTypeLinkService.findBy(document.definitionId().name())).thenReturn(
             zaakTypeLink
         )
+
+        val zaakInstanceLink = ZaakInstanceLink(
+            ZaakInstanceLinkId.newId(UUID.randomUUID()),
+            URI.create("http://zaak.instanceUrl.nl"),
+            UUID.randomUUID(),
+            document.id!!.id,
+            URI.create("http://zaak.TypeUrl.nl")
+        )
+
+        whenever(zaakInstanceLinkService.getByDocumentId(document.id!!.id)).thenReturn(zaakInstanceLink)
+
         httpZaakCreated()
         httpGetZaakEigenschappen()
         zaakService = ZaakService(
@@ -74,21 +77,22 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
             openZaakConfigService,
             openZaakTokenGeneratorService,
             zaakTypeLinkService,
-            documentService
+            documentService,
+            zaakInstanceLinkService
         )
-        openZaakFormFieldDataResolver = OpenZaakFormFieldDataResolver(zaakService, zaakTypeLinkService)
+        openZaakFormFieldDataResolver = OpenZaakFormFieldDataResolver(zaakService, zaakInstanceLinkService)
     }
 
     @Test
     fun `should not contain eigenschap with unknown key`() {
-        val resultMap = openZaakFormFieldDataResolver.get("house", document.id.id, "unknownVarName")
+        val resultMap = openZaakFormFieldDataResolver.get("house", document.id!!.id, "unknownVarName")
         assertThat(resultMap).isNotNull
         assertThat(resultMap).doesNotContainKey("unknownVarName")
     }
 
     @Test
     fun `should get open zaak eigenschappen value`() {
-        val resultMap = openZaakFormFieldDataResolver.get("house", document.id.id, "varNaam")
+        val resultMap = openZaakFormFieldDataResolver.get("house", document.id!!.id, "varNaam")
         assertThat(resultMap).isNotNull
         assertThat(resultMap).containsEntry("varNaam", "varWaarde")
     }

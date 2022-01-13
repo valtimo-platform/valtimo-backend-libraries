@@ -20,16 +20,16 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class DateProcessVariableDTOV2Test {
+class DateProcessVariableDTOV2Test {
     private static final String NAME = "some-name";
     private static final LocalDate FROM = LocalDate.of(2010, 1, 1);
     private static final LocalDate TO = LocalDate.of(2017, 1, 1);
 
     @Test
-    public void dateProcessVariableDTOV2() {
+    void dateProcessVariableDTOV2() {
         DateProcessVariableDTOV2.DateRange dateRange = new DateProcessVariableDTOV2.DateRange(FROM, TO);
         DateProcessVariableDTOV2 dateProcessVariableDTOV2 = new DateProcessVariableDTOV2(NAME, dateRange);
 
@@ -39,12 +39,12 @@ public class DateProcessVariableDTOV2Test {
     }
 
     @Test
-    public void dateProcessVariableDTOV2DateRangeNull() {
+    void dateProcessVariableDTOV2DateRangeNull() {
         assertThrows(NullPointerException.class, () -> new DateProcessVariableDTOV2(NAME, null));
     }
 
     @Test
-    public void dateProcessVariableDTOV2NameNull() {
+    void dateProcessVariableDTOV2NameNull() {
         DateProcessVariableDTOV2.DateRange dateRange = new DateProcessVariableDTOV2.DateRange(FROM, TO);
         assertThrows(NullPointerException.class, () -> new DateProcessVariableDTOV2(null, dateRange));
     }

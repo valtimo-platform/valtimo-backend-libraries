@@ -23,13 +23,13 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.objectsapi.BaseIntegrationTest
 import com.ritense.objectsapi.web.rest.request.CreateObjectSyncConfigRequest
 import com.ritense.objectsapi.web.rest.request.ModifyObjectSyncConfigRequest
-import java.util.UUID
-import javax.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import java.util.UUID
+import javax.transaction.Transactional
 
 @Transactional
 class ObjectSyncServiceIntTest : BaseIntegrationTest() {
@@ -60,7 +60,7 @@ class ObjectSyncServiceIntTest : BaseIntegrationTest() {
                 objectsTypeApi = ServerAuthSpecification(),
                 objectType = ObjectTypeConfig()
             )
-        )
+        ).connectorTypeInstance()!!
     }
 
     @Test

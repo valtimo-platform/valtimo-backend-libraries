@@ -36,7 +36,7 @@ class DocumentenService(
     private val openZaakConfigService: OpenZaakConfigService,
     private val openZaakTokenGeneratorService: OpenZaakTokenGeneratorService,
     private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
-    private val zaakTypeLinkService: ZaakTypeLinkService
+    private val zaakInstanceLinkService: ZaakInstanceLinkService
 ) : DocumentenService {
 
     override fun createEnkelvoudigInformatieObject(documentDefinitionName: String, multipartFile: MultipartFile): URI {
@@ -47,7 +47,7 @@ class DocumentenService(
             .post()
             .body(
                 mapOf(
-                    "bronorganisatie" to openZaakConfigService.get()!!.rsin.value,
+                    "bronorganisatie" to openZaakConfigService.getOpenZaakConfig()!!.rsin,
                     "creatiedatum" to LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     "titel" to multipartFile.originalFilename,
                     "auteur" to SecurityUtils.getCurrentUserLogin(),
@@ -55,17 +55,28 @@ class DocumentenService(
                     "taal" to "nld",
                     "inhoud" to Base64.getEncoder().encodeToString(multipartFile.bytes),
                     "informatieobjecttype" to informatieObjectTypeLink.informatieObjectType,
-                    "status" to "definitief"
-                )
+                    "status" to "definitief",
+                    "indicatieGebruiksrecht" to false
+                    )
             )
             .build()
             .execute(DocumentCreatedResult::class.java).url
     }
 
+    @Deprecated(
+        message = "Deprecated since 9.0.0, use the new function createObjectInformatieObject(URI, UUID)",
+        replaceWith = ReplaceWith("createObjectInformatieObject(enkelvoudigInformatieObject, documentId)"),
+        DeprecationLevel.WARNING
+    )
     override fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, documentId: UUID, documentDefinitionName: String) {
-        val zaakInstance = zaakTypeLinkService.findBy(documentDefinitionName).getZaakInstanceLink(documentId).zaakInstanceUrl
-        createObjectInformatieObject(enkelvoudigInformatieObject, zaakInstance)
+        createObjectInformatieObject(enkelvoudigInformatieObject, documentId)
     }
+
+    override fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, documentId: UUID) {
+        val zaakInstanceUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
+        createObjectInformatieObject(enkelvoudigInformatieObject, zaakInstanceUrl)
+    }
+
 
     override fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, zaak: URI) {
         OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)

@@ -25,12 +25,11 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.service.DocumentSequenceGeneratorService
 import com.ritense.document.service.DocumentService
-import com.ritense.openzaak.domain.configuration.OpenZaakConfig
-import com.ritense.openzaak.domain.configuration.OpenZaakConfigId
 import com.ritense.openzaak.domain.configuration.Rsin
-import com.ritense.openzaak.domain.configuration.Secret
+import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import com.ritense.openzaak.service.impl.OpenZaakConfigService
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
+import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import org.mockito.Mock
@@ -40,7 +39,6 @@ import org.springframework.http.MediaType
 import org.springframework.web.client.RestTemplate
 import java.net.URI
 import java.util.Optional
-import java.util.UUID
 
 abstract class BaseTest {
 
@@ -62,6 +60,9 @@ abstract class BaseTest {
     lateinit var zaakTypeLinkService: ZaakTypeLinkService
 
     @Mock
+    lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
+
+    @Mock
     lateinit var documentService: DocumentService
 
     lateinit var document: JsonSchemaDocument
@@ -74,16 +75,15 @@ abstract class BaseTest {
         val documentOptional = documentOptional()
         document = documentOptional.orElseThrow()
 
-        whenever(openZaakConfigService.get()).thenReturn(openzaakConfig())
+        whenever(openZaakConfigService.getOpenZaakConfig()).thenReturn(openzaakConfig())
         whenever(documentService.findBy(any())).thenReturn(documentOptional)
     }
 
     fun openzaakConfig(): OpenZaakConfig {
         return OpenZaakConfig(
-            OpenZaakConfigId.newId(UUID.randomUUID()),
             "https://openzaak.ritense.com/",
             "valtimo_openzaak_test",
-            Secret("ySCrWMK7nCPdoSkjydb58racw2tOzuDqgge3SFhgR3Fe"),
+            "ySCrWMK7nCPdoSkjydb58racw2tOzuDqgge3SFhgR3Fe",
             Rsin("002564440")
         )
     }
@@ -110,7 +110,7 @@ abstract class BaseTest {
         return header
     }
 
-    open fun path(name: String): URI {
+    fun path(name: String): URI {
         return URI.create(String.format("config/document/definition/%s.json", "$name.schema"))
     }
 

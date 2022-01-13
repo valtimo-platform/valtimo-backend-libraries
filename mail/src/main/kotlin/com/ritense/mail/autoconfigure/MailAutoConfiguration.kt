@@ -16,19 +16,68 @@
 
 package com.ritense.mail.autoconfigure
 
+import com.ritense.mail.MailDispatcher
+import com.ritense.mail.config.MailingProperties
+import com.ritense.mail.domain.filters.BlacklistFilter
+import com.ritense.mail.domain.filters.RedirectToFilter
+import com.ritense.mail.domain.filters.WhitelistFilter
+import com.ritense.mail.repository.BlacklistRepository
+import com.ritense.mail.service.BlacklistService
+import com.ritense.mail.service.FilteredMailSender
 import com.ritense.mail.service.MailService
+import com.ritense.valtimo.contract.mail.MailFilter
 import com.ritense.valtimo.contract.mail.MailSender
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
+@EnableConfigurationProperties(value = [MailingProperties::class])
+@EnableJpaRepositories(basePackages = ["com.ritense.mail.repository"])
+@EntityScan("com.ritense.mail.domain")
 class MailAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(MailService::class)
     fun mailService(mailSender: MailSender): MailService {
         return MailService(mailSender)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(MailSender::class)
+    fun filteredMailService(mailDispatcher: MailDispatcher, filters: Collection<MailFilter>): MailSender {
+        return FilteredMailSender(mailDispatcher, filters)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(BlacklistService::class)
+    fun blacklistService(blacklistRepository: BlacklistRepository): BlacklistService {
+        return BlacklistService(blacklistRepository)
+    }
+
+    //filters
+    @Bean
+    @ConditionalOnMissingBean(BlacklistFilter::class)
+    fun blacklistFilter(
+        mailingProperties: MailingProperties,
+        blacklistService: BlacklistService
+    ): BlacklistFilter {
+        return BlacklistFilter(mailingProperties, blacklistService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RedirectToFilter::class)
+    fun redirectToFilter(mailingProperties: MailingProperties): RedirectToFilter {
+        return RedirectToFilter(mailingProperties)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(WhitelistFilter::class)
+    fun whitelistFilter(mailingProperties: MailingProperties): WhitelistFilter {
+        return WhitelistFilter(mailingProperties)
     }
 
 }

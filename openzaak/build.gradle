@@ -20,12 +20,13 @@ projectVersion = 1.0
 
 dockerCompose {
     projectName = "openzaak"
-    isRequiredBy(test)
-    isRequiredBy(checkExtended)
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
     useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
 }
 
 dependencies {
+    implementation project(':connector')
     implementation project(':contract')
     implementation project(':core')
     implementation project(':document')

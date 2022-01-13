@@ -129,12 +129,12 @@ mailing:
 valtimo:
     app:
         scheme: http
-    #mandrill:
-    #    apiKey: #external
-    #    dateFormat: dd-MM-yyyy
-    #    notificationTemplate: bpc-task-notification
-    #    completionTemplate: bpc-task-completion
-    #    reminderTemplate: bpc-task-reminder
+    mandrill:
+        apiKey: #external
+        dateFormat: dd-MM-yyyy
+        notificationTemplate: bpc-task-notification
+        completionTemplate: bpc-task-completion
+        reminderTemplate: bpc-task-reminder
     jwt:
         base64encoding: false #auth0 client is not base64 encoded
         tokenValidityInSeconds: 3600 # Token is valid 1 hour
@@ -172,6 +172,14 @@ valtimo:
                     - "*"
             paths:
                 - "/**"
+    openklant:
+        url: "http://localhost:8006"
+        clientId: "valtimo_client"
+        secret: "e09b8bc5-5831-4618-ab28-41411304309d"
+        rsin: "051845623"
+
+    genericTemplateName: "template-name"
+
 
 spring-actuator:
     username: admin

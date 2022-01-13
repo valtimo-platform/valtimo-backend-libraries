@@ -17,8 +17,6 @@
 package com.ritense.openzaak.service.impl
 
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinks
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
@@ -78,11 +76,11 @@ class ZaakTypeLinkService(
                     ZaakTypeLinkId.newId(UUID.randomUUID()),
                     request.documentDefinitionName,
                     request.zaakTypeUrl,
-                    ZaakInstanceLinks(),
-                    ServiceTaskHandlers()
+                    ServiceTaskHandlers(),
+                    request.createWithDossier ?: false
                 )
             } else {
-                zaakTypeLink.changeZaakTypeUrl(request.zaakTypeUrl);
+                zaakTypeLink.processUpdateRequest(request)
             }
             zaakTypeLinkRepository.save(zaakTypeLink)
             return CreateZaaktypeLinkResultSucceeded(zaakTypeLink)
@@ -98,14 +96,8 @@ class ZaakTypeLinkService(
         zaakTypeLinkRepository.deleteByDocumentDefinitionName(documentDefinitionName)
     }
 
-    override fun assignZaakInstance(id: ZaakTypeLinkId, zaakInstanceLink: ZaakInstanceLink): ZaakTypeLink {
-        val zaakTypeLink = findBy(id)
-        zaakTypeLink.assignZaakInstance(zaakInstanceLink)
-        return zaakTypeLinkRepository.save(zaakTypeLink)
-    }
-
     private fun findBy(id: ZaakTypeLinkId): ZaakTypeLink {
-        return zaakTypeLinkRepository.getOne(id)
+        return zaakTypeLinkRepository.getById(id)
     }
 
     override fun assignServiceTaskHandler(
@@ -130,10 +122,11 @@ class ZaakTypeLinkService(
 
     override fun removeServiceTaskHandler(
         zaakTypeLinkId: ZaakTypeLinkId,
+        processDefinitionKey: String,
         serviceTaskId: String
     ): RemoveServiceTaskHandlerResult {
         val zaakTypeLink = findBy(zaakTypeLinkId)
-        zaakTypeLink.removeZaakServiceHandler(serviceTaskId)
+        zaakTypeLink.removeZaakServiceHandler(processDefinitionKey, serviceTaskId)
         zaakTypeLinkRepository.save(zaakTypeLink)
         return RemoveServiceTaskHandlerResultSucceeded(zaakTypeLink)
     }

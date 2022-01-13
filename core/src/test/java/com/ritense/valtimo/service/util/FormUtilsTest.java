@@ -24,16 +24,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.CombinableMatcher.both;
-import static org.junit.Assert.assertThat;
 
-public class FormUtilsTest {
+class FormUtilsTest {
 
     public static final long LONG_VALUE = 10L;
     public static final Date DATE_VALUE = new Date();
 
     @Test
-    public void createTypedVariableMap() {
+    void createTypedVariableMap() {
         Map<String, Object> variables = new HashMap<>();
         variables.put("leeftijd", LONG_VALUE);
         variables.put("huidige_tijd", DATE_VALUE);

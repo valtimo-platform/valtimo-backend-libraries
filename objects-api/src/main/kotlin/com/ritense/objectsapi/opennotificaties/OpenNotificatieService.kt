@@ -16,19 +16,21 @@
 
 package com.ritense.objectsapi.opennotificaties
 
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
+import com.ritense.klant.service.BurgerService
 import com.ritense.objectsapi.domain.ProductAanvraag
 import com.ritense.objectsapi.domain.request.HandleNotificationRequest
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagConnector
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagTypeMapping
-import com.ritense.openzaak.service.DocumentenService
+import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
-import com.ritense.openzaak.service.impl.model.zaak.Zaak
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.OpenZaakResource
@@ -44,10 +46,11 @@ class OpenNotificatieService(
     val processDocumentService: ProcessDocumentService,
     val documentService: DocumentService,
     val zaakService: ZaakService,
-    val documentenService: DocumentenService,
     val connectorService: ConnectorService,
     val openZaakResourceRepository: OpenZaakResourceRepository,
-    val zaakRolService: ZaakRolService
+    val zaakRolService: ZaakRolService,
+    val zaakInstanceLinkService: ZaakInstanceLinkService,
+    val burgerService: BurgerService
 ) {
     fun handle(notification: HandleNotificationRequest, connectorId: String, authorizationKey: String) {
         if (notification.isCreateNotification() && !notification.isTestNotification()) {
@@ -56,6 +59,9 @@ class OpenNotificatieService(
             val productAanvraag = connector.getProductAanvraag(productAanvraagId)
             val typeMapping = connector.getTypeMapping(productAanvraag.type)
             val aanvragerRolTypeUrl = connector.getAanvragerRolTypeUrl()
+
+            //TODO: TP32743 Redflag needs to be refactored ASAP
+            (productAanvraag.data as ObjectNode).set<TextNode>("\$bsn", TextNode(productAanvraag.bsn))
 
             createDossier(productAanvraag, typeMapping, aanvragerRolTypeUrl)
             connector.deleteProductAanvraag(notification.getObjectId())
@@ -76,12 +82,12 @@ class OpenNotificatieService(
         aanvragerRolTypeUrl: URI
     ) {
         val informatieObjecten = getInformatieObjecten(productAanvraag.getAllFiles())
-        val document = createDocumentAndProcess(productAanvraag, typeMapping, informatieObjecten)
-        createZaak(productAanvraag, document, aanvragerRolTypeUrl, informatieObjecten)
+        val document = createDocument(productAanvraag, typeMapping, informatieObjecten)
+        assignZaakToUser(document, productAanvraag, aanvragerRolTypeUrl)
         startProcess(document.id(), typeMapping)
     }
 
-    private fun createDocumentAndProcess(
+    private fun createDocument(
         productAanvraag: ProductAanvraag,
         typeMapping: ProductAanvraagTypeMapping,
         informatieObjecten: Set<InformatieObject>
@@ -89,10 +95,12 @@ class OpenNotificatieService(
         val newDocumentRequest = NewDocumentRequest(typeMapping.caseDefinitionKey, productAanvraag.data)
             .withResources(getResources(informatieObjecten))
 
-        val documentResult = documentService.createDocument(newDocumentRequest);
+        val documentResult = documentService.createDocument(newDocumentRequest)
 
         if (documentResult.resultingDocument().isEmpty) {
-            logger.error { "Errors occurred during creation of dossier for productaanvraag: ${documentResult.errors()}" }
+            var logMessage = "Errors occurred during creation of dossier for productaanvraag:"
+            documentResult.errors().forEach { logMessage += "\n - " + it.asString() }
+            logger.error { logMessage }
         }
 
         val document = documentResult.resultingDocument().orElseThrow()
@@ -104,35 +112,28 @@ class OpenNotificatieService(
         documentId: Document.Id,
         typeMapping: ProductAanvraagTypeMapping
     ) {
-        val startProcessRequest = StartProcessForDocumentRequest(documentId, typeMapping.processDefinitionKey, null);
+        val startProcessRequest = StartProcessForDocumentRequest(documentId, typeMapping.processDefinitionKey, null)
 
         val processStartResult = processDocumentService.startProcessForDocument(startProcessRequest)
 
         if (processStartResult.resultingDocument().isEmpty) {
-            logger.error { "Errors occurred during starting of process for productaanvraag: ${processStartResult.errors()}" }
+            var logMessage = "Errors occurred during starting of process for productaanvraag:"
+            processStartResult.errors().forEach { logMessage += "\n - " + it.asString() }
+            logger.error { logMessage }
         }
     }
 
-    private fun createZaak(
-        productAanvraag: ProductAanvraag,
-        document: Document,
-        aanvragerRolTypeUrl: URI,
-        informatieObjecten: Set<InformatieObject>
-    ) {
-        val zaak = zaakService.createZaakWithLink(document.id())
-        assignZaakToUser(zaak, productAanvraag, aanvragerRolTypeUrl)
-        linkZaakInformatieObjecten(zaak, informatieObjecten)
-    }
-
-    private fun assignZaakToUser(zaak: Zaak, productAanvraag: ProductAanvraag, aanvragerRolTypeUrl: URI) {
+    private fun assignZaakToUser(document: Document, productAanvraag: ProductAanvraag, aanvragerRolTypeUrl: URI) {
+        val instanceLink = zaakInstanceLinkService.getByDocumentId(document.id().id)
         val roltoelichting = "Aanvrager automatisch toegevoegd in GZAC"
-        zaakRolService.addNatuurlijkPersoon(zaak, roltoelichting, aanvragerRolTypeUrl, productAanvraag.bsn)
-    }
-
-    private fun linkZaakInformatieObjecten(zaak: Zaak, informatieObjecten: Set<InformatieObject>) {
-        informatieObjecten.forEach {
-            documentenService.createObjectInformatieObject(it.url, zaak.url)
-        }
+        val klant = burgerService.ensureBurgerExists(productAanvraag.bsn)
+        zaakRolService.addNatuurlijkPersoon(
+            instanceLink.zaakInstanceUrl,
+            roltoelichting,
+            aanvragerRolTypeUrl,
+            productAanvraag.bsn,
+            URI(klant.url)
+        )
     }
 
     private fun getResources(informatieObjecten: Set<InformatieObject>): Set<Resource> {

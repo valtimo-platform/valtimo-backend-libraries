@@ -19,26 +19,17 @@ package com.ritense.openzaak.listener
 import com.ritense.openzaak.domain.event.EigenschappenSetEvent
 import com.ritense.openzaak.domain.event.ResultaatSetEvent
 import com.ritense.openzaak.domain.event.StatusSetEvent
-import com.ritense.openzaak.domain.event.ZaakCreatedEvent
 import com.ritense.openzaak.service.impl.ZaakService
 import org.springframework.context.event.EventListener
-import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.transaction.event.TransactionPhase
-import org.springframework.transaction.event.TransactionalEventListener
 import java.time.LocalDateTime
+import org.springframework.core.annotation.Order
 
 @Transactional
 class GlobalZaakEventListener(
     val zaakService: ZaakService
 ) {
-
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    fun handleCreateZaak(event: ZaakCreatedEvent) {
-        zaakService.createZaakWithLink(event.delegateExecution)
-    }
-
+    @Order(0)
     @EventListener(StatusSetEvent::class)
     fun handleSetStatus(event: StatusSetEvent) {
         zaakService.setZaakStatus(
@@ -48,15 +39,16 @@ class GlobalZaakEventListener(
         )
     }
 
+    @Order(0)
     @EventListener(ResultaatSetEvent::class)
     fun handleSetResultaat(event: ResultaatSetEvent) {
         zaakService.setZaakResultaat(
             event.zaak,
             event.resultaatType
         )
-
     }
 
+    @Order(0)
     @EventListener(EigenschappenSetEvent::class)
     fun handleSetEigenschappen(event: EigenschappenSetEvent) {
         zaakService.modifyEigenschap(

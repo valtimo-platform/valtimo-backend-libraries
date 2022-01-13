@@ -18,6 +18,7 @@ package com.ritense.connector.repository
 
 import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.connector.domain.ConnectorInstanceId
+import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.domain.ConnectorTypeId
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -25,6 +26,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface ConnectorTypeInstanceRepository : JpaRepository<ConnectorInstance, ConnectorInstanceId> {
     fun existsConnectorTypeInstanceByName(name: String): Boolean
+    fun existsConnectorTypeInstanceByType(type: ConnectorType): Boolean
     fun findByName(name: String): ConnectorInstance?
     fun findAllByTypeId(typeId: ConnectorTypeId, pageable: Pageable): Page<ConnectorInstance>
+    fun findByType(type: ConnectorType): ConnectorInstance
 }

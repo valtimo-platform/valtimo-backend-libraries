@@ -16,15 +16,10 @@
 
 package com.ritense.openzaak.web.rest.impl
 
-import com.ritense.openzaak.domain.configuration.OpenZaakConfig
-import com.ritense.openzaak.domain.request.CreateOpenZaakConfigRequest
-import com.ritense.openzaak.domain.request.ModifyOpenZaakConfigRequest
+import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import com.ritense.openzaak.service.impl.OpenZaakConfigService
-import com.ritense.openzaak.service.result.CreateOpenZaakConfigResult
-import com.ritense.openzaak.service.result.ModifyOpenZaakConfigResult
 import com.ritense.openzaak.web.rest.OpenZaakConfigResource
 import org.springframework.http.ResponseEntity
-import org.springframework.http.ResponseEntity.badRequest
 import org.springframework.http.ResponseEntity.noContent
 import org.springframework.http.ResponseEntity.ok
 
@@ -33,31 +28,10 @@ class OpenZaakConfigResource(
 ) : OpenZaakConfigResource {
 
     override fun getConfig(): ResponseEntity<OpenZaakConfig> {
-        val openZaakConfig = openZaakConfigService.get()
+        val openZaakConfig = openZaakConfigService.getOpenZaakConfig()
         return when (openZaakConfig) {
             null -> noContent().build()
             else -> ok(openZaakConfig)
         }
-    }
-
-    override fun createConfig(request: CreateOpenZaakConfigRequest): ResponseEntity<CreateOpenZaakConfigResult> {
-        val result = openZaakConfigService.createOpenZaakConfig(request)
-        return when (result.openZaakConfig()) {
-            null -> badRequest().body(result)
-            else -> ok(result)
-        }
-    }
-
-    override fun modifyConfig(request: ModifyOpenZaakConfigRequest): ResponseEntity<ModifyOpenZaakConfigResult> {
-        val result = openZaakConfigService.modifyOpenZaakConfig(request)
-        return when (result.openZaakConfig()) {
-            null -> badRequest().body(result)
-            else -> ok(result)
-        }
-    }
-
-    override fun deleteConfig(): ResponseEntity<Void> {
-        openZaakConfigService.removeOpenZaakConfig()
-        return noContent().build()
     }
 }
