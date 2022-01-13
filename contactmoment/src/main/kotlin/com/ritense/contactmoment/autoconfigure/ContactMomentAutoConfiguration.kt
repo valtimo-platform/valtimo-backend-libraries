@@ -109,7 +109,7 @@ class ContactMomentAutoConfiguration {
         sender: MailSender,
         klantService: KlantService,
         connectorService: ConnectorService,
-        @Value("\${valtimo.genericTemplateName}") templateName: String
+        @Value("\${valtimo.genericTemplateName:default-template}") templateName: String
     ): KlantcontactService {
         return KlantcontactService(sender, klantService, connectorService, templateName)
     }
