@@ -17,6 +17,7 @@
 package com.ritense.contactmoment.connector
 
 import com.ritense.contactmoment.BaseContactMomentIntegrationTest
+import com.ritense.contactmoment.domain.Kanaal
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -43,7 +44,7 @@ class ContactMomentConnectorIntTest : BaseContactMomentIntegrationTest() {
         medewerker.id = "test-id"
         `when`(currentUserService.currentUser).thenReturn(medewerker)
 
-        val contactMoment = (contactMomentConnector as ContactMomentConnector).createContactMoment("mail", "content-2")
+        val contactMoment = (contactMomentConnector as ContactMomentConnector).createContactMoment(Kanaal.MAIL, "content-2")
 
         Assertions.assertThat(contactMoment.tekst).isEqualTo("content-2")
     }

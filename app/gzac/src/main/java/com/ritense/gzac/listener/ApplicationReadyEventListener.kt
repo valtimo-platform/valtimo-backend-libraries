@@ -1,6 +1,7 @@
 package com.ritense.gzac.listener
 
 import com.ritense.connector.service.ConnectorService
+import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objectsapi.service.ObjectTypeConfig
 import com.ritense.objectsapi.service.ObjectsApiProperties
@@ -36,6 +37,18 @@ class ApplicationReadyEventListener(
                                 "e09b8bc5-5831-4618-ab28-41411304309d",
                                 Rsin("051845623")
                             )
+                        )
+                    )
+                }
+                if (it.name == "ContactMoment") {
+                    connectorService.createConnectorInstance(
+                        typeId = it.id.id,
+                        name = "ContactMomentInstance",
+                        connectorProperties = ContactMomentProperties(
+                            "http://localhost:8006",
+                            "valtimo_client",
+                            "e09b8bc5-5831-4618-ab28-41411304309d",
+                            "051845623"
                         )
                     )
                 }

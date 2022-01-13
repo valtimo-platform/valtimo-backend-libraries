@@ -22,6 +22,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentConnector
+import com.ritense.contactmoment.domain.Kanaal
 import com.ritense.contactmoment.domain.request.SendMessageRequest
 import com.ritense.klant.domain.Klant
 import com.ritense.klant.service.KlantService
@@ -64,7 +65,7 @@ internal class KlantcontactServiceTest {
 
         verify(klantService).getKlantForDocument(documentId)
         verify(mailSender).send(captor.capture())
-        verify(connector).createContactMoment(KlantcontactService.MESSAGE_KANAAL, "text")
+        verify(connector).createContactMoment(Kanaal.MAIL, "text")
 
         val sentMessage = captor.firstValue
         assertTrue(sentMessage.recipients.isPresent)
