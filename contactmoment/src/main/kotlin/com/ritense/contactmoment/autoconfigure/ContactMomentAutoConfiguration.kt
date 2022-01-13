@@ -26,6 +26,7 @@ import com.ritense.contactmoment.service.KlantcontactService
 import com.ritense.contactmoment.web.rest.ContactMomentResource
 import com.ritense.contactmoment.web.rest.MessageResource
 import com.ritense.klant.service.KlantService
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import com.ritense.valtimo.service.CurrentUserService
 import io.netty.handler.logging.LogLevel
@@ -83,8 +84,9 @@ class ContactMomentAutoConfiguration {
         contactMomentProperties: ContactMomentProperties,
         contactMomentClient: ContactMomentClient,
         currentUserService: CurrentUserService,
+        userManagementService: UserManagementService,
     ): Connector {
-        return ContactMomentConnector(contactMomentProperties, contactMomentClient, currentUserService)
+        return ContactMomentConnector(contactMomentProperties, contactMomentClient, currentUserService, userManagementService)
     }
 
     @Bean
