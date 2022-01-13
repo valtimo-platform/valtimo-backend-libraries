@@ -64,6 +64,7 @@ public class JwtFilter extends GenericFilterBean {
             // user id should always be set or reset to null because the camunda implementation will remember the user id from a previous request.
             identityService.setAuthenticatedUserId(authenticatedUserId);
             filterChain.doFilter(servletRequest, servletResponse);
+            identityService.clearAuthentication();
         } catch (ExpiredJwtException eje) {
             slf4jLogger.info("Security exception for user {} - {}", eje.getClaims().getSubject(), eje.getMessage());
             ((HttpServletResponse) servletResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);

@@ -23,13 +23,14 @@ import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
-
 class ContactMomentHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/contactmoment").hasAuthority(USER)
+                .antMatchers(POST, "/api/contactmoment").hasAuthority(USER)
+                .antMatchers(GET, "/api/contactmoment/kanaal").hasAuthority(USER)
                 .antMatchers(POST, "/api/document/{documentId}/message").hasAuthority(USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

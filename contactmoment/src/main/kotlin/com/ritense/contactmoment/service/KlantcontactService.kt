@@ -18,6 +18,7 @@ package com.ritense.contactmoment.service
 
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentConnector
+import com.ritense.contactmoment.domain.Kanaal
 import com.ritense.contactmoment.domain.request.SendMessageRequest
 import com.ritense.klant.service.KlantService
 import com.ritense.valtimo.contract.basictype.EmailAddress
@@ -56,11 +57,7 @@ class KlantcontactService(
 
         mailSender.send(builder.build())
 
-        contactMomentConnector.createContactMoment(MESSAGE_KANAAL, message.bodyText)
+        contactMomentConnector.createContactMoment(Kanaal.MAIL, message.bodyText)
 
-    }
-
-    companion object {
-        val MESSAGE_KANAAL = "mail"
     }
 }

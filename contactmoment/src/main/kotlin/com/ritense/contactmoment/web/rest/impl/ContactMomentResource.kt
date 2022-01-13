@@ -19,7 +19,9 @@ package com.ritense.contactmoment.web.rest.impl
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentConnector
 import com.ritense.contactmoment.domain.ContactMoment
+import com.ritense.contactmoment.domain.Kanaal
 import com.ritense.contactmoment.web.rest.ContactMomentResource
+import com.ritense.contactmoment.web.rest.request.CreateContactMomentRequest
 import org.springframework.http.ResponseEntity
 
 class ContactMomentResource(
@@ -28,6 +30,17 @@ class ContactMomentResource(
 
     override fun getContactMomenten(): ResponseEntity<List<ContactMoment>> {
         return ResponseEntity.ok(getContactMomentConnector().getContactMomenten(1))
+    }
+
+    override fun createContactMomenten(request: CreateContactMomentRequest): ResponseEntity<ContactMoment> {
+        return ResponseEntity.ok(getContactMomentConnector().createContactMoment(
+            request.kanaal,
+            request.tekst
+        ))
+    }
+
+    override fun getKanalen(): ResponseEntity<Array<Kanaal>> {
+        return ResponseEntity.ok(Kanaal.values())
     }
 
     private fun getContactMomentConnector(): ContactMomentConnector {

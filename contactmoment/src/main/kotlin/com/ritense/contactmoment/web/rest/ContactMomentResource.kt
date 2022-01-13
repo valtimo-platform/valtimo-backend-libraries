@@ -17,9 +17,14 @@
 package com.ritense.contactmoment.web.rest
 
 import com.ritense.contactmoment.domain.ContactMoment
+import com.ritense.contactmoment.domain.Kanaal
+import com.ritense.contactmoment.web.rest.request.CreateContactMomentRequest
+import javax.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -29,5 +34,11 @@ interface ContactMomentResource {
 
     @GetMapping
     fun getContactMomenten(): ResponseEntity<List<ContactMoment>>
+
+    @PostMapping
+    fun createContactMomenten(@Valid @RequestBody request: CreateContactMomentRequest): ResponseEntity<ContactMoment>
+
+    @GetMapping("/kanaal")
+    fun getKanalen(): ResponseEntity<Array<Kanaal>>
 
 }
