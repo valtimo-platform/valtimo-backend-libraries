@@ -34,9 +34,13 @@ class ContactMomentResource(
 
     override fun createContactMomenten(request: CreateContactMomentRequest): ResponseEntity<ContactMoment> {
         return ResponseEntity.ok(getContactMomentConnector().createContactMoment(
-            Kanaal.GZAC,
+            request.kanaal,
             request.tekst
         ))
+    }
+
+    override fun getKanalen(): ResponseEntity<Array<Kanaal>> {
+        return ResponseEntity.ok(Kanaal.values())
     }
 
     private fun getContactMomentConnector(): ContactMomentConnector {

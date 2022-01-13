@@ -17,15 +17,18 @@
 package com.ritense.contactmoment.web.rest.impl
 
 import com.ritense.contactmoment.BaseContactMomentIntegrationTest
+import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 
@@ -44,10 +47,11 @@ internal class ContactMomentResourceIT : BaseContactMomentIntegrationTest() {
 
     @Test
     @WithMockUser
-    fun `sendMessage sends message and stores contactmoment`() {
+    fun `post contactmoment saves contact moment`() {
         mockUser(lastName = "Miller")
         val postBody = """
             {
+                "kanaal": "MAIL",
                 "tekst": "content-2"
             }
         """.trimIndent()
@@ -59,10 +63,26 @@ internal class ContactMomentResourceIT : BaseContactMomentIntegrationTest() {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(MockMvcResultHandlers.print())
-            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.registratiedatum").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.tekst").value("content-2"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.medewerkerIdentificatie.achternaam").value("Miller"))
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$.registratiedatum").isNotEmpty)
+            .andExpect(jsonPath("$.kanaal").value("MAIL"))
+            .andExpect(jsonPath("$.tekst").value("content-2"))
+            .andExpect(jsonPath("$.medewerkerIdentificatie.achternaam").value("Miller"))
+            .andReturn()
+    }
+
+    @Test
+    @WithMockUser
+    fun `get kanalen responds with all kanalen`() {
+
+        mockMvc.perform(
+            get("/api/contactmoment/kanaal")
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$", hasSize<Int>(1)))
+            .andExpect(jsonPath("$.[0]").value("MAIL"))
             .andReturn()
     }
 

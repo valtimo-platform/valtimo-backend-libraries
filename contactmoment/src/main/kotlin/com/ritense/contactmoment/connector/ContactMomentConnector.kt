@@ -59,7 +59,7 @@ class ContactMomentConnector(
         val request = CreateContactMomentRequest(
             bronorganisatie = contactMomentProperties.rsin,
             registratiedatum = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            kanaal = kanaal.name.lowercase(),
+            kanaal = kanaal.name,
             tekst = text,
             medewerkerIdentificatie = CreateContactMomentRequest.MedewerkerIdentificatieRequest(
                 identificatie = getMedewerkerIdentificatie(medewerker),
