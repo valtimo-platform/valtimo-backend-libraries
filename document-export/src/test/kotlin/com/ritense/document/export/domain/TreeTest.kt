@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test
 internal class TreeTest : BaseTest() {
 
     @Test
-    fun `should deploy connectorBean and save to connectorType`() {
+    fun `should initialize tree`() {
         val jsonSchema = JsonSchema.fromResourceUri(path("testschema"))
 
         val tree = Tree.init(jsonSchema.asJson())
 
         assertThat(tree).isNotNull
-        assertThat(tree.nodes).isNotEmpty
+        assertThat(tree.root).isNotEmpty
     }
 
     companion object {

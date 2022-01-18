@@ -20,6 +20,7 @@ dependencies {
     implementation project(':resource')
     implementation "com.github.erosb:everit-json-schema:1.14.0"
     implementation "com.networknt:json-schema-validator:1.0.64"
+    implementation "com.jayway.jsonpath:json-path:2.6.0"
     testImplementation "org.springframework.security:spring-security-test"
 }
 

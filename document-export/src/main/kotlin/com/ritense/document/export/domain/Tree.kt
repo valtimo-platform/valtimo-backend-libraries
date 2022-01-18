@@ -17,19 +17,27 @@
 package com.ritense.document.export.domain
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.networknt.schema.JsonSchemaFactory
 import com.networknt.schema.SchemaValidatorsConfig
+import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.validation.Validatable
 import org.hibernate.annotations.Type
-import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Embeddable
 
 @Embeddable
-data class Tree(
+class Tree(
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
     @Column(name = "nodes", columnDefinition = "json")
-    val nodes: List<Node>
-) {
+    //TODO not empty
+    val root: MutableList<Node>
+) : Validatable {
+
+    init {
+        validate()
+    }
 
     companion object {
 
@@ -41,9 +49,12 @@ data class Tree(
                 .getInstance()//SpecVersion.VersionFlag.V7
                 .getSchema(schema, config)
 
-            val result = jsonSchema2.walk(null, false)
+            jsonSchema2.walk(null, false)
+            val tree = Mapper.INSTANCE.get().readTree(propertyWalkListener.json)
             val nodes = mutableListOf<Node>()
-            propertyWalkListener.events.forEach { walkEvent ->
+            traverse(tree, nodes)
+
+            /*propertyWalkListener.events.forEach { walkEvent ->
                 //val node = nodes.find { walkEvent.at.startsWith(it.path) }
                 val node = nodes.find { walkEvent.at.startsWith(it.path) }
 
@@ -66,8 +77,79 @@ data class Tree(
                         )
                     )
                 }
-            }
+            }*/
             return Tree(nodes)
+        }
+
+        //Not perfect
+        // Should parse:
+        /* {
+            "myAdress": {
+                "number": "",
+                "country": {
+                    "iso": ""
+                },
+                "streetName": "",
+                "province": "",
+                "city": ""
+            },
+            "otherAddresses": [{
+                "number": "",
+                "country": {
+                    "iso": ""
+                },
+                "streetName": "",
+                "province": "",
+                "city": ""
+            }],
+            "voornaam": ""
+        }}*/
+        fun traverse(rootNode: JsonNode, result: MutableList<Node>) {
+            val iterator = rootNode.fields()
+            while (iterator.hasNext()) {
+                val jsonNode = iterator.next()
+                if (jsonNode.value.isTextual) {
+                    result.add(Node(name = jsonNode.key))
+                } else if (jsonNode.value.isObject) {
+                    val objectNode = jsonNode.value as ObjectNode
+                    val containerNode = Node(name = "Container ${jsonNode.key.toString()}")
+                    objectNode.fieldNames().forEach { fieldName ->
+                        containerNode.children.add(
+                            Node(name = fieldName, parent = containerNode)
+                        )
+                    }
+                    result.add(containerNode)
+                } else if (jsonNode.value.isArray) {
+                    val arrayNode = jsonNode.value as ArrayNode
+                    val containerNode = Node(name = "Container ${jsonNode.key.toString()}")
+                    arrayNode.get(0).fieldNames().forEach { fieldName ->
+                        containerNode.children.add(
+                            Node(name = fieldName, parent = containerNode)
+                        )
+                    }
+                    result.add(containerNode)
+                }
+            }
+
+            /* rootNode.forEach { jsonNode ->
+                 if (jsonNode.isTextual) {
+                     *//*  val containerNode = Node(name = "Container")
+                      containerNode.children.add(Node(name = field, parent = containerNode))
+                      result.add(containerNode)*//*
+                    result.add(Node(name = jsonNode.fieldNames().next()))
+                } else if (jsonNode.isObject) {
+                    jsonNode as ObjectNode
+                    val containerNode = Node(name = "Container ")
+                    jsonNode.fieldNames().forEach { fieldName ->
+                        containerNode.children.add(
+                            Node(name = fieldName, parent = containerNode)
+                        )
+                    }
+                    result.add(containerNode)
+                } else if (jsonNode.isArray) {
+                    traverse(jsonNode, result)
+                }
+            }*/
         }
 
     }

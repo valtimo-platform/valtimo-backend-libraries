@@ -21,16 +21,16 @@ import com.ritense.valtimo.contract.validation.Validatable
 import java.io.Serializable
 import java.util.UUID
 
-data class Node(
-    val id: UUID, // unique id
+class Node(
+    val id: UUID = UUID.randomUUID(), // unique id
     val name: String, // node's primary label.
-    var parent: Node?,
-    val path: String,// data point within definition
+    var parent: Node? = null,
+    val path: String = "",// data point within definition
     val colour: String = "", // color for Excel column
     val type: ExportType? = null, // orb / star / key
     var order: Int? = 0, // position column in export
     var filters: List<Filter>? = null, // filter used on pointer as where clause(s)
-    var childs: MutableList<Node> = mutableListOf()
+    var children: MutableList<Node> = mutableListOf()
 ) : Validatable, Serializable {
 
     init {
