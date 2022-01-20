@@ -1,6 +1,5 @@
 package com.ritense.document.export.service.excelexport
 
-import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.stereotype.Component
@@ -35,7 +34,6 @@ class DataToExcelParser {
         if (fileExists) {
             val xssf = XSSFWorkbook(fileName)
             workbook = SXSSFWorkbook(xssf, 1)
-            workbook.xssfWorkbook.getSheetAt(0)
         } else {
             workbook = SXSSFWorkbook(1)
             workbook.createSheet(sheetname)
@@ -48,7 +46,7 @@ class DataToExcelParser {
         fileName: String,
         fileExists: Boolean,
         rows: List<List<Any>>
-    ): SXSSFWorkbook {
+    ) {
 
         workbook.use {
             val startRow = workbook.xssfWorkbook.getSheetAt(0).lastRowNum.plus(1)
@@ -68,7 +66,6 @@ class DataToExcelParser {
             }
             writeDataToExcel(fileName, workbook, fileExists)
         }
-        return workbook
     }
 
     private fun writeDataToExcel(
