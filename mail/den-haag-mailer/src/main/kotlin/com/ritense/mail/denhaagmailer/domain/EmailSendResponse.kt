@@ -33,7 +33,6 @@ data class EmailSendResponse(
     fun toMailMessageStatus(): MailMessageStatus {
         return MailMessageStatus
             .with(getRecipientEmailAddress(), "SENT", hashCode().toString())
-            .emailContent(data.content)
             .build()
     }
 

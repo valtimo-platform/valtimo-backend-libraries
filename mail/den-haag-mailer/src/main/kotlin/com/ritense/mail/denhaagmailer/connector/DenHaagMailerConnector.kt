@@ -22,11 +22,13 @@ import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.mail.denhaagmailer.domain.EmailSendRequest
 import com.ritense.mail.denhaagmailer.domain.NamedByteArrayResource
 import com.ritense.mail.denhaagmailer.service.DenHaagMailClient
+import com.ritense.mail.event.MailSendEvent
 import com.ritense.valtimo.contract.mail.model.MailMessageStatus
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.AttachmentCollection
 import org.apache.commons.lang3.NotImplementedException
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.io.Resource
 import kotlin.streams.toList
 
@@ -34,6 +36,7 @@ import kotlin.streams.toList
 class DenHaagMailerConnector(
     private var denHaagMailerConnectorProperties: DenHaagMailerConnectorProperties,
     private val denHaagMailClient: DenHaagMailClient,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) : Connector {
 
     override fun getProperties(): ConnectorProperties {
@@ -56,7 +59,17 @@ class DenHaagMailerConnector(
         for (sendRequest in sendRequests) {
             val attachments = attachmentsToResources(templatedMailMessage.attachments)
             val response = denHaagMailClient.send(templateId, sendRequest, attachments)
-            statusList.add(response.toMailMessageStatus())
+            val mailStatus = response.toMailMessageStatus()
+            statusList.add(mailStatus)
+
+            if (response.success == true) {
+                applicationEventPublisher.publishEvent(
+                    MailSendEvent(
+                        mailStatus.email,
+                        templatedMailMessage.subject
+                    )
+                )
+            }
         }
         return statusList
     }

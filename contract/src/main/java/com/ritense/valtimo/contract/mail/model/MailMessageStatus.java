@@ -19,22 +19,18 @@ package com.ritense.valtimo.contract.mail.model;
 import com.ritense.valtimo.contract.basictype.EmailAddress;
 
 import java.util.Objects;
-import lombok.Getter;
 
-@Getter
 public class MailMessageStatus {
     private final EmailAddress email;
     private final String status;
     private final String rejectReason;
     private final String id;
-    private final String emailContent;
 
     private MailMessageStatus(Builder builder) {
         this.email = builder.email;
         this.status = builder.status;
         this.rejectReason = builder.rejectReason;
         this.id = builder.id;
-        this.emailContent = builder.emailContent;
     }
 
     public static Builder with(EmailAddress email, String status, String id) {
@@ -47,7 +43,6 @@ public class MailMessageStatus {
         private final String id;
 
         private String rejectReason = null;
-        private String emailContent = null;
 
         private Builder(EmailAddress email, String status, String id) {
             Objects.requireNonNull(email, "Email argument cannot be null");
@@ -66,14 +61,24 @@ public class MailMessageStatus {
             return this;
         }
 
-        public Builder emailContent(String emailContent) {
-            Objects.requireNonNull(emailContent, "Email content argument cannot be null");
-            this.emailContent = emailContent;
-            return this;
-        }
-
         public MailMessageStatus build() {
             return new MailMessageStatus(this);
         }
+    }
+
+    public EmailAddress getEmail() {
+        return email;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public String getId() {
+        return id;
     }
 }
