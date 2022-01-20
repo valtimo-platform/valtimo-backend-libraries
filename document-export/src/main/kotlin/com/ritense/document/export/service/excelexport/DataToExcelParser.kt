@@ -1,3 +1,20 @@
+/*
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
 package com.ritense.document.export.service.excelexport
 
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
@@ -7,6 +24,7 @@ import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 
 @Component
 class DataToExcelParser {
@@ -47,10 +65,8 @@ class DataToExcelParser {
         fileExists: Boolean,
         rows: List<List<Any>>
     ) {
-
+        val startRow = workbook.xssfWorkbook.getSheetAt(0).lastRowNum.plus(1)
         workbook.use {
-            val startRow = workbook.xssfWorkbook.getSheetAt(0).lastRowNum.plus(1)
-            println(startRow)
             rows.forEachIndexed { index, columns ->
                 val row = workbook.getSheetAt(0).createRow(startRow.plus(index))
                 columns.indices.forEach { cellNumber ->
@@ -76,16 +92,17 @@ class DataToExcelParser {
         if (fileExists) {
             FileOutputStream(tempExcelFileName).use { out -> workbook.write(out) }
             // files can not be overridden with Workbook
-            Files.delete(Paths.get(fileName))
-            Files.move(Paths.get(tempExcelFileName), Paths.get(fileName))
+            println("deleted data and copy data now")
+            Files.move(Paths.get(tempExcelFileName), Paths.get(fileName), StandardCopyOption.REPLACE_EXISTING)
         } else {
+            println("writing data now")
             FileOutputStream(fileName).use { out -> workbook.write(out) }
         }
         workbook.dispose()
     }
 
     companion object {
-        private const val tempExcelFileName = "tempExcelFileName"
+        private const val tempExcelFileName = "src/test/resources/test-files/tempExcelFileName.xlsx"
         private const val sheetname = "sheet_1"
     }
 }
