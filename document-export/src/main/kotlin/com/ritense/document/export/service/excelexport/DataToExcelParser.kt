@@ -17,57 +17,14 @@ class DataToExcelParser {
         rows: List<List<Any>>
     ) {
         val fileExists = Files.exists(Path.of(fileName))
-        var workbook = createWorkbook(fileName, fileExists)
+        val workbook = createWorkbook(fileName, fileExists)
 
-        workbook = convertDataToRows(
+        convertDataToRows(
             workbook = workbook,
+            fileName = fileName,
+            fileExists = fileExists,
             rows = rows
         )
-        writeDataToExcel(
-            fileName = fileName,
-            workbook = workbook,
-            fileExists = fileExists
-        )
-    }
-
-    private fun writeDataToExcel(
-        fileName: String,
-        workbook: SXSSFWorkbook,
-        fileExists: Boolean
-    ) {
-        if (fileExists) {
-            FileOutputStream(tempExcelFileName).use { out -> workbook.write(out) }
-            // files can not be overridden with Workbook
-            Files.delete(Paths.get(fileName))
-            Files.move(Paths.get(tempExcelFileName), Paths.get(fileName))
-        } else {
-            FileOutputStream(fileName).use { out -> workbook.write(out) }
-        }
-        workbook.dispose()
-    }
-
-    private fun convertDataToRows(
-        workbook: SXSSFWorkbook,
-        rows: List<List<Any>>
-    ): SXSSFWorkbook {
-        val sheet = workbook.getSheetAt(0)
-        val startRow = sheet.lastRowNum.plus(1)
-        workbook.use {
-            rows.forEachIndexed { index, columns ->
-                val row = sheet.createRow(startRow.plus(index))
-                columns.indices.forEach { cellNumber ->
-                    if (columns[cellNumber] is String) {
-                        val result: String = columns[cellNumber] as String
-                        row.createCell(cellNumber).setCellValue(result)
-                    }
-                    if (columns[cellNumber] is Number) {
-                        val result: Double = columns[cellNumber] as Double
-                        row.createCell(cellNumber).setCellValue(result)
-                    }
-                }
-            }
-        }
-        return workbook
     }
 
     private fun createWorkbook(
@@ -86,6 +43,49 @@ class DataToExcelParser {
         return workbook
     }
 
+    private fun convertDataToRows(
+        workbook: SXSSFWorkbook,
+        fileName: String,
+        fileExists: Boolean,
+        rows: List<List<Any>>
+    ): SXSSFWorkbook {
+
+        workbook.use {
+            val startRow = workbook.xssfWorkbook.getSheetAt(0).lastRowNum.plus(1)
+            println(startRow)
+            rows.forEachIndexed { index, columns ->
+                val row = workbook.getSheetAt(0).createRow(startRow.plus(index))
+                columns.indices.forEach { cellNumber ->
+                    if (columns[cellNumber] is String) {
+                        val result: String = columns[cellNumber] as String
+                        row.createCell(cellNumber).setCellValue(result)
+                    }
+                    if (columns[cellNumber] is Number) {
+                        val result: Double = columns[cellNumber] as Double
+                        row.createCell(cellNumber).setCellValue(result)
+                    }
+                }
+            }
+            writeDataToExcel(fileName, workbook, fileExists)
+        }
+        return workbook
+    }
+
+    private fun writeDataToExcel(
+        fileName: String,
+        workbook: SXSSFWorkbook,
+        fileExists: Boolean
+    ) {
+        if (fileExists) {
+            FileOutputStream(tempExcelFileName).use { out -> workbook.write(out) }
+            // files can not be overridden with Workbook
+            Files.delete(Paths.get(fileName))
+            Files.move(Paths.get(tempExcelFileName), Paths.get(fileName))
+        } else {
+            FileOutputStream(fileName).use { out -> workbook.write(out) }
+        }
+        workbook.dispose()
+    }
 
     companion object {
         private const val tempExcelFileName = "tempExcelFileName"
