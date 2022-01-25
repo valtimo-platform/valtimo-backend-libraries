@@ -43,16 +43,13 @@ internal class KlantcontactServiceTest {
     fun `sendMessage should get klant and send mail`() {
         val mailSender = mock<MailSender>()
         val klantService = mock<KlantService>()
-        val connectorService = mock<ConnectorService>()
         val template = "template"
-        val service = KlantcontactService(mailSender, klantService, connectorService, template)
+        val service = KlantcontactService(mailSender, klantService, template)
 
         val captor = argumentCaptor<TemplatedMailMessage>()
         val documentId = UUID.randomUUID()
         val request = SendMessageRequest("subject", "text")
 
-        val connector = mock<ContactMomentConnector>()
-        whenever(connectorService.loadByClassName(ContactMomentConnector::class.java)).thenReturn(connector)
         whenever(klantService.getKlantForDocument(documentId)).thenReturn(
             Klant(
                 "http://example.org",
@@ -65,7 +62,6 @@ internal class KlantcontactServiceTest {
 
         verify(klantService).getKlantForDocument(documentId)
         verify(mailSender).send(captor.capture())
-        verify(connector).createContactMoment(Kanaal.MAIL, "text")
 
         val sentMessage = captor.firstValue
         assertTrue(sentMessage.recipients.isPresent)
@@ -86,15 +82,12 @@ internal class KlantcontactServiceTest {
     fun `sendMessage should throw exception when emailadress is null`() {
         val mailSender = mock<MailSender>()
         val klantService = mock<KlantService>()
-        val connectorService = mock<ConnectorService>()
         val template = "template"
-        val service = KlantcontactService(mailSender, klantService, connectorService, template)
+        val service = KlantcontactService(mailSender, klantService, template)
 
         val documentId = UUID.randomUUID()
         val request = SendMessageRequest("subject", "text")
 
-        val connector = mock<ContactMomentConnector>()
-        whenever(connectorService.loadByClassName(ContactMomentConnector::class.java)).thenReturn(connector)
         whenever(klantService.getKlantForDocument(documentId)).thenReturn(
             Klant(
                 "http://example.org",
@@ -103,9 +96,9 @@ internal class KlantcontactServiceTest {
             )
         )
 
-        val exception = Assertions.assertThrows(IllegalStateException::class.java, {
+        val exception = Assertions.assertThrows(IllegalStateException::class.java) {
             service.sendMessage(documentId, request)
-        })
+        }
 
         Assertions.assertEquals("emailaddress was not available for klant", exception.message)
     }
