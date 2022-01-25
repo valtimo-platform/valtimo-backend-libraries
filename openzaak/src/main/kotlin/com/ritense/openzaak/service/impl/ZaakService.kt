@@ -55,13 +55,12 @@ class ZaakService(
 
     override fun createZaakWithLink(documentId: Document.Id): Zaak {
         val document = documentService.findBy(documentId).orElseThrow()
-        val openZaakConfig = openZaakConfigService.get()!!
-
+        val openZaakConfig = openZaakConfigService.getOpenZaakConfig()!!
         val zaakTypeLink = zaakTypeLinkService.findBy(document.definitionId().name())
         val zaakInstance = createZaak(
             zaakTypeLink.zaakTypeUrl,
             LocalDateTime.now(),
-            openZaakConfig.rsin.value
+            openZaakConfig.rsin.toString()
         )
 
         zaakInstanceLinkService.createZaakInstanceLink(
@@ -202,7 +201,7 @@ class ZaakService(
     }
 
     private fun getZaakStatusOmschrijving(zaakStatusUrl: URI): String? {
-        val zaakStatusPath = openZaakConfigService.get()?.let { zaakStatusUrl.toString().replace(it.url, "") }
+        val zaakStatusPath = openZaakConfigService.getOpenZaakConfig()?.let { zaakStatusUrl.toString().replace(it.url, "") }
         val statusType = zaakStatusPath?.let {
             OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
                 .path(it)
@@ -211,7 +210,7 @@ class ZaakService(
                 .execute(Status::class.java)
         }
 
-        val statusTypePath = openZaakConfigService.get()?.let { statusType?.statustype.toString().replace(it.url, "") }
+        val statusTypePath = openZaakConfigService.getOpenZaakConfig()?.let { statusType?.statustype.toString().replace(it.url, "") }
         return statusTypePath?.let {
             OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
                 .path(it)
@@ -222,7 +221,7 @@ class ZaakService(
     }
 
     private fun getZaakResultaatOmschrijving(zaakResultaatUrl: URI): String? {
-        val zaakResultaatPath = openZaakConfigService.get()?.let { zaakResultaatUrl.toString().replace(it.url, "") }
+        val zaakResultaatPath = openZaakConfigService.getOpenZaakConfig()?.let { zaakResultaatUrl.toString().replace(it.url, "") }
         val resultaatType = zaakResultaatPath?.let {
             OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
                 .path(it)
@@ -231,7 +230,7 @@ class ZaakService(
                 .execute(Resultaat::class.java)
         }
 
-        val resultaatTypePath = openZaakConfigService.get()?.let { resultaatType?.resultaattype.toString().replace(it.url, "") }
+        val resultaatTypePath = openZaakConfigService.getOpenZaakConfig()?.let { resultaatType?.resultaattype.toString().replace(it.url, "") }
         return resultaatTypePath?.let {
             OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
                 .path(it)

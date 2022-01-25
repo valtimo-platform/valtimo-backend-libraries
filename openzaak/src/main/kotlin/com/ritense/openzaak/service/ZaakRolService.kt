@@ -16,11 +16,14 @@
 
 package com.ritense.openzaak.service
 
-import com.ritense.openzaak.service.impl.model.zaak.Zaak
+import com.ritense.openzaak.service.impl.model.ResultWrapper
+import com.ritense.openzaak.service.impl.model.zaak.Rol
 import java.net.URI
 
 interface ZaakRolService {
 
-    fun addNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, bsn: String)
+    fun addNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, bsn: String, betrokkene: URI?)
+
+    fun getZaakInitator(zaakUrl: URI): ResultWrapper<Rol>
 
 }

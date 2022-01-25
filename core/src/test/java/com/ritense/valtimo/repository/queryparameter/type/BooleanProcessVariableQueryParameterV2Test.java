@@ -21,20 +21,20 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BooleanProcessVariableQueryParameterV2Test {
+class BooleanProcessVariableQueryParameterV2Test {
 
     private static final String NAME = "some-name";
     private static final Boolean VALUE = false;
 
     @Test
-    public void booleanProcessVariableQueryParameter() {
+    void booleanProcessVariableQueryParameter() {
         BooleanProcessVariableQueryParameterV2 booleanProcessVariableQueryParameter = booleanProcessVariableQueryParameterV2();
         assertEquals(NAME, booleanProcessVariableQueryParameter.name);
         assertEquals(VALUE, booleanProcessVariableQueryParameter.getValue());
     }
 
     @Test
-    public void booleanType() {
+    void booleanType() {
         BooleanProcessVariableQueryParameterV2 booleanProcessVariableQueryParameter = booleanProcessVariableQueryParameterV2();
         assertTrue(booleanProcessVariableQueryParameter.isVariableBoolean());
     }

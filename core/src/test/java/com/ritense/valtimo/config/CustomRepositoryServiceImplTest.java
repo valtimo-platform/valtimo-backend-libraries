@@ -29,14 +29,14 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class CustomRepositoryServiceImplTest {
+class CustomRepositoryServiceImplTest {
 
     private CustomRepositoryServiceImpl customRepositoryServiceImpl;
     private ApplicationEventPublisher applicationEventPublisher;
@@ -44,7 +44,7 @@ public class CustomRepositoryServiceImplTest {
     private final String PROCESS_DEFINITION_KEY = "e6025d07-555b-11e9-9747-acde48001122";
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
         commandExecutor = mock(CommandExecutor.class);
 
@@ -56,7 +56,7 @@ public class CustomRepositoryServiceImplTest {
     }
 
     @Test
-    public void shouldPublishProcessDefinitionDeletedEventWhenProcessDefinitionIsDeleted() throws IOException {
+    void shouldPublishProcessDefinitionDeletedEventWhenProcessDefinitionIsDeleted() throws IOException {
         customRepositoryServiceImpl.deleteProcessDefinition(PROCESS_DEFINITION_KEY);
 
         ArgumentCaptor<AuditEvent> argumentCaptor = ArgumentCaptor.forClass(AuditEvent.class);

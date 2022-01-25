@@ -14,13 +14,13 @@ class RsinTest {
     @Test
     fun `should create valid rsin`() {
         val rsin = Rsin("002564440")
-        assertThat(rsin.value).isEqualTo("002564440")
+        assertThat(rsin.toString()).isEqualTo("002564440")
     }
 
     @Test
     fun `bugfix should create valid rsin`() {
         val rsin = Rsin("001326132")
-        assertThat(rsin.value).isEqualTo("001326132")
+        assertThat(rsin.toString()).isEqualTo("001326132")
     }
 
     /*

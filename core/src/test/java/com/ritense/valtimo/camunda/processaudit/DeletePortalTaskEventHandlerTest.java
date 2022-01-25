@@ -35,7 +35,7 @@ class DeletePortalTaskEventHandlerTest {
     private DelegateTask delegateTask;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
         taskEventHandler = new TaskEventHandler(applicationEventPublisher);
 

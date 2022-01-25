@@ -16,7 +16,7 @@
 
 package com.ritense.openzaak.service.impl
 
-import com.ritense.openzaak.domain.configuration.OpenZaakConfig
+import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.core.ResolvableType
@@ -61,7 +61,7 @@ data class OpenZaakRequestBuilder(
 
     fun build() = apply {
         if (this.config == null) {
-            this.config = openZaakConfigService.get() ?: throw IllegalStateException("OpenZaak config is not found")
+            this.config = openZaakConfigService.getOpenZaakConfig() ?: throw IllegalStateException("OpenZaak config is not found")
         }
         val builder = UriComponentsBuilder
             .fromUriString(this.config!!.url)
@@ -142,7 +142,7 @@ data class OpenZaakRequestBuilder(
 
     private fun buildHeaders(openZaakConfig: OpenZaakConfig): HttpHeaders {
         val generatedToken = tokenGeneratorService.generateToken(
-            openZaakConfig.secret.value,
+            openZaakConfig.secret,
             openZaakConfig.clientId
         )
         val headers = HttpHeaders()
@@ -151,15 +151,16 @@ data class OpenZaakRequestBuilder(
         } else {
             headers.accept = this.acceptHeader
         }
-        headers.set("Accept-Crs", "EPSG:4326")
-        headers.set("Content-Crs", "EPSG:4326")
+        headers.set("Accept-Crs", HEADER_DATA)
+        headers.set("Content-Crs", HEADER_DATA)
+
         headers.setBearerAuth(generatedToken)
         return headers
     }
 
     private fun buildPostHeaders(openZaakConfig: OpenZaakConfig): HttpHeaders {
         val generatedToken = tokenGeneratorService.generateToken(
-            openZaakConfig.secret.value,
+            openZaakConfig.secret,
             openZaakConfig.clientId
         )
         val headers = HttpHeaders()
@@ -169,11 +170,15 @@ data class OpenZaakRequestBuilder(
             headers.accept = this.acceptHeader
         }
         headers.contentType = MediaType.APPLICATION_JSON
-        headers.set("Accept-Crs", "EPSG:4326")
-        headers.set("Content-Crs", "EPSG:4326")
+        headers.set("Accept-Crs", HEADER_DATA)
+        headers.set("Content-Crs", HEADER_DATA)
         headers.setBearerAuth(generatedToken)
 
         return headers
+    }
+
+    companion object {
+        const val HEADER_DATA = "EPSG:4326"
     }
 
 }

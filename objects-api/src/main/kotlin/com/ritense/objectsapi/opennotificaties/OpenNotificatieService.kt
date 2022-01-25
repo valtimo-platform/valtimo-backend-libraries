@@ -22,6 +22,7 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
+import com.ritense.klant.service.BurgerService
 import com.ritense.objectsapi.domain.ProductAanvraag
 import com.ritense.objectsapi.domain.request.HandleNotificationRequest
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagConnector
@@ -48,7 +49,8 @@ class OpenNotificatieService(
     val connectorService: ConnectorService,
     val openZaakResourceRepository: OpenZaakResourceRepository,
     val zaakRolService: ZaakRolService,
-    val zaakInstanceLinkService: ZaakInstanceLinkService
+    val zaakInstanceLinkService: ZaakInstanceLinkService,
+    val burgerService: BurgerService
 ) {
     fun handle(notification: HandleNotificationRequest, connectorId: String, authorizationKey: String) {
         if (notification.isCreateNotification() && !notification.isTestNotification()) {
@@ -93,7 +95,7 @@ class OpenNotificatieService(
         val newDocumentRequest = NewDocumentRequest(typeMapping.caseDefinitionKey, productAanvraag.data)
             .withResources(getResources(informatieObjecten))
 
-        val documentResult = documentService.createDocument(newDocumentRequest);
+        val documentResult = documentService.createDocument(newDocumentRequest)
 
         if (documentResult.resultingDocument().isEmpty) {
             var logMessage = "Errors occurred during creation of dossier for productaanvraag:"
@@ -110,7 +112,7 @@ class OpenNotificatieService(
         documentId: Document.Id,
         typeMapping: ProductAanvraagTypeMapping
     ) {
-        val startProcessRequest = StartProcessForDocumentRequest(documentId, typeMapping.processDefinitionKey, null);
+        val startProcessRequest = StartProcessForDocumentRequest(documentId, typeMapping.processDefinitionKey, null)
 
         val processStartResult = processDocumentService.startProcessForDocument(startProcessRequest)
 
@@ -124,7 +126,14 @@ class OpenNotificatieService(
     private fun assignZaakToUser(document: Document, productAanvraag: ProductAanvraag, aanvragerRolTypeUrl: URI) {
         val instanceLink = zaakInstanceLinkService.getByDocumentId(document.id().id)
         val roltoelichting = "Aanvrager automatisch toegevoegd in GZAC"
-        zaakRolService.addNatuurlijkPersoon(instanceLink.zaakInstanceUrl, roltoelichting, aanvragerRolTypeUrl, productAanvraag.bsn)
+        val klant = burgerService.ensureBurgerExists(productAanvraag.bsn)
+        zaakRolService.addNatuurlijkPersoon(
+            instanceLink.zaakInstanceUrl,
+            roltoelichting,
+            aanvragerRolTypeUrl,
+            productAanvraag.bsn,
+            URI(klant.url)
+        )
     }
 
     private fun getResources(informatieObjecten: Set<InformatieObject>): Set<Resource> {

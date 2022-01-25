@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class EnumProcessVariableQueryParameterV2Test {
+class EnumProcessVariableQueryParameterV2Test {
     private static final String NAME = "some-name";
     private static List<String> enumValues = new ArrayList<>();
 

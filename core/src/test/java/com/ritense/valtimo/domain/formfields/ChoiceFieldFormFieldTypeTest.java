@@ -23,23 +23,23 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class ChoiceFieldFormFieldTypeTest {
+class ChoiceFieldFormFieldTypeTest {
 
     private ChoiceFieldFormFieldType choiceFieldFormFieldType;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         choiceFieldFormFieldType = new ChoiceFieldFormFieldType();
     }
 
     @Test
-    public void shouldConvertModelValueToStringWhenString() {
+    void shouldConvertModelValueToStringWhenString() {
         String modelValue = "test value";
         assertEquals(modelValue, choiceFieldFormFieldType.convertModelValueToFormValue(modelValue));
     }
 
     @Test
-    public void shouldReturnNullWhenConvertingNonStringModelValue() {
+    void shouldReturnNullWhenConvertingNonStringModelValue() {
         assertNull(choiceFieldFormFieldType.convertModelValueToFormValue(0));
     }
 

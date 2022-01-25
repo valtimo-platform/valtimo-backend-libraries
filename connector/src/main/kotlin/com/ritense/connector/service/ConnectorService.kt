@@ -68,10 +68,10 @@ open class ConnectorService(
         typeId: UUID,
         name: String,
         connectorProperties: ConnectorProperties
-    ): ConnectorInstance {
+    ): CreateConnectorInstanceResult {
         return createConnectorInstance(
             CreateConnectorInstanceRequest(typeId, name, connectorProperties)
-        ).connectorTypeInstance()!!
+        )
     }
 
     open fun createConnectorInstance(
@@ -82,6 +82,12 @@ open class ConnectorService(
                 !connectorTypeInstanceRepository.existsConnectorTypeInstanceByName(createConnectorInstanceRequest.name)
             ) { "connectorTypeInstance already exists under same name" }
             val connectorType = connectorTypeRepository.findById(ConnectorTypeId.existingId(createConnectorInstanceRequest.typeId))
+            if (connectorType.isPresent && !connectorType.get().allowMultipleConnectorInstances) {
+                // Check if the same connectorType has been used before
+                require(
+                    !connectorTypeInstanceRepository.existsConnectorTypeInstanceByType(connectorType.get())
+                ) { "Only one ${connectorType.get().name} connector is allowed" }
+            }
             val connectorInstance = connectorTypeInstanceRepository.save(
                 ConnectorInstance(
                     ConnectorInstanceId.newId(UUID.randomUUID()),
@@ -162,5 +168,23 @@ open class ConnectorService(
             setProperties(connectorInstance.connectorProperties)
         }
         return connector
+    }
+
+    open fun <T : Connector> loadByClassName(clazz: Class<T>): T {
+        val className = ConnectorType.getNameFromClass(clazz)
+        val connectorTypes = connectorTypeRepository.findByClassName(className)
+        if (connectorTypes.isEmpty()) {
+            throw IllegalStateException("No connector type found with class: '$className'")
+        } else if (connectorTypes.size >= 2) {
+            throw IllegalStateException("Multiple connector types found for class: '$className'")
+        }
+        val connectorType = connectorTypes[0]
+        val connectors = connectorTypeInstanceRepository.findAllByTypeId(connectorType.id, Pageable.ofSize(2))
+        if (connectors.isEmpty) {
+            throw IllegalStateException("No connector instance found with type: '${connectorType.name}'")
+        } else if (connectors.totalElements >= 2) {
+            throw IllegalStateException("Multiple connector instances found for type: '${connectorType.name}'")
+        }
+        return load(connectors.content[0]!!) as T
     }
 }

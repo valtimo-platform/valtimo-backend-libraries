@@ -16,11 +16,15 @@
 
 package com.ritense.contactmoment
 
+import com.ritense.klant.autoconfiguration.KlantAutoConfiguration
 import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication(scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class])
+@SpringBootApplication(
+    scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class],
+    exclude = [KlantAutoConfiguration::class]
+)
 class TestApplication {
 
     fun main(args: Array<String>) {

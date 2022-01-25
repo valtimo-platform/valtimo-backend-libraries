@@ -31,28 +31,28 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ValtimoSchemaOperationsCommandTest {
+class ValtimoSchemaOperationsCommandTest {
 
     private LiquibaseRunner liquibaseRunner;
     private CommandContext commandContext;
     private ValtimoSchemaOperationsCommand valtimoSchemaOperationsCommand;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         liquibaseRunner = mock(LiquibaseRunner.class);
         commandContext = mock(CommandContext.class);
         valtimoSchemaOperationsCommand = new ValtimoSchemaOperationsCommand(liquibaseRunner);
     }
 
     @Test
-    public void shouldNotExecuteWhenCommandContextIsNull() {
+    void shouldNotExecuteWhenCommandContextIsNull() {
         assertThrows(NullPointerException.class, () -> {
             valtimoSchemaOperationsCommand.execute(null);
         });
     }
 
     @Test
-    public void shouldExecute() throws DatabaseException, SQLException {
+    void shouldExecute() throws DatabaseException, SQLException {
         PersistenceSession persistenceSession = mock(PersistenceSession.class);
         when(commandContext.getSession(any())).thenReturn(persistenceSession);
         valtimoSchemaOperationsCommand.execute(commandContext);
@@ -60,7 +60,7 @@ public class ValtimoSchemaOperationsCommandTest {
     }
 
     @Test
-    public void shouldNotExecuteWhenPersistenceSessionIsNull() {
+    void shouldNotExecuteWhenPersistenceSessionIsNull() {
         when(commandContext.getSession(any())).thenReturn(null);
         assertThrows(NullPointerException.class, () -> {
             valtimoSchemaOperationsCommand.execute(commandContext);

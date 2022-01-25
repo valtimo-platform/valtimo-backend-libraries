@@ -16,8 +16,5 @@
 package com.ritense.contactmoment.domain
 
 data class MedewerkerIdentificatie(
-    val identificatie: String?,
     val achternaam: String?,
-    val voorletters: String?,
-    val voorvoegselAchternaam: String?,
 )

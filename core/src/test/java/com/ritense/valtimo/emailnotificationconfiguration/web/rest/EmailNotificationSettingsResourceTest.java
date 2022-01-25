@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
-public class EmailNotificationSettingsResourceTest {
+class EmailNotificationSettingsResourceTest {
 
     private EmailNotificationSettingsServiceImpl emailNotificationService;
     private EmailNotificationSettingsResource emailNotificationSettingsResource;
@@ -55,7 +55,7 @@ public class EmailNotificationSettingsResourceTest {
     private static final String JOHN = "john@ritense.com";
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         objectMapper = new ObjectMapper();
         emailNotificationService = mock(EmailNotificationSettingsServiceImpl.class);
         emailNotificationSettingsResource = new EmailNotificationSettingsResource(emailNotificationService);
@@ -65,7 +65,7 @@ public class EmailNotificationSettingsResourceTest {
     }
 
     @Test
-    public void shouldReturnNoContent() throws Exception {
+    void shouldReturnNoContent() throws Exception {
         when(emailNotificationService.getSettingsFor(anyString())).thenReturn(
             Optional.empty()
         );

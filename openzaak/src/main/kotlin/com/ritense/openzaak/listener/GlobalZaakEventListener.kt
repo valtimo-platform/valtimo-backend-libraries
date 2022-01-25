@@ -23,11 +23,13 @@ import com.ritense.openzaak.service.impl.ZaakService
 import org.springframework.context.event.EventListener
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import org.springframework.core.annotation.Order
 
 @Transactional
 class GlobalZaakEventListener(
     val zaakService: ZaakService
 ) {
+    @Order(0)
     @EventListener(StatusSetEvent::class)
     fun handleSetStatus(event: StatusSetEvent) {
         zaakService.setZaakStatus(
@@ -37,6 +39,7 @@ class GlobalZaakEventListener(
         )
     }
 
+    @Order(0)
     @EventListener(ResultaatSetEvent::class)
     fun handleSetResultaat(event: ResultaatSetEvent) {
         zaakService.setZaakResultaat(
@@ -45,6 +48,7 @@ class GlobalZaakEventListener(
         )
     }
 
+    @Order(0)
     @EventListener(EigenschappenSetEvent::class)
     fun handleSetEigenschappen(event: EigenschappenSetEvent) {
         zaakService.modifyEigenschap(

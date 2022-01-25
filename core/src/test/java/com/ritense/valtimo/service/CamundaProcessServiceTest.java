@@ -46,7 +46,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.when;
 
-public class CamundaProcessServiceTest {
+class CamundaProcessServiceTest {
 
     private static final String userMock = "user";
     private HistoricProcessInstanceEntity latestProcessInstance;
@@ -75,7 +75,7 @@ public class CamundaProcessServiceTest {
     private HistoryService historyService = Mockito.mock(HistoryService.class, RETURNS_DEEP_STUBS);
 
     @Test
-    public void getAllActiveContextProcessesStartedByCurrentUserTestExpectAll() {
+    void getAllActiveContextProcessesStartedByCurrentUserTestExpectAll() {
         camundaProcessService = new CamundaProcessService(runtimeService, repositoryService, formService, historyService);
 
         //when
@@ -107,7 +107,7 @@ public class CamundaProcessServiceTest {
     }
 
     @Test
-    public void getAllActiveContextProcessesStartedByCurrentUserTestExpectTwo() {
+    void getAllActiveContextProcessesStartedByCurrentUserTestExpectTwo() {
         camundaProcessService = new CamundaProcessService(runtimeService, repositoryService, formService, historyService);
 
         //when

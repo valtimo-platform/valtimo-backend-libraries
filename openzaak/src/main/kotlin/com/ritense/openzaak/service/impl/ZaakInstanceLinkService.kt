@@ -53,4 +53,9 @@ class ZaakInstanceLinkService(
         return zaakInstanceLinkRepository.findByDocumentId(documentId)
             ?: throw ZaakInstanceLinkNotFoundException("No ZaakInstanceLink found for document id ${documentId}")
     }
+
+    override fun getByZaakInstanceUrl(zaakInstanceUrl: URI): ZaakInstanceLink {
+        return zaakInstanceLinkRepository.findByZaakInstanceUrl(zaakInstanceUrl)
+            ?: throw ZaakInstanceLinkNotFoundException("No ZaakInstanceLink found for zaak instance url ${zaakInstanceUrl}")
+    }
 }

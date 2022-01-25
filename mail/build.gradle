@@ -26,6 +26,7 @@ dependencies {
     api "org.camunda.bpm:camunda-engine:7.14.0"
     testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.15.0")
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation project(':test-utils-common')
 }
 
 apply from: "gradle/publishing.gradle"

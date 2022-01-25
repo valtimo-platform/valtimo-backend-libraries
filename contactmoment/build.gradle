@@ -29,6 +29,7 @@ dependencies {
     implementation project(':connector')
     implementation project(':contract')
     implementation project(':core')
+    implementation project(':klant')
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
@@ -39,11 +40,14 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-impl:0.11.2"
     implementation "io.jsonwebtoken:jjwt-jackson:0.11.2"
 
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2"
     testImplementation "com.squareup.okhttp3:mockwebserver:4.9.3"
     testImplementation "com.squareup.okhttp3:okhttp:4.9.3"
+    testImplementation project(':test-utils-common')
+    testImplementation project(":resource:local-resource")
 
 
     jar {

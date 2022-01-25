@@ -21,6 +21,7 @@ import com.ritense.connector.repository.ConnectorTypeInstanceRepository
 import com.ritense.connector.service.ConnectorFluentBuilder
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
+import com.ritense.klant.service.BurgerService
 import com.ritense.objectsapi.domain.sync.listener.DocumentEventListener
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagConnector
@@ -70,7 +71,8 @@ class ObjectsApiAutoConfiguration {
         connectorService: ConnectorService,
         openZaakResourceRepository: OpenZaakResourceRepository,
         zaakRolService: ZaakRolService,
-        zaakInstanceLinkService: ZaakInstanceLinkService
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        burgerService: BurgerService
     ): OpenNotificatieService {
         return OpenNotificatieService(
             processDocumentService,
@@ -79,7 +81,8 @@ class ObjectsApiAutoConfiguration {
             connectorService,
             openZaakResourceRepository,
             zaakRolService,
-            zaakInstanceLinkService
+            zaakInstanceLinkService,
+            burgerService
         )
     }
 

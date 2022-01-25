@@ -47,8 +47,8 @@ class MailAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(FilteredMailSender::class)
-    fun filteredMailService(mailDispatcher: MailDispatcher, filters: Collection<MailFilter>): FilteredMailSender {
+    @ConditionalOnMissingBean(MailSender::class)
+    fun filteredMailService(mailDispatcher: MailDispatcher, filters: Collection<MailFilter>): MailSender {
         return FilteredMailSender(mailDispatcher, filters)
     }
 
