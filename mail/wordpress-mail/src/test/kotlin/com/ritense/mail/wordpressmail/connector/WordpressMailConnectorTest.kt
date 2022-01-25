@@ -67,8 +67,6 @@ class WordpressMailConnectorTest : BaseTest() {
 
     @Test
     fun `should set properties`() {
-        //Given
-        val wordpressMailConnectorProperties = WordpressMailConnectorProperties("http://localhost:8012/")
 
         //when
         wordpressMailConnector.setProperties(wordpressMailConnectorProperties)
