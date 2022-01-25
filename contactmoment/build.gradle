@@ -30,6 +30,7 @@ dependencies {
     implementation project(':contract')
     implementation project(':core')
     implementation project(':klant')
+    implementation project(':mail')
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "org.springframework.boot:spring-boot-starter-webflux"

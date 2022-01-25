@@ -16,9 +16,6 @@
 
 package com.ritense.contactmoment.service
 
-import com.ritense.connector.service.ConnectorService
-import com.ritense.contactmoment.connector.ContactMomentConnector
-import com.ritense.contactmoment.domain.Kanaal
 import com.ritense.contactmoment.domain.request.SendMessageRequest
 import com.ritense.klant.service.KlantService
 import com.ritense.valtimo.contract.basictype.EmailAddress
@@ -33,13 +30,10 @@ import java.util.UUID
 class KlantcontactService(
     val mailSender: MailSender,
     val klantService: KlantService,
-    val connectorService: ConnectorService,
     val templateName: String
 ) {
 
     fun sendMessage(documentId: UUID, message: SendMessageRequest) {
-        val contactMomentConnector = connectorService.loadByClassName(ContactMomentConnector::class.java)
-
         val klant = klantService.getKlantForDocument(documentId)
 
         if (klant.emailadres == null) {
@@ -56,8 +50,6 @@ class KlantcontactService(
             .subject(Subject.from(message.subject))
 
         mailSender.send(builder.build())
-
-        contactMomentConnector.createContactMoment(Kanaal.MAIL, message.bodyText)
 
     }
 }
