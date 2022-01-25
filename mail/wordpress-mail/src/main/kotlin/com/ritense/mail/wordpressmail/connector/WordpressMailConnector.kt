@@ -29,6 +29,7 @@ import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.AttachmentCollection
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.io.Resource
+import kotlin.streams.toList
 
 @ConnectorType(name = "WordpressMail")
 class WordpressMailConnector(
@@ -88,7 +89,7 @@ class WordpressMailConnector(
     private fun attachmentsToResources(attachments: AttachmentCollection): List<Resource>? {
         return attachments.get()?.stream()
             ?.map { NamedByteArrayResource(it.name.get(), it.content.get()) }
-            ?.toList()
+            ?.toList<NamedByteArrayResource>()
     }
 
     companion object {
