@@ -16,6 +16,8 @@
 
 package com.ritense.mail.wordpressmail.domain
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class EmailTemplateResponse(
     val success: Boolean? = false,
     val message: String?,
@@ -24,7 +26,7 @@ data class EmailTemplateResponse(
 
     data class EmailTemplate(
         val id: String,
-        val post_title: String,
+        @JsonProperty("post_title") val postTitle: String,
         val subject: String,
         val content: String,
         val variables: List<String>,

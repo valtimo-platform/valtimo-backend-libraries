@@ -27,10 +27,8 @@ import com.ritense.valtimo.contract.mail.model.MailMessageStatus
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.AttachmentCollection
-import org.apache.commons.lang3.NotImplementedException
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.io.Resource
-import kotlin.streams.toList
 
 @ConnectorType(name = "WordpressMail")
 class WordpressMailConnector(
@@ -49,7 +47,7 @@ class WordpressMailConnector(
     }
 
     fun send(rawMailMessage: RawMailMessage): MutableList<MailMessageStatus> {
-        throw NotImplementedException("Send has not been implemented with RawMailMessage")
+        TODO("Send has not been implemented with RawMailMessage")
     }
 
     fun send(templatedMailMessage: TemplatedMailMessage): MutableList<MailMessageStatus> {
@@ -79,7 +77,7 @@ class WordpressMailConnector(
     }
 
     private fun getTemplateIdByName(templateName: String): String {
-        val template = wordpressMailClient.getEmailTemplates().emails.firstOrNull { it.post_title == templateName }
+        val template = wordpressMailClient.getEmailTemplates().emails.firstOrNull { it.postTitle == templateName }
         if (template == null) {
             throw IllegalStateException("No e-mail template found with name: '$templateName'")
         } else {
