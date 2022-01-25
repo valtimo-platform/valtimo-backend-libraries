@@ -1,3 +1,0 @@
-# AutoConfigurations
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.mail.denhaagmailer.autoconfigure.DenHaagMailerAutoConfiguration

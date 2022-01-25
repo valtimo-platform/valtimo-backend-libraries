@@ -35,7 +35,7 @@ include(
         "document-generation:local-document-generation",
         "openzaak",
         "mail",
-        "mail:den-haag-mailer",
+        "mail:wordpress-mail",
         "mail:flowmailer",
         "mail:local-mail",
         "mail:mandrill",
