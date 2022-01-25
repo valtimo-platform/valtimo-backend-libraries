@@ -1,0 +1,37 @@
+{
+    "$id": "mutation-requests.schema",
+    "type": "object",
+    "title": "Mutatie meldingen",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "mutationRequest": {
+            "$ref": "#/definitions/mutationRequest"
+        }
+    },
+    "definitions": {
+        "mutationRequest": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "string"
+                },
+                "mutations": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "sub": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "additionalProperties": false
+}

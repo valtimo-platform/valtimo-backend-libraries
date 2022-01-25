@@ -2,6 +2,7 @@ version: '3.9'
 services:
     db:
         image: mysql:5.7
+        platform: linux/amd64
         #ports:
            # - "3306:3306" #needs overriding "XXXX:3306" XXXX=your-own-port-per-module-test
         environment:
@@ -35,3 +36,4 @@ services:
 #   url: jdbc:mysql://localhost:3313/milestones-test
 #   url: jdbc:mysql://localhost:3314/mail-test
 #   url: jdbc:mysql://localhost:3315/contactmoment-test
+#   url: jdbc:mysql://localhost:3317/smartdocuments-test

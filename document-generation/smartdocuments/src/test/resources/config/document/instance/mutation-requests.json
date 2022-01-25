@@ -1,0 +1,16 @@
+{
+    "mutationRequest": {
+        "comments": "Alle drie de panden inmeten.",
+        "mutations": [
+            {
+                "sub": ["test1", "test2", "test3"]
+            },
+            {
+                "sub": ["test4", "test5", "test6"]
+            },
+            {
+                "sub": ["test7", "test8", "test9"]
+            }
+        ]
+    }
+}
