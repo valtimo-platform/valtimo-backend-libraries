@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ritense.mail.wordpressmail.connector
 
-package com.ritense.connector.domain
+import com.ritense.connector.domain.ConnectorProperties
 
-interface Connector {
-    fun getProperties(): ConnectorProperties
-    fun setProperties(connectorProperties: ConnectorProperties)
-    fun onCreate(connectorInstance: ConnectorInstance) {}
-    fun onEdit(connectorInstance: ConnectorInstance) {}
-    fun onDelete(connectorInstance: ConnectorInstance) {}
-}
+class WordpressMailConnectorProperties(
+    val url: String? = ""
+) : ConnectorProperties

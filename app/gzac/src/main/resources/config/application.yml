@@ -107,9 +107,12 @@ spring:
                                 password: guest
                                 virtual-host: /
             source: externalDomainMessageSupplier
+
 logging:
     level:
         org.springframework.beans: DEBUG
+        reactor.netty.http.client.HttpClient: DEBUG
+
 server:
     port: 8080
     compression:

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
+dockerCompose {
+    projectName = "wordpress-mail"
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
+    useComposeFiles.addAll("../../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+}
+
 dependencies {
     implementation project(":mail")
     implementation project(":connector")
     implementation project(":document")
-    implementation project(":resource")
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
-    implementation "com.vladmihalcea:hibernate-types-52:2.12.1"
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
-    implementation 'org.apache.tika:tika-core:1.18'
-
-    annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
 
     testImplementation project(":mail")
-    testImplementation project(':resource')
-    testImplementation "org.springframework.security:spring-security-test"
-    testImplementation "org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.13.0"
+    testImplementation project(":connector")
 
     //Kotlin
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
@@ -38,7 +38,7 @@ dependencies {
     jar {
         enabled = true
         manifest {
-            attributes("Implementation-Title": "Ritense Flowmailer spring boot starter")
+            attributes("Implementation-Title": "Ritense Wordpress Mail spring boot starter")
             attributes("Implementation-Version": projectVersion)
         }
     }

@@ -22,6 +22,7 @@ import com.ritense.contactmoment.client.ContactMomentClient
 import com.ritense.contactmoment.client.ContactMomentTokenGenerator
 import com.ritense.contactmoment.connector.ContactMomentConnector
 import com.ritense.contactmoment.connector.ContactMomentProperties
+import com.ritense.contactmoment.listener.MailSendListener
 import com.ritense.contactmoment.service.KlantcontactService
 import com.ritense.contactmoment.web.rest.ContactMomentResource
 import com.ritense.contactmoment.web.rest.MessageResource
@@ -104,14 +105,19 @@ class ContactMomentAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(MailSendListener::class)
+    fun mailSendListener(connectorService: ConnectorService): MailSendListener {
+        return MailSendListener(connectorService)
+    }
+
+    @Bean
     @ConditionalOnMissingBean(KlantcontactService::class)
     fun klantcontactService(
         sender: MailSender,
         klantService: KlantService,
-        connectorService: ConnectorService,
         @Value("\${valtimo.genericTemplateName:default-template}") templateName: String
     ): KlantcontactService {
-        return KlantcontactService(sender, klantService, connectorService, templateName)
+        return KlantcontactService(sender, klantService, templateName)
     }
 
     @Bean

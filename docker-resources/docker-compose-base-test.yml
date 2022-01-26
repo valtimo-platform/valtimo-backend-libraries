@@ -36,4 +36,5 @@ services:
 #   url: jdbc:mysql://localhost:3313/milestones-test
 #   url: jdbc:mysql://localhost:3314/mail-test
 #   url: jdbc:mysql://localhost:3315/contactmoment-test
+#   url: jdbc:mysql://localhost:3316/wordpress-mail-test
 #   url: jdbc:mysql://localhost:3317/smartdocuments-test

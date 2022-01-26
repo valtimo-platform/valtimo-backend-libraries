@@ -36,6 +36,7 @@ include(
         "document-generation:smartdocuments",
         "openzaak",
         "mail",
+        "mail:wordpress-mail",
         "mail:flowmailer",
         "mail:local-mail",
         "mail:mandrill",

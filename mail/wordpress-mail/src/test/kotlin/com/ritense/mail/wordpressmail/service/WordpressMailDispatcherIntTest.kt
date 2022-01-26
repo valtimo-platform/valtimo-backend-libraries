@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.connector.domain
+package com.ritense.mail.wordpressmail.service
 
-interface Connector {
-    fun getProperties(): ConnectorProperties
-    fun setProperties(connectorProperties: ConnectorProperties)
-    fun onCreate(connectorInstance: ConnectorInstance) {}
-    fun onEdit(connectorInstance: ConnectorInstance) {}
-    fun onDelete(connectorInstance: ConnectorInstance) {}
+import com.ritense.mail.wordpressmail.BaseIntegrationTest
+import javax.inject.Inject
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+
+internal class WordpressMailDispatcherIntTest : BaseIntegrationTest() {
+
+    @Inject
+    lateinit var wordpressMailMailDispatcher: WordpressMailDispatcher
+
+    @Test
+    fun `should instantiate WordpressMailDispatcher bean`() {
+        assertThat(wordpressMailMailDispatcher).isNotNull
+    }
+
 }
