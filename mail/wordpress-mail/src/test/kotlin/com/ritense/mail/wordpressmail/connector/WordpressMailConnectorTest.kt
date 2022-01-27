@@ -97,7 +97,7 @@ class WordpressMailConnectorTest : BaseTest() {
     @Test
     fun `should build TemplatedMailMessage and call the send method in the WordpressMailClient`() {
         //Given
-        val templateResponse = EmailTemplateResponse.EmailTemplate("generic-mail-template", "generic-mail-template", "", "", emptyList())
+        val templateResponse = EmailTemplateResponse.EmailTemplate("generic-mail-template", "generic-mail-template", "", "", emptyList<String>())
         whenever(wordpressMailClient.getEmailTemplates())
             .thenReturn(EmailTemplateResponse(true, "", listOf(templateResponse)))
         whenever(wordpressMailClient.send(anyString(), any(), isNull()))
