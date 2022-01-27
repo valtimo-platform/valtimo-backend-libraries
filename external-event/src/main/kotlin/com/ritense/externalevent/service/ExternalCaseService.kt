@@ -58,8 +58,16 @@ class ExternalCaseService(
             portalMapping.processDefinitionKey,
             newDocumentRequest
         )
-        val document = processDocumentService
-            .newDocumentAndStartProcess(newDocumentAndStartProcessRequest).resultingDocument().orElseThrow()
+        val documentResult = processDocumentService
+            .newDocumentAndStartProcess(newDocumentAndStartProcessRequest)
+
+        if (documentResult.resultingDocument().isEmpty) {
+            var logMessage = "Errors occurred during creation of external case (external caseId=${createExternalCaseMessage.caseId}, caseDefinitionId=${createExternalCaseMessage.caseDefinitionId}):"
+            documentResult.errors().forEach { logMessage += "\n - " + it.asString() }
+            ExternalTaskService.logger.error { logMessage }
+        }
+
+        val document = documentResult.resultingDocument().orElseThrow()
 
         sink.tryEmitNext(
             UpdateExternalIdPortalCaseMessage(
