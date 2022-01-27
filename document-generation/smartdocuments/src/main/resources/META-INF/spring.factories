@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.valtimo.smartdocuments.autoconfigure.SmartDocumentsAutoConfiguration
+  com.ritense.smartdocuments.autoconfigure.SmartDocumentsAutoConfiguration

@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.valtimo.smartdocuments.autoconfigure
+
+package com.ritense.smartdocuments.autoconfigure
 
 import com.ritense.connector.domain.Connector
-import com.ritense.valtimo.smartdocuments.client.SmartDocumentsClient
-import com.ritense.valtimo.smartdocuments.connector.SmartDocumentsConnectorProperties
+import com.ritense.connector.service.ConnectorService
+import com.ritense.document.service.DocumentService
+import com.ritense.document.service.DocumentVariableService
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.resource.service.ResourceService
+import com.ritense.smartdocuments.client.SmartDocumentsClient
+import com.ritense.smartdocuments.connector.SmartDocumentsConnector
+import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
+import com.ritense.smartdocuments.service.CamundaSmartDocumentGenerator
+import com.ritense.smartdocuments.service.SmartDocumentPdfGenerator
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
@@ -31,6 +40,38 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
 class SmartDocumentsAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaSmartDocumentGenerator::class)
+    fun smartDocumentGenerator(
+        smartDocumentPdfGenerator: SmartDocumentPdfGenerator,
+        processDocumentAssociationService: ProcessDocumentAssociationService,
+        documentService: DocumentService,
+    ): CamundaSmartDocumentGenerator {
+        return CamundaSmartDocumentGenerator(
+            smartDocumentPdfGenerator,
+            processDocumentAssociationService,
+            documentService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SmartDocumentPdfGenerator::class)
+    fun smartDocumentPdfGenerator(
+        connectorService: ConnectorService,
+        documentService: DocumentService,
+        resourceService: ResourceService,
+        applicationEventPublisher: ApplicationEventPublisher,
+        documentVariableService: DocumentVariableService,
+    ): SmartDocumentPdfGenerator {
+        return SmartDocumentPdfGenerator(
+            connectorService,
+            documentService,
+            resourceService,
+            applicationEventPublisher,
+            documentVariableService,
+        )
+    }
 
     @Bean
     @ConditionalOnMissingBean(SmartDocumentsClient::class)
@@ -57,16 +98,18 @@ class SmartDocumentsAutoConfiguration {
 
     //Connector
 
-    //@Bean
-    //@ConditionalOnMissingBean(SmartDocumentsConnector::class)
-    //@Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    //fun smartDocumentsConnector(
-    //    smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
-    //    smartDocumentsClient: SmartDocumentsClient,
-    //    applicationEventPublisher: ApplicationEventPublisher
-    //): Connector {
-    //    return SmartDocumentsConnector(smartDocumentsConnectorProperties, smartDocumentsClient, applicationEventPublisher)
-    //}
+    @Bean
+    @ConditionalOnMissingBean(SmartDocumentsConnector::class)
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    fun smartDocumentsConnector(
+        smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
+        smartDocumentsClient: SmartDocumentsClient
+    ): Connector {
+        return SmartDocumentsConnector(
+            smartDocumentsConnectorProperties,
+            smartDocumentsClient
+        )
+    }
 
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)

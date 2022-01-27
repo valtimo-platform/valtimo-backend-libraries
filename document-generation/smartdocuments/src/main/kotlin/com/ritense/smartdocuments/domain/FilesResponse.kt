@@ -1,4 +1,4 @@
-package com.ritense.valtimo.smartdocuments.domain
+package com.ritense.smartdocuments.domain
 
 data class FilesResponse(
     val file: List<FileResponse>,

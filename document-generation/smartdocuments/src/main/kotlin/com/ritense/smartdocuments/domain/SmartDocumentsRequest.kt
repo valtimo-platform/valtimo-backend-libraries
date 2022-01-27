@@ -1,4 +1,4 @@
-package com.ritense.valtimo.smartdocuments.domain
+package com.ritense.smartdocuments.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
@@ -8,8 +8,11 @@ data class SmartDocumentsRequest(
 ) {
 
     data class SmartDocument(
-        @JsonProperty("Selection") val selection: String,
-        @JsonProperty("Template") val template: String,
+        @JsonProperty("Selection") val selection: Selection,
+    )
+
+    data class Selection(
         @JsonProperty("TemplateGroup") val templateGroup: String,
+        @JsonProperty("Template") val template: String,
     )
 }

@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.valtimo.smartdocuments.connector
+
+package com.ritense.smartdocuments.connector
 
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
@@ -22,9 +23,13 @@ import com.ritense.documentgeneration.domain.GeneratedDocument
 import com.ritense.documentgeneration.domain.placeholders.TemplatePlaceholders
 import com.ritense.documentgeneration.domain.templatedata.TemplateData
 import com.ritense.documentgeneration.domain.templatedata.TemplateDataBlock
-import com.ritense.valtimo.smartdocuments.client.SmartDocumentsClient
-import com.ritense.valtimo.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.client.SmartDocumentsClient
+import com.ritense.smartdocuments.domain.GeneratedSmartDocument
+import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import org.apache.commons.io.FilenameUtils
 import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_PDF
+import java.util.Base64
 
 @ConnectorType(name = "SmartDocuments")
 class SmartDocumentsConnector(
@@ -41,21 +46,27 @@ class SmartDocumentsConnector(
         smartDocumentsClient.setProperties(smartDocumentsConnectorProperties)
     }
 
-    fun getTemplatePlaceholders(templateName: String): TemplatePlaceholders {
-        throw UnsupportedOperationException()
-    }
-
-    fun generateDocument(templateName: String, templateData: TemplateData): GeneratedDocument {
-        smartDocumentsClient.generateDocument(
+    fun generateDocument(
+        templateName: String,
+        templateData: TemplateData,
+        mediaType: MediaType = APPLICATION_PDF
+    ): GeneratedDocument {
+        val filesResponse = smartDocumentsClient.generateDocument(
             SmartDocumentsRequest(
-                templateDataToMap(templateData),
-                ...
+                templateDataToMap(templateData), SmartDocumentsRequest.SmartDocument(
+                    SmartDocumentsRequest.Selection(
+                        smartDocumentsConnectorProperties.templateGroup!!, templateName
+                    )
+                )
+            )
         )
+        val pdfResponse = filesResponse.file.first { it.outputFormat == mediaType.subtype.uppercase() }
+        return GeneratedSmartDocument(
+            pdfResponse.filename,
+            FilenameUtils.getExtension(pdfResponse.filename),
+            mediaType.toString(),
+            Base64.getDecoder().decode(pdfResponse.document.data),
         )
-    }
-
-    fun getDocumentMediaType(): MediaType {
-        return MediaType.APPLICATION_PDF
     }
 
     private fun templateDataToMap(templateData: TemplateData): Map<String, String> {
@@ -67,9 +78,7 @@ class SmartDocumentsConnector(
     }
 
     private fun templateDataBlockToMap(
-        templateDataBlock: TemplateDataBlock,
-        namePrefix: String,
-        customerData: MutableMap<String, String>
+        templateDataBlock: TemplateDataBlock, namePrefix: String, customerData: MutableMap<String, String>
     ): Map<String, String> {
         templateDataBlock.templateDataBlockItems.forEach { item ->
             val namePrefix2 = namePrefix + "_" + templateDataBlock.name

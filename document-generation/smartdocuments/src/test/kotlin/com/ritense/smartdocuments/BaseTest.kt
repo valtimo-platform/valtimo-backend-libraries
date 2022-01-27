@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.valtimo.smartdocuments.connector
 
-import com.ritense.connector.domain.ConnectorProperties
+package com.ritense.smartdocuments
 
-data class SmartDocumentsConnectorProperties(
-    val url: String? = "",
-    val username: String? = "",
-    val password: String? = "",
-) : ConnectorProperties
+abstract class BaseTest {
+
+    fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName).readText(Charsets.UTF_8)
+
+}

@@ -1,10 +1,8 @@
 spring:
-    main:
-        allow-bean-definition-overriding: false
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3312/smartdocuments-test
+        url: jdbc:mysql://localhost:3317/smartdocuments-test
         username: valtimo
         password: password
         hikari:
@@ -37,38 +35,12 @@ spring:
                 implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
             use-new-id-generator-mappings: false
 
-scheduling:
-    enabled: false
-    job:
-        cron:
-            syncAuth0LogsEvents: 0 0 3 * * ? # Every day at 3:00
-            cleanupAuditEvents: 0 0 4 * * ? # Every day at 00:00
-            taskNotificationReminder: 0 0 10 * * ? # Every day at 10:00
-
 spring-actuator:
     username: test
     password: test
 
-camunda:
-    bpm:
-        history-level: audit
-
 valtimo:
-    auth0:
-        enabled: false
-    mandrill:
-        apiKey: some-key
-        dateFormat: dd-MM-yyyy
-        notificationTemplate: bpc-task-notification
-        completionTemplate: bpc-task-completion
-        reminderTemplate: bpc-task-reminder
+    connector-encryption:
+        secret: "0123456789101112"
 
-aws:
-    profile: ritense
-    region: eu-central-1
-    s3:
-        bucketName: ritense-development
-        bucketRegion: us-east-1
-
-smartdocuments:
-    testMode: true
+openzaak.superSecret: "some-super-secret"

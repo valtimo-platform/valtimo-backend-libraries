@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.valtimo.smartdocuments.client
+package com.ritense.smartdocuments.client
 
-import com.ritense.valtimo.smartdocuments.connector.SmartDocumentsConnectorProperties
-import com.ritense.valtimo.smartdocuments.domain.FilesResponse
-import com.ritense.valtimo.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
+import com.ritense.smartdocuments.domain.FilesResponse
+import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -36,20 +36,17 @@ class SmartDocumentsClient(
 
     fun generateDocument(
         smartDocumentsRequest: SmartDocumentsRequest,
-    ): Any {
+    ): FilesResponse {
         try {
-            val response = webClient().post()
+            return webClient().post()
                 .uri("/wsxmldeposit/deposit/unattended")
                 .contentType(APPLICATION_JSON)
                 .bodyValue(smartDocumentsRequest)
                 .retrieve()
                 .bodyToMono(FilesResponse::class.java)
                 .block()!!
-            return response
-        } catch (e: WebClientResponseException.BadRequest) {
-            throw HttpClientErrorException(HttpStatus.BAD_REQUEST, e.responseBodyAsString)
-        } catch (e: WebClientResponseException.InternalServerError) {
-            throw HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, e.responseBodyAsString)
+        } catch (e: WebClientResponseException) {
+            throw HttpClientErrorException(e.statusCode, e.responseBodyAsString)
         }
     }
 
