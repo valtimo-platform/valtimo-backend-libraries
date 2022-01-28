@@ -29,6 +29,6 @@ data class EmailTemplateResponse(
         @JsonProperty("post_title") val postTitle: String,
         val subject: String,
         val content: String,
-        val variables: List<String>,
+        val variables: Any, // Sometimes an array and sometimes an object
     )
 }
