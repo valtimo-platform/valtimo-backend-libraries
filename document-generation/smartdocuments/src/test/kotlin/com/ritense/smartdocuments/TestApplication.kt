@@ -17,13 +17,11 @@
 package com.ritense.smartdocuments
 
 import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
-import com.ritense.smartdocuments.autoconfigure.SmartDocumentsAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication(
-    scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class],
-    exclude = [SmartDocumentsAutoConfiguration::class]
+    scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class]
 )
 class TestApplication {
 

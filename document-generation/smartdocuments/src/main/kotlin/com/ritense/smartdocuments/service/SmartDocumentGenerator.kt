@@ -16,53 +16,37 @@
 
 package com.ritense.smartdocuments.service
 
-import com.fasterxml.jackson.core.JsonPointer
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile
 import com.ritense.document.service.DocumentService
-import com.ritense.document.service.DocumentVariableService
 import com.ritense.documentgeneration.domain.GeneratedDocument
-import com.ritense.documentgeneration.domain.placeholders.TemplatePlaceholders
-import com.ritense.documentgeneration.domain.templatedata.TemplateData
-import com.ritense.documentgeneration.domain.templatedata.TemplateDataField
-import com.ritense.documentgeneration.service.PdfDocumentGenerator
 import com.ritense.resource.service.ResourceService
 import com.ritense.resource.service.request.RawFileUploadRequest
+import com.ritense.smartdocuments.connector.SmartDocumentsConnector
 import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.utils.RequestHelper
 import com.ritense.valtimo.contract.utils.SecurityUtils
-import com.ritense.smartdocuments.connector.SmartDocumentsConnector
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.MediaType
-import org.springframework.http.MediaType.APPLICATION_PDF
 import java.time.LocalDateTime
 import java.util.UUID
-import javax.ws.rs.NotSupportedException
 
-class SmartDocumentPdfGenerator(
+class SmartDocumentGenerator(
     private val connectorService: ConnectorService,
     private val documentService: DocumentService,
     private val resourceService: ResourceService,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val documentVariableService: DocumentVariableService,
-) : PdfDocumentGenerator {
+) {
 
-    override fun getTemplatePlaceholders(templateName: String): TemplatePlaceholders {
-        throw NotSupportedException("SmartDocuments doesn't have API call for this")
-    }
-
-    override fun generateDocument(templateName: String, templateData: TemplateData): GeneratedDocument {
-        return getSmartDocumentsConnector().generateDocument(templateName, templateData, APPLICATION_PDF)
-    }
-
-    override fun getDocumentMediaType(): MediaType {
-        return APPLICATION_PDF
-    }
-
-    fun generateAndStoreDocument(templateIdentifier: String, document: Document, placeholders: List<JsonPointer>) {
-        val generatedDocument = generateDocument(templateIdentifier, document, placeholders)
+    fun generateAndStoreDocument(
+        documentId: Document.Id,
+        templateId: String,
+        templateData: Map<String, Any>,
+        mediaType: MediaType
+    ) {
+        val generatedDocument = generateDocument(documentId, templateId, templateData, mediaType)
         val uploadRequest = RawFileUploadRequest(
             generatedDocument.name,
             generatedDocument.extension,
@@ -72,40 +56,36 @@ class SmartDocumentPdfGenerator(
         )
         val key = String.format("generated-documents/%s", generatedDocument.name)
         val resource = resourceService.store(key, uploadRequest)
-        documentService.assignRelatedFile(
-            document.id(),
-            JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin())
-        )
+        val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin())
+        documentService.assignRelatedFile(documentId, relatedFile)
     }
 
-    private fun generateDocument(templateIdentifier: String, document: Document, placeholders: List<JsonPointer>): GeneratedDocument {
-        val generatedDocument = generateDocument(templateIdentifier, getTemplateData(document, placeholders))
+    private fun generateDocument(
+        documentId: Document.Id,
+        templateId: String,
+        templateData: Map<String, Any>,
+        mediaType: MediaType
+    ): GeneratedDocument {
+        val generatedDocument = generateDocument(templateId, templateData, mediaType)
         applicationEventPublisher.publishEvent(
             DossierDocumentGeneratedEvent(
                 UUID.randomUUID(),
                 RequestHelper.getOrigin(),
                 LocalDateTime.now(),
                 AuditHelper.getActor(),
-                templateIdentifier,
-                document.id().toString()
+                templateId,
+                documentId.toString()
             )
         )
         return generatedDocument
     }
 
-    private fun getTemplateData(document: Document, templatePlaceholders: TemplatePlaceholders): TemplateData {
-        // TODO: Improve in #33405
-        val builder = TemplateData.builder()
-        for(placeholder in placeholders) {
-            builder.addDataField(
-                TemplateDataField(
-                    "placeholder.last()",
-                    documentVariableService.getTextOrReturnEmptyString(document, "/achternaamAanvrager")
-                )
-            )
-        }
-
-            return builder.build()
+    private fun generateDocument(
+        templateId: String,
+        templateData: Map<String, Any>,
+        mediaType: MediaType
+    ): GeneratedDocument {
+        return getSmartDocumentsConnector().generateDocument(templateId, templateData, mediaType)
     }
 
     private fun getSmartDocumentsConnector(): SmartDocumentsConnector {

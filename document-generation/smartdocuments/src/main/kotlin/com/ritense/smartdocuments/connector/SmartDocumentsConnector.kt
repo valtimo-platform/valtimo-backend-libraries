@@ -20,15 +20,11 @@ import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.documentgeneration.domain.GeneratedDocument
-import com.ritense.documentgeneration.domain.placeholders.TemplatePlaceholders
-import com.ritense.documentgeneration.domain.templatedata.TemplateData
-import com.ritense.documentgeneration.domain.templatedata.TemplateDataBlock
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.smartdocuments.domain.GeneratedSmartDocument
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import org.apache.commons.io.FilenameUtils
 import org.springframework.http.MediaType
-import org.springframework.http.MediaType.APPLICATION_PDF
 import java.util.Base64
 
 @ConnectorType(name = "SmartDocuments")
@@ -48,46 +44,27 @@ class SmartDocumentsConnector(
 
     fun generateDocument(
         templateName: String,
-        templateData: TemplateData,
-        mediaType: MediaType = APPLICATION_PDF
+        templateData: Map<String, Any>,
+        mediaType: MediaType
     ): GeneratedDocument {
         val filesResponse = smartDocumentsClient.generateDocument(
             SmartDocumentsRequest(
-                templateDataToMap(templateData), SmartDocumentsRequest.SmartDocument(
+                templateData,
+                SmartDocumentsRequest.SmartDocument(
                     SmartDocumentsRequest.Selection(
-                        smartDocumentsConnectorProperties.templateGroup!!, templateName
+                        smartDocumentsConnectorProperties.templateGroup!!,
+                        templateName
                     )
                 )
             )
         )
-        val pdfResponse = filesResponse.file.first { it.outputFormat == mediaType.subtype.uppercase() }
+        val pdfResponse = filesResponse.file.first { it.outputFormat.equals(mediaType.subtype, ignoreCase = true) }
         return GeneratedSmartDocument(
             pdfResponse.filename,
             FilenameUtils.getExtension(pdfResponse.filename),
             mediaType.toString(),
             Base64.getDecoder().decode(pdfResponse.document.data),
         )
-    }
-
-    private fun templateDataToMap(templateData: TemplateData): Map<String, String> {
-        val customerData = mutableMapOf<String, String>()
-
-        templateData.templateDataFields.forEach { customerData[it.name] = it.value.toString() }
-        templateData.templateDataBlocks.forEach { templateDataBlockToMap(it, "", customerData) }
-        return customerData
-    }
-
-    private fun templateDataBlockToMap(
-        templateDataBlock: TemplateDataBlock, namePrefix: String, customerData: MutableMap<String, String>
-    ): Map<String, String> {
-        templateDataBlock.templateDataBlockItems.forEach { item ->
-            val namePrefix2 = namePrefix + "_" + templateDataBlock.name
-            item.templateDataFields.forEach { customerData[namePrefix2 + "_" + it.name] = it.value.toString() }
-            item.templateDataBlocks.forEach {
-                templateDataBlockToMap(it, namePrefix2, customerData)
-            }
-        }
-        return customerData
     }
 
 }

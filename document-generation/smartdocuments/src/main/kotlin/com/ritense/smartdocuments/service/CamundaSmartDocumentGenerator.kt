@@ -16,25 +16,26 @@
 
 package com.ritense.smartdocuments.service
 
+import com.fasterxml.jackson.core.JsonPointer
 import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.springframework.http.MediaType
 
 class CamundaSmartDocumentGenerator(
-    private val smartDocumentPdfGenerator: SmartDocumentPdfGenerator,
+    private val smartDocumentGenerator: SmartDocumentGenerator,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val documentService: DocumentService,
 ) {
 
-    fun generate(execution: DelegateExecution, mediaType: String, templateIdentifier: String) {
-        if (mediaType != MediaType.APPLICATION_PDF_VALUE) {
-            TODO("Not yet implemented")
-        }
-
-        smartDocumentPdfGenerator.generateAndStoreDocument(templateIdentifier, getDocument(execution), emptyList())
+    fun generate(execution: DelegateExecution, templateId: String, mediaTypeValue: String) {
+        val document = getDocument(execution)
+        val templateData = getTemplateData(execution, document)
+        val mediaType = MediaType.valueOf(mediaTypeValue)
+        smartDocumentGenerator.generateAndStoreDocument(document.id(), templateId, templateData, mediaType)
     }
 
     private fun getDocument(delegateExecution: DelegateExecution): Document {
@@ -47,6 +48,44 @@ class CamundaSmartDocumentGenerator(
             // In case a process has no token wait state ProcessDocumentInstance is not yet created,
             // therefore out business-key is our last chance which is populated with the documentId also.
             documentService.get(delegateExecution.businessKey)
+        }
+    }
+
+    private fun getTemplateData(execution: DelegateExecution, document: Document): MutableMap<String, Any> {
+        val camundaPropertiesMap = mutableMapOf<String, Any>()
+        execution
+            .bpmnModelElementInstance
+            .extensionElements
+            .elementsQuery
+            .filterByType(CamundaProperties::class.java)
+            .singleResult()
+            .camundaProperties
+            .associateTo(camundaPropertiesMap) {
+                it.camundaName to getPlaceholderValue(it.camundaValue, execution, document)
+            }
+        return camundaPropertiesMap
+    }
+
+    private fun getPlaceholderValue(value: String, execution: DelegateExecution, document: Document): Any {
+        return if (value.startsWith("pv:")) {
+            getPlaceholderValueFromProcessVariable(value.substring("pv:".length), execution)
+        } else if (value.startsWith("doc:")) {
+            getPlaceholderValueFromDocument(value.substring("doc:".length), document)
+        } else {
+            value
+        }
+    }
+
+    private fun getPlaceholderValueFromProcessVariable(value: String, execution: DelegateExecution): Any {
+        return execution.variables[value].toString()
+    }
+
+    private fun getPlaceholderValueFromDocument(value: String, document: Document): Any {
+        val nodeOpt = document.content().getValueBy(JsonPointer.valueOf(value))
+        return if (nodeOpt.isPresent) {
+            nodeOpt.get().asText()
+        } else {
+            ""
         }
     }
 
