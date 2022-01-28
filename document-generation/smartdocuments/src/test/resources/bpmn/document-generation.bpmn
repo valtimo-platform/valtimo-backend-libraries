@@ -16,6 +16,7 @@
           <camunda:property name="achternaam" value="doc:/lastname" />
           <camunda:property name="leeftijd" value="pv:age" />
           <camunda:property name="toestemming" value="true" />
+          <camunda:property />
         </camunda:properties>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0rqqr55</bpmn:incoming>

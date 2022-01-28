@@ -51,19 +51,16 @@ class CamundaSmartDocumentGenerator(
         }
     }
 
-    private fun getTemplateData(execution: DelegateExecution, document: Document): MutableMap<String, Any> {
-        val camundaPropertiesMap = mutableMapOf<String, Any>()
-        execution
+    private fun getTemplateData(execution: DelegateExecution, document: Document): Map<String, Any> {
+        return execution
             .bpmnModelElementInstance
             .extensionElements
             .elementsQuery
             .filterByType(CamundaProperties::class.java)
             .singleResult()
             .camundaProperties
-            .associateTo(camundaPropertiesMap) {
-                it.camundaName to getPlaceholderValue(it.camundaValue, execution, document)
-            }
-        return camundaPropertiesMap
+            .filter { it.camundaName != null && it.camundaValue != null }
+            .associate { it.camundaName!! to getPlaceholderValue(it.camundaValue, execution, document) }
     }
 
     private fun getPlaceholderValue(value: String, execution: DelegateExecution, document: Document): Any {
