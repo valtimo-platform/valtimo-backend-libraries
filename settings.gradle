@@ -33,6 +33,7 @@ include(
         "form-link",
         "document-generation",
         "document-generation:local-document-generation",
+        "document-generation:smartdocuments",
         "openzaak",
         "mail",
         "mail:wordpress-mail",
