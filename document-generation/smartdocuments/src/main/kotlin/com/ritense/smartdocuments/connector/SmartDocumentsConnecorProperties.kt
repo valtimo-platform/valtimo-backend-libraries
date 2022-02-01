@@ -21,6 +21,5 @@ import com.ritense.connector.domain.ConnectorProperties
 data class SmartDocumentsConnectorProperties(
     var url: String? = "",
     var username: String? = "",
-    var password: String? = "",
-    var templateGroup: String? = "",
+    var password: String? = ""
 ) : ConnectorProperties

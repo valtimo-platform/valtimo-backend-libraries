@@ -43,6 +43,7 @@ class SmartDocumentsConnector(
     }
 
     fun generateDocument(
+        templateGroup: String,
         templateName: String,
         templateData: Map<String, Any>,
         mediaType: MediaType
@@ -52,7 +53,7 @@ class SmartDocumentsConnector(
                 templateData,
                 SmartDocumentsRequest.SmartDocument(
                     SmartDocumentsRequest.Selection(
-                        smartDocumentsConnectorProperties.templateGroup!!,
+                        templateGroup,
                         templateName
                     )
                 )

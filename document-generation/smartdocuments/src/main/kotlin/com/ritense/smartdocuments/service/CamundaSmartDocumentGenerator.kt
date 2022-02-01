@@ -31,11 +31,11 @@ class CamundaSmartDocumentGenerator(
     private val documentService: DocumentService,
 ) {
 
-    fun generate(execution: DelegateExecution, templateId: String, mediaTypeValue: String) {
+    fun generate(execution: DelegateExecution, templateGroup: String, templateId: String, mediaTypeValue: String) {
         val document = getDocument(execution)
         val templateData = getTemplateData(execution, document)
         val mediaType = MediaType.valueOf(mediaTypeValue)
-        smartDocumentGenerator.generateAndStoreDocument(document.id(), templateId, templateData, mediaType)
+        smartDocumentGenerator.generateAndStoreDocument(document.id(), templateGroup, templateId, templateData, mediaType)
     }
 
     private fun getDocument(delegateExecution: DelegateExecution): Document {

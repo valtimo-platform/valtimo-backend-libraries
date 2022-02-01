@@ -42,11 +42,12 @@ class SmartDocumentGenerator(
 
     fun generateAndStoreDocument(
         documentId: Document.Id,
+        templateGroup: String,
         templateId: String,
         templateData: Map<String, Any>,
         mediaType: MediaType
     ) {
-        val generatedDocument = generateDocument(documentId, templateId, templateData, mediaType)
+        val generatedDocument = generateDocument(documentId, templateGroup, templateId, templateData, mediaType)
         val uploadRequest = RawFileUploadRequest(
             generatedDocument.name,
             generatedDocument.extension,
@@ -62,11 +63,12 @@ class SmartDocumentGenerator(
 
     private fun generateDocument(
         documentId: Document.Id,
+        templateGroup: String,
         templateId: String,
         templateData: Map<String, Any>,
         mediaType: MediaType
     ): GeneratedDocument {
-        val generatedDocument = generateDocument(templateId, templateData, mediaType)
+        val generatedDocument = generateDocument(templateGroup, templateId, templateData, mediaType)
         applicationEventPublisher.publishEvent(
             DossierDocumentGeneratedEvent(
                 UUID.randomUUID(),
@@ -81,11 +83,12 @@ class SmartDocumentGenerator(
     }
 
     private fun generateDocument(
+        templateGroup: String,
         templateId: String,
         templateData: Map<String, Any>,
         mediaType: MediaType
     ): GeneratedDocument {
-        return getSmartDocumentsConnector().generateDocument(templateId, templateData, mediaType)
+        return getSmartDocumentsConnector().generateDocument(templateGroup, templateId, templateData, mediaType)
     }
 
     private fun getSmartDocumentsConnector(): SmartDocumentsConnector {
