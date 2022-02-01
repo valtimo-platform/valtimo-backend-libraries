@@ -80,6 +80,7 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
         // then
         verify(smartDocumentGenerator).generateAndStoreDocument(
             any(),
+            eq("my-template-group"),
             eq("my-template-id"),
             eq(mapOf<String, Any>("achternaam" to "Klaveren", "leeftijd" to "38", "toestemming" to "true")),
             eq(MediaType.APPLICATION_PDF)

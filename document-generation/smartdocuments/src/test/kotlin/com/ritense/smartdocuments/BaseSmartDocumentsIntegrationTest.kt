@@ -92,7 +92,6 @@ class BaseSmartDocumentsIntegrationTest : BaseIntegrationTest() {
         smartDocumentsConnectorProperties.url = server.url("/").toString()
         smartDocumentsConnectorProperties.username = "valtimo-test"
         smartDocumentsConnectorProperties.password = "41625e22-c4ef-487b-93fc-e46a25278d11"
-        smartDocumentsConnectorProperties.templateGroup = "Development"
         connectorDeploymentService.deployAll(listOf(smartDocumentsConnector))
 
         val connectorType = connectorService.getConnectorTypes().first { it.name == "SmartDocuments" }

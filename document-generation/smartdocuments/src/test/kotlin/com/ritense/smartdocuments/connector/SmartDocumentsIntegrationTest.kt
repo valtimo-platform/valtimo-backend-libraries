@@ -31,6 +31,7 @@ class SmartDocumentsIntegrationTest : BaseSmartDocumentsIntegrationTest() {
     @Test
     fun `should generate document`() {
         val generatedDocument = (smartDocumentsConnector as SmartDocumentsConnector).generateDocument(
+            "template-group",
             "template",
             mapOf("voornaam" to "Jan"),
             APPLICATION_PDF
