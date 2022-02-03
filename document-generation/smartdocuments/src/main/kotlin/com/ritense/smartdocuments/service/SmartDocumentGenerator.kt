@@ -24,12 +24,12 @@ import com.ritense.documentgeneration.domain.GeneratedDocument
 import com.ritense.resource.service.ResourceService
 import com.ritense.resource.service.request.RawFileUploadRequest
 import com.ritense.smartdocuments.connector.SmartDocumentsConnector
+import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.utils.RequestHelper
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.http.MediaType
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -45,9 +45,9 @@ class SmartDocumentGenerator(
         templateGroup: String,
         templateId: String,
         templateData: Map<String, Any>,
-        mediaType: MediaType
+        format: DocumentFormatOption
     ) {
-        val generatedDocument = generateDocument(documentId, templateGroup, templateId, templateData, mediaType)
+        val generatedDocument = generateDocument(documentId, templateGroup, templateId, templateData, format)
         val uploadRequest = RawFileUploadRequest(
             generatedDocument.name,
             generatedDocument.extension,
@@ -66,9 +66,9 @@ class SmartDocumentGenerator(
         templateGroup: String,
         templateId: String,
         templateData: Map<String, Any>,
-        mediaType: MediaType
+        format: DocumentFormatOption
     ): GeneratedDocument {
-        val generatedDocument = generateDocument(templateGroup, templateId, templateData, mediaType)
+        val generatedDocument = generateDocument(templateGroup, templateId, templateData, format)
         applicationEventPublisher.publishEvent(
             DossierDocumentGeneratedEvent(
                 UUID.randomUUID(),
@@ -86,9 +86,9 @@ class SmartDocumentGenerator(
         templateGroup: String,
         templateId: String,
         templateData: Map<String, Any>,
-        mediaType: MediaType
+        format: DocumentFormatOption
     ): GeneratedDocument {
-        return getSmartDocumentsConnector().generateDocument(templateGroup, templateId, templateData, mediaType)
+        return getSmartDocumentsConnector().generateDocument(templateGroup, templateId, templateData, format)
     }
 
     private fun getSmartDocumentsConnector(): SmartDocumentsConnector {

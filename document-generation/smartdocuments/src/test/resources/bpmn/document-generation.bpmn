@@ -9,7 +9,7 @@
       <bpmn:incoming>SequenceFlow_17rgisa</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_17rgisa" sourceRef="GenerateDocument" targetRef="EndEvent_0v6qdzq" />
-    <bpmn:serviceTask id="GenerateDocument" name="Generate Document" camunda:expression="${camundaSmartDocumentGenerator.generate(execution, &#34;my-template-group&#34;, &#34;my-template-id&#34;, &#34;application/pdf&#34;)}">
+    <bpmn:serviceTask id="GenerateDocument" name="Generate Document" camunda:expression="${camundaSmartDocumentGenerator.generate(execution, &#34;my-template-group&#34;, &#34;my-template-id&#34;, &#34;PDF&#34;)}">
       <bpmn:extensionElements>
         <camunda:executionListener expression="Test" event="start" />
         <camunda:properties>

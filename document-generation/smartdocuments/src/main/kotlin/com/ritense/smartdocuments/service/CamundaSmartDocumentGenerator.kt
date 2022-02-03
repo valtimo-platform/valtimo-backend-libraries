@@ -21,9 +21,9 @@ import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.smartdocuments.domain.DocumentFormatOption
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
-import org.springframework.http.MediaType
 
 class CamundaSmartDocumentGenerator(
     private val smartDocumentGenerator: SmartDocumentGenerator,
@@ -31,11 +31,10 @@ class CamundaSmartDocumentGenerator(
     private val documentService: DocumentService,
 ) {
 
-    fun generate(execution: DelegateExecution, templateGroup: String, templateId: String, mediaTypeValue: String) {
+    fun generate(execution: DelegateExecution, templateGroup: String, templateId: String, format: DocumentFormatOption) {
         val document = getDocument(execution)
         val templateData = getTemplateData(execution, document)
-        val mediaType = MediaType.valueOf(mediaTypeValue)
-        smartDocumentGenerator.generateAndStoreDocument(document.id(), templateGroup, templateId, templateData, mediaType)
+        smartDocumentGenerator.generateAndStoreDocument(document.id(), templateGroup, templateId, templateData, format)
     }
 
     private fun getDocument(delegateExecution: DelegateExecution): Document {

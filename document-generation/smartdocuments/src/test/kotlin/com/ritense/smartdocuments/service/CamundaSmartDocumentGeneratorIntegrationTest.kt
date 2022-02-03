@@ -28,13 +28,13 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.request.FileUploadRequest
 import com.ritense.smartdocuments.BaseSmartDocumentsIntegrationTest
+import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.valtimo.contract.resource.Resource
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.mock.mockito.SpyBean
-import org.springframework.http.MediaType
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -83,7 +83,7 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
             eq("my-template-group"),
             eq("my-template-id"),
             eq(mapOf<String, Any>("achternaam" to "Klaveren", "leeftijd" to "38", "toestemming" to "true")),
-            eq(MediaType.APPLICATION_PDF)
+            eq(DocumentFormatOption.PDF)
         )
         verify(resourceService).store(any(), any<FileUploadRequest>())
     }
