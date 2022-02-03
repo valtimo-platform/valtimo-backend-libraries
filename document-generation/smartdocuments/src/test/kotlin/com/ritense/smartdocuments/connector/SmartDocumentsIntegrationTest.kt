@@ -17,6 +17,7 @@
 package com.ritense.smartdocuments.connector
 
 import com.ritense.smartdocuments.BaseSmartDocumentsIntegrationTest
+import com.ritense.smartdocuments.domain.DocumentFormatOption
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -34,7 +35,7 @@ class SmartDocumentsIntegrationTest : BaseSmartDocumentsIntegrationTest() {
             "template-group",
             "template",
             mapOf("voornaam" to "Jan"),
-            APPLICATION_PDF
+            DocumentFormatOption.PDF
         )
 
         Assertions.assertThat(generatedDocument.name).isEqualTo("integration-test.pdf")

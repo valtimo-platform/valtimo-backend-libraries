@@ -21,10 +21,10 @@ import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.documentgeneration.domain.GeneratedDocument
 import com.ritense.smartdocuments.client.SmartDocumentsClient
+import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.GeneratedSmartDocument
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import org.apache.commons.io.FilenameUtils
-import org.springframework.http.MediaType
 import java.util.Base64
 
 @ConnectorType(name = "SmartDocuments")
@@ -46,7 +46,7 @@ class SmartDocumentsConnector(
         templateGroup: String,
         templateName: String,
         templateData: Map<String, Any>,
-        mediaType: MediaType
+        format: DocumentFormatOption
     ): GeneratedDocument {
         val filesResponse = smartDocumentsClient.generateDocument(
             SmartDocumentsRequest(
@@ -59,11 +59,11 @@ class SmartDocumentsConnector(
                 )
             )
         )
-        val pdfResponse = filesResponse.file.first { it.outputFormat.equals(mediaType.subtype, ignoreCase = true) }
+        val pdfResponse = filesResponse.file.first { it.outputFormat.equals(format.toString(), ignoreCase = true) }
         return GeneratedSmartDocument(
             pdfResponse.filename,
             FilenameUtils.getExtension(pdfResponse.filename),
-            mediaType.toString(),
+            format.mediaType.toString(),
             Base64.getDecoder().decode(pdfResponse.document.data),
         )
     }
