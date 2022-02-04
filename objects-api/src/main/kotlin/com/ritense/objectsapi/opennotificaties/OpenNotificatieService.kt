@@ -50,7 +50,7 @@ class OpenNotificatieService(
     val openZaakResourceRepository: OpenZaakResourceRepository,
     val zaakRolService: ZaakRolService,
     val zaakInstanceLinkService: ZaakInstanceLinkService,
-    val burgerService: BurgerService
+    val burgerService: BurgerService?
 ) {
     fun handle(notification: HandleNotificationRequest, connectorId: String, authorizationKey: String) {
         if (notification.isCreateNotification() && !notification.isTestNotification()) {
@@ -126,13 +126,13 @@ class OpenNotificatieService(
     private fun assignZaakToUser(document: Document, productAanvraag: ProductAanvraag, aanvragerRolTypeUrl: URI) {
         val instanceLink = zaakInstanceLinkService.getByDocumentId(document.id().id)
         val roltoelichting = "Aanvrager automatisch toegevoegd in GZAC"
-        val klant = burgerService.ensureBurgerExists(productAanvraag.bsn)
+        val klant = burgerService?.let { it.ensureBurgerExists(productAanvraag.bsn) }
         zaakRolService.addNatuurlijkPersoon(
             instanceLink.zaakInstanceUrl,
             roltoelichting,
             aanvragerRolTypeUrl,
             productAanvraag.bsn,
-            URI(klant.url)
+            klant?.let { URI(it.url) }
         )
     }
 
