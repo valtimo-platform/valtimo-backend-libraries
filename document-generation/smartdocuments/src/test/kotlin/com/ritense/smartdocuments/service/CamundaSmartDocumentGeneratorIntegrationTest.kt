@@ -26,8 +26,6 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.resource.service.request.ByteArrayMultipartFile
-import com.ritense.resource.service.request.FileUploadRequest
 import com.ritense.smartdocuments.BaseSmartDocumentsIntegrationTest
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.valtimo.contract.resource.Resource
@@ -67,7 +65,7 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
             override fun sizeInBytes() = 123L
             override fun createdOn() = LocalDateTime.now()
         }
-        whenever(resourceService.store(any(), any<FileUploadRequest>())).thenReturn(emptyResource)
+        whenever(resourceService.store(any(), any(), any<MultipartFile>())).thenReturn(emptyResource)
         processDocumentAssociationService.createProcessDocumentDefinition(
             ProcessDocumentDefinitionRequest(PROCESS_DEFINITION_KEY, DOCUMENT_DEFINITION_KEY, true, true)
         )
