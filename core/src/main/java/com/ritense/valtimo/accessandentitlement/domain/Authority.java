@@ -115,6 +115,9 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
         }
     }
 
+    /**
+     * @deprecated - This method will be removed in 11.0.0
+     */
     @Deprecated(forRemoval = true, since = "9.4.0")
     public void changeHourlyRate(BigDecimal hourlyRate) {
         if (!this.hourlyRate.equals(hourlyRate)) {
@@ -141,6 +144,9 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
         return name;
     }
 
+    /**
+     * @deprecated - This method will be removed in 11.0.0
+     */
     @Deprecated(forRemoval = true, since = "9.4.0")
     public Money getHourlyRate() {
         if (hourlyRate == null) {

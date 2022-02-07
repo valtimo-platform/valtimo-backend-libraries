@@ -196,15 +196,6 @@ subprojects { subproject ->
         testImplementation "org.jetbrains.kotlin:kotlin-test"
     }
 
-    configurations.all{
-        resolutionStrategy {
-            eachDependency { details ->
-                if ('org.jacoco' == details.requested.group) {
-                    details.useVersion "0.8.7"
-                }
-            }
-        }
-    }
 }
 
 tasks.withType(PublishToMavenRepository) {

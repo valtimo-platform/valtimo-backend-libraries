@@ -74,6 +74,9 @@ public abstract class AuthorityEvent extends AuditMetaData implements AuditEvent
         return systemAuthority;
     }
 
+    /**
+     * @deprecated - This method will be removed in 11.0.0
+     */
     @Deprecated(forRemoval = true, since = "9.4.0")
     public Money getHourlyRate() {
         return hourlyRate;

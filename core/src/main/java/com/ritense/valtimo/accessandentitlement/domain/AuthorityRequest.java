@@ -26,7 +26,6 @@ public class AuthorityRequest {
     @Pattern(regexp = "^[a-zA-Z0-9-_]+$")
     private String name;
 
-    @Deprecated(forRemoval = true, since = "9.4.0")
     private BigDecimal hourlyRate;
 
     private AuthorityRequest() {
@@ -45,6 +44,9 @@ public class AuthorityRequest {
         return name;
     }
 
+    /**
+     * @deprecated - This method will be removed in 11.0.0
+     */
     @Deprecated(forRemoval = true, since = "9.4.0")
     public BigDecimal getHourlyRate() {
         return hourlyRate == null ? BigDecimal.ZERO : hourlyRate;
