@@ -51,6 +51,21 @@ public abstract class AuthorityEvent extends AuditMetaData implements AuditEvent
         this.hourlyRate = hourlyRate;
     }
 
+    @JsonCreator
+    public AuthorityEvent(
+        UUID id,
+        String origin,
+        LocalDateTime occurredOn,
+        String user,
+        String name,
+        boolean systemAuthority
+    ) {
+        super(id, origin, occurredOn, user);
+        assertArgumentNotNull(name, "name is required");
+        this.name = name;
+        this.systemAuthority = systemAuthority;
+    }
+
     public String getName() {
         return name;
     }

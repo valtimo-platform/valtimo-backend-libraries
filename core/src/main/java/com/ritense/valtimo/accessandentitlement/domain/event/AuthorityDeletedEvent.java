@@ -37,4 +37,16 @@ public class AuthorityDeletedEvent extends AuthorityEvent {
         super(id, origin, occurredOn, user, name, systemAuthority, hourlyRate);
     }
 
+    @JsonCreator
+    public AuthorityDeletedEvent(
+        UUID id,
+        String origin,
+        LocalDateTime occurredOn,
+        String user,
+        String name,
+        Boolean systemAuthority
+    ) {
+        super(id, origin, occurredOn, user, name, systemAuthority);
+    }
+
 }

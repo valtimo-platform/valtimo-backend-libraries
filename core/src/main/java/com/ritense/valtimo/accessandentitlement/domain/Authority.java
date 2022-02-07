@@ -82,6 +82,22 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
         ));
     }
 
+    public Authority(String name, boolean systemAuthority) {
+        assertArgumentNotNull(name, "name is required");
+        assertArgumentLength(name, 50, "name max length is 50");
+        this.name = name;
+        this.hourlyRate = BigDecimal.ZERO;
+        this.systemAuthority = systemAuthority;
+        registerEvent(new AuthorityCreatedEvent(
+            UUID.randomUUID(),
+            RequestHelper.getOrigin(),
+            LocalDateTime.now(),
+            AuditHelper.getActor(),
+            getName(),
+            getSystemAuthority()
+        ));
+    }
+
     public void changeName(String name) {
         if (!this.name.equals(name)) {
             final String oldName = getName();

@@ -37,6 +37,10 @@ public class AuthorityRequest {
         this.hourlyRate = hourlyRate;
     }
 
+    public AuthorityRequest(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

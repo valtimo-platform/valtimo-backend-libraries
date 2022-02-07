@@ -42,6 +42,20 @@ public class AuthorityNameChangedEvent extends AuthorityEvent {
         this.oldName = oldName;
     }
 
+    @JsonCreator
+    public AuthorityNameChangedEvent(
+        UUID id,
+        String origin,
+        LocalDateTime occurredOn,
+        String user,
+        String name,
+        Boolean systemAuthority,
+        String oldName
+    ) {
+        super(id, origin, occurredOn, user, name, systemAuthority);
+        this.oldName = oldName;
+    }
+
     public String getOldName() {
         return oldName;
     }
