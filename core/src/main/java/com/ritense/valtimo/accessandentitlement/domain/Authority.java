@@ -61,7 +61,10 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
     private Authority() {
     }
 
-    public Authority(String name, BigDecimal hourlyRate, boolean systemAuthority) {
+    public Authority(
+            String name,
+            @Deprecated(forRemoval = true, since = "9.4.0") BigDecimal hourlyRate,
+            boolean systemAuthority) {
         assertArgumentNotNull(name, "name is required");
         assertArgumentLength(name, 50, "name max length is 50");
         assertArgumentNotNull(hourlyRate, "hourlyRate is required");
@@ -96,6 +99,7 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
         }
     }
 
+    @Deprecated(forRemoval = true, since = "9.4.0")
     public void changeHourlyRate(BigDecimal hourlyRate) {
         if (!this.hourlyRate.equals(hourlyRate)) {
             final Money oldHourlyRate = getHourlyRate();
@@ -121,6 +125,7 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
         return name;
     }
 
+    @Deprecated(forRemoval = true, since = "9.4.0")
     public Money getHourlyRate() {
         if (hourlyRate == null) {
             return null;

@@ -26,13 +26,13 @@ public class AuthorityRequest {
     @Pattern(regexp = "^[a-zA-Z0-9-_]+$")
     private String name;
 
-    @NotNull
+    @Deprecated(forRemoval = true, since = "9.4.0")
     private BigDecimal hourlyRate;
 
     private AuthorityRequest() {
     }
 
-    public AuthorityRequest(String name, BigDecimal hourlyRate) {
+    public AuthorityRequest(String name, @Deprecated(forRemoval = true, since = "9.4.0") BigDecimal hourlyRate) {
         this.name = name;
         this.hourlyRate = hourlyRate;
     }
@@ -41,8 +41,9 @@ public class AuthorityRequest {
         return name;
     }
 
+    @Deprecated(forRemoval = true, since = "9.4.0")
     public BigDecimal getHourlyRate() {
-        return hourlyRate;
+        return hourlyRate == null ? BigDecimal.ZERO : hourlyRate;
     }
 
 }

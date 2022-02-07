@@ -35,7 +35,7 @@ public class AuthorityNameChangedEvent extends AuthorityEvent {
         String user,
         String name,
         Boolean systemAuthority,
-        Money hourlyRate,
+        @Deprecated(forRemoval = true, since = "9.4.0") Money hourlyRate,
         String oldName
     ) {
         super(id, origin, occurredOn, user, name, systemAuthority, hourlyRate);

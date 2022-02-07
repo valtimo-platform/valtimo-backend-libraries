@@ -41,7 +41,7 @@ public abstract class AuthorityEvent extends AuditMetaData implements AuditEvent
         String user,
         String name,
         boolean systemAuthority,
-        Money hourlyRate
+        @Deprecated(forRemoval = true, since = "9.4.0") Money hourlyRate
     ) {
         super(id, origin, occurredOn, user);
         assertArgumentNotNull(name, "name is required");
@@ -59,6 +59,7 @@ public abstract class AuthorityEvent extends AuditMetaData implements AuditEvent
         return systemAuthority;
     }
 
+    @Deprecated(forRemoval = true, since = "9.4.0")
     public Money getHourlyRate() {
         return hourlyRate;
     }

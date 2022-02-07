@@ -32,7 +32,7 @@ public class AuthorityDeletedEvent extends AuthorityEvent {
         String user,
         String name,
         Boolean systemAuthority,
-        Money hourlyRate
+        @Deprecated(forRemoval = true, since = "9.4.0") Money hourlyRate
     ) {
         super(id, origin, occurredOn, user, name, systemAuthority, hourlyRate);
     }
