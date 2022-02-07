@@ -33,6 +33,11 @@ public abstract class AuthorityEvent extends AuditMetaData implements AuditEvent
     private boolean systemAuthority;
     private Money hourlyRate;
 
+    /**
+     * @deprecated - This method will be removed in 11.0.0
+     * Use {@link #AuthorityEvent(UUID, String, LocalDateTime, String, String, boolean)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "9.4.0")
     @JsonCreator
     public AuthorityEvent(
         UUID id,
@@ -41,7 +46,7 @@ public abstract class AuthorityEvent extends AuditMetaData implements AuditEvent
         String user,
         String name,
         boolean systemAuthority,
-        @Deprecated(forRemoval = true, since = "9.4.0") Money hourlyRate
+        Money hourlyRate
     ) {
         super(id, origin, occurredOn, user);
         assertArgumentNotNull(name, "name is required");

@@ -31,7 +31,12 @@ public class AuthorityRequest {
     private AuthorityRequest() {
     }
 
-    public AuthorityRequest(String name, @Deprecated(forRemoval = true, since = "9.4.0") BigDecimal hourlyRate) {
+    /**
+     * @deprecated - This method will be removed in 11.0.0
+     * Use {@link #AuthorityRequest(String, BigDecimal)}  instead.
+     */
+    @Deprecated(forRemoval = true, since = "9.4.0")
+    public AuthorityRequest(String name, BigDecimal hourlyRate) {
         this.name = name;
         this.hourlyRate = hourlyRate;
     }

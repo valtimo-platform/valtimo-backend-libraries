@@ -27,6 +27,11 @@ public class AuthorityNameChangedEvent extends AuthorityEvent {
 
     private String oldName;
 
+    /**
+     * @deprecated - This method will be removed in 11.0.0
+     * Use {@link #AuthorityNameChangedEvent(UUID, String, LocalDateTime, String, String, Boolean, String)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "9.4.0")
     @JsonCreator
     public AuthorityNameChangedEvent(
         UUID id,
@@ -35,7 +40,7 @@ public class AuthorityNameChangedEvent extends AuthorityEvent {
         String user,
         String name,
         Boolean systemAuthority,
-        @Deprecated(forRemoval = true, since = "9.4.0") Money hourlyRate,
+        Money hourlyRate,
         String oldName
     ) {
         super(id, origin, occurredOn, user, name, systemAuthority, hourlyRate);
