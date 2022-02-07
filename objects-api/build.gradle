@@ -26,6 +26,7 @@ dockerCompose {
 }
 
 dependencies {
+    implementation project(':core')
     implementation project(':contract')
     implementation project(':connector')
     implementation project(':document')
