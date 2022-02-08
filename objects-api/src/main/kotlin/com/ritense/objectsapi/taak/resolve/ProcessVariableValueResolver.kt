@@ -1,7 +1,7 @@
 package com.ritense.objectsapi.taak.resolve
 
 import com.ritense.processdocument.domain.ProcessInstanceId
-import com.ritense.valtimo.contract.audit.VariableScope
+import org.camunda.bpm.engine.delegate.VariableScope
 
 class ProcessVariableValueResolver: PlaceHolderValueResolver {
     override fun resolveValue(placeholder: String,
