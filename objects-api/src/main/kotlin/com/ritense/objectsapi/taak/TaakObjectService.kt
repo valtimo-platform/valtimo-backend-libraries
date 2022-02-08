@@ -3,7 +3,7 @@ package com.ritense.objectsapi.taak
 import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.objectsapi.service.ObjectsApiService
 import java.util.UUID
-import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.camunda.bpm.engine.delegate.DelegateTask
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
@@ -18,30 +18,32 @@ class TaakObjectService(
 ) {
     private val objectsApiService = ObjectsApiService(objectsApiProperties)
 
-    fun createTask(formulierId: String, delegateExecution: DelegateExecution) {
+    fun createTask(formulierId: String, task: DelegateTask) {
         TaakObjectDto(
-            bsn = bsnProvider.getBurgerServiceNummer(delegateExecution),
-            kvk = kvkProvider.getKvkNummer(delegateExecution),
-            verwerkerTaakId = UUID.fromString(delegateExecution.activityInstanceId),
+            bsn = bsnProvider.getBurgerServiceNummer(task),
+            kvk = kvkProvider.getKvkNummer(task),
+            verwerkerTaakId = UUID.fromString(task.executionId),
             formulierId = formulierId,
-            data = getTaskProperties(delegateExecution),
+            data = getTaskProperties(task),
             status = TaakObjectStatus.open
         )
+        //TODO: save in objects API
     }
 
-    private fun getTaskProperties(delegateExecution: DelegateExecution): Map<String, Any> {
-        return delegateExecution.bpmnModelElementInstance.extensionElements.elements
+    private fun getTaskProperties(task: DelegateTask): Map<String, Any> {
+        task.bpmnModelInstance
+        return task.bpmnModelElementInstance.extensionElements.elements
             .filterIsInstance<CamundaProperties>()
             .single()
             .camundaProperties
             .filter { it.camundaName.startsWith(prefix = "taak:", ignoreCase = true) }
             .associateBy(
                 { it.camundaName.substringAfter(delimiter = ":") },
-                { resolveValue(delegateExecution, it.camundaValue) }
+                { resolveValue(task, it.camundaValue) }
             )
     }
 
-    private fun resolveValue(delegateExecution: DelegateExecution, value: String): String {
+    private fun resolveValue(task: DelegateTask, value: String): String {
         //TODO: add functionality to translate doc:,pv: and other references.
         return value
     }

@@ -1,7 +1,7 @@
 package com.ritense.objectsapi.taak
 
-import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.camunda.bpm.engine.delegate.DelegateTask
 
 interface BsnProvider {
-    fun getBurgerServiceNummer(delegateExecution: DelegateExecution): String?
+    fun getBurgerServiceNummer(task:DelegateTask): String?
 }

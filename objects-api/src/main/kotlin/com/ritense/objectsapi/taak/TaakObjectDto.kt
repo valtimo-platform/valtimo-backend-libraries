@@ -8,8 +8,8 @@ data class TaakObjectDto(
     val kvk: String?,
     @JsonProperty("verwerker_taak_id") val verwerkerTaakId: UUID,
     @JsonProperty("formulier_id") val formulierId: String,
-    val data: Map<String, Any>?,
-    @JsonProperty("verzonden_data") val verzondenData: Map<String, Any>?,
+    val data: Map<String, Any>? = null,
+    @JsonProperty("verzonden_data") val verzondenData: Map<String, Any>? = null,
     val status: TaakObjectStatus = TaakObjectStatus.open
 ) {
     init {
