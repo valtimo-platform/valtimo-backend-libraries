@@ -97,6 +97,4 @@ internal class TaakObjectConnectorTest {
         return delegateTask
     }
 
-    data class Asdf(val a: String) : java.lang.Object()
-
 }

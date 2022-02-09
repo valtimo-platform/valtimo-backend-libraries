@@ -8,6 +8,8 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.objectsapi.BaseIntegrationTest
+import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
+import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.zaak.BetrokkeneType
 import com.ritense.openzaak.service.impl.model.zaak.Rol
@@ -26,9 +28,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
 import java.net.URI
+import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.fail
 
 internal class TaakObjectServiceIntTest: BaseIntegrationTest() {
 
@@ -86,6 +88,15 @@ internal class TaakObjectServiceIntTest: BaseIntegrationTest() {
                 )
             )
         )))
+        whenever(zaakInstanceLinkService.getByDocumentId(any<UUID>())).thenReturn(
+            ZaakInstanceLink(
+                ZaakInstanceLinkId.newId(UUID.randomUUID()),
+                URI("http://some-url"),
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                URI("http://some-url")
+            )
+        )
 
         val jsonContent = Mapper.INSTANCE.get().readTree("{\"voornaam\": \"Peter\"}")
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, jsonContent)
@@ -103,7 +114,7 @@ internal class TaakObjectServiceIntTest: BaseIntegrationTest() {
         assertEquals("12345", JsonPath.read(bodyContent, "$.record.data.bsn"))
         assertNotNull(JsonPath.read(bodyContent, "$.record.data.verwerker_taak_id"))
         assertEquals("Peter", JsonPath.read(bodyContent, "$.record.data.data.voornaam"))
-        assertEquals("38", JsonPath.read(bodyContent, "$.record.data.data.leeftijd"))
+        assertEquals(38, JsonPath.read(bodyContent, "$.record.data.data.leeftijd"))
         assertEquals("open", JsonPath.read(bodyContent, "$.record.data.status"))
     }
 
@@ -124,6 +135,7 @@ internal class TaakObjectServiceIntTest: BaseIntegrationTest() {
     }
 
     fun startMockServer() {
+        executedRequests = mutableListOf()
         val dispatcher: Dispatcher = object : Dispatcher() {
             @Throws(InterruptedException::class)
             override fun dispatch(request: RecordedRequest): MockResponse {
@@ -148,13 +160,6 @@ internal class TaakObjectServiceIntTest: BaseIntegrationTest() {
             .filter { method.matches(it.method!!) }
             .filter { it.path?.substringBefore('?').equals(path) }
             .firstOrNull()
-    }
-
-    fun verifyRequestSent(method: HttpMethod, path: String) {
-        val request = findRequest(method, path)
-        if (request == null){
-            fail("Request with method $method and path $path was not sent")
-        }
     }
 
     private fun mockResponseFromFile(fileName: String): MockResponse {
