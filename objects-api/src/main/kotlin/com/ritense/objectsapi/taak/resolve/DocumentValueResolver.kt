@@ -21,7 +21,7 @@ class DocumentValueResolver(
         val document = processDocumentService.getDocument(processInstanceId, variableScope)
 
         val value = document.content().getValueBy(JsonPointer.valueOf(placeholder.substringAfter(":"))).orNull()
-        if(value?.isValueNode == true) {
+        if (value?.isValueNode == true) {
             return Mapper.INSTANCE.get().readValue(value.asText(), Object::class.java)
         }
 

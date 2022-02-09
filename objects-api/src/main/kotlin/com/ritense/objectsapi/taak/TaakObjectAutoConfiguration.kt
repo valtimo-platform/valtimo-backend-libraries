@@ -1,6 +1,5 @@
 package com.ritense.objectsapi.taak
 
-import com.ritense.connector.domain.Connector
 import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.taak.initiator.BsnProvider
 import com.ritense.objectsapi.taak.initiator.DocumentInitiatorProvider

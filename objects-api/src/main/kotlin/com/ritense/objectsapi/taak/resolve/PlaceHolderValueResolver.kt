@@ -5,5 +5,5 @@ import org.camunda.bpm.engine.delegate.VariableScope
 
 interface PlaceHolderValueResolver {
 
-    fun resolveValue(placeholder:String, processInstanceId: ProcessInstanceId, variableScope: VariableScope): Any?
+    fun resolveValue(placeholder: String, processInstanceId: ProcessInstanceId, variableScope: VariableScope): Any?
 }

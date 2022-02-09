@@ -10,7 +10,7 @@ class DocumentInitiatorProvider(
     private val processDocumentService: ProcessDocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
     private val zaakRolService: ZaakRolService
-): BsnProvider, KvkProvider {
+) : BsnProvider, KvkProvider {
 
 
     override fun getBurgerServiceNummer(task: DelegateTask): String? {

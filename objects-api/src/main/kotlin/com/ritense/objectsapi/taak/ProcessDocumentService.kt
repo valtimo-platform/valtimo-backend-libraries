@@ -5,8 +5,6 @@ import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.service.CamundaProcessService
-import java.lang.RuntimeException
-import java.util.Optional
 import org.camunda.bpm.engine.delegate.BaseDelegateExecution
 import org.camunda.bpm.engine.delegate.VariableScope
 
@@ -21,18 +19,18 @@ class ProcessDocumentService(
         return if (processDocumentInstance != null) {
             val jsonSchemaDocumentId = processDocumentInstance.processDocumentInstanceId().documentId()
             documentService.findBy(jsonSchemaDocumentId).orNull()
-                ?:throw RuntimeException("Could not find document by documentInstance for process instance $processInstanceId!")
+                ?: throw RuntimeException("Could not find document by documentInstance for process instance $processInstanceId!")
         } else {
             // In case a process has no token wait state ProcessDocumentInstance is not yet created,
             // therefore out business-key is our last chance which is populated with the documentId also.
             val businessKey = getBusinessKey(processInstanceId, variableScope)
             documentService.get(businessKey)
-                ?:throw RuntimeException("Could not find document by businessKey ($businessKey) for process instance $processInstanceId!")
+                ?: throw RuntimeException("Could not find document by businessKey ($businessKey) for process instance $processInstanceId!")
         }
     }
 
     private fun getBusinessKey(processInstanceId: ProcessInstanceId, variableScope: VariableScope): String {
-        return if(variableScope is BaseDelegateExecution) {
+        return if (variableScope is BaseDelegateExecution) {
             variableScope.businessKey
         } else {
             val processInstance = camundaProcessService.findProcessInstanceById(processInstanceId.toString()).orNull()

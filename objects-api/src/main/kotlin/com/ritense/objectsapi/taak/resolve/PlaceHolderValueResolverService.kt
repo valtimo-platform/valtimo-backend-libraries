@@ -5,7 +5,7 @@ import org.camunda.bpm.engine.delegate.VariableScope
 
 class PlaceHolderValueResolverService(
     private val placeHolderValueResolvers: List<PlaceHolderValueResolver>
-): PlaceHolderValueResolver {
+) : PlaceHolderValueResolver {
 
     override fun resolveValue(
         placeholder: String,

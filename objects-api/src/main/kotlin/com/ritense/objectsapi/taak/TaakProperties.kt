@@ -5,5 +5,4 @@ import com.ritense.objectsapi.service.ObjectsApiProperties
 
 class TaakProperties(
     var objectsApiProperties: ObjectsApiProperties = ObjectsApiProperties(),
-): ConnectorProperties {
-}
+): ConnectorProperties

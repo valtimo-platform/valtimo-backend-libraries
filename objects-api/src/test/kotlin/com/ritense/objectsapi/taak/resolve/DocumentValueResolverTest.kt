@@ -1,40 +1,36 @@
 package com.ritense.objectsapi.taak.resolve
 
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.objectsapi.taak.ProcessDocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
-import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.*
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.Mockito.*
+import java.util.UUID
 
 internal class DocumentValueResolverTest {
 
-    private lateinit var processDocumentService:ProcessDocumentService
+    private lateinit var processDocumentService: ProcessDocumentService
 
-    @InjectMocks
-    private lateinit var documentValueResolver:DocumentValueResolver
+    private lateinit var documentValueResolver: DocumentValueResolver
 
     @BeforeEach
     internal fun setUp() {
-        processDocumentService = mock(ProcessDocumentService::class.java)
+        processDocumentService = mock()
         documentValueResolver = DocumentValueResolver(processDocumentService)
     }
 
     @Test
-    fun `should resolve placeholder from process variables`() {
+    fun `should resolve placeholder from document properties`() {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
-        val document = mock(Document::class.java)
-        `when`(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "value": true, "lastName": "Doe"}}}"""))
-        doReturn(document).`when`(processDocumentService).getDocument(processInstanceId, variableScope)
+        val document = mock<Document>()
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "value": true, "lastName": "Doe"}}}"""))
+        whenever(processDocumentService.getDocument(processInstanceId, variableScope)).thenReturn(document)
 
         val resolvedValue = documentValueResolver.resolveValue(
             placeholder = "doc:/root/child/value",
@@ -46,12 +42,12 @@ internal class DocumentValueResolverTest {
     }
 
     @Test
-    fun `should NOT resolve placeholder from process variables`() {
+    fun `should NOT resolve placeholder from document properties`() {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
-        val document = mock(Document::class.java)
-        `when`(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "lastName": "Doe"}}}"""))
-        doReturn(document).`when`(processDocumentService).getDocument(processInstanceId, variableScope)
+        val document = mock<Document>()
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "lastName": "Doe"}}}"""))
+        whenever(processDocumentService.getDocument(processInstanceId, variableScope)).thenReturn(document)
 
         val resolvedValue = documentValueResolver.resolveValue(
             placeholder = "doc:/root/child/value",

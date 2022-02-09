@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Test
 
-
 internal class ProcessVariableValueResolverTest {
     private val processVariableValueResolver = ProcessVariableValueResolver()
 
