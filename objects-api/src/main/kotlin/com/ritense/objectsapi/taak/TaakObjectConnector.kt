@@ -79,7 +79,6 @@ class TaakObjectConnector(
     }
 
     private fun getTaskProperties(task: DelegateTask): Map<String, Any> {
-        task.bpmnModelInstance
         return task.bpmnModelElementInstance.extensionElements.elements
             .filterIsInstance<CamundaProperties>()
             .single()
