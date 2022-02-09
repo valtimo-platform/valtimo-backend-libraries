@@ -116,7 +116,7 @@ internal class TaakObjectServiceIntTest: BaseIntegrationTest() {
 
         connectorService.createConnectorInstance(
             connectorType.id.id,
-            "",
+            "TaakConnector",
             taakObjectConnectorProperties
         )
 

@@ -7,7 +7,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_1abb79g" sourceRef="start-event" targetRef="form-task" />
     <bpmn:userTask id="form-task" name="Doe een ding" camunda:candidateGroups="ROLE_USER">
       <bpmn:extensionElements>
-        <camunda:taskListener expression="${taakObjectService.createTask(&#34;test-form&#34;, task)}" event="create" />
+        <camunda:taskListener expression="${connectorService.load(&#34;TaakConnector&#34;).createTask(&#34;test-form&#34;, task)}" event="create" />
         <camunda:properties>
           <camunda:property name="taak:voornaam" value="doc:/voornaam" />
           <camunda:property name="taak:leeftijd" value="pv:age" />
