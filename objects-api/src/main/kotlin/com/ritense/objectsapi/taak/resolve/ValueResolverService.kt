@@ -29,16 +29,19 @@ class ValueResolverService(
         variableScope: VariableScope,
         placeholders: List<String>
     ): Map<String, Any> {
+        //Group by prefix
         return placeholders.groupBy {
             it.substringBefore(":", missingDelimiterValue = "")
         }.mapNotNull { (prefix, placeholders) ->
+            //Create a resolver per prefix group
             resolverFactoryMap[prefix]?.createResolver(processInstanceId, variableScope)?.let { resolve ->
+                //Create a list of resolved Map entries
                 placeholders.mapNotNull { placeholder ->
                     resolve(placeholder.substringAfter(":"))
                         ?.let { placeholder to it }
                 }
             }
-        }.flatten().associate { (key, value) ->
+        }.flatten().associate { (key, value) -> //Create a Map from a list of entries
             key to value
         }
     }
