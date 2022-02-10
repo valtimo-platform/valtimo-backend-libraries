@@ -17,11 +17,11 @@
 package com.ritense.objectsapi.taak
 
 import com.ritense.openzaak.provider.BsnProvider
-import com.ritense.objectsapi.taak.resolve.FixedValueResolver
-import com.ritense.objectsapi.taak.resolve.DocumentValueResolver
-import com.ritense.objectsapi.taak.resolve.PlaceHolderValueResolver
-import com.ritense.objectsapi.taak.resolve.PlaceHolderValueResolverService
-import com.ritense.objectsapi.taak.resolve.ProcessVariableValueResolver
+import com.ritense.objectsapi.taak.resolve.FixedValueResolverFactory
+import com.ritense.objectsapi.taak.resolve.DocumentValueResolverFactory
+import com.ritense.objectsapi.taak.resolve.ValueResolverFactory
+import com.ritense.objectsapi.taak.resolve.ValueResolverService
+import com.ritense.objectsapi.taak.resolve.ProcessVariableValueResolverFactory
 import com.ritense.processdocument.service.ProcessDocumentService
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -38,10 +38,10 @@ class TaakObjectAutoConfiguration {
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     fun taakObjectConnector(
         taakProperties: TaakProperties,
-        placeHolderValueResolverService: PlaceHolderValueResolverService,
+        valueResolverService: ValueResolverService,
         bsnProvider: BsnProvider
     ): TaakObjectConnector {
-        return TaakObjectConnector(taakProperties, placeHolderValueResolverService, bsnProvider, null)
+        return TaakObjectConnector(taakProperties, valueResolverService, bsnProvider, null)
     }
 
     @Bean
@@ -51,31 +51,31 @@ class TaakObjectAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(PlaceHolderValueResolverService::class)
-    fun placeHolderValueResolverService(
-        placeHolderValueResolvers: List<PlaceHolderValueResolver>
-    ): PlaceHolderValueResolverService {
-        return PlaceHolderValueResolverService(placeHolderValueResolvers)
+    @ConditionalOnMissingBean(ValueResolverService::class)
+    fun valueResolverService(
+        valueResolverFactories: List<ValueResolverFactory>
+    ): ValueResolverService {
+        return ValueResolverService(valueResolverFactories)
     }
 
     @Bean
-    @ConditionalOnMissingBean(FixedValueResolver::class)
-    fun fixedValueResolver(): PlaceHolderValueResolver {
-        return FixedValueResolver()
+    @ConditionalOnMissingBean(FixedValueResolverFactory::class)
+    fun fixedValueResolver(): ValueResolverFactory {
+        return FixedValueResolverFactory()
     }
 
     @Bean
-    @ConditionalOnMissingBean(DocumentValueResolver::class)
+    @ConditionalOnMissingBean(DocumentValueResolverFactory::class)
     fun documentValueResolver(
         processDocumentService: ProcessDocumentService
-    ): PlaceHolderValueResolver {
-        return DocumentValueResolver(processDocumentService)
+    ): ValueResolverFactory {
+        return DocumentValueResolverFactory(processDocumentService)
     }
 
     @Bean
-    @ConditionalOnMissingBean(ProcessVariableValueResolver::class)
-    fun processVariableValueResolver(): PlaceHolderValueResolver {
-        return ProcessVariableValueResolver()
+    @ConditionalOnMissingBean(ProcessVariableValueResolverFactory::class)
+    fun processVariableValueResolver(): ValueResolverFactory {
+        return ProcessVariableValueResolverFactory()
     }
 
 }

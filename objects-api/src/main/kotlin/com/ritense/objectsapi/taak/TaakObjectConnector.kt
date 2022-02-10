@@ -25,7 +25,7 @@ import com.ritense.objectsapi.domain.request.CreateObjectRequest
 import com.ritense.objectsapi.service.ObjectsApiService
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.openzaak.provider.KvkProvider
-import com.ritense.objectsapi.taak.resolve.PlaceHolderValueResolverService
+import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.json.Mapper
 import java.net.URI
@@ -40,7 +40,7 @@ import kotlin.contracts.ExperimentalContracts
 @ConnectorType(name = "Taak")
 class TaakObjectConnector(
     private var taakProperties: TaakProperties,
-    private val placeHolderValueResolverService: PlaceHolderValueResolverService,
+    private val valueResolverService: ValueResolverService,
     private val bsnProvider: BsnProvider?,
     private val kvkProvider: KvkProvider?
 ):Connector, ObjectsApiService(taakProperties.objectsApiProperties) {
@@ -85,23 +85,26 @@ class TaakObjectConnector(
     }
 
     private fun getTaskProperties(task: DelegateTask): Map<String, Any> {
-        return task.bpmnModelElementInstance.extensionElements.elements
+        val taakProperties = task.bpmnModelElementInstance.extensionElements.elements
             .filterIsInstance<CamundaProperties>()
             .single()
             .camundaProperties
             .filter { it.camundaName.startsWith(prefix = "taak:", ignoreCase = true) }
-            .associateBy(
-                { it.camundaName.substringAfter(delimiter = ":") },
-                { resolveValue(task, it.camundaValue) }
-            )
-    }
 
-    private fun resolveValue(task: DelegateTask, value: String): Any {
-        return placeHolderValueResolverService.resolveValue(
-            placeholder = value,
+        val resolvedPlaceholders = valueResolverService.resolvePlaceholders(
             processInstanceId = CamundaProcessInstanceId(task.processInstanceId),
-            variableScope = task
-        ) ?: value
+            variableScope = task,
+            taakProperties.map { it.camundaValue }
+        )
+
+        // This is a workaround for Kotlin not having an associateNotNull method
+        return taakProperties.mapNotNull { property ->
+            resolvedPlaceholders[property.camundaValue]?.let { value ->
+                property.camundaName.substringAfter(delimiter = ":") to value
+            }
+        }.associate { (key, value) ->
+            key to value
+        }
     }
 
     override fun getProperties(): ConnectorProperties {

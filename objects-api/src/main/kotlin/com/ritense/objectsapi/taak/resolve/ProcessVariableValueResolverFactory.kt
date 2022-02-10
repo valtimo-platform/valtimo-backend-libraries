@@ -16,30 +16,22 @@
 
 package com.ritense.objectsapi.taak.resolve
 
-import com.fasterxml.jackson.core.JsonPointer
 import com.ritense.processdocument.domain.ProcessInstanceId
-import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.contract.json.Mapper
 import org.camunda.bpm.engine.delegate.VariableScope
 
-class DocumentValueResolver(
-    private val processDocumentService: ProcessDocumentService
-) : PlaceHolderValueResolver {
+class ProcessVariableValueResolverFactory : ValueResolverFactory {
 
-    override fun resolveValue(
-        placeholder: String,
+    override fun supportedPrefix(): String {
+        return "pv"
+    }
+
+    override fun createResolver(
         processInstanceId: ProcessInstanceId,
         variableScope: VariableScope
-    ): Any? {
-        if (!placeholder.startsWith("doc:")) return null
+    ): (placeholder: String) -> Any? {
 
-        val document = processDocumentService.getDocument(processInstanceId, variableScope)
-
-        val value = document.content().getValueBy(JsonPointer.valueOf(placeholder.substringAfter(":"))).orElse(null)
-        if (value?.isValueNode == true) {
-            return Mapper.INSTANCE.get().treeToValue(value, Object::class.java)
+        return { placeholder ->
+            variableScope.variables[placeholder]
         }
-
-        return null
     }
 }

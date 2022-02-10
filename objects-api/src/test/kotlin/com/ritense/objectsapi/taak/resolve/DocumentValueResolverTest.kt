@@ -22,22 +22,22 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 internal class DocumentValueResolverTest {
 
     private lateinit var processDocumentService: ProcessDocumentService
 
-    private lateinit var documentValueResolver: DocumentValueResolver
+    private lateinit var documentValueResolver: DocumentValueResolverFactory
 
     @BeforeEach
     internal fun setUp() {
         processDocumentService = mock()
-        documentValueResolver = DocumentValueResolver(processDocumentService)
+        documentValueResolver = DocumentValueResolverFactory(processDocumentService)
     }
 
     @Test
@@ -48,10 +48,11 @@ internal class DocumentValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "value": true, "lastName": "Doe"}}}"""))
         whenever(processDocumentService.getDocument(processInstanceId, variableScope)).thenReturn(document)
 
-        val resolvedValue = documentValueResolver.resolveValue(
-            placeholder = "doc:/root/child/value",
+        val resolvedValue = documentValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
+        )(
+            "/root/child/value"
         )
 
         Assertions.assertThat(resolvedValue).isEqualTo(true)
@@ -65,10 +66,11 @@ internal class DocumentValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "lastName": "Doe"}}}"""))
         whenever(processDocumentService.getDocument(processInstanceId, variableScope)).thenReturn(document)
 
-        val resolvedValue = documentValueResolver.resolveValue(
-            placeholder = "doc:/root/child/firstName",
+        val resolvedValue = documentValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
+        )(
+            "/root/child/firstName"
         )
 
         Assertions.assertThat(resolvedValue).isEqualTo("John")
@@ -82,10 +84,11 @@ internal class DocumentValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "lastName": "Doe", "age": 5}}}"""))
         whenever(processDocumentService.getDocument(processInstanceId, variableScope)).thenReturn(document)
 
-        val resolvedValue = documentValueResolver.resolveValue(
-            placeholder = "doc:/root/child/age",
+        val resolvedValue = documentValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
+        )(
+            "/root/child/age"
         )
 
         Assertions.assertThat(resolvedValue).isEqualTo(5)
@@ -99,11 +102,13 @@ internal class DocumentValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "lastName": "Doe"}}}"""))
         whenever(processDocumentService.getDocument(processInstanceId, variableScope)).thenReturn(document)
 
-        val resolvedValue = documentValueResolver.resolveValue(
-            placeholder = "doc:/root/child/value",
+        val resolvedValue = documentValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
+        )(
+            "/root/child/value"
         )
+
         Assertions.assertThat(resolvedValue).isNull()
     }
 }

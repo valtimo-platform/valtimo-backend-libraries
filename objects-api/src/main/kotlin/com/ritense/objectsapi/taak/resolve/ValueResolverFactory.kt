@@ -19,7 +19,10 @@ package com.ritense.objectsapi.taak.resolve
 import com.ritense.processdocument.domain.ProcessInstanceId
 import org.camunda.bpm.engine.delegate.VariableScope
 
-interface PlaceHolderValueResolver {
+interface ValueResolverFactory {
 
-    fun resolveValue(placeholder: String, processInstanceId: ProcessInstanceId, variableScope: VariableScope): Any?
+    fun supportedPrefix(): String
+
+    fun createResolver(processInstanceId: ProcessInstanceId, variableScope: VariableScope)
+        : (placeholder: String) -> Any?
 }

@@ -19,17 +19,27 @@ package com.ritense.objectsapi.taak.resolve
 import com.ritense.processdocument.domain.ProcessInstanceId
 import org.camunda.bpm.engine.delegate.VariableScope
 
-class PlaceHolderValueResolverService(
-    private val placeHolderValueResolvers: List<PlaceHolderValueResolver>
+class ValueResolverService(
+    valueResolverFactories: List<ValueResolverFactory>
 ) {
+    private val resolverFactoryMap = valueResolverFactories.associateBy { it.supportedPrefix() }
 
-    fun resolveValue(
-        placeholder: String,
+    fun resolvePlaceholders(
         processInstanceId: ProcessInstanceId,
-        variableScope: VariableScope
-    ): Any? {
-        return placeHolderValueResolvers.firstNotNullOfOrNull {
-            it.resolveValue(placeholder, processInstanceId, variableScope)
+        variableScope: VariableScope,
+        placeholders: List<String>
+    ): Map<String, Any> {
+        return placeholders.groupBy {
+            it.substringBefore(":", missingDelimiterValue = "")
+        }.mapNotNull { (prefix, placeholders) ->
+            resolverFactoryMap[prefix]?.createResolver(processInstanceId, variableScope)?.let { resolve ->
+                placeholders.mapNotNull { placeholder ->
+                    resolve(placeholder.substringAfter(":"))
+                        ?.let { placeholder to it }
+                }
+            }
+        }.flatten().associate { (key, value) ->
+            key to value
         }
     }
 }

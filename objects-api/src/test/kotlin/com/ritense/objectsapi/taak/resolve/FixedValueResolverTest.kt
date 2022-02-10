@@ -17,24 +17,25 @@
 package com.ritense.objectsapi.taak.resolve
 
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 internal class FixedValueResolverTest {
 
-    private val fixedValueResolver = FixedValueResolver()
+    private val fixedValueResolver = FixedValueResolverFactory()
 
     @Test
     fun `should resolve boolean placeholder from placeholder`() {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
 
-        val resolvedValue = fixedValueResolver.resolveValue(
-            placeholder = "true",
+        val resolvedValue = fixedValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
+        )(
+            "true"
         )
 
         Assertions.assertThat(resolvedValue).isEqualTo(true)
@@ -45,10 +46,11 @@ internal class FixedValueResolverTest {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
 
-        val resolvedValue = fixedValueResolver.resolveValue(
-            placeholder = "1337",
+        val resolvedValue = fixedValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
+        )(
+            "1337"
         )
 
         Assertions.assertThat(resolvedValue).isEqualTo(1337L)
@@ -59,10 +61,11 @@ internal class FixedValueResolverTest {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
 
-        val resolvedValue = fixedValueResolver.resolveValue(
-            placeholder = "13.37",
+        val resolvedValue = fixedValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
+        )(
+            "13.37"
         )
 
         Assertions.assertThat(resolvedValue).isEqualTo(13.37)
@@ -73,10 +76,11 @@ internal class FixedValueResolverTest {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
 
-        val resolvedValue = fixedValueResolver.resolveValue(
-            placeholder = "asdf",
+        val resolvedValue = fixedValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
+        )(
+            "asdf"
         )
 
         Assertions.assertThat(resolvedValue).isEqualTo("asdf")

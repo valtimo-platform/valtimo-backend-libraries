@@ -18,15 +18,24 @@ package com.ritense.objectsapi.taak.resolve
 
 import com.ritense.processdocument.domain.ProcessInstanceId
 import org.camunda.bpm.engine.delegate.VariableScope
+import org.springframework.core.annotation.Order
 
-class ProcessVariableValueResolver : PlaceHolderValueResolver {
-    override fun resolveValue(
-        placeholder: String,
+@Order(Int.MAX_VALUE)
+class FixedValueResolverFactory : ValueResolverFactory {
+
+    override fun supportedPrefix(): String {
+        return ""
+    }
+
+    override fun createResolver(
         processInstanceId: ProcessInstanceId,
         variableScope: VariableScope
-    ): Any? {
-        if (!placeholder.startsWith("pv:")) return null
-
-        return variableScope.variables[placeholder.substringAfter(":")]
+    ): (placeholder: String) -> Any? {
+        return { placeholder->
+            placeholder.toBooleanStrictOrNull()
+                ?: placeholder.toLongOrNull()
+                ?: placeholder.toDoubleOrNull()
+                ?: placeholder
+        }
     }
 }
