@@ -34,8 +34,9 @@ class ValueResolverService(
             it.substringBefore(":", missingDelimiterValue = "")
         }.mapNotNull { (prefix, placeholders) ->
             //Create a resolver per prefix group
-            resolverFactoryMap[prefix]?.createResolver(processInstanceId, variableScope)?.let { resolve ->
+            resolverFactoryMap[prefix]?.createResolver(processInstanceId, variableScope)
                 //Create a list of resolved Map entries
+                ?.let { resolve ->
                 placeholders.mapNotNull { placeholder ->
                     resolve(placeholder.substringAfter(":"))
                         ?.let { placeholder to it }
