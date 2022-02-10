@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi.taak.initiator
+package com.ritense.openzaak.provider
 
 import org.camunda.bpm.engine.delegate.DelegateTask
 
-interface KvkProvider {
-    fun getKvkNummer(task: DelegateTask): String?
+interface BsnProvider {
+    fun getBurgerServiceNummer(task: DelegateTask): String?
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi.taak.initiator
+package com.ritense.openzaak.provider
 
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.openzaak.service.ZaakInstanceLinkService
@@ -22,12 +22,12 @@ import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import org.camunda.bpm.engine.delegate.DelegateTask
 
-class DocumentInitiatorProvider(
+@OptIn(ExperimentalContracts::class)
+class ZaakBsnProvider(
     private val processDocumentService: ProcessDocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
     private val zaakRolService: ZaakRolService
-) : BsnProvider, KvkProvider {
-
+) : BsnProvider {
 
     override fun getBurgerServiceNummer(task: DelegateTask): String? {
         val document = processDocumentService.getDocument(CamundaProcessInstanceId(task.processInstanceId), task)
@@ -36,11 +36,6 @@ class DocumentInitiatorProvider(
             .results.firstNotNullOfOrNull {
                 it.betrokkeneIdentificatie?.inpBsn
             }
-    }
-
-    override fun getKvkNummer(task: DelegateTask): String? {
-        //TODO: "Not yet implemented"
-        return null
     }
 
 }

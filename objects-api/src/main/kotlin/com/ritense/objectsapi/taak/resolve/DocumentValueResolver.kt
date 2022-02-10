@@ -16,9 +16,7 @@
 
 package com.ritense.objectsapi.taak.resolve
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.core.JsonPointer
-import com.fasterxml.jackson.databind.node.*
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.Mapper

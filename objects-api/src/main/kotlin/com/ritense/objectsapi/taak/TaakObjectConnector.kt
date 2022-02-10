@@ -23,8 +23,8 @@ import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.objectsapi.domain.Record
 import com.ritense.objectsapi.domain.request.CreateObjectRequest
 import com.ritense.objectsapi.service.ObjectsApiService
-import com.ritense.objectsapi.taak.initiator.BsnProvider
-import com.ritense.objectsapi.taak.initiator.KvkProvider
+import com.ritense.openzaak.provider.BsnProvider
+import com.ritense.openzaak.provider.KvkProvider
 import com.ritense.objectsapi.taak.resolve.PlaceHolderValueResolverService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.json.Mapper

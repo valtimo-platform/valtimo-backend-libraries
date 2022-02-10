@@ -24,8 +24,8 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.objectsapi.domain.request.CreateObjectRequest
-import com.ritense.objectsapi.taak.initiator.BsnProvider
-import com.ritense.objectsapi.taak.initiator.KvkProvider
+import com.ritense.openzaak.provider.BsnProvider
+import com.ritense.openzaak.provider.KvkProvider
 import com.ritense.objectsapi.taak.resolve.PlaceHolderValueResolverService
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.delegate.DelegateTask
