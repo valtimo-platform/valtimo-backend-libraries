@@ -17,7 +17,9 @@
 package com.ritense.openzaak.provider
 
 import org.camunda.bpm.engine.delegate.DelegateTask
+import kotlin.contracts.ExperimentalContracts
 
+@ExperimentalContracts
 interface KvkProvider {
     fun getKvkNummer(task: DelegateTask): String?
 }

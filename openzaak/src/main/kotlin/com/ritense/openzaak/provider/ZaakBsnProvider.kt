@@ -21,6 +21,7 @@ import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import org.camunda.bpm.engine.delegate.DelegateTask
+import kotlin.contracts.ExperimentalContracts
 
 @OptIn(ExperimentalContracts::class)
 class ZaakBsnProvider(

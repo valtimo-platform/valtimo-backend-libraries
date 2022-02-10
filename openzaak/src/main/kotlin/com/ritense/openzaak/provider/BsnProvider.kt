@@ -18,6 +18,7 @@ package com.ritense.openzaak.provider
 
 import org.camunda.bpm.engine.delegate.DelegateTask
 
+@ExperimentalContracts
 interface BsnProvider {
     fun getBurgerServiceNummer(task: DelegateTask): String?
 }

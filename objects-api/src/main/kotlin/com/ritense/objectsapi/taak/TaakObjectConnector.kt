@@ -34,14 +34,20 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
+import kotlin.contracts.ExperimentalContracts
 
+@OptIn(ExperimentalContracts::class)
 @ConnectorType(name = "Taak")
 class TaakObjectConnector(
     private var taakProperties: TaakProperties,
     private val placeHolderValueResolverService: PlaceHolderValueResolverService,
-    private val bsnProvider: BsnProvider,
-    private val kvkProvider: KvkProvider
+    private val bsnProvider: BsnProvider?,
+    private val kvkProvider: KvkProvider?
 ):Connector, ObjectsApiService(taakProperties.objectsApiProperties) {
+
+    init {
+        require(bsnProvider != null || kvkProvider != null) { "BSN and/or KvK provider is required!"}
+    }
 
     fun createTask(task: DelegateTask, formulierId: String) {
         val taakObject = createTaakObjectDto(task, formulierId)
@@ -68,8 +74,8 @@ class TaakObjectConnector(
         formulierId: String
     ): TaakObjectDto {
         val taakObject = TaakObjectDto(
-            bsn = bsnProvider.getBurgerServiceNummer(task),
-            kvk = kvkProvider.getKvkNummer(task),
+            bsn = bsnProvider?.getBurgerServiceNummer(task),
+            kvk = kvkProvider?.getKvkNummer(task),
             verwerkerTaakId = UUID.fromString(task.executionId),
             formulierId = formulierId,
             data = getTaskProperties(task),
