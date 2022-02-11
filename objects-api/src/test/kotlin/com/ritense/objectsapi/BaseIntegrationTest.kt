@@ -17,8 +17,6 @@
 package com.ritense.objectsapi
 
 import com.ritense.klant.service.BurgerService
-import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
-import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.mail.MailSender
@@ -39,12 +37,6 @@ abstract class BaseIntegrationTest {
 
     @MockBean
     lateinit var burgerService: BurgerService
-
-    @MockBean
-    lateinit var zaakRolService: ZaakRolService
-
-    @MockBean
-    lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
 
     @MockBean
     lateinit var mailSender: MailSender
