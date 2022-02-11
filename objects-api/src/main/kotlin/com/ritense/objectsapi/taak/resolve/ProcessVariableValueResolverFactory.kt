@@ -19,6 +19,11 @@ package com.ritense.objectsapi.taak.resolve
 import com.ritense.processdocument.domain.ProcessInstanceId
 import org.camunda.bpm.engine.delegate.VariableScope
 
+/**
+ * This resolver can resolve placeholders against the variables of a process or task.
+ *
+ * The value of the placeholder should be in the format pv:someProperty
+ */
 class ProcessVariableValueResolverFactory : ValueResolverFactory {
 
     override fun supportedPrefix(): String {

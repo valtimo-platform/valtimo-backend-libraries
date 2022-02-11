@@ -22,6 +22,11 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.Mapper
 import org.camunda.bpm.engine.delegate.VariableScope
 
+/**
+ * This resolver can resolve placeholders against Document linked to the process
+ *
+ * The value of the placeholder should be in the format doc:/some/json/pointer
+ */
 class DocumentValueResolverFactory(
     private val processDocumentService: ProcessDocumentService
 ) : ValueResolverFactory {

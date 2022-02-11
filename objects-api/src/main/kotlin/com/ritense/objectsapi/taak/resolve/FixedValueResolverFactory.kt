@@ -20,6 +20,14 @@ import com.ritense.processdocument.domain.ProcessInstanceId
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.springframework.core.annotation.Order
 
+/**
+ * This resolver returns the placeholder as the value.
+ * It will do a best-effort of guessing the type of the given placeholder before returning it.
+ *
+ * For instance, "true" will become the boolean <code>true</code>
+ *
+ * These placeholders do not have a prefix
+ */
 @Order(Int.MAX_VALUE)
 class FixedValueResolverFactory : ValueResolverFactory {
 
