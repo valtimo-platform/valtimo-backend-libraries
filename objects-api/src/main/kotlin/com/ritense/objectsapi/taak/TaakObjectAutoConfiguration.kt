@@ -60,14 +60,12 @@ class TaakObjectAutoConfiguration {
         return ValueResolverService(valueResolverFactories)
     }
 
-    @Order(Ordered.LOWEST_PRECEDENCE)
     @Bean
     @ConditionalOnMissingBean(FixedValueResolverFactory::class)
     fun fixedValueResolver(): ValueResolverFactory {
         return FixedValueResolverFactory()
     }
 
-    @Order(1)
     @Bean
     @ConditionalOnMissingBean(DocumentValueResolverFactory::class)
     fun documentValueResolver(
@@ -76,11 +74,9 @@ class TaakObjectAutoConfiguration {
         return DocumentValueResolverFactory(processDocumentService)
     }
 
-    @Order(0)
     @Bean
     @ConditionalOnMissingBean(ProcessVariableValueResolverFactory::class)
     fun processVariableValueResolver(): ValueResolverFactory {
         return ProcessVariableValueResolverFactory()
     }
-
 }
