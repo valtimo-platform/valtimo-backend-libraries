@@ -17,19 +17,20 @@
 package com.ritense.objectsapi.taak
 
 import com.jayway.jsonpath.JsonPath
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.connector.domain.Connector
+import com.ritense.connector.domain.ConnectorInstance
+import com.ritense.connector.domain.ConnectorInstanceId
+import com.ritense.connector.repository.ConnectorTypeInstanceRepository
 import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.objectsapi.BaseIntegrationTest
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
-import com.ritense.openzaak.service.impl.model.ResultWrapper
-import com.ritense.openzaak.service.impl.model.zaak.BetrokkeneType
-import com.ritense.openzaak.service.impl.model.zaak.Rol
-import com.ritense.openzaak.service.impl.model.zaak.RolNatuurlijkPersoon
+import com.ritense.openzaak.domain.configuration.Rsin
+import com.ritense.openzaak.domain.connector.OpenZaakConfig
+import com.ritense.openzaak.domain.connector.OpenZaakProperties
+import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
@@ -42,13 +43,14 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpMethod
 import java.net.URI
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-internal class TaakObjectServiceIntTest: BaseIntegrationTest() {
+internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var taakObjectConnector: TaakObjectConnector
@@ -68,8 +70,19 @@ internal class TaakObjectServiceIntTest: BaseIntegrationTest() {
     @Autowired
     lateinit var connectorDeploymentService: ConnectorDeploymentService
 
+    @Autowired
+    lateinit var zaakTypeLinkService: ZaakTypeLinkService
+
+    @Autowired
+    lateinit var connectorTypeInstanceRepository: ConnectorTypeInstanceRepository
+
+    @Autowired
+    @Qualifier("openZaakConnector")
+    lateinit var openZaakConnector: Connector
+
     lateinit var server: MockWebServer
     lateinit var executedRequests: MutableList<RecordedRequest>
+    lateinit var openZaakConnectorInstance: ConnectorInstance
 
     private val PROCESS_DEFINITION_KEY = "portal-task"
     private val DOCUMENT_DEFINITION_KEY = "testschema"
@@ -91,29 +104,14 @@ internal class TaakObjectServiceIntTest: BaseIntegrationTest() {
         processDocumentAssociationService.createProcessDocumentDefinition(
             ProcessDocumentDefinitionRequest(PROCESS_DEFINITION_KEY, DOCUMENT_DEFINITION_KEY, true, true)
         )
-
-        whenever(zaakRolService.getZaakInitator(any())).thenReturn(ResultWrapper(count = 1, results = listOf(
-            Rol(
-                URI("http://some-url"),
-                URI("http://some-url"),
-                BetrokkeneType.NATUURLIJK_PERSOON,
-                URI("http://some-url"),
-                "toelichting",
-                RolNatuurlijkPersoon(
-                    "12345"
-                )
-            )
-        )))
-        whenever(zaakInstanceLinkService.getByDocumentId(any<UUID>())).thenReturn(
-            ZaakInstanceLink(
-                ZaakInstanceLinkId.newId(UUID.randomUUID()),
-                URI("http://some-url"),
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                URI("http://some-url")
+        setupOpenZaakConnector()
+        zaakTypeLinkService.createZaakTypeLink(
+            CreateZaakTypeLinkRequest(
+                DOCUMENT_DEFINITION_KEY,
+                URI("http://some-url/catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773"),
+                true
             )
         )
-
         val jsonContent = Mapper.INSTANCE.get().readTree("{\"voornaam\": \"Peter\"}")
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, jsonContent)
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
@@ -156,11 +154,10 @@ internal class TaakObjectServiceIntTest: BaseIntegrationTest() {
             @Throws(InterruptedException::class)
             override fun dispatch(request: RecordedRequest): MockResponse {
                 executedRequests.add(request)
-                val response = when (request.path?.substringBefore('?')) {
-                    "/api/v2/objects" -> when (request.method) {
-                        "POST" -> mockResponseFromFile("/data/post-create-object.json")
-                        else -> MockResponse().setResponseCode(404)
-                    }
+                val response = when (request.method + " " + request.path?.substringBefore('?')) {
+                    "POST /api/v2/objects" -> mockResponseFromFile("/data/post-create-object.json")
+                    "POST /zaken/api/v1/zaken" -> mockResponseFromFile("/data/post-create-zaak.json")
+                    "GET /zaken/api/v1/rollen" -> mockResponseFromFile("/data/get-rol.json")
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
@@ -169,6 +166,29 @@ internal class TaakObjectServiceIntTest: BaseIntegrationTest() {
         server = MockWebServer()
         server.dispatcher = dispatcher
         server.start()
+    }
+
+    fun setupOpenZaakConnector() {
+        connectorDeploymentService.deployAll(listOf(openZaakConnector))
+        val connectorInstanceId = ConnectorInstanceId.newId(UUID.fromString("26141e07-40e4-4a7e-9c78-f7a40db3b3f0"))
+        val openZaakConnectorType = connectorService.getConnectorTypes()
+            .filter { it.name.equals("OpenZaak") }
+            .first()
+
+        openZaakConnectorInstance = ConnectorInstance(
+            connectorInstanceId,
+            openZaakConnectorType,
+            "OpenZaakConnector",
+            OpenZaakProperties(
+                OpenZaakConfig(
+                    server.url("/").toString(),
+                    "test-client",
+                    "711de9a3-1af6-4196-b4dd-e8a2e2ade17c",
+                    Rsin("051845623")
+                )
+            )
+        )
+        connectorTypeInstanceRepository.save(openZaakConnectorInstance)
     }
 
     fun findRequest(method: HttpMethod, path: String): RecordedRequest? {

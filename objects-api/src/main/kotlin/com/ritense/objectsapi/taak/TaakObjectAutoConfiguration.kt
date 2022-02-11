@@ -16,19 +16,21 @@
 
 package com.ritense.objectsapi.taak
 
-import com.ritense.openzaak.provider.BsnProvider
-import com.ritense.objectsapi.taak.resolve.FixedValueResolverFactory
 import com.ritense.objectsapi.taak.resolve.DocumentValueResolverFactory
+import com.ritense.objectsapi.taak.resolve.FixedValueResolverFactory
+import com.ritense.objectsapi.taak.resolve.ProcessVariableValueResolverFactory
 import com.ritense.objectsapi.taak.resolve.ValueResolverFactory
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
-import com.ritense.objectsapi.taak.resolve.ProcessVariableValueResolverFactory
+import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.processdocument.service.ProcessDocumentService
+import kotlin.contracts.ExperimentalContracts
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
-import kotlin.contracts.ExperimentalContracts
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 
 @Configuration
 class TaakObjectAutoConfiguration {
@@ -58,12 +60,14 @@ class TaakObjectAutoConfiguration {
         return ValueResolverService(valueResolverFactories)
     }
 
+    @Order(Ordered.LOWEST_PRECEDENCE)
     @Bean
     @ConditionalOnMissingBean(FixedValueResolverFactory::class)
     fun fixedValueResolver(): ValueResolverFactory {
         return FixedValueResolverFactory()
     }
 
+    @Order(1)
     @Bean
     @ConditionalOnMissingBean(DocumentValueResolverFactory::class)
     fun documentValueResolver(
@@ -72,6 +76,7 @@ class TaakObjectAutoConfiguration {
         return DocumentValueResolverFactory(processDocumentService)
     }
 
+    @Order(0)
     @Bean
     @ConditionalOnMissingBean(ProcessVariableValueResolverFactory::class)
     fun processVariableValueResolver(): ValueResolverFactory {
