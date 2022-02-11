@@ -42,12 +42,14 @@ class ChangeLog20211130AddProcessDefinitionKeyToServiceTaskHandler : CustomTaskC
             val zaakTypeLinkId = result.getBytes(1)
             val handlersString = result.getString(2)
             val handlers = Mapper.INSTANCE.get().readValue(handlersString, ArrayNode::class.java)
-            for (handler in handlers) {
-                val serviceTaskHandler = handler as ObjectNode
+            val handlerIterator = handlers.iterator()
+            while (handlerIterator.hasNext()) {
+                val serviceTaskHandler = handlerIterator.next() as ObjectNode
                 val serviceTaskId = serviceTaskHandler.get("serviceTaskId").textValue()
                 val processDefinitionKey = taskToProcessMap[serviceTaskId]
                 if (processDefinitionKey == null) {
-                    logger.warn { "Failed to find process-definition-key for service-task-id: $serviceTaskId" }
+                    logger.warn { "Failed to find process-definition-key for service-task-id: $serviceTaskId. Removing service task handler" }
+                    handlerIterator.remove()
                 } else {
                     serviceTaskHandler.set<TextNode>("processDefinitionKey", TextNode.valueOf(processDefinitionKey))
                 }
