@@ -20,26 +20,35 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.Mapper
+import java.util.function.Function
 import org.camunda.bpm.engine.delegate.VariableScope
 
-class DocumentValueResolver(
+/**
+ * This resolver can resolve requestedValues against Document linked to the process
+ *
+ * The value of the requestedValue should be in the format doc:/some/json/pointer
+ */
+class DocumentValueResolverFactory(
     private val processDocumentService: ProcessDocumentService
-) : PlaceHolderValueResolver {
+) : ValueResolverFactory {
 
-    override fun resolveValue(
-        placeholder: String,
+    override fun supportedPrefix(): String {
+        return "doc"
+    }
+
+    override fun createResolver(
         processInstanceId: ProcessInstanceId,
         variableScope: VariableScope
-    ): Any? {
-        if (!placeholder.startsWith("doc:")) return null
-
+    ): Function<String, Any?> {
         val document = processDocumentService.getDocument(processInstanceId, variableScope)
 
-        val value = document.content().getValueBy(JsonPointer.valueOf(placeholder.substringAfter(":"))).orElse(null)
-        if (value?.isValueNode == true) {
-            return Mapper.INSTANCE.get().treeToValue(value, Object::class.java)
+        return Function { requestedValue ->
+            val value = document.content().getValueBy(JsonPointer.valueOf(requestedValue)).orElse(null)
+            if (value?.isValueNode == true) {
+                Mapper.INSTANCE.get().treeToValue(value, Object::class.java)
+            } else {
+                null
+            }
         }
-
-        return null
     }
 }

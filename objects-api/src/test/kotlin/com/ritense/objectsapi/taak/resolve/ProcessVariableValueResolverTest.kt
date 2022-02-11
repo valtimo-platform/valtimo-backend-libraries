@@ -23,32 +23,40 @@ import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Test
 
 internal class ProcessVariableValueResolverTest {
-    private val processVariableValueResolver = ProcessVariableValueResolver()
+    private val processVariableValueResolver = ProcessVariableValueResolverFactory()
 
     @Test
-    fun `should resolve placeholder from process variables`() {
+    fun `should resolve requestedValue from process variables`() {
         val somePropertyName = "somePropertyName"
-        val resolvedValue = processVariableValueResolver.resolveValue(
-            placeholder = "pv:$somePropertyName",
-            processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString()),
-            variableScope = DelegateTaskFake()
-                .withVariable("firstName", "John")
-                .withVariable(somePropertyName, true)
-                .withVariable("lastName", "Doe")
+        val variableScope = DelegateTaskFake()
+            .withVariable("firstName", "John")
+            .withVariable(somePropertyName, true)
+            .withVariable("lastName", "Doe")
+        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+
+        val resolvedValue = processVariableValueResolver.createResolver(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope
+        ).apply(
+            somePropertyName
         )
 
         Assertions.assertThat(resolvedValue).isEqualTo(true)
     }
 
     @Test
-    fun `should NOT resolve placeholder from process variables`() {
+    fun `should NOT resolve requestedValue from process variables`() {
         val somePropertyName = "somePropertyName"
-        val resolvedValue = processVariableValueResolver.resolveValue(
-            placeholder = "pv:$somePropertyName",
-            processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString()),
-            variableScope = DelegateTaskFake()
-                .withVariable("firstName", "John")
-                .withVariable("lastName", "Doe")
+        val variableScope = DelegateTaskFake()
+            .withVariable("firstName", "John")
+            .withVariable("lastName", "Doe")
+        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+
+        val resolvedValue = processVariableValueResolver.createResolver(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope
+        ).apply(
+            somePropertyName
         )
 
         Assertions.assertThat(resolvedValue).isNull()

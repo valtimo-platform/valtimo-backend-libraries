@@ -19,6 +19,7 @@ package com.ritense.objectsapi.taak
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
@@ -26,7 +27,8 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.objectsapi.domain.request.CreateObjectRequest
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.openzaak.provider.KvkProvider
-import com.ritense.objectsapi.taak.resolve.PlaceHolderValueResolverService
+import com.ritense.objectsapi.taak.resolve.ValueResolverService
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
@@ -41,7 +43,7 @@ import kotlin.contracts.ExperimentalContracts
 internal class TaakObjectConnectorTest {
 
     private lateinit var taakProperties: TaakProperties
-    private lateinit var placeHolderValueResolverService: PlaceHolderValueResolverService
+    private lateinit var valueResolverService: ValueResolverService
     private lateinit var bsnProvider: BsnProvider
     private lateinit var kvkProvider: KvkProvider
 
@@ -50,13 +52,13 @@ internal class TaakObjectConnectorTest {
     @BeforeEach
     internal fun setUp() {
         taakProperties = TaakProperties()
-        placeHolderValueResolverService = mock()
+        valueResolverService = mock()
         bsnProvider = mock()
         kvkProvider = mock()
         taakObjectConnector = spy(
             TaakObjectConnector(
                 taakProperties,
-                placeHolderValueResolverService,
+                valueResolverService,
                 bsnProvider,
                 kvkProvider
             )
@@ -69,14 +71,21 @@ internal class TaakObjectConnectorTest {
         doReturn(mock<com.ritense.objectsapi.domain.Object>()).whenever(taakObjectConnector).createObject(any())
         val task = mockDelegateTask("taak:my-var", "pv:my-process-var")
 
+        whenever(valueResolverService.resolveValues(
+            eq(CamundaProcessInstanceId(task.processInstanceId)),
+            eq(task),
+            eq(listOf("pv:my-process-var"))
+        )).thenReturn(mapOf("pv:my-process-var" to "somevalue"))
+
         taakObjectConnector.createTask(task, "my-form-id")
 
         val captor = argumentCaptor<CreateObjectRequest>()
         verify(taakObjectConnector).createObject(captor.capture())
-        Assertions.assertThat(captor.firstValue.record.data).containsAllEntriesOf(
+        val capturedObjectRequest = captor.firstValue
+        Assertions.assertThat(capturedObjectRequest.record.data).containsAllEntriesOf(
             mapOf(
                 "bsn" to "my-bsn",
-                "data" to mapOf("my-var" to "pv:my-process-var"),
+                "data" to mapOf("my-var" to "somevalue"),
                 "formulier_id" to "my-form-id"
             )
         )

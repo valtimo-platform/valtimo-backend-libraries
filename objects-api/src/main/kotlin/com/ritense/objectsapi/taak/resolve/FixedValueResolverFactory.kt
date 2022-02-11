@@ -17,19 +17,33 @@
 package com.ritense.objectsapi.taak.resolve
 
 import com.ritense.processdocument.domain.ProcessInstanceId
+import java.util.function.Function
 import org.camunda.bpm.engine.delegate.VariableScope
+import org.springframework.core.annotation.Order
 
-class PlaceHolderValueResolverService(
-    private val placeHolderValueResolvers: List<PlaceHolderValueResolver>
-) {
+/**
+ * This resolver returns the requestedValue as the value.
+ * It will do a best-effort of guessing the type of the given requestedValue before returning it.
+ *
+ * For instance, "true" will become the boolean <code>true</code>
+ *
+ * These requestedValues do not have a prefix
+ */
+class FixedValueResolverFactory : ValueResolverFactory {
 
-    fun resolveValue(
-        placeholder: String,
+    override fun supportedPrefix(): String {
+        return ""
+    }
+
+    override fun createResolver(
         processInstanceId: ProcessInstanceId,
         variableScope: VariableScope
-    ): Any? {
-        return placeHolderValueResolvers.firstNotNullOfOrNull {
-            it.resolveValue(placeholder, processInstanceId, variableScope)
+    ): Function<String, Any?> {
+        return Function { requestedValue->
+            requestedValue.toBooleanStrictOrNull()
+                ?: requestedValue.toLongOrNull()
+                ?: requestedValue.toDoubleOrNull()
+                ?: requestedValue
         }
     }
 }
