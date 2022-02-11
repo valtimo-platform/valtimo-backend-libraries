@@ -141,6 +141,7 @@ open class ConnectorService(
         connector.onDelete(connectorInstance)
     }
 
+
     /**
      * Instantiates a connector by name with configured properties.
      * Get bean will retrieve the bean from the context. Connector beans should be annotated
@@ -148,10 +149,23 @@ open class ConnectorService(
      *
      * @param name the name of the connector instance
      */
-    open fun load(name: String): Connector {
+    open fun loadByName(name: String): Connector {
         val connectorTypeInstance = connectorTypeInstanceRepository.findByName(name)
         requireNotNull(connectorTypeInstance) { "ConnectorTypeInstance was not found with name: $name" }
         return load(connectorTypeInstance)
+    }
+
+    /**
+     * Instantiates a connector by name with configured properties.
+     * Get bean will retrieve the bean from the context. Connector beans should be annotated
+     * with <code>@Scope(BeanDefinition.SCOPE_PROTOTYPE)</code> to ensure call based creation.
+     *
+     * @param name the name of the connector instance
+     * @deprecated Changed method name to be able to load connectors from a BPMN model. Replaced by {@link #loadByName(String)}
+     */
+    @Deprecated("Changed method name to be able to load connectors from a BPMN model. Replaced by loadByName(String)")
+    open fun load(name: String): Connector {
+        return loadByName(name)
     }
 
     /**

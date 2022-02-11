@@ -61,6 +61,11 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
     private Authority() {
     }
 
+    /**
+     * @deprecated - This method will be removed in 11.0.0
+     * Use {@link #Authority(String, boolean)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "9.4.0")
     public Authority(String name, BigDecimal hourlyRate, boolean systemAuthority) {
         assertArgumentNotNull(name, "name is required");
         assertArgumentLength(name, 50, "name max length is 50");
@@ -79,6 +84,22 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
         ));
     }
 
+    public Authority(String name, boolean systemAuthority) {
+        assertArgumentNotNull(name, "name is required");
+        assertArgumentLength(name, 50, "name max length is 50");
+        this.name = name;
+        this.hourlyRate = BigDecimal.ZERO;
+        this.systemAuthority = systemAuthority;
+        registerEvent(new AuthorityCreatedEvent(
+            UUID.randomUUID(),
+            RequestHelper.getOrigin(),
+            LocalDateTime.now(),
+            AuditHelper.getActor(),
+            getName(),
+            getSystemAuthority()
+        ));
+    }
+
     public void changeName(String name) {
         if (!this.name.equals(name)) {
             final String oldName = getName();
@@ -90,12 +111,15 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
                 AuditHelper.getActor(),
                 getName(),
                 getSystemAuthority(),
-                getHourlyRate(),
                 oldName
             ));
         }
     }
 
+    /**
+     * @deprecated - This method will be removed in 11.0.0
+     */
+    @Deprecated(forRemoval = true, since = "9.4.0")
     public void changeHourlyRate(BigDecimal hourlyRate) {
         if (!this.hourlyRate.equals(hourlyRate)) {
             final Money oldHourlyRate = getHourlyRate();
@@ -121,6 +145,10 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
         return name;
     }
 
+    /**
+     * @deprecated - This method will be removed in 11.0.0
+     */
+    @Deprecated(forRemoval = true, since = "9.4.0")
     public Money getHourlyRate() {
         if (hourlyRate == null) {
             return null;
@@ -138,13 +166,12 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
         }
         Authority authority = (Authority) o;
         return getName().equals(authority.getName()) &&
-            getSystemAuthority().equals(authority.getSystemAuthority()) &&
-            getHourlyRate().equals(authority.getHourlyRate());
+            getSystemAuthority().equals(authority.getSystemAuthority());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName(), getSystemAuthority(), getHourlyRate());
+        return Objects.hash(getName(), getSystemAuthority());
     }
 
     @Override
@@ -152,7 +179,6 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
         return "Authority{" +
             "name='" + name + '\'' +
             "systemAuthority='" + systemAuthority + '\'' +
-            "hourlyRate='" + hourlyRate + '\'' +
             "}";
     }
 
