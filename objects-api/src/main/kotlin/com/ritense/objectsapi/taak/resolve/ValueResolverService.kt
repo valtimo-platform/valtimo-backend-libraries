@@ -24,6 +24,19 @@ class ValueResolverService(
 ) {
     private val resolverFactoryMap = valueResolverFactories.associateBy { it.supportedPrefix() }
 
+    /**
+     * This method provides a way of resolving placeholders into values using defined resolvers.
+     * Placeholders are typically prefixed, like 'pv:propertyName'.
+     * If not, a resolver should be configured to handle '' prefixes.
+     *
+     * A placeholder can only be resolved when a resolver for that prefix is configured.
+     * An unresolved placeholder will not be included in the returned map.
+     *
+     * @param processInstanceId The Camunda processInstanceId these values belong to
+     * @param variableScope An implementation of VariableScope. For instance: a TaskDelegate or DelegateExecution
+     * @param placeholders The placeholders that should be resolved into values.
+     * @return A map where the key is the placeholder, and the value the resolved value.
+     */
     fun resolvePlaceholders(
         processInstanceId: ProcessInstanceId,
         variableScope: VariableScope,
