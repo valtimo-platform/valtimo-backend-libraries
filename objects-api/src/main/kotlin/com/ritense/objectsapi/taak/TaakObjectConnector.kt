@@ -91,7 +91,7 @@ class TaakObjectConnector(
             .camundaProperties
             .filter { it.camundaName.startsWith(prefix = "taak:", ignoreCase = true) }
 
-        val resolvedPlaceholders = valueResolverService.resolveValues(
+        val resolvedValues = valueResolverService.resolveValues(
             processInstanceId = CamundaProcessInstanceId(task.processInstanceId),
             variableScope = task,
             taakProperties.map { it.camundaValue }
@@ -99,7 +99,7 @@ class TaakObjectConnector(
 
         // This is a workaround for Kotlin not having an associateNotNull method
         return taakProperties.mapNotNull { property ->
-            resolvedPlaceholders[property.camundaValue]?.let { value ->
+            resolvedValues[property.camundaValue]?.let { value ->
                 property.camundaName.substringAfter(delimiter = ":") to value
             }
         }.toMap()

@@ -26,7 +26,7 @@ internal class ProcessVariableValueResolverTest {
     private val processVariableValueResolver = ProcessVariableValueResolverFactory()
 
     @Test
-    fun `should resolve placeholder from process variables`() {
+    fun `should resolve requestedValue from process variables`() {
         val somePropertyName = "somePropertyName"
         val variableScope = DelegateTaskFake()
             .withVariable("firstName", "John")
@@ -45,7 +45,7 @@ internal class ProcessVariableValueResolverTest {
     }
 
     @Test
-    fun `should NOT resolve placeholder from process variables`() {
+    fun `should NOT resolve requestedValue from process variables`() {
         val somePropertyName = "somePropertyName"
         val variableScope = DelegateTaskFake()
             .withVariable("firstName", "John")

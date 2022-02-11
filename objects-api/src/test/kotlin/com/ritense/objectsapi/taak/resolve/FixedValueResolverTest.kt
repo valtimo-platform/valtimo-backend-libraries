@@ -27,7 +27,7 @@ internal class FixedValueResolverTest {
     private val fixedValueResolver = FixedValueResolverFactory()
 
     @Test
-    fun `should resolve boolean placeholder from placeholder`() {
+    fun `should resolve boolean value from requestedValue`() {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
 
@@ -42,7 +42,7 @@ internal class FixedValueResolverTest {
     }
 
     @Test
-    fun `should resolve long placeholder from placeholder`() {
+    fun `should resolve long value from requestedValue`() {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
 
@@ -57,7 +57,7 @@ internal class FixedValueResolverTest {
     }
 
     @Test
-    fun `should resolve double placeholder from placeholder`() {
+    fun `should resolve double value from requestedValue`() {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
 
@@ -72,7 +72,7 @@ internal class FixedValueResolverTest {
     }
 
     @Test
-    fun `should resolve string placeholder from placeholder`() {
+    fun `should resolve string value from requestedValue`() {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
 

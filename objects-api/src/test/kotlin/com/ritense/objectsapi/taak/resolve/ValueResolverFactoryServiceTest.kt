@@ -42,8 +42,8 @@ internal class ValueResolverFactoryServiceTest {
     }
 
     @Test
-    fun `Should resolve list of placeholders`() {
-        val resolvedPlaceholders = resolverService.resolveValues(
+    fun `Should resolve list of requested values`() {
+        val resolvedValues = resolverService.resolveValues(
             processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString()),
             variableScope = DelegateTaskFake()
                 .withVariable("firstName", "John")
@@ -58,7 +58,7 @@ internal class ValueResolverFactoryServiceTest {
             )
         )
 
-        assertThat(resolvedPlaceholders).containsExactlyInAnyOrderEntriesOf(
+        assertThat(resolvedValues).containsExactlyInAnyOrderEntriesOf(
             mapOf(
                 "pv:firstName" to "John",
                 "pv:lastName" to "Doe",

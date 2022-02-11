@@ -41,7 +41,7 @@ internal class DocumentValueResolverTest {
     }
 
     @Test
-    fun `should resolve boolean placeholder from document properties`() {
+    fun `should resolve boolean value from document properties`() {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
         val document = mock<Document>()
@@ -59,7 +59,7 @@ internal class DocumentValueResolverTest {
     }
 
     @Test
-    fun `should resolve string placeholder from document properties`() {
+    fun `should resolve string value from document properties`() {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
         val document = mock<Document>()
@@ -77,7 +77,7 @@ internal class DocumentValueResolverTest {
     }
 
     @Test
-    fun `should resolve int placeholder from document properties`() {
+    fun `should resolve int value from document properties`() {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
         val document = mock<Document>()
@@ -95,7 +95,7 @@ internal class DocumentValueResolverTest {
     }
 
     @Test
-    fun `should NOT resolve placeholder from document properties`() {
+    fun `should NOT resolve requestedValue from document properties`() {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
         val document = mock<Document>()
