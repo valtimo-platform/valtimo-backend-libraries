@@ -26,6 +26,8 @@ dependencies {
     implementation project(":core")
     testImplementation project(path: ":core", configuration: 'testOutput')
     implementation project(":web")
+    implementation project(":objects-api")
+    implementation project(":process-document")
 
     // Spring
     implementation "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:3.2.1"

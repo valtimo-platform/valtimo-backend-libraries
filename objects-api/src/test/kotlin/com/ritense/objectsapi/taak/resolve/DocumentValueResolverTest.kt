@@ -51,7 +51,7 @@ internal class DocumentValueResolverTest {
         val resolvedValue = documentValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
-        )(
+        ).apply(
             "/root/child/value"
         )
 
@@ -69,7 +69,7 @@ internal class DocumentValueResolverTest {
         val resolvedValue = documentValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
-        )(
+        ).apply(
             "/root/child/firstName"
         )
 
@@ -87,7 +87,7 @@ internal class DocumentValueResolverTest {
         val resolvedValue = documentValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
-        )(
+        ).apply(
             "/root/child/age"
         )
 
@@ -105,7 +105,7 @@ internal class DocumentValueResolverTest {
         val resolvedValue = documentValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
-        )(
+        ).apply(
             "/root/child/value"
         )
 

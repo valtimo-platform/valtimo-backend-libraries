@@ -34,7 +34,7 @@ internal class FixedValueResolverTest {
         val resolvedValue = fixedValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
-        )(
+        ).apply(
             "true"
         )
 
@@ -49,7 +49,7 @@ internal class FixedValueResolverTest {
         val resolvedValue = fixedValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
-        )(
+        ).apply(
             "1337"
         )
 
@@ -64,7 +64,7 @@ internal class FixedValueResolverTest {
         val resolvedValue = fixedValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
-        )(
+        ).apply(
             "13.37"
         )
 
@@ -79,7 +79,7 @@ internal class FixedValueResolverTest {
         val resolvedValue = fixedValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
-        )(
+        ).apply(
             "asdf"
         )
 

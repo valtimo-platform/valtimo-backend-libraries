@@ -37,7 +37,7 @@ internal class ProcessVariableValueResolverTest {
         val resolvedValue = processVariableValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
-        )(
+        ).apply(
             somePropertyName
         )
 
@@ -55,7 +55,7 @@ internal class ProcessVariableValueResolverTest {
         val resolvedValue = processVariableValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
-        )(
+        ).apply(
             somePropertyName
         )
 

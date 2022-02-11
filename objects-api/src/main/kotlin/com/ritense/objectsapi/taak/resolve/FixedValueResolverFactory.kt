@@ -17,18 +17,18 @@
 package com.ritense.objectsapi.taak.resolve
 
 import com.ritense.processdocument.domain.ProcessInstanceId
+import java.util.function.Function
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.springframework.core.annotation.Order
 
 /**
- * This resolver returns the placeholder as the value.
- * It will do a best-effort of guessing the type of the given placeholder before returning it.
+ * This resolver returns the requestedValue as the value.
+ * It will do a best-effort of guessing the type of the given requestedValue before returning it.
  *
  * For instance, "true" will become the boolean <code>true</code>
  *
- * These placeholders do not have a prefix
+ * These requestedValues do not have a prefix
  */
-@Order(Int.MAX_VALUE)
 class FixedValueResolverFactory : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
@@ -38,12 +38,12 @@ class FixedValueResolverFactory : ValueResolverFactory {
     override fun createResolver(
         processInstanceId: ProcessInstanceId,
         variableScope: VariableScope
-    ): (placeholder: String) -> Any? {
-        return { placeholder->
-            placeholder.toBooleanStrictOrNull()
-                ?: placeholder.toLongOrNull()
-                ?: placeholder.toDoubleOrNull()
-                ?: placeholder
+    ): Function<String, Any?> {
+        return Function { requestedValue->
+            requestedValue.toBooleanStrictOrNull()
+                ?: requestedValue.toLongOrNull()
+                ?: requestedValue.toDoubleOrNull()
+                ?: requestedValue
         }
     }
 }

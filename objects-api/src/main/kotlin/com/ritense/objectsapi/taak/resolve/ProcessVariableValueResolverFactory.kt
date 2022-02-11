@@ -17,12 +17,13 @@
 package com.ritense.objectsapi.taak.resolve
 
 import com.ritense.processdocument.domain.ProcessInstanceId
+import java.util.function.Function
 import org.camunda.bpm.engine.delegate.VariableScope
 
 /**
- * This resolver can resolve placeholders against the variables of a process or task.
+ * This resolver can resolve requestedValues against the variables of a process or task.
  *
- * The value of the placeholder should be in the format pv:someProperty
+ * The value of the requestedValue should be in the format pv:someProperty
  */
 class ProcessVariableValueResolverFactory : ValueResolverFactory {
 
@@ -33,10 +34,10 @@ class ProcessVariableValueResolverFactory : ValueResolverFactory {
     override fun createResolver(
         processInstanceId: ProcessInstanceId,
         variableScope: VariableScope
-    ): (placeholder: String) -> Any? {
+    ): Function<String, Any?> {
 
-        return { placeholder ->
-            variableScope.variables[placeholder]
+        return Function { requestedValue ->
+            variableScope.variables[requestedValue]
         }
     }
 }

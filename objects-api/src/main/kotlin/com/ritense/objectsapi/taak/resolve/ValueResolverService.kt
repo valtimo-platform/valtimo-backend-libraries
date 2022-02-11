@@ -22,41 +22,44 @@ import org.camunda.bpm.engine.delegate.VariableScope
 class ValueResolverService(
     valueResolverFactories: List<ValueResolverFactory>
 ) {
-    private val resolverFactoryMap = valueResolverFactories.associateBy { it.supportedPrefix() }
+    private val resolverFactoryMap: Map<String, ValueResolverFactory> = valueResolverFactories.groupBy { it.supportedPrefix() }
+        .filter { (key, value) ->
+            if(value.size == 1) true else throw RuntimeException("Found more than 1 resolver for prefix '$key': ${value.joinToString { resolver -> resolver.javaClass.simpleName }}")
+        }.map { (key, value) ->
+            key to value.first()
+        }.toMap()
+
 
     /**
-     * This method provides a way of resolving placeholders into values using defined resolvers.
-     * Placeholders are typically prefixed, like 'pv:propertyName'.
+     * This method provides a way of resolving requestedValues into values using defined resolvers.
+     * requestedValues are typically prefixed, like 'pv:propertyName'.
      * If not, a resolver should be configured to handle '' prefixes.
      *
-     * A placeholder can only be resolved when a resolver for that prefix is configured.
-     * An unresolved placeholder will not be included in the returned map.
+     * A requestedValue can only be resolved when a resolver for that prefix is configured.
+     * An unresolved requestedValue will not be included in the returned map.
      *
      * @param processInstanceId The Camunda processInstanceId these values belong to
      * @param variableScope An implementation of VariableScope. For instance: a TaskDelegate or DelegateExecution
-     * @param placeholders The placeholders that should be resolved into values.
-     * @return A map where the key is the placeholder, and the value the resolved value.
+     * @param requestedValues The requestedValues that should be resolved into values.
+     * @return A map where the key is the requestedValue, and the value the resolved value.
      */
-    fun resolvePlaceholders(
+    fun resolveValues(
         processInstanceId: ProcessInstanceId,
         variableScope: VariableScope,
-        placeholders: List<String>
+        requestedValues: List<String>
     ): Map<String, Any> {
         //Group by prefix
-        return placeholders.groupBy {
+        return requestedValues.groupBy {
             it.substringBefore(":", missingDelimiterValue = "")
-        }.mapNotNull { (prefix, placeholders) ->
+        }.mapNotNull { (prefix, requestedValues) ->
             //Create a resolver per prefix group
-            resolverFactoryMap[prefix]?.createResolver(processInstanceId, variableScope)
-                //Create a list of resolved Map entries
-                ?.let { resolve ->
-                placeholders.mapNotNull { placeholder ->
-                    resolve(placeholder.substringAfter(":"))
-                        ?.let { placeholder to it }
-                }
+            val resolverFactory = resolverFactoryMap[prefix]?:throw RuntimeException("No resolver factory found for value prefix $prefix")
+            val resolver = resolverFactory.createResolver(processInstanceId, variableScope)
+            //Create a list of resolved Map entries
+            requestedValues.mapNotNull { requestedValue ->
+                resolver.apply(requestedValue.substringAfter(":"))
+                    ?.let { requestedValue to it }
             }
-        }.flatten().associate { (key, value) -> //Create a Map from a list of entries
-            key to value
-        }
+        }.flatten().toMap()
     }
 }

@@ -18,9 +18,11 @@ package com.ritense.objectsapi.taak.resolve
 
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import java.util.UUID
-import org.assertj.core.api.Assertions
+import kotlin.jvm.Throws
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.assertj.core.api.Assertions.assertThat
 
 internal class ValueResolverFactoryServiceTest {
 
@@ -29,8 +31,19 @@ internal class ValueResolverFactoryServiceTest {
     )
 
     @Test
+    fun `Should fail on duplicate resolver prefixes at init`() {
+        val exception = assertThrows<RuntimeException> {
+            ValueResolverService(
+                listOf( ProcessVariableValueResolverFactory(), ProcessVariableValueResolverFactory())
+            )
+        }
+
+        assertThat(exception.message).startsWith("Found more than 1 resolver for prefix 'pv'")
+    }
+
+    @Test
     fun `Should resolve list of placeholders`() {
-        val resolvedPlaceholders = resolverService.resolvePlaceholders(
+        val resolvedPlaceholders = resolverService.resolveValues(
             processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString()),
             variableScope = DelegateTaskFake()
                 .withVariable("firstName", "John")
@@ -45,7 +58,7 @@ internal class ValueResolverFactoryServiceTest {
             )
         )
 
-        Assertions.assertThat(resolvedPlaceholders).containsExactlyInAnyOrderEntriesOf(
+        assertThat(resolvedPlaceholders).containsExactlyInAnyOrderEntriesOf(
             mapOf(
                 "pv:firstName" to "John",
                 "pv:lastName" to "Doe",
@@ -53,5 +66,24 @@ internal class ValueResolverFactoryServiceTest {
                 "fixedValue" to "fixedValue",
             )
         )
+    }
+
+    @Test
+    @Throws(RuntimeException::class)
+    fun `Should throw exception on unknown prefix`() {
+        val exception = assertThrows<RuntimeException> {
+            resolverService.resolveValues(
+                processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString()),
+                variableScope = DelegateTaskFake()
+                    .withVariable("firstName", "John")
+                    .withVariable("lastName", "Doe")
+                    .withVariable("active", true),
+                listOf(
+                    "xyz:firstName"
+                )
+            )
+        }
+
+        assertThat(exception.message).startsWith("No resolver factory found for value prefix xyz")
     }
 }

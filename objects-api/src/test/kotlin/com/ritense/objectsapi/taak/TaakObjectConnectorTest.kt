@@ -71,7 +71,7 @@ internal class TaakObjectConnectorTest {
         doReturn(mock<com.ritense.objectsapi.domain.Object>()).whenever(taakObjectConnector).createObject(any())
         val task = mockDelegateTask("taak:my-var", "pv:my-process-var")
 
-        whenever(valueResolverService.resolvePlaceholders(
+        whenever(valueResolverService.resolveValues(
             eq(CamundaProcessInstanceId(task.processInstanceId)),
             eq(task),
             eq(listOf("pv:my-process-var"))

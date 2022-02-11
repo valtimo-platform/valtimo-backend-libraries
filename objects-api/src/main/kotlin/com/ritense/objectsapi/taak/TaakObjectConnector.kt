@@ -91,7 +91,7 @@ class TaakObjectConnector(
             .camundaProperties
             .filter { it.camundaName.startsWith(prefix = "taak:", ignoreCase = true) }
 
-        val resolvedPlaceholders = valueResolverService.resolvePlaceholders(
+        val resolvedPlaceholders = valueResolverService.resolveValues(
             processInstanceId = CamundaProcessInstanceId(task.processInstanceId),
             variableScope = task,
             taakProperties.map { it.camundaValue }
@@ -102,9 +102,7 @@ class TaakObjectConnector(
             resolvedPlaceholders[property.camundaValue]?.let { value ->
                 property.camundaName.substringAfter(delimiter = ":") to value
             }
-        }.associate { (key, value) ->
-            key to value
-        }
+        }.toMap()
     }
 
     override fun getProperties(): ConnectorProperties {
