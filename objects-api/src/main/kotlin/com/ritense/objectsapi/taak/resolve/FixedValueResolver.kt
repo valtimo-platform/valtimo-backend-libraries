@@ -18,9 +18,7 @@ package com.ritense.objectsapi.taak.resolve
 
 import com.ritense.processdocument.domain.ProcessInstanceId
 import org.camunda.bpm.engine.delegate.VariableScope
-import org.springframework.core.annotation.Order
 
-@Order(Int.MAX_VALUE)
 class FixedValueResolver : PlaceHolderValueResolver {
 
     override fun resolveValue(
