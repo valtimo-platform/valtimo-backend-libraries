@@ -92,7 +92,7 @@ class TaakObjectConnector(
         val taakObject = TaakObjectDto(
             bsn = bsnProvider?.getBurgerServiceNummer(task),
             kvk = kvkProvider?.getKvkNummer(task),
-            verwerkerTaakId = UUID.fromString(task.executionId),
+            verwerkerTaakId = UUID.fromString(task.id),
             formulierId = formulierId,
             data = getTaskProperties(task),
             status = TaakObjectStatus.open

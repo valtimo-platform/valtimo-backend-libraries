@@ -22,9 +22,7 @@ import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.valtimo.service.BpmnModelService
 import org.camunda.bpm.engine.TaskService
-import org.camunda.bpm.engine.task.Task
 import org.springframework.context.event.EventListener
-import java.util.UUID
 
 class TaakObjectListener(
     private val openNotificatieService: OpenNotificatieService,
@@ -44,16 +42,9 @@ class TaakObjectListener(
             if (taakObject.status != TaakObjectStatus.ingediend) {
                 return
             }
-            val task = getTaskByExecutionId(taakObject.verwerkerTaakId)
-            taskService.complete(task.id)
+            taskService.complete(taakObject.verwerkerTaakId.toString())
 
             connector.deleteTaakObject(taakObjectId)
         }
-    }
-
-    private fun getTaskByExecutionId(executionId: UUID): Task {
-        return taskService.createTaskQuery()
-            .executionId(executionId.toString())
-            .singleResult()
     }
 }
