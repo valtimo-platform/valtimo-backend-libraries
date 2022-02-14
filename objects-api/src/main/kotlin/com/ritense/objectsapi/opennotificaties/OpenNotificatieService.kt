@@ -16,6 +16,7 @@
 
 package com.ritense.objectsapi.opennotificaties
 
+import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorInstanceId
 import com.ritense.connector.service.ConnectorService
 import com.ritense.objectsapi.domain.request.HandleNotificationRequest
