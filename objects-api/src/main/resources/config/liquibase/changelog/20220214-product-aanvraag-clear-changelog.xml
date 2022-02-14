@@ -20,7 +20,7 @@
 
     <changeSet author="Klaas Schuijtemaker" id="1">
         <delete tableName="connector_instance">
-            <where>name LIKE '%TaakProperties%' OR name LIKE '%ProductAanvraagProperties%' OR name LIKE '%ObjectsApiProperties%'</where>
+            <where>connector_properties LIKE '%TaakProperties%' OR connector_properties LIKE '%ProductAanvraagProperties%' OR connector_properties LIKE '%ObjectsApiProperties%'</where>
         </delete>
     </changeSet>
 
