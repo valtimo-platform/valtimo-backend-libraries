@@ -71,39 +71,6 @@ class OpenNotificatieConnectorTest : BaseTest() {
     }
 
     @Test
-    fun `verify abonnement key should verify key when abonnement exists`() {
-        val connectorId = ConnectorInstanceId(UUID.randomUUID())
-        `when`(abonnementLinkRepository.findById(connectorId))
-            .thenReturn(Optional.of(AbonnementLink(connectorId, UUID.randomUUID(), "valid-key")))
-
-        val result = connector.verifyAbonnementKey(connectorId, "valid-key")
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun `verify abonnement key should fail verification when abonnement doesnt exist`() {
-        val connectorId = ConnectorInstanceId(UUID.randomUUID())
-        `when`(abonnementLinkRepository.findById(connectorId))
-            .thenReturn(Optional.empty())
-
-        val result = connector.verifyAbonnementKey(connectorId, "valid-key")
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `verify abonnement key should fail verification when abonnement exists but key doesnt match`() {
-        val connectorId = ConnectorInstanceId(UUID.randomUUID())
-        `when`(abonnementLinkRepository.findById(connectorId))
-            .thenReturn(Optional.of(AbonnementLink(connectorId, UUID.randomUUID(), "valid-key")))
-
-        val result = connector.verifyAbonnementKey(connectorId, "invalid-key")
-
-        assertFalse(result)
-    }
-
-    @Test
     fun `create abonnement should create abonnement`() {
         val connectorId = ConnectorInstanceId(UUID.randomUUID())
         val abonnementId = UUID.randomUUID()

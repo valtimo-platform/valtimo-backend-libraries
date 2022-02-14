@@ -104,7 +104,7 @@ class ObjectsApiConnector(
         )
     }
 
-    override fun getProperties(): ConnectorProperties {
+    override fun getProperties(): ObjectsApiProperties {
         return objectsApiProperties
     }
 
@@ -115,5 +115,6 @@ class ObjectsApiConnector(
     companion object {
         const val rootUrlApiVersion = "/api/v2"
         const val datePattern = "yyyy-MM-dd"
+        inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
     }
 }

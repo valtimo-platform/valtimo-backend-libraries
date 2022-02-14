@@ -22,16 +22,10 @@ import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.connector.domain.ConnectorInstanceId
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
-import com.ritense.connector.service.ConnectorDeploymentService
-import com.ritense.connector.service.ConnectorService
 import com.ritense.klant.domain.Klant
 import com.ritense.objectsapi.BaseIntegrationTest
 import com.ritense.objectsapi.domain.AbonnementLink
-import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.repository.AbonnementLinkRepository
-import com.ritense.objectsapi.service.ObjectTypeConfig
-import com.ritense.objectsapi.service.ObjectsApiProperties
-import com.ritense.objectsapi.service.ServerAuthSpecification
 import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import com.ritense.openzaak.domain.connector.OpenZaakProperties
@@ -46,8 +40,8 @@ import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
@@ -84,13 +78,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     lateinit var webApplicationContext: WebApplicationContext
 
     @Autowired
-    lateinit var connectorDeploymentService: ConnectorDeploymentService
-
-    @Autowired
     lateinit var connectorTypeInstanceRepository: ConnectorTypeInstanceRepository
-
-    @Autowired
-    lateinit var connectorService: ConnectorService
 
     @Autowired
     lateinit var zaakTypeLinkService: ZaakTypeLinkService
@@ -135,6 +123,8 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should create abonnement when creating productaanvraag connector`() {
+        setupOpenNotificatieConnector(server.url("/").toString())
+        setupObjectApiConnector(server.url("/").toString())
         val postBody = """
             {
                 "typeId": "${connectorType.id.id}",
@@ -204,29 +194,8 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
                 "name": "Productaanvragen",
                 "connectorProperties":{
                     "className": "com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties",
-                    "objectsApiProperties":{
-                        "className": "com.ritense.objectsapi.service.ObjectsApiProperties",
-                        "objectsApi":{
-                            "url": "$baseUrl",
-                            "token": "123"
-                        },
-                        "objectsTypeApi":{
-                            "url": "$baseUrl",
-                            "token": "456"
-                        },
-                        "objectType":{
-                            "name": "productAanvraag",
-                            "title": "Product Aanvraag",
-                            "url": "${baseUrl}api/v1/objecttypes/021f685e-9482-4620-b157-34cd4003da6b",
-                            "typeversion": "1"
-                        }
-                    },
-                    "openNotificatieProperties":{
-                        "baseUrl": "$baseUrl",
-                        "clientId": "valtimo",
-                        "secret": "33d2f33d-93fe-4351-88bd-8d9b69b8d978",
-                        "callbackBaseUrl": "$baseUrl"
-                    },
+                    "objectsApiConnectionName": "objectsApiInstance",
+                    "openNotificatieConnectionName": "openNotificatieInstance",
                     "typeMapping": [
                         {
                             "productAanvraagType": "test",
@@ -698,42 +667,18 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     }
 
     fun prepareConnectorInstance(processDefinitionKey: String = "test") {
+        setupObjectApiConnector(server.url("/").toString())
+        setupOpenNotificatieConnector(server.url("/").toString())
         val connectorInstanceId = ConnectorInstanceId.newId(UUID.fromString("26141e07-40e4-4a7e-9c78-f7a40db3b3e9"))
         productAanvraagConnectorInstance = ConnectorInstance(
             connectorInstanceId,
             connectorType,
             "test-connector",
             ProductAanvraagProperties(
-                ObjectsApiProperties(
-                    ServerAuthSpecification(
-                        baseUrl,
-                        "token"
-                    ),
-                    ServerAuthSpecification(
-                        baseUrl,
-                        "token"
-                    ),
-                    ObjectTypeConfig(
-                        "productaanvraag",
-                        "Productaanvraag",
-                        "${baseUrl}api/v1/objecttypes/021f685e-9482-4620-b157-34cd4003da6b",
-                        "1"
-                    )
-                ),
-                OpenNotificatieProperties(
-                    baseUrl,
-                    "clientId",
-                    "69b8c79e-acb3-4587-9a2e-b9d288081c22",
-                    baseUrl
-                ),
-                listOf(
-                    ProductAanvraagTypeMapping(
-                        "some-type",
-                        "testschema",
-                        processDefinitionKey
-                    )
-                ),
-                "${baseUrl}catalogi/api/v1/roltypen/1c359a1b-c38d-47b8-bed5-994db88ead61"
+                openNotificatieConnectionName = "openNotificatieInstance",
+                objectsApiConnectionName = "objectsApiInstance",
+                typeMapping = listOf(ProductAanvraagTypeMapping("some-type", "testschema", processDefinitionKey)),
+                aanvragerRolTypeUrl = "http://aanvragerroltype.url/zaken/api/v1/rollen/281fdae4-fc32-46e9-b621-bb4b444b8f52",
             )
         )
         connectorTypeInstanceRepository.save(productAanvraagConnectorInstance)

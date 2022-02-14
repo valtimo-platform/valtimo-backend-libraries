@@ -18,11 +18,16 @@ package com.ritense.objectsapi.taak
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.ritense.connector.domain.Connector
+import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
+import com.ritense.connector.service.ConnectorService
+import com.ritense.objectsapi.domain.GenericObject
 import com.ritense.objectsapi.domain.Record
 import com.ritense.objectsapi.domain.request.CreateObjectRequest
-import com.ritense.objectsapi.service.ObjectsApiService
+import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
+import com.ritense.objectsapi.service.ObjectsApiConnector
+import com.ritense.objectsapi.taak.TaakObjectConnector.Companion.TAAK_CONNECTOR_NAME
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.openzaak.provider.KvkProvider
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
@@ -37,13 +42,14 @@ import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import kotlin.contracts.ExperimentalContracts
 
 @OptIn(ExperimentalContracts::class)
-@ConnectorType(name = "Taak")
+@ConnectorType(name = TAAK_CONNECTOR_NAME)
 class TaakObjectConnector(
     private var taakProperties: TaakProperties,
     private val valueResolverService: ValueResolverService,
+    private val connectorService: ConnectorService,
     private val bsnProvider: BsnProvider?,
     private val kvkProvider: KvkProvider?
-):Connector, ObjectsApiService(taakProperties.objectsApiProperties) {
+):Connector {
 
     init {
         require(bsnProvider != null || kvkProvider != null) { "BSN and/or KvK provider is required!"}
@@ -55,9 +61,19 @@ class TaakObjectConnector(
         createObjectRecord(taakObject)
     }
 
+    fun getTaakObject(productAanvraagId: UUID): TaakObjectDto {
+        val type = ObjectsApiConnector.typeReference<GenericObject<TaakObjectDto>>()
+        return getObjectsApiConnector().getTypedObject(productAanvraagId, type).record.data
+    }
+
+    fun deleteTaakObject(productAanvraagId: UUID) {
+        getObjectsApiConnector().deleteObject(productAanvraagId)
+    }
+
     private fun createObjectRecord(taakObject: TaakObjectDto) {
-        val objectType = objectsApiProperties.objectType
-        createObject(
+        val objectsApiConnector = getObjectsApiConnector()
+        val objectType = objectsApiConnector.getProperties().objectType
+        objectsApiConnector.createObject(
             CreateObjectRequest(
                 type = URI(objectType.url),
                 Record(
@@ -105,12 +121,40 @@ class TaakObjectConnector(
         }.toMap()
     }
 
+    private fun getObjectsApiConnector(): ObjectsApiConnector {
+        return connectorService.loadByName(taakProperties.objectsApiConnectionName) as ObjectsApiConnector
+    }
+
+    private fun getOpenNotificatieConnector(): OpenNotificatieConnector {
+        return connectorService.loadByName(taakProperties.openNotificatieConnectionName) as OpenNotificatieConnector
+    }
+
+    override fun onCreate(connectorInstance: ConnectorInstance) {
+        val openNotificatieConnector = getOpenNotificatieConnector()
+        openNotificatieConnector.ensureKanaalExists()
+        openNotificatieConnector.createAbonnement(connectorInstance.id)
+    }
+
+    override fun onEdit(connectorInstance: ConnectorInstance) {
+        val openNotificatieConnector = getOpenNotificatieConnector()
+        openNotificatieConnector.deleteAbonnement(connectorInstance.id)
+        openNotificatieConnector.createAbonnement(connectorInstance.id)
+    }
+
+    override fun onDelete(connectorInstance: ConnectorInstance) {
+        val openNotificatieConnector = getOpenNotificatieConnector()
+        openNotificatieConnector.deleteAbonnement(connectorInstance.id)
+    }
+
     override fun getProperties(): ConnectorProperties {
         return taakProperties
     }
 
     override fun setProperties(connectorProperties: ConnectorProperties) {
         taakProperties = connectorProperties as TaakProperties
-        objectsApiProperties = taakProperties.objectsApiProperties
+    }
+
+    companion object {
+        const val TAAK_CONNECTOR_NAME = "Taak"
     }
 }
