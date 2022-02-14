@@ -131,29 +131,8 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
                 "name": "Productaanvragen",
                 "connectorProperties":{
                     "className": "com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties",
-                    "objectsApiProperties":{
-                        "className": "com.ritense.objectsapi.service.ObjectsApiProperties",
-                        "objectsApi":{
-                            "url": "$baseUrl",
-                            "token": "123"
-                        },
-                        "objectsTypeApi":{
-                            "url": "$baseUrl",
-                            "token": "456"
-                        },
-                        "objectType":{
-                            "name": "productAanvraag",
-                            "title": "Product Aanvraag",
-                            "url": "${baseUrl}api/v1/objecttypes/021f685e-9482-4620-b157-34cd4003da6b",
-                            "typeversion": "1"
-                        }
-                    },
-                    "openNotificatieProperties":{
-                        "baseUrl": "$baseUrl",
-                        "clientId": "valtimo",
-                        "secret": "33d2f33d-93fe-4351-88bd-8d9b69b8d978",
-                        "callbackBaseUrl": "$baseUrl"
-                    },
+                    "objectsApiConnectionName": "objectsApiInstance",
+                    "openNotificatieConnectionName": "openNotificatieInstance",
                     "typeMapping": [
                         {
                             "productAanvraagType": "test",
@@ -681,6 +660,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
                 aanvragerRolTypeUrl = "http://aanvragerroltype.url/zaken/api/v1/rollen/281fdae4-fc32-46e9-b621-bb4b444b8f52",
             )
         )
+
         connectorTypeInstanceRepository.save(productAanvraagConnectorInstance)
 
         abonnementLink = AbonnementLink(
