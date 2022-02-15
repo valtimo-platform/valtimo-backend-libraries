@@ -129,7 +129,7 @@ internal class TaakObjectConnectorTest {
         whenever(camundaProperties.camundaProperties).thenReturn(listOf(camundaProperty))
 
         val delegateTask = Mockito.mock(DelegateTask::class.java, Mockito.RETURNS_DEEP_STUBS)
-        whenever(delegateTask.executionId).thenReturn(UUID.randomUUID().toString())
+        whenever(delegateTask.id).thenReturn(UUID.randomUUID().toString())
         whenever(delegateTask.bpmnModelElementInstance.extensionElements.elements).thenReturn(listOf(camundaProperties))
         whenever(delegateTask.processInstanceId).thenReturn(UUID.randomUUID().toString())
 
