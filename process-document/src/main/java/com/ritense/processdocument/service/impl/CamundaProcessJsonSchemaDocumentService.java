@@ -21,6 +21,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
+import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
@@ -54,13 +55,16 @@ import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.camunda.bpm.engine.delegate.BaseDelegateExecution;
+import org.camunda.bpm.engine.delegate.DelegateTask;
+import org.camunda.bpm.engine.delegate.VariableScope;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -294,6 +298,31 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             return new StartProcessForDocumentResultSucceeded(document, camundaProcessInstanceId);
         } catch (RuntimeException ex) {
             return new StartProcessForDocumentResultFailed(parseAndLogException(ex));
+        }
+    }
+
+    public Document getDocument(ProcessInstanceId processInstanceId, VariableScope variableScope) {
+        var processDocumentInstance = processDocumentAssociationService.findProcessDocumentInstance(processInstanceId).orElse(null);
+        if (processDocumentInstance != null) {
+            var jsonSchemaDocumentId = processDocumentInstance.processDocumentInstanceId().documentId().toString();
+            return documentService.get(jsonSchemaDocumentId);
+        } else {
+            // In case a process has no token wait state ProcessDocumentInstance is not yet created,
+            // therefore out business-key is our last chance which is populated with the documentId also.
+            var businessKey = getBusinessKey(processInstanceId, variableScope);
+            return documentService.get(businessKey);
+        }
+    }
+
+    private String getBusinessKey(ProcessInstanceId processInstanceId, VariableScope variableScope) {
+        if (variableScope instanceof BaseDelegateExecution) {
+            return ((BaseDelegateExecution) variableScope).getBusinessKey();
+        } else if (variableScope instanceof DelegateTask) {
+            return ((DelegateTask) variableScope).getExecution().getBusinessKey();
+        } else {
+            var processInstance = camundaProcessService.findProcessInstanceById(processInstanceId.toString())
+                .orElseThrow(() -> new RuntimeException("Process instance not found by id $processInstanceId"));
+            return processInstance.getBusinessKey();
         }
     }
 

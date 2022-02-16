@@ -86,6 +86,7 @@ class WordpressMailClient(
 
     private fun webClient(): WebClient {
         return wordpressMailWebClientBuilder
+            .clone()
             .baseUrl(wordpressMailConnectorProperties.url!!)
             .build()
     }

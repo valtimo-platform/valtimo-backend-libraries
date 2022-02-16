@@ -23,11 +23,13 @@ import com.ritense.document.domain.impl.Mapper
 import liquibase.change.custom.CustomTaskChange
 import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
-import liquibase.exception.CustomChangeException
 import liquibase.exception.ValidationErrors
 import liquibase.resource.ResourceAccessor
+import mu.KotlinLogging
 
 class ChangeLog20211130AddProcessDefinitionKeyToServiceTaskHandler : CustomTaskChange {
+
+    private val logger = KotlinLogging.logger {}
 
     override fun execute(database: Database?) {
         val connection = database!!.connection as JdbcConnection
@@ -40,12 +42,17 @@ class ChangeLog20211130AddProcessDefinitionKeyToServiceTaskHandler : CustomTaskC
             val zaakTypeLinkId = result.getBytes(1)
             val handlersString = result.getString(2)
             val handlers = Mapper.INSTANCE.get().readValue(handlersString, ArrayNode::class.java)
-            for (handler in handlers) {
-                val serviceTaskHandler = handler as ObjectNode
+            val handlerIterator = handlers.iterator()
+            while (handlerIterator.hasNext()) {
+                val serviceTaskHandler = handlerIterator.next() as ObjectNode
                 val serviceTaskId = serviceTaskHandler.get("serviceTaskId").textValue()
                 val processDefinitionKey = taskToProcessMap[serviceTaskId]
-                    ?: throw CustomChangeException("Failed to find process-definition-key for service-task-id: $serviceTaskId")
-                serviceTaskHandler.set<TextNode>("processDefinitionKey", TextNode.valueOf(processDefinitionKey))
+                if (processDefinitionKey == null) {
+                    logger.warn { "Failed to find process-definition-key for service-task-id: $serviceTaskId. Removing service task handler" }
+                    handlerIterator.remove()
+                } else {
+                    serviceTaskHandler.set<TextNode>("processDefinitionKey", TextNode.valueOf(processDefinitionKey))
+                }
             }
 
             statement = connection.prepareStatement("UPDATE zaak_type_link SET service_task_handlers = ? WHERE zaak_type_link_id = ?")

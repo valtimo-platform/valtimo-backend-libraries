@@ -23,6 +23,10 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * @deprecated - This method will be removed in 11.0.0
+ */
+@Deprecated(forRemoval = true, since = "9.4.0")
 public class AuthorityHourlyRateChangedEvent extends AuthorityEvent {
 
     private Money oldHourlyRate;

@@ -66,6 +66,7 @@ open class ContactMomentClient(
         )
 
         return contactMomentWebClientBuilder
+            .clone()
             .baseUrl(contactMomentProperties!!.url)
             .defaultHeader("Authorization", "Bearer $token")
             .build()
