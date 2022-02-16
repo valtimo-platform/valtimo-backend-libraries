@@ -16,14 +16,18 @@
 
 package com.ritense.objectsapi.taak.resolve
 
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import java.util.UUID
 import org.assertj.core.api.Assertions
+import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Test
 
 internal class ProcessVariableValueResolverTest {
-    private val processVariableValueResolver = ProcessVariableValueResolverFactory()
+    private val runtimeService: RuntimeService = mock()
+    private val processVariableValueResolver = ProcessVariableValueResolverFactory(runtimeService)
 
     @Test
     fun `should resolve requestedValue from process variables`() {
@@ -60,5 +64,17 @@ internal class ProcessVariableValueResolverTest {
         )
 
         Assertions.assertThat(resolvedValue).isNull()
+    }
+
+    @Test
+    fun `should handle value from process variables`() {
+        val variableScope = DelegateTaskFake()
+        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+
+        processVariableValueResolver.handleValues(
+            processInstanceId, variableScope, mapOf("pv:firstName" to "John")
+        )
+
+        verify(runtimeService).setVariables(processInstanceId.toString(), mapOf("firstName" to "John"))
     }
 }

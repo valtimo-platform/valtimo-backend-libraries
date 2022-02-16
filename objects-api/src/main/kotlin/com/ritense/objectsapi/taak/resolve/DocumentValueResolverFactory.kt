@@ -16,12 +16,18 @@
 
 package com.ritense.objectsapi.taak.resolve
 
+import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.core.JsonPointer
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.TextNode
+import com.ritense.document.domain.impl.request.ModifyDocumentRequest
+import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.Mapper
-import java.util.function.Function
+import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import org.camunda.bpm.engine.delegate.VariableScope
+import java.util.function.Function
 
 /**
  * This resolver can resolve requestedValues against Document linked to the process
@@ -29,7 +35,8 @@ import org.camunda.bpm.engine.delegate.VariableScope
  * The value of the requestedValue should be in the format doc:/some/json/pointer
  */
 class DocumentValueResolverFactory(
-    private val processDocumentService: ProcessDocumentService
+    private val processDocumentService: ProcessDocumentService,
+    private val documentService: DocumentService,
 ) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
@@ -51,4 +58,40 @@ class DocumentValueResolverFactory(
             }
         }
     }
+
+    override fun handleValues(
+        processInstanceId: ProcessInstanceId,
+        variableScope: VariableScope,
+        values: Map<String, Any>
+    ) {
+        val document = processDocumentService.getDocument(processInstanceId, variableScope)
+        val jsonPatchBuilder = JsonPatchBuilder()
+
+        values.forEach {
+            val path = JsonPointer.valueOf(it.key.substringAfter(":"))
+            val valueNode = toValueNode(it.value)
+            when (it.key.substringBefore(":", missingDelimiterValue = "")) {
+                "add" -> jsonPatchBuilder.add(path, valueNode)
+                "replace" -> jsonPatchBuilder.replace(path, valueNode)
+                else -> throw IllegalArgumentException("Missing 'add' or 'replace' in '${it.key}'")
+            }
+        }
+
+        documentService.modifyDocument(
+            ModifyDocumentRequest(
+                document?.id().toString(),
+                document.content().asJson(),
+                document?.version().toString()
+            ).withJsonPatch(jsonPatchBuilder.build())
+        )
+    }
+
+    private fun toValueNode(value: Any) : JsonNode {
+        return try {
+            Mapper.INSTANCE.get().readTree(value.toString())
+        } catch (e : JsonParseException) {
+            TextNode.valueOf(value.toString())
+        }
+    }
+
 }

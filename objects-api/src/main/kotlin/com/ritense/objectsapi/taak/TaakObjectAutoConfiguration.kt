@@ -17,6 +17,7 @@
 package com.ritense.objectsapi.taak
 
 import com.ritense.connector.service.ConnectorService
+import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.taak.resolve.DocumentValueResolverFactory
 import com.ritense.objectsapi.taak.resolve.FixedValueResolverFactory
@@ -26,6 +27,8 @@ import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.service.BpmnModelService
+import com.ritense.valtimo.service.CamundaTaskService
+import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -41,15 +44,17 @@ class TaakObjectAutoConfiguration {
     @ConditionalOnMissingBean(TaakObjectListener::class)
     fun taakObjectListener(
         openNotificatieService: OpenNotificatieService,
-        taskService: TaskService,
+        camundaTaskService: CamundaTaskService,
         valueResolverService: ValueResolverService,
         bpmnModelService: BpmnModelService,
+        runtimeService: RuntimeService,
     ): TaakObjectListener {
         return TaakObjectListener(
             openNotificatieService,
-            taskService,
+            camundaTaskService,
             valueResolverService,
-            bpmnModelService
+            bpmnModelService,
+            runtimeService,
         )
     }
 
@@ -94,14 +99,17 @@ class TaakObjectAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentValueResolverFactory::class)
     fun documentValueResolver(
-        processDocumentService: ProcessDocumentService
+        processDocumentService: ProcessDocumentService,
+        documentService: DocumentService,
     ): ValueResolverFactory {
-        return DocumentValueResolverFactory(processDocumentService)
+        return DocumentValueResolverFactory(processDocumentService, documentService)
     }
 
     @Bean
     @ConditionalOnMissingBean(ProcessVariableValueResolverFactory::class)
-    fun processVariableValueResolver(): ValueResolverFactory {
-        return ProcessVariableValueResolverFactory()
+    fun processVariableValueResolver(
+        runtimeService: RuntimeService,
+    ): ValueResolverFactory {
+        return ProcessVariableValueResolverFactory(runtimeService)
     }
 }

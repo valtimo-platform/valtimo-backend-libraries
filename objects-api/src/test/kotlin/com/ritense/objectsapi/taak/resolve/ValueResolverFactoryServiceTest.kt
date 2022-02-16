@@ -16,25 +16,31 @@
 
 package com.ritense.objectsapi.taak.resolve
 
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
-import java.util.UUID
-import kotlin.jvm.Throws
+import org.assertj.core.api.Assertions.assertThat
+import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.assertj.core.api.Assertions.assertThat
+import java.util.UUID
 
 internal class ValueResolverFactoryServiceTest {
 
+    private val runtimeService: RuntimeService = mock()
     private val resolverService = ValueResolverService(
-        listOf( ProcessVariableValueResolverFactory(), FixedValueResolverFactory())
+        listOf(ProcessVariableValueResolverFactory(runtimeService), FixedValueResolverFactory())
     )
 
     @Test
     fun `Should fail on duplicate resolver prefixes at init`() {
         val exception = assertThrows<RuntimeException> {
             ValueResolverService(
-                listOf( ProcessVariableValueResolverFactory(), ProcessVariableValueResolverFactory())
+                listOf(
+                    ProcessVariableValueResolverFactory(runtimeService),
+                    ProcessVariableValueResolverFactory(runtimeService)
+                )
             )
         }
 
@@ -85,5 +91,25 @@ internal class ValueResolverFactoryServiceTest {
         }
 
         assertThat(exception.message).startsWith("No resolver factory found for value prefix xyz")
+    }
+
+    @Test
+    fun `Should handle list of values`() {
+        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val variableScope = DelegateTaskFake()
+
+        resolverService.handleValues(
+            processInstanceId, variableScope, mapOf(
+                "pv:firstName" to "John",
+                "pv:lastName" to "Doe",
+                "pv:active" to true,
+            )
+        )
+
+        verify(runtimeService).setVariables(processInstanceId.toString(), mapOf(
+            "firstName" to "John",
+            "lastName" to "Doe",
+            "active" to true,
+        ))
     }
 }
