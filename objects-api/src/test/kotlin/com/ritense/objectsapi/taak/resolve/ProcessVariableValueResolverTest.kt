@@ -72,7 +72,7 @@ internal class ProcessVariableValueResolverTest {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
 
         processVariableValueResolver.handleValues(
-            processInstanceId, variableScope, mapOf("pv:firstName" to "John")
+            processInstanceId, variableScope, mapOf("firstName" to "John")
         )
 
         verify(runtimeService).setVariables(processInstanceId.toString(), mapOf("firstName" to "John"))
