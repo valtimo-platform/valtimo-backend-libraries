@@ -18,11 +18,13 @@ package com.ritense.document.autoconfigure;
 
 import com.ritense.document.config.SpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerImpl;
 import com.ritense.document.domain.impl.listener.DocumentRelatedFileSubmittedEventListenerImpl;
 import com.ritense.document.domain.impl.listener.RelatedJsonSchemaDocumentAvailableEventListenerImpl;
 import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
 import com.ritense.document.repository.DocumentDefinitionRepository;
+import com.ritense.document.repository.DocumentDefinitionRoleRepository;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.service.DocumentDefinitionService;
@@ -44,6 +46,7 @@ import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.authentication.CurrentUserService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
@@ -79,11 +82,15 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentDefinitionService.class)
     public JsonSchemaDocumentDefinitionService documentDefinitionService(
         final ResourceLoader resourceLoader,
-        final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository
+        final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
+        final DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository,
+        final CurrentUserService currentUserService
     ) {
         return new JsonSchemaDocumentDefinitionService(
             resourceLoader,
-            documentDefinitionRepository
+            documentDefinitionRepository,
+            documentDefinitionRoleRepository,
+            currentUserService
         );
     }
 
@@ -147,9 +154,14 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentDefinitionResource.class)
     public JsonSchemaDocumentDefinitionResource documentDefinitionResource(
         final DocumentDefinitionService documentDefinitionService,
-        final UndeployDocumentDefinitionService undeployDocumentDefinitionService
+        final UndeployDocumentDefinitionService undeployDocumentDefinitionService,
+        final CurrentUserService currentUserService
     ) {
-        return new JsonSchemaDocumentDefinitionResource(documentDefinitionService, undeployDocumentDefinitionService);
+        return new JsonSchemaDocumentDefinitionResource(
+            documentDefinitionService,
+            undeployDocumentDefinitionService,
+            currentUserService
+        );
     }
 
     @Bean

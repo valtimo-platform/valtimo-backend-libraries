@@ -26,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.Set;
 
 public interface DocumentDefinitionService {
 
@@ -53,4 +54,7 @@ public interface DocumentDefinitionService {
 
     void removeDocumentDefinition(String documentDefinitionName);
 
+    Set<String> getDocumentDefinitionRoles(String documentDefinitionName);
+
+    void putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles);
 }

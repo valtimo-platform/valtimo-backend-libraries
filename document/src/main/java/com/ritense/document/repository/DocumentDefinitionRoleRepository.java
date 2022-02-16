@@ -16,25 +16,17 @@
 
 package com.ritense.document.repository;
 
-import com.ritense.document.domain.DocumentDefinition;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.ritense.document.domain.DocumentDefinitionRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 @NoRepositoryBean
-public interface DocumentDefinitionRepository<T extends DocumentDefinition> extends
-    JpaRepository<T, DocumentDefinition.Id> {
+public interface DocumentDefinitionRoleRepository<T extends DocumentDefinitionRole> extends
+    JpaRepository<T, DocumentDefinitionRole.Id> {
 
-    Optional<T> findFirstByIdNameOrderByIdVersionDesc(String documentDefinitionName);
+    void deleteByIdDocumentDefinitionName(String documentDefinitionName);
 
-    List<T> findAllByIdName(String documentDefinitionName);
-
-    Page<JsonSchemaDocumentDefinition> findAllForRoles(List<String> roles, Pageable pageable);
-
-    void deleteByIdName(String documentDefinitionName);
+    Set<String> findAllByIdDocumentDefinitionName(String documentDefinitionName);
 }
