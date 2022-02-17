@@ -17,18 +17,14 @@
 package com.ritense.document.domain.impl;
 
 import com.ritense.document.domain.DocumentDefinitionRole;
-import com.ritense.valtimo.contract.domain.AbstractId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.io.Serializable;
-
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentRange;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
@@ -39,7 +35,7 @@ public class JsonSchemaDocumentDefinitionRoleId implements DocumentDefinitionRol
     @Column(name = "document_definition_name", length = 50, columnDefinition = "VARCHAR(50)", nullable = false, updatable = false)
     private String documentDefinitionName;
 
-    @Column(name = "document_definition_version", columnDefinition = "VARCHAR(50)", nullable = false, updatable = false)
+    @Column(name = "role", columnDefinition = "VARCHAR(50)", nullable = false, updatable = false)
     private String role;
 
     public String documentDefinitionName() {
