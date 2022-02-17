@@ -31,7 +31,7 @@ public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefiniti
     @Query(""
         + "SELECT  distinct dd "
         + "FROM    JsonSchemaDocumentDefinition dd "
-        + "INNER JOIN JsonSchemaDocumentDefinitionRole ddRole ON ddRole.id.role IN :roles "
+        + "INNER JOIN JsonSchemaDocumentDefinitionRole ddRole ON ddRole.id.documentDefinitionName = dd.id.name AND ddRole.id.role in :roles "
         + "WHERE   dd.id.version = (" +
         "   SELECT max(dd2.id.version) " +
         "   FROM JsonSchemaDocumentDefinition dd2 " +
