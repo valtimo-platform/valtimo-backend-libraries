@@ -18,11 +18,7 @@ package com.ritense.objectsapi.taak
 
 import com.jayway.jsonpath.JsonPath
 import com.ritense.connector.domain.Connector
-import com.ritense.connector.domain.ConnectorInstance
-import com.ritense.connector.domain.ConnectorInstanceId
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
-import com.ritense.connector.service.ConnectorDeploymentService
-import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.objectsapi.BaseIntegrationTest
@@ -46,7 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpMethod
 import java.net.URI
-import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -65,12 +60,6 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
     lateinit var taakObjectConnectorProperties: TaakProperties
 
     @Autowired
-    lateinit var connectorService: ConnectorService
-
-    @Autowired
-    lateinit var connectorDeploymentService: ConnectorDeploymentService
-
-    @Autowired
     lateinit var zaakTypeLinkService: ZaakTypeLinkService
 
     @Autowired
@@ -82,7 +71,6 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
 
     lateinit var server: MockWebServer
     lateinit var executedRequests: MutableList<RecordedRequest>
-    lateinit var openZaakConnectorInstance: ConnectorInstance
 
     private val PROCESS_DEFINITION_KEY = "portal-task"
     private val DOCUMENT_DEFINITION_KEY = "testschema"
@@ -90,7 +78,7 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
     @BeforeEach
     internal fun setUp() {
         startMockServer()
-        setupConnector()
+        setupTaakConnector()
     }
 
     @AfterEach
@@ -132,11 +120,13 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
         assertEquals("open", JsonPath.read(bodyContent, "$.record.data.status"))
     }
 
-    private fun setupConnector() {
-        taakObjectConnectorProperties.objectsApiProperties.objectsApi.url = server.url("/").toString()
-        taakObjectConnectorProperties.objectsApiProperties.objectsApi.token = "some-token"
+    private fun setupTaakConnector() {
+        setupObjectApiConnector(server.url("/").toString())
+        setupOpenNotificatieConnector(server.url("/").toString())
+        taakObjectConnectorProperties.openNotificatieConnectionName = "openNotificatieInstance"
+        taakObjectConnectorProperties.objectsApiConnectionName = "objectsApiInstance"
 
-        val types = connectorDeploymentService.deployAll(listOf(taakObjectConnector))
+        connectorDeploymentService.deployAll(listOf(taakObjectConnector))
         val connectorType = connectorService.getConnectorTypes().first { it.name == "Taak" }
 
         connectorService.createConnectorInstance(
@@ -158,6 +148,8 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
                     "POST /api/v2/objects" -> mockResponseFromFile("/data/post-create-object.json")
                     "POST /zaken/api/v1/zaken" -> mockResponseFromFile("/data/post-create-zaak.json")
                     "GET /zaken/api/v1/rollen" -> mockResponseFromFile("/data/get-rol.json")
+                    "GET /api/v1/kanaal" -> mockResponseFromFile("/data/get-kanalen.json")
+                    "POST /api/v1/abonnement" -> mockResponseFromFile("/data/post-abonnement.json")
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
@@ -168,27 +160,25 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
         server.start()
     }
 
-    fun setupOpenZaakConnector() {
-        connectorDeploymentService.deployAll(listOf(openZaakConnector))
-        val connectorInstanceId = ConnectorInstanceId.newId(UUID.fromString("26141e07-40e4-4a7e-9c78-f7a40db3b3f0"))
-        val openZaakConnectorType = connectorService.getConnectorTypes()
-            .filter { it.name.equals("OpenZaak") }
-            .first()
-
-        openZaakConnectorInstance = ConnectorInstance(
-            connectorInstanceId,
-            openZaakConnectorType,
-            "OpenZaakConnector",
-            OpenZaakProperties(
-                OpenZaakConfig(
-                    server.url("/").toString(),
-                    "test-client",
-                    "711de9a3-1af6-4196-b4dd-e8a2e2ade17c",
-                    Rsin("051845623")
-                )
+    private fun setupOpenZaakConnector() {
+        val properties = OpenZaakProperties(
+            OpenZaakConfig(
+                server.url("/").toString(),
+                "test-client",
+                "711de9a3-1af6-4196-b4dd-e8a2e2ade17c",
+                Rsin("051845623")
             )
         )
-        connectorTypeInstanceRepository.save(openZaakConnectorInstance)
+        connectorDeploymentService.deployAll(listOf(openZaakConnector))
+        val connectorType = connectorService.getConnectorTypes().first { it.name == "OpenZaak" }
+
+        connectorService.createConnectorInstance(
+            connectorType.id.id,
+            "openZaakInstance",
+            properties
+        )
+
+        openZaakConnector = connectorService.loadByClassName(openZaakConnector::class.java)
     }
 
     fun findRequest(method: HttpMethod, path: String): RecordedRequest? {
