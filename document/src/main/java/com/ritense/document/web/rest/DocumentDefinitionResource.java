@@ -34,9 +34,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-
 import java.util.Set;
+import javax.validation.Valid;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -44,6 +43,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface DocumentDefinitionResource {
+
+    @GetMapping(value = "/document-definitions")
+    ResponseEntity<Page<? extends DocumentDefinition>> getAllDocumentDefinitions(
+        @PageableDefault(sort = {"id.name"}, direction = ASC) Pageable pageable
+    );
 
     @GetMapping(value = "/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
@@ -61,9 +65,9 @@ public interface DocumentDefinitionResource {
     @DeleteMapping(value = "/document-definition/{name}")
     ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(@PathVariable String name);
 
-    @GetMapping(value = "/document-definition/{name}/roles")
+    @GetMapping(value = "/document-definition/{documentDefinitionName}/roles")
     ResponseEntity<Set<String>> getDocumentDefinitionRoles(@PathVariable String documentDefinitionName);
 
-    @PutMapping(value = "/document-definition/{name}/roles")
+    @PutMapping(value = "/document-definition/{documentDefinitionName}/roles")
     ResponseEntity<Void> putDocumentDefinitionRoles(@PathVariable String documentDefinitionName, @RequestBody Set<String> roles);
 }

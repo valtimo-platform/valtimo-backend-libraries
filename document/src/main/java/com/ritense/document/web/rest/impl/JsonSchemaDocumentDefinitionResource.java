@@ -32,7 +32,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -43,6 +42,11 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     private final DocumentDefinitionService documentDefinitionService;
     private final UndeployDocumentDefinitionService undeployDocumentDefinitionService;
     private final CurrentUserService currentUserService;
+
+    @Override
+    public ResponseEntity<Page<? extends DocumentDefinition>> getAllDocumentDefinitions(Pageable pageable) {
+        return ok(documentDefinitionService.findForAdmin(pageable));
+    }
 
     @Override
     public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(Pageable pageable) {

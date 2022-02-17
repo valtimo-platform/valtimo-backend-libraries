@@ -30,6 +30,8 @@ import java.util.Set;
 
 public interface DocumentDefinitionService {
 
+    Page<? extends DocumentDefinition> findForAdmin(Pageable pageable);
+
     Page<? extends DocumentDefinition> findAll(Pageable pageable);
 
     JsonSchemaDocumentDefinitionId findIdByName(String name);

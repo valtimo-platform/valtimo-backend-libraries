@@ -39,4 +39,13 @@ public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefiniti
         ") ")
     Page<JsonSchemaDocumentDefinition> findAllForRoles(List<String> roles, Pageable pageable);
 
+    @Query(""
+        + "SELECT  dd "
+        + "FROM    JsonSchemaDocumentDefinition dd "
+        + "WHERE   dd.id.version = (" +
+        "   SELECT max(dd2.id.version) " +
+        "   FROM JsonSchemaDocumentDefinition dd2 " +
+        "   WHERE dd2.id.name = dd.id.name " +
+        ") ")
+    Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable);
 }

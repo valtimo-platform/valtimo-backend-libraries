@@ -34,6 +34,8 @@ public interface DocumentDefinitionRepository<T extends DocumentDefinition> exte
 
     List<T> findAllByIdName(String documentDefinitionName);
 
+    Page<T> findAll(Pageable pageable);
+
     Page<JsonSchemaDocumentDefinition> findAllForRoles(List<String> roles, Pageable pageable);
 
     void deleteByIdName(String documentDefinitionName);

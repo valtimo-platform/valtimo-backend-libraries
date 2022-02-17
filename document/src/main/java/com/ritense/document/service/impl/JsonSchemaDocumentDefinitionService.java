@@ -64,6 +64,11 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     private final DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository;
     private final CurrentUserService currentUserService;
 
+    @Override
+    public Page<JsonSchemaDocumentDefinition> findForAdmin(Pageable pageable) {
+        return documentDefinitionRepository.findAll(pageable);
+    }
+
     @SneakyThrows
     @Override
     public Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable) {
@@ -196,7 +201,10 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public Set<String> getDocumentDefinitionRoles(String documentDefinitionName) {
-        return documentDefinitionRoleRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
+        return documentDefinitionRoleRepository.findAllByIdDocumentDefinitionName(documentDefinitionName)
+            .stream()
+            .map(role -> role.id().role())
+            .collect(Collectors.toSet());
     }
 
     @Override

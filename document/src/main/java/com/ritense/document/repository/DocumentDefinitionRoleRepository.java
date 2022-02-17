@@ -28,5 +28,5 @@ public interface DocumentDefinitionRoleRepository<T extends DocumentDefinitionRo
 
     void deleteByIdDocumentDefinitionName(String documentDefinitionName);
 
-    Set<String> findAllByIdDocumentDefinitionName(String documentDefinitionName);
+    Set<DocumentDefinitionRole> findAllByIdDocumentDefinitionName(String documentDefinitionName);
 }
