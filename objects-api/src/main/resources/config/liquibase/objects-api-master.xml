@@ -22,5 +22,6 @@
 
     <include file="changelog/20210901-objects-api-sync-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20211006-opennotificatie-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20220214-product-aanvraag-clear-changelog.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

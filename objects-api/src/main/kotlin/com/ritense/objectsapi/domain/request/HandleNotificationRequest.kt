@@ -32,12 +32,17 @@ data class HandleNotificationRequest (
         return actie.equals(CREATE_ACTION_TYPE)
     }
 
+    fun isEditNotification(): Boolean {
+        return actie.equals(EDIT_ACTION_TYPE)
+    }
+
     fun isTestNotification(): Boolean {
         return kanaal.equals(TEST_KANAAL_NAME)
     }
 
     companion object {
         const val CREATE_ACTION_TYPE = "create"
+        const val EDIT_ACTION_TYPE = "edit"
         const val TEST_KANAAL_NAME = "test"
     }
 }
