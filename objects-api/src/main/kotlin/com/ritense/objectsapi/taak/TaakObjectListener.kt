@@ -19,6 +19,7 @@ package com.ritense.objectsapi.taak
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
+import com.ritense.objectsapi.productaanvraag.ProductAanvraagConnector
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.valtimo.service.BpmnModelService
 import org.camunda.bpm.engine.TaskService
@@ -26,9 +27,7 @@ import org.springframework.context.event.EventListener
 
 class TaakObjectListener(
     private val openNotificatieService: OpenNotificatieService,
-    private val taskService: TaskService,
-    private val valueResolverService: ValueResolverService,
-    private val bpmnModelService: BpmnModelService,
+    private val taskService: TaskService
 ) {
 
     @EventListener(OpenNotificationEvent::class)
@@ -36,15 +35,22 @@ class TaakObjectListener(
         if (event.notification.kanaal == OpenNotificatieConnector.OBJECTEN_KANAAL_NAME
             && event.notification.isEditNotification()
         ) {
-            val connector = openNotificatieService.findConnector(event.connectorId, event.authorizationKey) as TaakObjectConnector
-            val taakObjectId = event.notification.getObjectId()
-            val taakObject = connector.getTaakObject(taakObjectId)
-            if (taakObject.status != TaakObjectStatus.ingediend) {
-                return
-            }
-            taskService.complete(taakObject.verwerkerTaakId.toString())
+            val connector = openNotificatieService.findConnector(event.connectorId, event.authorizationKey)
 
-            connector.deleteTaakObject(taakObjectId)
+            // check if the created object is the right kind based on the name of the type of the created object.
+            // This is the only way to do so until other information becomes available or we retrieve every object that is created
+            if (connector is TaakObjectConnector
+                && event.notification.getObjectTypeName()?.equals(connector.getObjectsApiConnector().getProperties().objectType.title)?: false
+            ) {
+                val taakObjectId = event.notification.getObjectId()
+                val taakObject = connector.getTaakObject(taakObjectId)
+                if (taakObject.status != TaakObjectStatus.ingediend) {
+                    return
+                }
+                taskService.complete(taakObject.verwerkerTaakId.toString())
+
+                connector.deleteTaakObject(taakObjectId)
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.ritense.gzac.listener
 
+import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
@@ -50,19 +51,27 @@ class ApplicationReadyEventListener(
     }
 
     fun createConnectors() {
+        val connectorTypes = connectorService.getConnectorTypes()
+
         connectorService.getConnectorTypes().forEach {
             try {
-                when (it.name) {
-                    "OpenZaak" -> createOpenZaakConnector(it.id.id)
-                    "ContactMoment" -> createContactMomentConnector(it.id.id)
-                    "ObjectsApi" -> createObjectApiConnectors(it.id.id)
-                    "ProductAanvragen" -> createProductAanvraagConnector(it.id.id)
-                    "Taak" -> createTaakConnector(it.id.id)
-                }
+                createOpenZaakConnector(connectorTypes.findId("OpenZaak"))
+                createOpenNotificatiesConnector(connectorTypes.findId("OpenNotificatie"))
+                createContactMomentConnector(connectorTypes.findId("ContactMoment"))
+                createObjectApiConnectors(connectorTypes.findId("ObjectsApi"))
+                createProductAanvraagConnector(connectorTypes.findId("ProductAanvragen"))
+                createTaakConnector(connectorTypes.findId("Taak"))
             } catch (ex: Exception) {
                 logger.error { ex }
             }
         }
+    }
+
+    fun List<ConnectorType>.findId(connectorName: String): UUID {
+        return this
+            .filter { it.name.equals(connectorName) }
+            .first()
+            .id.id
     }
 
     fun createOpenZaakConnector(id: UUID) {
@@ -95,6 +104,8 @@ class ApplicationReadyEventListener(
 
     fun createObjectApiConnectors(id: UUID) {
         createStraatverlichtingConnector(id)
+        createTaakObjectsApiConnector(id)
+        createProductAanvraagObjectsApiConnector(id)
     }
 
     fun createStraatverlichtingConnector(id: UUID) {
@@ -131,27 +142,59 @@ class ApplicationReadyEventListener(
         }
     }
 
+    fun createTaakObjectsApiConnector(id: UUID) {
+        connectorService.createConnectorInstance(
+            typeId = id,
+            name = TAAK_OBJECTAPI_CONNECTOR_NAME,
+            connectorProperties = ObjectsApiProperties(
+                objectsApi = ServerAuthSpecification(
+                    "http://localhost:8010",
+                    "182c13e2209161852c53cef53a879f7a2f923430"
+                ),
+                objectsTypeApi = ServerAuthSpecification(
+                    "http://localhost:8011",
+                    "cd63e158f3aca276ef284e3033d020a22899c728"
+                ),
+                objectType = ObjectTypeConfig(
+                    "taak",
+                    "Objecttypen API: Taak",
+                    "http://host.docker.internal:8011/api/v1/objecttypes/3e852115-277a-4570-873a-9a64be3aeb34",
+                    "1"
+                )
+            )
+        )
+    }
+
+    fun createProductAanvraagObjectsApiConnector(id: UUID) {
+        connectorService.createConnectorInstance(
+            typeId = id,
+            name = PRODUCTAANVRAAG_OBJECTAPI_CONNECTOR_NAME,
+            connectorProperties = ObjectsApiProperties(
+                objectsApi = ServerAuthSpecification(
+                    "http://localhost:8010",
+                    "182c13e2209161852c53cef53a879f7a2f923430"
+                ),
+                objectsTypeApi = ServerAuthSpecification(
+                    "http://localhost:8011",
+                    "cd63e158f3aca276ef284e3033d020a22899c728"
+                ),
+                objectType = ObjectTypeConfig(
+                    "productAanvraag",
+                    "Objecttypen API: Productaanvraag",
+                    "http://host.docker.internal:8011/api/v1/objecttypes/021f685e-9482-4620-b157-34cd4003da6b",
+                    "1"
+                )
+            )
+        )
+    }
+
     fun createTaakConnector(id: UUID) {
         connectorService.createConnectorInstance(
             typeId = id,
             name = "TaakConnector",
             connectorProperties = TaakProperties(
-                ObjectsApiProperties(
-                    objectsApi = ServerAuthSpecification(
-                        "http://localhost:8010",
-                        "182c13e2209161852c53cef53a879f7a2f923430"
-                    ),
-                    objectsTypeApi = ServerAuthSpecification(
-                        "http://localhost:8011",
-                        "cd63e158f3aca276ef284e3033d020a22899c728"
-                    ),
-                    objectType = ObjectTypeConfig(
-                        "taak",
-                        "Taak",
-                        "http://host.docker.internal:8011/api/v1/objecttypes/3e852115-277a-4570-873a-9a64be3aeb34",
-                        "1"
-                    )
-                )
+                openNotificatieConnectionName = OPENNOTIFICATIES_CONNECTOR_NAME,
+                objectsApiConnectionName = TAAK_OBJECTAPI_CONNECTOR_NAME
             )
         )
     }
@@ -161,28 +204,8 @@ class ApplicationReadyEventListener(
             typeId = id,
             name = "ProductAanvragen",
             connectorProperties = ProductAanvraagProperties(
-                objectsApiProperties = ObjectsApiProperties(
-                    objectsApi = ServerAuthSpecification(
-                        "http://localhost:8010",
-                        "182c13e2209161852c53cef53a879f7a2f923430"
-                    ),
-                    objectsTypeApi = ServerAuthSpecification(
-                        "http://localhost:8011",
-                        "cd63e158f3aca276ef284e3033d020a22899c728"
-                    ),
-                    objectType = ObjectTypeConfig(
-                        "productAanvraag",
-                        "Product Aanvraag",
-                        "http://host.docker.internal:8011/api/v1/objecttypes/021f685e-9482-4620-b157-34cd4003da6b",
-                        "1"
-                    )
-                ),
-                openNotificatieProperties = OpenNotificatieProperties(
-                    "http://localhost:8002",
-                    "valtimo",
-                    "zZ!xRP&\$qTn4A9ETa^ZMKepDm^8egjPz",
-                    "http://host.docker.internal:8080"
-                ),
+                openNotificatieConnectionName = OPENNOTIFICATIES_CONNECTOR_NAME,
+                objectsApiConnectionName = PRODUCTAANVRAAG_OBJECTAPI_CONNECTOR_NAME,
                 typeMapping = listOf(
                     ProductAanvraagTypeMapping(
                         "lening",
@@ -191,6 +214,19 @@ class ApplicationReadyEventListener(
                     )
                 ),
                 aanvragerRolTypeUrl = "http://localhost:8001/catalogi/api/v1/roltypen/1c359a1b-c38d-47b8-bed5-994db88ead61"
+            )
+        )
+    }
+
+    fun createOpenNotificatiesConnector(id: UUID) {
+        connectorService.createConnectorInstance(
+            typeId = id,
+            name = OPENNOTIFICATIES_CONNECTOR_NAME,
+            connectorProperties = OpenNotificatieProperties(
+                "http://localhost:8002",
+                "valtimo",
+                "zZ!xRP&\$qTn4A9ETa^ZMKepDm^8egjPz",
+                "http://host.docker.internal:8080"
             )
         )
     }
@@ -228,5 +264,8 @@ class ApplicationReadyEventListener(
 
     companion object {
         val logger = KotlinLogging.logger {}
+        val OPENNOTIFICATIES_CONNECTOR_NAME = "OpenNotificaties"
+        val TAAK_OBJECTAPI_CONNECTOR_NAME = "TaakObjects"
+        val PRODUCTAANVRAAG_OBJECTAPI_CONNECTOR_NAME = "ProductAanvraagObjects"
     }
 }
