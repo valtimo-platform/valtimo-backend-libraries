@@ -16,6 +16,8 @@
 
 package com.ritense.objectsapi.taak
 
+import com.ritense.connector.service.ConnectorService
+import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.taak.resolve.DocumentValueResolverFactory
 import com.ritense.objectsapi.taak.resolve.FixedValueResolverFactory
 import com.ritense.objectsapi.taak.resolve.ProcessVariableValueResolverFactory
@@ -23,17 +25,33 @@ import com.ritense.objectsapi.taak.resolve.ValueResolverFactory
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.processdocument.service.ProcessDocumentService
-import kotlin.contracts.ExperimentalContracts
+import com.ritense.valtimo.service.BpmnModelService
+import org.camunda.bpm.engine.TaskService
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
-import org.springframework.core.Ordered
-import org.springframework.core.annotation.Order
+import kotlin.contracts.ExperimentalContracts
 
 @Configuration
 class TaakObjectAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(TaakObjectListener::class)
+    fun taakObjectListener(
+        openNotificatieService: OpenNotificatieService,
+        taskService: TaskService,
+        valueResolverService: ValueResolverService,
+        bpmnModelService: BpmnModelService,
+    ): TaakObjectListener {
+        return TaakObjectListener(
+            openNotificatieService,
+            taskService,
+            valueResolverService,
+            bpmnModelService
+        )
+    }
 
     @OptIn(ExperimentalContracts::class)
     @Bean
@@ -41,9 +59,16 @@ class TaakObjectAutoConfiguration {
     fun taakObjectConnector(
         taakProperties: TaakProperties,
         valueResolverService: ValueResolverService,
+        connectorService: ConnectorService,
         bsnProvider: BsnProvider
     ): TaakObjectConnector {
-        return TaakObjectConnector(taakProperties, valueResolverService, bsnProvider, null)
+        return TaakObjectConnector(
+            taakProperties,
+            valueResolverService,
+            connectorService,
+            bsnProvider,
+            null
+        )
     }
 
     @Bean

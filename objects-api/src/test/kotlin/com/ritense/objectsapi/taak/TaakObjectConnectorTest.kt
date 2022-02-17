@@ -24,7 +24,10 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.connector.service.ConnectorService
 import com.ritense.objectsapi.domain.request.CreateObjectRequest
+import com.ritense.objectsapi.service.ObjectsApiConnector
+import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.openzaak.provider.KvkProvider
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
@@ -44,6 +47,7 @@ internal class TaakObjectConnectorTest {
 
     private lateinit var taakProperties: TaakProperties
     private lateinit var valueResolverService: ValueResolverService
+    private lateinit var connectorService: ConnectorService
     private lateinit var bsnProvider: BsnProvider
     private lateinit var kvkProvider: KvkProvider
 
@@ -53,12 +57,14 @@ internal class TaakObjectConnectorTest {
     internal fun setUp() {
         taakProperties = TaakProperties()
         valueResolverService = mock()
+        connectorService = mock()
         bsnProvider = mock()
         kvkProvider = mock()
         taakObjectConnector = spy(
             TaakObjectConnector(
                 taakProperties,
                 valueResolverService,
+                connectorService,
                 bsnProvider,
                 kvkProvider
             )
@@ -67,8 +73,11 @@ internal class TaakObjectConnectorTest {
 
     @Test
     fun `should create object with properties from task`() {
+        val objectsApiConnector = mock<ObjectsApiConnector>()
         whenever(bsnProvider.getBurgerServiceNummer(any())).thenReturn("my-bsn")
-        doReturn(mock<com.ritense.objectsapi.domain.Object>()).whenever(taakObjectConnector).createObject(any())
+        whenever(connectorService.loadByName(any())).thenReturn(objectsApiConnector)
+        whenever(objectsApiConnector.getProperties()).thenReturn(ObjectsApiProperties())
+        doReturn(mock<com.ritense.objectsapi.domain.Object>()).whenever(objectsApiConnector).createObject(any())
         val task = mockDelegateTask("taak:my-var", "pv:my-process-var")
 
         whenever(valueResolverService.resolveValues(
@@ -80,7 +89,7 @@ internal class TaakObjectConnectorTest {
         taakObjectConnector.createTask(task, "my-form-id")
 
         val captor = argumentCaptor<CreateObjectRequest>()
-        verify(taakObjectConnector).createObject(captor.capture())
+        verify(objectsApiConnector).createObject(captor.capture())
         val capturedObjectRequest = captor.firstValue
         Assertions.assertThat(capturedObjectRequest.record.data).containsAllEntriesOf(
             mapOf(
@@ -93,14 +102,17 @@ internal class TaakObjectConnectorTest {
 
     @Test
     fun `should not use task-properties that are not marked with 'taak'`() {
+        val objectsApiConnector = mock<ObjectsApiConnector>()
         whenever(bsnProvider.getBurgerServiceNummer(any())).thenReturn("my-bsn")
-        doReturn(mock<com.ritense.objectsapi.domain.Object>()).whenever(taakObjectConnector).createObject(any())
+        whenever(connectorService.loadByName(any())).thenReturn(objectsApiConnector)
+        whenever(objectsApiConnector.getProperties()).thenReturn(ObjectsApiProperties())
+        doReturn(mock<com.ritense.objectsapi.domain.Object>()).whenever(objectsApiConnector).createObject(any())
         val task = mockDelegateTask("my-var", "doc:/my-doc-prop")
 
         taakObjectConnector.createTask(task, "my-form-id")
 
         val captor = argumentCaptor<CreateObjectRequest>()
-        verify(taakObjectConnector).createObject(captor.capture())
+        verify(objectsApiConnector).createObject(captor.capture())
         Assertions.assertThat(captor.firstValue.record.data).containsAllEntriesOf(
             mapOf(
                 "data" to emptyMap<String, String>(),
@@ -117,7 +129,7 @@ internal class TaakObjectConnectorTest {
         whenever(camundaProperties.camundaProperties).thenReturn(listOf(camundaProperty))
 
         val delegateTask = Mockito.mock(DelegateTask::class.java, Mockito.RETURNS_DEEP_STUBS)
-        whenever(delegateTask.executionId).thenReturn(UUID.randomUUID().toString())
+        whenever(delegateTask.id).thenReturn(UUID.randomUUID().toString())
         whenever(delegateTask.bpmnModelElementInstance.extensionElements.elements).thenReturn(listOf(camundaProperties))
         whenever(delegateTask.processInstanceId).thenReturn(UUID.randomUUID().toString())
 
