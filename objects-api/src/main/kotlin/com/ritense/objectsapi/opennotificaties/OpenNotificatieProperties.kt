@@ -16,9 +16,11 @@
 
 package com.ritense.objectsapi.opennotificaties
 
+import com.ritense.connector.domain.ConnectorProperties
+
 data class OpenNotificatieProperties(
     var baseUrl: String = "",
     var clientId: String = "",
     var secret: String = "",
     var callbackBaseUrl: String = ""
-)
+) : ConnectorProperties
