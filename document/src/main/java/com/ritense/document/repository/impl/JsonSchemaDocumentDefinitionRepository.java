@@ -29,7 +29,7 @@ import java.util.List;
 public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefinitionRepository<JsonSchemaDocumentDefinition> {
 
     @Query(""
-        + "SELECT  dd "
+        + "SELECT  distinct dd "
         + "FROM    JsonSchemaDocumentDefinition dd "
         + "INNER JOIN JsonSchemaDocumentDefinitionRole ddRole ON ddRole.id.role IN :roles "
         + "WHERE   dd.id.version = (" +
