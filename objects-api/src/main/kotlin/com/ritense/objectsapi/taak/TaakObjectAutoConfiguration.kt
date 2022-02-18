@@ -47,6 +47,8 @@ class TaakObjectAutoConfiguration {
         valueResolverService: ValueResolverService,
         bpmnModelService: BpmnModelService,
         runtimeService: RuntimeService,
+        documentService: DocumentService,
+        processDocumentService: ProcessDocumentService,
     ): TaakObjectListener {
         return TaakObjectListener(
             openNotificatieService,
@@ -54,6 +56,8 @@ class TaakObjectAutoConfiguration {
             valueResolverService,
             bpmnModelService,
             runtimeService,
+            documentService,
+            processDocumentService,
         )
     }
 

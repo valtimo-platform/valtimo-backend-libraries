@@ -70,11 +70,11 @@ class OpenNotificatieService(
         return files.map { createOpenzaakResource(getInformatieObject(it)) }.toCollection(hashSetOf())
     }
 
-    private fun getInformatieObject(file: URI): InformatieObject {
+    fun getInformatieObject(file: URI): InformatieObject {
         return zaakService.getInformatieObject(UUID.fromString(file.path.substringAfterLast('/')))
     }
 
-    private fun createOpenzaakResource(informatieObject: InformatieObject): OpenZaakResource {
+    fun createOpenzaakResource(informatieObject: InformatieObject): OpenZaakResource {
         val openZaakResource = OpenZaakResource(
             ResourceId.newId(UUID.randomUUID()),
             informatieObject.url,

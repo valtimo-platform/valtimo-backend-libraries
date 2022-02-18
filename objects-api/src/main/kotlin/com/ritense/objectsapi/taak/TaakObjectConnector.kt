@@ -105,6 +105,7 @@ class TaakObjectConnector(
             .filterIsInstance<CamundaProperties>()
             .single()
             .camundaProperties
+            .filter { it.camundaName != null && it.camundaValue != null }
             .filter { it.camundaName.startsWith(prefix = "taak:", ignoreCase = true) }
 
         val resolvedValues = valueResolverService.resolveValues(

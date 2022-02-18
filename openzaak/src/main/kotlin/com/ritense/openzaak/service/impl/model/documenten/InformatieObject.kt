@@ -21,6 +21,7 @@ import java.time.LocalDateTime
 
 data class InformatieObject(
     val url: URI,
+    val auteur: String?,
     val bestandsnaam: String,
     val bestandsomvang: Long,
     val beginRegistratie: LocalDateTime,
