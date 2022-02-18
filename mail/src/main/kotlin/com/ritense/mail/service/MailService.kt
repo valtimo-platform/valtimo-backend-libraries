@@ -50,7 +50,6 @@ class MailService(
             .filterByType(CamundaProperties::class.java)
             .singleResult()
             .camundaProperties
-            .filter { it.camundaName != null && it.camundaValue != null }
             .associateTo(camundaPropertiesMap) {
                 it.getAttributeValue("name") to parseValue(it.camundaValue, delegateExecution)
             }
