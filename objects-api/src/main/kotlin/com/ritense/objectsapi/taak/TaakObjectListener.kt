@@ -47,15 +47,22 @@ class TaakObjectListener(
         if (event.notification.kanaal == OpenNotificatieConnector.OBJECTEN_KANAAL_NAME
             && event.notification.isEditNotification()
         ) {
-            val connector = openNotificatieService.findConnector(event.connectorId, event.authorizationKey) as TaakObjectConnector
-            val taakObjectId = event.notification.getObjectId()
-            val taakObject = connector.getTaakObject(taakObjectId)
-            if (taakObject.status != TaakObjectStatus.ingediend) {
-                return
-            }
-            saveDataAndCompleteTask(taakObject)
+            val connector = openNotificatieService.findConnector(event.connectorId, event.authorizationKey)
 
-            connector.deleteTaakObject(taakObjectId)
+            // check if the created object is the right kind based on the name of the type of the created object.
+            // This is the only way to do so until other information becomes available or we retrieve every object that is created
+            if (connector is TaakObjectConnector
+                && event.notification.getObjectTypeName()?.equals(connector.getObjectsApiConnector().getProperties().objectType.title)?: false
+            ) {
+                val taakObjectId = event.notification.getObjectId()
+                val taakObject = connector.getTaakObject(taakObjectId)
+                if (taakObject.status != TaakObjectStatus.ingediend) {
+                    return
+                }
+                saveDataAndCompleteTask(taakObject)
+
+                connector.deleteTaakObject(taakObjectId)
+            }
         }
     }
 
