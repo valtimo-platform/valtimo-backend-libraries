@@ -44,13 +44,8 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     private final CurrentUserService currentUserService;
 
     @Override
-    public ResponseEntity<Page<? extends DocumentDefinition>> getAllDocumentDefinitions(Pageable pageable) {
-        return ok(documentDefinitionService.findForAdmin(pageable));
-    }
-
-    @Override
-    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(Pageable pageable) {
-        return ok(documentDefinitionService.findAll(pageable));
+    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(boolean filteredOnRole, Pageable pageable) {
+        return ok(documentDefinitionService.findForUser(filteredOnRole, pageable));
     }
 
     @Override

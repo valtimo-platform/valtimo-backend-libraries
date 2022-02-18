@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
@@ -44,13 +45,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface DocumentDefinitionResource {
 
-    @GetMapping(value = "/document-definitions")
-    ResponseEntity<Page<? extends DocumentDefinition>> getAllDocumentDefinitions(
-        @PageableDefault(sort = {"id.name"}, direction = ASC) Pageable pageable
-    );
-
     @GetMapping(value = "/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
+        @RequestParam(name = "filteredOnRole", defaultValue = "true") boolean filteredOnRole,
         @PageableDefault(sort = {"id.name"}, direction = ASC) Pageable pageable
     );
 

@@ -30,9 +30,9 @@ import java.util.Set;
 
 public interface DocumentDefinitionService {
 
-    Page<? extends DocumentDefinition> findForAdmin(Pageable pageable);
-
     Page<? extends DocumentDefinition> findAll(Pageable pageable);
+
+    Page<? extends DocumentDefinition> findForUser(boolean filteredForRole, Pageable pageable);
 
     JsonSchemaDocumentDefinitionId findIdByName(String name);
 

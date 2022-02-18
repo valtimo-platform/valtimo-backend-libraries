@@ -30,6 +30,7 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.service.result.error.DocumentDefinitionError;
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
 import com.ritense.valtimo.contract.authentication.CurrentUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -65,15 +66,19 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     private final CurrentUserService currentUserService;
 
     @Override
-    public Page<JsonSchemaDocumentDefinition> findForAdmin(Pageable pageable) {
+    public Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable) {
         return documentDefinitionRepository.findAll(pageable);
     }
 
     @SneakyThrows
     @Override
-    public Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable) {
+    public Page<JsonSchemaDocumentDefinition> findForUser(boolean filteredOnRole, Pageable pageable) {
         List<String> roles = currentUserService.getCurrentUser().getRoles();
-        return documentDefinitionRepository.findAllForRoles(roles, pageable);
+        if(!filteredOnRole && roles.contains(AuthoritiesConstants.ADMIN)) {
+            return documentDefinitionRepository.findAll(pageable);
+        } else {
+            return documentDefinitionRepository.findAllForRoles(roles, pageable);
+        }
     }
 
     @Override
