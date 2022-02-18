@@ -56,6 +56,8 @@ public interface DocumentDefinitionService {
 
     void removeDocumentDefinition(String documentDefinitionName);
 
+    boolean currentUserCanAccessDocumentDefinition(String documentDefinitionName);
+
     Set<String> getDocumentDefinitionRoles(String documentDefinitionName);
 
     void putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles);

@@ -31,7 +31,7 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.service.result.error.DocumentDefinitionError;
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
-import com.ritense.valtimo.contract.authentication.CurrentUserService;
+import com.ritense.valtimo.contract.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +63,6 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     private final ResourceLoader resourceLoader;
     private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
     private final DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository;
-    private final CurrentUserService currentUserService;
 
     @Override
     public Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable) {
@@ -73,8 +72,8 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     @SneakyThrows
     @Override
     public Page<JsonSchemaDocumentDefinition> findForUser(boolean filteredOnRole, Pageable pageable) {
-        List<String> roles = currentUserService.getCurrentUser().getRoles();
-        if(!filteredOnRole && roles.contains(AuthoritiesConstants.ADMIN)) {
+        List<String> roles = SecurityUtils.getCurrentUserRoles();
+        if (!filteredOnRole && roles.contains(AuthoritiesConstants.ADMIN)) {
             return documentDefinitionRepository.findAll(pageable);
         } else {
             return documentDefinitionRepository.findAllForRoles(roles, pageable);
@@ -202,6 +201,14 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     @Override
     public void removeDocumentDefinition(String documentDefinitionName) {
         documentDefinitionRepository.deleteByIdName(documentDefinitionName);
+    }
+
+    @Override
+    @SneakyThrows
+    public boolean currentUserCanAccessDocumentDefinition(String documentDefinitionName) {
+        List<String> roles = SecurityUtils.getCurrentUserRoles();
+        return roles.contains(AuthoritiesConstants.ADMIN)
+            || getDocumentDefinitionRoles(documentDefinitionName).stream().anyMatch(roles::contains);
     }
 
     @Override

@@ -41,7 +41,6 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
 
     private final DocumentDefinitionService documentDefinitionService;
     private final UndeployDocumentDefinitionService undeployDocumentDefinitionService;
-    private final CurrentUserService currentUserService;
 
     @Override
     public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(boolean filteredOnRole, Pageable pageable) {
@@ -51,9 +50,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     @Override
     @SneakyThrows
     public ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(String name) {
-        List<String> userRoles = currentUserService.getCurrentUser().getRoles();
-        if (documentDefinitionService.getDocumentDefinitionRoles(name)
-            .stream().noneMatch(userRoles::contains)) {
+        if (!documentDefinitionService.currentUserCanAccessDocumentDefinition(name)) {
             ResponseEntity.notFound();
         }
 

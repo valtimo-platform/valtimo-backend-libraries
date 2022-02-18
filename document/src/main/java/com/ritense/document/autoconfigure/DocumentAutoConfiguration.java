@@ -83,14 +83,12 @@ public class DocumentAutoConfiguration {
     public JsonSchemaDocumentDefinitionService documentDefinitionService(
         final ResourceLoader resourceLoader,
         final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
-        final DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository,
-        final CurrentUserService currentUserService
+        final DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository
     ) {
         return new JsonSchemaDocumentDefinitionService(
             resourceLoader,
             documentDefinitionRepository,
-            documentDefinitionRoleRepository,
-            currentUserService
+            documentDefinitionRoleRepository
         );
     }
 
@@ -154,13 +152,11 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentDefinitionResource.class)
     public JsonSchemaDocumentDefinitionResource documentDefinitionResource(
         final DocumentDefinitionService documentDefinitionService,
-        final UndeployDocumentDefinitionService undeployDocumentDefinitionService,
-        final CurrentUserService currentUserService
+        final UndeployDocumentDefinitionService undeployDocumentDefinitionService
     ) {
         return new JsonSchemaDocumentDefinitionResource(
             documentDefinitionService,
-            undeployDocumentDefinitionService,
-            currentUserService
+            undeployDocumentDefinitionService
         );
     }
 

@@ -16,17 +16,22 @@
 
 package com.ritense.document.service.impl;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
-
+import com.ritense.document.domain.DocumentDefinitionRole;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.repository.DocumentRepository;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.service.DocumentSearchService;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
+import com.ritense.valtimo.contract.utils.SecurityUtils;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.query.criteria.internal.OrderImpl;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -35,13 +40,14 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.query.criteria.internal.OrderImpl;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 @Transactional
@@ -58,29 +64,38 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     ) {
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaQuery<JsonSchemaDocument> query = cb.createQuery(JsonSchemaDocument.class);
-        final Root<JsonSchemaDocument> documentRoot = query.from(JsonSchemaDocument.class);
-        final List<Predicate> predicates = new ArrayList<>();
+        final Root<JsonSchemaDocument> selectRoot = query.from(JsonSchemaDocument.class);
 
-        addNonJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
-        addJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
-
-        query.where(predicates.toArray(Predicate[]::new));
-        query.orderBy(getOrderBy(cb, documentRoot, pageable.getSort()));
+        query.select(selectRoot).distinct(true);
+        query.where(createPredicates(searchRequest, cb, query, selectRoot));
+        query.orderBy(getOrderBy(cb, selectRoot, pageable.getSort()));
 
         final TypedQuery<JsonSchemaDocument> typedQuery = entityManager
             .createQuery(query)
-            .setFirstResult((int)pageable.getOffset())
+            .setFirstResult((int) pageable.getOffset())
             .setMaxResults(pageable.getPageSize());
 
         final CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        countQuery.select(cb.count(countQuery.from(JsonSchemaDocument.class)));
-        countQuery.where(predicates.toArray(Predicate[]::new));
+        Root<JsonSchemaDocument> countRoot = countQuery.from(JsonSchemaDocument.class);
+        countQuery.select(cb.countDistinct(countRoot));
+        countQuery.where(createPredicates(searchRequest, cb, countQuery, countRoot));
 
         return new PageImpl<>(typedQuery.getResultList(), pageable, entityManager.createQuery(countQuery).getSingleResult());
     }
 
+    @NotNull
+    private Predicate[] createPredicates(SearchRequest searchRequest, CriteriaBuilder cb, CriteriaQuery<?> query, Root<JsonSchemaDocument> documentRoot) {
+        final List<Predicate> predicates = new ArrayList<>();
+
+        addNonJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
+        addJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
+        addUserRolePredicate(cb, query, documentRoot, predicates);
+
+        return predicates.toArray(Predicate[]::new);
+    }
+
     private void addNonJsonFieldPredicates(CriteriaBuilder cb, Root<JsonSchemaDocument> root,
-        SearchRequest searchRequest, List<Predicate> predicates) {
+                                           SearchRequest searchRequest, List<Predicate> predicates) {
 
         if (!StringUtils.isEmpty(searchRequest.getDocumentDefinitionName())) {
             predicates.add(cb.equal(root.get("documentDefinitionId").get("name"),
@@ -98,11 +113,10 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         if (!StringUtils.isEmpty(searchRequest.getGlobalSearchFilter())) {
             predicates.add(findJsonValue(cb, root, searchRequest.getGlobalSearchFilter()));
         }
-
     }
 
     private void addJsonFieldPredicates(CriteriaBuilder cb, Root<JsonSchemaDocument> root,
-        SearchRequest searchRequest, List<Predicate> predicates) {
+                                        SearchRequest searchRequest, List<Predicate> predicates) {
 
         if (searchRequest.getOtherFilters() != null && !searchRequest.getOtherFilters().isEmpty()) {
             Map<String, List<SearchCriteria>> criteriaPerPath = searchRequest.getOtherFilters()
@@ -128,6 +142,24 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .collect(toList());
 
             predicates.add(cb.and(criteriaPredicates.toArray(Predicate[]::new)));
+        }
+    }
+
+    @SneakyThrows
+    private void addUserRolePredicate(CriteriaBuilder cb,
+                                      CriteriaQuery<?> query,
+                                      Root<JsonSchemaDocument> documentRoot,
+                                      List<Predicate> predicates) {
+        List<String> roles = SecurityUtils.getCurrentUserRoles();
+        if (!roles.contains(AuthoritiesConstants.ADMIN)) {
+            final Root<JsonSchemaDocumentDefinitionRole> documentDefinitionRoot = query.from(JsonSchemaDocumentDefinitionRole.class);
+            predicates.add(
+                cb.and(
+                    cb.equal(documentRoot.get("documentDefinitionId").get("name"),
+                        documentDefinitionRoot.get("id").get("documentDefinitionName")),
+                    documentDefinitionRoot.get("id").get("role").in(roles)
+                )
+            );
         }
     }
 

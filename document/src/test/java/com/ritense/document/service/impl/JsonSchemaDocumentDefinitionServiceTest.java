@@ -49,7 +49,6 @@ public class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
     private JsonSchemaDocumentDefinitionService documentDefinitionService;
     private JsonSchemaDocumentDefinitionRepository jsonSchemaDocumentDefinitionRepository;
     private JsonSchemaDocumentDefinitionRoleRepository jsonSchemaDocumentDefinitionRoleRepository;
-    private CurrentUserService currentUserService;
     private ResourceLoader resourceLoader;
     private JsonSchemaDocumentDefinition definition;
 
@@ -57,14 +56,12 @@ public class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
     public void setUp() {
         jsonSchemaDocumentDefinitionRepository = mock(JsonSchemaDocumentDefinitionRepository.class);
         jsonSchemaDocumentDefinitionRoleRepository = mock(JsonSchemaDocumentDefinitionRoleRepository.class);
-        currentUserService = mock(CurrentUserService.class);
         resourceLoader = mock(DefaultResourceLoader.class);
         documentDefinitionService = mock(JsonSchemaDocumentDefinitionService.class);
         documentDefinitionService = spy(new JsonSchemaDocumentDefinitionService(
             resourceLoader,
             jsonSchemaDocumentDefinitionRepository,
-            jsonSchemaDocumentDefinitionRoleRepository,
-            currentUserService
+            jsonSchemaDocumentDefinitionRoleRepository
         ));
         definition = definitionOf("person");
     }

@@ -28,8 +28,6 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceed
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
-import com.ritense.valtimo.contract.authentication.CurrentUserService;
-import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -46,6 +44,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -69,19 +68,15 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     private MockMvc mockMvc;
     private Page<JsonSchemaDocumentDefinition> definitionPage;
     private JsonSchemaDocumentDefinition definition;
-    private CurrentUserService currentUserService;
-    private ValtimoUser userWithRole;
 
     @BeforeEach
     public void setUp() {
         documentDefinitionService = mock(JsonSchemaDocumentDefinitionService.class);
         undeployDocumentDefinitionService = mock(UndeployJsonSchemaDocumentDefinitionService.class);
-        currentUserService = mock(CurrentUserService.class);
 
         documentDefinitionResource = new JsonSchemaDocumentDefinitionResource(
             documentDefinitionService,
-            undeployDocumentDefinitionService,
-            currentUserService
+            undeployDocumentDefinitionService
         );
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentDefinitionResource)
@@ -93,14 +88,11 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         Pageable unpaged = Pageable.unpaged();
 
         definitionPage = new PageImpl<>(definitions, unpaged, 1);
-
-        userWithRole = new ValtimoUser();
-        userWithRole.setRoles(List.of(SOME_ROLE));
     }
 
     @Test
     public void shouldReturnPagedRecordPage() throws Exception {
-        when(documentDefinitionService.findAll(any())).thenReturn(definitionPage);
+        when(documentDefinitionService.findForUser(anyBoolean(), any())).thenReturn(definitionPage);
 
         mockMvc.perform(get("/api/document-definition"))
             .andDo(print())
@@ -113,7 +105,6 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     public void shouldReturnSingleDefinitionRecordByName() throws Exception {
         String definitionName = definition.getId().name();
         when(documentDefinitionService.findLatestByName(anyString())).thenReturn(Optional.of(definition));
-        when(currentUserService.getCurrentUser()).thenReturn(userWithRole);
         when(documentDefinitionService.getDocumentDefinitionRoles(eq(definitionName))).thenReturn(Set.of(SOME_ROLE));
         mockMvc.perform(get("/api/document-definition/{name}", definitionName))
             .andDo(print())
