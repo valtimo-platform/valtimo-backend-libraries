@@ -63,7 +63,6 @@ public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResou
         @RequestParam(value = "toDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
         Pageable pageable
     ) {
-        //TODO: How are we going to filter these by role?
         return ResponseEntity.ok(
             documentSnapshotService.getDocumentSnapshots(
                 definitionName,
