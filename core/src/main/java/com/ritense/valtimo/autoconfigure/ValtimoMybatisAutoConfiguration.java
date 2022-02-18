@@ -37,7 +37,7 @@ import java.util.Properties;
 @Configuration
 public class ValtimoMybatisAutoConfiguration {
 
-    @Value("${valtimo.database}")
+    @Value("${valtimo.database:mysql}")
     private String valtimoDatabaseType;
 
     public static final Map<String, String> databaseSpecificTruncDatepart1 = new HashMap<>();
