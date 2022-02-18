@@ -19,12 +19,12 @@ dependencies {
     api project(':openzaak')
 
     implementation "org.hibernate:hibernate-core"
-    implementation "org.testcontainers:jdbc"
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
+    testImplementation "org.testcontainers:jdbc"
     testImplementation group: 'org.liquibase', name: 'liquibase-core', version: '4.3.3'
     testImplementation group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.3.3'
     testImplementation group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
