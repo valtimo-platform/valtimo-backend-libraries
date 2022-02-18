@@ -25,7 +25,6 @@ import com.ritense.objectsapi.taak.resolve.ValueResolverFactory
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.service.BpmnModelService
 import org.camunda.bpm.engine.TaskService
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -41,15 +40,11 @@ class TaakObjectAutoConfiguration {
     @ConditionalOnMissingBean(TaakObjectListener::class)
     fun taakObjectListener(
         openNotificatieService: OpenNotificatieService,
-        taskService: TaskService,
-        valueResolverService: ValueResolverService,
-        bpmnModelService: BpmnModelService,
+        taskService: TaskService
     ): TaakObjectListener {
         return TaakObjectListener(
             openNotificatieService,
-            taskService,
-            valueResolverService,
-            bpmnModelService
+            taskService
         )
     }
 
