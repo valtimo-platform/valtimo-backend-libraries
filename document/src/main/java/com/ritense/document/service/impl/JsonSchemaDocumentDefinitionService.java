@@ -69,7 +69,6 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         return documentDefinitionRepository.findAll(pageable);
     }
 
-    @SneakyThrows
     @Override
     public Page<JsonSchemaDocumentDefinition> findForUser(boolean filteredOnRole, Pageable pageable) {
         List<String> roles = SecurityUtils.getCurrentUserRoles();
@@ -204,7 +203,6 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
-    @SneakyThrows
     public boolean currentUserCanAccessDocumentDefinition(String documentDefinitionName) {
         List<String> roles = SecurityUtils.getCurrentUserRoles();
         return roles.contains(AuthoritiesConstants.ADMIN)

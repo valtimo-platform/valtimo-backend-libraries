@@ -145,22 +145,19 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         }
     }
 
-    @SneakyThrows
     private void addUserRolePredicate(CriteriaBuilder cb,
                                       CriteriaQuery<?> query,
                                       Root<JsonSchemaDocument> documentRoot,
                                       List<Predicate> predicates) {
         List<String> roles = SecurityUtils.getCurrentUserRoles();
-        if (!roles.contains(AuthoritiesConstants.ADMIN)) {
-            final Root<JsonSchemaDocumentDefinitionRole> documentDefinitionRoot = query.from(JsonSchemaDocumentDefinitionRole.class);
-            predicates.add(
-                cb.and(
-                    cb.equal(documentRoot.get("documentDefinitionId").get("name"),
-                        documentDefinitionRoot.get("id").get("documentDefinitionName")),
-                    documentDefinitionRoot.get("id").get("role").in(roles)
-                )
-            );
-        }
+        final Root<JsonSchemaDocumentDefinitionRole> documentDefinitionRoot = query.from(JsonSchemaDocumentDefinitionRole.class);
+        predicates.add(
+            cb.and(
+                cb.equal(documentRoot.get("documentDefinitionId").get("name"),
+                    documentDefinitionRoot.get("id").get("documentDefinitionName")),
+                documentDefinitionRoot.get("id").get("role").in(roles)
+            )
+        );
     }
 
     private Predicate findJsonPathValue(CriteriaBuilder cb, Root<JsonSchemaDocument> root, String path, String value) {
