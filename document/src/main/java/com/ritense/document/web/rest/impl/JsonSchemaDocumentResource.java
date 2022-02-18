@@ -20,6 +20,7 @@ import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
@@ -45,15 +46,21 @@ import java.util.UUID;
 public class JsonSchemaDocumentResource implements DocumentResource {
 
     private final DocumentService documentService;
+    private final DocumentDefinitionService documentDefinitionService;
 
-    public JsonSchemaDocumentResource(final DocumentService documentService) {
+    public JsonSchemaDocumentResource(
+        final DocumentService documentService,
+        final DocumentDefinitionService documentDefinitionService
+    ) {
         this.documentService = documentService;
+        this.documentDefinitionService = documentDefinitionService;
     }
 
     @Override
     @GetMapping(value = "/{id}")
     public ResponseEntity<? extends Document> getDocument(@PathVariable(name = "id") UUID id) {
         return documentService.findBy(JsonSchemaDocumentId.existingId(id))
+            .filter(it -> hasAccessToDefinitionName(it.definitionId().name()))
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
@@ -63,6 +70,9 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     public ResponseEntity<CreateDocumentResult> createNewDocument(
         @RequestBody @Valid NewDocumentRequest request
     ) {
+        if (!hasAccessToDefinitionName(request.documentDefinitionName())) {
+            return ResponseEntity.badRequest().build();
+        }
         return applyResult(documentService.createDocument(request));
     }
 
@@ -71,6 +81,9 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     public ResponseEntity<ModifyDocumentResult> modifyDocumentContent(
         @RequestBody @Valid ModifyDocumentRequest request
     ) {
+        if (!hasAccessToDocumentId(request.documentId())) {
+            return ResponseEntity.badRequest().build();
+        }
         return applyResult(documentService.modifyDocument(request));
     }
 
@@ -80,6 +93,10 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         @PathVariable(name = "document-id") UUID documentId,
         @PathVariable(name = "resource-id") UUID resourceId
     ) {
+        if (!hasAccessToDocumentId(documentId)) {
+            return ResponseEntity.badRequest().build();
+        }
+
         documentService.assignResource(JsonSchemaDocumentId.existingId(documentId), resourceId);
         return ResponseEntity.noContent().build();
     }
@@ -90,8 +107,28 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         @PathVariable(name = "document-id") UUID documentId,
         @PathVariable(name = "resource-id") UUID resourceId
     ) {
+        if (!hasAccessToDocumentId(documentId)) {
+            return ResponseEntity.badRequest().build();
+        }
+
         documentService.removeRelatedFile(JsonSchemaDocumentId.existingId(documentId), resourceId);
         return ResponseEntity.noContent().build();
+    }
+
+    private boolean hasAccessToDocumentId(UUID documentId) {
+        return hasAccessToDocumentId(documentId.toString());
+    }
+
+    private boolean hasAccessToDocumentId(String documentId) {
+        return hasAccessToDefinitionName(
+            documentService.get(documentId).definitionId().name()
+        );
+    }
+
+    private boolean hasAccessToDefinitionName(String definitionName) {
+        return documentDefinitionService.currentUserCanAccessDocumentDefinition(
+            definitionName
+        );
     }
 
     <T extends DocumentResult> ResponseEntity<T> applyResult(T result) {
