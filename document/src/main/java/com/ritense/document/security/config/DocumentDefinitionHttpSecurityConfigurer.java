@@ -36,7 +36,6 @@ public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityCon
                 .antMatchers(GET, "/api/document-definition").hasAuthority(USER)
                 .antMatchers(GET, "/api/document-definition/{name}").hasAuthority(USER)
                 .antMatchers(POST, "/api/document-definition").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/document-definitions").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/document-definition/{name}").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/document-definition/{name}/roles").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/document-definition/{name}/roles").hasAuthority(ADMIN);
