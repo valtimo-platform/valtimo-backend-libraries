@@ -17,9 +17,11 @@
 package com.ritense.openzaak.service.impl.model.documenten
 
 import java.net.URI
+import java.time.LocalDateTime
 
 data class InformatieObject(
     val url: URI,
     val bestandsnaam: String,
-    val bestandsomvang: Long
+    val bestandsomvang: Long,
+    val beginRegistratie: LocalDateTime,
 )

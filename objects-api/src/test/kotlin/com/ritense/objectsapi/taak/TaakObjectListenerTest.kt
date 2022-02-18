@@ -11,7 +11,10 @@ import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
 import com.ritense.objectsapi.service.ObjectTypeConfig
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.service.ObjectsApiProperties
-import org.camunda.bpm.engine.TaskService
+import com.ritense.objectsapi.taak.resolve.ValueResolverService
+import com.ritense.valtimo.service.BpmnModelService
+import com.ritense.valtimo.service.CamundaTaskService
+import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.UUID
@@ -19,14 +22,26 @@ import java.util.UUID
 internal class TaakObjectListenerTest {
 
     lateinit var listener: TaakObjectListener
-    lateinit var taskService: TaskService
     lateinit var openNotificatieService: OpenNotificatieService
+    lateinit var camundaTaskService: CamundaTaskService
+    lateinit var valueResolverService: ValueResolverService
+    lateinit var bpmnModelService: BpmnModelService
+    lateinit var runtimeService: RuntimeService
 
     @BeforeEach
     fun setup() {
-        taskService = mock()
         openNotificatieService = mock()
-        listener = TaakObjectListener(openNotificatieService, taskService)
+        camundaTaskService = mock()
+        valueResolverService = mock()
+        bpmnModelService = mock()
+        runtimeService = mock()
+        listener = TaakObjectListener(
+            openNotificatieService,
+            camundaTaskService,
+            valueResolverService,
+            bpmnModelService,
+            runtimeService
+        )
     }
 
     @Test
@@ -67,7 +82,7 @@ internal class TaakObjectListenerTest {
 
         listener.notificationReceived(event)
 
-        verify(taskService).complete("0155b054-ceb1-42ab-888b-c522b203685e")
+        verify(camundaTaskService).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
         verify(connector).deleteTaakObject(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))
     }
 
@@ -88,7 +103,7 @@ internal class TaakObjectListenerTest {
 
         listener.notificationReceived(event)
 
-        verify(taskService, never()).complete("0155b054-ceb1-42ab-888b-c522b203685e")
+        verify(camundaTaskService, never()).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
     }
 
     @Test
@@ -108,7 +123,7 @@ internal class TaakObjectListenerTest {
 
         listener.notificationReceived(event)
 
-        verify(taskService, never()).complete("0155b054-ceb1-42ab-888b-c522b203685e")
+        verify(camundaTaskService, never()).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
     }
 
     @Test
@@ -131,7 +146,7 @@ internal class TaakObjectListenerTest {
 
         listener.notificationReceived(event)
 
-        verify(taskService, never()).complete("0155b054-ceb1-42ab-888b-c522b203685e")
+        verify(camundaTaskService, never()).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
     }
 
     @Test
@@ -162,7 +177,7 @@ internal class TaakObjectListenerTest {
 
         listener.notificationReceived(event)
 
-        verify(taskService, never()).complete("0155b054-ceb1-42ab-888b-c522b203685e")
+        verify(camundaTaskService, never()).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
         verify(connector, never()).deleteTaakObject(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))
     }
 
@@ -204,7 +219,7 @@ internal class TaakObjectListenerTest {
 
         listener.notificationReceived(event)
 
-        verify(taskService, never()).complete("0155b054-ceb1-42ab-888b-c522b203685e")
+        verify(camundaTaskService, never()).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
         verify(connector, never()).deleteTaakObject(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))
     }
 }

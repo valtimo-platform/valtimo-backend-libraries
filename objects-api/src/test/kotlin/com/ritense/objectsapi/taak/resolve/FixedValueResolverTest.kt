@@ -21,6 +21,7 @@ import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 internal class FixedValueResolverTest {
 
@@ -84,6 +85,16 @@ internal class FixedValueResolverTest {
         )
 
         Assertions.assertThat(resolvedValue).isEqualTo("asdf")
+    }
+
+    @Test
+    fun `should NOT handle value`() {
+        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val variableScope = DelegateTaskFake()
+
+        assertThrows<RuntimeException>("Can't handle value that doesn't have a prefix. firstName to John") {
+            fixedValueResolver.handleValues(processInstanceId, variableScope, mapOf("firstName" to "John"))
+        }
     }
 
 }

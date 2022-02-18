@@ -17,9 +17,8 @@
 package com.ritense.objectsapi.taak.resolve
 
 import com.ritense.processdocument.domain.ProcessInstanceId
-import java.util.function.Function
 import org.camunda.bpm.engine.delegate.VariableScope
-import org.springframework.core.annotation.Order
+import java.util.function.Function
 
 /**
  * This resolver returns the requestedValue as the value.
@@ -45,5 +44,14 @@ class FixedValueResolverFactory : ValueResolverFactory {
                 ?: requestedValue.toDoubleOrNull()
                 ?: requestedValue
         }
+    }
+
+    override fun handleValues(
+        processInstanceId: ProcessInstanceId,
+        variableScope: VariableScope,
+        values: Map<String, Any>
+    ) {
+        val firstValue = values.iterator().next()
+        throw RuntimeException("Can't handle value that doesn't have a prefix. {${firstValue.key} to ${firstValue.value}}")
     }
 }

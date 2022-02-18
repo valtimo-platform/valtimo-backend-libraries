@@ -16,18 +16,30 @@
 
 package com.ritense.objectsapi.taak
 
+import com.fasterxml.jackson.core.JsonPointer
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ValueNode
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
-import com.ritense.objectsapi.productaanvraag.ProductAanvraagConnector
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.BpmnModelService
-import org.camunda.bpm.engine.TaskService
+import com.ritense.valtimo.service.CamundaTaskService
+import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.engine.delegate.VariableScope
+import org.camunda.bpm.engine.task.Task
+import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.springframework.context.event.EventListener
+import java.net.URI
 
 class TaakObjectListener(
     private val openNotificatieService: OpenNotificatieService,
-    private val taskService: TaskService
+    private val camundaTaskService: CamundaTaskService,
+    private val valueResolverService: ValueResolverService,
+    private val bpmnModelService: BpmnModelService,
+    private val runtimeService: RuntimeService,
 ) {
 
     @EventListener(OpenNotificationEvent::class)
@@ -47,10 +59,66 @@ class TaakObjectListener(
                 if (taakObject.status != TaakObjectStatus.ingediend) {
                     return
                 }
-                taskService.complete(taakObject.verwerkerTaakId.toString())
+                saveDataAndCompleteTask(taakObject)
 
                 connector.deleteTaakObject(taakObjectId)
             }
         }
+    }
+
+    private fun saveDataAndCompleteTask(taakObject: TaakObjectDto) {
+        val task = camundaTaskService.findTaskById(taakObject.verwerkerTaakId.toString())
+        if (taakObject.data != null && taakObject.data.isNotEmpty()) {
+            val taakObjectData = Mapper.INSTANCE.get().valueToTree<JsonNode>(taakObject.data)
+            loadTaakObjectDocuments(taakObjectData)
+            handleTaakObjectData(taakObjectData, task)
+        }
+        camundaTaskService.completeTaskWithoutFormData(taakObject.verwerkerTaakId.toString())
+    }
+
+    private fun loadTaakObjectDocuments(taakObjectData: JsonNode) {
+        val filesNode = taakObjectData.at(JsonPointer.valueOf("/documenten"))
+        if (filesNode.isArray) {
+            openNotificatieService.createOpenzaakResources(filesNode.map { URI(it.textValue()) })
+        }
+    }
+
+    private fun handleTaakObjectData(taakObjectData: JsonNode, task: Task) {
+        val resolvedValues = getResolvedValues(task, taakObjectData)
+        if (resolvedValues.isNotEmpty()) {
+            valueResolverService.handleValues(
+                CamundaProcessInstanceId(task.processInstanceId),
+                getVariableScope(task),
+                resolvedValues
+            )
+        }
+    }
+
+    /**
+     * @param task with extensions-property: [ taskResult:doc:add:/streetName  to  "/persoonsData/adres/straatnaam" ]
+     * @param data {"persoonsData":{"adres":{"straatnaam":"Funenpark"}}}
+     * @return mapOf(doc:add:/streetName to "Funenpark")
+     */
+    private fun getResolvedValues(task: Task, data: JsonNode): Map<String, Any> {
+        return bpmnModelService.getTask(task).extensionElements.elements
+            .filterIsInstance<CamundaProperties>()
+            .single()
+            .camundaProperties
+            .filter { it.camundaName.startsWith(prefix = "taskResult:", ignoreCase = true) }
+            .associateBy(
+                { it.camundaName.substringAfter(delimiter = ":") },
+                { getValue(data, it.camundaValue) }
+            )
+    }
+
+    private fun getValue(data: JsonNode, path: String): Any {
+        val valueNode = data.at(JsonPointer.valueOf(path)) as ValueNode
+        return Mapper.INSTANCE.get().treeToValue(valueNode, Object::class.java)
+    }
+
+    private fun getVariableScope(task: Task): VariableScope {
+        return runtimeService.createProcessInstanceQuery()
+            .processInstanceId(task.processInstanceId)
+            .singleResult() as VariableScope
     }
 }

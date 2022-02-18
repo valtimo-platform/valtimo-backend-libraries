@@ -67,8 +67,7 @@ class ProductAanvraagAutoConfiguration {
     fun productAanvraagService(
         processDocumentService: ProcessDocumentService,
         documentService: DocumentService,
-        zaakService: ZaakService,
-        openZaakResourceRepository: OpenZaakResourceRepository,
+        openNotificatieService: OpenNotificatieService,
         zaakRolService: ZaakRolService,
         zaakInstanceLinkService: ZaakInstanceLinkService,
         burgerService: BurgerService
@@ -76,8 +75,7 @@ class ProductAanvraagAutoConfiguration {
         return ProductAanvraagService(
             processDocumentService,
             documentService,
-            zaakService,
-            openZaakResourceRepository,
+            openNotificatieService,
             zaakRolService,
             zaakInstanceLinkService,
             burgerService
