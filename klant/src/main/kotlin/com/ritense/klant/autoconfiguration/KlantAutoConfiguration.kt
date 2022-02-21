@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-@ConditionalOnProperty("valtimo.openklant")
+@ConditionalOnProperty("valtimo.openklant.url")
 @EnableConfigurationProperties(OpenKlantClientProperties::class)
 class KlantAutoConfiguration {
 
