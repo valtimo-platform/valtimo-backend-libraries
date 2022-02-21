@@ -161,6 +161,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
             return new DeployDocumentDefinitionResultSucceeded(documentDefinition);
         } catch (Exception ex) {
             DocumentDefinitionError error = ex::getMessage;
+            logger.warn(ex.getMessage());
             return new DeployDocumentDefinitionResultFailed(List.of(error));
         }
     }
