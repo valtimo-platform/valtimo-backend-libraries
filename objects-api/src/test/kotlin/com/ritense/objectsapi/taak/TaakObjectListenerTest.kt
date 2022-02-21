@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.connector.domain.Connector
+import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.domain.request.HandleNotificationRequest
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
@@ -12,6 +13,7 @@ import com.ritense.objectsapi.service.ObjectTypeConfig
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
+import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.RuntimeService
@@ -27,6 +29,8 @@ internal class TaakObjectListenerTest {
     lateinit var valueResolverService: ValueResolverService
     lateinit var bpmnModelService: BpmnModelService
     lateinit var runtimeService: RuntimeService
+    lateinit var documentService: DocumentService
+    lateinit var processDocumentService: ProcessDocumentService
 
     @BeforeEach
     fun setup() {
@@ -35,12 +39,16 @@ internal class TaakObjectListenerTest {
         valueResolverService = mock()
         bpmnModelService = mock()
         runtimeService = mock()
+        documentService = mock()
+        processDocumentService = mock()
         listener = TaakObjectListener(
             openNotificatieService,
             camundaTaskService,
             valueResolverService,
             bpmnModelService,
-            runtimeService
+            runtimeService,
+            documentService,
+            processDocumentService,
         )
     }
 
