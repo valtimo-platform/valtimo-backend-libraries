@@ -20,15 +20,10 @@ import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
-import com.ritense.valtimo.contract.authentication.CurrentUserService;
-import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
 
@@ -41,7 +36,6 @@ import java.util.Set;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @Tag("integration")
 @Transactional
@@ -49,9 +43,6 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
 
     @Inject
     private ResourceLoader resourceLoader;
-
-    @MockBean
-    private CurrentUserService currentUserService;
 
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = USER)
@@ -153,21 +144,18 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
             "}\n").documentDefinition();
 
         //Unused documentDefinition
-        documentDefinitionService.deploy("" +
+        DocumentDefinition unexpectedDefinition = documentDefinitionService.deploy("" +
             "{\n" +
             "    \"$id\": \"roles2.schema\",\n" +
             "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n");
+            "}\n").documentDefinition();
 
         documentDefinitionService.putDocumentDefinitionRoles(expectedDefinition.id().name(), Set.of(USER));
 
-        ValtimoUser valtimoUser = new ValtimoUser(null, "john@ritense.com", null, null, null, null, null, true, null, false, false, List.of(USER));
-        when(currentUserService.getCurrentUser()).thenReturn(valtimoUser);
-
-        boolean filteredForRole = false; //The user we're testing with is not ADMIN, so the result should be the same
+        boolean filteredForRole = false;
         List<DocumentDefinition> all = (List<DocumentDefinition>)documentDefinitionService.findForUser(filteredForRole, Pageable.unpaged()).getContent();
-        assertThat(all).hasSize(1);
-        assertThat(all).containsOnly(expectedDefinition);
+        assertThat(all).contains(expectedDefinition);
+        assertThat(all).doesNotContain(unexpectedDefinition);
     }
 
     @Test
@@ -184,9 +172,6 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
             "    \"$id\": \"roles2.schema\",\n" +
             "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
             "}\n").documentDefinition();
-
-        ValtimoUser valtimoUser = new ValtimoUser(null, "john@ritense.com", null, null, null, null, null, true, null, false, false, List.of(ADMIN));
-        when(currentUserService.getCurrentUser()).thenReturn(valtimoUser);
 
         boolean filteredForRole = false;
         List<DocumentDefinition> all = (List<DocumentDefinition>)documentDefinitionService.findForUser(filteredForRole, Pageable.unpaged()).getContent();
@@ -210,9 +195,6 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
             "}\n").documentDefinition();
 
         documentDefinitionService.putDocumentDefinitionRoles(documentDefinition1.id().name(), Set.of(ADMIN));
-
-        ValtimoUser valtimoUser = new ValtimoUser(null, "john@ritense.com", null, null, null, null, null, true, null, false, false, List.of(ADMIN));
-        when(currentUserService.getCurrentUser()).thenReturn(valtimoUser);
 
         boolean filteredForRole = true;
         List<DocumentDefinition> all = (List<DocumentDefinition>)documentDefinitionService.findForUser(filteredForRole, Pageable.unpaged()).getContent();

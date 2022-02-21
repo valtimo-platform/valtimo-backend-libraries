@@ -23,7 +23,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.exception.DocumentDefinitionNameMismatchException;
 import com.ritense.document.repository.impl.JsonSchemaDocumentDefinitionRepository;
 import com.ritense.document.repository.impl.JsonSchemaDocumentDefinitionRoleRepository;
-import com.ritense.valtimo.contract.authentication.CurrentUserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
