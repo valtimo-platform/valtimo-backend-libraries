@@ -63,29 +63,6 @@ class ObjectsApiAutoConfiguration {
         return ObjectSyncService(objectSyncConfigRepository, connectorTypeInstanceRepository)
     }
 
-    @Bean
-    fun openNotificationService(
-        processDocumentService: ProcessDocumentService,
-        documentService: DocumentService,
-        zaakService: ZaakService,
-        connectorService: ConnectorService,
-        openZaakResourceRepository: OpenZaakResourceRepository,
-        zaakRolService: ZaakRolService,
-        zaakInstanceLinkService: ZaakInstanceLinkService,
-        burgerService: BurgerService?
-    ): OpenNotificatieService {
-        return OpenNotificatieService(
-            processDocumentService,
-            documentService,
-            zaakService,
-            connectorService,
-            openZaakResourceRepository,
-            zaakRolService,
-            zaakInstanceLinkService,
-            burgerService
-        )
-    }
-
     //Connector
 
     @Bean
@@ -127,28 +104,5 @@ class ObjectsApiAutoConfiguration {
     @ConditionalOnMissingBean(ObjectSyncConfigResource::class)
     fun objectSyncConfigResource(objectSyncService: ObjectSyncService): ObjectSyncConfigResource {
         return ObjectSyncConfigResource(objectSyncService)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(OpenNotificatieResource::class)
-    fun openNotificatieResource(openNotificatieService: OpenNotificatieService): OpenNotificatieResource {
-        return OpenNotificatieResourceImpl(openNotificatieService)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(ProductAanvraagConnector::class)
-    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    fun productAanvraagConnector(
-        productAanvraagProperties: ProductAanvraagProperties,
-        documentService: DocumentService,
-        abonnementLinkRepository: AbonnementLinkRepository
-    ): Connector {
-        return ProductAanvraagConnector(productAanvraagProperties, documentService, abonnementLinkRepository)
-    }
-
-    @Bean
-    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    fun productAanvraagProperties(): ProductAanvraagProperties {
-        return ProductAanvraagProperties()
     }
 }

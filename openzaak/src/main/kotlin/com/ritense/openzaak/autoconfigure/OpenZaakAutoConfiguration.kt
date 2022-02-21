@@ -27,6 +27,8 @@ import com.ritense.openzaak.listener.EigenschappenSubmittedListener
 import com.ritense.openzaak.listener.GlobalZaakEventListener
 import com.ritense.openzaak.listener.OpenZaakUndeployDocumentDefinitionEventListener
 import com.ritense.openzaak.listener.ServiceTaskListener
+import com.ritense.openzaak.provider.BsnProvider
+import com.ritense.openzaak.provider.ZaakBsnProvider
 import com.ritense.openzaak.repository.InformatieObjectTypeLinkRepository
 import com.ritense.openzaak.repository.ZaakInstanceLinkRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
@@ -52,6 +54,7 @@ import com.ritense.openzaak.web.rest.impl.StatusResource
 import com.ritense.openzaak.web.rest.impl.ZaakTypeLinkResource
 import com.ritense.openzaak.web.rest.impl.ZaakTypeResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.ProcessDocumentService
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
@@ -63,6 +66,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.web.client.RestTemplate
+import kotlin.contracts.ExperimentalContracts
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.openzaak.repository"])
@@ -356,6 +360,21 @@ class OpenZaakAutoConfiguration {
     @ConditionalOnMissingBean(ZaakProcessService::class)
     fun zaakProcessService(zaakStatusService: com.ritense.openzaak.service.ZaakStatusService): ZaakProcessService {
         return ZaakProcessService(zaakStatusService)
+    }
+
+    @OptIn(ExperimentalContracts::class)
+    @Bean
+    @ConditionalOnMissingBean(BsnProvider::class)
+    fun bsnProvider(
+        processDocumentService: ProcessDocumentService,
+        zaakInstanceLinkService: com.ritense.openzaak.service.ZaakInstanceLinkService,
+        zaakRolService: ZaakRolService
+    ): BsnProvider {
+        return ZaakBsnProvider(
+            processDocumentService,
+            zaakInstanceLinkService,
+            zaakRolService
+        )
     }
 
 }

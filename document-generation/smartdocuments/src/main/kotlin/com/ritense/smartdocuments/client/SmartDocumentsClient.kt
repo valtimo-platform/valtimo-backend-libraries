@@ -57,6 +57,7 @@ class SmartDocumentsClient(
         )
 
         return smartDocumentsWebClientBuilder
+            .clone()
             .baseUrl(smartDocumentsConnectorProperties.url!!)
             .filter(basicAuthentication)
             .build()

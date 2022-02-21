@@ -26,23 +26,35 @@ public class AuthorityRequest {
     @Pattern(regexp = "^[a-zA-Z0-9-_]+$")
     private String name;
 
-    @NotNull
     private BigDecimal hourlyRate;
 
     private AuthorityRequest() {
     }
 
+    /**
+     * @deprecated - This method will be removed in 11.0.0
+     * Use {@link #AuthorityRequest(String, BigDecimal)}  instead.
+     */
+    @Deprecated(forRemoval = true, since = "9.4.0")
     public AuthorityRequest(String name, BigDecimal hourlyRate) {
         this.name = name;
         this.hourlyRate = hourlyRate;
+    }
+
+    public AuthorityRequest(String name) {
+        this.name = name;
     }
 
     public String getName() {
         return name;
     }
 
+    /**
+     * @deprecated - This method will be removed in 11.0.0
+     */
+    @Deprecated(forRemoval = true, since = "9.4.0")
     public BigDecimal getHourlyRate() {
-        return hourlyRate;
+        return hourlyRate == null ? BigDecimal.ZERO : hourlyRate;
     }
 
 }

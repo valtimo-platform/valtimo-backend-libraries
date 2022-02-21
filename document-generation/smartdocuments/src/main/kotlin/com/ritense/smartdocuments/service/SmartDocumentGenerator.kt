@@ -22,7 +22,7 @@ import com.ritense.document.domain.impl.JsonSchemaRelatedFile
 import com.ritense.document.service.DocumentService
 import com.ritense.documentgeneration.domain.GeneratedDocument
 import com.ritense.resource.service.ResourceService
-import com.ritense.resource.service.request.RawFileUploadRequest
+import com.ritense.resource.service.request.ByteArrayMultipartFile
 import com.ritense.smartdocuments.connector.SmartDocumentsConnector
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.valtimo.contract.audit.utils.AuditHelper
@@ -48,15 +48,20 @@ class SmartDocumentGenerator(
         format: DocumentFormatOption
     ) {
         val generatedDocument = generateDocument(documentId, templateGroup, templateId, templateData, format)
-        val uploadRequest = RawFileUploadRequest(
+
+        val document = documentService.findBy(documentId)
+            .orElseThrow { NullPointerException("Document $documentId needed for generation of document not found") }
+
+        val resource = resourceService.store(
+            document.definitionId().name(),
             generatedDocument.name,
-            generatedDocument.extension,
-            generatedDocument.size,
-            generatedDocument.contentType,
-            generatedDocument.asByteArray
+            ByteArrayMultipartFile(
+                generatedDocument.asByteArray,
+                generatedDocument.name,
+                format.mediaType
+            )
         )
-        val key = String.format("generated-documents/%s", generatedDocument.name)
-        val resource = resourceService.store(key, uploadRequest)
+
         val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin())
         documentService.assignRelatedFile(documentId, relatedFile)
     }

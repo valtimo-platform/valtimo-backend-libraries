@@ -26,7 +26,6 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.resource.service.request.FileUploadRequest
 import com.ritense.smartdocuments.BaseSmartDocumentsIntegrationTest
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.valtimo.contract.resource.Resource
@@ -35,6 +34,7 @@ import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.mock.mockito.SpyBean
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -65,7 +65,7 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
             override fun sizeInBytes() = 123L
             override fun createdOn() = LocalDateTime.now()
         }
-        whenever(resourceService.store(any(), any<FileUploadRequest>())).thenReturn(emptyResource)
+        whenever(resourceService.store(any(), any(), any<MultipartFile>())).thenReturn(emptyResource)
         processDocumentAssociationService.createProcessDocumentDefinition(
             ProcessDocumentDefinitionRequest(PROCESS_DEFINITION_KEY, DOCUMENT_DEFINITION_KEY, true, true)
         )
@@ -85,7 +85,8 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
             eq(mapOf<String, Any>("achternaam" to "Klaveren", "leeftijd" to "38", "toestemming" to "true")),
             eq(DocumentFormatOption.PDF)
         )
-        verify(resourceService).store(any(), any<FileUploadRequest>())
+
+        verify(resourceService).store(any(), any(), any<MultipartFile>())
     }
 
 }

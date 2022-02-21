@@ -17,13 +17,10 @@
 package com.ritense.objectsapi.productaanvraag
 
 import com.ritense.connector.domain.ConnectorProperties
-import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
-import com.ritense.objectsapi.service.ObjectsApiProperties
-import java.net.URI
 
 data class ProductAanvraagProperties(
-    var objectsApiProperties: ObjectsApiProperties = ObjectsApiProperties(),
-    var openNotificatieProperties: OpenNotificatieProperties = OpenNotificatieProperties(),
+    var openNotificatieConnectionName: String = "",
+    var objectsApiConnectionName: String = "",
     var typeMapping: List<ProductAanvraagTypeMapping> = emptyList(),
     var aanvragerRolTypeUrl: String = ""
 ): ConnectorProperties
