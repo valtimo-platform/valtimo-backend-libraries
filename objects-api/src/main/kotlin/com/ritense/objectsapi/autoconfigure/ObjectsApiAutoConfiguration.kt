@@ -72,7 +72,7 @@ class ObjectsApiAutoConfiguration {
         openZaakResourceRepository: OpenZaakResourceRepository,
         zaakRolService: ZaakRolService,
         zaakInstanceLinkService: ZaakInstanceLinkService,
-        burgerService: BurgerService
+        burgerService: BurgerService?
     ): OpenNotificatieService {
         return OpenNotificatieService(
             processDocumentService,
