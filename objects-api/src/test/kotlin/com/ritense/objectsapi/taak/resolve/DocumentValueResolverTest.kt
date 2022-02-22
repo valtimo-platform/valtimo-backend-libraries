@@ -142,8 +142,7 @@ internal class DocumentValueResolverTest {
 
         val captor = argumentCaptor<ModifyDocumentRequest>()
         verify(documentService).modifyDocument(captor.capture())
-        Assertions.assertThat(captor.firstValue.jsonPatch().patches())
-            .contains(AddOperation(JsonPointer.valueOf("/firstname"), TextNode.valueOf("John")))
+        Assertions.assertThat(captor.firstValue.content()).contains(TextNode.valueOf("John"))
     }
 
     @Test
@@ -162,8 +161,7 @@ internal class DocumentValueResolverTest {
 
         val captor = argumentCaptor<ModifyDocumentRequest>()
         verify(documentService).modifyDocument(captor.capture())
-        Assertions.assertThat(captor.firstValue.jsonPatch().patches())
-            .contains(ReplaceOperation(JsonPointer.valueOf("/firstname"), TextNode.valueOf("John")))
+        Assertions.assertThat(captor.firstValue.content()).contains(TextNode.valueOf("John"))
     }
 
     @Test
@@ -182,8 +180,7 @@ internal class DocumentValueResolverTest {
 
         val captor = argumentCaptor<ModifyDocumentRequest>()
         verify(documentService).modifyDocument(captor.capture())
-        Assertions.assertThat(captor.firstValue.jsonPatch().patches())
-            .contains(AddOperation(JsonPointer.valueOf("/approved"), BooleanNode.TRUE))
+        Assertions.assertThat(captor.firstValue.content()).contains(BooleanNode.TRUE)
     }
 
     @Test
@@ -202,7 +199,6 @@ internal class DocumentValueResolverTest {
 
         val captor = argumentCaptor<ModifyDocumentRequest>()
         verify(documentService).modifyDocument(captor.capture())
-        Assertions.assertThat(captor.firstValue.jsonPatch().patches())
-            .contains(AddOperation(JsonPointer.valueOf("/age"), IntNode.valueOf(18)))
+        Assertions.assertThat(captor.firstValue.content()).contains(IntNode.valueOf(18))
     }
 }
