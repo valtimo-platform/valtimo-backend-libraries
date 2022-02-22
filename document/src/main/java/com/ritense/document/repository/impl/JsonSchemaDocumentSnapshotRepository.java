@@ -27,13 +27,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public interface JsonSchemaDocumentSnapshotRepository extends DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> {
 
     @Query("" +
-        "SELECT  ds " +
+        "SELECT  distinct ds " +
         "FROM    JsonSchemaDocumentSnapshot ds " +
+        "INNER JOIN JsonSchemaDocumentDefinitionRole ddRole ON ddRole.id.documentDefinitionName = ds.document.documentDefinitionId.name AND ddRole.id.role in :roles " +
         "WHERE   (:definitionName IS NULL OR ds.document.documentDefinitionId.name = :definitionName) " +
         "AND     (:documentId IS NULL OR ds.document.id = :documentId) " +
         "AND     (:fromDateTime IS NULL OR ds.createdOn >= :fromDateTime) " +
@@ -43,6 +45,7 @@ public interface JsonSchemaDocumentSnapshotRepository extends DocumentSnapshotRe
         @Param("documentId") JsonSchemaDocumentId documentId,
         @Param("fromDateTime") LocalDateTime fromDateTime,
         @Param("toDateTime") LocalDateTime toDateTime,
+        @Param("roles") List<String> roles,
         Pageable pageable
     );
 

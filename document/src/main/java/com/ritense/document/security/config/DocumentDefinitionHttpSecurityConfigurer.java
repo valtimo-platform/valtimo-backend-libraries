@@ -25,6 +25,7 @@ import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.U
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 
 public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -35,7 +36,9 @@ public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityCon
                 .antMatchers(GET, "/api/document-definition").hasAuthority(USER)
                 .antMatchers(GET, "/api/document-definition/{name}").hasAuthority(USER)
                 .antMatchers(POST, "/api/document-definition").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/document-definition/{name}").hasAuthority(ADMIN);
+                .antMatchers(DELETE, "/api/document-definition/{name}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/document-definition/{name}/roles").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/document-definition/{name}/roles").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

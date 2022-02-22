@@ -20,6 +20,7 @@ import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
+import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.valtimo.contract.utils.TestUtil;
@@ -57,12 +58,14 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
     private MockMvc mockMvc;
     private Page<JsonSchemaDocument> documentPage;
     private JsonSchemaDocument document;
+    private DocumentDefinitionService documentDefinitionService;
 
     @BeforeEach
     public void setUp() {
 
         documentService = mock(JsonSchemaDocumentService.class);
-        documentResource = new JsonSchemaDocumentResource(documentService);
+        documentDefinitionService = mock(DocumentDefinitionService.class);
+        documentResource = new JsonSchemaDocumentResource(documentService, documentDefinitionService);
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -86,7 +89,10 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
 
     @Test
     public void shouldReturnOkWithDocument() throws Exception {
-        when(documentService.findBy(any())).thenReturn(Optional.of(document));
+        when(documentService.findBy(any()))
+            .thenReturn(Optional.of(document));
+        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
+            .thenReturn(true);
 
         mockMvc.perform(get("/api/document/{id}", UUID.randomUUID().toString())
             .accept(APPLICATION_JSON_VALUE)
@@ -105,6 +111,10 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
         final var document = createDocument(content);
         final var modifyDocumentResult = new JsonSchemaDocument.ModifyDocumentResultImpl(document);
         when(documentService.modifyDocument(any())).thenReturn(modifyDocumentResult);
+        when(documentService.get(document.id().getId().toString()))
+            .thenReturn(document);
+        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
+            .thenReturn(true);
 
         final var modifyRequest = new ModifyDocumentRequest(
             document.id().toString(),
@@ -128,6 +138,11 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(content);
 
+        when(documentService.get(document.id().getId().toString()))
+            .thenReturn(document);
+        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
+            .thenReturn(true);
+
         mockMvc.perform(
             post("/api/document/{document-id}/resource/{resource-id}", document.id(), UUID.randomUUID())
                 .contentType(APPLICATION_JSON_VALUE)
@@ -144,6 +159,11 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
         final var json = "{\"firstName\": \"John\"}";
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(content);
+
+        when(documentService.get(document.id().getId().toString()))
+            .thenReturn(document);
+        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
+            .thenReturn(true);
 
         mockMvc.perform(
             delete("/api/document/{document-id}/resource/{resource-id}", document.id(), UUID.randomUUID())
