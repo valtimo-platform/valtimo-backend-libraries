@@ -71,27 +71,5 @@
         </preConditions>
         <dropTable tableName="open_zaak_config"/>
     </changeSet>
-    <changeSet author="Ivo Zaal" id="1599414709479-6">
-        <preConditions onFail="MARK_RAN">
-            <dbms type="postgresql"/>
-        </preConditions>
-        <createTable tableName="open_zaak_config">
-            <column name="open_zaak_config_id" type="${uuidType}">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="open_zaak_configPK"/>
-            </column>
-            <column name="client_id" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="secret" type="VARCHAR(128)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="url" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="rsin" type="CHAR(9)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
 
 </databaseChangeLog>
