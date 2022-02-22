@@ -68,6 +68,13 @@
             <column name="name"/>
         </createIndex>
     </changeSet>
+    <changeSet author="Rick Veenstra" id="1628085538996-5">
+        <addColumn tableName="connector_type">
+            <column name="allow_multiple" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 
     <changeSet author="Ivo Zaal" id="1628085538996-7">
         <preConditions onFail="MARK_RAN">

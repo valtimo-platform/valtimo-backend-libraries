@@ -4,7 +4,7 @@
   "volgendContactmoment": null,
   "bronorganisatie": "051845623",
   "registratiedatum": "2019-08-24T14:15:22Z",
-  "kanaal": "string",
+  "kanaal": "MAIL",
   "voorkeurskanaal": "string",
   "voorkeurstaal": "str",
   "tekst": "content-2",
@@ -15,7 +15,7 @@
   "medewerker": "http://example.com",
   "medewerkerIdentificatie": {
     "identificatie": "string",
-    "achternaam": "string",
+    "achternaam": "Miller",
     "voorletters": "string",
     "voorvoegselAchternaam": "string"
   },

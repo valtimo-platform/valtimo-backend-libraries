@@ -2,6 +2,7 @@ version: '3.9'
 services:
     db:
         image: mysql:5.7
+        platform: linux/amd64
         #ports:
            # - "3306:3306" #needs overriding "XXXX:3306" XXXX=your-own-port-per-module-test
         environment:
@@ -20,6 +21,7 @@ services:
             "--innodb_flush_method=O_DIRECT",
             "--sql_mode=NO_ENGINE_SUBSTITUTION"
         ]
+        platform: linux/amd64
 # Ports taken
 #   url: jdbc:mysql://localhost:3301/form-test
 #   url: jdbc:mysql://localhost:3302/form-test-link
@@ -35,3 +37,5 @@ services:
 #   url: jdbc:mysql://localhost:3313/milestones-test
 #   url: jdbc:mysql://localhost:3314/mail-test
 #   url: jdbc:mysql://localhost:3315/contactmoment-test
+#   url: jdbc:mysql://localhost:3316/wordpress-mail-test
+#   url: jdbc:mysql://localhost:3317/smartdocuments-test

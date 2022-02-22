@@ -16,37 +16,30 @@
 
 package com.ritense.objectsapi.opennotificaties
 
+import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorInstanceId
+import com.ritense.connector.domain.ConnectorProperties
+import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.objectsapi.domain.Abonnement
 import com.ritense.objectsapi.domain.AbonnementLink
 import com.ritense.objectsapi.domain.Kanaal
 import com.ritense.objectsapi.domain.KanaalLink
 import com.ritense.objectsapi.repository.AbonnementLinkRepository
-import com.ritense.valtimo.contract.utils.SecurityUtils
-import io.jsonwebtoken.JwtBuilder
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
-import io.jsonwebtoken.security.Keys
 import java.security.SecureRandom
 import java.util.Base64
-import java.util.Date
 import java.util.UUID
 import mu.KotlinLogging
 
+@ConnectorType(name = "OpenNotificatie")
 class OpenNotificatieConnector(
     private var openNotificatieProperties: OpenNotificatieProperties,
     private var abonnementLinkRepository: AbonnementLinkRepository,
     private var openNotificatieClient: OpenNotificatieClient
-) {
+): Connector {
     fun ensureKanaalExists() {
         if (!verifyObjectenKanaalExists()) {
             createObjectenKanaal()
         }
-    }
-
-    fun verifyAbonnementKey(connectorId: ConnectorInstanceId, key: String): Boolean {
-        val abonnementLink = abonnementLinkRepository.findById(connectorId)
-        return abonnementLink.isPresent && key.equals(abonnementLink.get().key)
     }
 
     fun createAbonnement(connectorId: ConnectorInstanceId) {
@@ -82,9 +75,13 @@ class OpenNotificatieConnector(
         }
     }
 
-    fun setProperties(properties: OpenNotificatieProperties) {
-        openNotificatieProperties = properties
-        openNotificatieClient.setProperties(properties)
+    override fun setProperties(connectorProperties: ConnectorProperties) {
+        openNotificatieProperties = connectorProperties as OpenNotificatieProperties
+        openNotificatieClient.setProperties(openNotificatieProperties)
+    }
+
+    override fun getProperties(): OpenNotificatieProperties {
+        return openNotificatieProperties
     }
 
     private fun verifyObjectenKanaalExists(): Boolean {

@@ -27,9 +27,7 @@ import com.ritense.connector.impl.ObjectApiConnectorType
 import com.ritense.connector.impl.ObjectApiProperties
 import com.ritense.connector.repository.ConnectorTypeRepository
 import com.ritense.connector.web.rest.request.ModifyConnectorInstanceRequest
-import java.util.UUID
-import javax.inject.Inject
-import javax.transaction.Transactional
+import com.ritense.connector.web.rest.result.CreateConnectorInstanceResultFailed
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeAll
@@ -39,6 +37,9 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.domain.Pageable
+import java.util.UUID
+import javax.inject.Inject
+import javax.transaction.Transactional
 
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -58,11 +59,12 @@ class ConnectorServiceIntTest : BaseIntegrationTest() {
     lateinit var connector: Connector
 
     lateinit var connectorTypeId: ConnectorTypeId
+    lateinit var connectorType: ConnectorType
 
     @BeforeAll
     fun setup() {
         connectorTypeId = ConnectorTypeId(UUID.randomUUID())
-        val connectorType = ConnectorType(
+        connectorType = ConnectorType(
             connectorTypeId,
             "test-connector-name",
             "test-connector",
@@ -76,12 +78,15 @@ class ConnectorServiceIntTest : BaseIntegrationTest() {
         val name = "aName"
         val objectApiProperties = ObjectApiProperties(NestedObject(name))
 
-        val connectorInstance = connectorService.createConnectorInstance(
+        val connectorInstanceResult = connectorService.createConnectorInstance(
             connectorTypeId.id,
             name,
             objectApiProperties
         )
 
+        assertThat(connectorInstanceResult.connectorTypeInstance()).isNotNull
+
+        val connectorInstance = connectorInstanceResult.connectorTypeInstance()!!
         assertThat(connectorInstance.id).isNotNull
         assertThat(connectorInstance.type.id).isEqualTo(connectorTypeId)
         assertThat(connectorInstance.name).isEqualTo(name)
@@ -92,11 +97,14 @@ class ConnectorServiceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should modify connectorInstance`() {
-        val connectorInstance = connectorService.createConnectorInstance(
+        val connectorInstanceResult = connectorService.createConnectorInstance(
             connectorTypeId.id,
             "aName",
             ObjectApiProperties(NestedObject("aCustomName"))
         )
+
+        assertThat(connectorInstanceResult.connectorTypeInstance()).isNotNull
+        val connectorInstance = connectorInstanceResult.connectorTypeInstance()!!
 
         val request = ModifyConnectorInstanceRequest(
             connectorInstance.id.id,
@@ -117,11 +125,14 @@ class ConnectorServiceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should remove connectorInstance`() {
-        val connectorInstance = connectorService.createConnectorInstance(
+        val connectorInstanceResult = connectorService.createConnectorInstance(
             connectorTypeId.id,
             "aName",
             ObjectApiProperties(NestedObject("aCustomName"))
         )
+
+        assertThat(connectorInstanceResult.connectorTypeInstance()).isNotNull
+        val connectorInstance = connectorInstanceResult.connectorTypeInstance()!!
 
         connectorService.removeConnectorTypeInstance(connectorInstance.id.id)
 
@@ -133,6 +144,81 @@ class ConnectorServiceIntTest : BaseIntegrationTest() {
     @Test
     fun `should throw exception loading connector with unknown name`() {
         assertThrows(IllegalArgumentException::class.java) { connectorService.load("unknownName") }
+    }
+
+    @Test
+    fun `should fail when using the same name twice`() {
+        val name = "aName"
+        val objectApiProperties = ObjectApiProperties(NestedObject(name))
+
+        connectorService.createConnectorInstance(
+            connectorTypeId.id,
+            name,
+            objectApiProperties
+        )
+
+        val result = connectorService.createConnectorInstance(
+            connectorTypeId.id,
+            name,
+            objectApiProperties
+        )
+
+        assertThat(result).isInstanceOf(CreateConnectorInstanceResultFailed::class.java)
+        assertThat(result.connectorTypeInstance()).isNull()
+    }
+
+    @Test
+    fun `should allow multiple connectors of same type when multiple is allowed`() {
+        assertThat(connectorType.allowMultipleConnectorInstances).isTrue
+
+        val name = "aName"
+        val objectApiProperties = ObjectApiProperties(NestedObject(name))
+        connectorService.createConnectorInstance(
+            connectorTypeId.id,
+            name,
+            objectApiProperties
+        )
+
+        val result = connectorService.createConnectorInstance(
+            connectorTypeId.id,
+            "AnotherName",
+            objectApiProperties
+        )
+
+        assertThat(result).isNotNull
+    }
+
+    @Test
+    fun `should fail when creating connector of a type that already exists and where multiple are not allowed`() {
+        val name = "singleInstanceConnector"
+        val objectApiProperties = ObjectApiProperties(NestedObject(name))
+        val singleInstanceConnectorId = ConnectorTypeId(UUID.randomUUID())
+
+        val singleInstanceConnectorType = ConnectorType(
+            singleInstanceConnectorId,
+            "test-connector-name",
+            "test-connector",
+            object : ConnectorProperties {},
+            false
+        )
+        connectorTypeRepository.save(singleInstanceConnectorType)
+
+        // First connector instance
+        connectorService.createConnectorInstance(
+            singleInstanceConnectorId.id,
+            name,
+            objectApiProperties
+        )
+
+        // Second connector instance
+        val result =  connectorService.createConnectorInstance(
+            singleInstanceConnectorId.id,
+            "otherName",
+            objectApiProperties
+        )
+
+        assertThat(result).isInstanceOf(CreateConnectorInstanceResultFailed::class.java)
+        assertThat(result.connectorTypeInstance()).isNull()
     }
 
     @Test

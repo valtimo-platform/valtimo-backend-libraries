@@ -20,7 +20,7 @@ import com.ritense.valtimo.domain.process.IProcessDataObject;
 import com.ritense.valtimo.repository.ProcessDataObjectRelationRepository;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
@@ -34,7 +34,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ProcessDataObjectServiceUnitTest {
+class ProcessDataObjectServiceUnitTest {
 
     private ProcessDataObjectService processDataObjectService;
 
@@ -63,38 +63,38 @@ public class ProcessDataObjectServiceUnitTest {
     }
 
     @Test
-    public void shouldNotThrowIllegalArgumentExceptionWhenFindAllProcessInstancesByObjectIsCalled() throws ReflectiveOperationException {
+    void shouldNotThrowIllegalArgumentExceptionWhenFindAllProcessInstancesByObjectIsCalled() throws ReflectiveOperationException {
         try {
             processDataObjectService.findAllProcessInstancesByObject(ExampleProcessDataObject.class, 10);
         } catch (IllegalArgumentException e) {
-            Assert.fail("processDataObjectService.findAllProcessInstancesByObject() threw an IllegalArgumentException");
+            Assertions.fail("processDataObjectService.findAllProcessInstancesByObject() threw an IllegalArgumentException");
         }
     }
 
     @Test
-    public void shouldNotThrowIllegalArgumentExceptionWhenFindAllObjectsByProcessInstancesIsCalled() {
+    void shouldNotThrowIllegalArgumentExceptionWhenFindAllObjectsByProcessInstancesIsCalled() {
         try {
             processDataObjectService.findAllObjectsByProcessInstances(Collections.singletonList("1234"));
         } catch (IllegalArgumentException e) {
-            Assert.fail("processDataObjectService.findAllObjectsByProcessInstances() threw an IllegalArgumentException");
+            Assertions.fail("processDataObjectService.findAllObjectsByProcessInstances() threw an IllegalArgumentException");
         }
     }
 
     @Test
-    public void shouldNotThrowIllegalArgumentExceptionWhenFindAllObjectsByObjectTypeAndProcessInstanceIsCalled() {
+    void shouldNotThrowIllegalArgumentExceptionWhenFindAllObjectsByObjectTypeAndProcessInstanceIsCalled() {
         try {
             processDataObjectService.findAllObjectsByObjectTypeAndProcessInstance(ExampleProcessDataObject.class, "1234");
         } catch (IllegalArgumentException e) {
-            Assert.fail("processDataObjectService.findAllObjectsByObjectTypeAndProcessInstance() threw an IllegalArgumentException");
+            Assertions.fail("processDataObjectService.findAllObjectsByObjectTypeAndProcessInstance() threw an IllegalArgumentException");
         }
     }
 
     @Test
-    public void shouldNotThrowIllegalArgumentExceptionWhenFindAllObjectsByObjectTypeAndProcessInstancesIsCalled() {
+    void shouldNotThrowIllegalArgumentExceptionWhenFindAllObjectsByObjectTypeAndProcessInstancesIsCalled() {
         try {
             processDataObjectService.findAllObjectsByObjectTypeAndProcessInstances(ExampleProcessDataObject.class, Collections.singletonList("1234"));
         } catch (IllegalArgumentException e) {
-            Assert.fail("processDataObjectService.findAllObjectsByObjectTypeAndProcessInstances() threw an IllegalArgumentException");
+            Assertions.fail("processDataObjectService.findAllObjectsByObjectTypeAndProcessInstances() threw an IllegalArgumentException");
         }
     }
 

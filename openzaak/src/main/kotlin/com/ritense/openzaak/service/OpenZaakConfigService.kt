@@ -16,20 +16,10 @@
 
 package com.ritense.openzaak.service
 
-import com.ritense.openzaak.domain.configuration.OpenZaakConfig
-import com.ritense.openzaak.domain.request.CreateOpenZaakConfigRequest
-import com.ritense.openzaak.domain.request.ModifyOpenZaakConfigRequest
-import com.ritense.openzaak.service.result.CreateOpenZaakConfigResult
-import com.ritense.openzaak.service.result.ModifyOpenZaakConfigResult
+import com.ritense.openzaak.domain.connector.OpenZaakConfig
 
 interface OpenZaakConfigService {
 
-    fun get(): OpenZaakConfig?
-
-    fun createOpenZaakConfig(request: CreateOpenZaakConfigRequest): CreateOpenZaakConfigResult
-
-    fun modifyOpenZaakConfig(request: ModifyOpenZaakConfigRequest): ModifyOpenZaakConfigResult
-
-    fun removeOpenZaakConfig()
-
+    fun getOpenZaakConfig(): OpenZaakConfig?
+    fun hasOpenZaakConfig(): Boolean
 }

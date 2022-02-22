@@ -42,15 +42,17 @@ class DocumentenService(
     override fun createEnkelvoudigInformatieObject(documentDefinitionName: String, multipartFile: MultipartFile): URI {
         val informatieObjectTypeLink = informatieObjectTypeLinkService.get(documentDefinitionName)!!
 
+        val auteur = SecurityUtils.getCurrentUserLogin()?: DEFAULT_AUTEUR_NAME
+
         return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
             .path("/documenten/api/v1/enkelvoudiginformatieobjecten")
             .post()
             .body(
                 mapOf(
-                    "bronorganisatie" to openZaakConfigService.get()!!.rsin.value,
+                    "bronorganisatie" to openZaakConfigService.getOpenZaakConfig()!!.rsin,
                     "creatiedatum" to LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     "titel" to multipartFile.originalFilename,
-                    "auteur" to SecurityUtils.getCurrentUserLogin(),
+                    "auteur" to auteur,
                     "bestandsnaam" to multipartFile.originalFilename,
                     "taal" to "nld",
                     "inhoud" to Base64.getEncoder().encodeToString(multipartFile.bytes),
@@ -114,5 +116,7 @@ class DocumentenService(
 
     companion object {
         val logger = KotlinLogging.logger {}
+
+        val DEFAULT_AUTEUR_NAME = "Valtimo"
     }
 }

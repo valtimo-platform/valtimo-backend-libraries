@@ -1,13 +1,8 @@
 package com.ritense.openzaak.service.impl
 
 import com.nhaarman.mockitokotlin2.verify
-import com.ritense.openzaak.domain.configuration.OpenZaakConfig
-import com.ritense.openzaak.domain.configuration.OpenZaakConfigId
 import com.ritense.openzaak.domain.configuration.Rsin
-import com.ritense.openzaak.domain.configuration.Secret
-import java.net.URI
-import java.util.Arrays
-import java.util.UUID
+import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -21,6 +16,9 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
+import java.net.URI
+import java.util.Arrays
+import java.util.UUID
 
 internal class DocumentenServiceTest {
 
@@ -29,6 +27,7 @@ internal class DocumentenServiceTest {
     val openZaakTokenGeneratorService = mock(OpenZaakTokenGeneratorService::class.java)
     val informatieObjectTypeLinkService = mock(InformatieObjectTypeLinkService::class.java)
     val zaakInstanceLinkService = mock(ZaakInstanceLinkService::class.java)
+
     val service = DocumentenService(
         restTemplate,
         openZaakConfigService,
@@ -53,11 +52,10 @@ internal class DocumentenServiceTest {
             MockitoHelper.anyObject<ParameterizedTypeReference<ByteArray>>()
         )).thenReturn(ResponseEntity.ok("content".toByteArray()))
 
-        `when`(openZaakConfigService.get()).thenReturn(OpenZaakConfig(
-            OpenZaakConfigId.existingId(UUID.randomUUID()),
+        `when`(openZaakConfigService.getOpenZaakConfig()).thenReturn(OpenZaakConfig(
             "http://documenten.api",
             "client",
-            Secret("secret"),
+            "secret",
             Rsin("051845623")
         ))
 

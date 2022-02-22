@@ -16,7 +16,10 @@
 
 package com.ritense.processdocument.service;
 
+import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentId;
+import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest;
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
@@ -29,6 +32,7 @@ import com.ritense.processdocument.service.result.ModifyDocumentAndStartProcessR
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.processdocument.service.result.NewDocumentForRunningProcessResult;
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
+import org.camunda.bpm.engine.delegate.VariableScope;
 
 public interface ProcessDocumentService {
 
@@ -43,5 +47,9 @@ public interface ProcessDocumentService {
     ModifyDocumentAndStartProcessResult modifyDocumentAndStartProcess(ModifyDocumentAndStartProcessRequest request);
 
     StartProcessForDocumentResult startProcessForDocument(StartProcessForDocumentRequest request);
+
+    JsonSchemaDocumentId getDocumentId(ProcessInstanceId processInstanceId, VariableScope variableScope);
+
+    Document getDocument(ProcessInstanceId processInstanceId, VariableScope variableScope);
 
 }

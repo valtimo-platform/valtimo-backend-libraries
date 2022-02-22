@@ -107,4 +107,26 @@ class ZaakInstanceLinkServiceTest: BaseTest() {
             zaakInstanceLinkService.getByDocumentId(UUID.randomUUID())
         }
     }
+
+    @Test
+    fun `should get entity by zaak instance url`() {
+        whenever(zaakInstanceLinkRepository.findByZaakInstanceUrl(zaakInstanceUrl)).thenReturn(zaakInstanceLink)
+
+        val result = zaakInstanceLinkService.getByZaakInstanceUrl(zaakInstanceUrl)
+
+        assertThat(result).isNotNull
+        assertThat(!result.id.isNew)
+        assertThat(result.zaakInstanceLinkId.id).isEqualTo(zaakInstanceLinkId.id)
+        assertThat(result.zaakInstanceUrl).isEqualTo(zaakInstanceUrl)
+        assertThat(result.zaakInstanceId).isEqualTo(zaakInstanceId)
+        assertThat(result.documentId).isEqualTo(documentId)
+        assertThat(result.zaakTypeUrl).isEqualTo(zaakTypeUrl)
+    }
+
+    @Test
+    fun `should not find entity by invalid zaak instance url`() {
+        assertThrows(ZaakInstanceLinkNotFoundException::class.java) {
+            zaakInstanceLinkService.getByZaakInstanceUrl(URI.create("https://fake-url.com/"))
+        }
+    }
 }

@@ -47,7 +47,11 @@ data class ConnectorType(
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "connector_properties", columnDefinition = "json")
     @JsonProperty("properties")
-    var connectorProperties: ConnectorProperties
+    var connectorProperties: ConnectorProperties,
+
+    @Column(name="allow_multiple", columnDefinition = "boolean", nullable = false)
+    var allowMultipleConnectorInstances: Boolean = true
+
 ) : Validatable {
 
     init {

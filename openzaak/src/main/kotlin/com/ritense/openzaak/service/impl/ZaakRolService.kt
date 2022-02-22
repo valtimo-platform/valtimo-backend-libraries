@@ -17,6 +17,8 @@
 package com.ritense.openzaak.service.impl
 
 import com.ritense.openzaak.service.ZaakRolService
+import com.ritense.openzaak.service.impl.model.ResultWrapper
+import com.ritense.openzaak.service.impl.model.catalogi.EigenschapType
 import com.ritense.openzaak.service.impl.model.zaak.BetrokkeneType
 import com.ritense.openzaak.service.impl.model.zaak.Rol
 import com.ritense.openzaak.service.impl.model.zaak.RolNatuurlijkPersoon
@@ -30,11 +32,12 @@ class ZaakRolService(
     private val tokenGeneratorService: OpenZaakTokenGeneratorService
 ): ZaakRolService {
 
-    override fun addNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, bsn: String) {
+    override fun addNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, bsn: String, betrokkene: URI?) {
         OpenZaakRequestBuilder(restTemplate, openZaakConfigService, tokenGeneratorService)
             .path("zaken/api/v1/rollen")
             .body(Rol(
                 zaakUrl,
+                betrokkene,
                 BetrokkeneType.NATUURLIJK_PERSOON,
                 roltype,
                 roltoelichting,
@@ -43,6 +46,18 @@ class ZaakRolService(
             .post()
             .build()
             .execute(Rol::class.java)
+    }
+
+    override fun getZaakInitator(zaakUrl: URI): ResultWrapper<Rol> {
+        return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, tokenGeneratorService)
+            .path("zaken/api/v1/rollen")
+            .queryParams(mapOf(
+                "zaak" to zaakUrl.toString(),
+                "omschrijvingGeneriek" to "initiator"
+            ))
+            .get()
+            .build()
+            .executeWrapped(Rol::class.java)
     }
 
 }

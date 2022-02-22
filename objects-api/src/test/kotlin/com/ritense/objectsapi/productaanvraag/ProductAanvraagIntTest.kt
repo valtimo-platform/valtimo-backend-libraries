@@ -22,38 +22,30 @@ import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.connector.domain.ConnectorInstanceId
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
-import com.ritense.connector.service.ConnectorDeploymentService
-import com.ritense.connector.service.ConnectorService
+import com.ritense.klant.domain.Klant
 import com.ritense.objectsapi.BaseIntegrationTest
 import com.ritense.objectsapi.domain.AbonnementLink
-import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.repository.AbonnementLinkRepository
-import com.ritense.objectsapi.service.ObjectTypeConfig
-import com.ritense.objectsapi.service.ObjectsApiProperties
-import com.ritense.objectsapi.service.ServerAuthSpecification
+import com.ritense.openzaak.domain.configuration.Rsin
+import com.ritense.openzaak.domain.connector.OpenZaakConfig
+import com.ritense.openzaak.domain.connector.OpenZaakProperties
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
-import com.ritense.openzaak.domain.request.CreateOpenZaakConfigRequest
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
-import com.ritense.openzaak.service.OpenZaakConfigService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
-import java.net.URI
-import java.util.UUID
-import javax.transaction.Transactional
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.fail
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.junit.Assert.assertTrue
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpMethod
@@ -64,6 +56,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import java.net.URI
+import java.util.UUID
+import javax.transaction.Transactional
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.fail
 
 @Transactional
 class ProductAanvraagIntTest : BaseIntegrationTest() {
@@ -73,19 +71,14 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     lateinit var productAanvraagConnector: Connector
 
     @Autowired
+    @Qualifier("openZaakConnector")
+    lateinit var openZaakConnector: Connector
+
+    @Autowired
     lateinit var webApplicationContext: WebApplicationContext
 
     @Autowired
-    lateinit var connectorDeploymentService: ConnectorDeploymentService
-
-    @Autowired
     lateinit var connectorTypeInstanceRepository: ConnectorTypeInstanceRepository
-
-    @Autowired
-    lateinit var connectorService: ConnectorService
-
-    @Autowired
-    lateinit var openZaakConfigService: OpenZaakConfigService
 
     @Autowired
     lateinit var zaakTypeLinkService: ZaakTypeLinkService
@@ -101,7 +94,8 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     lateinit var baseUrl: String
 
     lateinit var connectorType: ConnectorType
-    lateinit var connectorInstance: ConnectorInstance
+    lateinit var productAanvraagConnectorInstance: ConnectorInstance
+    lateinit var openZaakConnectorInstance: ConnectorInstance
     lateinit var abonnementLink: AbonnementLink
     lateinit var executedRequests: MutableList<RecordedRequest>
 
@@ -114,9 +108,9 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         setupMockServer()
         server.start()
         baseUrl = server.url("/").toString()
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
 
-        connectorDeploymentService.deployAll(listOf(productAanvraagConnector))
+        connectorDeploymentService.deployAll(listOf(productAanvraagConnector, openZaakConnector))
         connectorType = connectorService.getConnectorTypes()
             .filter { it.name.equals("ProductAanvragen") }
             .first()
@@ -129,35 +123,16 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should create abonnement when creating productaanvraag connector`() {
+        setupOpenNotificatieConnector(server.url("/").toString())
+        setupObjectApiConnector(server.url("/").toString())
         val postBody = """
             {
                 "typeId": "${connectorType.id.id}",
                 "name": "Productaanvragen",
                 "connectorProperties":{
                     "className": "com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties",
-                    "objectsApiProperties":{
-                        "className": "com.ritense.objectsapi.service.ObjectsApiProperties",
-                        "objectsApi":{
-                            "url": "$baseUrl",
-                            "token": "123"
-                        },
-                        "objectsTypeApi":{
-                            "url": "$baseUrl",
-                            "token": "456"
-                        },
-                        "objectType":{
-                            "name": "productAanvraag",
-                            "title": "Product Aanvraag",
-                            "url": "${baseUrl}api/v1/objecttypes/021f685e-9482-4620-b157-34cd4003da6b",
-                            "typeversion": "1"
-                        }
-                    },
-                    "openNotificatieProperties":{
-                        "baseUrl": "$baseUrl",
-                        "clientId": "valtimo",
-                        "secret": "33d2f33d-93fe-4351-88bd-8d9b69b8d978",
-                        "callbackBaseUrl": "$baseUrl"
-                    },
+                    "objectsApiConnectionName": "objectsApiInstance",
+                    "openNotificatieConnectionName": "openNotificatieInstance",
                     "typeMapping": [
                         {
                             "productAanvraagType": "test",
@@ -193,34 +168,13 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
 
         val putBody = """
             {
-                "id": "${connectorInstance.id.id}",
+                "id": "${productAanvraagConnectorInstance.id.id}",
                 "typeId": "${connectorType.id.id}",
                 "name": "Productaanvragen",
                 "connectorProperties":{
                     "className": "com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties",
-                    "objectsApiProperties":{
-                        "className": "com.ritense.objectsapi.service.ObjectsApiProperties",
-                        "objectsApi":{
-                            "url": "$baseUrl",
-                            "token": "123"
-                        },
-                        "objectsTypeApi":{
-                            "url": "$baseUrl",
-                            "token": "456"
-                        },
-                        "objectType":{
-                            "name": "productAanvraag",
-                            "title": "Product Aanvraag",
-                            "url": "${baseUrl}api/v1/objecttypes/021f685e-9482-4620-b157-34cd4003da6b",
-                            "typeversion": "1"
-                        }
-                    },
-                    "openNotificatieProperties":{
-                        "baseUrl": "$baseUrl",
-                        "clientId": "valtimo",
-                        "secret": "33d2f33d-93fe-4351-88bd-8d9b69b8d978",
-                        "callbackBaseUrl": "$baseUrl"
-                    },
+                    "objectsApiConnectionName": "objectsApiInstance",
+                    "openNotificatieConnectionName": "openNotificatieInstance",
                     "typeMapping": [
                         {
                             "productAanvraagType": "test",
@@ -257,7 +211,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         prepareConnectorInstance()
 
         mockMvc.perform(
-            MockMvcRequestBuilders.delete("/api/connector/instance/${connectorInstance.id.id}")
+            MockMvcRequestBuilders.delete("/api/connector/instance/${productAanvraagConnectorInstance.id.id}")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
@@ -272,6 +226,12 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         prepareConnectorInstance()
         prepareOpenZaakConfig()
         prepareDocumentDefinitionSettings()
+
+        `when`(burgerService.ensureBurgerExists("051845623")).thenReturn(Klant(
+            "http://www.example.com/some-id",
+            "0123456789",
+            "test@example.com"
+        ))
 
         val postBody = """
             {
@@ -298,6 +258,8 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
 
         verifyRequestSent(HttpMethod.GET, "/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777")
         verifyRequestSent(HttpMethod.DELETE, "/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777")
+
+        verify(burgerService).ensureBurgerExists("051845623")
     }
 
     @Test
@@ -305,6 +267,12 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         prepareConnectorInstance("test-service-task")
         prepareOpenZaakConfig()
         prepareServiceTaskDocumentDefinitionSettings()
+
+        `when`(burgerService.ensureBurgerExists("051845623")).thenReturn(Klant(
+            "http://www.example.com/some-id",
+            "0123456789",
+            "test@example.com"
+        ))
 
         val postBody = """
             {
@@ -678,45 +646,22 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     }
 
     fun prepareConnectorInstance(processDefinitionKey: String = "test") {
+        setupObjectApiConnector(server.url("/").toString())
+        setupOpenNotificatieConnector(server.url("/").toString())
         val connectorInstanceId = ConnectorInstanceId.newId(UUID.fromString("26141e07-40e4-4a7e-9c78-f7a40db3b3e9"))
-        connectorInstance = ConnectorInstance(
+        productAanvraagConnectorInstance = ConnectorInstance(
             connectorInstanceId,
             connectorType,
             "test-connector",
             ProductAanvraagProperties(
-                ObjectsApiProperties(
-                    ServerAuthSpecification(
-                        baseUrl,
-                        "token"
-                    ),
-                    ServerAuthSpecification(
-                        baseUrl,
-                        "token"
-                    ),
-                    ObjectTypeConfig(
-                        "productaanvraag",
-                        "Productaanvraag",
-                        "${baseUrl}api/v1/objecttypes/021f685e-9482-4620-b157-34cd4003da6b",
-                        "1"
-                    )
-                ),
-                OpenNotificatieProperties(
-                    baseUrl,
-                    "clientId",
-                    "69b8c79e-acb3-4587-9a2e-b9d288081c22",
-                    baseUrl
-                ),
-                listOf(
-                    ProductAanvraagTypeMapping(
-                        "some-type",
-                        "testschema",
-                        processDefinitionKey
-                    )
-                ),
-                "${baseUrl}catalogi/api/v1/roltypen/1c359a1b-c38d-47b8-bed5-994db88ead61"
+                openNotificatieConnectionName = "openNotificatieInstance",
+                objectsApiConnectionName = "objectsApiInstance",
+                typeMapping = listOf(ProductAanvraagTypeMapping("some-type", "testschema", processDefinitionKey)),
+                aanvragerRolTypeUrl = "http://aanvragerroltype.url/zaken/api/v1/rollen/281fdae4-fc32-46e9-b621-bb4b444b8f52",
             )
         )
-        connectorTypeInstanceRepository.save(connectorInstance)
+
+        connectorTypeInstanceRepository.save(productAanvraagConnectorInstance)
 
         abonnementLink = AbonnementLink(
             connectorInstanceId,
@@ -728,12 +673,25 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     }
 
     fun prepareOpenZaakConfig() {
-        openZaakConfigService.createOpenZaakConfig(CreateOpenZaakConfigRequest(
-            baseUrl,
-            "test-client",
-            "711de9a3-1af6-4196-b4dd-e8a2e2ade17c",
-            "051845623"
-        ))
+        val connectorInstanceId = ConnectorInstanceId.newId(UUID.fromString("26141e07-40e4-4a7e-9c78-f7a40db3b3f0"))
+        val openZaakConnectorType = connectorService.getConnectorTypes()
+            .filter { it.name.equals("OpenZaak") }
+            .first()
+
+        openZaakConnectorInstance = ConnectorInstance(
+            connectorInstanceId,
+            openZaakConnectorType,
+            "OpenZaakConnector",
+            OpenZaakProperties(
+                OpenZaakConfig(
+                    baseUrl,
+                    "test-client",
+                    "711de9a3-1af6-4196-b4dd-e8a2e2ade17c",
+                    Rsin("051845623")
+                )
+            )
+        )
+        connectorTypeInstanceRepository.save(openZaakConnectorInstance)
 
         zaakTypeLinkId = zaakTypeLinkService.createZaakTypeLink(CreateZaakTypeLinkRequest(
             "testschema",

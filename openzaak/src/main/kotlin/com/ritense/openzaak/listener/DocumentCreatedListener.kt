@@ -20,11 +20,13 @@ import com.ritense.document.domain.event.DocumentCreatedEvent
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import org.springframework.context.event.EventListener
+import org.springframework.core.annotation.Order
 
 class DocumentCreatedListener(
     val zaakService: ZaakService,
     val zaakTypeLinkService: ZaakTypeLinkService
 ) {
+    @Order(0)
     @EventListener(DocumentCreatedEvent::class)
     fun handle(event: DocumentCreatedEvent) {
         val zaakTypeLink = zaakTypeLinkService.get(event.definitionId().name())

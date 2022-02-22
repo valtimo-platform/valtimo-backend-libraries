@@ -1,0 +1,18 @@
+{
+    "count": 1,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "zaak": "http://some-url/zaken/api/v1/zaken/7413e298-c78b-4ab8-8e8a-a825faed0e7f",
+            "betrokkene": null,
+            "betrokkeneType": "natuurlijk_persoon",
+            "roltype": "http://some-url/catalogi/api/v1/roltypen/020b1fa2-dc67-4463-a778-367787f7e486",
+            "roltoelichting": "string",
+            "indicatieMachtiging": "gemachtigde",
+            "betrokkeneIdentificatie": {
+                "inpBsn": "12345"
+            }
+        }
+    ]
+}

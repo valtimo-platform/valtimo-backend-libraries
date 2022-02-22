@@ -20,10 +20,13 @@ package com.ritense.openzaak.repository
 
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
+import java.net.URI
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface ZaakInstanceLinkRepository : JpaRepository<ZaakInstanceLink, ZaakInstanceLinkId> {
 
     fun findByDocumentId(documentId: UUID): ZaakInstanceLink?
+
+    fun findByZaakInstanceUrl(zaakInstanceUrl: URI): ZaakInstanceLink?
 }

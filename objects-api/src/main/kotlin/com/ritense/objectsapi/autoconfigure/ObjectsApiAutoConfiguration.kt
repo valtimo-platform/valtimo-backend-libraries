@@ -22,22 +22,11 @@ import com.ritense.connector.service.ConnectorFluentBuilder
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.domain.sync.listener.DocumentEventListener
-import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
-import com.ritense.objectsapi.productaanvraag.ProductAanvraagConnector
-import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
-import com.ritense.objectsapi.repository.AbonnementLinkRepository
 import com.ritense.objectsapi.repository.ObjectSyncConfigRepository
 import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.service.ObjectsApiProperties
-import com.ritense.objectsapi.web.rest.OpenNotificatieResource
 import com.ritense.objectsapi.web.rest.impl.ObjectSyncConfigResource
-import com.ritense.objectsapi.web.rest.impl.OpenNotificatieResourceImpl
-import com.ritense.openzaak.service.ZaakInstanceLinkService
-import com.ritense.openzaak.service.ZaakRolService
-import com.ritense.openzaak.service.ZaakService
-import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.resource.repository.OpenZaakResourceRepository
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -60,27 +49,6 @@ class ObjectsApiAutoConfiguration {
         connectorTypeInstanceRepository: ConnectorTypeInstanceRepository
     ): ObjectSyncService {
         return ObjectSyncService(objectSyncConfigRepository, connectorTypeInstanceRepository)
-    }
-
-    @Bean
-    fun openNotificationService(
-        processDocumentService: ProcessDocumentService,
-        documentService: DocumentService,
-        zaakService: ZaakService,
-        connectorService: ConnectorService,
-        openZaakResourceRepository: OpenZaakResourceRepository,
-        zaakRolService: ZaakRolService,
-        zaakInstanceLinkService: ZaakInstanceLinkService
-    ): OpenNotificatieService {
-        return OpenNotificatieService(
-            processDocumentService,
-            documentService,
-            zaakService,
-            connectorService,
-            openZaakResourceRepository,
-            zaakRolService,
-            zaakInstanceLinkService
-        )
     }
 
     //Connector
@@ -124,28 +92,5 @@ class ObjectsApiAutoConfiguration {
     @ConditionalOnMissingBean(ObjectSyncConfigResource::class)
     fun objectSyncConfigResource(objectSyncService: ObjectSyncService): ObjectSyncConfigResource {
         return ObjectSyncConfigResource(objectSyncService)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(OpenNotificatieResource::class)
-    fun openNotificatieResource(openNotificatieService: OpenNotificatieService): OpenNotificatieResource {
-        return OpenNotificatieResourceImpl(openNotificatieService)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(ProductAanvraagConnector::class)
-    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    fun productAanvraagConnector(
-        productAanvraagProperties: ProductAanvraagProperties,
-        documentService: DocumentService,
-        abonnementLinkRepository: AbonnementLinkRepository
-    ): Connector {
-        return ProductAanvraagConnector(productAanvraagProperties, documentService, abonnementLinkRepository)
-    }
-
-    @Bean
-    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    fun productAanvraagProperties(): ProductAanvraagProperties {
-        return ProductAanvraagProperties()
     }
 }

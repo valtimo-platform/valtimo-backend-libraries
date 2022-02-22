@@ -18,35 +18,22 @@ package com.ritense.objectsapi.productaanvraag
 
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorInstance
-import com.ritense.connector.domain.ConnectorInstanceId
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
-import com.ritense.document.service.DocumentService
+import com.ritense.connector.service.ConnectorService
 import com.ritense.objectsapi.domain.GenericObject
 import com.ritense.objectsapi.domain.ProductAanvraag
-import com.ritense.objectsapi.opennotificaties.OpenNotificatieClient
-import com.ritense.objectsapi.repository.AbonnementLinkRepository
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
+import com.ritense.objectsapi.productaanvraag.ProductAanvraagConnector.Companion.PRODUCT_AANVRAGEN_CONNECTOR_NAME
 import com.ritense.objectsapi.service.ObjectsApiConnector
+import mu.KotlinLogging
 import java.net.URI
 import java.util.UUID
-import mu.KotlinLogging
-import org.springframework.core.ParameterizedTypeReference
 
-@ConnectorType(name = "ProductAanvragen")
+@ConnectorType(name = PRODUCT_AANVRAGEN_CONNECTOR_NAME)
 class ProductAanvraagConnector(
+    private var connectorService: ConnectorService,
     private var productAanvraagProperties: ProductAanvraagProperties,
-    private var documentService: DocumentService,
-    private var abonnementLinkRepository: AbonnementLinkRepository,
-    private var objectsApiConnector: ObjectsApiConnector = ObjectsApiConnector(
-        productAanvraagProperties.objectsApiProperties,
-        documentService
-    ),
-    private var openNotificatieConnector: OpenNotificatieConnector = OpenNotificatieConnector(
-        productAanvraagProperties.openNotificatieProperties,
-        abonnementLinkRepository,
-        OpenNotificatieClient(productAanvraagProperties.openNotificatieProperties)
-    )
 ) : Connector {
 
     override fun getProperties(): ConnectorProperties {
@@ -55,16 +42,15 @@ class ProductAanvraagConnector(
 
     override fun setProperties(connectorProperties: ConnectorProperties) {
         productAanvraagProperties = connectorProperties as ProductAanvraagProperties
-        objectsApiConnector.setProperties(productAanvraagProperties.objectsApiProperties)
-        openNotificatieConnector.setProperties(productAanvraagProperties.openNotificatieProperties)
     }
 
     fun getProductAanvraag(productAanvraagId: UUID): ProductAanvraag {
-        return objectsApiConnector.getTypedObject(productAanvraagId, typeReference<GenericObject<ProductAanvraag>>()).record.data
+        val type = ObjectsApiConnector.typeReference<GenericObject<ProductAanvraag>>()
+        return getObjectsApiConnector().getTypedObject(productAanvraagId, type).record.data
     }
 
     fun deleteProductAanvraag(productAanvraagId: UUID) {
-        objectsApiConnector.deleteObject(productAanvraagId)
+        getObjectsApiConnector().deleteObject(productAanvraagId)
     }
 
     fun getTypeMapping(type: String): ProductAanvraagTypeMapping {
@@ -82,27 +68,32 @@ class ProductAanvraagConnector(
         return URI(productAanvraagProperties.aanvragerRolTypeUrl)
     }
 
-    fun verifyKey(connectorId: UUID, key: String): Boolean {
-        return openNotificatieConnector.verifyAbonnementKey(ConnectorInstanceId.existingId(connectorId), key)
+    fun getOpenNotificatieConnector(): OpenNotificatieConnector {
+        return connectorService.loadByName(productAanvraagProperties.openNotificatieConnectionName) as OpenNotificatieConnector
+    }
+
+    fun getObjectsApiConnector(): ObjectsApiConnector {
+        return connectorService.loadByName(productAanvraagProperties.objectsApiConnectionName) as ObjectsApiConnector
     }
 
     override fun onCreate(connectorInstance: ConnectorInstance) {
+        val openNotificatieConnector = getOpenNotificatieConnector()
         openNotificatieConnector.ensureKanaalExists()
         openNotificatieConnector.createAbonnement(connectorInstance.id)
     }
 
     override fun onEdit(connectorInstance: ConnectorInstance) {
+        val openNotificatieConnector = getOpenNotificatieConnector()
         openNotificatieConnector.deleteAbonnement(connectorInstance.id)
         openNotificatieConnector.createAbonnement(connectorInstance.id)
     }
 
     override fun onDelete(connectorInstance: ConnectorInstance) {
-        openNotificatieConnector.deleteAbonnement(connectorInstance.id)
+        getOpenNotificatieConnector().deleteAbonnement(connectorInstance.id)
     }
-
-    private inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
 
     companion object {
         val logger = KotlinLogging.logger {}
+        const val PRODUCT_AANVRAGEN_CONNECTOR_NAME = "ProductAanvragen"
     }
 }

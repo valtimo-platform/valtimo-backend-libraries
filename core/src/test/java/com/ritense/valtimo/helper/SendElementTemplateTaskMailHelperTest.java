@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class SendElementTemplateTaskMailHelperTest {
+class SendElementTemplateTaskMailHelperTest {
 
     private static final String RECEIVER_VALUE_STATIC = "receiver@test.com";
     private static final String RECEIVER_VALUE_EXPRESSION = "receiver@process-variable.com";
@@ -40,63 +40,63 @@ public class SendElementTemplateTaskMailHelperTest {
     private static final String TEMPLATE_ID = "template_id";
 
     @Test
-    public void getReceiverKeyValueStaticTest() {
+    void getReceiverKeyValueStaticTest() {
         String receiver = SendElementTemplateTaskMailHelper.getReceiverKeyValue(getCamundaPropertiesWithStatics(), getProcessVariables());
 
         assertEquals(RECEIVER_VALUE_STATIC, receiver);
     }
 
     @Test
-    public void getReceiverKeyValueExpressionTest() {
+    void getReceiverKeyValueExpressionTest() {
         String receiver = SendElementTemplateTaskMailHelper.getReceiverKeyValue(getCamundaPropertiesWithExpressions(), getProcessVariables());
 
         assertEquals(RECEIVER_VALUE_EXPRESSION, receiver);
     }
 
     @Test
-    public void getSenderKeyValueStaticTest() {
+    void getSenderKeyValueStaticTest() {
         String sender = SendElementTemplateTaskMailHelper.getSenderKeyValue(getCamundaPropertiesWithStatics(), getProcessVariables());
 
         assertEquals(SENDER_VALUE_STATIC, sender);
     }
 
     @Test
-    public void getSenderKeyValueExpressionTest() {
+    void getSenderKeyValueExpressionTest() {
         String sender = SendElementTemplateTaskMailHelper.getSenderKeyValue(getCamundaPropertiesWithExpressions(), getProcessVariables());
 
         assertEquals(SENDER_VALUE_EXPRESSION, sender);
     }
 
     @Test
-    public void getSubjectKeyValueStaticTest() {
+    void getSubjectKeyValueStaticTest() {
         String subject = SendElementTemplateTaskMailHelper.getSubjectKeyValue(getCamundaPropertiesWithStatics(), getProcessVariables());
 
         assertEquals(SUBJECT_VALUE_STATIC, subject);
     }
 
     @Test
-    public void getSubjectKeyValueExpressionTest() {
+    void getSubjectKeyValueExpressionTest() {
         String subject = SendElementTemplateTaskMailHelper.getSubjectKeyValue(getCamundaPropertiesWithExpressions(), getProcessVariables());
 
         assertEquals(SUBJECT_VALUE_EXPRESSION, subject);
     }
 
     @Test
-    public void getTemplateKeyValueStaticTest() {
+    void getTemplateKeyValueStaticTest() {
         String templateId = SendElementTemplateTaskMailHelper.getTemplateKeyValue(getCamundaPropertiesWithStatics(), getProcessVariables());
 
         assertEquals(TEMPLATE_ID, templateId);
     }
 
     @Test
-    public void getTemplateKeyValueExpressionTest() {
+    void getTemplateKeyValueExpressionTest() {
         String templateId = SendElementTemplateTaskMailHelper.getTemplateKeyValue(getCamundaPropertiesWithExpressions(), getProcessVariables());
 
         assertEquals(TEMPLATE_ID, templateId);
     }
 
     @Test
-    public void shouldThrowExpectedElementTemplatePropertyNotFoundExceptionTest() throws IllegalElementTemplatePropertyValueException {
+    void shouldThrowExpectedElementTemplatePropertyNotFoundExceptionTest() throws IllegalElementTemplatePropertyValueException {
         Map<String, Object> camundaProperties = new HashMap<>();
 
         try {
@@ -108,7 +108,7 @@ public class SendElementTemplateTaskMailHelperTest {
     }
 
     @Test
-    public void shouldThrowIllegalElementTemplatePropertyValueExceptionTest() throws ExpectedElementTemplatePropertyNotFoundException {
+    void shouldThrowIllegalElementTemplatePropertyValueExceptionTest() throws ExpectedElementTemplatePropertyNotFoundException {
         try {
             SendElementTemplateTaskMailHelper.validateExpectedKeys(getCamundaPropertiesWithEmptyStatics());
             fail();

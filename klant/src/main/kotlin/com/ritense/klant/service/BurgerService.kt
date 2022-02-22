@@ -19,5 +19,9 @@ package com.ritense.klant.service
 import com.ritense.klant.domain.Klant
 
 interface BurgerService {
-    fun getBurger(bsn: String): Klant
+    fun getBurger(bsn: String): Klant?
+
+    fun createBurger(bsn: String): Klant
+
+    fun ensureBurgerExists(bsn: String): Klant
 }
