@@ -23,8 +23,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefinitionRepository<JsonSchemaDocumentDefinition> {
+
+    @Query(""
+        + "SELECT  distinct dd "
+        + "FROM    JsonSchemaDocumentDefinition dd "
+        + "INNER JOIN JsonSchemaDocumentDefinitionRole ddRole ON ddRole.id.documentDefinitionName = dd.id.name AND ddRole.id.role in :roles "
+        + "WHERE   dd.id.version = (" +
+        "   SELECT max(dd2.id.version) " +
+        "   FROM JsonSchemaDocumentDefinition dd2 " +
+        "   WHERE dd2.id.name = dd.id.name " +
+        ") ")
+    Page<JsonSchemaDocumentDefinition> findAllForRoles(List<String> roles, Pageable pageable);
 
     @Query(""
         + "SELECT  dd "
@@ -35,5 +48,4 @@ public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefiniti
         "   WHERE dd2.id.name = dd.id.name " +
         ") ")
     Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable);
-
 }

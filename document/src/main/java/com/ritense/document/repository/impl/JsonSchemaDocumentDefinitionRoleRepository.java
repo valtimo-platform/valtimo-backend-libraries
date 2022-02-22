@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.service.impl.model.documenten
+package com.ritense.document.repository.impl;
 
-import java.net.URI
-import java.time.LocalDateTime
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
+import com.ritense.document.repository.DocumentDefinitionRoleRepository;
+import org.springframework.stereotype.Repository;
 
-data class InformatieObject(
-    val url: URI,
-    val auteur: String?,
-    val bestandsnaam: String,
-    val bestandsomvang: Long,
-    val beginRegistratie: LocalDateTime,
-)
+@Repository
+public interface JsonSchemaDocumentDefinitionRoleRepository extends DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> {
+
+}

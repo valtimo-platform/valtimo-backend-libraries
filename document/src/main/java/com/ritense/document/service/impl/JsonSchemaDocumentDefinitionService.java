@@ -20,13 +20,18 @@ import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchema;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRoleId;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;
+import com.ritense.document.repository.DocumentDefinitionRoleRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.service.result.error.DocumentDefinitionError;
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
+import com.ritense.valtimo.contract.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -42,6 +47,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
@@ -54,10 +61,21 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     private final ResourceLoader resourceLoader;
     private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
+    private final DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository;
 
     @Override
     public Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable) {
         return documentDefinitionRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<JsonSchemaDocumentDefinition> findForUser(boolean filteredOnRole, Pageable pageable) {
+        List<String> roles = SecurityUtils.getCurrentUserRoles();
+        if (!filteredOnRole && roles.contains(AuthoritiesConstants.ADMIN)) {
+            return documentDefinitionRepository.findAll(pageable);
+        } else {
+            return documentDefinitionRepository.findAllForRoles(roles, pageable);
+        }
     }
 
     @Override
@@ -161,6 +179,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
             return new DeployDocumentDefinitionResultSucceeded(documentDefinition);
         } catch (Exception ex) {
             DocumentDefinitionError error = ex::getMessage;
+            logger.warn(ex.getMessage());
             return new DeployDocumentDefinitionResultFailed(List.of(error));
         }
     }
@@ -181,6 +200,31 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     @Override
     public void removeDocumentDefinition(String documentDefinitionName) {
         documentDefinitionRepository.deleteByIdName(documentDefinitionName);
+    }
+
+    @Override
+    public boolean currentUserCanAccessDocumentDefinition(String documentDefinitionName) {
+        List<String> roles = SecurityUtils.getCurrentUserRoles();
+        return roles.contains(AuthoritiesConstants.ADMIN)
+            || getDocumentDefinitionRoles(documentDefinitionName).stream().anyMatch(roles::contains);
+    }
+
+    @Override
+    public Set<String> getDocumentDefinitionRoles(String documentDefinitionName) {
+        return documentDefinitionRoleRepository.findAllByIdDocumentDefinitionName(documentDefinitionName)
+            .stream()
+            .map(role -> role.id().role())
+            .collect(Collectors.toSet());
+    }
+
+    @Override
+    public void putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles) {
+        List<JsonSchemaDocumentDefinitionRole> documentDefinitionRoles = roles.stream().map(it -> new JsonSchemaDocumentDefinitionRole(new JsonSchemaDocumentDefinitionRoleId(
+            documentDefinitionName,
+            it
+        ))).collect(Collectors.toList());
+        documentDefinitionRoleRepository.deleteByIdDocumentDefinitionName(documentDefinitionName);
+        documentDefinitionRoleRepository.saveAll(documentDefinitionRoles);
     }
 
     private Resource[] loadResources() throws IOException {

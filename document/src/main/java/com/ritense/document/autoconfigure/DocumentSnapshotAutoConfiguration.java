@@ -21,6 +21,7 @@ import com.ritense.document.domain.impl.listener.DocumentSnapshotCapturedEventPu
 import com.ritense.document.domain.impl.listener.UndeployDocumentDefinitionEventListener;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.repository.DocumentSnapshotRepository;
+import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
@@ -52,9 +53,10 @@ public class DocumentSnapshotAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentSnapshotResource.class)
     public DocumentSnapshotResource documentSnapshotResource(
-        final DocumentSnapshotService documentSnapshotService
+        final DocumentSnapshotService documentSnapshotService,
+        DocumentDefinitionService documentDefinitionService
     ) {
-        return new JsonSchemaDocumentSnapshotResource(documentSnapshotService);
+        return new JsonSchemaDocumentSnapshotResource(documentSnapshotService, documentDefinitionService);
     }
 
     @Bean

@@ -40,9 +40,14 @@ data class HandleNotificationRequest (
         return kanaal.equals(TEST_KANAAL_NAME)
     }
 
+    fun getObjectTypeName(): String? {
+        return kenmerken[OBJECTTYPE_NAME_KEY]
+    }
+
     companion object {
         const val CREATE_ACTION_TYPE = "create"
         const val EDIT_ACTION_TYPE = "edit"
         const val TEST_KANAAL_NAME = "test"
+        const val OBJECTTYPE_NAME_KEY = "objectType"
     }
 }

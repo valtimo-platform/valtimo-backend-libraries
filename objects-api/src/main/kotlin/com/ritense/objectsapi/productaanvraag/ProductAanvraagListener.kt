@@ -35,18 +35,24 @@ class ProductAanvraagListener(
         if (event.notification.kanaal == OBJECTEN_KANAAL_NAME
             && event.notification.isCreateNotification()
         ) {
+            val connector = openNotificatieService.findConnector(event.connectorId, event.authorizationKey)
 
-            val connector = openNotificatieService.findConnector(event.connectorId, event.authorizationKey) as ProductAanvraagConnector
-            val productAanvraagId = event.notification.getObjectId()
-            val productAanvraag = connector.getProductAanvraag(productAanvraagId)
-            val typeMapping = connector.getTypeMapping(productAanvraag.type)
-            val aanvragerRolTypeUrl = connector.getAanvragerRolTypeUrl()
+            // check if the created object is the right kind based on the name of the type of the created object.
+            // This is the only way to do so until other information becomes available or we retrieve every object that is created
+            if (connector is ProductAanvraagConnector
+                && event.notification.getObjectTypeName()?.equals(connector.getObjectsApiConnector().getProperties().objectType.title)?: false
+            ) {
+                val productAanvraagId = event.notification.getObjectId()
+                val productAanvraag = connector.getProductAanvraag(productAanvraagId)
+                val typeMapping = connector.getTypeMapping(productAanvraag.type)
+                val aanvragerRolTypeUrl = connector.getAanvragerRolTypeUrl()
 
-            //TODO: TP32743 Redflag needs to be refactored ASAP
-            (productAanvraag.data as ObjectNode).set<TextNode>("\$bsn", TextNode(productAanvraag.bsn))
+                //TODO: TP32743 Redflag needs to be refactored ASAP
+                (productAanvraag.data as ObjectNode).set<TextNode>("\$bsn", TextNode(productAanvraag.bsn))
 
-            productAanvraagService.createDossier(productAanvraag, typeMapping, aanvragerRolTypeUrl)
-            connector.deleteProductAanvraag(productAanvraagId)
+                productAanvraagService.createDossier(productAanvraag, typeMapping, aanvragerRolTypeUrl)
+                connector.deleteProductAanvraag(productAanvraagId)
+            }
         }
     }
 }

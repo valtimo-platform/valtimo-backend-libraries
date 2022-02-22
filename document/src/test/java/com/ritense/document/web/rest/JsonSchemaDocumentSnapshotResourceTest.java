@@ -21,6 +21,7 @@ import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
+import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSnapshotService;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSnapshotResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,11 +57,13 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
     private JsonSchemaDocumentSnapshot documentSnapshot;
     private Page<JsonSchemaDocumentSnapshot> documentSnapshotPage;
     private JsonSchemaDocumentDefinition documentDefinition;
+    private DocumentDefinitionService documentDefinitionService;
 
     @BeforeEach
     public void setUp() {
         documentSnapshotService = mock(JsonSchemaDocumentSnapshotService.class);
-        documentSnapshotResource = new JsonSchemaDocumentSnapshotResource(documentSnapshotService);
+        documentDefinitionService = mock(DocumentDefinitionService.class);
+        documentSnapshotResource = new JsonSchemaDocumentSnapshotResource(documentSnapshotService, documentDefinitionService);
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentSnapshotResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -76,6 +79,8 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
     public void shouldReturnOkWithDocumentSnapshot() throws Exception {
         when(documentSnapshotService.findById(eq(documentSnapshot.getId())))
             .thenReturn(Optional.of(documentSnapshot));
+        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(documentDefinition.id().name()))
+            .thenReturn(true);
 
         mockMvc.perform(get("/api/document-snapshot/{id}", documentSnapshot.id())
             .accept(APPLICATION_JSON_VALUE)

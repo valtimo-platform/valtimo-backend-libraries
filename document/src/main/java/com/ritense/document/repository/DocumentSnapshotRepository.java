@@ -24,6 +24,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoRepositoryBean
 public interface DocumentSnapshotRepository<T extends DocumentSnapshot> extends JpaRepository<T, DocumentSnapshot.Id> {
@@ -33,6 +34,7 @@ public interface DocumentSnapshotRepository<T extends DocumentSnapshot> extends 
         JsonSchemaDocumentId documentId,
         LocalDateTime fromDateTime,
         LocalDateTime toDateTime,
+        List<String> roles,
         Pageable pageable
     );
 

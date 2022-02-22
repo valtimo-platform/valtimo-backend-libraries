@@ -14,15 +14,27 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.service.impl.model.documenten
+package com.ritense.document.domain;
 
-import java.net.URI
-import java.time.LocalDateTime
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.ritense.document.domain.validation.DocumentContentValidationResult;
 
-data class InformatieObject(
-    val url: URI,
-    val auteur: String?,
-    val bestandsnaam: String,
-    val bestandsomvang: Long,
-    val beginRegistratie: LocalDateTime,
-)
+import java.time.temporal.Temporal;
+
+public interface DocumentDefinitionRole {
+
+    @JsonProperty
+    Id id();
+
+    interface Id {
+
+        @JsonProperty
+        String documentDefinitionName();
+
+        @JsonProperty
+        String role();
+
+    }
+
+}

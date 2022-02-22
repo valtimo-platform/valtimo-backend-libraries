@@ -21,14 +21,22 @@ import com.ritense.connector.domain.ConnectorInstanceId
 import com.ritense.connector.service.ConnectorService
 import com.ritense.objectsapi.domain.request.HandleNotificationRequest
 import com.ritense.objectsapi.repository.AbonnementLinkRepository
+import com.ritense.openzaak.service.ZaakService
+import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
+import com.ritense.resource.domain.OpenZaakResource
+import com.ritense.resource.domain.ResourceId
+import com.ritense.resource.repository.OpenZaakResourceRepository
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
+import java.net.URI
 import java.util.UUID
 
 class OpenNotificatieService(
     private val connectorService: ConnectorService,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val abonnementLinkRepository: AbonnementLinkRepository
+    private val abonnementLinkRepository: AbonnementLinkRepository,
+    private val zaakService: ZaakService,
+    private val openZaakResourceRepository: OpenZaakResourceRepository,
 ) {
     fun handle(notification: HandleNotificationRequest, connectorId: String, authorizationKey: String) {
         if (notification.isTestNotification()) {
@@ -50,12 +58,32 @@ class OpenNotificatieService(
         if (!verifyAbonnementKey(ConnectorInstanceId(UUID.fromString(connectorId)), authorizationKey)) {
             throw InvalidKeyException()
         }
-        return  connectorService.load(connectorInstance)
+        return connectorService.load(connectorInstance)
     }
 
     private fun verifyAbonnementKey(connectorId: ConnectorInstanceId, key: String): Boolean {
         val abonnementLink = abonnementLinkRepository.findById(connectorId)
         return abonnementLink.isPresent && key == abonnementLink.get().key
+    }
+
+    fun createOpenzaakResources(files: List<URI>): Set<OpenZaakResource> {
+        return files.map { createOpenzaakResource(getInformatieObject(it)) }.toCollection(hashSetOf())
+    }
+
+    fun getInformatieObject(file: URI): InformatieObject {
+        return zaakService.getInformatieObject(UUID.fromString(file.path.substringAfterLast('/')))
+    }
+
+    fun createOpenzaakResource(informatieObject: InformatieObject): OpenZaakResource {
+        val openZaakResource = OpenZaakResource(
+            ResourceId.newId(UUID.randomUUID()),
+            informatieObject.url,
+            informatieObject.bestandsnaam,
+            informatieObject.bestandsnaam.substringAfterLast("."),
+            informatieObject.bestandsomvang,
+            informatieObject.beginRegistratie
+        )
+        return openZaakResourceRepository.save(openZaakResource)
     }
 
     companion object {

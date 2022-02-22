@@ -16,17 +16,12 @@
 
 package com.ritense.document.service.impl;
 
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.service.result.CreateDocumentResult;
-import java.util.List;
-import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -35,6 +30,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.test.context.support.WithMockUser;
+
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Set;
+
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER;
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")
 @Transactional
@@ -46,6 +49,7 @@ public class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest 
     @BeforeEach
     public void beforeEach() {
         definition = definition();
+        documentDefinitionService.putDocumentDefinitionRoles(definition.id().name(), Set.of(USER, DEVELOPER));
         var content = new JsonDocumentContent("{\"street\": \"Funenpark\"}");
 
         originalDocument = documentService.createDocument(
@@ -66,6 +70,7 @@ public class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest 
 
         JsonSchemaDocumentDefinition definitionHouseV2 = definitionOf("house", 2, "noautodeploy/house_v2.schema.json");
         documentDefinitionService.store(definitionHouseV2);
+        documentDefinitionService.putDocumentDefinitionRoles(definitionHouseV2.id().name(), Set.of(USER, DEVELOPER));
         documentService.createDocument(
             new NewDocumentRequest(
                 definitionHouseV2.id().name(),
