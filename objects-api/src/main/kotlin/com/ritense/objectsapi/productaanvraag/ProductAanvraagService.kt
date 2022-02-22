@@ -41,7 +41,7 @@ class ProductAanvraagService(
     private val openNotificatieService: OpenNotificatieService,
     private val zaakRolService: ZaakRolService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
-    private val burgerService: BurgerService
+    private val burgerService: BurgerService?
 ) {
 
     fun createDossier(
@@ -94,13 +94,13 @@ class ProductAanvraagService(
     private fun assignZaakToUser(document: Document, productAanvraag: ProductAanvraag, aanvragerRolTypeUrl: URI) {
         val instanceLink = zaakInstanceLinkService.getByDocumentId(document.id().id)
         val roltoelichting = "Aanvrager automatisch toegevoegd in GZAC"
-        val klant = burgerService.ensureBurgerExists(productAanvraag.bsn)
+        val klant = burgerService?.ensureBurgerExists(productAanvraag.bsn)
         zaakRolService.addNatuurlijkPersoon(
             instanceLink.zaakInstanceUrl,
             roltoelichting,
             aanvragerRolTypeUrl,
             productAanvraag.bsn,
-            URI(klant.url)
+            klant?.let { URI(it.url) }
         )
     }
 

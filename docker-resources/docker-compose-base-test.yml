@@ -21,6 +21,7 @@ services:
             "--innodb_flush_method=O_DIRECT",
             "--sql_mode=NO_ENGINE_SUBSTITUTION"
         ]
+        platform: linux/amd64
 # Ports taken
 #   url: jdbc:mysql://localhost:3301/form-test
 #   url: jdbc:mysql://localhost:3302/form-test-link
