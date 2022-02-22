@@ -29,10 +29,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Set;
 import javax.validation.Valid;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
@@ -44,6 +47,7 @@ public interface DocumentDefinitionResource {
 
     @GetMapping(value = "/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
+        @RequestParam(name = "filteredOnRole", defaultValue = "true") boolean filteredOnRole,
         @PageableDefault(sort = {"id.name"}, direction = ASC) Pageable pageable
     );
 
@@ -57,4 +61,10 @@ public interface DocumentDefinitionResource {
 
     @DeleteMapping(value = "/document-definition/{name}")
     ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(@PathVariable String name);
+
+    @GetMapping(value = "/document-definition/{documentDefinitionName}/roles")
+    ResponseEntity<Set<String>> getDocumentDefinitionRoles(@PathVariable String documentDefinitionName);
+
+    @PutMapping(value = "/document-definition/{documentDefinitionName}/roles")
+    ResponseEntity<Void> putDocumentDefinitionRoles(@PathVariable String documentDefinitionName, @RequestBody Set<String> roles);
 }

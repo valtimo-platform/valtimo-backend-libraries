@@ -22,6 +22,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.exception.DocumentDefinitionNameMismatchException;
 import com.ritense.document.repository.impl.JsonSchemaDocumentDefinitionRepository;
+import com.ritense.document.repository.impl.JsonSchemaDocumentDefinitionRoleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -46,15 +47,21 @@ public class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
 
     private JsonSchemaDocumentDefinitionService documentDefinitionService;
     private JsonSchemaDocumentDefinitionRepository jsonSchemaDocumentDefinitionRepository;
+    private JsonSchemaDocumentDefinitionRoleRepository jsonSchemaDocumentDefinitionRoleRepository;
     private ResourceLoader resourceLoader;
     private JsonSchemaDocumentDefinition definition;
 
     @BeforeEach
     public void setUp() {
         jsonSchemaDocumentDefinitionRepository = mock(JsonSchemaDocumentDefinitionRepository.class);
+        jsonSchemaDocumentDefinitionRoleRepository = mock(JsonSchemaDocumentDefinitionRoleRepository.class);
         resourceLoader = mock(DefaultResourceLoader.class);
         documentDefinitionService = mock(JsonSchemaDocumentDefinitionService.class);
-        documentDefinitionService = spy(new JsonSchemaDocumentDefinitionService(resourceLoader, jsonSchemaDocumentDefinitionRepository));
+        documentDefinitionService = spy(new JsonSchemaDocumentDefinitionService(
+            resourceLoader,
+            jsonSchemaDocumentDefinitionRepository,
+            jsonSchemaDocumentDefinitionRoleRepository
+        ));
         definition = definitionOf("person");
     }
 

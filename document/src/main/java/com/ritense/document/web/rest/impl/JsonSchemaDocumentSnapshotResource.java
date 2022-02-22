@@ -19,6 +19,7 @@ package com.ritense.document.web.rest.impl;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshotId;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
+import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.document.web.rest.DocumentSnapshotResource;
 import lombok.RequiredArgsConstructor;
@@ -42,11 +43,13 @@ import java.util.UUID;
 public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResource {
 
     private final DocumentSnapshotService documentSnapshotService;
+    private final DocumentDefinitionService documentDefinitionService;
 
     @Override
     @GetMapping(value = "/{id}")
     public ResponseEntity<? extends DocumentSnapshot> getDocumentSnapshot(@PathVariable(name = "id") UUID snapshotId) {
         return documentSnapshotService.findById(JsonSchemaDocumentSnapshotId.existingId(snapshotId))
+            .filter(it -> hasAccessToDefinitionName(it.document().definitionId().name()))
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
@@ -68,6 +71,12 @@ public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResou
                 toDateTime,
                 pageable
             )
+        );
+    }
+
+    private boolean hasAccessToDefinitionName(String definitionName) {
+        return documentDefinitionService.currentUserCanAccessDocumentDefinition(
+            definitionName
         );
     }
 }

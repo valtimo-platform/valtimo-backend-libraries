@@ -23,11 +23,16 @@ import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
 import com.ritense.document.web.rest.DocumentDefinitionResource;
+import com.ritense.valtimo.contract.authentication.CurrentUserService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+import java.util.Set;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -38,15 +43,18 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     private final UndeployDocumentDefinitionService undeployDocumentDefinitionService;
 
     @Override
-    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(Pageable pageable) {
-        return ok(documentDefinitionService.findAll(pageable));
+    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(boolean filteredOnRole, Pageable pageable) {
+        return ok(documentDefinitionService.findForUser(filteredOnRole, pageable));
     }
 
     @Override
+    @SneakyThrows
     public ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(String name) {
-        return documentDefinitionService.findLatestByName(name)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+        if (!documentDefinitionService.currentUserCanAccessDocumentDefinition(name)) {
+            ResponseEntity.notFound();
+        }
+
+        return ResponseEntity.of(documentDefinitionService.findLatestByName(name));
     }
 
     @Override
@@ -59,6 +67,19 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
         return applyResult(undeployDocumentDefinitionService.undeploy(name));
     }
 
+    @Override
+    public ResponseEntity<Set<String>> getDocumentDefinitionRoles(String documentDefinitionName) {
+        return ResponseEntity.ok()
+            .body(documentDefinitionService.getDocumentDefinitionRoles(documentDefinitionName));
+    }
+
+    @Override
+    public ResponseEntity<Void> putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles) {
+        documentDefinitionService.putDocumentDefinitionRoles(documentDefinitionName, roles);
+
+        return ResponseEntity.ok().build();
+    }
+
     <T extends DeployDocumentDefinitionResult> ResponseEntity<T> applyResult(T result) {
         var httpStatus = result.documentDefinition() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(httpStatus).body(result);
@@ -68,6 +89,4 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
         var httpStatus = result.documentDefinitionName() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(httpStatus).body(result);
     }
-
-
 }

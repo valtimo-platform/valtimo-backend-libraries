@@ -41,8 +41,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -59,6 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
+    public static final String SOME_ROLE = "SOME_ROLE";
     private JsonSchemaDocumentDefinitionService documentDefinitionService;
     private DocumentDefinitionResource documentDefinitionResource;
     private UndeployDocumentDefinitionService undeployDocumentDefinitionService;
@@ -70,6 +73,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     public void setUp() {
         documentDefinitionService = mock(JsonSchemaDocumentDefinitionService.class);
         undeployDocumentDefinitionService = mock(UndeployJsonSchemaDocumentDefinitionService.class);
+
         documentDefinitionResource = new JsonSchemaDocumentDefinitionResource(
             documentDefinitionService,
             undeployDocumentDefinitionService
@@ -88,7 +92,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
     @Test
     public void shouldReturnPagedRecordPage() throws Exception {
-        when(documentDefinitionService.findAll(any())).thenReturn(definitionPage);
+        when(documentDefinitionService.findForUser(anyBoolean(), any())).thenReturn(definitionPage);
 
         mockMvc.perform(get("/api/document-definition"))
             .andDo(print())
@@ -99,9 +103,10 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
     @Test
     public void shouldReturnSingleDefinitionRecordByName() throws Exception {
+        String definitionName = definition.getId().name();
         when(documentDefinitionService.findLatestByName(anyString())).thenReturn(Optional.of(definition));
-
-        mockMvc.perform(get("/api/document-definition/{name}", definition.getId().name()))
+        when(documentDefinitionService.getDocumentDefinitionRoles(eq(definitionName))).thenReturn(Set.of(SOME_ROLE));
+        mockMvc.perform(get("/api/document-definition/{name}", definitionName))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
