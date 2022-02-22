@@ -62,4 +62,30 @@ class ValueResolverService(
             }
         }.flatten().toMap()
     }
+
+    /**
+     * Handle values. Usually by storing them somewhere.
+     *
+     * @param processInstanceId The Camunda processInstanceId these values belong to
+     * @param variableScope An implementation of VariableScope.
+     * @param values mapOf(doc:add:/firstname to John)
+     */
+    fun handleValues(
+        processInstanceId: ProcessInstanceId,
+        variableScope: VariableScope,
+        values: Map<String, Any>
+    ) {
+        values.entries
+            .groupBy { it.key.substringBefore(":", missingDelimiterValue = "") }
+            .forEach { (prefix, values) ->
+                val resolverFactory = resolverFactoryMap[prefix]
+                    ?: throw RuntimeException("No resolver factory found for value prefix $prefix")
+
+                resolverFactory.handleValues(
+                    processInstanceId,
+                    variableScope,
+                    values.associate { it.key.substringAfter(":") to it.value }
+                )
+            }
+    }
 }

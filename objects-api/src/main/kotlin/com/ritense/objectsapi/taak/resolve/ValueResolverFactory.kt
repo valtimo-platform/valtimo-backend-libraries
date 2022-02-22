@@ -49,4 +49,11 @@ interface ValueResolverFactory {
      */
     fun createResolver(processInstanceId: ProcessInstanceId, variableScope: VariableScope)
         : Function<String, Any?>
+
+    /**
+     * @param processInstanceId The Camunda processInstanceId these values belong to
+     * @param variableScope An implementation of VariableScope.
+     * @param values The values to handle. i.e. mapOf(doc:add:/firstname to John)
+     */
+    fun handleValues(processInstanceId: ProcessInstanceId, variableScope: VariableScope, values: Map<String, Any>)
 }

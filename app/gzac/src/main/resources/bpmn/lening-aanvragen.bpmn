@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_12j1sji" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.1.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_12j1sji" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.12.0">
   <bpmn:process id="lening-aanvragen" name="Lening aanvragen" isExecutable="true">
     <bpmn:startEvent id="start-event" camunda:formKey="formio:new-load-request">
       <bpmn:extensionElements>
@@ -16,6 +16,12 @@
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1abb79g" sourceRef="start-event" targetRef="form-task" />
     <bpmn:userTask id="form-task" name="Akkoord op lening?" camunda:candidateGroups="ROLE_USER">
+      <bpmn:extensionElements>
+        <camunda:taskListener expression="${connectorService.loadByName(&#34;TaakConnector&#34;).createTask(task, &#34;test-form&#34;)}" event="create" />
+        <camunda:properties>
+          <camunda:property name="taak:voornaam" value="doc:/voornaam" />
+        </camunda:properties>
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1abb79g</bpmn:incoming>
       <bpmn:outgoing>Flow_1j5xjoe</bpmn:outgoing>
     </bpmn:userTask>

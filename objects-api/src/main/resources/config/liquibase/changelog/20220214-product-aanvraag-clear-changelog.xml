@@ -30,4 +30,8 @@
         </delete>
     </changeSet>
 
+    <changeSet author="Klaas Schuijtemaker" id="3">
+        <delete tableName="opennotificatie_abonnement_link"/>
+    </changeSet>
+
 </databaseChangeLog>

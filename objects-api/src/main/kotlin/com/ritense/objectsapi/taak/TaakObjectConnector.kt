@@ -61,13 +61,13 @@ class TaakObjectConnector(
         createObjectRecord(taakObject)
     }
 
-    fun getTaakObject(productAanvraagId: UUID): TaakObjectDto {
+    fun getTaakObject(taakObjectId: UUID): TaakObjectDto {
         val type = ObjectsApiConnector.typeReference<GenericObject<TaakObjectDto>>()
-        return getObjectsApiConnector().getTypedObject(productAanvraagId, type).record.data
+        return getObjectsApiConnector().getTypedObject(taakObjectId, type).record.data
     }
 
-    fun deleteTaakObject(productAanvraagId: UUID) {
-        getObjectsApiConnector().deleteObject(productAanvraagId)
+    fun deleteTaakObject(taakObjectId: UUID) {
+        getObjectsApiConnector().deleteObject(taakObjectId)
     }
 
     private fun createObjectRecord(taakObject: TaakObjectDto) {
@@ -105,6 +105,7 @@ class TaakObjectConnector(
             .filterIsInstance<CamundaProperties>()
             .single()
             .camundaProperties
+            .filter { it.camundaName != null && it.camundaValue != null }
             .filter { it.camundaName.startsWith(prefix = "taak:", ignoreCase = true) }
 
         val resolvedValues = valueResolverService.resolveValues(
@@ -121,7 +122,7 @@ class TaakObjectConnector(
         }.toMap()
     }
 
-    private fun getObjectsApiConnector(): ObjectsApiConnector {
+    internal fun getObjectsApiConnector(): ObjectsApiConnector {
         return connectorService.loadByName(taakProperties.objectsApiConnectionName) as ObjectsApiConnector
     }
 
