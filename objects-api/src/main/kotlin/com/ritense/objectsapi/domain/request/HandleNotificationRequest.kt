@@ -32,22 +32,22 @@ data class HandleNotificationRequest (
         return actie.equals(CREATE_ACTION_TYPE)
     }
 
-    fun isEditNotification(): Boolean {
-        return actie.equals(EDIT_ACTION_TYPE)
+    fun isUpdateNotification(): Boolean {
+        return actie.equals(UPDATE_ACTION_TYPE)
     }
 
     fun isTestNotification(): Boolean {
         return kanaal.equals(TEST_KANAAL_NAME)
     }
 
-    fun getObjectTypeName(): String? {
-        return kenmerken[OBJECTTYPE_NAME_KEY]
+    fun getObjectTypeUrl(): String? {
+        return kenmerken[OBJECTTYPE_URL_KEY]
     }
 
     companion object {
         const val CREATE_ACTION_TYPE = "create"
-        const val EDIT_ACTION_TYPE = "edit"
+        const val UPDATE_ACTION_TYPE = "update"
         const val TEST_KANAAL_NAME = "test"
-        const val OBJECTTYPE_NAME_KEY = "objectType"
+        const val OBJECTTYPE_URL_KEY = "objectType"
     }
 }

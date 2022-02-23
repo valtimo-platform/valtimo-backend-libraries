@@ -61,7 +61,7 @@ internal class TaakObjectListenerTest {
         whenever(connector.getObjectsApiConnector()).thenReturn(objectsApiConnector)
         whenever(objectsApiConnector.getProperties()).thenReturn(ObjectsApiProperties(
             objectType = ObjectTypeConfig(
-                title = "some-type"
+                url = "http://example.com/some-url"
             )
         ))
 
@@ -79,9 +79,9 @@ internal class TaakObjectListenerTest {
             HandleNotificationRequest(
                 "objecten",
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
-                "edit",
+                "update",
                 mapOf(
-                    "objectType" to "some-type"
+                    "objectType" to "http://example.com/some-url"
                 )
             ),
             "123",
@@ -102,7 +102,7 @@ internal class TaakObjectListenerTest {
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
                 "edit",
                 mapOf(
-                    "objectType" to "some-type"
+                    "objectType" to "http://some-url/some-type"
                 )
             ),
             "123",
@@ -122,7 +122,7 @@ internal class TaakObjectListenerTest {
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
                 "create",
                 mapOf(
-                    "objectType" to "some-type"
+                    "objectType" to "http://some-url/some-type"
                 )
             ),
             "123",
@@ -145,7 +145,7 @@ internal class TaakObjectListenerTest {
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
                 "edit",
                 mapOf(
-                    "objectType" to "some-type"
+                    "objectType" to "http://some-url/some-type"
                 )
             ),
             "123",
@@ -176,7 +176,7 @@ internal class TaakObjectListenerTest {
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
                 "edit",
                 mapOf(
-                    "objectType" to "some-type"
+                    "objectType" to "http://some-url/some-type"
                 )
             ),
             "123",
@@ -218,7 +218,7 @@ internal class TaakObjectListenerTest {
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
                 "edit",
                 mapOf(
-                    "objectType" to "some-type"
+                    "objectType" to "http://some-url/some-type"
                 )
             ),
             "123",
