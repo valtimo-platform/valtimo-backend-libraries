@@ -81,19 +81,20 @@ class TaakObjectListener(
             val variableScope = getVariableScope(task)
             val taakObjectData = Mapper.INSTANCE.get().valueToTree<JsonNode>(taakObject.verzondenData)
             val resolvedValues = getResolvedValues(task, taakObjectData)
-            loadTaakObjectDocuments(processInstanceId, variableScope, resolvedValues, taakObjectData)
+            loadTaakObjectDocuments(processInstanceId, variableScope, taakObjectData)
             handleTaakObjectData(processInstanceId, variableScope, resolvedValues)
         }
         camundaTaskService.completeTaskWithoutFormData(taakObject.verwerkerTaakId.toString())
     }
 
-    private fun loadTaakObjectDocuments(processInstanceId: ProcessInstanceId, variableScope: VariableScope, resolvedValues: Map<String, Any>, taakObjectData: JsonNode) {
-        val filesNode = taakObjectData.at(JsonPointer.valueOf("/documenten"))
-        if (filesNode.isArray) {
+    private fun loadTaakObjectDocuments(processInstanceId: ProcessInstanceId, variableScope: VariableScope, taakObjectData: JsonNode) {
+        val documentPathsNode = taakObjectData.at(JsonPointer.valueOf("/documenten"))
+        if (documentPathsNode.isArray) {
             val documentId = processDocumentService.getDocumentId(processInstanceId, variableScope)
-            for (fileNode in filesNode) {
-                if (resolvedValues.values.contains(fileNode.textValue())) {
-                    createResourceAndAssignToDocument(URI(fileNode.textValue()), documentId)
+            for (documentPathNode in documentPathsNode) {
+                val documentUrlNode = taakObjectData.at(JsonPointer.valueOf(documentPathNode.textValue())) as ValueNode
+                if (!documentUrlNode.isMissingNode && !documentUrlNode.isNull) {
+                    createResourceAndAssignToDocument(URI(documentUrlNode.textValue()), documentId)
                 }
             }
         }
