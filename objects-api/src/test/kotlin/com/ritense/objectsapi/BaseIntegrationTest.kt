@@ -69,7 +69,7 @@ abstract class BaseIntegrationTest {
         val properties = ObjectsApiProperties(
             ServerAuthSpecification(url, UUID.randomUUID().toString()),
             ServerAuthSpecification(url, UUID.randomUUID().toString()),
-            ObjectTypeConfig("some-name", "Some title", url, "1")
+            ObjectTypeConfig("some-name", "Objecttypen API: productaanvraag", url, "1")
         )
 
         connectorDeploymentService.deployAll(listOf(objectsApiConnector))

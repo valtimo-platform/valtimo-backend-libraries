@@ -21,6 +21,8 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.objectsapi.repository.AbonnementLinkRepository
 import com.ritense.objectsapi.web.rest.OpenNotificatieResource
 import com.ritense.objectsapi.web.rest.impl.OpenNotificatieResourceImpl
+import com.ritense.openzaak.service.ZaakService
+import com.ritense.resource.repository.OpenZaakResourceRepository
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
@@ -36,12 +38,16 @@ class OpenNotificatieAutoConfiguration {
     fun openNotificationService(
         connectorService: ConnectorService,
         applicationEventPublisher: ApplicationEventPublisher,
-        abonnementLinkRepository: AbonnementLinkRepository
+        abonnementLinkRepository: AbonnementLinkRepository,
+        zaakService: ZaakService,
+        openZaakResourceRepository: OpenZaakResourceRepository,
     ): OpenNotificatieService {
         return OpenNotificatieService(
             connectorService,
             applicationEventPublisher,
-            abonnementLinkRepository
+            abonnementLinkRepository,
+            zaakService,
+            openZaakResourceRepository
         )
     }
 

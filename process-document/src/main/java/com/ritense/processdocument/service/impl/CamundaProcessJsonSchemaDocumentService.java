@@ -301,17 +301,21 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         }
     }
 
-    public Document getDocument(ProcessInstanceId processInstanceId, VariableScope variableScope) {
+    public JsonSchemaDocumentId getDocumentId(ProcessInstanceId processInstanceId, VariableScope variableScope) {
         var processDocumentInstance = processDocumentAssociationService.findProcessDocumentInstance(processInstanceId).orElse(null);
         if (processDocumentInstance != null) {
             var jsonSchemaDocumentId = processDocumentInstance.processDocumentInstanceId().documentId().toString();
-            return documentService.get(jsonSchemaDocumentId);
+            return JsonSchemaDocumentId.existingId(UUID.fromString(jsonSchemaDocumentId));
         } else {
             // In case a process has no token wait state ProcessDocumentInstance is not yet created,
             // therefore out business-key is our last chance which is populated with the documentId also.
             var businessKey = getBusinessKey(processInstanceId, variableScope);
-            return documentService.get(businessKey);
+            return JsonSchemaDocumentId.existingId(UUID.fromString(businessKey));
         }
+    }
+
+    public Document getDocument(ProcessInstanceId processInstanceId, VariableScope variableScope) {
+        return documentService.get(getDocumentId(processInstanceId, variableScope).toString());
     }
 
     private String getBusinessKey(ProcessInstanceId processInstanceId, VariableScope variableScope) {

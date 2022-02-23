@@ -21,10 +21,9 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.klant.service.BurgerService
 import com.ritense.objectsapi.domain.ProductAanvraag
+import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.openzaak.service.ZaakRolService
-import com.ritense.openzaak.service.ZaakService
-import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.OpenZaakResource
@@ -39,11 +38,10 @@ import java.util.UUID
 class ProductAanvraagService(
     private val processDocumentService: ProcessDocumentService,
     private val documentService: DocumentService,
-    private val zaakService: ZaakService,
-    private val openZaakResourceRepository: OpenZaakResourceRepository,
+    private val openNotificatieService: OpenNotificatieService,
     private val zaakRolService: ZaakRolService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
-    private val burgerService: BurgerService
+    private val burgerService: BurgerService?
 ) {
 
     fun createDossier(
@@ -51,8 +49,8 @@ class ProductAanvraagService(
         typeMapping: ProductAanvraagTypeMapping,
         aanvragerRolTypeUrl: URI
     ) {
-        val informatieObjecten = getInformatieObjecten(productAanvraag.getAllFiles())
-        val document = createDocument(productAanvraag, typeMapping, informatieObjecten)
+        val openZaakResources = openNotificatieService.createOpenzaakResources(productAanvraag.getAllFiles())
+        val document = createDocument(productAanvraag, typeMapping, openZaakResources)
         assignZaakToUser(document, productAanvraag, aanvragerRolTypeUrl)
         startProcess(document.id(), typeMapping)
     }
@@ -60,10 +58,10 @@ class ProductAanvraagService(
     private fun createDocument(
         productAanvraag: ProductAanvraag,
         typeMapping: ProductAanvraagTypeMapping,
-        informatieObjecten: Set<InformatieObject>
+        openZaakResources: Set<OpenZaakResource>
     ): Document {
         val newDocumentRequest = NewDocumentRequest(typeMapping.caseDefinitionKey, productAanvraag.data)
-            .withResources(getResources(informatieObjecten))
+            .withResources(openZaakResources)
 
         val documentResult = documentService.createDocument(newDocumentRequest)
 
@@ -96,48 +94,14 @@ class ProductAanvraagService(
     private fun assignZaakToUser(document: Document, productAanvraag: ProductAanvraag, aanvragerRolTypeUrl: URI) {
         val instanceLink = zaakInstanceLinkService.getByDocumentId(document.id().id)
         val roltoelichting = "Aanvrager automatisch toegevoegd in GZAC"
-        val klant = burgerService.ensureBurgerExists(productAanvraag.bsn)
+        val klant = burgerService?.ensureBurgerExists(productAanvraag.bsn)
         zaakRolService.addNatuurlijkPersoon(
             instanceLink.zaakInstanceUrl,
             roltoelichting,
             aanvragerRolTypeUrl,
             productAanvraag.bsn,
-            URI(klant.url)
+            klant?.let { URI(it.url) }
         )
-    }
-
-    private fun getResources(informatieObjecten: Set<InformatieObject>): Set<Resource> {
-        return informatieObjecten.map {
-            createOpenzaakResource(
-                it.url,
-                it.bestandsnaam,
-                it.bestandsnaam.substringAfterLast("."),
-                it.bestandsomvang
-            )
-        }.toCollection(hashSetOf())
-    }
-
-    private fun getInformatieObjecten(files: List<URI>): Set<InformatieObject> {
-        return files.map {
-            zaakService.getInformatieObject(UUID.fromString(it.path.substringAfterLast('/')))
-        }.toCollection(hashSetOf())
-    }
-
-    private fun createOpenzaakResource(
-        informatieObjectUrl: URI,
-        name: String,
-        extension: String,
-        size: Long
-    ): OpenZaakResource {
-        val openZaakResource = OpenZaakResource(
-            ResourceId.newId(UUID.randomUUID()),
-            informatieObjectUrl,
-            name,
-            extension,
-            size,
-            LocalDateTime.now()
-        )
-        return openZaakResourceRepository.save(openZaakResource)
     }
 
     companion object {
