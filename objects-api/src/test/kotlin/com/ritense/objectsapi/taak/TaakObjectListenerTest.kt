@@ -100,7 +100,7 @@ internal class TaakObjectListenerTest {
             HandleNotificationRequest(
                 "some-invalid-kanaal",
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
-                "edit",
+                "update",
                 mapOf(
                     "objectType" to "http://some-url/some-type"
                 )
@@ -143,7 +143,7 @@ internal class TaakObjectListenerTest {
             HandleNotificationRequest(
                 "objecten",
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
-                "edit",
+                "update",
                 mapOf(
                     "objectType" to "http://some-url/some-type"
                 )
@@ -174,7 +174,7 @@ internal class TaakObjectListenerTest {
             HandleNotificationRequest(
                 "objecten",
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
-                "edit",
+                "update",
                 mapOf(
                     "objectType" to "http://some-url/some-type"
                 )
@@ -216,7 +216,7 @@ internal class TaakObjectListenerTest {
             HandleNotificationRequest(
                 "objecten",
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
-                "edit",
+                "update",
                 mapOf(
                     "objectType" to "http://some-url/some-type"
                 )
