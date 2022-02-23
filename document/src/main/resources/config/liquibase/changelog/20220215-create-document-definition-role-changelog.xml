@@ -44,7 +44,7 @@
     <changeSet author="Theo Beers" id="4">
         <sql>
             INSERT INTO json_schema_document_definition_role (document_definition_name, role)
-            SELECT DISTINCT document_definition_name, 'USER_ROLE' as role FROM json_schema_document_definition
+            SELECT DISTINCT document_definition_name, 'ROLE_USER' as role FROM json_schema_document_definition
         </sql>
     </changeSet>
 
