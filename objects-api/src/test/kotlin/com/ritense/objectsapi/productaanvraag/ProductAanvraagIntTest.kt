@@ -242,7 +242,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
                 "actie": "create",
                 "aanmaakdatum": "2021-09-22T21:29:21.541153Z",
                 "kenmerken": {
-                    "objectType": "Objecttypen API: productaanvraag"
+                    "objectType": "${server.url("/")}"
                 }
             }
         """.trimIndent()
@@ -283,7 +283,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
                 "actie": "create",
                 "aanmaakdatum": "2021-09-22T21:29:21.541153Z",
                 "kenmerken": {
-                    "objectType": "Objecttypen API: productaanvraag"
+                    "objectType": "${server.url("/")}"
                 }
             }
         """.trimIndent()
