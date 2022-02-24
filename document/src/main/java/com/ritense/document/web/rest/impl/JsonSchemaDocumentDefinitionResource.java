@@ -23,7 +23,6 @@ import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
 import com.ritense.document.web.rest.DocumentDefinitionResource;
-import com.ritense.valtimo.contract.authentication.CurrentUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
@@ -31,7 +30,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
 import java.util.Set;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -50,7 +48,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     @Override
     @SneakyThrows
     public ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(String name) {
-        if (!documentDefinitionService.currentUserCanAccessDocumentDefinition(name)) {
+        if (!documentDefinitionService.currentUserCanAccessDocumentDefinition(true, name)) {
             ResponseEntity.notFound();
         }
 
