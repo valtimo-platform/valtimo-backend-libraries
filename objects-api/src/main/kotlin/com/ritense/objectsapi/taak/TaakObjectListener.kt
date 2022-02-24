@@ -63,13 +63,14 @@ class TaakObjectListener(
                 && event.notification.getObjectTypeUrl()?.equals(connector.getObjectsApiConnector().getProperties().objectType.url)?: false
             ) {
                 val taakObjectId = event.notification.getObjectId()
-                val taakObject = connector.getTaakObject(taakObjectId)
+                val taakObjectRecord = connector.getTaakObjectRecord(taakObjectId)
+                val taakObject = taakObjectRecord.record.data
                 if (taakObject.status != TaakObjectStatus.ingediend) {
                     return
                 }
                 saveDataAndCompleteTask(taakObject)
 
-                connector.deleteTaakObject(taakObjectId)
+                connector.modifyTaakObjectStatusVerwerkt(taakObjectRecord)
             }
         }
     }

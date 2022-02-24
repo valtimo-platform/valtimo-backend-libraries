@@ -91,7 +91,7 @@ class ProductAanvraagConnectorTest : BaseTest() {
             UUID.randomUUID(),
             "http://object.url",
             "type",
-            ObjectRecord(productAanvraag)
+            ObjectRecord(1, "2022-01-01", productAanvraag)
         )
         whenever(connectorService.loadByName(any())).thenReturn(objectsApiConnector)
         `when`(objectsApiConnector.getTypedObject(productAanvraagId, typeReference<GenericObject<ProductAanvraag>>())).thenReturn(objectRecord)
