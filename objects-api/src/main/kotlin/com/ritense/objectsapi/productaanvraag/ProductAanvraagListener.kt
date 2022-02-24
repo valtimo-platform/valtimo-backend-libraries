@@ -18,8 +18,6 @@ package com.ritense.objectsapi.productaanvraag
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
-import com.ritense.connector.service.ConnectorService
-import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector.Companion.OBJECTEN_KANAAL_NAME
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
@@ -40,7 +38,7 @@ class ProductAanvraagListener(
             // check if the created object is the right kind based on the name of the type of the created object.
             // This is the only way to do so until other information becomes available or we retrieve every object that is created
             if (connector is ProductAanvraagConnector
-                && event.notification.getObjectTypeName()?.equals(connector.getObjectsApiConnector().getProperties().objectType.title)?: false
+                && event.notification.getObjectTypeUrl()?.equals(connector.getObjectsApiConnector().getProperties().objectType.url)?: false
             ) {
                 val productAanvraagId = event.notification.getObjectId()
                 val productAanvraag = connector.getProductAanvraag(productAanvraagId)

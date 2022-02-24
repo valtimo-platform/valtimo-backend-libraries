@@ -23,12 +23,14 @@ import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentSnapshotService;
+import com.ritense.valtimo.contract.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -51,11 +53,13 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
         LocalDateTime toDateTime,
         Pageable pageable
     ) {
+        List<String> roles = SecurityUtils.getCurrentUserRoles();
         return documentSnapshotRepository.getDocumentSnapshots(
             definitionName,
             documentId,
             fromDateTime,
             toDateTime,
+            roles,
             pageable
         );
     }

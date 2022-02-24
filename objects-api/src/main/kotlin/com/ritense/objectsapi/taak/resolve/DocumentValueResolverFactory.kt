@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
+import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -77,12 +78,14 @@ class DocumentValueResolverFactory(
             }
         }
 
+        val documentContent = document.content().asJson()
+        JsonPatchService.apply(jsonPatchBuilder.build(), documentContent)
         documentService.modifyDocument(
             ModifyDocumentRequest(
                 document?.id().toString(),
-                document.content().asJson(),
+                documentContent,
                 document?.version().toString()
-            ).withJsonPatch(jsonPatchBuilder.build())
+            )
         )
     }
 
