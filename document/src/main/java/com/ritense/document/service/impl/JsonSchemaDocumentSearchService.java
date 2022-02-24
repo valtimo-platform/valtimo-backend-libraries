@@ -16,23 +16,16 @@
 
 package com.ritense.document.service.impl;
 
-import com.ritense.document.domain.DocumentDefinitionRole;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.service.DocumentSearchService;
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.query.criteria.internal.OrderImpl;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -41,12 +34,14 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.query.criteria.internal.OrderImpl;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
