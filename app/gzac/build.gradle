@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":mail:local-mail"))
     implementation(project(":connector"))
     implementation(project(":objects-api"))
+    implementation(project(":besluit"))
 
     // Database
     implementation "mysql:mysql-connector-java"
