@@ -42,6 +42,7 @@
     </changeSet>
 
     <changeSet author="Theo Beers" id="4">
+        <validCheckSum>8:49dbaeaf1946a56fb322a45f62fa0913</validCheckSum>
         <sql>
             INSERT INTO json_schema_document_definition_role (document_definition_name, role)
             SELECT DISTINCT dd.document_definition_name, r.role
