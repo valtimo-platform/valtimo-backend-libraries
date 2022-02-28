@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.besluit.service
+package com.ritense.besluit
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.ritense.connector.config.Decryptor
-import com.ritense.connector.config.Encryptor
-import com.ritense.openzaak.domain.configuration.Rsin
+import com.ritense.besluit.connector.BesluitConnector
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
-class ServerAuthSpecification(
-    var url: String = "",
-    @set:JsonSerialize(using = Encryptor::class)
-    @get:JsonDeserialize(using = Decryptor::class)
-    var secret: String = "",
-    var clientId: String = "",
-    var rsin: Rsin = Rsin("")
-)
+@SpringBootTest
+@ExtendWith(value = [SpringExtension::class])
+@Tag("integration")
+abstract class BaseIntegrationTest {
+
+    @MockBean
+    lateinit var besluitConnector: BesluitConnector
+}

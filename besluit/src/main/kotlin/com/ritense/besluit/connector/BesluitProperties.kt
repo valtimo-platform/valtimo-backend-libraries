@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.besluit.service
+package com.ritense.besluit.connector
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.ritense.connector.config.Decryptor
-import com.ritense.connector.config.Encryptor
-import com.ritense.openzaak.domain.configuration.Rsin
+import com.ritense.besluit.service.ServerAuthSpecification
+import com.ritense.connector.domain.ConnectorProperties
 
-class ServerAuthSpecification(
-    var url: String = "",
-    @set:JsonSerialize(using = Encryptor::class)
-    @get:JsonDeserialize(using = Decryptor::class)
-    var secret: String = "",
-    var clientId: String = "",
-    var rsin: Rsin = Rsin("")
-)
+class BesluitProperties(
+    var besluitApi: ServerAuthSpecification
+) : ConnectorProperties

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.repository.converter
+package com.ritense.besluit.connector
 
-import javax.inject.Inject
-import javax.persistence.AttributeConverter
+import com.ritense.besluit.BaseIntegrationTest
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Test
 
-class SecretAttributeConverter @Inject constructor(private val bean: Encryptor) : AttributeConverter<String, String> {
 
-    override fun convertToDatabaseColumn(attribute: String): String {
-        return bean.encrypt(attribute)
+class BesluitConnectorIntTest : BaseIntegrationTest() {
+
+    @Test
+    fun `should create besluit`() {
+        val besluit = besluitConnector.createBsluit();
+
+        assertNotNull(besluit)
     }
-
-    override fun convertToEntityAttribute(encryptedProperty: String): String {
-        return bean.decrypt(encryptedProperty)
-    }
-
 }

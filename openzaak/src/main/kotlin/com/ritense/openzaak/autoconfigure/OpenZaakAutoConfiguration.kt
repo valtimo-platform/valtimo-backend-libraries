@@ -32,7 +32,6 @@ import com.ritense.openzaak.provider.ZaakBsnProvider
 import com.ritense.openzaak.repository.InformatieObjectTypeLinkRepository
 import com.ritense.openzaak.repository.ZaakInstanceLinkRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
-import com.ritense.openzaak.repository.converter.Encryptor
 import com.ritense.openzaak.service.DocumentenService
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.openzaak.service.impl.EigenschapService
@@ -56,7 +55,6 @@ import com.ritense.openzaak.web.rest.impl.ZaakTypeResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import org.camunda.bpm.engine.RepositoryService
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -72,12 +70,6 @@ import kotlin.contracts.ExperimentalContracts
 @EnableJpaRepositories(basePackages = ["com.ritense.openzaak.repository"])
 @EntityScan("com.ritense.openzaak.domain")
 class OpenZaakAutoConfiguration {
-
-    @Bean
-    @ConditionalOnMissingBean(Encryptor::class)
-    fun encryptor(@Value("\${openzaak.superSecret}") superSecret: String): Encryptor {
-        return Encryptor(superSecret)
-    }
 
     @Bean
     @ConditionalOnMissingBean(RestTemplate::class)

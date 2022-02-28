@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022W Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,17 @@ dependencies {
 
     implementation "org.hibernate:hibernate-core"
     implementation 'org.glassfish:javax.json:1.1.2'
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.5.2"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation project(path: ":core", configuration: 'testOutput')
-
-    testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.13.0")
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2"
+    testImplementation project(':test-utils-common')
+    testImplementation project(":resource:local-resource")
 
     jar {
         enabled = true
