@@ -16,13 +16,6 @@
 
 apply from: 'gradle/liquibase.gradle'
 
-dockerCompose {
-    projectName = "besluit"
-    isRequiredBy(integrationTesting)
-    isRequiredBy(securityTesting)
-    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
-}
-
 dependencies {
     implementation project(':core')
     implementation project(':contract')
