@@ -18,6 +18,7 @@ package com.ritense.openzaak.service.impl
 
 import com.ritense.openzaak.service.ZaakTypeService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
+import com.ritense.openzaak.service.impl.model.catalogi.BesluitType
 import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
 import org.springframework.web.client.RestTemplate
 
@@ -33,6 +34,14 @@ class ZaakTypeService(
             .get()
             .build()
             .executeWrapped(ZaakType::class.java)
+    }
+
+    override fun getBesluitTypes(): ResultWrapper<BesluitType> {
+        return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
+            .path("catalogi/api/v1/besluittypen")
+            .get()
+            .build()
+            .executeWrapped(BesluitType::class.java)
     }
 
 }

@@ -20,6 +20,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.openzaak.BaseTest
 import com.ritense.openzaak.service.impl.ZaakTypeService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
+import com.ritense.openzaak.service.impl.model.catalogi.BesluitType
 import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -45,12 +46,20 @@ class ZaakTypeServiceTest : BaseTest() {
             openZaakConfigService,
             openZaakTokenGeneratorService
         )
-        httpGetZaaktypen()
     }
 
     @Test
     fun `should get zaaktypen`() {
         //given
+        httpCall(
+            listOf(
+                ZaakType(
+                    URI.create("http://example.com"),
+                    "omschrijving",
+                    "omschrijvingGeneriek"
+                )
+            )
+        )
         val result = zaakTypeService.getZaakTypes()
 
         //when
@@ -62,27 +71,46 @@ class ZaakTypeServiceTest : BaseTest() {
         assertThat(zaaktype.omschrijvingGeneriek).isEqualTo("omschrijvingGeneriek")
     }
 
-    private fun httpGetZaaktypen() {
+    @Test
+    fun `should get besluit typen`() {
+        //given
+        httpCall(
+            listOf(
+                BesluitType(
+                    URI.create("http://example.com"),
+                    "omschrijving"
+                )
+            )
+        )
+        val result = zaakTypeService.getBesluitTypes()
+
+        //when
+        val zaaktype = result.results.first()
+
+        //then
+        assertThat(zaaktype.url).isEqualTo(URI.create("http://example.com"))
+        assertThat(zaaktype.omschrijving).isEqualTo("omschrijving")
+    }
+
+    private fun httpCall(entities: List<Any>) {
         val responseEntity = ResponseEntity(
             ResultWrapper(
                 1,
                 URI.create("http://example.com"),
                 URI.create("http://example.com"),
-                listOf(ZaakType(
-                    URI.create("http://example.com"),
-                    "omschrijving",
-                    "omschrijvingGeneriek"
-                ))
+                entities
             ),
             httpHeaders(),
             HttpStatus.OK
         )
-        whenever(restTemplate.exchange(
-            anyString(),
-            any(HttpMethod::class.java),
-            any(HttpEntity::class.java),
-            any(ParameterizedTypeReference::class.java)
-        )).thenReturn(responseEntity)
+        whenever(
+            restTemplate.exchange(
+                anyString(),
+                any(HttpMethod::class.java),
+                any(HttpEntity::class.java),
+                any(ParameterizedTypeReference::class.java)
+            )
+        ).thenReturn(responseEntity)
     }
 
 }

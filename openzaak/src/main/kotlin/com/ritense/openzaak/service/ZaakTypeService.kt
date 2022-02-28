@@ -17,10 +17,13 @@
 package com.ritense.openzaak.service
 
 import com.ritense.openzaak.service.impl.model.ResultWrapper
+import com.ritense.openzaak.service.impl.model.catalogi.BesluitType
 import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
 
 interface ZaakTypeService {
 
     fun getZaakTypes(): ResultWrapper<ZaakType>
+
+    fun getBesluitTypes(): ResultWrapper<BesluitType>
 
 }
