@@ -34,16 +34,18 @@ class BesluitConnector(
 
     /**
      * Create a Besluit
+     *
+     * TODO Add besluittype and zaak
      */
-    fun createBsluit(): Besluit {
+    fun createBesluit(): Besluit {
         val request = CreateBesluitRequest(
-            besluitTypeUrl = "test",
-            zaakUrl = "test",
+            besluittype = "testBesluittype",
+            zaak = "testZaak",
             datum = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
             ingangsdatum = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         )
 
-        return runBlocking { besluitClient.createBesluit(request) }
+        return runBlocking { besluitClient.createBesluit(request, getProperties() as BesluitProperties) }
     }
 
     override fun getProperties(): ConnectorProperties {

@@ -16,9 +16,18 @@
 
 package com.ritense.besluit.connector
 
-import com.ritense.besluit.service.ServerAuthSpecification
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.ritense.connector.config.Decryptor
+import com.ritense.connector.config.Encryptor
 import com.ritense.connector.domain.ConnectorProperties
+import com.ritense.openzaak.domain.configuration.Rsin
 
 class BesluitProperties(
-    var besluitApi: ServerAuthSpecification
+    var url: String = "",
+    @set:JsonSerialize(using = Encryptor::class)
+    @get:JsonDeserialize(using = Decryptor::class)
+    var secret: String = "",
+    var clientId: String = "",
+    var rsin: Rsin = Rsin("")
 ) : ConnectorProperties

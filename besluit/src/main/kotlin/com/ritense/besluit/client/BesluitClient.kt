@@ -22,33 +22,32 @@ import com.ritense.besluit.domain.request.CreateBesluitRequest
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 
-open  class BesluitClient(
+open class BesluitClient(
     private val besluitWebClient: WebClient,
-    private val besluitTokenGenerator: BesluitTokenGenerator,
-    private val besluitProperties: BesluitProperties
+    private val besluitTokenGenerator: BesluitTokenGenerator
 ) {
     /**
      * Create a BESLUIT
      *
      * @param request the <code>CreateBesluitRequest</code> to use when createing new requests
      */
-    suspend fun createBesluit(request: CreateBesluitRequest): Besluit {
-        return webClient()
+    suspend fun createBesluit(request: CreateBesluitRequest, besluitProperties: BesluitProperties): Besluit {
+        return webClient(besluitProperties)
             .post()
-            .uri("/api/v1/besluiten/besluiten")
+            .uri("/api/v1/besluiten")
             .bodyValue(request)
             .retrieve()
             .awaitBody()
     }
 
-    private fun webClient(): WebClient {
+    private fun webClient(besluitProperties: BesluitProperties): WebClient {
         val token = besluitTokenGenerator.generateToken(
-            besluitProperties.besluitApi.secret,
-            besluitProperties.besluitApi.clientId
+            besluitProperties.secret,
+            besluitProperties.clientId
         )
         return besluitWebClient
             .mutate()
-            .baseUrl(besluitProperties.besluitApi.url)
+            .baseUrl(besluitProperties.url)
             .defaultHeader("Authorization", "Bearer $token")
             .build()
     }

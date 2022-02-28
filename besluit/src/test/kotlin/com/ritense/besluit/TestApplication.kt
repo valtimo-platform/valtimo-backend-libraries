@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.besluit.service
+package com.ritense.besluit
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.ritense.connector.config.Decryptor
-import com.ritense.connector.config.Encryptor
-import com.ritense.openzaak.domain.configuration.Rsin
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
-class ServerAuthSpecification(
-    var url: String = "",
-    @set:JsonSerialize(using = Encryptor::class)
-    @get:JsonDeserialize(using = Decryptor::class)
-    var secret: String = "",
-    var clientId: String = "",
-    var rsin: Rsin = Rsin("")
-)
+@SpringBootApplication
+class TestApplication {
+
+    fun main(args: Array<String>) {
+        runApplication<TestApplication>(*args)
+    }
+}

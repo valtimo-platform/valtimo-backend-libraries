@@ -215,9 +215,6 @@ camunda:
             password: admin
             first-name: Admin account
 
-openzaak:
-    superSecret: "nD$QFSxd$2d&$aMF$$9vnxm%F$53aEZu"
-
 # ==================
 # keycloak server to server config
 # ==================

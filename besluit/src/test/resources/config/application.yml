@@ -2,11 +2,12 @@ spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3309/openzaak-test
+        url: jdbc:mysql://localhost:3318/besluit-test
         username: valtimo
         password: password
         hikari:
-            auto-commit: false
+            auto-commit:
+                false
     liquibase:
         enabled: false
     jpa:
@@ -35,38 +36,10 @@ spring:
                 implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
             use-new-id-generator-mappings: false
 
-scheduling:
-    enabled: false
-    job:
-        cron:
-            syncAuth0LogsEvents: 0 0 3 * * ? # Every day at 3:00
-            cleanupAuditEvents: 0 0 4 * * ? # Every day at 00:00
-            taskNotificationReminder: 0 0 10 * * ? # Every day at 10:00
-
 spring-actuator:
     username: test
     password: test
 
-camunda:
-    bpm:
-        history-level: audit
-aws:
-    profile: ritense
-    region: eu-central-1
-    s3:
-        bucketName: test-name
-        bucketRegion: eu-central-1
-
 valtimo:
-    auth0:
-        enabled: false
-    mandrill:
-        apiKey: some-key
-        dateFormat: dd-MM-yyyy
-        notificationTemplate: bpc-task-notification
-        completionTemplate: bpc-task-completion
-        reminderTemplate: bpc-task-reminder
-    public-task:
-        token-secret: mfEddMIK+lrHfNK1J6rfLcdQ1Tao8OCpWrpmXvyEQGd5FhOkNfHlX9hyWHs+4GfGhUky8kv4v4Ar3JOvbOGGgQ==
     connector-encryption:
         secret: "0123456789101112"

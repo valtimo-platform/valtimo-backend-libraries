@@ -16,9 +16,21 @@
 
 package com.ritense.besluit.domain.request
 
+import com.fasterxml.jackson.annotation.JsonInclude
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class CreateBesluitRequest(
-    val besluitTypeUrl: String,
-    val zaakUrl: String,
-    val datum: String,
-    val ingangsdatum: String,
+    val identificatie: String? = null,
+    val verantwoordelijkeOrganisatie: String? = null,
+    val besluittype: String? = null,
+    val zaak: String? = null,
+    val datum: String? = null,
+    val toelichting: String? = null,
+    val bestuursorgaan: String? = null,
+    val ingangsdatum: String? = null,
+    val vervaldatum: String? = null,
+    val vervalreden: String? = null,
+    val publicatiedatum: String? = null,
+    val verzendddatum: String? = null,
+    val uiterlijkeReactiedatum: String? = null
 )

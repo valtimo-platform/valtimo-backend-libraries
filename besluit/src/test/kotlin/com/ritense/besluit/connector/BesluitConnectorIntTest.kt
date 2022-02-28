@@ -17,16 +17,19 @@
 package com.ritense.besluit.connector
 
 import com.ritense.besluit.BaseIntegrationTest
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
-
 
 class BesluitConnectorIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should create besluit`() {
-        val besluit = besluitConnector.createBsluit();
+        val besluit = besluitConnector.createBesluit()
 
         assertNotNull(besluit)
+        assertEquals(
+            "http://localhost:8006/api/v1/besluiten/16d33b53-e283-40ef-8d86-6914282aea25",
+            besluit.url)
     }
 }

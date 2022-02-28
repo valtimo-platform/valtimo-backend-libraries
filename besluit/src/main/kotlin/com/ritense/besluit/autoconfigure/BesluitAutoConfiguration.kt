@@ -20,12 +20,13 @@ import com.ritense.besluit.client.BesluitClient
 import com.ritense.besluit.client.BesluitTokenGenerator
 import com.ritense.besluit.connector.BesluitConnector
 import com.ritense.besluit.connector.BesluitProperties
-import com.ritense.besluit.service.ServerAuthSpecification
 import io.netty.handler.logging.LogLevel
+import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Scope
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
@@ -56,9 +57,8 @@ class BesluitAutoConfiguration {
     fun besluitenService(
         besluitWebClient: WebClient,
         besluitTokenGenerator: BesluitTokenGenerator,
-        besluitProperties: BesluitProperties
     ): BesluitClient {
-        return BesluitClient(besluitWebClient, besluitTokenGenerator, besluitProperties)
+        return BesluitClient(besluitWebClient, besluitTokenGenerator)
     }
 
     @Bean
@@ -71,6 +71,7 @@ class BesluitAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(BesluitConnector::class)
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     fun besluitConnector(
         besluitProperties: BesluitProperties,
         besluitClient: BesluitClient
@@ -80,16 +81,9 @@ class BesluitAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(BesluitProperties::class)
-    fun besluitApiConnector(
-        besluitApi: ServerAuthSpecification
-    ) : BesluitProperties {
-        return BesluitProperties(besluitApi)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(ServerAuthSpecification::class)
-    fun besluitApi() : ServerAuthSpecification {
-        return ServerAuthSpecification()
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    fun besluitProperties() : BesluitProperties {
+        return BesluitProperties()
     }
 
     // Services
