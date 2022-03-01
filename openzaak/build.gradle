@@ -48,6 +48,7 @@ dependencies {
 
     //Kotlin
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "org.mockito:mockito-inline"
 
     jar {
         enabled = true
