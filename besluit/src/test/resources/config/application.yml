@@ -6,8 +6,7 @@ spring:
         username: valtimo
         password: password
         hikari:
-            auto-commit:
-                false
+            auto-commit: false
     liquibase:
         enabled: false
     jpa:

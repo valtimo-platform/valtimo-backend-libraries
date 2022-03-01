@@ -22,8 +22,13 @@ import com.ritense.besluit.connector.BesluitConnector
 import com.ritense.besluit.connector.BesluitProperties
 import io.netty.handler.logging.LogLevel
 import org.springframework.beans.factory.config.BeanDefinition
+import com.ritense.besluit.service.BesluitApiProperties
+import com.ritense.besluit.service.BesluitConnector
+import com.ritense.besluit.service.BesluitService
+import com.ritense.besluit.service.ServerAuthSpecification
+import com.ritense.besluit.web.rest.BesluitResource
+import com.ritense.openzaak.besluit.BesluitClient
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
@@ -34,8 +39,6 @@ import reactor.netty.http.client.HttpClient
 import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
-@EnableJpaRepositories(basePackages = ["com.ritense.besluit.repository"])
-@EntityScan("com.ritense.besluit.domain")
 class BesluitAutoConfiguration {
 
     @Bean
@@ -86,6 +89,22 @@ class BesluitAutoConfiguration {
         return BesluitProperties()
     }
 
+    @Bean
+    @ConditionalOnMissingBean(BesluitResource::class)
+    fun besluitResource(
+        besluitService: BesluitService,
+    ): BesluitResource {
+        return com.ritense.besluit.web.rest.impl.BesluitResource(besluitService)
+    }
+
     // Services
+
+    @Bean
+    @ConditionalOnMissingBean(BesluitService::class)
+    fun besluitService(
+        besluitClient: BesluitClient,
+    ): BesluitService {
+        return BesluitService(besluitClient)
+    }
 
 }

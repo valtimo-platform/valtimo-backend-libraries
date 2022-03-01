@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.besluit.service
+package com.ritense.besluit.web.rest.impl
 
 import com.ritense.besluit.domain.BesluitType
-import com.ritense.openzaak.besluit.BesluitClient
+import com.ritense.besluit.service.BesluitService
+import com.ritense.besluit.web.rest.BesluitResource
+import org.springframework.http.ResponseEntity
 
-open class BesluitService(
-    val besluitClient: BesluitClient
-) {
+class BesluitResource(
+    val besluitService: BesluitService,
+) : BesluitResource {
 
-    fun getBesluittypen(): List<BesluitType> {
-        return besluitClient.getBesluittypen().results
-            .map { BesluitType(it.url, it.omschrijving) }
+    override fun getBesluittypen(): ResponseEntity<List<BesluitType>> {
+        return ResponseEntity.ok(besluitService.getBesluittypen())
     }
+
 }

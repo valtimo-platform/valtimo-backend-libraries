@@ -28,6 +28,7 @@ import com.ritense.document.autoconfigure.DocumentSnapshotAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakLiquibaseAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakSecurityAutoConfiguration
+import com.ritense.openzaak.besluit.BesluitAutoConfiguration
 import com.ritense.processdocument.autoconfigure.ProcessDocumentAuditAutoConfiguration
 import com.ritense.processdocument.autoconfigure.ProcessDocumentAutoConfiguration
 import com.ritense.valtimo.autoconfigure.AccessAndEntitlementAutoConfiguration
@@ -56,6 +57,7 @@ import org.springframework.boot.test.context.TestConfiguration
         AccessAndEntitlementAutoConfiguration::class,
         AuditAutoConfiguration::class,
         AuthenticationAutoConfiguration::class,
+        BesluitAutoConfiguration::class,
         CamundaAutoConfiguration::class,
         CamundaBpmAutoConfiguration::class,
         ChoiceFieldAutoConfiguration::class,

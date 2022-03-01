@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2021 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.besluit.service
+package com.ritense.besluit.web.rest
 
 import com.ritense.besluit.domain.BesluitType
-import com.ritense.openzaak.besluit.BesluitClient
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
-open class BesluitService(
-    val besluitClient: BesluitClient
-) {
+@RestController
+@RequestMapping(value = ["/api/besluittype"], produces = [MediaType.APPLICATION_JSON_VALUE])
+interface BesluitResource {
 
-    fun getBesluittypen(): List<BesluitType> {
-        return besluitClient.getBesluittypen().results
-            .map { BesluitType(it.url, it.omschrijving) }
-    }
+    @GetMapping
+    fun getBesluittypen(
+    ): ResponseEntity<List<BesluitType>>
+
 }

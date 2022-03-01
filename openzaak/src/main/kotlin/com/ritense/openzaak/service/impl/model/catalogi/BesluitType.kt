@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.besluit.service
+package com.ritense.openzaak.service.impl.model.catalogi
 
-import com.ritense.besluit.domain.BesluitType
-import com.ritense.openzaak.besluit.BesluitClient
+import java.net.URI
 
-open class BesluitService(
-    val besluitClient: BesluitClient
-) {
-
-    fun getBesluittypen(): List<BesluitType> {
-        return besluitClient.getBesluittypen().results
-            .map { BesluitType(it.url, it.omschrijving) }
-    }
-}
+data class BesluitType (
+    val url: URI,
+    val omschrijving: String,
+)
