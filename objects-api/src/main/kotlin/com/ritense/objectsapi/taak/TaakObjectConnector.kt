@@ -25,6 +25,7 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.objectsapi.domain.GenericObject
 import com.ritense.objectsapi.domain.Record
 import com.ritense.objectsapi.domain.request.CreateObjectRequest
+import com.ritense.objectsapi.domain.request.ModifyObjectRequest
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.taak.TaakObjectConnector.Companion.TAAK_CONNECTOR_NAME
@@ -61,13 +62,28 @@ class TaakObjectConnector(
         createObjectRecord(taakObject)
     }
 
-    fun getTaakObject(taakObjectId: UUID): TaakObjectDto {
+    fun getTaakObjectRecord(taakObjectId: UUID): GenericObject<TaakObjectDto> {
         val type = ObjectsApiConnector.typeReference<GenericObject<TaakObjectDto>>()
-        return getObjectsApiConnector().getTypedObject(taakObjectId, type).record.data
+        return getObjectsApiConnector().getTypedObject(taakObjectId, type)
     }
 
     fun deleteTaakObject(taakObjectId: UUID) {
         getObjectsApiConnector().deleteObject(taakObjectId)
+    }
+
+    fun modifyTaakObjectStatusVerwerkt(taakObject: GenericObject<TaakObjectDto>) {
+        val data = Mapper.INSTANCE.get().convertValue(taakObject.record.data, jacksonTypeRef<MutableMap<String, Any>>())
+        data["status"] = TaakObjectStatus.verwerkt.toString()
+        val request = ModifyObjectRequest(
+            taakObject.uuid,
+            URI(taakObject.type),
+            Record(
+                taakObject.record.typeVersion.toString(),
+                taakObject.record.startAt,
+                data,
+            )
+        )
+        getObjectsApiConnector().modifyObject(request)
     }
 
     private fun createObjectRecord(taakObject: TaakObjectDto) {

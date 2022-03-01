@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi.domain
+package com.ritense.besluit.service
 
-import java.util.UUID
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.ritense.connector.config.Decryptor
+import com.ritense.connector.config.Encryptor
+import com.ritense.openzaak.domain.configuration.Rsin
 
-data class GenericObject<T> (
-    val uuid: UUID,
-    val url: String,
-    val type: String,
-    val record: ObjectRecord<T>
-)
-
-data class ObjectRecord<T> (
-    val typeVersion: Int,
-    val startAt: String,
-    val data: T
+class ServerAuthSpecification(
+    var url: String = "",
+    @set:JsonSerialize(using = Encryptor::class)
+    @get:JsonDeserialize(using = Decryptor::class)
+    var secret: String = "",
+    var clientId: String = "",
+    var rsin: Rsin = Rsin("")
 )
