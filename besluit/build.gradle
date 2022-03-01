@@ -24,10 +24,12 @@ dockerCompose {
 }
 
 dependencies {
+    implementation project(':audit')
     implementation project(':core')
     implementation project(':contract')
     implementation project(':connector')
     implementation project(':openzaak')
+    implementation project(':document')
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 

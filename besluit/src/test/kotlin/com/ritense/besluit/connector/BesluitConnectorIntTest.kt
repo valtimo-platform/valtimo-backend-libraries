@@ -20,12 +20,13 @@ import com.ritense.besluit.BaseIntegrationTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
+import java.net.URI
 
 class BesluitConnectorIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should create besluit`() {
-        val besluit = besluitConnector.createBesluit()
+        val besluit = besluitConnector.createBesluit(URI("http://example.com"), URI("http://example.com"))
 
         assertNotNull(besluit)
         assertEquals(

@@ -23,6 +23,8 @@ import com.ritense.connector.domain.ConnectorInstanceId
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
 import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorService
+import com.ritense.openzaak.catalogi.CatalogiClient
+import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
@@ -37,13 +39,18 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.HttpMethod
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.util.UUID
+import kotlin.test.fail
 
 @SpringBootTest
 @ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
 @Tag("integration")
 class BaseIntegrationTest : BaseTest() {
+
+    @MockBean
+    lateinit var catalogiClient: CatalogiClient
 
     @Autowired
     lateinit var besluitConnector: BesluitConnector
@@ -51,7 +58,7 @@ class BaseIntegrationTest : BaseTest() {
     @Autowired
     lateinit var besluitProperties: BesluitProperties
 
-    @Autowired
+    @MockBean
     lateinit var userManagementService: UserManagementService
 
     @Autowired
@@ -67,6 +74,7 @@ class BaseIntegrationTest : BaseTest() {
     lateinit var mailSender: MailSender
 
     lateinit var server: MockWebServer
+    protected var executedRequests: MutableList<RecordedRequest> =  mutableListOf()
 
     @BeforeEach
     internal fun setUp() {
@@ -83,11 +91,10 @@ class BaseIntegrationTest : BaseTest() {
         val dispatcher: Dispatcher = object : Dispatcher() {
             @Throws(InterruptedException::class)
             override fun dispatch(request: RecordedRequest): MockResponse {
-                val response = when (request.path?.substringBefore('?')) {
-                    "/api/v1/besluiten" -> when (request.method) {
-                        "POST" -> mockResponseFromFile("/data/create_besluit_response.json" )
-                        else -> MockResponse().setResponseCode(404)
-                    }
+                executedRequests.add(request)
+                val response = when (request.method + " " + request.path?.substringBefore('?')) {
+                    "POST /api/v1/besluiten" -> mockResponseFromFile("/data/create_besluit_response.json" )
+                    "POST /zaken/api/v1/zaken" -> mockResponseFromFile("/data/post-create-zaak.json")
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
@@ -102,6 +109,7 @@ class BaseIntegrationTest : BaseTest() {
         besluitProperties.url = server.url("/").toString()
         besluitProperties.clientId = "valtimo-test"
         besluitProperties.secret = "41625e21-c4ef-487b-93fc-e46a25278d12"
+        besluitProperties.rsin = Rsin("051845623")
         connectorDeploymentService.deployAll(listOf(besluitConnector))
 
         val connectorType = connectorService.getConnectorTypes().first { it.name == "Besluiten"}
@@ -122,6 +130,20 @@ class BaseIntegrationTest : BaseTest() {
             .addHeader("Content-Type", "application/json; charset=utf-8")
             .setResponseCode(200)
             .setBody(readFileAsString(fileName))
+    }
+
+    fun findRequest(method: HttpMethod, path: String): RecordedRequest? {
+        return executedRequests
+            .filter { method.matches(it.method!!) }
+            .firstOrNull { it.path?.substringBefore('?').equals(path) }
+    }
+
+    fun verifyRequestSent(method: HttpMethod, path: String, requestBodyFileName: String) {
+        val request = findRequest(method, path)
+        val requestBody = readFileAsString(requestBodyFileName).replace("{{baseUrl}}", server.url("/").toString())
+        if (request == null || requestBody == request.body.toString()){
+            fail("Request with method $method and path $path was not sent")
+        }
     }
 }
 

@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.klant.autoconfiguration.KlantAutoConfiguration
+  com.ritense.besluit.autoconfigure.BesluitAutoConfiguration, \
+  com.ritense.besluit.autoconfigure.BesluitSecurityAutoConfiguration

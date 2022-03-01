@@ -37,7 +37,7 @@ open class BesluitClient(
             .uri("/api/v1/besluiten")
             .bodyValue(request)
             .retrieve()
-            .awaitBody()
+            .awaitBody<Besluit>()
     }
 
     private fun webClient(besluitProperties: BesluitProperties): WebClient {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.listener
+package com.ritense.besluit.listener
 
+import com.ritense.besluit.connector.BesluitConnector
+import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
+import com.ritense.openzaak.listener.BaseServiceTaskListener
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
-import com.ritense.openzaak.service.impl.ZaakService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.annotation.Transactional
 
-open class ServiceTaskListener(
+open class BesluitServiceTaskListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
     private val documentService: DocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
-    private val zaakService: ZaakService,
-    private val repositoryService: RepositoryService
+    private val repositoryService: RepositoryService,
+    private val connectorService: ConnectorService,
 ) : BaseServiceTaskListener(
     zaakTypeLinkService,
     documentService,
@@ -49,23 +51,11 @@ open class ServiceTaskListener(
         val serviceTaskId = execution.currentActivityId
         val serviceTaskHandler = zaakTypeLink.getServiceTaskHandlerBy(processDefinitionKey, serviceTaskId) ?: return
 
-        when(serviceTaskHandler.operation) {
-            Operation.CREATE_ZAAK -> zaakService.createZaakWithLink(execution)
-            Operation.SET_RESULTAAT,
-            Operation.SET_STATUS -> handleOperation(execution, processDefinitionKey, document, zaakTypeLink)
-            else -> return
+        if (serviceTaskHandler.operation == Operation.CREATE_BESLUIT) {
+            val zaakInstanceLink = zaakInstanceLinkService.getByDocumentId(document.id().id)
+            val besluitConnector = connectorService.loadByClassName(BesluitConnector::class.java)
+            val besluitTypeUrl = serviceTaskHandler.parameter
+            besluitConnector.createBesluit(zaakInstanceLink.zaakInstanceUrl, besluitTypeUrl)
         }
-    }
-
-    private fun handleOperation(
-        execution: DelegateExecution,
-        processDefinitionKey: String,
-        document: Document,
-        zaakTypeLink: ZaakTypeLink
-    ) {
-        // TODO [RV] - Can we remove the when in handleServiceTask by using the when above?
-        val zaakInstanceUrl = zaakInstanceLinkService.getByDocumentId(document.id().id).zaakInstanceUrl
-        zaakTypeLink.handleServiceTask(execution, processDefinitionKey, zaakInstanceUrl)
-        zaakTypeLinkService.modify(zaakTypeLink)
     }
 }

@@ -17,14 +17,14 @@
 package com.ritense.besluit.service
 
 import com.ritense.besluit.domain.BesluitType
-import com.ritense.openzaak.besluit.BesluitClient
+import com.ritense.openzaak.catalogi.CatalogiClient
 
 open class BesluitService(
-    val besluitClient: BesluitClient
+    private val catalogiClient: CatalogiClient
 ) {
 
     fun getBesluittypen(): List<BesluitType> {
-        return besluitClient.getBesluittypen().results
+        return catalogiClient.getBesluittypen().results
             .map { BesluitType(it.url, it.omschrijving) }
     }
 }

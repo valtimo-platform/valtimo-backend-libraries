@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.besluit
+package com.ritense.openzaak.catalogi
 
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.openzaak.BaseTest
@@ -34,12 +34,12 @@ import java.net.URI
 
 class BesluitClientTest : BaseTest() {
 
-    lateinit var besluitClient: BesluitClient
+    lateinit var besluitClient: CatalogiClient
 
     @BeforeEach
     fun setUp() {
         baseSetUp()
-        besluitClient = BesluitClient(
+        besluitClient = CatalogiClient(
             restTemplate,
             openZaakConfigService,
             openZaakTokenGeneratorService

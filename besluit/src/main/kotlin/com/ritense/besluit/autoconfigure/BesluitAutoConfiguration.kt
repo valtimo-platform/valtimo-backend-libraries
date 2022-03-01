@@ -16,23 +16,24 @@
 
 package com.ritense.besluit.autoconfigure
 
-import com.ritense.besluit.client.BesluitClient
 import com.ritense.besluit.client.BesluitTokenGenerator
 import com.ritense.besluit.connector.BesluitConnector
 import com.ritense.besluit.connector.BesluitProperties
-import io.netty.handler.logging.LogLevel
-import org.springframework.beans.factory.config.BeanDefinition
-import com.ritense.besluit.service.BesluitApiProperties
-import com.ritense.besluit.service.BesluitConnector
+import com.ritense.besluit.listener.BesluitServiceTaskListener
 import com.ritense.besluit.service.BesluitService
-import com.ritense.besluit.service.ServerAuthSpecification
 import com.ritense.besluit.web.rest.BesluitResource
-import com.ritense.openzaak.besluit.BesluitClient
+import com.ritense.connector.service.ConnectorService
+import com.ritense.document.service.DocumentService
+import com.ritense.openzaak.catalogi.CatalogiClient
+import com.ritense.openzaak.service.ZaakTypeLinkService
+import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
+import io.netty.handler.logging.LogLevel
+import org.camunda.bpm.engine.RepositoryService
+import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
@@ -43,7 +44,7 @@ class BesluitAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(WebClient::class)
-    fun contactMomentWebClientBuilder(): WebClient {
+    fun besluitWebClient(): WebClient {
         return WebClient.builder().clientConnector(
             ReactorClientHttpConnector(
                 HttpClient.create().wiretap(
@@ -56,12 +57,12 @@ class BesluitAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(BesluitClient::class)
+    @ConditionalOnMissingBean(com.ritense.besluit.client.BesluitClient::class)
     fun besluitenService(
         besluitWebClient: WebClient,
         besluitTokenGenerator: BesluitTokenGenerator,
-    ): BesluitClient {
-        return BesluitClient(besluitWebClient, besluitTokenGenerator)
+    ): com.ritense.besluit.client.BesluitClient {
+        return com.ritense.besluit.client.BesluitClient(besluitWebClient, besluitTokenGenerator)
     }
 
     @Bean
@@ -77,7 +78,7 @@ class BesluitAutoConfiguration {
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     fun besluitConnector(
         besluitProperties: BesluitProperties,
-        besluitClient: BesluitClient
+        besluitClient: com.ritense.besluit.client.BesluitClient
     ) : BesluitConnector {
         return BesluitConnector(besluitProperties, besluitClient)
     }
@@ -102,9 +103,27 @@ class BesluitAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(BesluitService::class)
     fun besluitService(
-        besluitClient: BesluitClient,
+        catalogiClient: CatalogiClient,
     ): BesluitService {
-        return BesluitService(besluitClient)
+        return BesluitService(catalogiClient)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(BesluitServiceTaskListener::class)
+    fun besluitServiceTaskListener(
+        zaakTypeLinkService: ZaakTypeLinkService,
+        documentService: DocumentService,
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        repositoryService: RepositoryService,
+        connectorService: ConnectorService
+    ): BesluitServiceTaskListener {
+        return BesluitServiceTaskListener(
+            zaakTypeLinkService,
+            documentService,
+            zaakInstanceLinkService,
+            repositoryService,
+            connectorService
+        )
     }
 
 }
