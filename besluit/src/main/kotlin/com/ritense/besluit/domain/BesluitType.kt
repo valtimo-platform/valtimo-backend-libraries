@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.besluit.web.rest.response
+package com.ritense.besluit.domain
 
 import java.net.URI
 
-data class BesluitTypeResponse(
+data class BesluitType(
     val url: URI,
     val omschrijving: String,
 )

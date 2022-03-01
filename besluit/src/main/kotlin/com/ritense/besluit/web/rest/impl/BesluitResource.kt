@@ -16,20 +16,17 @@
 
 package com.ritense.besluit.web.rest.impl
 
+import com.ritense.besluit.domain.BesluitType
+import com.ritense.besluit.service.BesluitService
 import com.ritense.besluit.web.rest.BesluitResource
-import com.ritense.besluit.web.rest.response.BesluitTypeResponse
-import com.ritense.openzaak.service.impl.ZaakTypeService
 import org.springframework.http.ResponseEntity
 
 class BesluitResource(
-    val zaakTypeService: ZaakTypeService,
+    val besluitService: BesluitService,
 ) : BesluitResource {
 
-    override fun getBesluitTypen(): ResponseEntity<List<BesluitTypeResponse>> {
-        val besluitTypes = zaakTypeService.getBesluitTypes().results
-            .map { BesluitTypeResponse(it.url, it.omschrijving) }
-
-        return ResponseEntity.ok(besluitTypes)
+    override fun getBesluittypen(): ResponseEntity<List<BesluitType>> {
+        return ResponseEntity.ok(besluitService.getBesluittypen())
     }
 
 }

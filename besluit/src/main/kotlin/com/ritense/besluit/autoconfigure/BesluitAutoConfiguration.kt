@@ -2,10 +2,10 @@ package com.ritense.besluit.autoconfigure
 
 import com.ritense.besluit.service.BesluitApiProperties
 import com.ritense.besluit.service.BesluitConnector
-import com.ritense.besluit.service.BesluitenService
+import com.ritense.besluit.service.BesluitService
 import com.ritense.besluit.service.ServerAuthSpecification
 import com.ritense.besluit.web.rest.BesluitResource
-import com.ritense.openzaak.service.impl.ZaakTypeService
+import com.ritense.openzaak.besluit.BesluitClient
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -40,19 +40,19 @@ class BesluitAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(BesluitResource::class)
     fun besluitResource(
-        zaakTypeService: ZaakTypeService
+        besluitService: BesluitService,
     ): BesluitResource {
-        return com.ritense.besluit.web.rest.impl.BesluitResource(zaakTypeService)
+        return com.ritense.besluit.web.rest.impl.BesluitResource(besluitService)
     }
 
     // Services
 
     @Bean
-    @ConditionalOnMissingBean(BesluitenService::class)
-    fun besluitenService(
-        besluitApiProperties: BesluitApiProperties
-    ): BesluitenService {
-        return BesluitenService(besluitApiProperties)
+    @ConditionalOnMissingBean(BesluitService::class)
+    fun besluitService(
+        besluitClient: BesluitClient,
+    ): BesluitService {
+        return BesluitService(besluitClient)
     }
 
 }

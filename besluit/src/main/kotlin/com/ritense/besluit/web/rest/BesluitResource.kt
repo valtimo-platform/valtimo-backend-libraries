@@ -16,7 +16,7 @@
 
 package com.ritense.besluit.web.rest
 
-import com.ritense.besluit.web.rest.response.BesluitTypeResponse
+import com.ritense.besluit.domain.BesluitType
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -24,11 +24,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/besluit/types"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api/besluittype"], produces = [MediaType.APPLICATION_JSON_VALUE])
 interface BesluitResource {
 
     @GetMapping
-    fun getBesluitTypen(
-    ): ResponseEntity<List<BesluitTypeResponse>>
+    fun getBesluittypen(
+    ): ResponseEntity<List<BesluitType>>
 
 }

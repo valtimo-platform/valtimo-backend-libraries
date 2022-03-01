@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.service
+package com.ritense.openzaak.besluit
 
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.openzaak.BaseTest
-import com.ritense.openzaak.service.impl.ZaakTypeService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
-import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
+import com.ritense.openzaak.service.impl.model.catalogi.BesluitType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,25 +32,32 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.net.URI
 
-class ZaakTypeServiceTest : BaseTest() {
+class BesluitClientTest : BaseTest() {
 
-    lateinit var zaakTypeService: ZaakTypeService
+    lateinit var besluitClient: BesluitClient
 
     @BeforeEach
     fun setUp() {
         baseSetUp()
-        zaakTypeService = ZaakTypeService(
+        besluitClient = BesluitClient(
             restTemplate,
             openZaakConfigService,
             openZaakTokenGeneratorService
         )
-        httpGetZaaktypen()
     }
 
     @Test
-    fun `should get zaaktypen`() {
+    fun `should get besluit typen`() {
         //given
-        val result = zaakTypeService.getZaakTypes()
+        httpCall(
+            listOf(
+                BesluitType(
+                    URI.create("http://example.com"),
+                    "omschrijving"
+                )
+            )
+        )
+        val result = besluitClient.getBesluittypen()
 
         //when
         val zaaktype = result.results.first()
@@ -59,30 +65,27 @@ class ZaakTypeServiceTest : BaseTest() {
         //then
         assertThat(zaaktype.url).isEqualTo(URI.create("http://example.com"))
         assertThat(zaaktype.omschrijving).isEqualTo("omschrijving")
-        assertThat(zaaktype.omschrijvingGeneriek).isEqualTo("omschrijvingGeneriek")
     }
 
-    private fun httpGetZaaktypen() {
+    private fun httpCall(entities: List<Any>) {
         val responseEntity = ResponseEntity(
             ResultWrapper(
                 1,
                 URI.create("http://example.com"),
                 URI.create("http://example.com"),
-                listOf(ZaakType(
-                    URI.create("http://example.com"),
-                    "omschrijving",
-                    "omschrijvingGeneriek"
-                ))
+                entities
             ),
             httpHeaders(),
             HttpStatus.OK
         )
-        whenever(restTemplate.exchange(
-            anyString(),
-            any(HttpMethod::class.java),
-            any(HttpEntity::class.java),
-            any(ParameterizedTypeReference::class.java)
-        )).thenReturn(responseEntity)
+        whenever(
+            restTemplate.exchange(
+                anyString(),
+                any(HttpMethod::class.java),
+                any(HttpEntity::class.java),
+                any(ParameterizedTypeReference::class.java)
+            )
+        ).thenReturn(responseEntity)
     }
 
 }

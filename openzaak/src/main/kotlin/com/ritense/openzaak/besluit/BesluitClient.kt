@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.service.impl
+package com.ritense.openzaak.besluit
 
-import com.ritense.openzaak.service.ZaakTypeService
+import com.ritense.openzaak.service.impl.OpenZaakConfigService
+import com.ritense.openzaak.service.impl.OpenZaakRequestBuilder
+import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
-import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
+import com.ritense.openzaak.service.impl.model.catalogi.BesluitType
 import org.springframework.web.client.RestTemplate
 
-class ZaakTypeService(
+class BesluitClient(
     private val restTemplate: RestTemplate,
     private val openZaakConfigService: OpenZaakConfigService,
     private val openZaakTokenGeneratorService: OpenZaakTokenGeneratorService
-) : ZaakTypeService {
+) {
 
-    override fun getZaakTypes(): ResultWrapper<ZaakType> {
+    fun getBesluittypen(): ResultWrapper<BesluitType> {
         return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
-            .path("catalogi/api/v1/zaaktypen")
+            .path("catalogi/api/v1/besluittypen")
             .get()
             .build()
-            .executeWrapped(ZaakType::class.java)
+            .executeWrapped(BesluitType::class.java)
     }
 
 }

@@ -48,7 +48,7 @@ internal class BesluitResourceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should get besluit types`() {
-        whenever(zaakTypeService.getBesluitTypes()).thenReturn(
+        whenever(besluitClient.getBesluittypen()).thenReturn(
             ResultWrapper(
                 1,
                 null,
@@ -57,7 +57,7 @@ internal class BesluitResourceIntTest : BaseIntegrationTest() {
             )
         )
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/besluit/types"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/besluittype"))
             .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
