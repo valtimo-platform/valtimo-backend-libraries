@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022W Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':audit')
     implementation project(':core')
     implementation project(':contract')
     implementation project(':connector')
@@ -40,7 +39,6 @@ dependencies {
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
-    testImplementation project(':audit')
     testImplementation project(':document')
     testImplementation project(':process-document')
     testImplementation project(path: ":core", configuration: 'testOutput')

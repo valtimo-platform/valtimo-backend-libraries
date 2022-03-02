@@ -16,6 +16,7 @@
 
 package com.ritense.besluit.autoconfigure
 
+import com.ritense.besluit.client.BesluitClient
 import com.ritense.besluit.client.BesluitTokenGenerator
 import com.ritense.besluit.connector.BesluitConnector
 import com.ritense.besluit.connector.BesluitProperties
@@ -57,12 +58,12 @@ class BesluitAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(com.ritense.besluit.client.BesluitClient::class)
-    fun besluitenService(
+    @ConditionalOnMissingBean(BesluitClient::class)
+    fun besluitClient(
         besluitWebClient: WebClient,
         besluitTokenGenerator: BesluitTokenGenerator,
-    ): com.ritense.besluit.client.BesluitClient {
-        return com.ritense.besluit.client.BesluitClient(besluitWebClient, besluitTokenGenerator)
+    ): BesluitClient {
+        return BesluitClient(besluitWebClient, besluitTokenGenerator)
     }
 
     @Bean

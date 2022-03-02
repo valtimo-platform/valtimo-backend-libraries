@@ -93,7 +93,7 @@ class BaseIntegrationTest : BaseTest() {
             override fun dispatch(request: RecordedRequest): MockResponse {
                 executedRequests.add(request)
                 val response = when (request.method + " " + request.path?.substringBefore('?')) {
-                    "POST /api/v1/besluiten" -> mockResponseFromFile("/data/create_besluit_response.json")
+                    "POST /api/v1/besluiten" -> mockResponseFromFile("/data/post-create-besluit.json")
                     "POST /zaken/api/v1/zaken" -> mockResponseFromFile("/data/post-create-zaak.json")
                     else -> MockResponse().setResponseCode(404)
                 }

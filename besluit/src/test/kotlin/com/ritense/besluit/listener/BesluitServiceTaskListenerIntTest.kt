@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpMethod
 import java.net.URI
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
@@ -46,24 +46,21 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
     @Test
     fun `Should create besluit by process connection`() {
         val zaakTypeLink = createZaakTypeLink()
-        assignServiceTaskHandler(zaakTypeLink.id)
+        assignServiceTaskHandlerToCreateBesluit(zaakTypeLink.id)
         createProcessDocumentDefinition()
         setupOpenZaakConnector()
 
-        startProcess()
+        startCreateBesluitProcess()
 
         val requestBody = getRequestBody(HttpMethod.POST, "/api/v1/besluiten", CreateBesluitRequest::class.java)
         Assertions.assertThat(requestBody.verantwoordelijkeOrganisatie).isEqualTo("051845623")
-        Assertions.assertThat(requestBody.besluittype)
-            .isEqualTo("${server.url("/")}catalogi/api/v1/besluittypen/9305dc14-68bd-4e78-986d-626304196bae")
-        Assertions.assertThat(requestBody.zaak)
-            .isEqualTo("http://some-url/zaken/api/v1/zaken/7413e298-c78b-4ab8-8e8a-a825faed0e7f")
-        Assertions.assertThat(requestBody.datum).isEqualTo(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
-        Assertions.assertThat(requestBody.ingangsdatum)
-            .isEqualTo(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+        Assertions.assertThat(requestBody.besluittype).endsWith("/catalogi/api/v1/besluittypen/9305dc14-68bd-4e78-986d-626304196bae")
+        Assertions.assertThat(requestBody.zaak).endsWith("/zaken/api/v1/zaken/7413e298-c78b-4ab8-8e8a-a825faed0e7f")
+        Assertions.assertThat(requestBody.datum).isEqualTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+        Assertions.assertThat(requestBody.ingangsdatum).isEqualTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
     }
 
-    fun startProcess() {
+    fun startCreateBesluitProcess() {
         val newDocumentRequest = NewDocumentRequest(
             "testschema",
             Mapper.get().readTree("{\"voornaam\": \"John\"}")
@@ -87,7 +84,7 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
         )
     }
 
-    fun assignServiceTaskHandler(zaakTypeLinkId: ZaakTypeLinkId): CreateServiceTaskHandlerResult {
+    fun assignServiceTaskHandlerToCreateBesluit(zaakTypeLinkId: ZaakTypeLinkId): CreateServiceTaskHandlerResult {
         return zaakTypeLinkService.assignServiceTaskHandler(
             zaakTypeLinkId,
             ServiceTaskHandlerRequest(

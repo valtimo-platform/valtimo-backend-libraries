@@ -17,6 +17,7 @@
 package com.ritense.klant.service
 
 import com.ritense.audit.autoconfigure.AuditAutoConfiguration
+import com.ritense.besluit.autoconfigure.BesluitAutoConfiguration
 import com.ritense.connector.autoconfigure.ConnectorAutoConfiguration
 import com.ritense.connector.autoconfigure.ConnectorLiquibaseAutoConfiguration
 import com.ritense.connector.autoconfigure.ConnectorSecurityAutoConfiguration
@@ -57,6 +58,7 @@ import org.springframework.boot.test.context.TestConfiguration
         AccessAndEntitlementAutoConfiguration::class,
         AuditAutoConfiguration::class,
         AuthenticationAutoConfiguration::class,
+        BesluitAutoConfiguration::class,
         CatalogiAutoConfiguration::class,
         CamundaAutoConfiguration::class,
         CamundaBpmAutoConfiguration::class,

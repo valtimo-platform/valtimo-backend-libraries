@@ -182,8 +182,6 @@ valtimo:
         rsin: "051845623"
 
     genericTemplateName: "template-name"
-    besluitDocumentRequired: true
-
 
 
 spring-actuator:
