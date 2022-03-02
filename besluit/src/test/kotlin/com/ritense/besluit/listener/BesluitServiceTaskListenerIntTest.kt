@@ -1,6 +1,7 @@
 package com.ritense.besluit.listener
 
 import com.ritense.besluit.BaseIntegrationTest
+import com.ritense.besluit.domain.request.CreateBesluitRequest
 import com.ritense.connector.domain.Connector
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.openzaak.domain.configuration.Rsin
@@ -18,12 +19,16 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.http.HttpMethod
 import java.net.URI
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-class BesluitServiceTaskListenerTest : BaseIntegrationTest() {
+class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var zaakTypeLinkService: ZaakTypeLinkService
@@ -47,25 +52,28 @@ class BesluitServiceTaskListenerTest : BaseIntegrationTest() {
 
         startProcess()
 
-//        val requestBody = getRequestBody(HttpMethod.POST, "/api/v1/besluit", tionsCreateBesluitRequest::class.java)
-//        Assertions.assertThat(requestBody.verantwoordelijkeOrganisatie).isEqualTo("051845623")
-//        Assertions.assertThat(requestBody.besluittype).isEqualTo("${server.url("/")}catalogi/api/v1/besluittypen/9305dc14-68bd-4e78-986d-626304196bae")
-//        Assertions.assertThat(requestBody.zaak).isEqualTo("test")
+        val requestBody = getRequestBody(HttpMethod.POST, "/api/v1/besluiten", CreateBesluitRequest::class.java)
+        Assertions.assertThat(requestBody.verantwoordelijkeOrganisatie).isEqualTo("051845623")
+        Assertions.assertThat(requestBody.besluittype)
+            .isEqualTo("${server.url("/")}catalogi/api/v1/besluittypen/9305dc14-68bd-4e78-986d-626304196bae")
+        Assertions.assertThat(requestBody.zaak)
+            .isEqualTo("http://some-url/zaken/api/v1/zaken/7413e298-c78b-4ab8-8e8a-a825faed0e7f")
+        Assertions.assertThat(requestBody.datum).isEqualTo(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+        Assertions.assertThat(requestBody.ingangsdatum)
+            .isEqualTo(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
     }
 
-//    fun getRequestBody(method: HttpMethod, path: String, clazz: Class<Any>) {
-//        return Mapper.get().readValue(findRequest(method, path)!!.body.readUtf8(), clazz)
-//    }
-
     fun startProcess() {
-        val newDocumentRequest =  NewDocumentRequest(
+        val newDocumentRequest = NewDocumentRequest(
             "testschema",
             Mapper.get().readTree("{\"voornaam\": \"John\"}")
         )
         processDocumentService.newDocumentAndStartProcess(
             NewDocumentAndStartProcessRequest(
                 "CreateBesluitProcess",
-                newDocumentRequest))
+                newDocumentRequest
+            )
+        )
     }
 
     fun createProcessDocumentDefinition() {
@@ -83,8 +91,8 @@ class BesluitServiceTaskListenerTest : BaseIntegrationTest() {
         return zaakTypeLinkService.assignServiceTaskHandler(
             zaakTypeLinkId,
             ServiceTaskHandlerRequest(
-                "test-create-besluit-process",
-                "create-besluit-task",
+                "CreateBesluitProcess",
+                "CreateBesluitTask",
                 Operation.CREATE_BESLUIT,
                 URI("${server.url("/")}catalogi/api/v1/besluittypen/9305dc14-68bd-4e78-986d-626304196bae")
             )

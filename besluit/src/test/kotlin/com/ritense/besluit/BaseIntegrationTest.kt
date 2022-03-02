@@ -25,6 +25,7 @@ import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorService
 import com.ritense.openzaak.catalogi.CatalogiClient
 import com.ritense.openzaak.domain.configuration.Rsin
+import com.ritense.openzaak.service.impl.Mapper
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
@@ -41,8 +42,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpMethod
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.util.UUID
-import kotlin.test.fail
+import java.util.*
 
 @SpringBootTest
 @ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
@@ -74,7 +74,7 @@ class BaseIntegrationTest : BaseTest() {
     lateinit var mailSender: MailSender
 
     lateinit var server: MockWebServer
-    protected var executedRequests: MutableList<RecordedRequest> =  mutableListOf()
+    protected var executedRequests: MutableList<RecordedRequest> = mutableListOf()
 
     @BeforeEach
     internal fun setUp() {
@@ -93,7 +93,7 @@ class BaseIntegrationTest : BaseTest() {
             override fun dispatch(request: RecordedRequest): MockResponse {
                 executedRequests.add(request)
                 val response = when (request.method + " " + request.path?.substringBefore('?')) {
-                    "POST /api/v1/besluiten" -> mockResponseFromFile("/data/create_besluit_response.json" )
+                    "POST /api/v1/besluiten" -> mockResponseFromFile("/data/create_besluit_response.json")
                     "POST /zaken/api/v1/zaken" -> mockResponseFromFile("/data/post-create-zaak.json")
                     else -> MockResponse().setResponseCode(404)
                 }
@@ -112,7 +112,7 @@ class BaseIntegrationTest : BaseTest() {
         besluitProperties.rsin = Rsin("051845623")
         connectorDeploymentService.deployAll(listOf(besluitConnector))
 
-        val connectorType = connectorService.getConnectorTypes().first { it.name == "Besluiten"}
+        val connectorType = connectorService.getConnectorTypes().first { it.name == "Besluiten" }
         val connectorInstanceId = ConnectorInstanceId.newId(UUID.fromString("731008ba-a062-4840-9d32-e29c08d32943"))
         val connectorInstance = ConnectorInstance(
             connectorInstanceId,
@@ -138,12 +138,8 @@ class BaseIntegrationTest : BaseTest() {
             .firstOrNull { it.path?.substringBefore('?').equals(path) }
     }
 
-    fun verifyRequestSent(method: HttpMethod, path: String, requestBodyFileName: String) {
-        val request = findRequest(method, path)
-        val requestBody = readFileAsString(requestBodyFileName).replace("{{baseUrl}}", server.url("/").toString())
-        if (request == null || requestBody == request.body.toString()){
-            fail("Request with method $method and path $path was not sent")
-        }
+    fun <T> getRequestBody(method: HttpMethod, path: String, clazz: Class<T>): T {
+        return Mapper.get().readValue(findRequest(method, path)!!.body.readUtf8(), clazz)
     }
 }
 
