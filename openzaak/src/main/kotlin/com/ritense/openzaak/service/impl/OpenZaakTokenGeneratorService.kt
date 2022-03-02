@@ -20,12 +20,16 @@ import com.ritense.openzaak.service.TokenGeneratorService
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import io.jsonwebtoken.JwtBuilder
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import java.nio.charset.Charset
 import java.util.Date
+import mu.KLogger
+import mu.KotlinLogging
 
 class OpenZaakTokenGeneratorService : TokenGeneratorService {
+
 
     override fun generateToken(secretKey: String, clientId: String): String {
         if (secretKey.length < 32) {
@@ -40,17 +44,40 @@ class OpenZaakTokenGeneratorService : TokenGeneratorService {
             .claim("client_id", clientId)
 
         appendUserInfo(jwtBuilder)
+        copyClaimsFromAuthentication(jwtBuilder, "realm_access", "resource_access")
         return jwtBuilder
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact()
     }
 
-    fun appendUserInfo(jwtBuilder: JwtBuilder): JwtBuilder {
+    private fun appendUserInfo(jwtBuilder: JwtBuilder) {
         val userLogin = SecurityUtils.getCurrentUserLogin()
         val userId = userLogin ?: "Valtimo"
-        return jwtBuilder
+
+        jwtBuilder
             .claim("user_id", userId)
             .claim("user_representation", "")
     }
 
+    private fun copyClaimsFromAuthentication(jwtBuilder: JwtBuilder, vararg claims: String) {
+        val authentication = SecurityUtils.getCurrentUserAuthentication()
+
+        val jwtToken: String = authentication?.credentials.toString()
+        val unsignedToken = jwtToken.split("\\.", limit = 2).joinToString(".")
+
+        val jwtParser = Jwts.parserBuilder().build()
+        try {
+            val jwtClaims = jwtParser.parseClaimsJwt(unsignedToken).body
+
+            jwtBuilder.addClaims(jwtClaims.filterKeys {
+                claims.contains(it)
+            })
+        } catch (ex: MalformedJwtException) {
+            logger.error { ex }
+        }
+    }
+
+    companion object {
+        val logger: KLogger = KotlinLogging.logger {}
+    }
 }
