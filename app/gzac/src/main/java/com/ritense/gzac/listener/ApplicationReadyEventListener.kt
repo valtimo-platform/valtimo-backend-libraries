@@ -5,6 +5,7 @@ import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
+import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagTypeMapping
@@ -23,6 +24,7 @@ import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -37,7 +39,8 @@ class ApplicationReadyEventListener(
     private val objectSyncService: ObjectSyncService,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val zaakTypeLinkService: ZaakTypeLinkService,
-    private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService
+    private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
+    private val documentDefinitionService: DocumentDefinitionService,
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
@@ -49,6 +52,7 @@ class ApplicationReadyEventListener(
     fun handleDocumentDefinitionDeployed(event: DocumentDefinitionDeployedEvent) {
         linkProcess(event)
         connectZaakType(event)
+        setDocumentDefinitionRole(event)
     }
 
     fun createConnectors() {
@@ -275,6 +279,13 @@ class ApplicationReadyEventListener(
                 )
             )
         }
+    }
+
+    fun setDocumentDefinitionRole(event: DocumentDefinitionDeployedEvent) {
+        documentDefinitionService.putDocumentDefinitionRoles(
+            event.documentDefinition().id().name(),
+            setOf(AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER)
+        )
     }
 
     companion object {
