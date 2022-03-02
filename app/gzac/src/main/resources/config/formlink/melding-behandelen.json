@@ -1,0 +1,12 @@
+[
+    {
+        "formName": "start-form-melding",
+        "formLinkElementId": "start-event-melding-behandelen",
+        "formAssociationType": "start-event"
+    },
+    {
+        "formName": "user-task-melding-bekijken",
+        "formLinkElementId": "melding-bekijken",
+        "formAssociationType": "user-task"
+    }
+]

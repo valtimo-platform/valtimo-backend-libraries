@@ -48,6 +48,7 @@ include(
         "objects-api",
         "document-export",
         "klant",
-        "test-utils-common"
+        "test-utils-common",
+        "besluit"
 )
 

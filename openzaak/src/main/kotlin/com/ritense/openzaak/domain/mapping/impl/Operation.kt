@@ -19,5 +19,6 @@ package com.ritense.openzaak.domain.mapping.impl
 enum class Operation {
     CREATE_ZAAK,
     SET_RESULTAAT,
-    SET_STATUS
+    SET_STATUS,
+    CREATE_BESLUIT,
 }

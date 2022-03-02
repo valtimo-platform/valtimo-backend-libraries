@@ -202,10 +202,16 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         documentDefinitionRepository.deleteByIdName(documentDefinitionName);
     }
 
+
     @Override
     public boolean currentUserCanAccessDocumentDefinition(String documentDefinitionName) {
+        return currentUserCanAccessDocumentDefinition(false, documentDefinitionName);
+    }
+
+    @Override
+    public boolean currentUserCanAccessDocumentDefinition(boolean allowPrivilegedRoles, String documentDefinitionName) {
         List<String> roles = SecurityUtils.getCurrentUserRoles();
-        return roles.contains(AuthoritiesConstants.ADMIN)
+        return (allowPrivilegedRoles && roles.contains(AuthoritiesConstants.ADMIN))
             || getDocumentDefinitionRoles(documentDefinitionName).stream().anyMatch(roles::contains);
     }
 

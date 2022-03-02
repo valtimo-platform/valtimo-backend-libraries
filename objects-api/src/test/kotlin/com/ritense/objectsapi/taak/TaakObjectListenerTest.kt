@@ -1,11 +1,14 @@
 package com.ritense.objectsapi.taak
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.connector.domain.Connector
 import com.ritense.document.service.DocumentService
+import com.ritense.objectsapi.domain.GenericObject
+import com.ritense.objectsapi.domain.ObjectRecord
 import com.ritense.objectsapi.domain.request.HandleNotificationRequest
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
@@ -61,17 +64,21 @@ internal class TaakObjectListenerTest {
         whenever(connector.getObjectsApiConnector()).thenReturn(objectsApiConnector)
         whenever(objectsApiConnector.getProperties()).thenReturn(ObjectsApiProperties(
             objectType = ObjectTypeConfig(
-                title = "some-type"
+                url = "http://example.com/some-url"
             )
         ))
 
-        whenever(connector.getTaakObject(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))).thenReturn(
-            TaakObjectDto(
-                bsn = "bsn",
-                kvk = "kvk",
-                verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
-                formulierId = "some-form",
-                status = TaakObjectStatus.ingediend
+        whenever(connector.getTaakObjectRecord(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))).thenReturn(
+            GenericObject(
+                UUID.randomUUID(), "http://example.com", "taak", ObjectRecord(
+                    1, "2022-01-01", TaakObjectDto(
+                        bsn = "bsn",
+                        kvk = "kvk",
+                        verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
+                        formulierId = "some-form",
+                        status = TaakObjectStatus.ingediend
+                    )
+                )
             )
         )
 
@@ -79,9 +86,9 @@ internal class TaakObjectListenerTest {
             HandleNotificationRequest(
                 "objecten",
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
-                "edit",
+                "update",
                 mapOf(
-                    "objectType" to "some-type"
+                    "objectType" to "http://example.com/some-url"
                 )
             ),
             "123",
@@ -91,7 +98,7 @@ internal class TaakObjectListenerTest {
         listener.notificationReceived(event)
 
         verify(camundaTaskService).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
-        verify(connector).deleteTaakObject(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))
+        verify(connector).modifyTaakObjectStatusVerwerkt(any())
     }
 
     @Test
@@ -100,9 +107,9 @@ internal class TaakObjectListenerTest {
             HandleNotificationRequest(
                 "some-invalid-kanaal",
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
-                "edit",
+                "update",
                 mapOf(
-                    "objectType" to "some-type"
+                    "objectType" to "http://some-url/some-type"
                 )
             ),
             "123",
@@ -122,7 +129,7 @@ internal class TaakObjectListenerTest {
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
                 "create",
                 mapOf(
-                    "objectType" to "some-type"
+                    "objectType" to "http://some-url/some-type"
                 )
             ),
             "123",
@@ -143,9 +150,9 @@ internal class TaakObjectListenerTest {
             HandleNotificationRequest(
                 "objecten",
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
-                "edit",
+                "update",
                 mapOf(
-                    "objectType" to "some-type"
+                    "objectType" to "http://some-url/some-type"
                 )
             ),
             "123",
@@ -174,9 +181,9 @@ internal class TaakObjectListenerTest {
             HandleNotificationRequest(
                 "objecten",
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
-                "edit",
+                "update",
                 mapOf(
-                    "objectType" to "some-type"
+                    "objectType" to "http://some-url/some-type"
                 )
             ),
             "123",
@@ -202,13 +209,17 @@ internal class TaakObjectListenerTest {
             )
         ))
 
-        whenever(connector.getTaakObject(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))).thenReturn(
-            TaakObjectDto(
-                bsn = "bsn",
-                kvk = "kvk",
-                verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
-                formulierId = "some-form",
-                status = TaakObjectStatus.verwerkt
+        whenever(connector.getTaakObjectRecord(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))).thenReturn(
+            GenericObject(
+                UUID.randomUUID(), "http://example.com", "taak", ObjectRecord(
+                    1, "2022-01-01", TaakObjectDto(
+                        bsn = "bsn",
+                        kvk = "kvk",
+                        verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
+                        formulierId = "some-form",
+                        status = TaakObjectStatus.ingediend
+                    )
+                )
             )
         )
 
@@ -216,9 +227,9 @@ internal class TaakObjectListenerTest {
             HandleNotificationRequest(
                 "objecten",
                 "http://some-url/api/321f370a-b8cc-4286-91d8-2fd293796b4c",
-                "edit",
+                "update",
                 mapOf(
-                    "objectType" to "some-type"
+                    "objectType" to "http://some-url/some-type"
                 )
             ),
             "123",

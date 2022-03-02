@@ -37,6 +37,7 @@ import org.camunda.bpm.engine.delegate.VariableScope
 import org.camunda.bpm.engine.task.Task
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.springframework.context.event.EventListener
+import java.lang.RuntimeException
 import java.net.URI
 
 class TaakObjectListener(
@@ -52,47 +53,49 @@ class TaakObjectListener(
     @EventListener(OpenNotificationEvent::class)
     fun notificationReceived(event: OpenNotificationEvent) {
         if (event.notification.kanaal == OpenNotificatieConnector.OBJECTEN_KANAAL_NAME
-            && event.notification.isEditNotification()
+            && event.notification.isUpdateNotification()
         ) {
             val connector = openNotificatieService.findConnector(event.connectorId, event.authorizationKey)
 
             // check if the created object is the right kind based on the name of the type of the created object.
             // This is the only way to do so until other information becomes available or we retrieve every object that is created
             if (connector is TaakObjectConnector
-                && event.notification.getObjectTypeName()?.equals(connector.getObjectsApiConnector().getProperties().objectType.title)?: false
+                && event.notification.getObjectTypeUrl()?.equals(connector.getObjectsApiConnector().getProperties().objectType.url)?: false
             ) {
                 val taakObjectId = event.notification.getObjectId()
-                val taakObject = connector.getTaakObject(taakObjectId)
+                val taakObjectRecord = connector.getTaakObjectRecord(taakObjectId)
+                val taakObject = taakObjectRecord.record.data
                 if (taakObject.status != TaakObjectStatus.ingediend) {
                     return
                 }
                 saveDataAndCompleteTask(taakObject)
 
-                connector.deleteTaakObject(taakObjectId)
+                connector.modifyTaakObjectStatusVerwerkt(taakObjectRecord)
             }
         }
     }
 
     private fun saveDataAndCompleteTask(taakObject: TaakObjectDto) {
         val task = camundaTaskService.findTaskById(taakObject.verwerkerTaakId.toString())
-        if (taakObject.data != null && taakObject.data.isNotEmpty()) {
+        if (taakObject.verzondenData != null && taakObject.verzondenData.isNotEmpty()) {
             val processInstanceId = CamundaProcessInstanceId(task.processInstanceId)
             val variableScope = getVariableScope(task)
-            val taakObjectData = Mapper.INSTANCE.get().valueToTree<JsonNode>(taakObject.data)
+            val taakObjectData = Mapper.INSTANCE.get().valueToTree<JsonNode>(taakObject.verzondenData)
             val resolvedValues = getResolvedValues(task, taakObjectData)
-            loadTaakObjectDocuments(processInstanceId, variableScope, resolvedValues, taakObjectData)
+            loadTaakObjectDocuments(processInstanceId, variableScope, taakObjectData)
             handleTaakObjectData(processInstanceId, variableScope, resolvedValues)
         }
         camundaTaskService.completeTaskWithoutFormData(taakObject.verwerkerTaakId.toString())
     }
 
-    private fun loadTaakObjectDocuments(processInstanceId: ProcessInstanceId, variableScope: VariableScope, resolvedValues: Map<String, Any>, taakObjectData: JsonNode) {
-        val filesNode = taakObjectData.at(JsonPointer.valueOf("/documenten"))
-        if (filesNode.isArray) {
+    private fun loadTaakObjectDocuments(processInstanceId: ProcessInstanceId, variableScope: VariableScope, taakObjectData: JsonNode) {
+        val documentPathsNode = taakObjectData.at(JsonPointer.valueOf("/documenten"))
+        if (documentPathsNode.isArray) {
             val documentId = processDocumentService.getDocumentId(processInstanceId, variableScope)
-            for (fileNode in filesNode) {
-                if (resolvedValues.values.contains(fileNode.textValue())) {
-                    createResourceAndAssignToDocument(URI(fileNode.textValue()), documentId)
+            for (documentPathNode in documentPathsNode) {
+                val documentUrlNode = taakObjectData.at(JsonPointer.valueOf(documentPathNode.textValue())) as ValueNode
+                if (!documentUrlNode.isMissingNode && !documentUrlNode.isNull) {
+                    createResourceAndAssignToDocument(URI(documentUrlNode.textValue()), documentId)
                 }
             }
         }
@@ -125,12 +128,15 @@ class TaakObjectListener(
             .filter { it.camundaName.startsWith(prefix = "taskResult:", ignoreCase = true) }
             .associateBy(
                 { it.camundaName.substringAfter(delimiter = ":") },
-                { getValue(data, it.camundaValue) }
+                { getValue(data, it.camundaValue, it.camundaName, task) }
             )
     }
 
-    private fun getValue(data: JsonNode, path: String): Any {
+    private fun getValue(data: JsonNode, path: String, camundaName: String, task: Task): Any {
         val valueNode = data.at(JsonPointer.valueOf(path)) as ValueNode
+        if (valueNode.isMissingNode) {
+            throw RuntimeException("Failed to do '$camundaName' for task '${task.taskDefinitionKey}'. Missing data on path '$path'")
+        }
         return Mapper.INSTANCE.get().treeToValue(valueNode, Object::class.java)
     }
 

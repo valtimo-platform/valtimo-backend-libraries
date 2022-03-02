@@ -58,6 +58,8 @@ public interface DocumentDefinitionService {
 
     boolean currentUserCanAccessDocumentDefinition(String documentDefinitionName);
 
+    boolean currentUserCanAccessDocumentDefinition(boolean allowPrivilegedRoles, String documentDefinitionName);
+
     Set<String> getDocumentDefinitionRoles(String documentDefinitionName);
 
     void putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles);

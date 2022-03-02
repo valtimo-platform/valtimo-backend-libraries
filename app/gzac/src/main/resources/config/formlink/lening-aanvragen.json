@@ -1,0 +1,12 @@
+[
+    {
+        "formName": "start-form-lening-aanvragen",
+        "formLinkElementId": "start-event",
+        "formAssociationType": "start-event"
+    },
+    {
+        "formName": "start-form-lening-aanvragen",
+        "formLinkElementId": "akkoord-op-lening-task",
+        "formAssociationType": "user-task"
+    }
+]
