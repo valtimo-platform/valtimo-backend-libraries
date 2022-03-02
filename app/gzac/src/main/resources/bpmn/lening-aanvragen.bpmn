@@ -28,14 +28,14 @@
       <bpmn:incoming>SequenceFlow_0zvtwht</bpmn:incoming>
       <bpmn:terminateEventDefinition />
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1j5xjoe" sourceRef="akkoord-op-lening-task" targetRef="Activity_0lpel56" />
-    <bpmn:sequenceFlow id="Flow_1uqnsqd" sourceRef="Activity_1b5ft6p" targetRef="generate-pdf" />
-    <bpmn:serviceTask id="Activity_1b5ft6p" name="Create product: straatverlichting" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:expression="${connectorFluentBuilder.builder().withConnector(&#39;ObjectsApi-ConnectorInstance&#39;).put(execution.processBusinessKey, &#39;height&#39;, &#39;/height&#39;).executeCreateObjectRequest()}">
+    <bpmn:sequenceFlow id="Flow_1j5xjoe" sourceRef="akkoord-op-lening-task" targetRef="burger-controleer-lening-task" />
+    <bpmn:sequenceFlow id="Flow_1uqnsqd" sourceRef="create-product-straatverlichting-task" targetRef="generate-pdf" />
+    <bpmn:serviceTask id="create-product-straatverlichting-task" name="Create product: straatverlichting" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:expression="${connectorFluentBuilder.builder().withConnector(&#39;ObjectsApi-ConnectorInstance&#39;).put(execution.processBusinessKey, &#39;height&#39;, &#39;/height&#39;).executeCreateObjectRequest()}">
       <bpmn:incoming>Flow_1t6wrhx</bpmn:incoming>
       <bpmn:outgoing>Flow_1uqnsqd</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_1t6wrhx" sourceRef="Activity_0lpel56" targetRef="Activity_1b5ft6p" />
-    <bpmn:userTask id="Activity_0lpel56" name="Burger controleer lening" camunda:asyncBefore="true" camunda:asyncAfter="true">
+    <bpmn:sequenceFlow id="Flow_1t6wrhx" sourceRef="burger-controleer-lening-task" targetRef="create-product-straatverlichting-task" />
+    <bpmn:userTask id="burger-controleer-lening-task" name="Burger controleer lening" camunda:asyncBefore="true" camunda:asyncAfter="true">
       <bpmn:extensionElements>
         <camunda:executionListener expression="${connectorService.loadByName(&#34;TaakConnector&#34;).createTask(task, &#34;test-form&#34;)}" event="start" />
         <camunda:properties>
@@ -50,25 +50,25 @@
   <bpmn:message id="Message_09w12pu" name="Public Akkoord task finished" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="lening-aanvragen">
-      <bpmndi:BPMNEdge id="Flow_1j5xjoe_di" bpmnElement="Flow_1j5xjoe">
-        <di:waypoint x="310" y="121" />
-        <di:waypoint x="350" y="121" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_1abb79g_di" bpmnElement="SequenceFlow_1abb79g">
-        <di:waypoint x="168" y="121" />
-        <di:waypoint x="210" y="121" />
+      <bpmndi:BPMNEdge id="Flow_1t6wrhx_di" bpmnElement="Flow_1t6wrhx">
+        <di:waypoint x="450" y="121" />
+        <di:waypoint x="490" y="121" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1uqnsqd_di" bpmnElement="Flow_1uqnsqd">
         <di:waypoint x="590" y="121" />
         <di:waypoint x="640" y="121" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1j5xjoe_di" bpmnElement="Flow_1j5xjoe">
+        <di:waypoint x="310" y="121" />
+        <di:waypoint x="350" y="121" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0zvtwht_di" bpmnElement="SequenceFlow_0zvtwht">
         <di:waypoint x="740" y="121" />
         <di:waypoint x="812" y="121" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1t6wrhx_di" bpmnElement="Flow_1t6wrhx">
-        <di:waypoint x="450" y="121" />
-        <di:waypoint x="490" y="121" />
+      <bpmndi:BPMNEdge id="SequenceFlow_1abb79g_di" bpmnElement="SequenceFlow_1abb79g">
+        <di:waypoint x="168" y="121" />
+        <di:waypoint x="210" y="121" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start-event">
         <dc:Bounds x="132" y="103" width="36" height="36" />
@@ -76,16 +76,16 @@
       <bpmndi:BPMNShape id="UserTask_18proky_di" bpmnElement="akkoord-op-lening-task">
         <dc:Bounds x="210" y="81" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0tx6ca4_di" bpmnElement="Activity_1b5ft6p">
-        <dc:Bounds x="490" y="81" width="100" height="80" />
+      <bpmndi:BPMNShape id="ServiceTask_1jti829_di" bpmnElement="generate-pdf">
+        <dc:Bounds x="640" y="81" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1p8ekbs_di" bpmnElement="end-event">
         <dc:Bounds x="812" y="103" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_1jti829_di" bpmnElement="generate-pdf">
-        <dc:Bounds x="640" y="81" width="100" height="80" />
+      <bpmndi:BPMNShape id="Activity_0tx6ca4_di" bpmnElement="create-product-straatverlichting-task">
+        <dc:Bounds x="490" y="81" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_01l4vlb_di" bpmnElement="Activity_0lpel56">
+      <bpmndi:BPMNShape id="Activity_01l4vlb_di" bpmnElement="burger-controleer-lening-task">
         <dc:Bounds x="350" y="81" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>

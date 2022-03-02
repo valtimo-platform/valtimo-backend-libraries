@@ -23,6 +23,7 @@ import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -268,7 +269,7 @@ class ApplicationReadyEventListener(
     fun setDocumentDefinitionRole(event: DocumentDefinitionDeployedEvent) {
         documentDefinitionService.putDocumentDefinitionRoles(
             event.documentDefinition().id().name(),
-            setOf("ROLE_ADMIN", "ROLE_USER")
+            setOf(AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER)
         )
     }
 
