@@ -36,10 +36,14 @@ dependencies {
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
+    testImplementation project(':audit')
+    testImplementation project(':document')
+    testImplementation project(':process-document')
     testImplementation project(path: ":core", configuration: 'testOutput')
 
     testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.13.0")
     testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
     jar {
         enabled = true

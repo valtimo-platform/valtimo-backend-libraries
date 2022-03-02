@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.klant.service
+package com.ritense.besluit
 
 import com.ritense.audit.autoconfigure.AuditAutoConfiguration
 import com.ritense.connector.autoconfigure.ConnectorAutoConfiguration
@@ -28,7 +28,6 @@ import com.ritense.document.autoconfigure.DocumentSnapshotAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakLiquibaseAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakSecurityAutoConfiguration
-import com.ritense.openzaak.besluit.BesluitAutoConfiguration
 import com.ritense.processdocument.autoconfigure.ProcessDocumentAuditAutoConfiguration
 import com.ritense.processdocument.autoconfigure.ProcessDocumentAutoConfiguration
 import com.ritense.valtimo.autoconfigure.AccessAndEntitlementAutoConfiguration
@@ -45,19 +44,17 @@ import com.ritense.valtimo.autoconfigure.ValtimoMethodSecurityAutoConfiguration
 import com.ritense.valtimo.autoconfigure.ValtimoMybatisAutoConfiguration
 import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration
-import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.runApplication
 
 @SpringBootApplication(
     exclude = [
         AccessAndEntitlementAutoConfiguration::class,
         AuditAutoConfiguration::class,
         AuthenticationAutoConfiguration::class,
-        BesluitAutoConfiguration::class,
         CamundaAutoConfiguration::class,
         CamundaBpmAutoConfiguration::class,
         ChoiceFieldAutoConfiguration::class,
@@ -88,13 +85,9 @@ import org.springframework.boot.test.context.TestConfiguration
         ValtimoMybatisAutoConfiguration::class,
     ]
 )
-class KlantTestConfiguration {
+class TestApplication {
 
     fun main(args: Array<String>) {
-        SpringApplication.run(KlantTestConfiguration::class.java, *args)
-    }
-
-    @TestConfiguration
-    class TestConfig { //Beans extra
+        runApplication<TestApplication>(*args)
     }
 }

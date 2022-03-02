@@ -6,8 +6,8 @@ import com.ritense.connector.domain.meta.ConnectorType
 
 @ConnectorType(name = "BesluitApi")
 class BesluitConnector(
-    besluitApiProperties: BesluitApiProperties
-) : Connector, BesluitenService(besluitApiProperties) {
+    var besluitApiProperties: BesluitApiProperties
+) : Connector {
 
     override fun getProperties(): BesluitApiProperties {
         return besluitApiProperties
