@@ -28,7 +28,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
 @EntityScan("com.ritense.valtimo.emailnotificationsettings.domain")
-@EnableJpaRepositories(basePackages = "com.ritense.valtimo.emailnotificationsettings.repository")
+@EnableJpaRepositories(basePackageClasses = EmailNotificationSettingsRepository.class)
 public class EmailNotificationSettingsAutoConfiguration {
 
     @Bean

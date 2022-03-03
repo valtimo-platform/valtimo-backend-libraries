@@ -24,8 +24,10 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
+@EnableJpaRepositories(basePackageClasses = ProcessDataObjectRelationRepository.class)
 @EntityScan("com.ritense.valtimo.domain.process")
 public class ProcessDataObjectAutoConfiguration {
 
