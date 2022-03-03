@@ -30,7 +30,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EnableJpaRepositories(basePackageClasses = ContextRepository.class)
+@EnableJpaRepositories(basePackageClasses = {
+    ContextRepository.class,
+    UserContextRepository.class
+})
 @EntityScan("com.ritense.valtimo.domain.contexts")
 public class ContextAutoConfiguration {
 
