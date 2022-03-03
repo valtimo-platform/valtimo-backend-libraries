@@ -21,16 +21,22 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import java.net.URI
+import java.util.UUID
 
 class BesluitConnectorIntTest : BaseIntegrationTest() {
 
     @Test
-    fun `should create besluit`() {
-        val besluit = besluitConnector.createBesluit(URI("http://example.com"), URI("http://example.com"))
+    fun `should create besluit and publish event`() {
+        val besluit = besluitConnector.createBesluit(
+            URI("http://zaakInstanceUri.com"),
+            URI("http://besluittypeUri.com"),
+            UUID.randomUUID().toString()
+        )
 
         assertNotNull(besluit)
         assertEquals(
             "http://localhost:8006/api/v1/besluiten/16d33b53-e283-40ef-8d86-6914282aea25",
             besluit.url)
+        assertNotNull(besluit.identificatie)
     }
 }

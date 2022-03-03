@@ -55,7 +55,8 @@ open class BesluitServiceTaskListener(
             val zaakInstanceLink = zaakInstanceLinkService.getByDocumentId(document.id().id)
             val besluitConnector = connectorService.loadByClassName(BesluitConnector::class.java)
             val besluitTypeUrl = serviceTaskHandler.parameter
-            besluitConnector.createBesluit(zaakInstanceLink.zaakInstanceUrl, besluitTypeUrl)
+            val businessKey = execution.businessKey
+            besluitConnector.createBesluit(zaakInstanceLink.zaakInstanceUrl, besluitTypeUrl, businessKey)
         }
     }
 }

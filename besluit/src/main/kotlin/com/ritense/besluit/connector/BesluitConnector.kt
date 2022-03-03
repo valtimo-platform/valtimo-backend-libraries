@@ -22,16 +22,22 @@ import com.ritense.besluit.domain.request.CreateBesluitRequest
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
+import com.ritense.processdocument.event.BesluitAddedEvent
+import com.ritense.valtimo.contract.audit.utils.AuditHelper
+import com.ritense.valtimo.contract.utils.RequestHelper
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 @ConnectorType(name = "Besluiten")
 class BesluitConnector(
     private var besluitProperties: BesluitProperties,
-    private var besluitClient: BesluitClient
+    private var besluitClient: BesluitClient,
+    private var applicationEventPublisher: ApplicationEventPublisher
 ) : Connector {
 
     /**
@@ -40,7 +46,7 @@ class BesluitConnector(
      * @param zaakUri - The URI of the zaak
      * @param besluitTypeUri - The URI of the besluittype
      */
-    fun createBesluit(zaakUri: URI, besluitTypeUri: URI): Besluit {
+    fun createBesluit(zaakUri: URI, besluitTypeUri: URI, businessKey: String): Besluit {
         val request = CreateBesluitRequest(
             verantwoordelijkeOrganisatie = besluitProperties.rsin.toString(),
             besluittype = besluitTypeUri.toString(),
@@ -50,9 +56,10 @@ class BesluitConnector(
         )
 
         return runBlocking {
-            val result = besluitClient.createBesluit(request, getProperties() as BesluitProperties)
-            logger.info { "Succesfully created besluit ${result.identificatie}" }
-            return@runBlocking result
+            val besluit = besluitClient.createBesluit(request, getProperties() as BesluitProperties)
+            logger.info { "Succesfully created besluit ${besluit.identificatie}" }
+            publishBesluitAddedEvent(besluit, businessKey)
+            return@runBlocking besluit
         }
     }
 
@@ -62,6 +69,19 @@ class BesluitConnector(
 
     override fun setProperties(connectorProperties: ConnectorProperties) {
         besluitProperties = connectorProperties as BesluitProperties
+    }
+
+    private fun publishBesluitAddedEvent(besluit: Besluit, businessKey: String) {
+        applicationEventPublisher.publishEvent(
+            BesluitAddedEvent(
+                UUID.randomUUID(),
+                RequestHelper.getOrigin(),
+                LocalDateTime.now(),
+                AuditHelper.getActor(),
+                besluit.identificatie,
+                businessKey
+            )
+        )
     }
 
     companion object {

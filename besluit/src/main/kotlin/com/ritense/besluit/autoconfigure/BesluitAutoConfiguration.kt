@@ -32,6 +32,7 @@ import io.netty.handler.logging.LogLevel
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
@@ -79,9 +80,10 @@ class BesluitAutoConfiguration {
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     fun besluitConnector(
         besluitProperties: BesluitProperties,
-        besluitClient: com.ritense.besluit.client.BesluitClient
+        besluitClient: BesluitClient,
+        applicationEventPublisher: ApplicationEventPublisher
     ) : BesluitConnector {
-        return BesluitConnector(besluitProperties, besluitClient)
+        return BesluitConnector(besluitProperties, besluitClient, applicationEventPublisher)
     }
 
     @Bean

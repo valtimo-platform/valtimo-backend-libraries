@@ -29,6 +29,7 @@ dependencies {
     implementation project(':connector')
     implementation project(':openzaak')
     implementation project(':document')
+    implementation project(':process-document')
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
