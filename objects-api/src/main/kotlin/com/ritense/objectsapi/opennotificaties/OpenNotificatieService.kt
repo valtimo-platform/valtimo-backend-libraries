@@ -22,10 +22,8 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.objectsapi.domain.request.HandleNotificationRequest
 import com.ritense.objectsapi.repository.AbonnementLinkRepository
 import com.ritense.openzaak.service.ZaakService
-import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
 import com.ritense.resource.domain.OpenZaakResource
-import com.ritense.resource.domain.ResourceId
-import com.ritense.resource.repository.OpenZaakResourceRepository
+import com.ritense.resource.service.OpenZaakService
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import java.net.URI
@@ -36,7 +34,7 @@ class OpenNotificatieService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val abonnementLinkRepository: AbonnementLinkRepository,
     private val zaakService: ZaakService,
-    private val openZaakResourceRepository: OpenZaakResourceRepository,
+    private val openZaakService: OpenZaakService,
 ) {
     fun handle(notification: HandleNotificationRequest, connectorId: String, authorizationKey: String) {
         if (notification.isTestNotification()) {
@@ -67,23 +65,7 @@ class OpenNotificatieService(
     }
 
     fun createOpenzaakResources(files: List<URI>): Set<OpenZaakResource> {
-        return files.map { createOpenzaakResource(getInformatieObject(it)) }.toCollection(hashSetOf())
-    }
-
-    fun getInformatieObject(file: URI): InformatieObject {
-        return zaakService.getInformatieObject(UUID.fromString(file.path.substringAfterLast('/')))
-    }
-
-    fun createOpenzaakResource(informatieObject: InformatieObject): OpenZaakResource {
-        val openZaakResource = OpenZaakResource(
-            ResourceId.newId(UUID.randomUUID()),
-            informatieObject.url,
-            informatieObject.bestandsnaam,
-            informatieObject.bestandsnaam.substringAfterLast("."),
-            informatieObject.bestandsomvang,
-            informatieObject.beginRegistratie
-        )
-        return openZaakResourceRepository.save(openZaakResource)
+        return files.map { openZaakService.store(zaakService.getInformatieObject(it)) }.toCollection(hashSetOf())
     }
 
     companion object {

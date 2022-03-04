@@ -95,6 +95,9 @@ class BaseIntegrationTest : BaseTest() {
                 val response = when (request.method + " " + request.path?.substringBefore('?')) {
                     "POST /api/v1/besluiten" -> mockResponseFromFile("/data/post-create-besluit.json")
                     "POST /zaken/api/v1/zaken" -> mockResponseFromFile("/data/post-create-zaak.json")
+                    "GET /documenten/api/v1/enkelvoudiginformatieobjecten/429cd502-3ddc-43de-aa1b-791404cd2913" -> mockResponseFromFile("/data/get-enkelvoudiginformatieobject.json")
+                    "POST /zaken/api/v1/zaakinformatieobjecten" -> mockResponseFromFile("/data/post-relation-zaak-informatieobject.json")
+                    "POST /api/v1/besluitinformatieobjecten" -> mockResponseFromFile("/data/post-relation-besluit-informatieobject.json")
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response

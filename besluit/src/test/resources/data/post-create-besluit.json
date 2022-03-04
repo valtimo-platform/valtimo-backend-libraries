@@ -1,5 +1,5 @@
 {
-    "url": "http://localhost:8006/api/v1/besluiten/16d33b53-e283-40ef-8d86-6914282aea25",
+    "url": "http://example/api/v1/besluiten/16d33b53-e283-40ef-8d86-6914282aea25",
     "identificatie": "string",
     "verantwoordelijkeOrganisatie": "051845623",
     "besluittype": "string",

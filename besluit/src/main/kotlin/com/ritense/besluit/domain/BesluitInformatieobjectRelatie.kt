@@ -18,7 +18,8 @@ package com.ritense.besluit.domain
 
 import java.net.URI
 
-data class Besluit(
+data class BesluitInformatieobjectRelatie(
     val url: URI,
-    val identificatie: String
+    val informatieobject: URI,
+    val besluit: URI,
 )

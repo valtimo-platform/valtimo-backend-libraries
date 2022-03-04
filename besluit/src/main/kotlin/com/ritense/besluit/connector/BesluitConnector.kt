@@ -18,6 +18,8 @@ package com.ritense.besluit.connector
 
 import com.ritense.besluit.client.BesluitClient
 import com.ritense.besluit.domain.Besluit
+import com.ritense.besluit.domain.BesluitInformatieobjectRelatie
+import com.ritense.besluit.domain.request.BesluitInformatieobjectRelatieRequest
 import com.ritense.besluit.domain.request.CreateBesluitRequest
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
@@ -56,14 +58,27 @@ class BesluitConnector(
         )
 
         return runBlocking {
-            val besluit = besluitClient.createBesluit(request, getProperties() as BesluitProperties)
-            logger.info { "Succesfully created besluit ${besluit.identificatie}" }
+            val besluit = besluitClient.createBesluit(request, getProperties())
+            logger.info { "Successfully created besluit ${besluit.identificatie}" }
             publishBesluitAddedEvent(besluit, businessKey)
             return@runBlocking besluit
         }
     }
 
-    override fun getProperties(): ConnectorProperties {
+    fun createBesluitInformatieobjectRelatie(informatieobject: URI, besluit: URI): BesluitInformatieobjectRelatie {
+        val request = BesluitInformatieobjectRelatieRequest(
+            informatieobject = informatieobject,
+            besluit = besluit,
+        )
+
+        return runBlocking {
+            val result = besluitClient.createBesluitInformatieobjectRelatie(request, getProperties())
+            logger.info { "Successfully created relation between besluit and informatieobject ${result.url}" }
+            return@runBlocking result
+        }
+    }
+
+    override fun getProperties(): BesluitProperties {
         return besluitProperties
     }
 
@@ -85,7 +100,6 @@ class BesluitConnector(
     }
 
     companion object {
-        const val rootUrlApiVersion = "/api/v1"
         val logger = KotlinLogging.logger {}
     }
 }

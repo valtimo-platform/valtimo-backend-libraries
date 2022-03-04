@@ -193,6 +193,10 @@ class ZaakService(
             .execute(InformatieObject::class.java)
     }
 
+    override fun getInformatieObject(file: URI): InformatieObject {
+        return getInformatieObject(UUID.fromString(file.path.substringAfterLast('/')))
+    }
+
     class Constants {
         companion object {
             val DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")

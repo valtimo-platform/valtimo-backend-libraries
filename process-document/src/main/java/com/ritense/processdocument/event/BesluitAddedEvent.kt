@@ -11,27 +11,20 @@ import com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull
 import java.time.LocalDateTime
 import java.util.UUID
 
-class BesluitAddedEvent : AuditMetaData, AuditEvent {
-
-    private var identificatie: String
+class BesluitAddedEvent @JsonCreator constructor(
+    id: UUID?,
+    origin: String?,
+    occurredOn: LocalDateTime?,
+    user: String?,
+    private var identificatie: String,
     private var businessKey: String
+) : AuditMetaData(id, origin, occurredOn, user), AuditEvent {
 
-    @JsonCreator
-    constructor(
-        id: UUID?,
-        origin: String?,
-        occurredOn: LocalDateTime?,
-        user: String?,
-        identificatie: String,
-        businessKey: String
-    ) : super(id, origin, occurredOn, user) {
-
+    init {
         assertArgumentNotNull(identificatie, "identificatie is required")
         assertArgumentNotEmpty(identificatie, "identification cannot be empty")
         assertArgumentNotNull(businessKey, "businessKey is required")
         assertArgumentNotEmpty(businessKey,"businessKey cannot be empty")
-        this.identificatie = identificatie
-        this.businessKey = businessKey
     }
 
     @JsonProperty

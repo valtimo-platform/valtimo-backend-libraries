@@ -18,6 +18,8 @@ package com.ritense.besluit.client
 
 import com.ritense.besluit.connector.BesluitProperties
 import com.ritense.besluit.domain.Besluit
+import com.ritense.besluit.domain.BesluitInformatieobjectRelatie
+import com.ritense.besluit.domain.request.BesluitInformatieobjectRelatieRequest
 import com.ritense.besluit.domain.request.CreateBesluitRequest
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
@@ -38,6 +40,21 @@ open class BesluitClient(
             .bodyValue(request)
             .retrieve()
             .awaitBody<Besluit>()
+    }
+
+    /**
+     * Create link between Besluit and Informatieobject
+     */
+    suspend fun createBesluitInformatieobjectRelatie(
+        request: BesluitInformatieobjectRelatieRequest,
+        besluitProperties: BesluitProperties
+    ): BesluitInformatieobjectRelatie {
+        return webClient(besluitProperties)
+            .post()
+            .uri("/api/v1/besluitinformatieobjecten")
+            .bodyValue(request)
+            .retrieve()
+            .awaitBody()
     }
 
     private fun webClient(besluitProperties: BesluitProperties): WebClient {

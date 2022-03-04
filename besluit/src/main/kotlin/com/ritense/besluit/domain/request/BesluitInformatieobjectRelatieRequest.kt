@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.besluit.domain
+package com.ritense.besluit.domain.request
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import java.net.URI
 
-data class Besluit(
-    val url: URI,
-    val identificatie: String
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class BesluitInformatieobjectRelatieRequest(
+    val informatieobject: URI,
+    val besluit: URI,
 )

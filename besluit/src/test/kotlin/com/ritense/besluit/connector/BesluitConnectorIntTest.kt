@@ -35,7 +35,7 @@ class BesluitConnectorIntTest : BaseIntegrationTest() {
 
         assertNotNull(besluit)
         assertEquals(
-            "http://localhost:8006/api/v1/besluiten/16d33b53-e283-40ef-8d86-6914282aea25",
+            URI("http://example/api/v1/besluiten/16d33b53-e283-40ef-8d86-6914282aea25"),
             besluit.url)
         assertNotNull(besluit.identificatie)
     }

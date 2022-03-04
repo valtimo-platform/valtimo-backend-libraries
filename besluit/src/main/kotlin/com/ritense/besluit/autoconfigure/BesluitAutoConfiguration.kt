@@ -26,10 +26,13 @@ import com.ritense.besluit.web.rest.BesluitResource
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.catalogi.CatalogiClient
+import com.ritense.openzaak.service.ZaakService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
+import com.ritense.resource.service.OpenZaakService
 import io.netty.handler.logging.LogLevel
 import org.camunda.bpm.engine.RepositoryService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
@@ -118,14 +121,20 @@ class BesluitAutoConfiguration {
         documentService: DocumentService,
         zaakInstanceLinkService: ZaakInstanceLinkService,
         repositoryService: RepositoryService,
-        connectorService: ConnectorService
+        connectorService: ConnectorService,
+        zaakService: ZaakService,
+        openZaakService: OpenZaakService,
+        @Value("\${valtimo.besluitDocumentRequired}") besluitDocumentRequired: Boolean,
     ): BesluitServiceTaskListener {
         return BesluitServiceTaskListener(
             zaakTypeLinkService,
             documentService,
             zaakInstanceLinkService,
             repositoryService,
-            connectorService
+            connectorService,
+            zaakService,
+            openZaakService,
+            besluitDocumentRequired
         )
     }
 

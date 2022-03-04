@@ -32,6 +32,7 @@ import com.ritense.openzaak.autoconfigure.OpenZaakSecurityAutoConfiguration
 import com.ritense.openzaak.catalogi.CatalogiAutoConfiguration
 import com.ritense.processdocument.autoconfigure.ProcessDocumentAuditAutoConfiguration
 import com.ritense.processdocument.autoconfigure.ProcessDocumentAutoConfiguration
+import com.ritense.resource.autoconfigure.OpenZaakResourceAutoConfiguration
 import com.ritense.valtimo.autoconfigure.AccessAndEntitlementAutoConfiguration
 import com.ritense.valtimo.autoconfigure.AuthenticationAutoConfiguration
 import com.ritense.valtimo.autoconfigure.CamundaAutoConfiguration
@@ -81,6 +82,7 @@ import org.springframework.boot.test.context.TestConfiguration
         LiquibaseRunnerAutoConfiguration::class,
         OpenZaakAutoConfiguration::class,
         OpenZaakLiquibaseAutoConfiguration::class,
+        OpenZaakResourceAutoConfiguration::class,
         OpenZaakSecurityAutoConfiguration::class,
         ProcessDataObjectAutoConfiguration::class,
         ProcessDocumentAutoConfiguration::class,

@@ -26,9 +26,11 @@ import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
+import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
@@ -48,6 +50,8 @@ class TaakObjectListener(
     private val runtimeService: RuntimeService,
     private val documentService: DocumentService,
     private val processDocumentService: ProcessDocumentService,
+    private val zaakService: ZaakService,
+    private val openZaakService: OpenZaakService,
 ) {
 
     @EventListener(OpenNotificationEvent::class)
@@ -102,8 +106,8 @@ class TaakObjectListener(
     }
 
     private fun createResourceAndAssignToDocument(file: URI, documentId: Document.Id) {
-        val informatieObject = openNotificatieService.getInformatieObject(file)
-        val resource = openNotificatieService.createOpenzaakResource(informatieObject)
+        val informatieObject = zaakService.getInformatieObject(file)
+        val resource = openZaakService.store(informatieObject)
         val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(informatieObject.auteur)
         documentService.assignRelatedFile(documentId, relatedFile)
     }
@@ -133,7 +137,7 @@ class TaakObjectListener(
     }
 
     private fun getValue(data: JsonNode, path: String, camundaName: String, task: Task): Any {
-        val valueNode = data.at(JsonPointer.valueOf(path)) as ValueNode
+        val valueNode = data.at(JsonPointer.valueOf(path))
         if (valueNode.isMissingNode) {
             throw RuntimeException("Failed to do '$camundaName' for task '${task.taskDefinitionKey}'. Missing data on path '$path'")
         }

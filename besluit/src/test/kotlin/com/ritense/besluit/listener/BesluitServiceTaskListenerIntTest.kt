@@ -1,8 +1,10 @@
 package com.ritense.besluit.listener
 
 import com.ritense.besluit.BaseIntegrationTest
+import com.ritense.besluit.domain.request.BesluitInformatieobjectRelatieRequest
 import com.ritense.besluit.domain.request.CreateBesluitRequest
 import com.ritense.connector.domain.Connector
+import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.openzaak.domain.connector.OpenZaakConfig
@@ -26,6 +28,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpMethod
 import java.net.URI
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
@@ -45,13 +48,20 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
 
     @Test
     fun `Should create besluit by process connection`() {
+        val besluitInformatieobjectUrl = "http://example/documenten/api/v1/enkelvoudiginformatieobjecten/429cd502-3ddc-43de-aa1b-791404cd2913"
         val zaakTypeLink = createZaakTypeLink()
         assignServiceTaskHandlerToCreateBesluit(zaakTypeLink.id)
         createProcessDocumentDefinition()
         setupOpenZaakConnector()
 
-        startCreateBesluitProcess()
+        val document = startCreateBesluitProcess("{\"voornaam\": \"John\", \"\$besluit\":\"$besluitInformatieobjectUrl\"}")
 
+        assertBesluitCreated()
+        assertRelationBetweenBesluitAndInformatieobject()
+        assertBesluitFileCreated(document)
+    }
+
+    private fun assertBesluitCreated() {
         val requestBody = getRequestBody(HttpMethod.POST, "/api/v1/besluiten", CreateBesluitRequest::class.java)
         Assertions.assertThat(requestBody.verantwoordelijkeOrganisatie).isEqualTo("051845623")
         Assertions.assertThat(requestBody.besluittype).endsWith("/catalogi/api/v1/besluittypen/9305dc14-68bd-4e78-986d-626304196bae")
@@ -60,17 +70,33 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
         Assertions.assertThat(requestBody.ingangsdatum).isEqualTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
     }
 
-    fun startCreateBesluitProcess() {
+    private fun assertRelationBetweenBesluitAndInformatieobject() {
+        val requestBody = getRequestBody(HttpMethod.POST, "/api/v1/besluitinformatieobjecten", BesluitInformatieobjectRelatieRequest::class.java)
+        Assertions.assertThat(requestBody.informatieobject).isEqualTo(URI("http://example/documenten/api/v1/enkelvoudiginformatieobjecten/429cd502-3ddc-43de-aa1b-791404cd2913"))
+        Assertions.assertThat(requestBody.besluit).isEqualTo(URI("http://example/api/v1/besluiten/16d33b53-e283-40ef-8d86-6914282aea25"))
+    }
+
+    private fun assertBesluitFileCreated(document: Document) {
+        Assertions.assertThat(document.relatedFiles()).hasSize(1)
+        val relatedFile = document.relatedFiles().iterator().next()
+        Assertions.assertThat(relatedFile.fileId).isNotNull
+        Assertions.assertThat(relatedFile.fileName).isEqualTo("passport.jpg")
+        Assertions.assertThat(relatedFile.sizeInBytes).isEqualTo(148649)
+        Assertions.assertThat(relatedFile.createdOn).isEqualTo(LocalDateTime.parse("2022-02-18T15:19:51.408988"))
+        Assertions.assertThat(relatedFile.createdBy).isEqualTo("John Doe")
+    }
+
+    fun startCreateBesluitProcess(content: String): Document {
         val newDocumentRequest = NewDocumentRequest(
             "testschema",
-            Mapper.get().readTree("{\"voornaam\": \"John\"}")
+            Mapper.get().readTree(content)
         )
-        processDocumentService.newDocumentAndStartProcess(
+        return processDocumentService.newDocumentAndStartProcess(
             NewDocumentAndStartProcessRequest(
                 "CreateBesluitProcess",
                 newDocumentRequest
             )
-        )
+        ).resultingDocument().get()
     }
 
     fun createProcessDocumentDefinition() {
