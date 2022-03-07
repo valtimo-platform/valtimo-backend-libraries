@@ -24,19 +24,16 @@ import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
-import com.ritense.objectsapi.domain.GenericObject
 import com.ritense.objectsapi.domain.Object
-import com.ritense.objectsapi.domain.ObjectTypes
 import com.ritense.objectsapi.domain.Record
 import com.ritense.objectsapi.domain.request.CreateObjectRequest
 import com.ritense.objectsapi.domain.request.ModifyObjectRequest
-import com.ritense.objectsapi.domain.request.ObjectSearchParameter
 import com.ritense.valtimo.contract.json.Mapper
+import org.springframework.core.ParameterizedTypeReference
 import java.net.URI
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
-import org.springframework.core.ParameterizedTypeReference
 
 @ConnectorType(name = "ObjectsApi")
 class ObjectsApiConnector(
