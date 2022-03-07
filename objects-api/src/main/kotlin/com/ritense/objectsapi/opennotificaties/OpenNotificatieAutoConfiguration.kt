@@ -22,7 +22,6 @@ import com.ritense.objectsapi.repository.AbonnementLinkRepository
 import com.ritense.objectsapi.web.rest.OpenNotificatieResource
 import com.ritense.objectsapi.web.rest.impl.OpenNotificatieResourceImpl
 import com.ritense.openzaak.service.ZaakService
-import com.ritense.resource.repository.OpenZaakResourceRepository
 import com.ritense.resource.service.OpenZaakService
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean

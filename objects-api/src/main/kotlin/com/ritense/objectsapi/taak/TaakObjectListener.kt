@@ -39,7 +39,7 @@ import org.camunda.bpm.engine.delegate.VariableScope
 import org.camunda.bpm.engine.task.Task
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.springframework.context.event.EventListener
-import java.lang.RuntimeException
+import java.net.MalformedURLException
 import java.net.URI
 
 class TaakObjectListener(
@@ -61,10 +61,8 @@ class TaakObjectListener(
         ) {
             val connector = openNotificatieService.findConnector(event.connectorId, event.authorizationKey)
 
-            // check if the created object is the right kind based on the name of the type of the created object.
-            // This is the only way to do so until other information becomes available or we retrieve every object that is created
-            if (connector is TaakObjectConnector
-                && event.notification.getObjectTypeUrl()?.equals(connector.getObjectsApiConnector().getProperties().objectType.url)?: false
+            if (connector is TaakObjectConnector && connector.getObjectsApiConnector().getProperties()
+                    .objectType.url == event.notification.getObjectTypeUrl()
             ) {
                 val taakObjectId = event.notification.getObjectId()
                 val taakObjectRecord = connector.getTaakObjectRecord(taakObjectId)
@@ -92,17 +90,38 @@ class TaakObjectListener(
         camundaTaskService.completeTaskWithoutFormData(taakObject.verwerkerTaakId.toString())
     }
 
-    private fun loadTaakObjectDocuments(processInstanceId: ProcessInstanceId, variableScope: VariableScope, taakObjectData: JsonNode) {
+    private fun loadTaakObjectDocuments(
+        processInstanceId: ProcessInstanceId,
+        variableScope: VariableScope,
+        taakObjectData: JsonNode
+    ) {
+        val documentId = processDocumentService.getDocumentId(processInstanceId, variableScope)
+        getDocumentenUris(taakObjectData).forEach { createResourceAndAssignToDocument(it, documentId) }
+    }
+
+    private fun getDocumentenUris(taakObjectData: JsonNode): List<URI> {
         val documentPathsNode = taakObjectData.at(JsonPointer.valueOf("/documenten"))
-        if (documentPathsNode.isArray) {
-            val documentId = processDocumentService.getDocumentId(processInstanceId, variableScope)
-            for (documentPathNode in documentPathsNode) {
-                val documentUrlNode = taakObjectData.at(JsonPointer.valueOf(documentPathNode.textValue())) as ValueNode
-                if (!documentUrlNode.isMissingNode && !documentUrlNode.isNull) {
-                    createResourceAndAssignToDocument(URI(documentUrlNode.textValue()), documentId)
+        if (documentPathsNode.isMissingNode || documentPathsNode.isNull) {
+            return emptyList()
+        }
+        if (!documentPathsNode.isArray) {
+            throw RuntimeException("Not an array: '/verzonden_data/documenten'")
+        }
+        val documentenUris = mutableListOf<URI>()
+        for (documentPathNode in documentPathsNode) {
+            val documentUrlNode = taakObjectData.at(JsonPointer.valueOf(documentPathNode.textValue())) as ValueNode
+            if (!documentUrlNode.isMissingNode && !documentUrlNode.isNull) {
+                if (!documentUrlNode.isTextual) {
+                    throw RuntimeException("Invalid URL in '/verzonden_data/documenten'. ${documentUrlNode.toPrettyString()}")
+                }
+                try {
+                    documentenUris.add(URI(documentUrlNode.textValue()))
+                } catch (e: MalformedURLException) {
+                    throw RuntimeException("Malformed URL in: '/verzonden_data/documenten'", e)
                 }
             }
         }
+        return documentenUris
     }
 
     private fun createResourceAndAssignToDocument(file: URI, documentId: Document.Id) {
@@ -112,7 +131,11 @@ class TaakObjectListener(
         documentService.assignRelatedFile(documentId, relatedFile)
     }
 
-    private fun handleTaakObjectData(processInstanceId: ProcessInstanceId, variableScope: VariableScope, resolvedValues: Map<String, Any>) {
+    private fun handleTaakObjectData(
+        processInstanceId: ProcessInstanceId,
+        variableScope: VariableScope,
+        resolvedValues: Map<String, Any>
+    ) {
         if (resolvedValues.isNotEmpty()) {
             valueResolverService.handleValues(processInstanceId, variableScope, resolvedValues)
         }

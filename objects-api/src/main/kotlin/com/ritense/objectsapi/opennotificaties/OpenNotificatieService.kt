@@ -37,8 +37,9 @@ class OpenNotificatieService(
     private val openZaakService: OpenZaakService,
 ) {
     fun handle(notification: HandleNotificationRequest, connectorId: String, authorizationKey: String) {
+        logger.debug { "Notification received: $notification" }
+
         if (notification.isTestNotification()) {
-            logger.info { "Test notification received" }
             return
         }
 
