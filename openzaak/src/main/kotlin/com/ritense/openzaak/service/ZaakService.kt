@@ -59,4 +59,6 @@ interface ZaakService {
     fun getInformatieObjectTypen(catalogus: URI): ResultWrapper<InformatieObjectType>
 
     fun getInformatieObject(documentId: UUID): InformatieObject
+
+    fun getInformatieObject(file: URI): InformatieObject
 }
