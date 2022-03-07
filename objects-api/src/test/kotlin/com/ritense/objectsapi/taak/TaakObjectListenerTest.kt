@@ -16,7 +16,9 @@ import com.ritense.objectsapi.service.ObjectTypeConfig
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
+import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.RuntimeService
@@ -34,6 +36,8 @@ internal class TaakObjectListenerTest {
     lateinit var runtimeService: RuntimeService
     lateinit var documentService: DocumentService
     lateinit var processDocumentService: ProcessDocumentService
+    lateinit var zaakService: ZaakService
+    lateinit var openZaakService: OpenZaakService
 
     @BeforeEach
     fun setup() {
@@ -44,6 +48,8 @@ internal class TaakObjectListenerTest {
         runtimeService = mock()
         documentService = mock()
         processDocumentService = mock()
+        zaakService = mock()
+        openZaakService = mock()
         listener = TaakObjectListener(
             openNotificatieService,
             camundaTaskService,
@@ -52,6 +58,8 @@ internal class TaakObjectListenerTest {
             runtimeService,
             documentService,
             processDocumentService,
+            zaakService,
+            openZaakService,
         )
     }
 

@@ -75,7 +75,7 @@ internal class OpenZaakTokenGeneratorServiceTest {
     @Test
     fun `Should not crash on invalid credentials (JWT) value`() {
         val userId = "myUserId"
-        val userToken = "invalid_token"
+        val userToken = "a.b.c.d"
         val authenticationToken = UsernamePasswordAuthenticationToken(null, userToken)
 
         Mockito.mockStatic(SecurityUtils::class.java).use { mockedUtils ->

@@ -17,6 +17,7 @@
 package com.ritense.resource.service
 
 import com.ritense.openzaak.service.DocumentenService
+import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
 import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.resource.domain.ResourceId
 import com.ritense.resource.repository.OpenZaakResourceRepository
@@ -76,6 +77,18 @@ class OpenZaakService(
             LocalDateTime.now()
         )
         return openZaakResourceRepository.saveAndFlush(openZaakResource)
+    }
+
+    fun store(informatieObject: InformatieObject): OpenZaakResource {
+        val openZaakResource = OpenZaakResource(
+            ResourceId.newId(UUID.randomUUID()),
+            informatieObject.url,
+            informatieObject.bestandsnaam,
+            informatieObject.bestandsnaam.substringAfterLast("."),
+            informatieObject.bestandsomvang,
+            informatieObject.beginRegistratie
+        )
+        return openZaakResourceRepository.save(openZaakResource)
     }
 
     override fun store(key: String, fileUploadRequest: FileUploadRequest): Resource {

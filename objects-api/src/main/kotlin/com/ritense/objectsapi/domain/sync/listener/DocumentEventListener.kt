@@ -83,7 +83,7 @@ open class DocumentEventListener(
                         .builder()
                         .withConnector(connectorInstance.name) as ObjectsApiConnector
 
-                    val objectsApiProperties = objectsApiConnector.getProperties() as ObjectsApiProperties
+                    val objectsApiProperties = objectsApiConnector.getProperties()
 
                     //Find object to update
                     val objects = objectsApiConnector.getObjects(
