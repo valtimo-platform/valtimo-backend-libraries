@@ -64,7 +64,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -73,7 +72,6 @@ import java.util.Optional;
 @Configuration
 @EnableConfigurationProperties(value = {ValtimoProperties.class})
 @EnableJpaAuditing(dateTimeProviderRef = "customDateTimeProvider")
-@EnableJpaRepositories(basePackages = "com.ritense.valtimo.repository")
 @EnableCamundaEventBus
 public class ValtimoAutoConfiguration {
 
@@ -122,13 +120,17 @@ public class ValtimoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(AuthorizedUsersService.class)
-    public AuthorizedUsersService authorizedUsersService(final Collection<AuthorizedUserRepository> authorizedUserRepositories) {
+    public AuthorizedUsersService authorizedUsersService(
+        final Collection<AuthorizedUserRepository> authorizedUserRepositories
+    ) {
         return new AuthorizedUsersService(authorizedUserRepositories);
     }
 
     @Bean
     @ConditionalOnMissingBean(com.ritense.valtimo.service.CurrentUserService.class)
-    public com.ritense.valtimo.service.CurrentUserService currentUserService(final Collection<CurrentUserRepository> currentUserRepositories) {
+    public com.ritense.valtimo.service.CurrentUserService currentUserService(
+        final Collection<CurrentUserRepository> currentUserRepositories
+    ) {
         return new com.ritense.valtimo.service.CurrentUserService(currentUserRepositories);
     }
 
