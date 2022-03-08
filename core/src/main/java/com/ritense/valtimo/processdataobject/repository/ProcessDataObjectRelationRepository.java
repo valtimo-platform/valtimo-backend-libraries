@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.repository;
+package com.ritense.valtimo.processdataobject.repository;
 
 import com.ritense.valtimo.domain.process.IProcessDataObject;
 import com.ritense.valtimo.domain.process.ProcessDataObjectRelation;

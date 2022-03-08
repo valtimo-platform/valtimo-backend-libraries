@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.repository;
+package com.ritense.valtimo.choicefield.repository;
 
 import com.ritense.valtimo.domain.choicefield.ChoiceFieldValue;
 import org.springframework.data.domain.Page;
