@@ -16,11 +16,21 @@
 
 package com.ritense.haalcentraal.domain
 
-data class Persoonsgegevens(
-    val burgerservicenummer: String,
-    val naam: PersoonNaam?,
-    val geboorte: PersoonGeboorte?,
+import com.fasterxml.jackson.annotation.JsonProperty
+
+data class Personen(
+    @JsonProperty("_embedded")
+    val embedded: Embedded
 ) {
+    data class Embedded(
+        val ingeschrevenpersonen: List<Persoonsgegevens>
+    )
+
+    data class Persoonsgegevens(
+        val burgerservicenummer: String,
+        val naam: PersoonNaam?,
+        val geboorte: PersoonGeboorte?,
+    )
 
    data class PersoonNaam(
         val voornamen: String?,
@@ -33,7 +43,6 @@ data class Persoonsgegevens(
    )
 
    data class PersoonGeboorteDatum (
-       val datum: String?,
        val jaar: Int?,
        val maand: Int?,
        val dag: Int?

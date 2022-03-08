@@ -17,11 +17,10 @@
 package com.ritense.haalcentraal.web.rest
 
 import com.ritense.haalcentraal.BaseIntegrationTest
-import com.ritense.haalcentraal.web.rest.request.GetPeopleRequest
-
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -32,6 +31,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 
+@EnableAutoConfiguration
 class HaalCentraalResourceIntTest : BaseIntegrationTest() {
 
     @Autowired
@@ -103,5 +103,6 @@ class HaalCentraalResourceIntTest : BaseIntegrationTest() {
             .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().is5xxServerError)
+            .andExpect(jsonPath("$.detail").value("When not searching with a bsn the name and birthdate must both be filled in"))
     }
 }

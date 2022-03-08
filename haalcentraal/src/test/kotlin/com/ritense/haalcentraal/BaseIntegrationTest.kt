@@ -16,13 +16,15 @@
 
 package com.ritense.haalcentraal
 
+import com.ritense.connector.domain.ConnectorInstance
+import com.ritense.connector.domain.ConnectorInstanceId
+import com.ritense.connector.repository.ConnectorTypeInstanceRepository
 import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorService
 import com.ritense.haalcentraal.connector.HaalCentraalBRPConnector
 import com.ritense.haalcentraal.connector.HaalCentraalBRPProperties
-import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.repository.UserContextRepository
+import com.ritense.valtimo.contract.mail.MailSender
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -35,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.util.UUID
 
 @SpringBootTest
 @ExtendWith(value = [SpringExtension::class])
@@ -48,6 +51,9 @@ class BaseIntegrationTest : BaseTest() {
     lateinit var haalCentraalBRPProperties: HaalCentraalBRPProperties
 
     @Autowired
+    lateinit var connectorTypeInstanceRepository: ConnectorTypeInstanceRepository
+
+    @Autowired
     lateinit var connectorService: ConnectorService
 
     @Autowired
@@ -56,8 +62,8 @@ class BaseIntegrationTest : BaseTest() {
     @MockBean
     lateinit var userManagementService: UserManagementService
 
-//    @MockBean
-//    lateinit var userContextRepository: UserContextRepository
+    @MockBean
+    lateinit var mailSender: MailSender
 
     lateinit var server: MockWebServer
     protected var executedRequests: MutableList<RecordedRequest> = mutableListOf()
@@ -79,7 +85,7 @@ class BaseIntegrationTest : BaseTest() {
             override fun dispatch(request: RecordedRequest): MockResponse {
                 executedRequests.add(request)
                 val response = when (request.method + " " + request.path?.substringBefore('?')) {
-                    "POST /ingeschrevenpersonen" -> mockResponseFromFile("/data/get-ingeschreven-personen.json")
+                    "GET /ingeschrevenpersonen" -> mockResponseFromFile("/data/get-ingeschreven-personen.json")
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
@@ -103,12 +109,16 @@ class BaseIntegrationTest : BaseTest() {
         connectorDeploymentService.deployAll(listOf(haalCentraalBRPConnector))
 
         val connectorType = connectorService.getConnectorTypes().first { it.name == "HaalCentraal" }
-
-        connectorService.createConnectorInstance(
-            connectorType.id.id,
-            "haalcentraalConnector",
+        val connectorInstanceId = ConnectorInstanceId.newId(UUID.fromString("731008ba-a062-4840-9d32-e29c08d32944"))
+        val connectorInstance = ConnectorInstance(
+            connectorInstanceId,
+            connectorType,
+            "HaalCentraal",
             haalCentraalBRPProperties
         )
+
+        connectorTypeInstanceRepository.save(connectorInstance)
+
         haalCentraalBRPConnector = connectorService.loadByClassName(HaalCentraalBRPConnector::class.java)
     }
 

@@ -21,7 +21,7 @@ import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.haalcentraal.client.HaalCentraalBRPClient
 import com.ritense.haalcentraal.domain.Person
-import com.ritense.haalcentraal.domain.Persoonsgegevens
+import com.ritense.haalcentraal.domain.Personen
 import com.ritense.haalcentraal.web.rest.request.GetPeopleRequest
 import kotlinx.coroutines.runBlocking
 import java.security.InvalidParameterException
@@ -35,34 +35,31 @@ class HaalCentraalBRPConnector(
 ) : Connector {
 
 
-    fun findPeople(request: GetPeopleRequest): List<Person> {
+    fun findPeople(request: GetPeopleRequest): List<Person>? {
         validateRequest(request)
-        val persoonsgegevens: List<Persoonsgegevens> = runBlocking {
-            if (request.bsn?.isNotEmpty() == true) {
-                val person = haalCentraalBRPClient.findPersonByBsn(request.bsn, haalCentraalBRPProperties)
-                if (person == null) {
-                    emptyList()
-                } else {
-                    listOf(person)
-                }
-            } else {
-                haalCentraalBRPClient.findPeopleByBirthYearAndName(
-                    request.geboortedatum!!,
-                    request.geslachtsnaam!!,
-                    haalCentraalBRPProperties
-                )
-            }
+        val personen: Personen = runBlocking {
+            haalCentraalBRPClient.findPeople(
+                request.geboortedatum,
+                request.geslachtsnaam,
+                request.bsn,
+                haalCentraalBRPProperties
+            )
         }
 
-        return persoonsgegevens.map {
+        val test = personen?.embedded?.ingeschrevenpersonen?.map {
             Person(
                 it.burgerservicenummer,
                 it.naam?.voornamen,
                 it.naam?.voorletters,
                 it.naam?.geslachtsnaam,
-                toIsoLocalDate(it.geboorte?.datum?.jaar, it.geboorte?.datum?.maand, it.geboorte?.datum?.dag),
+                toIsoLocalDate(
+                    it.geboorte?.datum?.jaar,
+                    it.geboorte?.datum?.maand,
+                    it.geboorte?.datum?.dag),
             )
         }
+
+        return test
     }
 
     override fun getProperties(): HaalCentraalBRPProperties {
@@ -75,7 +72,7 @@ class HaalCentraalBRPConnector(
 
     private fun toIsoLocalDate(year: Int?, month: Int?, day: Int?): String? {
         return if (year == null || month == null || day == null) {
-            null;
+            null
         } else {
             LocalDate.of(year, month, day).format(DateTimeFormatter.ISO_LOCAL_DATE)
         }
@@ -86,9 +83,8 @@ class HaalCentraalBRPConnector(
             return
         }
 
-        if ((request.geslachtsnaam?.isEmpty() == true && request.geboortedatum?.isNotEmpty() == true)
-            || request.geslachtsnaam?.isNotEmpty() == true && request.geboortedatum?.isEmpty() == true
-        ) {
+        if ((request.geslachtsnaam == null && request.geboortedatum?.isNotEmpty() == true)
+            || request.geslachtsnaam?.isNotEmpty() == true && request.geboortedatum == null) {
             throw InvalidParameterException("When not searching with a bsn the name and birthdate must both be filled in")
         }
     }

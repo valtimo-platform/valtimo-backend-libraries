@@ -17,55 +17,43 @@
 package com.ritense.haalcentraal.client
 
 import com.ritense.haalcentraal.connector.HaalCentraalBRPProperties
-import com.ritense.haalcentraal.domain.Persoonsgegevens
+import com.ritense.haalcentraal.domain.Personen
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 
 class HaalCentraalBRPClient(
     private val haalcentraalWebClient: WebClient
 ) {
-
-    suspend fun findPersonByBsn(bsn: String, haalcentraalBRPProperties: HaalCentraalBRPProperties): Persoonsgegevens? {
+    suspend fun findPeople(
+        geboortedatum: String?,
+        geslachtsnaam: String?,
+        burgerservicenummer: String?,
+        haalcentraalBRPProperties: HaalCentraalBRPProperties
+    ): Personen {
         val people = webClient(haalcentraalBRPProperties)
             .get()
             .uri {
-                val uriBUilder = it.path("/ingeschrevenpersonen/$bsn")
-                    .queryParam("fields", "burgerservicenummer,naam,geboorte.datum")
-                uriBUilder.build()
-            }
-            .retrieve()
-            .awaitBody<List<Persoonsgegevens>>()
-        return if (people.size > 1) {
-            throw IllegalStateException("Multiple people found for BSN: $bsn")
-        } else if (people.isEmpty()) {
-            null
-        } else {
-            people[0]
-        }
-    }
-
-    suspend fun findPeopleByBirthYearAndName(
-        birthYear: String,
-        geslachtsnaam: String,
-        haalcentraalBRPProperties: HaalCentraalBRPProperties
-    ): List<Persoonsgegevens> {
-        return webClient(haalcentraalBRPProperties)
-            .get()
-            .uri {
                 val uriBUilder = it.path("/ingeschrevenpersonen")
-                    .queryParam("geboorte__datum", birthYear)
+                    .queryParam("geboorte__datum", geboortedatum)
                     .queryParam("naam__geslachtsnaam", geslachtsnaam)
+                    .queryParam("burgerservicenummer", burgerservicenummer)
                     .queryParam("fields", "burgerservicenummer,naam,geboorte.datum")
                 uriBUilder.build()
             }
             .retrieve()
-            .awaitBody()
+            .awaitBody<Personen>()
+
+        if (burgerservicenummer != null && burgerservicenummer.isNotEmpty() && people.embedded.ingeschrevenpersonen.size > 1 ) {
+           throw IllegalStateException("Multiple people found for BSN: $burgerservicenummer")
+        }
+
+        return people
     }
 
     private fun webClient(haalcentraalBRPProperties: HaalCentraalBRPProperties): WebClient {
         return haalcentraalWebClient
             .mutate()
-            .baseUrl(haalcentraalBRPProperties.url)
+            .baseUrl(haalcentraalBRPProperties.url!!)
             .defaultHeader("X-API-KEY", haalcentraalBRPProperties.apiKey!!)
             .build()
     }

@@ -19,6 +19,7 @@ dependencies {
     implementation(project(":connector"))
     implementation(project(":objects-api"))
     implementation(project(":besluit"))
+    implementation(project(":haalcentraal"))
 
     // Database
     implementation "mysql:mysql-connector-java"
