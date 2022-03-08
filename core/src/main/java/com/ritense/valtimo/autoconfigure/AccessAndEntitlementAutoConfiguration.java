@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "com.ritense.valtimo.accessandentitlement.repository")
+@EnableJpaRepositories(basePackageClasses = AuthorityRepository.class)
 @EntityScan("com.ritense.valtimo.accessandentitlement.domain")
 public class AccessAndEntitlementAutoConfiguration {
 
