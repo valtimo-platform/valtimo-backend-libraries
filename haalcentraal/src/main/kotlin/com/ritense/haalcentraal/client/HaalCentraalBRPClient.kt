@@ -52,7 +52,7 @@ class HaalCentraalBRPClient(
         return webClient(haalcentraalBRPProperties)
             .get()
             .uri {
-                val uriBUilder = it.path("/ingeschrevenpersonen/")
+                val uriBUilder = it.path("/ingeschrevenpersonen")
                     .queryParam("geboorte__datum", birthYear)
                     .queryParam("naam__geslachtsnaam", geslachtsnaam)
                     .queryParam("fields", "burgerservicenummer,naam,geboorte.datum")

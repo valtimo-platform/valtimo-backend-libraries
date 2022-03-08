@@ -17,14 +17,15 @@
 package com.ritense.haalcentraal.web.rest
 
 import com.ritense.haalcentraal.BaseIntegrationTest
+import com.ritense.haalcentraal.web.rest.request.GetPeopleRequest
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -45,17 +46,62 @@ class HaalCentraalResourceIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should get persons`() {
+    fun `should get person by bsn`() {
+        val request = """
+            {
+                "bsn":"555555021"
+            }
+        """.trimIndent()
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/haalcentraal/people"))
-            .andDo(MockMvcResultHandlers.print())
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/haalcentraal/people")
+            .content(request)
+            .contentType(APPLICATION_JSON_VALUE))
+            .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$.[0].burgerservicenummer").value("555555021"))
             .andExpect(jsonPath("$.[0].voornamen").value("Pieter Jan"))
             .andExpect(jsonPath("$.[0].voorletters").value("P.J."))
             .andExpect(jsonPath("$.[0].geslachtsnaam").value("Vries"))
             .andExpect(jsonPath("$.[0].geboorteDatum").value("1989-05-03"))
+    }
+
+    @Test
+    fun `should get persons by name and date`() {
+        val request = """
+            {
+                "geslachtsnaam":"Vries",
+                "geboortedatum":"1989-05-03"
+            }
+        """.trimIndent()
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/haalcentraal/people")
+            .content(request)
+            .contentType(APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$.[0].burgerservicenummer").value("555555021"))
+            .andExpect(jsonPath("$.[0].voornamen").value("Pieter Jan"))
+            .andExpect(jsonPath("$.[0].voorletters").value("P.J."))
+            .andExpect(jsonPath("$.[0].geslachtsnaam").value("Vries"))
+            .andExpect(jsonPath("$.[0].geboorteDatum").value("1989-05-03"))
+    }
+
+    @Test
+    fun `should fail on invalid request`() {
+        val request = """
+            {
+                "geslachtsnaam":"Vries"
+            }
+        """.trimIndent()
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/haalcentraal/people")
+            .content(request)
+            .contentType(APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().is5xxServerError)
     }
 }

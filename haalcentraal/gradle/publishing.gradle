@@ -19,8 +19,8 @@ pluginManager.withPlugin('maven-publish') {
         publications {
             maven(MavenPublication) {
                 pom {
-                    name = 'Besluit module'
-                    description = 'The Haalcentraal module is a wrapper around the Common grounds Haalcentraal API'
+                    name = 'Haalcentraal module'
+                    description = 'The Haalcentraal module is a wrapper around the Common Grounds Haalcentraal API'
                     developers {
                         developer {
                             id = "team-valtimo"

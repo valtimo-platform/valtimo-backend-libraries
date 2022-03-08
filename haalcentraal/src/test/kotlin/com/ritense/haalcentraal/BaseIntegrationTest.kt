@@ -22,6 +22,7 @@ import com.ritense.haalcentraal.connector.HaalCentraalBRPConnector
 import com.ritense.haalcentraal.connector.HaalCentraalBRPProperties
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.repository.UserContextRepository
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -36,7 +37,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
-@ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
+@ExtendWith(value = [SpringExtension::class])
 @Tag("integration")
 class BaseIntegrationTest : BaseTest() {
 
@@ -54,6 +55,9 @@ class BaseIntegrationTest : BaseTest() {
 
     @MockBean
     lateinit var userManagementService: UserManagementService
+
+//    @MockBean
+//    lateinit var userContextRepository: UserContextRepository
 
     lateinit var server: MockWebServer
     protected var executedRequests: MutableList<RecordedRequest> = mutableListOf()
@@ -75,7 +79,7 @@ class BaseIntegrationTest : BaseTest() {
             override fun dispatch(request: RecordedRequest): MockResponse {
                 executedRequests.add(request)
                 val response = when (request.method + " " + request.path?.substringBefore('?')) {
-                    "POST /api/v1/haalCentraalBRPen" -> mockResponseFromFile("/data/get-ingeschreven-personen.json")
+                    "POST /ingeschrevenpersonen" -> mockResponseFromFile("/data/get-ingeschreven-personen.json")
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response

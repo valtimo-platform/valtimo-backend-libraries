@@ -1,5 +1,6 @@
 package com.ritense.gzac.listener
 
+import com.ritense.besluit.service.BesluitApiProperties
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties

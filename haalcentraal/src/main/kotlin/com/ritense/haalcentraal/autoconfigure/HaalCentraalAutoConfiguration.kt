@@ -32,7 +32,7 @@ import reactor.netty.http.client.HttpClient
 import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
-class HaalCentraalAutoConfiguration {
+internal class HaalCentraalAutoConfiguration {
 
     // Webclient
     @Bean
