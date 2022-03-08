@@ -51,8 +51,8 @@ class BesluitConnector(
     fun createBesluit(zaakUri: URI, besluitTypeUri: URI, businessKey: String): Besluit {
         val request = CreateBesluitRequest(
             verantwoordelijkeOrganisatie = besluitProperties.rsin.toString(),
-            besluittype = besluitTypeUri.toString(),
-            zaak = zaakUri.toString(),
+            besluittype = besluitTypeUri,
+            zaak = zaakUri,
             datum = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE),
             ingangsdatum = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
         )
