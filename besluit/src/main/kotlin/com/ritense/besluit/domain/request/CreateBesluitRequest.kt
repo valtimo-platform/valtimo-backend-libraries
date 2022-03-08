@@ -17,17 +17,19 @@
 package com.ritense.besluit.domain.request
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import java.net.URI
+import java.util.UUID
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class CreateBesluitRequest(
-    val identificatie: String? = null,
-    val verantwoordelijkeOrganisatie: String? = null,
-    val besluittype: String? = null,
-    val zaak: String? = null,
-    val datum: String? = null,
+    val identificatie: UUID? = null,
+    val verantwoordelijkeOrganisatie: String,
+    val besluittype: URI,
+    val zaak: URI? = null,
+    val datum: String,
     val toelichting: String? = null,
     val bestuursorgaan: String? = null,
-    val ingangsdatum: String? = null,
+    val ingangsdatum: String,
     val vervaldatum: String? = null,
     val vervalreden: String? = null,
     val publicatiedatum: String? = null,
