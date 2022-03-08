@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.autoconfigure;
 
-import com.ritense.valtimo.repository.ContextRepository;
-import com.ritense.valtimo.repository.UserContextRepository;
+import com.ritense.valtimo.context.repository.ContextRepository;
+import com.ritense.valtimo.context.repository.UserContextRepository;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.ContextService;
 import com.ritense.valtimo.service.CurrentUserService;
