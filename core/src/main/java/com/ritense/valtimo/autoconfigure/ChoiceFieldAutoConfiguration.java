@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.autoconfigure;
 
-import com.ritense.valtimo.repository.ChoiceFieldRepository;
-import com.ritense.valtimo.repository.ChoiceFieldValueRepository;
+import com.ritense.valtimo.choicefield.repository.ChoiceFieldRepository;
+import com.ritense.valtimo.choicefield.repository.ChoiceFieldValueRepository;
 import com.ritense.valtimo.service.ChoiceFieldService;
 import com.ritense.valtimo.service.ChoiceFieldValueService;
 import com.ritense.valtimo.web.rest.ChoiceFieldResource;

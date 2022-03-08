@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.autoconfigure;
 
-import com.ritense.valtimo.repository.ProcessDataObjectRelationRepository;
+import com.ritense.valtimo.processdataobject.repository.ProcessDataObjectRelationRepository;
 import com.ritense.valtimo.service.ProcessDataObjectService;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

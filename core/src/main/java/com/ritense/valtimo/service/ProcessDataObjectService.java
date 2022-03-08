@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 import com.ritense.valtimo.domain.process.IProcessDataObject;
 import com.ritense.valtimo.domain.process.ProcessDataObjectRelation;
 import com.ritense.valtimo.exception.ProcessDataObjectBindException;
-import com.ritense.valtimo.repository.ProcessDataObjectRelationRepository;
+import com.ritense.valtimo.processdataobject.repository.ProcessDataObjectRelationRepository;
 import com.ritense.valtimo.repository.utils.QueryUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
