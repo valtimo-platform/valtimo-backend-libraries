@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.repository;
+package com.ritense.valtimo.context.repository;
 
-import com.ritense.valtimo.domain.choicefield.ChoiceField;
+import com.ritense.valtimo.domain.contexts.Context;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-/**
- * Spring Data JPA repository for the ChoiceField entity.
- */
-@SuppressWarnings("unused")
+import java.util.Collection;
+import java.util.List;
+
 @Repository
-public interface ChoiceFieldRepository extends JpaRepository<ChoiceField,Long> {
-    ChoiceField findByKeyName(String name);
+public interface ContextRepository extends JpaRepository<Context, Long> {
+    Context findFirstByRolesInAndId(Collection<String> roles, Long contextId);
+
+    Context findFirstByRolesIn(Collection<String> roles);
+
+    List<Context> findDistinctByRolesIn(Collection<String> roles);
+
+    Context findByName(String name);
 }

@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.repository;
+package com.ritense.valtimo.context.repository;
 
-import com.ritense.valtimo.domain.contexts.Context;
+import com.ritense.valtimo.domain.contexts.UserContext;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
-import java.util.List;
-
 @Repository
-public interface ContextRepository extends JpaRepository<Context, Long> {
-    Context findFirstByRolesInAndId(Collection<String> roles, Long contextId);
-
-    Context findFirstByRolesIn(Collection<String> roles);
-
-    List<Context> findDistinctByRolesIn(Collection<String> roles);
-
-    Context findByName(String name);
+public interface UserContextRepository extends JpaRepository<UserContext, Long> {
+    UserContext findByUserId(String userId);
 }

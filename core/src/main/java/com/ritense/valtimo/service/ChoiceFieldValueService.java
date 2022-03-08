@@ -17,7 +17,7 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.domain.choicefield.ChoiceFieldValue;
-import com.ritense.valtimo.repository.ChoiceFieldValueRepository;
+import com.ritense.valtimo.choicefield.repository.ChoiceFieldValueRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
