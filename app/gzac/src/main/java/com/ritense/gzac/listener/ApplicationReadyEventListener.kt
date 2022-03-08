@@ -5,6 +5,7 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.haalcentraal.connector.HaalCentraalBRPProperties
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagTypeMapping
@@ -29,7 +30,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import java.net.URI
-import java.util.UUID
+import java.util.*
 
 
 @Component
@@ -59,6 +60,7 @@ class ApplicationReadyEventListener(
 
         connectorService.getConnectorTypes().forEach {
             try {
+                createHaalCentraalConnector(connectorTypes.findId("HaalCentraal"))
                 createOpenZaakConnector(connectorTypes.findId("OpenZaak"))
                 createOpenNotificatiesConnector(connectorTypes.findId("OpenNotificatie"))
                 createContactMomentConnector(connectorTypes.findId("ContactMoment"))
@@ -76,6 +78,17 @@ class ApplicationReadyEventListener(
             .filter { it.name.equals(connectorName) }
             .first()
             .id.id
+    }
+
+    fun createHaalCentraalConnector(id: UUID) {
+        connectorService.createConnectorInstance(
+            typeId = id,
+            name = "HaalCentraalInstance",
+            connectorProperties = HaalCentraalBRPProperties(
+                System.getenv("VALTIMO_HAALCENTRAAL_URL") ?: "http://example.com/",
+                System.getenv("VALTIMO_HAALCENTRAAL_APIKEY") ?: "example-api-key"
+            )
+        )
     }
 
     fun createOpenZaakConnector(id: UUID) {

@@ -19,7 +19,7 @@ package com.ritense.haalcentraal.web.rest
 import com.ritense.connector.service.ConnectorService
 import com.ritense.haalcentraal.connector.HaalCentraalBRPConnector
 import com.ritense.haalcentraal.domain.Person
-import com.ritense.haalcentraal.web.rest.request.GetPersonsRequest
+import com.ritense.haalcentraal.web.rest.request.GetPeopleRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -32,12 +32,12 @@ class HaalCentraalResource(
     val connectorService: ConnectorService
 ) {
 
-    @PostMapping("/person")
+    @PostMapping("/people")
     fun findPersonByBsn(
-        @RequestBody request: GetPersonsRequest
+        @RequestBody request: GetPeopleRequest
     ): ResponseEntity<List<Person>> {
         val connector = connectorService.loadByName("HaalCentraal") as HaalCentraalBRPConnector
-        return ResponseEntity.ok(connector.findPersonen(request))
+        return ResponseEntity.ok(connector.findPeople(request))
     }
 
 

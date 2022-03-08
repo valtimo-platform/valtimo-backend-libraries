@@ -25,8 +25,8 @@ class HaalCentraalBRPClient(
     private val haalcentraalWebClient: WebClient
 ) {
 
-    suspend fun findPersonByBsn(bsn: String, haalcentraalBRPProperties: HaalCentraalBRPProperties): List<Persoonsgegevens> {
-        return webClient(haalcentraalBRPProperties)
+    suspend fun findPersonByBsn(bsn: String, haalcentraalBRPProperties: HaalCentraalBRPProperties): Persoonsgegevens? {
+        val people = webClient(haalcentraalBRPProperties)
             .get()
             .uri {
                 val uriBUilder = it.path("/ingeschrevenpersonen/$bsn")
@@ -34,10 +34,21 @@ class HaalCentraalBRPClient(
                 uriBUilder.build()
             }
             .retrieve()
-            .awaitBody()
+            .awaitBody<List<Persoonsgegevens>>()
+        return if (people.size > 1) {
+            throw IllegalStateException("Multiple people found for BSN: $bsn")
+        } else if (people.isEmpty()) {
+            null
+        } else {
+            people[0]
+        }
     }
 
-    suspend fun findPersonByBirthYearAndName(birthYear: String, geslachtsnaam: String , haalcentraalBRPProperties: HaalCentraalBRPProperties): List<Persoonsgegevens> {
+    suspend fun findPeopleByBirthYearAndName(
+        birthYear: String,
+        geslachtsnaam: String,
+        haalcentraalBRPProperties: HaalCentraalBRPProperties
+    ): List<Persoonsgegevens> {
         return webClient(haalcentraalBRPProperties)
             .get()
             .uri {

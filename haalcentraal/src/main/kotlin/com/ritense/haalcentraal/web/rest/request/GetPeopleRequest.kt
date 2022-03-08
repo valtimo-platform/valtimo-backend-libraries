@@ -1,6 +1,6 @@
 package com.ritense.haalcentraal.web.rest.request
 
-data class GetPersonsRequest(
+data class GetPeopleRequest(
     val bsn: String?,
     val geslachtsnaam: String?,
     val geboortedatum: String?

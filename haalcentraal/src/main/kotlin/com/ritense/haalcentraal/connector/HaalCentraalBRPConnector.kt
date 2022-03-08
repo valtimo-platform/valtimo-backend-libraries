@@ -21,7 +21,8 @@ import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.haalcentraal.client.HaalCentraalBRPClient
 import com.ritense.haalcentraal.domain.Person
-import com.ritense.haalcentraal.web.rest.request.GetPersonsRequest
+import com.ritense.haalcentraal.domain.Persoonsgegevens
+import com.ritense.haalcentraal.web.rest.request.GetPeopleRequest
 import kotlinx.coroutines.runBlocking
 import java.security.InvalidParameterException
 import java.time.LocalDate
@@ -34,13 +35,18 @@ class HaalCentraalBRPConnector(
 ) : Connector {
 
 
-    fun findPersonen(request: GetPersonsRequest): List<Person> {
+    fun findPeople(request: GetPeopleRequest): List<Person> {
         validateRequest(request)
-        val persoonsgegevens = runBlocking {
+        val persoonsgegevens: List<Persoonsgegevens> = runBlocking {
             if (request.bsn?.isNotEmpty() == true) {
-                haalCentraalBRPClient.findPersonByBsn(request.bsn!!, haalCentraalBRPProperties)
+                val person = haalCentraalBRPClient.findPersonByBsn(request.bsn, haalCentraalBRPProperties)
+                if (person == null) {
+                    emptyList()
+                } else {
+                    listOf(person)
+                }
             } else {
-                haalCentraalBRPClient.findPersonByBirthYearAndName(
+                haalCentraalBRPClient.findPeopleByBirthYearAndName(
                     request.geboortedatum!!,
                     request.geslachtsnaam!!,
                     haalCentraalBRPProperties
@@ -48,19 +54,15 @@ class HaalCentraalBRPConnector(
             }
         }
 
-        val persons = persoonsgegevens.map {
-            val geboorteDatum = LocalDate.of(it.geboorte?.datum?.jaar, it.geboorte?.datum?.maand, it.geboorte?.datum?.dag)
-                .format(DateTimeFormatter.ISO_LOCAL_DATE)
-
+        return persoonsgegevens.map {
             Person(
                 it.burgerservicenummer,
                 it.naam?.voornamen,
                 it.naam?.voorletters,
                 it.naam?.geslachtsnaam,
-                LocalDate.of(it.geboorte?.datum?.jaar, it.geboorte?.datum?.maand, it.geboorte?.datum?.dag).format(DateTimeFormatter.ISO_LOCAL_DATE),
+                toIsoLocalDate(it.geboorte?.datum?.jaar, it.geboorte?.datum?.maand, it.geboorte?.datum?.dag),
             )
         }
-        return persons
     }
 
     override fun getProperties(): HaalCentraalBRPProperties {
@@ -71,7 +73,15 @@ class HaalCentraalBRPConnector(
         haalCentraalBRPProperties = connectorProperties as HaalCentraalBRPProperties
     }
 
-    private fun validateRequest(request: GetPersonsRequest) {
+    private fun toIsoLocalDate(year: Int?, month: Int?, day: Int?): String? {
+        return if (year == null || month == null || day == null) {
+            null;
+        } else {
+            LocalDate.of(year, month, day).format(DateTimeFormatter.ISO_LOCAL_DATE)
+        }
+    }
+
+    private fun validateRequest(request: GetPeopleRequest) {
         if (request.bsn?.isNotEmpty() == true) {
             return
         }
