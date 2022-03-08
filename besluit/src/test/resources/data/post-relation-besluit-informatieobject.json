@@ -1,0 +1,5 @@
+{
+    "url": "http://example/api/v1/zaakinformatieobjecten/c63cfdc2-323a-4a8b-98ff-d9986f6c28e7",
+    "informatieobject": "https://example.com/documenten/api/v1/enkelvoudiginformatieobjecten/429cd502-3ddc-43de-aa1b-791404cd2913",
+    "besluit": "http://example/api/v1/besluiten/16d33b53-e283-40ef-8d86-6914282aea25"
+}

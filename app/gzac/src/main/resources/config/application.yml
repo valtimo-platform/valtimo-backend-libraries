@@ -182,6 +182,7 @@ valtimo:
         rsin: "051845623"
 
     genericTemplateName: "template-name"
+    besluitDocumentRequired: true
 
 
 spring-actuator:
@@ -212,9 +213,6 @@ camunda:
             id: Admin
             password: admin
             first-name: Admin account
-
-openzaak:
-    superSecret: "nD$QFSxd$2d&$aMF$$9vnxm%F$53aEZu"
 
 # ==================
 # keycloak server to server config

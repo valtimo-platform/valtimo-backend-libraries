@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.repository.converter
+package com.ritense.besluit.domain
 
-import javax.inject.Inject
-import javax.persistence.AttributeConverter
+import java.net.URI
 
-class SecretAttributeConverter @Inject constructor(private val bean: Encryptor) : AttributeConverter<String, String> {
-
-    override fun convertToDatabaseColumn(attribute: String): String {
-        return bean.encrypt(attribute)
-    }
-
-    override fun convertToEntityAttribute(encryptedProperty: String): String {
-        return bean.decrypt(encryptedProperty)
-    }
-
-}
+data class BesluitInformatieobjectRelatie(
+    val url: URI,
+    val informatieobject: URI,
+    val besluit: URI,
+)

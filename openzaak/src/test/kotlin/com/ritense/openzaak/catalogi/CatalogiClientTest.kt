@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.besluit
+package com.ritense.openzaak.catalogi
 
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.openzaak.BaseTest
@@ -32,14 +32,14 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.net.URI
 
-class BesluitClientTest : BaseTest() {
+class CatalogiClientTest : BaseTest() {
 
-    lateinit var besluitClient: BesluitClient
+    lateinit var catalogiClient: CatalogiClient
 
     @BeforeEach
     fun setUp() {
         baseSetUp()
-        besluitClient = BesluitClient(
+        catalogiClient = CatalogiClient(
             restTemplate,
             openZaakConfigService,
             openZaakTokenGeneratorService
@@ -57,7 +57,7 @@ class BesluitClientTest : BaseTest() {
                 )
             )
         )
-        val result = besluitClient.getBesluittypen()
+        val result = catalogiClient.getBesluittypen()
 
         //when
         val zaaktype = result.results.first()

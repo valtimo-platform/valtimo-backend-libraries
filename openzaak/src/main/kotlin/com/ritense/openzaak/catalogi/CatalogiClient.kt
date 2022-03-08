@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.besluit
+package com.ritense.openzaak.catalogi
 
 import com.ritense.openzaak.service.impl.OpenZaakConfigService
+import com.ritense.openzaak.service.impl.OpenZaakRequestBuilder
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import com.ritense.openzaak.service.impl.model.ResultWrapper
+import com.ritense.openzaak.service.impl.model.catalogi.BesluitType
 import org.springframework.web.client.RestTemplate
 
-@Configuration
-class BesluitAutoConfiguration {
+class CatalogiClient(
+    private val restTemplate: RestTemplate,
+    private val openZaakConfigService: OpenZaakConfigService,
+    private val openZaakTokenGeneratorService: OpenZaakTokenGeneratorService
+) {
 
-    @Bean
-    @ConditionalOnMissingBean(BesluitClient::class)
-    fun besluitClient(
-        restTemplate: RestTemplate,
-        openZaakConfigService: OpenZaakConfigService,
-        openZaakTokenGeneratorService: OpenZaakTokenGeneratorService,
-    ): BesluitClient {
-        return BesluitClient(
-            restTemplate,
-            openZaakConfigService,
-            openZaakTokenGeneratorService,
-        )
+    fun getBesluittypen(): ResultWrapper<BesluitType> {
+        return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
+            .path("catalogi/api/v1/besluittypen")
+            .get()
+            .build()
+            .executeWrapped(BesluitType::class.java)
     }
 
 }

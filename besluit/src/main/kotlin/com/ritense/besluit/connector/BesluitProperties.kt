@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.besluit.service
+package com.ritense.besluit.connector
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.ritense.connector.config.Decryptor
 import com.ritense.connector.config.Encryptor
+import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.openzaak.domain.configuration.Rsin
 
-class ServerAuthSpecification(
+class BesluitProperties(
     var url: String = "",
     @set:JsonSerialize(using = Encryptor::class)
     @get:JsonDeserialize(using = Decryptor::class)
     var secret: String = "",
     var clientId: String = "",
     var rsin: Rsin = Rsin("")
-)
+) : ConnectorProperties
