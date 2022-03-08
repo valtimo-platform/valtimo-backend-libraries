@@ -138,12 +138,12 @@ class ConnectorServiceIntTest : BaseIntegrationTest() {
 
         verify(connector, times(1)).onDelete(connectorInstance)
 
-        assertThrows(IllegalArgumentException::class.java) { connectorService.load("aName") }
+        assertThrows(IllegalArgumentException::class.java) { connectorService.loadByName("aName") }
     }
 
     @Test
     fun `should throw exception loading connector with unknown name`() {
-        assertThrows(IllegalArgumentException::class.java) { connectorService.load("unknownName") }
+        assertThrows(IllegalArgumentException::class.java) { connectorService.loadByName("unknownName") }
     }
 
     @Test
@@ -234,7 +234,7 @@ class ConnectorServiceIntTest : BaseIntegrationTest() {
             properties
         )
 
-        val connector = connectorService.load(nameIdentifier)
+        val connector = connectorService.loadByName(nameIdentifier)
         assertThat(connector).isNotNull
         assertThat(connector.getProperties()).isEqualTo(properties)
         assertThat(connector.getProperties()).isInstanceOf(ObjectApiProperties::class.java)

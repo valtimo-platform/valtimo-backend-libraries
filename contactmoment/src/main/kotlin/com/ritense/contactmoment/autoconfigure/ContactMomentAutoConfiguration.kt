@@ -48,8 +48,8 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 class ContactMomentAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(WebClient.Builder::class)
-    fun contactMomentWebClientBuilder(): WebClient.Builder {
+    @ConditionalOnMissingBean(WebClient::class)
+    fun contactMomentWebClientBuilder(): WebClient {
         return WebClient.builder().clientConnector(
             ReactorClientHttpConnector(
                 HttpClient.create().wiretap(
@@ -58,18 +58,16 @@ class ContactMomentAutoConfiguration {
                     AdvancedByteBufFormat.TEXTUAL
                 )
             )
-        )
-            .defaultHeader("Accept-Crs", "EPSG:4326")
-            .defaultHeader("Content-Crs", "EPSG:4326")
+        ).build()
     }
 
     @Bean
     @ConditionalOnMissingBean(ContactMomentClient::class)
     fun contactMomentClient(
-        contactMomentWebClientBuilder: WebClient.Builder,
+        contactMomentWebClient: WebClient,
         contactMomentTokenGenerator: ContactMomentTokenGenerator,
     ): ContactMomentClient {
-        return ContactMomentClient(contactMomentWebClientBuilder, contactMomentTokenGenerator)
+        return ContactMomentClient(contactMomentWebClient, contactMomentTokenGenerator)
     }
 
     @Bean

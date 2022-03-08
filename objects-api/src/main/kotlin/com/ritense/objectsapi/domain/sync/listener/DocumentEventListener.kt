@@ -26,7 +26,6 @@ import com.ritense.objectsapi.domain.request.Comparator
 import com.ritense.objectsapi.domain.request.ObjectSearchParameter
 import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objectsapi.service.ObjectsApiConnector
-import com.ritense.objectsapi.service.ObjectsApiProperties
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase

@@ -42,13 +42,14 @@ internal class BesluitResourceIntTest : BaseIntegrationTest() {
     lateinit var mockMvc: MockMvc
 
     @BeforeEach
-    internal fun setUp() {
+    override fun setUp() {
+        super.setUp()
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
     }
 
     @Test
     fun `should get besluit types`() {
-        whenever(besluitClient.getBesluittypen()).thenReturn(
+        whenever(catalogiClient.getBesluittypen()).thenReturn(
             ResultWrapper(
                 1,
                 null,

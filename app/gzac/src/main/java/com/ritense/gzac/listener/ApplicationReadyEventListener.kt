@@ -1,6 +1,6 @@
 package com.ritense.gzac.listener
 
-import com.ritense.besluit.service.BesluitApiProperties
+import com.ritense.besluit.connector.BesluitProperties
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
@@ -31,7 +31,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import java.net.URI
-import java.util.*
+import java.util.UUID
 
 
 @Component
@@ -68,6 +68,7 @@ class ApplicationReadyEventListener(
                 createObjectApiConnectors(connectorTypes.findId("ObjectsApi"))
                 createProductAanvraagConnector(connectorTypes.findId("ProductAanvragen"))
                 createTaakConnector(connectorTypes.findId("Taak"))
+                createBesluitConnector(connectorTypes.findId("Besluit"))
             } catch (ex: Exception) {
                 logger.error { ex }
             }
@@ -245,6 +246,19 @@ class ApplicationReadyEventListener(
                 "valtimo",
                 "zZ!xRP&\$qTn4A9ETa^ZMKepDm^8egjPz",
                 "http://host.docker.internal:8080"
+            )
+        )
+    }
+
+    fun createBesluitConnector(id: UUID) {
+        connectorService.createConnectorInstance(
+            typeId = id,
+            name = "BesluitInstance",
+            connectorProperties = BesluitProperties(
+                "http://localhost:8001",
+                "valtimo_client",
+                "e09b8bc5-5831-4618-ab28-41411304309d",
+                Rsin("051845623")
             )
         )
     }
