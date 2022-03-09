@@ -38,3 +38,8 @@ spring:
 spring-actuator:
     username: test
     password: test
+
+valtimo:
+    connector-encryption:
+        secret: "0123456789101112"
+    besluitDocumentRequired: false
