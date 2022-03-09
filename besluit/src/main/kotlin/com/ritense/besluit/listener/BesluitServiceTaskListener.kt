@@ -85,22 +85,22 @@ open class BesluitServiceTaskListener(
     }
 
     private fun getBesluitOpenZaakResourceUuid(document: Document): UUID? {
-        val besluitResourceUuidNode = document.content().asJson().at(JsonPointer.valueOf("/\$besluit"))
+        val besluitResourceUuidNode = document.content().asJson().at(JsonPointer.valueOf("/besluit"))
 
         return if (besluitResourceUuidNode.isMissingNode || besluitResourceUuidNode.isNull) {
             if (besluitDocumentRequired) {
-                throw IllegalStateException("Dossier /\$besluit is empty. But valtimo.besluitDocumentRequired: true")
+                throw IllegalStateException("Dossier /besluit is empty. But valtimo.besluitDocumentRequired: true")
             } else {
                 null
             }
         } else {
             if (!besluitResourceUuidNode.isTextual) {
-                throw RuntimeException("Dossier /\$besluit doesn't contain UUID: `${besluitResourceUuidNode.toPrettyString()}`")
+                throw RuntimeException("Dossier /besluit doesn't contain UUID: `${besluitResourceUuidNode.toPrettyString()}`")
             } else {
                 try {
                     UUID.fromString(besluitResourceUuidNode.textValue())
                 } catch (e: IllegalArgumentException) {
-                    throw RuntimeException("Dossier /\$besluit contains malformed UUID", e)
+                    throw RuntimeException("Dossier /besluit contains malformed UUID", e)
                 }
             }
         }

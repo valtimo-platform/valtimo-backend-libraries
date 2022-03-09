@@ -60,7 +60,7 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
         createProcessDocumentDefinition()
         setupOpenZaakConnector()
 
-        startCreateBesluitProcess("{\"voornaam\": \"John\", \"\$besluit\":\"$besluitResourceId\"}")
+        startCreateBesluitProcess("{\"voornaam\": \"John\", \"besluit\":\"$besluitResourceId\"}")
 
         assertBesluitCreated()
         assertRelationBetweenBesluitAndInformatieobject()
