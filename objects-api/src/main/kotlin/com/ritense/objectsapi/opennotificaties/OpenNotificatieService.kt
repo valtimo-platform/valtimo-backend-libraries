@@ -66,7 +66,7 @@ class OpenNotificatieService(
     }
 
     fun createOpenzaakResources(files: List<URI>): Set<OpenZaakResource> {
-        return files.map { openZaakService.store(zaakService.getInformatieObject(it)) }.toCollection(hashSetOf())
+        return files.map { openZaakService.storeIfNotExists(zaakService.getInformatieObject(it)) }.toCollection(hashSetOf())
     }
 
     companion object {

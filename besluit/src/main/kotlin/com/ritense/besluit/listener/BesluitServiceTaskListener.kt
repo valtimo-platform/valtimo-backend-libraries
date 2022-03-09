@@ -103,7 +103,7 @@ open class BesluitServiceTaskListener(
     private fun createBesluitDocument(informatieobjectUrl: URI?, document: Document) {
         if (informatieobjectUrl != null) {
             val informatieObject = zaakService.getInformatieObject(informatieobjectUrl)
-            val resource = openZaakService.store(informatieObject)
+            val resource = openZaakService.storeIfNotExists(informatieObject)
             val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(informatieObject.auteur)
             documentService.assignRelatedFile(document.id(), relatedFile)
         }
