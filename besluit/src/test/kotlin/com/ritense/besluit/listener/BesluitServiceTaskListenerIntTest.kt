@@ -15,12 +15,15 @@ import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.Mapper
+import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
 import com.ritense.openzaak.service.result.CreateServiceTaskHandlerResult
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.resource.service.OpenZaakService
+import com.ritense.valtimo.contract.resource.Resource
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -43,22 +46,24 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
     lateinit var processDocumentService: ProcessDocumentService
 
     @Autowired
+    lateinit var openZaakService: OpenZaakService
+
+    @Autowired
     @Qualifier("openZaakConnector")
     lateinit var openZaakConnector: Connector
 
     @Test
     fun `Should create besluit by process connection`() {
-        val besluitInformatieobjectUrl = "http://example/documenten/api/v1/enkelvoudiginformatieobjecten/429cd502-3ddc-43de-aa1b-791404cd2913"
+        val besluitResourceId = createBesluitResource().id()
         val zaakTypeLink = createZaakTypeLink()
         assignServiceTaskHandlerToCreateBesluit(zaakTypeLink.id)
         createProcessDocumentDefinition()
         setupOpenZaakConnector()
 
-        val document = startCreateBesluitProcess("{\"voornaam\": \"John\", \"\$besluit\":\"$besluitInformatieobjectUrl\"}")
+        startCreateBesluitProcess("{\"voornaam\": \"John\", \"\$besluit\":\"$besluitResourceId\"}")
 
         assertBesluitCreated()
         assertRelationBetweenBesluitAndInformatieobject()
-        assertBesluitFileCreated(document)
     }
 
     private fun assertBesluitCreated() {
@@ -71,22 +76,28 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
     }
 
     private fun assertRelationBetweenBesluitAndInformatieobject() {
-        val requestBody = getRequestBody(HttpMethod.POST, "/api/v1/besluitinformatieobjecten", BesluitInformatieobjectRelatieRequest::class.java)
+        val requestBody = getRequestBody(
+            HttpMethod.POST,
+            "/api/v1/besluitinformatieobjecten",
+            BesluitInformatieobjectRelatieRequest::class.java
+        )
         assertThat(requestBody.informatieobject).isEqualTo(URI("http://example/documenten/api/v1/enkelvoudiginformatieobjecten/429cd502-3ddc-43de-aa1b-791404cd2913"))
         assertThat(requestBody.besluit).isEqualTo(URI("http://example/api/v1/besluiten/16d33b53-e283-40ef-8d86-6914282aea25"))
     }
 
-    private fun assertBesluitFileCreated(document: Document) {
-        assertThat(document.relatedFiles()).hasSize(1)
-        val relatedFile = document.relatedFiles().iterator().next()
-        assertThat(relatedFile.fileId).isNotNull
-        assertThat(relatedFile.fileName).isEqualTo("passport.jpg")
-        assertThat(relatedFile.sizeInBytes).isEqualTo(148649)
-        assertThat(relatedFile.createdOn).isEqualTo(LocalDateTime.parse("2022-02-18T15:19:51.408988"))
-        assertThat(relatedFile.createdBy).isEqualTo("John Doe")
+    private fun createBesluitResource(): Resource {
+        return openZaakService.store(
+            InformatieObject(
+                URI("http://example/documenten/api/v1/enkelvoudiginformatieobjecten/429cd502-3ddc-43de-aa1b-791404cd2913"),
+                "John",
+                "tree.png",
+                23,
+                LocalDateTime.now()
+            )
+        )
     }
 
-    fun startCreateBesluitProcess(content: String): Document {
+    private fun startCreateBesluitProcess(content: String): Document {
         val newDocumentRequest = NewDocumentRequest(
             "testschema",
             Mapper.get().readTree(content)
@@ -99,7 +110,7 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
         ).resultingDocument().get()
     }
 
-    fun createProcessDocumentDefinition() {
+    private fun createProcessDocumentDefinition() {
         processDocumentAssociationService.createProcessDocumentDefinition(
             ProcessDocumentDefinitionRequest(
                 "CreateBesluitProcess",
@@ -110,7 +121,7 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
         )
     }
 
-    fun assignServiceTaskHandlerToCreateBesluit(zaakTypeLinkId: ZaakTypeLinkId): CreateServiceTaskHandlerResult {
+    private fun assignServiceTaskHandlerToCreateBesluit(zaakTypeLinkId: ZaakTypeLinkId): CreateServiceTaskHandlerResult {
         return zaakTypeLinkService.assignServiceTaskHandler(
             zaakTypeLinkId,
             ServiceTaskHandlerRequest(
@@ -122,7 +133,7 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
         )
     }
 
-    fun createZaakTypeLink(): ZaakTypeLink {
+    private fun createZaakTypeLink(): ZaakTypeLink {
         return zaakTypeLinkService.createZaakTypeLink(
             CreateZaakTypeLinkRequest(
                 "testschema",
