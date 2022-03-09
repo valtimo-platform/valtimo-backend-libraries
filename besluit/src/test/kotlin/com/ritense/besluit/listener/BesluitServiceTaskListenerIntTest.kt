@@ -21,7 +21,7 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -63,27 +63,27 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
 
     private fun assertBesluitCreated() {
         val requestBody = getRequestBody(HttpMethod.POST, "/api/v1/besluiten", CreateBesluitRequest::class.java)
-        Assertions.assertThat(requestBody.verantwoordelijkeOrganisatie).isEqualTo("051845623")
-        Assertions.assertThat(requestBody.besluittype).endsWith("/catalogi/api/v1/besluittypen/9305dc14-68bd-4e78-986d-626304196bae")
-        Assertions.assertThat(requestBody.zaak).endsWith("/zaken/api/v1/zaken/7413e298-c78b-4ab8-8e8a-a825faed0e7f")
-        Assertions.assertThat(requestBody.datum).isEqualTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
-        Assertions.assertThat(requestBody.ingangsdatum).isEqualTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+        assertThat(requestBody.verantwoordelijkeOrganisatie).isEqualTo("051845623")
+        assertThat(requestBody.besluittype.toString()).endsWith("/catalogi/api/v1/besluittypen/9305dc14-68bd-4e78-986d-626304196bae")
+        assertThat(requestBody.zaak.toString()).endsWith("/zaken/api/v1/zaken/7413e298-c78b-4ab8-8e8a-a825faed0e7f")
+        assertThat(requestBody.datum).isEqualTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+        assertThat(requestBody.ingangsdatum).isEqualTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
     }
 
     private fun assertRelationBetweenBesluitAndInformatieobject() {
         val requestBody = getRequestBody(HttpMethod.POST, "/api/v1/besluitinformatieobjecten", BesluitInformatieobjectRelatieRequest::class.java)
-        Assertions.assertThat(requestBody.informatieobject).isEqualTo(URI("http://example/documenten/api/v1/enkelvoudiginformatieobjecten/429cd502-3ddc-43de-aa1b-791404cd2913"))
-        Assertions.assertThat(requestBody.besluit).isEqualTo(URI("http://example/api/v1/besluiten/16d33b53-e283-40ef-8d86-6914282aea25"))
+        assertThat(requestBody.informatieobject).isEqualTo(URI("http://example/documenten/api/v1/enkelvoudiginformatieobjecten/429cd502-3ddc-43de-aa1b-791404cd2913"))
+        assertThat(requestBody.besluit).isEqualTo(URI("http://example/api/v1/besluiten/16d33b53-e283-40ef-8d86-6914282aea25"))
     }
 
     private fun assertBesluitFileCreated(document: Document) {
-        Assertions.assertThat(document.relatedFiles()).hasSize(1)
+        assertThat(document.relatedFiles()).hasSize(1)
         val relatedFile = document.relatedFiles().iterator().next()
-        Assertions.assertThat(relatedFile.fileId).isNotNull
-        Assertions.assertThat(relatedFile.fileName).isEqualTo("passport.jpg")
-        Assertions.assertThat(relatedFile.sizeInBytes).isEqualTo(148649)
-        Assertions.assertThat(relatedFile.createdOn).isEqualTo(LocalDateTime.parse("2022-02-18T15:19:51.408988"))
-        Assertions.assertThat(relatedFile.createdBy).isEqualTo("John Doe")
+        assertThat(relatedFile.fileId).isNotNull
+        assertThat(relatedFile.fileName).isEqualTo("passport.jpg")
+        assertThat(relatedFile.sizeInBytes).isEqualTo(148649)
+        assertThat(relatedFile.createdOn).isEqualTo(LocalDateTime.parse("2022-02-18T15:19:51.408988"))
+        assertThat(relatedFile.createdBy).isEqualTo("John Doe")
     }
 
     fun startCreateBesluitProcess(content: String): Document {

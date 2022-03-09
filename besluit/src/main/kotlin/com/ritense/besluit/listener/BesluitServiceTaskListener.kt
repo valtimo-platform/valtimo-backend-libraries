@@ -78,15 +78,6 @@ open class BesluitServiceTaskListener(
         }
     }
 
-    private fun createBesluitDocument(informatieobjectUrl: URI?, document: Document) {
-        if (informatieobjectUrl != null) {
-            val informatieObject = zaakService.getInformatieObject(informatieobjectUrl)
-            val resource = openZaakService.store(informatieObject)
-            val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(informatieObject.auteur)
-            documentService.assignRelatedFile(document.id(), relatedFile)
-        }
-    }
-
     private fun getInformatieobjectUrl(document: Document): URI? {
         val besluitInformatieobjectUrlNode = document.content().asJson().at(JsonPointer.valueOf("/\$besluit"))
 
@@ -106,6 +97,15 @@ open class BesluitServiceTaskListener(
                     throw RuntimeException("Dossier /\$besluit contains malformed URI", e)
                 }
             }
+        }
+    }
+
+    private fun createBesluitDocument(informatieobjectUrl: URI?, document: Document) {
+        if (informatieobjectUrl != null) {
+            val informatieObject = zaakService.getInformatieObject(informatieobjectUrl)
+            val resource = openZaakService.store(informatieObject)
+            val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(informatieObject.auteur)
+            documentService.assignRelatedFile(document.id(), relatedFile)
         }
     }
 }
