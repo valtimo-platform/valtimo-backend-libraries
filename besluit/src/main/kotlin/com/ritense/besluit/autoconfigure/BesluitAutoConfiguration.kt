@@ -122,9 +122,8 @@ class BesluitAutoConfiguration {
         zaakInstanceLinkService: ZaakInstanceLinkService,
         repositoryService: RepositoryService,
         connectorService: ConnectorService,
-        zaakService: ZaakService,
         openZaakService: OpenZaakService,
-        @Value("\${valtimo.besluitDocumentRequired}") besluitDocumentRequired: Boolean,
+        @Value("\${valtimo.besluitDocumentRequired:false}") besluitDocumentRequired: Boolean,
     ): BesluitServiceTaskListener {
         return BesluitServiceTaskListener(
             zaakTypeLinkService,
@@ -132,7 +131,6 @@ class BesluitAutoConfiguration {
             zaakInstanceLinkService,
             repositoryService,
             connectorService,
-            zaakService,
             openZaakService,
             besluitDocumentRequired
         )

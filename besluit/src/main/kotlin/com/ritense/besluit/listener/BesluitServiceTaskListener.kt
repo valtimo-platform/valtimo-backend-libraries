@@ -20,20 +20,19 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.ritense.besluit.connector.BesluitConnector
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.Document
-import com.ritense.document.domain.impl.JsonSchemaRelatedFile
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.listener.BaseServiceTaskListener
-import com.ritense.openzaak.service.ZaakService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
+import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.resource.service.OpenZaakService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.annotation.Transactional
 import java.net.URI
-import java.net.URISyntaxException
+import java.util.UUID
 
 open class BesluitServiceTaskListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
@@ -41,7 +40,6 @@ open class BesluitServiceTaskListener(
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
     private val repositoryService: RepositoryService,
     private val connectorService: ConnectorService,
-    private val zaakService: ZaakService,
     private val openZaakService: OpenZaakService,
     private val besluitDocumentRequired: Boolean,
 ) : BaseServiceTaskListener(
@@ -66,46 +64,45 @@ open class BesluitServiceTaskListener(
     }
 
     private fun createBesluit(document: Document, besluitTypeUrl: URI, businessKey: String) {
-        val informatieobjectUrl = getInformatieobjectUrl(document)
-        createBesluitDocument(informatieobjectUrl, document)
+        val besluitResource = getBesluitResource(document)
 
         val zaakInstanceLink = zaakInstanceLinkService.getByDocumentId(document.id().id)
         val besluitConnector = connectorService.loadByClassName(BesluitConnector::class.java)
         val besluit = besluitConnector.createBesluit(zaakInstanceLink.zaakInstanceUrl, besluitTypeUrl, businessKey)
 
-        if (informatieobjectUrl != null) {
-            besluitConnector.createBesluitInformatieobjectRelatie(informatieobjectUrl, besluit.url)
+        if (besluitResource != null) {
+            besluitConnector.createBesluitInformatieobjectRelatie(besluitResource.informatieObjectUrl, besluit.url)
         }
     }
 
-    private fun getInformatieobjectUrl(document: Document): URI? {
-        val besluitInformatieobjectUrlNode = document.content().asJson().at(JsonPointer.valueOf("/\$besluit"))
+    private fun getBesluitResource(document: Document): OpenZaakResource? {
+        val besluitResourceId = getBesluitOpenZaakResourceUuid(document)
+        return if (besluitResourceId == null) {
+            null
+        } else {
+            openZaakService.getResource(besluitResourceId)
+        }
+    }
 
-        return if (besluitInformatieobjectUrlNode.isMissingNode || besluitInformatieobjectUrlNode.isNull) {
+    private fun getBesluitOpenZaakResourceUuid(document: Document): UUID? {
+        val besluitResourceUuidNode = document.content().asJson().at(JsonPointer.valueOf("/besluit"))
+
+        return if (besluitResourceUuidNode.isMissingNode || besluitResourceUuidNode.isNull) {
             if (besluitDocumentRequired) {
-                throw IllegalStateException("Dossier /\$besluit is empty. But valtimo.besluitDocumentRequired: true")
+                throw IllegalStateException("Dossier /besluit is empty. But valtimo.besluitDocumentRequired: true")
             } else {
                 null
             }
         } else {
-            if (!besluitInformatieobjectUrlNode.isTextual) {
-                throw RuntimeException("Dossier /\$besluit doesn't contain URI: `${besluitInformatieobjectUrlNode.toPrettyString()}`")
+            if (!besluitResourceUuidNode.isTextual) {
+                throw RuntimeException("Dossier /besluit doesn't contain UUID: `${besluitResourceUuidNode.toPrettyString()}`")
             } else {
                 try {
-                    URI(besluitInformatieobjectUrlNode.textValue())
-                } catch (e: URISyntaxException) {
-                    throw RuntimeException("Dossier /\$besluit contains malformed URI", e)
+                    UUID.fromString(besluitResourceUuidNode.textValue())
+                } catch (e: IllegalArgumentException) {
+                    throw RuntimeException("Dossier /besluit contains malformed UUID", e)
                 }
             }
-        }
-    }
-
-    private fun createBesluitDocument(informatieobjectUrl: URI?, document: Document) {
-        if (informatieobjectUrl != null) {
-            val informatieObject = zaakService.getInformatieObject(informatieobjectUrl)
-            val resource = openZaakService.store(informatieObject)
-            val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(informatieObject.auteur)
-            documentService.assignRelatedFile(document.id(), relatedFile)
         }
     }
 }

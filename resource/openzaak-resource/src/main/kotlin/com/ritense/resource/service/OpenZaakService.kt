@@ -28,11 +28,11 @@ import com.ritense.resource.web.ObjectUrlDTO
 import com.ritense.resource.web.ResourceDTO
 import com.ritense.valtimo.contract.resource.FileStatus
 import com.ritense.valtimo.contract.resource.Resource
+import org.springframework.web.multipart.MultipartFile
 import java.net.URL
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.servlet.http.HttpServletRequest
-import org.springframework.web.multipart.MultipartFile
 
 class OpenZaakService(
     val documentenService: DocumentenService,
