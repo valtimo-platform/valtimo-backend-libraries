@@ -79,12 +79,7 @@ class OpenZaakService(
         return openZaakResourceRepository.saveAndFlush(openZaakResource)
     }
 
-    fun storeIfNotExists(informatieObject: InformatieObject): OpenZaakResource {
-        val openZaakResourceOptional = openZaakResourceRepository.findByInformatieObjectUrl(informatieObject.url)
-        if (openZaakResourceOptional.isPresent) {
-            return openZaakResourceOptional.get()
-        }
-
+    fun store(informatieObject: InformatieObject): OpenZaakResource {
         val openZaakResource = OpenZaakResource(
             ResourceId.newId(UUID.randomUUID()),
             informatieObject.url,

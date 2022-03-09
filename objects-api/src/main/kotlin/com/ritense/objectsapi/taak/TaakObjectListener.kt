@@ -126,7 +126,7 @@ class TaakObjectListener(
 
     private fun createResourceAndAssignToDocument(file: URI, documentId: Document.Id) {
         val informatieObject = zaakService.getInformatieObject(file)
-        val resource = openZaakService.storeIfNotExists(informatieObject)
+        val resource = openZaakService.store(informatieObject)
         val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(informatieObject.auteur)
         documentService.assignRelatedFile(documentId, relatedFile)
     }
