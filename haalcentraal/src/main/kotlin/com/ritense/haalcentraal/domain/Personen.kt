@@ -23,7 +23,7 @@ data class Personen(
     val embedded: Embedded
 ) {
     data class Embedded(
-        val ingeschrevenpersonen: List<Persoonsgegevens>
+        val ingeschrevenpersonen: List<Persoonsgegevens>?
     )
 
     data class Persoonsgegevens(

@@ -35,7 +35,7 @@ class HaalCentraalBRPConnector(
 ) : Connector {
 
 
-    fun findPeople(request: GetPeopleRequest): List<Person>? {
+    fun findPeople(request: GetPeopleRequest): List<Person> {
         validateRequest(request)
         val personen: Personen = runBlocking {
             haalCentraalBRPClient.findPeople(
@@ -46,7 +46,7 @@ class HaalCentraalBRPConnector(
             )
         }
 
-        val test = personen?.embedded?.ingeschrevenpersonen?.map {
+        return personen.embedded.ingeschrevenpersonen?.map {
             Person(
                 it.burgerservicenummer,
                 it.naam?.voornamen,
@@ -57,9 +57,7 @@ class HaalCentraalBRPConnector(
                     it.geboorte?.datum?.maand,
                     it.geboorte?.datum?.dag),
             )
-        }
-
-        return test
+        } ?: emptyList()
     }
 
     override fun getProperties(): HaalCentraalBRPProperties {

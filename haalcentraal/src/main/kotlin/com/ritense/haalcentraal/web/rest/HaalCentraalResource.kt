@@ -36,7 +36,7 @@ class HaalCentraalResource(
     fun findPersonByBsn(
         @RequestBody request: GetPeopleRequest
     ): ResponseEntity<List<Person>> {
-        val connector = connectorService.loadByName("HaalCentraal") as HaalCentraalBRPConnector
+        val connector = connectorService.loadByClassName(HaalCentraalBRPConnector::class.java)
         return ResponseEntity.ok(connector.findPeople(request))
     }
 
