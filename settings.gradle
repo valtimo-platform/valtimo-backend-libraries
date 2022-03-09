@@ -49,6 +49,7 @@ include(
         "document-export",
         "klant",
         "test-utils-common",
-        "besluit"
+        "besluit",
+        "haalcentraal"
 )
 
