@@ -22,6 +22,7 @@ import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.BesluitType
 import org.springframework.web.client.RestTemplate
+import java.net.URI
 
 class CatalogiClient(
     private val restTemplate: RestTemplate,
@@ -29,9 +30,10 @@ class CatalogiClient(
     private val openZaakTokenGeneratorService: OpenZaakTokenGeneratorService
 ) {
 
-    fun getBesluittypen(): ResultWrapper<BesluitType> {
+    fun getBesluittypen(catalogiUrl: URI): ResultWrapper<BesluitType> {
         return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
             .path("catalogi/api/v1/besluittypen")
+            .queryParams(mapOf("catalogus" to catalogiUrl.toString()))
             .get()
             .build()
             .executeWrapped(BesluitType::class.java)

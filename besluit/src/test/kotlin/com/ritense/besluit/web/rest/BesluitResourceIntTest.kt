@@ -16,6 +16,7 @@
 
 package com.ritense.besluit.web.rest
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.besluit.BaseIntegrationTest
 import com.ritense.openzaak.service.impl.model.ResultWrapper
@@ -49,7 +50,8 @@ internal class BesluitResourceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should get besluit types`() {
-        whenever(catalogiClient.getBesluittypen()).thenReturn(
+        setupOpenZaakConnector()
+        whenever(catalogiClient.getBesluittypen(any())).thenReturn(
             ResultWrapper(
                 1,
                 null,
