@@ -32,7 +32,7 @@ class HaalCentraalResource(
     val connectorService: ConnectorService
 ) {
 
-    @PostMapping("/people")
+    @PostMapping("/personen")
     fun findPersonByBsn(
         @RequestBody request: GetPeopleRequest
     ): ResponseEntity<List<Person>> {
