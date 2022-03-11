@@ -35,10 +35,8 @@ class ProductAanvraagListener(
         ) {
             val connector = openNotificatieService.findConnector(event.connectorId, event.authorizationKey)
 
-            // check if the created object is the right kind based on the name of the type of the created object.
-            // This is the only way to do so until other information becomes available or we retrieve every object that is created
-            if (connector is ProductAanvraagConnector
-                && event.notification.getObjectTypeUrl()?.equals(connector.getObjectsApiConnector().getProperties().objectType.url)?: false
+            if (connector is ProductAanvraagConnector && connector.getObjectsApiConnector().getProperties()
+                    .objectType.url == event.notification.getObjectTypeUrl()
             ) {
                 val productAanvraagId = event.notification.getObjectId()
                 val productAanvraag = connector.getProductAanvraag(productAanvraagId)

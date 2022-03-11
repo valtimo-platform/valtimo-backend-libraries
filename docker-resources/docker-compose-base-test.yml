@@ -39,3 +39,5 @@ services:
 #   url: jdbc:mysql://localhost:3315/contactmoment-test
 #   url: jdbc:mysql://localhost:3316/wordpress-mail-test
 #   url: jdbc:mysql://localhost:3317/smartdocuments-test
+#   url: jdbc:mysql://localhost:3318/besluit-test
+#   url: jdbc:mysql://localhost:3319/haalcentraal-test

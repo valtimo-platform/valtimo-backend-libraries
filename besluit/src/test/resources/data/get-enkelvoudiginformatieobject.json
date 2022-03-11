@@ -1,0 +1,33 @@
+{
+    "url": "https://example.com/documenten/api/v1/enkelvoudiginformatieobjecten/429cd502-3ddc-43de-aa1b-791404cd2913",
+    "identificatie": "DOCUMENT-2022-0000000437",
+    "bronorganisatie": "900050287",
+    "creatiedatum": "2022-02-18",
+    "titel": "Passport",
+    "vertrouwelijkheidaanduiding": "zaakvertrouwelijk",
+    "auteur": "John Doe",
+    "status": "definitief",
+    "formaat": "",
+    "taal": "NL",
+    "versie": 1,
+    "beginRegistratie": "2022-02-18T15:19:51.408988Z",
+    "bestandsnaam": "passport.jpg",
+    "inhoud": "https://example/documenten/api/v1/enkelvoudiginformatieobjecten/429cd502-3ddc-43de-aa1b-791404cd2913/download?versie=1",
+    "bestandsomvang": 148649,
+    "link": "",
+    "beschrijving": "",
+    "ontvangstdatum": "2022-02-18",
+    "verzenddatum": "2022-02-18",
+    "indicatieGebruiksrecht": null,
+    "ondertekening": {
+        "soort": "",
+        "datum": null
+    },
+    "integriteit": {
+        "algoritme": "",
+        "waarde": "",
+        "datum": null
+    },
+    "informatieobjecttype": "https://example/catalogi/api/v1/informatieobjecttypen/a0d1b4d7-e74c-4118-9ed0-13f7ed8fb5fe",
+    "locked": false
+}

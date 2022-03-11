@@ -121,7 +121,7 @@ data class ZaakTypeLink(
     }
 
     @JsonIgnore
-    private fun getServiceTaskHandlerBy(processDefinitionKey: String, serviceTaskId: String): ServiceTaskHandler? {
+    fun getServiceTaskHandlerBy(processDefinitionKey: String, serviceTaskId: String): ServiceTaskHandler? {
         return serviceTaskHandlers.find { handler -> handler.processDefinitionKey == processDefinitionKey && handler.serviceTaskId == serviceTaskId }
     }
 
@@ -141,13 +141,4 @@ data class ZaakTypeLink(
             }
         }
     }
-
-    @JsonIgnore
-    fun isCreateZaakTask(execution: DelegateExecution, processDefinitionKey: String): Boolean {
-        val serviceTaskId = execution.currentActivityId
-        val serviceTaskHandler = getServiceTaskHandlerBy(serviceTaskId, processDefinitionKey) ?: return false
-
-        return serviceTaskHandler.operation == Operation.CREATE_ZAAK
-    }
-
 }

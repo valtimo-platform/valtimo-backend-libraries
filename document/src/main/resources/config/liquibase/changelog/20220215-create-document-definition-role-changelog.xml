@@ -28,23 +28,32 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet  author="Theo Beers"  id="2">
+    <changeSet author="Theo Beers" id="2">
         <addUniqueConstraint tableName="json_schema_document_definition_role"
-                              columnNames="document_definition_name, role"
-                              constraintName="uc_json_schema_document_definition_role" />
+                             columnNames="document_definition_name, role"
+                             constraintName="uc_json_schema_document_definition_role"/>
     </changeSet>
-    <changeSet  author="Theo Beers"  id="3">
+    <changeSet author="Theo Beers" id="3">
         <addForeignKeyConstraint baseTableName="json_schema_document_definition_role"
                                  baseColumnNames="document_definition_name"
                                  referencedTableName="json_schema_document_definition"
                                  referencedColumnNames="document_definition_name"
-                                 constraintName="fk_document_definition_role_name" />
+                                 constraintName="fk_document_definition_role_name"/>
     </changeSet>
 
     <changeSet author="Theo Beers" id="4">
+        <validCheckSum>8:49dbaeaf1946a56fb322a45f62fa0913</validCheckSum>
         <sql>
             INSERT INTO json_schema_document_definition_role (document_definition_name, role)
-            SELECT DISTINCT document_definition_name, 'ROLE_USER' as role FROM json_schema_document_definition
+            SELECT DISTINCT dd.document_definition_name, r.role
+            FROM json_schema_document_definition AS dd
+                     CROSS JOIN (SELECT 'ROLE_USER' as role) AS r
+            WHERE NOT EXISTS(
+                SELECT 1
+                FROM json_schema_document_definition_role AS sub
+                WHERE sub.document_definition_name = dd.document_definition_name
+                  AND sub.role = r.role
+                );
         </sql>
     </changeSet>
 

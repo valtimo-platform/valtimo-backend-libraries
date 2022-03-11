@@ -17,6 +17,7 @@
 package com.ritense.klant.service
 
 import com.ritense.audit.autoconfigure.AuditAutoConfiguration
+import com.ritense.besluit.autoconfigure.BesluitAutoConfiguration
 import com.ritense.connector.autoconfigure.ConnectorAutoConfiguration
 import com.ritense.connector.autoconfigure.ConnectorLiquibaseAutoConfiguration
 import com.ritense.connector.autoconfigure.ConnectorSecurityAutoConfiguration
@@ -28,8 +29,10 @@ import com.ritense.document.autoconfigure.DocumentSnapshotAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakLiquibaseAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakSecurityAutoConfiguration
+import com.ritense.openzaak.catalogi.CatalogiAutoConfiguration
 import com.ritense.processdocument.autoconfigure.ProcessDocumentAuditAutoConfiguration
 import com.ritense.processdocument.autoconfigure.ProcessDocumentAutoConfiguration
+import com.ritense.resource.autoconfigure.OpenZaakResourceAutoConfiguration
 import com.ritense.valtimo.autoconfigure.AccessAndEntitlementAutoConfiguration
 import com.ritense.valtimo.autoconfigure.AuthenticationAutoConfiguration
 import com.ritense.valtimo.autoconfigure.CamundaAutoConfiguration
@@ -56,6 +59,8 @@ import org.springframework.boot.test.context.TestConfiguration
         AccessAndEntitlementAutoConfiguration::class,
         AuditAutoConfiguration::class,
         AuthenticationAutoConfiguration::class,
+        BesluitAutoConfiguration::class,
+        CatalogiAutoConfiguration::class,
         CamundaAutoConfiguration::class,
         CamundaBpmAutoConfiguration::class,
         ChoiceFieldAutoConfiguration::class,
@@ -77,6 +82,7 @@ import org.springframework.boot.test.context.TestConfiguration
         LiquibaseRunnerAutoConfiguration::class,
         OpenZaakAutoConfiguration::class,
         OpenZaakLiquibaseAutoConfiguration::class,
+        OpenZaakResourceAutoConfiguration::class,
         OpenZaakSecurityAutoConfiguration::class,
         ProcessDataObjectAutoConfiguration::class,
         ProcessDocumentAutoConfiguration::class,

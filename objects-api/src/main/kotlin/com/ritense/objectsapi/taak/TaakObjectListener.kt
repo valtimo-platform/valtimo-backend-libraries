@@ -26,9 +26,11 @@ import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
+import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
@@ -37,7 +39,7 @@ import org.camunda.bpm.engine.delegate.VariableScope
 import org.camunda.bpm.engine.task.Task
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.springframework.context.event.EventListener
-import java.lang.RuntimeException
+import java.net.MalformedURLException
 import java.net.URI
 
 class TaakObjectListener(
@@ -48,6 +50,8 @@ class TaakObjectListener(
     private val runtimeService: RuntimeService,
     private val documentService: DocumentService,
     private val processDocumentService: ProcessDocumentService,
+    private val zaakService: ZaakService,
+    private val openZaakService: OpenZaakService,
 ) {
 
     @EventListener(OpenNotificationEvent::class)
@@ -57,19 +61,18 @@ class TaakObjectListener(
         ) {
             val connector = openNotificatieService.findConnector(event.connectorId, event.authorizationKey)
 
-            // check if the created object is the right kind based on the name of the type of the created object.
-            // This is the only way to do so until other information becomes available or we retrieve every object that is created
-            if (connector is TaakObjectConnector
-                && event.notification.getObjectTypeUrl()?.equals(connector.getObjectsApiConnector().getProperties().objectType.url)?: false
+            if (connector is TaakObjectConnector && connector.getObjectsApiConnector().getProperties()
+                    .objectType.url == event.notification.getObjectTypeUrl()
             ) {
                 val taakObjectId = event.notification.getObjectId()
-                val taakObject = connector.getTaakObject(taakObjectId)
+                val taakObjectRecord = connector.getTaakObjectRecord(taakObjectId)
+                val taakObject = taakObjectRecord.record.data
                 if (taakObject.status != TaakObjectStatus.ingediend) {
                     return
                 }
                 saveDataAndCompleteTask(taakObject)
 
-                connector.deleteTaakObject(taakObjectId)
+                connector.modifyTaakObjectStatusVerwerkt(taakObjectRecord)
             }
         }
     }
@@ -87,27 +90,52 @@ class TaakObjectListener(
         camundaTaskService.completeTaskWithoutFormData(taakObject.verwerkerTaakId.toString())
     }
 
-    private fun loadTaakObjectDocuments(processInstanceId: ProcessInstanceId, variableScope: VariableScope, taakObjectData: JsonNode) {
+    private fun loadTaakObjectDocuments(
+        processInstanceId: ProcessInstanceId,
+        variableScope: VariableScope,
+        taakObjectData: JsonNode
+    ) {
+        val documentId = processDocumentService.getDocumentId(processInstanceId, variableScope)
+        getDocumentenUris(taakObjectData).forEach { createResourceAndAssignToDocument(it, documentId) }
+    }
+
+    private fun getDocumentenUris(taakObjectData: JsonNode): List<URI> {
         val documentPathsNode = taakObjectData.at(JsonPointer.valueOf("/documenten"))
-        if (documentPathsNode.isArray) {
-            val documentId = processDocumentService.getDocumentId(processInstanceId, variableScope)
-            for (documentPathNode in documentPathsNode) {
-                val documentUrlNode = taakObjectData.at(JsonPointer.valueOf(documentPathNode.textValue())) as ValueNode
-                if (!documentUrlNode.isMissingNode && !documentUrlNode.isNull) {
-                    createResourceAndAssignToDocument(URI(documentUrlNode.textValue()), documentId)
+        if (documentPathsNode.isMissingNode || documentPathsNode.isNull) {
+            return emptyList()
+        }
+        if (!documentPathsNode.isArray) {
+            throw RuntimeException("Not an array: '/verzonden_data/documenten'")
+        }
+        val documentenUris = mutableListOf<URI>()
+        for (documentPathNode in documentPathsNode) {
+            val documentUrlNode = taakObjectData.at(JsonPointer.valueOf(documentPathNode.textValue())) as ValueNode
+            if (!documentUrlNode.isMissingNode && !documentUrlNode.isNull) {
+                if (!documentUrlNode.isTextual) {
+                    throw RuntimeException("Invalid URL in '/verzonden_data/documenten'. ${documentUrlNode.toPrettyString()}")
+                }
+                try {
+                    documentenUris.add(URI(documentUrlNode.textValue()))
+                } catch (e: MalformedURLException) {
+                    throw RuntimeException("Malformed URL in: '/verzonden_data/documenten'", e)
                 }
             }
         }
+        return documentenUris
     }
 
     private fun createResourceAndAssignToDocument(file: URI, documentId: Document.Id) {
-        val informatieObject = openNotificatieService.getInformatieObject(file)
-        val resource = openNotificatieService.createOpenzaakResource(informatieObject)
+        val informatieObject = zaakService.getInformatieObject(file)
+        val resource = openZaakService.store(informatieObject)
         val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(informatieObject.auteur)
         documentService.assignRelatedFile(documentId, relatedFile)
     }
 
-    private fun handleTaakObjectData(processInstanceId: ProcessInstanceId, variableScope: VariableScope, resolvedValues: Map<String, Any>) {
+    private fun handleTaakObjectData(
+        processInstanceId: ProcessInstanceId,
+        variableScope: VariableScope,
+        resolvedValues: Map<String, Any>
+    ) {
         if (resolvedValues.isNotEmpty()) {
             valueResolverService.handleValues(processInstanceId, variableScope, resolvedValues)
         }
@@ -132,7 +160,7 @@ class TaakObjectListener(
     }
 
     private fun getValue(data: JsonNode, path: String, camundaName: String, task: Task): Any {
-        val valueNode = data.at(JsonPointer.valueOf(path)) as ValueNode
+        val valueNode = data.at(JsonPointer.valueOf(path))
         if (valueNode.isMissingNode) {
             throw RuntimeException("Failed to do '$camundaName' for task '${task.taskDefinitionKey}'. Missing data on path '$path'")
         }

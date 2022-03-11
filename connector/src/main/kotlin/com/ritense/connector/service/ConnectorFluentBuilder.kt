@@ -45,7 +45,7 @@ class ConnectorFluentBuilder(
          * @param name the name of the connector instance
          */
         fun withConnector(name: String): Connector {
-            return connectorService.load(name)
+            return connectorService.loadByName(name)
         }
     }
 }

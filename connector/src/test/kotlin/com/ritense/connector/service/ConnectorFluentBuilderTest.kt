@@ -29,7 +29,7 @@ internal class ConnectorFluentBuilderTest : BaseTest() {
     fun `should build with connector`() {
         val connector = Mockito.mock(Connector::class.java)
 
-        Mockito.`when`(connectorService.load(anyString())).thenReturn(connector)
+        Mockito.`when`(connectorService.loadByName(anyString())).thenReturn(connector)
 
         val conenctor = ConnectorFluentBuilder(connectorService)
             .builder()

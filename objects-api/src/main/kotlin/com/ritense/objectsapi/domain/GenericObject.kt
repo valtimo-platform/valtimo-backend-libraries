@@ -26,5 +26,7 @@ data class GenericObject<T> (
 )
 
 data class ObjectRecord<T> (
+    val typeVersion: Int,
+    val startAt: String,
     val data: T
 )

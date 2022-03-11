@@ -1,11 +1,14 @@
 package com.ritense.objectsapi.taak
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.connector.domain.Connector
 import com.ritense.document.service.DocumentService
+import com.ritense.objectsapi.domain.GenericObject
+import com.ritense.objectsapi.domain.ObjectRecord
 import com.ritense.objectsapi.domain.request.HandleNotificationRequest
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
@@ -13,7 +16,9 @@ import com.ritense.objectsapi.service.ObjectTypeConfig
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
+import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.RuntimeService
@@ -31,6 +36,8 @@ internal class TaakObjectListenerTest {
     lateinit var runtimeService: RuntimeService
     lateinit var documentService: DocumentService
     lateinit var processDocumentService: ProcessDocumentService
+    lateinit var zaakService: ZaakService
+    lateinit var openZaakService: OpenZaakService
 
     @BeforeEach
     fun setup() {
@@ -41,6 +48,8 @@ internal class TaakObjectListenerTest {
         runtimeService = mock()
         documentService = mock()
         processDocumentService = mock()
+        zaakService = mock()
+        openZaakService = mock()
         listener = TaakObjectListener(
             openNotificatieService,
             camundaTaskService,
@@ -49,6 +58,8 @@ internal class TaakObjectListenerTest {
             runtimeService,
             documentService,
             processDocumentService,
+            zaakService,
+            openZaakService,
         )
     }
 
@@ -65,13 +76,17 @@ internal class TaakObjectListenerTest {
             )
         ))
 
-        whenever(connector.getTaakObject(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))).thenReturn(
-            TaakObjectDto(
-                bsn = "bsn",
-                kvk = "kvk",
-                verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
-                formulierId = "some-form",
-                status = TaakObjectStatus.ingediend
+        whenever(connector.getTaakObjectRecord(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))).thenReturn(
+            GenericObject(
+                UUID.randomUUID(), "http://example.com", "taak", ObjectRecord(
+                    1, "2022-01-01", TaakObjectDto(
+                        bsn = "bsn",
+                        kvk = "kvk",
+                        verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
+                        formulierId = "some-form",
+                        status = TaakObjectStatus.ingediend
+                    )
+                )
             )
         )
 
@@ -91,7 +106,7 @@ internal class TaakObjectListenerTest {
         listener.notificationReceived(event)
 
         verify(camundaTaskService).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
-        verify(connector).deleteTaakObject(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))
+        verify(connector).modifyTaakObjectStatusVerwerkt(any())
     }
 
     @Test
@@ -202,13 +217,17 @@ internal class TaakObjectListenerTest {
             )
         ))
 
-        whenever(connector.getTaakObject(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))).thenReturn(
-            TaakObjectDto(
-                bsn = "bsn",
-                kvk = "kvk",
-                verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
-                formulierId = "some-form",
-                status = TaakObjectStatus.verwerkt
+        whenever(connector.getTaakObjectRecord(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))).thenReturn(
+            GenericObject(
+                UUID.randomUUID(), "http://example.com", "taak", ObjectRecord(
+                    1, "2022-01-01", TaakObjectDto(
+                        bsn = "bsn",
+                        kvk = "kvk",
+                        verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
+                        formulierId = "some-form",
+                        status = TaakObjectStatus.ingediend
+                    )
+                )
             )
         )
 

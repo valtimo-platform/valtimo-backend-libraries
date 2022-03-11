@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.autoconfigure;
 
-import com.ritense.valtimo.repository.ChoiceFieldRepository;
-import com.ritense.valtimo.repository.ChoiceFieldValueRepository;
+import com.ritense.valtimo.choicefield.repository.ChoiceFieldRepository;
+import com.ritense.valtimo.choicefield.repository.ChoiceFieldValueRepository;
 import com.ritense.valtimo.service.ChoiceFieldService;
 import com.ritense.valtimo.service.ChoiceFieldValueService;
 import com.ritense.valtimo.web.rest.ChoiceFieldResource;
@@ -26,9 +26,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EntityScan("com.ritense.valtimo.domain.choicefield")
+@EnableJpaRepositories(basePackageClasses = {
+    ChoiceFieldRepository.class,
+    ChoiceFieldValueRepository.class
+})
+@EntityScan(value = "com.ritense.valtimo.domain.choicefield")
 public class ChoiceFieldAutoConfiguration {
 
     @Bean

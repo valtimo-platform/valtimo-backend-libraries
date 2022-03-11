@@ -25,7 +25,9 @@ import com.ritense.objectsapi.taak.resolve.ProcessVariableValueResolverFactory
 import com.ritense.objectsapi.taak.resolve.ValueResolverFactory
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.openzaak.provider.BsnProvider
+import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.RuntimeService
@@ -49,6 +51,8 @@ class TaakObjectAutoConfiguration {
         runtimeService: RuntimeService,
         documentService: DocumentService,
         processDocumentService: ProcessDocumentService,
+        zaakService: ZaakService,
+        openZaakService: OpenZaakService,
     ): TaakObjectListener {
         return TaakObjectListener(
             openNotificatieService,
@@ -58,6 +62,8 @@ class TaakObjectAutoConfiguration {
             runtimeService,
             documentService,
             processDocumentService,
+            zaakService,
+            openZaakService,
         )
     }
 

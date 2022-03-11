@@ -66,19 +66,15 @@ class DocumentValueResolverFactory(
         values: Map<String, Any>
     ) {
         val document = processDocumentService.getDocument(processInstanceId, variableScope)
+        val documentContent = document.content().asJson()
         val jsonPatchBuilder = JsonPatchBuilder()
 
         values.forEach {
             val path = JsonPointer.valueOf(it.key.substringAfter(":"))
             val valueNode = toValueNode(it.value)
-            when (it.key.substringBefore(":", missingDelimiterValue = "")) {
-                "add" -> jsonPatchBuilder.add(path, valueNode)
-                "replace" -> jsonPatchBuilder.replace(path, valueNode)
-                else -> throw IllegalArgumentException("Missing 'add' or 'replace' in '${it.key}'")
-            }
+            buildJsonPatch(jsonPatchBuilder, documentContent, path, valueNode)
         }
 
-        val documentContent = document.content().asJson()
         JsonPatchService.apply(jsonPatchBuilder.build(), documentContent)
         documentService.modifyDocument(
             ModifyDocumentRequest(
@@ -89,10 +85,29 @@ class DocumentValueResolverFactory(
         )
     }
 
-    private fun toValueNode(value: Any) : JsonNode {
+    private fun buildJsonPatch(builder: JsonPatchBuilder, content: JsonNode, path: JsonPointer, value: JsonNode) {
+        if (content.at(path.head()).isMissingNode) {
+            val propertyName = path.last().matchingProperty
+            val newValue: JsonNode = if (propertyName == "-" || propertyName == "0")
+                Mapper.INSTANCE.get().createArrayNode().add(value)
+            else
+                Mapper.INSTANCE.get().createObjectNode().set(path.last().matchingProperty, value)
+
+            buildJsonPatch(builder, content, path.head(), newValue)
+        } else {
+            val currentValue = content.at(path)
+            if (currentValue.isMissingNode || currentValue.isArray) {
+                builder.add(path, value)
+            } else {
+                builder.replace(path, value)
+            }
+        }
+    }
+
+    private fun toValueNode(value: Any): JsonNode {
         return try {
             Mapper.INSTANCE.get().readTree(value.toString())
-        } catch (e : JsonParseException) {
+        } catch (e: JsonParseException) {
             TextNode.valueOf(value.toString())
         }
     }
