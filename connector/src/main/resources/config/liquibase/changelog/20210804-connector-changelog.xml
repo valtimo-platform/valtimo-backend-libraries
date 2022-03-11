@@ -68,7 +68,11 @@
             <column name="name"/>
         </createIndex>
     </changeSet>
+
     <changeSet author="Rick Veenstra" id="1628085538996-5">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <addColumn tableName="connector_type">
             <column name="allow_multiple" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="false"/>
@@ -125,6 +129,17 @@
         <createIndex indexName="ix_connector_instance_name" tableName="connector_instance">
             <column name="name"/>
         </createIndex>
+    </changeSet>
+
+    <changeSet author="Rick Veenstra" id="1628085538996-11">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <addColumn tableName="connector_type">
+            <column name="allow_multiple" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>
