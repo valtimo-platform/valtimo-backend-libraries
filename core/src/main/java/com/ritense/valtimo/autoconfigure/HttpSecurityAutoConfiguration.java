@@ -34,6 +34,7 @@ import com.ritense.valtimo.security.config.DenyAllHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.EmailNotificationSettingsSecurityConfigurer;
 import com.ritense.valtimo.security.config.ErrorHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.JwtHttpSecurityConfigurer;
+import com.ritense.valtimo.security.config.PingHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ProcessHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ProcessInstanceHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.PublicProcessHttpSecurityConfigurer;
@@ -109,6 +110,13 @@ public class HttpSecurityAutoConfiguration {
     }
 
     //CORE ENDPOINT CONFIGURATION
+
+    @Order(260)
+    @Bean
+    @ConditionalOnMissingBean(PingHttpSecurityConfigurer.class)
+    public PingHttpSecurityConfigurer pingHttpSecurityConfigurer() {
+        return new PingHttpSecurityConfigurer();
+    }
 
     @Order(270)
     @Bean
