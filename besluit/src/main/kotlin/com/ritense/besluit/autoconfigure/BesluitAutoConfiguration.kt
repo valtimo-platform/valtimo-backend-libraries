@@ -110,8 +110,9 @@ class BesluitAutoConfiguration {
     @ConditionalOnMissingBean(BesluitService::class)
     fun besluitService(
         catalogiClient: CatalogiClient,
+        connectorService: ConnectorService,
     ): BesluitService {
-        return BesluitService(catalogiClient)
+        return BesluitService(catalogiClient, connectorService)
     }
 
     @Bean
