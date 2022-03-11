@@ -30,6 +30,7 @@ include(
         "document",
         "process-document",
         "form",
+        "form-flow",
         "form-link",
         "document-generation",
         "document-generation:local-document-generation",
