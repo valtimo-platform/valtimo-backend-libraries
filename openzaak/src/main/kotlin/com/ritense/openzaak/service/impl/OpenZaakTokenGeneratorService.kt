@@ -19,8 +19,8 @@ package com.ritense.openzaak.service.impl
 import com.ritense.openzaak.service.TokenGeneratorService
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import io.jsonwebtoken.JwtBuilder
+import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import java.nio.charset.Charset
@@ -63,7 +63,11 @@ class OpenZaakTokenGeneratorService : TokenGeneratorService {
         val authentication = SecurityUtils.getCurrentUserAuthentication()
 
         val jwtToken: String = authentication?.credentials.toString()
-        val unsignedToken = jwtToken.split("\\.", limit = 2).joinToString(".")
+        val tokenParts = jwtToken.split(".")
+        if (tokenParts.size < 2) {
+            return
+        }
+        val unsignedToken = "${tokenParts[0]}.${tokenParts[1]}."
 
         val jwtParser = Jwts.parserBuilder().build()
         try {
@@ -72,7 +76,7 @@ class OpenZaakTokenGeneratorService : TokenGeneratorService {
             jwtBuilder.addClaims(jwtClaims.filterKeys {
                 claims.contains(it)
             })
-        } catch (ex: MalformedJwtException) {
+        } catch (ex: JwtException) {
             logger.error { ex }
         }
     }

@@ -1,10 +1,12 @@
 package com.ritense.gzac.listener
 
+import com.ritense.besluit.connector.BesluitProperties
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.haalcentraal.connector.HaalCentraalBRPProperties
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagTypeMapping
@@ -59,12 +61,14 @@ class ApplicationReadyEventListener(
 
         connectorService.getConnectorTypes().forEach {
             try {
+                createHaalCentraalConnector(connectorTypes.findId("HaalCentraal"))
                 createOpenZaakConnector(connectorTypes.findId("OpenZaak"))
                 createOpenNotificatiesConnector(connectorTypes.findId("OpenNotificatie"))
                 createContactMomentConnector(connectorTypes.findId("ContactMoment"))
                 createObjectApiConnectors(connectorTypes.findId("ObjectsApi"))
                 createProductAanvraagConnector(connectorTypes.findId("ProductAanvragen"))
                 createTaakConnector(connectorTypes.findId("Taak"))
+                createBesluitConnector(connectorTypes.findId("Besluit"))
             } catch (ex: Exception) {
                 logger.error { ex }
             }
@@ -76,6 +80,17 @@ class ApplicationReadyEventListener(
             .filter { it.name.equals(connectorName) }
             .first()
             .id.id
+    }
+
+    fun createHaalCentraalConnector(id: UUID) {
+        connectorService.createConnectorInstance(
+            typeId = id,
+            name = "HaalCentraalInstance",
+            connectorProperties = HaalCentraalBRPProperties(
+                System.getenv("VALTIMO_HAALCENTRAAL_URL") ?: "http://example.com/",
+                System.getenv("VALTIMO_HAALCENTRAAL_APIKEY") ?: "example-api-key"
+            )
+        )
     }
 
     fun createOpenZaakConnector(id: UUID) {
@@ -231,6 +246,19 @@ class ApplicationReadyEventListener(
                 "valtimo",
                 "zZ!xRP&\$qTn4A9ETa^ZMKepDm^8egjPz",
                 "http://host.docker.internal:8080"
+            )
+        )
+    }
+
+    fun createBesluitConnector(id: UUID) {
+        connectorService.createConnectorInstance(
+            typeId = id,
+            name = "BesluitInstance",
+            connectorProperties = BesluitProperties(
+                "http://localhost:8001",
+                "valtimo_client",
+                "e09b8bc5-5831-4618-ab28-41411304309d",
+                Rsin("051845623")
             )
         )
     }

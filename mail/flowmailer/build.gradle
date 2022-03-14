@@ -15,7 +15,7 @@
  */
 
 dependencies {
-    implementation project(":mail")
+    api project(":mail")
     implementation project(":connector")
     implementation project(":document")
     implementation project(":resource")

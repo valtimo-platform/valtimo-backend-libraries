@@ -16,9 +16,9 @@
 
 package com.ritense.objectsapi.taak.resolve
 
-import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.node.BooleanNode
 import com.fasterxml.jackson.databind.node.IntNode
+import com.fasterxml.jackson.databind.node.MissingNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
@@ -30,15 +30,11 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.contract.json.patch.operation.AddOperation
-import com.ritense.valtimo.contract.json.patch.operation.JsonPatchOperation
-import com.ritense.valtimo.contract.json.patch.operation.ReplaceOperation
-import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
-import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 internal class DocumentValueResolverTest {
 
@@ -137,7 +133,7 @@ internal class DocumentValueResolverTest {
         documentValueResolver.handleValues(
             processInstanceId = processInstanceId,
             variableScope = variableScope,
-            mapOf("add:/firstname" to "John")
+            mapOf("/firstname" to "John")
         )
 
         val captor = argumentCaptor<ModifyDocumentRequest>()
@@ -150,13 +146,13 @@ internal class DocumentValueResolverTest {
         val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
         val variableScope = DelegateTaskFake()
         val document = mock<Document>()
-        whenever(document.content()).thenReturn(JsonDocumentContent("{}"))
+        whenever(document.content()).thenReturn(JsonDocumentContent("{\"firstname\":\"Peter\"}"))
         whenever(processDocumentService.getDocument(processInstanceId, variableScope)).thenReturn(document)
 
         documentValueResolver.handleValues(
             processInstanceId = processInstanceId,
             variableScope = variableScope,
-            mapOf("replace:/firstname" to "John")
+            mapOf("/firstname" to "John")
         )
 
         val captor = argumentCaptor<ModifyDocumentRequest>()
@@ -175,7 +171,7 @@ internal class DocumentValueResolverTest {
         documentValueResolver.handleValues(
             processInstanceId = processInstanceId,
             variableScope = variableScope,
-            mapOf("add:/approved" to true)
+            mapOf("/approved" to true)
         )
 
         val captor = argumentCaptor<ModifyDocumentRequest>()
@@ -194,11 +190,70 @@ internal class DocumentValueResolverTest {
         documentValueResolver.handleValues(
             processInstanceId = processInstanceId,
             variableScope = variableScope,
-            mapOf("add:/age" to 18)
+            mapOf("/age" to 18)
         )
 
         val captor = argumentCaptor<ModifyDocumentRequest>()
         verify(documentService).modifyDocument(captor.capture())
         Assertions.assertThat(captor.firstValue.content()).contains(IntNode.valueOf(18))
+    }
+
+    @Test
+    fun `should create JsonArray and JsonObject if not exist`() {
+        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val variableScope = DelegateTaskFake()
+        val document = mock<Document>()
+        whenever(document.content()).thenReturn(JsonDocumentContent("{}"))
+        whenever(processDocumentService.getDocument(processInstanceId, variableScope)).thenReturn(document)
+
+        documentValueResolver.handleValues(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope,
+            mapOf("/a/-/b/-/c/-/firstname" to "John")
+        )
+
+        val captor = argumentCaptor<ModifyDocumentRequest>()
+        verify(documentService).modifyDocument(captor.capture())
+        Assertions.assertThat(captor.firstValue.content().at("/a/0/b/0/c/0/firstname")).isEqualTo(TextNode.valueOf("John"))
+    }
+
+    @Test
+    fun `should replace value in list`() {
+        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val variableScope = DelegateTaskFake()
+        val document = mock<Document>()
+        whenever(document.content()).thenReturn(JsonDocumentContent("{\"myList\":[\"Peter\"]}"))
+        whenever(processDocumentService.getDocument(processInstanceId, variableScope)).thenReturn(document)
+
+        documentValueResolver.handleValues(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope,
+            mapOf("/myList/0" to "John")
+        )
+
+        val captor = argumentCaptor<ModifyDocumentRequest>()
+        verify(documentService).modifyDocument(captor.capture())
+        Assertions.assertThat(captor.firstValue.content().at("/myList/0")).isEqualTo(TextNode.valueOf("John"))
+        Assertions.assertThat(captor.firstValue.content().at("/myList/1")).isEqualTo(MissingNode.getInstance())
+    }
+
+    @Test
+    fun `should add value to list`() {
+        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val variableScope = DelegateTaskFake()
+        val document = mock<Document>()
+        whenever(document.content()).thenReturn(JsonDocumentContent("{\"myList\":[\"Peter\"]}"))
+        whenever(processDocumentService.getDocument(processInstanceId, variableScope)).thenReturn(document)
+
+        documentValueResolver.handleValues(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope,
+            mapOf("/myList/-" to "John")
+        )
+
+        val captor = argumentCaptor<ModifyDocumentRequest>()
+        verify(documentService).modifyDocument(captor.capture())
+        Assertions.assertThat(captor.firstValue.content().at("/myList/0")).isEqualTo(TextNode.valueOf("Peter"))
+        Assertions.assertThat(captor.firstValue.content().at("/myList/1")).isEqualTo(TextNode.valueOf("John"))
     }
 }

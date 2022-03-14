@@ -1,0 +1,594 @@
+{
+    "_links": {
+        "self": {
+            "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+            "templated": true,
+            "title": "string"
+        }
+    },
+    "_embedded": {
+        "ingeschrevenpersonen": [
+            {
+                "burgerservicenummer": "555555021",
+                "aNummer": "string",
+                "geheimhoudingPersoonsgegevens": true,
+                "geslachtsaanduiding": "man",
+                "leeftijd": 34,
+                "datumEersteInschrijvingGBA": {
+                    "dag": 3,
+                    "datum": {},
+                    "jaar": 1989,
+                    "maand": 5
+                },
+                "kiesrecht": {
+                    "europeesKiesrecht": true,
+                    "uitgeslotenVanKiesrecht": true,
+                    "einddatumUitsluitingEuropeesKiesrecht": {
+                        "dag": 3,
+                        "datum": {},
+                        "jaar": 1989,
+                        "maand": 5
+                    },
+                    "einddatumUitsluitingKiesrecht": {
+                        "dag": 3,
+                        "datum": {},
+                        "jaar": 1989,
+                        "maand": 5
+                    }
+                },
+                "naam": {
+                    "geslachtsnaam": "Vries",
+                    "voorletters": "P.J.",
+                    "voornamen": "Pieter Jan",
+                    "voorvoegsel": "de",
+                    "adellijkeTitelPredikaat": {
+                        "code": "6030",
+                        "omschrijving": "Nederland"
+                    },
+                    "aanhef": "Hoogwelgeboren heer",
+                    "aanschrijfwijze": "H.W. baron van den Aedel",
+                    "regelVoorafgaandAanAanschrijfwijze": "De hoogwelgeboren heer",
+                    "gebruikInLopendeTekst": "baron Van den Aedel",
+                    "aanduidingNaamgebruik": "eigen",
+                    "inOnderzoek": {
+                        "geslachtsnaam": true,
+                        "voornamen": true,
+                        "voorvoegsel": true,
+                        "adellijkeTitelPredikaat": true,
+                        "datumIngangOnderzoek": {
+                            "dag": 3,
+                            "datum": {},
+                            "jaar": 1989,
+                            "maand": 5
+                        },
+                        "aanduidingNaamgebruik": true
+                    }
+                },
+                "inOnderzoek": {
+                    "burgerservicenummer": true,
+                    "geslachtsaanduiding": true,
+                    "datumIngangOnderzoek": {
+                        "dag": 3,
+                        "datum": {},
+                        "jaar": 1989,
+                        "maand": 5
+                    }
+                },
+                "nationaliteiten": [
+                    {
+                        "aanduidingBijzonderNederlanderschap": "behandeld_als_nederlander",
+                        "datumIngangGeldigheid": {
+                            "dag": 3,
+                            "datum": {},
+                            "jaar": 1989,
+                            "maand": 5
+                        },
+                        "nationaliteit": {
+                            "code": "6030",
+                            "omschrijving": "Nederland"
+                        },
+                        "redenOpname": {
+                            "code": "6030",
+                            "omschrijving": "Nederland"
+                        },
+                        "inOnderzoek": {
+                            "aanduidingBijzonderNederlanderschap": true,
+                            "nationaliteit": true,
+                            "redenOpname": true,
+                            "datumIngangOnderzoek": {
+                                "dag": 3,
+                                "datum": {},
+                                "jaar": 1989,
+                                "maand": 5
+                            }
+                        }
+                    }
+                ],
+                "geboorte": {
+                    "datum": {
+                        "dag": 3,
+                        "datum": {},
+                        "jaar": 1989,
+                        "maand": 5
+                    },
+                    "land": {
+                        "code": "6030",
+                        "omschrijving": "Nederland"
+                    },
+                    "plaats": {
+                        "code": "6030",
+                        "omschrijving": "Nederland"
+                    },
+                    "inOnderzoek": {
+                        "datum": true,
+                        "land": true,
+                        "plaats": true,
+                        "datumIngangOnderzoek": {
+                            "dag": 3,
+                            "datum": {},
+                            "jaar": 1989,
+                            "maand": 5
+                        }
+                    }
+                },
+                "opschortingBijhouding": {
+                    "reden": "overlijden",
+                    "datum": {
+                        "dag": 3,
+                        "datum": {},
+                        "jaar": 1989,
+                        "maand": 5
+                    }
+                },
+                "overlijden": {
+                    "indicatieOverleden": true,
+                    "datum": {
+                        "dag": 3,
+                        "datum": {},
+                        "jaar": 1989,
+                        "maand": 5
+                    },
+                    "land": {
+                        "code": "6030",
+                        "omschrijving": "Nederland"
+                    },
+                    "plaats": {
+                        "code": "6030",
+                        "omschrijving": "Nederland"
+                    },
+                    "inOnderzoek": {
+                        "datum": true,
+                        "land": true,
+                        "plaats": true,
+                        "datumIngangOnderzoek": {
+                            "dag": 3,
+                            "datum": {},
+                            "jaar": 1989,
+                            "maand": 5
+                        }
+                    }
+                },
+                "verblijfplaats": {
+                    "straat": "Laan van de landinrichtingscommissie Duiven-Westervoort",
+                    "huisnummer": 1,
+                    "huisletter": "A",
+                    "huisnummertoevoeging": "bis",
+                    "postcode": "6922KZ",
+                    "woonplaats": "Duiven",
+                    "adresseerbaarObjectIdentificatie": "0226010000038820",
+                    "aanduidingBijHuisnummer": "tegenover",
+                    "nummeraanduidingIdentificatie": "0518200000366054",
+                    "functieAdres": "woonadres",
+                    "indicatieVestigingVanuitBuitenland": true,
+                    "locatiebeschrijving": "Naast de derde brug",
+                    "korteNaam": "string",
+                    "vanuitVertrokkenOnbekendWaarheen": true,
+                    "datumAanvangAdreshouding": {
+                        "dag": 3,
+                        "datum": {},
+                        "jaar": 1989,
+                        "maand": 5
+                    },
+                    "datumIngangGeldigheid": {
+                        "dag": 3,
+                        "datum": {},
+                        "jaar": 1989,
+                        "maand": 5
+                    },
+                    "datumInschrijvingInGemeente": {
+                        "dag": 3,
+                        "datum": {},
+                        "jaar": 1989,
+                        "maand": 5
+                    },
+                    "datumVestigingInNederland": {
+                        "dag": 3,
+                        "datum": {},
+                        "jaar": 1989,
+                        "maand": 5
+                    },
+                    "gemeenteVanInschrijving": {
+                        "code": "6030",
+                        "omschrijving": "Nederland"
+                    },
+                    "landVanwaarIngeschreven": {
+                        "code": "6030",
+                        "omschrijving": "Nederland"
+                    },
+                    "adresregel1": "Laan van de landinrichtingscommissie Duiven-Westervoort 26A-3",
+                    "adresregel2": "1234AA Nootdorp",
+                    "adresregel3": "Selangor",
+                    "vertrokkenOnbekendWaarheen": true,
+                    "land": {
+                        "code": "6030",
+                        "omschrijving": "Nederland"
+                    },
+                    "inOnderzoek": {
+                        "aanduidingBijHuisnummer": true,
+                        "datumAanvangAdreshouding": true,
+                        "datumIngangGeldigheid": true,
+                        "datumInschrijvingInGemeente": true,
+                        "datumVestigingInNederland": true,
+                        "functieAdres": true,
+                        "gemeenteVanInschrijving": true,
+                        "huisletter": true,
+                        "huisnummer": true,
+                        "huisnummertoevoeging": true,
+                        "nummeraanduidingIdentificatie": true,
+                        "adresseerbaarObjectIdentificatie": true,
+                        "landVanwaarIngeschreven": true,
+                        "locatiebeschrijving": true,
+                        "straat": true,
+                        "postcode": true,
+                        "korteNaam": true,
+                        "verblijfBuitenland": true,
+                        "woonplaats": true,
+                        "datumIngangOnderzoek": {
+                            "dag": 3,
+                            "datum": {},
+                            "jaar": 1989,
+                            "maand": 5
+                        }
+                    }
+                },
+                "gezagsverhouding": {
+                    "indicatieCurateleRegister": true,
+                    "indicatieGezagMinderjarige": "ouder1",
+                    "inOnderzoek": {
+                        "indicatieCurateleRegister": true,
+                        "indicatieGezagMinderjarige": true,
+                        "datumIngangOnderzoek": {
+                            "dag": 3,
+                            "datum": {},
+                            "jaar": 1989,
+                            "maand": 5
+                        }
+                    }
+                },
+                "verblijfstitel": {
+                    "aanduiding": {
+                        "code": "6030",
+                        "omschrijving": "Nederland"
+                    },
+                    "datumEinde": {
+                        "dag": 3,
+                        "datum": {},
+                        "jaar": 1989,
+                        "maand": 5
+                    },
+                    "datumIngang": {
+                        "dag": 3,
+                        "datum": {},
+                        "jaar": 1989,
+                        "maand": 5
+                    },
+                    "inOnderzoek": {
+                        "aanduiding": true,
+                        "datumEinde": true,
+                        "datumIngang": true,
+                        "datumIngangOnderzoek": {
+                            "dag": 3,
+                            "datum": {},
+                            "jaar": 1989,
+                            "maand": 5
+                        }
+                    }
+                },
+                "reisdocumentnummers": [
+                    "546376728"
+                ],
+                "kinderen": [
+                    {
+                        "burgerservicenummer": "555555021",
+                        "leeftijd": 12,
+                        "inOnderzoek": {
+                            "burgerservicenummer": true,
+                            "datumIngangOnderzoek": {
+                                "dag": 3,
+                                "datum": {},
+                                "jaar": 1989,
+                                "maand": 5
+                            }
+                        },
+                        "naam": {
+                            "geslachtsnaam": "Vries",
+                            "voorletters": "P.J.",
+                            "voornamen": "Pieter Jan",
+                            "voorvoegsel": "de",
+                            "adellijkeTitelPredikaat": {
+                                "code": "6030",
+                                "omschrijving": "Nederland"
+                            },
+                            "inOnderzoek": {
+                                "geslachtsnaam": true,
+                                "voornamen": true,
+                                "voorvoegsel": true,
+                                "adellijkeTitelPredikaat": true,
+                                "datumIngangOnderzoek": {
+                                    "dag": 3,
+                                    "datum": {},
+                                    "jaar": 1989,
+                                    "maand": 5
+                                }
+                            }
+                        },
+                        "geboorte": {
+                            "datum": {
+                                "dag": 3,
+                                "datum": {},
+                                "jaar": 1989,
+                                "maand": 5
+                            },
+                            "land": {
+                                "code": "6030",
+                                "omschrijving": "Nederland"
+                            },
+                            "plaats": {
+                                "code": "6030",
+                                "omschrijving": "Nederland"
+                            },
+                            "inOnderzoek": {
+                                "datum": true,
+                                "land": true,
+                                "plaats": true,
+                                "datumIngangOnderzoek": {
+                                    "dag": 3,
+                                    "datum": {},
+                                    "jaar": 1989,
+                                    "maand": 5
+                                }
+                            }
+                        }
+                    }
+                ],
+                "ouders": [
+                    {
+                        "burgerservicenummer": "555555021",
+                        "geslachtsaanduiding": "man",
+                        "ouderAanduiding": "ouder1",
+                        "datumIngangFamilierechtelijkeBetrekking": {
+                            "dag": 3,
+                            "datum": {},
+                            "jaar": 1989,
+                            "maand": 5
+                        },
+                        "naam": {
+                            "geslachtsnaam": "Vries",
+                            "voorletters": "P.J.",
+                            "voornamen": "Pieter Jan",
+                            "voorvoegsel": "de",
+                            "adellijkeTitelPredikaat": {
+                                "code": "6030",
+                                "omschrijving": "Nederland"
+                            },
+                            "inOnderzoek": {
+                                "geslachtsnaam": true,
+                                "voornamen": true,
+                                "voorvoegsel": true,
+                                "adellijkeTitelPredikaat": true,
+                                "datumIngangOnderzoek": {
+                                    "dag": 3,
+                                    "datum": {},
+                                    "jaar": 1989,
+                                    "maand": 5
+                                }
+                            }
+                        },
+                        "inOnderzoek": {
+                            "burgerservicenummer": true,
+                            "datumIngangFamilierechtelijkeBetrekking": true,
+                            "geslachtsaanduiding": true,
+                            "datumIngangOnderzoek": {
+                                "dag": 3,
+                                "datum": {},
+                                "jaar": 1989,
+                                "maand": 5
+                            }
+                        },
+                        "geboorte": {
+                            "datum": {
+                                "dag": 3,
+                                "datum": {},
+                                "jaar": 1989,
+                                "maand": 5
+                            },
+                            "land": {
+                                "code": "6030",
+                                "omschrijving": "Nederland"
+                            },
+                            "plaats": {
+                                "code": "6030",
+                                "omschrijving": "Nederland"
+                            },
+                            "inOnderzoek": {
+                                "datum": true,
+                                "land": true,
+                                "plaats": true,
+                                "datumIngangOnderzoek": {
+                                    "dag": 3,
+                                    "datum": {},
+                                    "jaar": 1989,
+                                    "maand": 5
+                                }
+                            }
+                        }
+                    }
+                ],
+                "partners": [
+                    {
+                        "burgerservicenummer": "555555021",
+                        "geslachtsaanduiding": "man",
+                        "soortVerbintenis": "huwelijk",
+                        "naam": {
+                            "geslachtsnaam": "Vries",
+                            "voorletters": "P.J.",
+                            "voornamen": "Pieter Jan",
+                            "voorvoegsel": "de",
+                            "adellijkeTitelPredikaat": {
+                                "code": "6030",
+                                "omschrijving": "Nederland"
+                            },
+                            "inOnderzoek": {
+                                "geslachtsnaam": true,
+                                "voornamen": true,
+                                "voorvoegsel": true,
+                                "adellijkeTitelPredikaat": true,
+                                "datumIngangOnderzoek": {
+                                    "dag": 3,
+                                    "datum": {},
+                                    "jaar": 1989,
+                                    "maand": 5
+                                }
+                            }
+                        },
+                        "geboorte": {
+                            "datum": {
+                                "dag": 3,
+                                "datum": {},
+                                "jaar": 1989,
+                                "maand": 5
+                            },
+                            "land": {
+                                "code": "6030",
+                                "omschrijving": "Nederland"
+                            },
+                            "plaats": {
+                                "code": "6030",
+                                "omschrijving": "Nederland"
+                            },
+                            "inOnderzoek": {
+                                "datum": true,
+                                "land": true,
+                                "plaats": true,
+                                "datumIngangOnderzoek": {
+                                    "dag": 3,
+                                    "datum": {},
+                                    "jaar": 1989,
+                                    "maand": 5
+                                }
+                            }
+                        },
+                        "inOnderzoek": {
+                            "burgerservicenummer": true,
+                            "geslachtsaanduiding": true,
+                            "soortVerbintenis": true,
+                            "datumIngangOnderzoek": {
+                                "dag": 3,
+                                "datum": {},
+                                "jaar": 1989,
+                                "maand": 5
+                            }
+                        },
+                        "aangaanHuwelijkPartnerschap": {
+                            "datum": {
+                                "dag": 3,
+                                "datum": {},
+                                "jaar": 1989,
+                                "maand": 5
+                            },
+                            "land": {
+                                "code": "6030",
+                                "omschrijving": "Nederland"
+                            },
+                            "plaats": {
+                                "code": "6030",
+                                "omschrijving": "Nederland"
+                            },
+                            "inOnderzoek": {
+                                "datum": true,
+                                "land": true,
+                                "plaats": true,
+                                "datumIngangOnderzoek": {
+                                    "dag": 3,
+                                    "datum": {},
+                                    "jaar": 1989,
+                                    "maand": 5
+                                }
+                            }
+                        }
+                    }
+                ],
+                "_links": {
+                    "self": {
+                        "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+                        "templated": true,
+                        "title": "string"
+                    },
+                    "ouders": [
+                        {
+                            "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+                            "templated": true,
+                            "title": "string"
+                        }
+                    ],
+                    "reisdocumenten": [
+                        {
+                            "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+                            "templated": true,
+                            "title": "string"
+                        }
+                    ],
+                    "kinderen": [
+                        {
+                            "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+                            "templated": true,
+                            "title": "string"
+                        }
+                    ],
+                    "partners": [
+                        {
+                            "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+                            "templated": true,
+                            "title": "string"
+                        }
+                    ],
+                    "partnerhistorie": {
+                        "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+                        "templated": true,
+                        "title": "string"
+                    },
+                    "verblijfplaatshistorie": {
+                        "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+                        "templated": true,
+                        "title": "string"
+                    },
+                    "verblijfstitelhistorie": {
+                        "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+                        "templated": true,
+                        "title": "string"
+                    },
+                    "nationaliteitHistorie": {
+                        "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+                        "templated": true,
+                        "title": "string"
+                    },
+                    "adres": {
+                        "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+                        "templated": true,
+                        "title": "string"
+                    }
+                }
+            }
+        ]
+    }
+}

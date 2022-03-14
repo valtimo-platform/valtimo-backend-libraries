@@ -27,6 +27,7 @@ public class CoreSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTe
         return new HashSet<>(
             Arrays.asList(
                 "/api/public/process/definition/{processDefinitionKey}/start-form",
+                "/api/ping",
                 "/api/mandrill/webhook"
             )
         );
