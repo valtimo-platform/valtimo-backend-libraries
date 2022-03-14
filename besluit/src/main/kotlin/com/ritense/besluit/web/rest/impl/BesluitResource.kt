@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.mapping.impl
+package com.ritense.besluit.web.rest.impl
 
-enum class Operation {
-    CREATE_ZAAK,
-    SET_RESULTAAT,
-    SET_STATUS,
-    CREATE_BESLUIT,
+import com.ritense.besluit.domain.BesluitType
+import com.ritense.besluit.service.BesluitService
+import com.ritense.besluit.web.rest.BesluitResource
+import org.springframework.http.ResponseEntity
+
+class BesluitResource(
+    val besluitService: BesluitService,
+) : BesluitResource {
+
+    override fun getBesluittypen(): ResponseEntity<List<BesluitType>> {
+        return ResponseEntity.ok(besluitService.getBesluittypen())
+    }
+
 }

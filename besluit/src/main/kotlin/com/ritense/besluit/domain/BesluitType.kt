@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.mapping.impl
+package com.ritense.besluit.domain
 
-enum class Operation {
-    CREATE_ZAAK,
-    SET_RESULTAAT,
-    SET_STATUS,
-    CREATE_BESLUIT,
-}
+import java.net.URI
+
+data class BesluitType(
+    val url: URI,
+    val omschrijving: String,
+)
