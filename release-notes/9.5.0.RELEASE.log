@@ -1,0 +1,10 @@
+c4984ce - Updated version to 9.5.0.RELEASE
+358dbc4 - Made klant-api optional (#103)
+75ee006 - Updated version to 9.5.0.51.RC-SNAPSHOT
+f2d8f48 - Fix test (#90)
+92aeca7 - #28227 Deprecate 'hourly rate' (#89)
+785e308 - Setting default file author name if no current user is found (#88)
+d0622b0 - Bugfix/upload file for smartdocuments (#87)
+749902e - Changed smart document camunda expression to not use MediaType (#86)
+aa7044b - #33180 koppeling smartdocuments basis (#83)
+af16a0f - Merge pull request #85 from valtimo-platform/main
