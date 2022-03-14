@@ -16,8 +16,6 @@
 
 projectVersion = 1.0
 
-apply from: 'gradle/liquibase.gradle'
-
 dockerCompose {
     projectName = "contactmoment"
     isRequiredBy(integrationTesting)
