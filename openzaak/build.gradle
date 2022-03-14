@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-apply from: 'gradle/liquibase.gradle'
-
 projectVersion = 1.0
 
 dockerCompose {
@@ -43,7 +41,7 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation "org.springframework.security:spring-security-test"
-
+    testImplementation "org.liquibase.ext:liquibase-hibernate5:4.8.0"
     testImplementation "org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.13.0"
 
     //Kotlin
