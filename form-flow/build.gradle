@@ -19,6 +19,8 @@ dependencies {
     /* DO NOT ADD DEPENDENCIES TO OTHER VALTIMO MODULES */
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
+    implementation "org.liquibase.ext:liquibase-hibernate5:4.8.0"
+
     jar {
         enabled = true
         manifest {
@@ -28,5 +30,4 @@ dependencies {
     }
 }
 
-apply from: "gradle/liquibase.gradle"
 apply from: "gradle/publishing.gradle"
