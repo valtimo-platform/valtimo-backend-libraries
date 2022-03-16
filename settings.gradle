@@ -31,6 +31,7 @@ include(
         "process-document",
         "form",
         "form-flow",
+        "form-flow-valtimo",
         "form-link",
         "document-generation",
         "document-generation:local-document-generation",
