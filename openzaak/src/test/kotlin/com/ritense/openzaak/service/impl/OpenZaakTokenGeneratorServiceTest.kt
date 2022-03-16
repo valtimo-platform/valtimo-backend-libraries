@@ -46,28 +46,21 @@ internal class OpenZaakTokenGeneratorServiceTest {
     }
 
     @Test
-    fun `Should add user claims to token`() {
+    fun `Should add user roles to token`() {
         val userId = "myUserId"
-        val userToken = Jwts.builder().addClaims(mapOf(
-            "test" to "test",
-            "realm_access" to mapOf("roles" to arrayOf("ROLE_USER")),
-            "resource_access" to mapOf("account" to mapOf("roles" to arrayOf("manage-account"))
-        ))).compact()
-        val authenticationToken = UsernamePasswordAuthenticationToken(null, userToken)
+        val roles = listOf("ROLE_USER", "ROLE_ADMIN")
 
         Mockito.mockStatic(SecurityUtils::class.java).use { mockedUtils ->
             mockedUtils.`when`<Any> { SecurityUtils.getCurrentUserLogin() }.thenReturn(userId)
-            mockedUtils.`when`<Any> { SecurityUtils.getCurrentUserAuthentication() }.thenReturn(authenticationToken)
+            mockedUtils.`when`<Any> { SecurityUtils.getCurrentUserRoles() }.thenReturn(roles)
 
             val jwt = openZaakTokenGeneratorService.generateToken(SECRET_KEY, CLIENT_ID)
             val claims:Claims = jwtParser.parse(jwt).body as Claims
             assertThat(claims).containsEntry("client_id", CLIENT_ID)
             assertThat(claims).containsEntry("user_id", userId)
 
-            val realmAccess = claims["realm_access"] as Map<String, *>
-            assertThat(realmAccess).containsKey("roles")
-            val resourceAccess = claims["resource_access"] as Map<String, *>
-            assertThat(resourceAccess).containsKey("account")
+            val claimedRoles = claims["roles"] as List<String>
+            assertThat(claimedRoles).containsExactlyInAnyOrder(*roles.toTypedArray())
             assertThat(claims).doesNotContainKey("test")
         }
     }
