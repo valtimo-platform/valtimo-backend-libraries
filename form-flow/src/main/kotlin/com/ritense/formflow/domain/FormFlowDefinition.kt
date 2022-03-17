@@ -21,6 +21,7 @@ import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.OneToMany
+import javax.persistence.OrderBy
 import javax.persistence.Table
 
 @Entity
@@ -31,5 +32,6 @@ data class FormFlowDefinition(
     val id: FormFlowDefinitionId,
 
     @OneToMany(targetEntity = FormFlowStep::class, fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @OrderBy("firstStep DESC")
     val steps: List<FormFlowStep>,
 )

@@ -37,6 +37,7 @@
             </column>
             <column name="form_flow_definition_key" type="varchar(256)"/>
             <column name="form_flow_definition_version" type="${intType}"/>
+            <column name="first_step" type="boolean"/>
             <column name="next_steps" type="JSON"/>
         </createTable>
     </changeSet>
