@@ -3,12 +3,8 @@ package com.ritense.besluit.listener
 import com.ritense.besluit.BaseIntegrationTest
 import com.ritense.besluit.domain.request.BesluitInformatieobjectRelatieRequest
 import com.ritense.besluit.domain.request.CreateBesluitRequest
-import com.ritense.connector.domain.Connector
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.NewDocumentRequest
-import com.ritense.openzaak.domain.configuration.Rsin
-import com.ritense.openzaak.domain.connector.OpenZaakConfig
-import com.ritense.openzaak.domain.connector.OpenZaakProperties
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
@@ -27,7 +23,6 @@ import com.ritense.valtimo.contract.resource.Resource
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpMethod
 import java.net.URI
 import java.time.LocalDate
@@ -47,10 +42,6 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var openZaakService: OpenZaakService
-
-    @Autowired
-    @Qualifier("openZaakConnector")
-    lateinit var openZaakConnector: Connector
 
     @Test
     fun `Should create besluit by process connection`() {
@@ -141,28 +132,6 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
                 true
             )
         ).zaakTypeLink()!!
-    }
-
-
-    private fun setupOpenZaakConnector() {
-        val properties = OpenZaakProperties(
-            OpenZaakConfig(
-                server.url("/").toString(),
-                "test-client",
-                "711de9a3-1af6-4196-b4dd-e8a2e2ade17c",
-                Rsin("051845623")
-            )
-        )
-        connectorDeploymentService.deployAll(listOf(openZaakConnector))
-        val connectorType = connectorService.getConnectorTypes().first { it.name == "OpenZaak" }
-
-        connectorService.createConnectorInstance(
-            connectorType.id.id,
-            "openZaakInstance",
-            properties
-        )
-
-        openZaakConnector = connectorService.loadByClassName(openZaakConnector::class.java)
     }
 
 }

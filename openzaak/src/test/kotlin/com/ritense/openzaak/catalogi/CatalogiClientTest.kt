@@ -57,7 +57,7 @@ class CatalogiClientTest : BaseTest() {
                 )
             )
         )
-        val result = catalogiClient.getBesluittypen()
+        val result = catalogiClient.getBesluittypen(URI("http://example/catalogi/id"))
 
         //when
         val zaaktype = result.results.first()

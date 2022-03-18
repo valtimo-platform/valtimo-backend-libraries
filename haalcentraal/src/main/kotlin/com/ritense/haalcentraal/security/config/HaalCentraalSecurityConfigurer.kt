@@ -27,7 +27,7 @@ class HaalCentraalSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/haalcentraal/people").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/haalcentraal/personen").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

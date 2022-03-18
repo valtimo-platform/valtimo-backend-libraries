@@ -8,7 +8,7 @@ import com.ritense.connector.domain.meta.ConnectorType
 class OpenZaakConnector(
     private var openZaakProperties: OpenZaakProperties
 ): Connector {
-    override fun getProperties(): ConnectorProperties {
+    override fun getProperties(): OpenZaakProperties {
         return openZaakProperties
     }
 

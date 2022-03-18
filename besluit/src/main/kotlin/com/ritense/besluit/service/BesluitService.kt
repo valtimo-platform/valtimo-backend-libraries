@@ -17,14 +17,20 @@
 package com.ritense.besluit.service
 
 import com.ritense.besluit.domain.BesluitType
+import com.ritense.connector.service.ConnectorService
 import com.ritense.openzaak.catalogi.CatalogiClient
+import com.ritense.openzaak.domain.connector.OpenZaakConnector
+import java.net.URI
 
 open class BesluitService(
-    private val catalogiClient: CatalogiClient
+    private val catalogiClient: CatalogiClient,
+    private val connectorService: ConnectorService,
 ) {
 
     fun getBesluittypen(): List<BesluitType> {
-        return catalogiClient.getBesluittypen().results
+        val openZaakConnector = connectorService.loadByClassName(OpenZaakConnector::class.java)
+        val catalogiUrl = URI(openZaakConnector.getProperties().openZaakConfig.catalogiUrl)
+        return catalogiClient.getBesluittypen(catalogiUrl).results
             .map { BesluitType(it.url, it.omschrijving) }
     }
 }

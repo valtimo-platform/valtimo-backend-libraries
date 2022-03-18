@@ -44,7 +44,7 @@ class OpenZaakTokenGeneratorService : TokenGeneratorService {
             .claim("client_id", clientId)
 
         appendUserInfo(jwtBuilder)
-        copyClaimsFromAuthentication(jwtBuilder, "realm_access", "resource_access")
+        appendRolesFromAuthentication(jwtBuilder)
         return jwtBuilder
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact()
@@ -59,25 +59,10 @@ class OpenZaakTokenGeneratorService : TokenGeneratorService {
             .claim("user_representation", "")
     }
 
-    private fun copyClaimsFromAuthentication(jwtBuilder: JwtBuilder, vararg claims: String) {
-        val authentication = SecurityUtils.getCurrentUserAuthentication()
-
-        val jwtToken: String = authentication?.credentials.toString()
-        val tokenParts = jwtToken.split(".")
-        if (tokenParts.size < 2) {
-            return
-        }
-        val unsignedToken = "${tokenParts[0]}.${tokenParts[1]}."
-
-        val jwtParser = Jwts.parserBuilder().build()
-        try {
-            val jwtClaims = jwtParser.parseClaimsJwt(unsignedToken).body
-
-            jwtBuilder.addClaims(jwtClaims.filterKeys {
-                claims.contains(it)
-            })
-        } catch (ex: JwtException) {
-            logger.error { ex }
+    private fun appendRolesFromAuthentication(jwtBuilder: JwtBuilder) {
+        val roles = SecurityUtils.getCurrentUserRoles()
+        if(!roles.isNullOrEmpty()) {
+            jwtBuilder.claim("roles", roles)
         }
     }
 

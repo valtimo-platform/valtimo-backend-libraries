@@ -25,6 +25,8 @@ import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorService
 import com.ritense.openzaak.catalogi.CatalogiClient
 import com.ritense.openzaak.domain.configuration.Rsin
+import com.ritense.openzaak.domain.connector.OpenZaakConnector
+import com.ritense.openzaak.domain.connector.OpenZaakProperties
 import com.ritense.openzaak.service.impl.Mapper
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
@@ -42,7 +44,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpMethod
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.util.*
+import java.util.UUID
 
 @SpringBootTest
 @ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
@@ -57,6 +59,12 @@ class BaseIntegrationTest : BaseTest() {
 
     @Autowired
     lateinit var besluitProperties: BesluitProperties
+
+    @Autowired
+    lateinit var openZaakConnector: OpenZaakConnector
+
+    @Autowired
+    lateinit var openZaakProperties: OpenZaakProperties
 
     @MockBean
     lateinit var userManagementService: UserManagementService
@@ -126,6 +134,24 @@ class BaseIntegrationTest : BaseTest() {
         connectorTypeInstanceRepository.save(connectorInstance)
 
         besluitConnector = connectorService.loadByClassName(BesluitConnector::class.java)
+    }
+
+    protected fun setupOpenZaakConnector() {
+        openZaakProperties.openZaakConfig.url = server.url("/").toString()
+        openZaakProperties.openZaakConfig.clientId = "test-client"
+        openZaakProperties.openZaakConfig.secret = "711de9a3-1af6-4196-b4dd-e8a2e2ade17c"
+        openZaakProperties.openZaakConfig.rsin = Rsin("051845623")
+
+        connectorDeploymentService.deployAll(listOf(openZaakConnector))
+        val connectorType = connectorService.getConnectorTypes().first { it.name == "OpenZaak" }
+
+        connectorService.createConnectorInstance(
+            connectorType.id.id,
+            "openZaakConnector",
+            openZaakProperties
+        )
+
+        openZaakConnector = connectorService.loadByClassName(OpenZaakConnector::class.java)
     }
 
     private fun mockResponseFromFile(fileName: String): MockResponse {
