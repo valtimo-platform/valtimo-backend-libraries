@@ -29,5 +29,6 @@ interface ConnectorTypeInstanceRepository : JpaRepository<ConnectorInstance, Con
     fun existsConnectorTypeInstanceByType(type: ConnectorType): Boolean
     fun findByName(name: String): ConnectorInstance?
     fun findAllByTypeId(typeId: ConnectorTypeId, pageable: Pageable): Page<ConnectorInstance>
+    fun findAllByTypeName(typeName: String, pageable: Pageable): Page<ConnectorInstance>
     fun findByType(type: ConnectorType): ConnectorInstance
 }
