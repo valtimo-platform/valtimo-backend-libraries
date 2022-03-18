@@ -52,6 +52,7 @@ interface ConnectorResource {
 
     @GetMapping(value = ["/instance"])
     fun getInstances(
+        @RequestParam(required = false) typeName: String?,
         @PageableDefault(sort = ["name"], direction = Sort.Direction.DESC) pageable: Pageable = Pageable.unpaged()
     ): ResponseEntity<Page<ConnectorInstance>>
 
