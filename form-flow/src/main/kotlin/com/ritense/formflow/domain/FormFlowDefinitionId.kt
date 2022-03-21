@@ -34,13 +34,17 @@ class FormFlowDefinitionId(
 
 ) : AbstractId<FormFlowDefinitionId>() {
 
+    override fun toString(): String {
+        return "$key:$version"
+    }
+
     companion object {
-        fun newId(key: String, version: Long): FormFlowDefinitionId {
+        fun newId(key: String): FormFlowDefinitionId {
             return FormFlowDefinitionId(key, 1).newIdentity()
         }
 
-        fun nextVersion(key: String, version: Long): FormFlowDefinitionId {
-            return FormFlowDefinitionId(key, version + 1).newIdentity()
+        fun nextVersion(id: FormFlowDefinitionId): FormFlowDefinitionId {
+            return FormFlowDefinitionId(id.key, id.version + 1).newIdentity()
         }
 
         fun existingId(key: String, version: Long): FormFlowDefinitionId {

@@ -36,6 +36,6 @@ data class FormFlowDefinition(
     @field:Length(max = 256)
     val startStep: String,
 
-    @OneToMany(targetEntity = FormFlowStep::class, fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val steps: List<FormFlowStep>,
 )

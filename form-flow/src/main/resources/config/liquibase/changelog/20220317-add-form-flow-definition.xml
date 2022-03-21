@@ -19,7 +19,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <changeSet id="33366677763335556669-1" author="Klaas Schuijtemaker">
+    <changeSet id="1" author="Klaas Schuijtemaker">
         <createTable tableName="form_flow_definition">
             <column name="key" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
@@ -31,7 +31,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="33366677763335556669-2" author="Rick Veenstra">
+    <changeSet id="2" author="Rick Veenstra">
         <createTable tableName="form_flow_step">
             <column name="key" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
@@ -42,7 +42,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="33366677763335556669-3" author="Klaas Schuijtemaker">
+    <changeSet id="3" author="Klaas Schuijtemaker">
         <addForeignKeyConstraint baseTableName="form_flow_step"
                                  baseColumnNames="form_flow_definition_key,form_flow_definition_version"
                                  constraintName="fk_form_flow_definition_id"
