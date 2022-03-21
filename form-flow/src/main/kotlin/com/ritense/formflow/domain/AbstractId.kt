@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.autoconfigure
+package com.ritense.formflow.domain
 
-import com.ritense.formflow.repository.FormFlowDefinitionRepository
-import com.ritense.formflow.repository.FormFlowStepRepository
-import org.springframework.boot.autoconfigure.domain.EntityScan
-import org.springframework.context.annotation.Configuration
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import java.io.Serializable
+import javax.persistence.Transient
 
-@Configuration
-@EnableJpaRepositories(basePackageClasses = [FormFlowDefinitionRepository::class, FormFlowStepRepository::class])
-@EntityScan(basePackages = ["com.ritense.formflow.domain"])
-class FormFlowAutoConfiguration
+abstract class AbstractId<SELF> : Identity, Serializable {
+
+    @Transient
+    private var isNew = false
+
+    override fun isNew() = isNew
+
+    fun newIdentity(): SELF {
+        isNew = true //note: for jpa to know this is a new entity
+        return this as SELF
+    }
+}
