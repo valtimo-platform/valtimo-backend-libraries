@@ -88,7 +88,6 @@ dependencies {
     testImplementation "org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.14.0"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
-    testImplementation "org.mockito:mockito-inline"
 }
 
 configurations {
