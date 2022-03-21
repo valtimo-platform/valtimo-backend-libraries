@@ -21,7 +21,6 @@ import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 import javax.persistence.Table
-import javax.validation.constraints.NotBlank
 
 @Entity
 @Table(name = "form_flow_step")
@@ -29,10 +28,6 @@ data class FormFlowStep(
 
     @EmbeddedId
     val id: FormFlowStepId,
-
-    @Column(name = "first_step")
-    @field:NotBlank
-    val firstStep: Boolean,
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
     @Column(name = "next_steps", columnDefinition = "JSON")

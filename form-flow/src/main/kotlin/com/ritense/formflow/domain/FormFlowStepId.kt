@@ -30,9 +30,8 @@ import javax.validation.constraints.NotBlank
 @EqualsAndHashCode(callSuper = false)
 class FormFlowStepId(
 
-    @Column(name = "key", nullable = false, columnDefinition = "VARCHAR(512)")
+    @Column(name = "key")
     @field:Length(max = 256)
-    @field:NotBlank
     val key: String,
 
     @ManyToOne(targetEntity = FormFlowDefinition::class, fetch = FetchType.LAZY)

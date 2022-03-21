@@ -20,19 +20,16 @@ import lombok.EqualsAndHashCode
 import org.hibernate.validator.constraints.Length
 import javax.persistence.Column
 import javax.persistence.Embeddable
-import javax.validation.constraints.NotBlank
 
 @Embeddable
 @EqualsAndHashCode(callSuper = false)
 class FormFlowDefinitionId(
 
-    @Column(name = "key", nullable = false, updatable = false)
+    @Column(name = "key")
     @field:Length(max = 256)
-    @field:NotBlank
     val key: String,
 
     @Column(name = "version")
-    @field:NotBlank
     val version: Long
 
 ) : AbstractId<FormFlowDefinitionId>() {

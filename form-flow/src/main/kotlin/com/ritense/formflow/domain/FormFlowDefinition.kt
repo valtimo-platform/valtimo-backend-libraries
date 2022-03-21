@@ -16,12 +16,13 @@
 
 package com.ritense.formflow.domain
 
+import org.hibernate.validator.constraints.Length
 import javax.persistence.CascadeType
+import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.OneToMany
-import javax.persistence.OrderBy
 import javax.persistence.Table
 
 @Entity
@@ -31,7 +32,10 @@ data class FormFlowDefinition(
     @EmbeddedId
     val id: FormFlowDefinitionId,
 
+    @Column(name = "start_step")
+    @field:Length(max = 256)
+    val startStep: String,
+
     @OneToMany(targetEntity = FormFlowStep::class, fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    @OrderBy("firstStep DESC")
     val steps: List<FormFlowStep>,
 )
