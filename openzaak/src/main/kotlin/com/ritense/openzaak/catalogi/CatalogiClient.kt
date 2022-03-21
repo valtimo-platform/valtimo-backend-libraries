@@ -30,10 +30,10 @@ class CatalogiClient(
     private val openZaakTokenGeneratorService: OpenZaakTokenGeneratorService
 ) {
 
-    fun getBesluittypen(catalogiUrl: URI): ResultWrapper<BesluitType> {
+    fun getBesluittypen(catalogUrl: URI): ResultWrapper<BesluitType> {
         return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
             .path("catalogi/api/v1/besluittypen")
-            .queryParams(mapOf("catalogus" to catalogiUrl.toString()))
+            .queryParams(mapOf("catalogus" to catalogUrl.toString()))
             .get()
             .build()
             .executeWrapped(BesluitType::class.java)

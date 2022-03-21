@@ -29,8 +29,8 @@ open class BesluitService(
 
     fun getBesluittypen(): List<BesluitType> {
         val openZaakConnector = connectorService.loadByClassName(OpenZaakConnector::class.java)
-        val catalogiUrl = URI(openZaakConnector.getProperties().openZaakConfig.catalogiUrl)
-        return catalogiClient.getBesluittypen(catalogiUrl).results
+        val catalogUrl = URI(openZaakConnector.getProperties().openZaakConfig.catalogUrl)
+        return catalogiClient.getBesluittypen(catalogUrl).results
             .map { BesluitType(it.url, it.omschrijving) }
     }
 }
