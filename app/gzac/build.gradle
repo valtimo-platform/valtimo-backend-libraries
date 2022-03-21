@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":document"))
     implementation(project(":process-document"))
     implementation(project(":form"))
+    implementation(project(":form-flow-valtimo"))
     implementation(project(":form-link"))
     implementation(project(":document-generation:local-document-generation"))
     implementation(project(":openzaak"))

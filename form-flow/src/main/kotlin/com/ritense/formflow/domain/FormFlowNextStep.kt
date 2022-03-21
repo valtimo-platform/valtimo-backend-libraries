@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.autoconfigure
+package com.ritense.formflow.domain
 
-import com.ritense.formflow.repository.FormFlowDefinitionRepository
-import com.ritense.formflow.repository.FormFlowStepRepository
-import org.springframework.boot.autoconfigure.domain.EntityScan
-import org.springframework.context.annotation.Configuration
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-
-@Configuration
-@EnableJpaRepositories(basePackageClasses = [FormFlowDefinitionRepository::class, FormFlowStepRepository::class])
-@EntityScan(basePackages = ["com.ritense.formflow.domain"])
-class FormFlowAutoConfiguration
+data class FormFlowNextStep(
+    val condition: String,
+    val step: String,
+)
