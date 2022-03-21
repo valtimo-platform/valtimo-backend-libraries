@@ -41,8 +41,13 @@ class ConnectorResource(
         return ResponseEntity.ok(connectorService.getConnectorInstanceById(instanceId))
     }
 
-    override fun getInstances(pageable: Pageable): ResponseEntity<Page<ConnectorInstance>> {
-        return ResponseEntity.ok(connectorService.getConnectorInstances(pageable))
+    override fun getInstances(typeName: String?, pageable: Pageable): ResponseEntity<Page<ConnectorInstance>> {
+        val instances = if (typeName == null) {
+            connectorService.getConnectorInstances(pageable)
+        } else {
+            connectorService.getConnectorInstancesByTypeName(typeName, pageable)
+        }
+        return ResponseEntity.ok(instances)
     }
 
     override fun getInstancesByType(typeId: UUID, pageable: Pageable): ResponseEntity<Page<ConnectorInstance>> {
