@@ -20,28 +20,30 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class OfficeIpRequestTest {
+class WhitelistIpRequestTest {
 
-    private static final String OFFICE_IP = "213.127.182.74";
-    private OfficeIpRequest officeIpRequest;
+    private static final String IPV4_LOOPBACK_IP = "127.0.0.1";
+    private static final String LOCALHOST = "localhost";
+    private WhitelistIpRequest localIpRequest;
     private HttpServletRequest httpServletRequest;
 
     @BeforeEach
     void setUp() {
-        officeIpRequest = new OfficeIpRequest();
+        localIpRequest = new WhitelistIpRequest(Set.of(LOCALHOST));
         httpServletRequest = mock(HttpServletRequest.class);
     }
 
     @Test
-    void shouldReturnTrueWhenIpFromOffice() {
-        when(httpServletRequest.getRemoteAddr()).thenReturn(OFFICE_IP);
+    void shouldReturnTrueWhenIpFromLocalHost() {
+        when(httpServletRequest.getRemoteAddr()).thenReturn(IPV4_LOOPBACK_IP);
 
-        final boolean result = officeIpRequest.check(httpServletRequest);
+        final boolean result = localIpRequest.check(httpServletRequest);
         assertThat(result).isTrue();
     }
 
@@ -49,15 +51,15 @@ class OfficeIpRequestTest {
     void shouldReturnFalseWhenEmpty() {
         when(httpServletRequest.getRemoteAddr()).thenReturn("");
 
-        final boolean result = officeIpRequest.check(httpServletRequest);
+        final boolean result = localIpRequest.check(httpServletRequest);
         assertThat(result).isFalse();
     }
 
     @Test
-    void shouldReturnFalseWhenNonOfficIp() {
-        when(httpServletRequest.getRemoteAddr()).thenReturn("127.0.0.1");
+    void shouldReturnFalseWhenNonLocalHostIp() {
+        when(httpServletRequest.getRemoteAddr()).thenReturn("10.0.0.1");
 
-        final boolean result = officeIpRequest.check(httpServletRequest);
+        final boolean result = localIpRequest.check(httpServletRequest);
         assertThat(result).isFalse();
     }
 
