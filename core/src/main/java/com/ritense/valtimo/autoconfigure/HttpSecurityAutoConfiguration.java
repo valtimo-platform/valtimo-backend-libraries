@@ -64,8 +64,6 @@ import org.springframework.security.web.authentication.Http403ForbiddenEntryPoin
 
 import java.util.List;
 
-;
-
 @Configuration
 @EnableWebSecurity
 @EnableConfigurationProperties(value = SecurityWhitelistProperties.class)
