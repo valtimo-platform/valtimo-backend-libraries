@@ -7,5 +7,5 @@ data class OpenZaakConfig(
     var clientId: String = "",
     var secret: String = "",
     var rsin: Rsin = Rsin(""),
-    var catalogUrl: String = "",
+    var catalogusUrl: String = "",
 )
