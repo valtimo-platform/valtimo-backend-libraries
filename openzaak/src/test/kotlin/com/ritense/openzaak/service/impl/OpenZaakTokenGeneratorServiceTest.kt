@@ -36,6 +36,7 @@ internal class OpenZaakTokenGeneratorServiceTest {
     fun `Should generate user token`() {
         val userId = "myUserId"
         Mockito.mockStatic(SecurityUtils::class.java).use { mockedUtils ->
+            mockedUtils.`when`<Any> { SecurityUtils.isAuthenticated() }.thenReturn(true)
             mockedUtils.`when`<Any> { SecurityUtils.getCurrentUserLogin() }.thenReturn(userId)
 
             val jwt = openZaakTokenGeneratorService.generateToken(SECRET_KEY, CLIENT_ID)
@@ -51,6 +52,7 @@ internal class OpenZaakTokenGeneratorServiceTest {
         val roles = listOf("ROLE_USER", "ROLE_ADMIN")
 
         Mockito.mockStatic(SecurityUtils::class.java).use { mockedUtils ->
+            mockedUtils.`when`<Any> { SecurityUtils.isAuthenticated() }.thenReturn(true)
             mockedUtils.`when`<Any> { SecurityUtils.getCurrentUserLogin() }.thenReturn(userId)
             mockedUtils.`when`<Any> { SecurityUtils.getCurrentUserRoles() }.thenReturn(roles)
 
@@ -73,6 +75,7 @@ internal class OpenZaakTokenGeneratorServiceTest {
 
         Mockito.mockStatic(SecurityUtils::class.java).use { mockedUtils ->
             mockedUtils.`when`<Any> { SecurityUtils.getCurrentUserLogin() }.thenReturn(userId)
+            mockedUtils.`when`<Any> { SecurityUtils.isAuthenticated() }.thenReturn(true)
             mockedUtils.`when`<Any> { SecurityUtils.getCurrentUserAuthentication() }.thenReturn(authenticationToken)
 
             val jwt = openZaakTokenGeneratorService.generateToken(SECRET_KEY, CLIENT_ID)
