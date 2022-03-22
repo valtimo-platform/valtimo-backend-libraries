@@ -17,6 +17,7 @@
 package com.ritense.openzaak.service.impl.model.zaak
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.ritense.openzaak.service.impl.model.zaak.betrokkene.BetrokkeneIdentificatie
 import java.net.URI
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -26,5 +27,5 @@ data class Rol(
     val betrokkeneType: BetrokkeneType,
     val roltype: URI,
     val roltoelichting: String,
-    val betrokkeneIdentificatie: RolNatuurlijkPersoon?
+    val betrokkeneIdentificatie: BetrokkeneIdentificatie?
 )

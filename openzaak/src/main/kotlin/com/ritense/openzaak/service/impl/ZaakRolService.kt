@@ -18,13 +18,11 @@ package com.ritense.openzaak.service.impl
 
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
-import com.ritense.openzaak.service.impl.model.catalogi.EigenschapType
 import com.ritense.openzaak.service.impl.model.zaak.BetrokkeneType
 import com.ritense.openzaak.service.impl.model.zaak.Rol
-import com.ritense.openzaak.service.impl.model.zaak.RolNatuurlijkPersoon
-import com.ritense.openzaak.service.impl.model.zaak.Zaak
-import java.net.URI
+import com.ritense.openzaak.service.impl.model.zaak.betrokkene.RolNatuurlijkPersoon
 import org.springframework.web.client.RestTemplate
+import java.net.URI
 
 class ZaakRolService(
     private val restTemplate: RestTemplate,

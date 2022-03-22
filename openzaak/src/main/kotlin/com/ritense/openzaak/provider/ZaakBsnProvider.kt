@@ -16,10 +16,11 @@
 
 package com.ritense.openzaak.provider
 
-import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.openzaak.service.ZaakRolService
+import com.ritense.openzaak.service.impl.model.zaak.betrokkene.RolNatuurlijkPersoon
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.service.ProcessDocumentService
 import org.camunda.bpm.engine.delegate.DelegateTask
 import kotlin.contracts.ExperimentalContracts
 
@@ -35,7 +36,10 @@ class ZaakBsnProvider(
         val zaakLink = zaakInstanceLinkService.getByDocumentId(document.id().id)
         return zaakRolService.getZaakInitator(zaakLink.zaakInstanceUrl)
             .results.firstNotNullOfOrNull {
-                it.betrokkeneIdentificatie?.inpBsn
+                when(it.betrokkeneIdentificatie) {
+                    is RolNatuurlijkPersoon -> it.betrokkeneIdentificatie.inpBsn
+                    else -> null
+                }
             }
     }
 

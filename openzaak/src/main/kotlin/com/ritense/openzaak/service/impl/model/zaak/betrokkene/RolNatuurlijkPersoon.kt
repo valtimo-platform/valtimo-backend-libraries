@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.service.impl.model.zaak
+package com.ritense.openzaak.service.impl.model.zaak.betrokkene
 
 data class RolNatuurlijkPersoon(
     val inpBsn: String
-)
+) : BetrokkeneIdentificatie()
