@@ -45,12 +45,13 @@ import com.ritense.valtimo.security.config.SwaggerHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.TaskHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.UserHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ValtimoVersionHttpSecurityConfigurer;
-import com.ritense.valtimo.security.interceptor.LocalhostIpRequest;
-import com.ritense.valtimo.security.interceptor.OfficeIpRequest;
+import com.ritense.valtimo.security.interceptor.SecurityWhitelistProperties;
+import com.ritense.valtimo.security.interceptor.WhitelistIpRequest;
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
 import org.camunda.bpm.engine.IdentityService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -65,6 +66,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableConfigurationProperties(value = SecurityWhitelistProperties.class)
 public class HttpSecurityAutoConfiguration {
 
     @Bean
@@ -86,15 +88,10 @@ public class HttpSecurityAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(LocalhostIpRequest.class)
-    public LocalhostIpRequest localhostIpRequest() {
-        return new LocalhostIpRequest();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(OfficeIpRequest.class)
-    public OfficeIpRequest officeIpRequest() {
-        return new OfficeIpRequest();
+    @ConditionalOnMissingBean(WhitelistIpRequest.class)
+    public WhitelistIpRequest whitelistIpRequest(
+        SecurityWhitelistProperties properties) {
+        return new WhitelistIpRequest(properties.getHosts());
     }
 
     @Bean

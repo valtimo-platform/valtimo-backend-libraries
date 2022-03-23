@@ -19,6 +19,7 @@ package com.ritense.objectsapi.productaanvraag
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
+import com.ritense.klant.service.BedrijfService
 import com.ritense.klant.service.BurgerService
 import com.ritense.objectsapi.domain.ProductAanvraag
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
@@ -27,13 +28,8 @@ import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.OpenZaakResource
-import com.ritense.resource.domain.ResourceId
-import com.ritense.resource.repository.OpenZaakResourceRepository
-import com.ritense.valtimo.contract.resource.Resource
 import mu.KotlinLogging
 import java.net.URI
-import java.time.LocalDateTime
-import java.util.UUID
 
 class ProductAanvraagService(
     private val processDocumentService: ProcessDocumentService,
@@ -41,7 +37,8 @@ class ProductAanvraagService(
     private val openNotificatieService: OpenNotificatieService,
     private val zaakRolService: ZaakRolService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
-    private val burgerService: BurgerService?
+    private val burgerService: BurgerService?,
+    private val bedrijfService: BedrijfService?
 ) {
 
     fun createDossier(
@@ -94,14 +91,26 @@ class ProductAanvraagService(
     private fun assignZaakToUser(document: Document, productAanvraag: ProductAanvraag, aanvragerRolTypeUrl: URI) {
         val instanceLink = zaakInstanceLinkService.getByDocumentId(document.id().id)
         val roltoelichting = "Aanvrager automatisch toegevoegd in GZAC"
-        val klant = burgerService?.ensureBurgerExists(productAanvraag.bsn)
-        zaakRolService.addNatuurlijkPersoon(
-            instanceLink.zaakInstanceUrl,
-            roltoelichting,
-            aanvragerRolTypeUrl,
-            productAanvraag.bsn,
-            klant?.let { URI(it.url) }
-        )
+        if (!productAanvraag.bsn.isNullOrEmpty()) {
+            val klant = burgerService?.ensureBurgerExists(productAanvraag.bsn)
+            zaakRolService.addNatuurlijkPersoon(
+                instanceLink.zaakInstanceUrl,
+                roltoelichting,
+                aanvragerRolTypeUrl,
+                productAanvraag.bsn,
+                klant?.url?.let { URI(it) }
+            )
+        }
+        if (!productAanvraag.kvk.isNullOrEmpty()) {
+            val klant = bedrijfService?.ensureBedrijfExists(productAanvraag.kvk)
+            zaakRolService.addNietNatuurlijkPersoon(
+                instanceLink.zaakInstanceUrl,
+                roltoelichting,
+                aanvragerRolTypeUrl,
+                productAanvraag.kvk,
+                klant?.url?.let { URI(it) }
+            )
+        }
     }
 
     companion object {

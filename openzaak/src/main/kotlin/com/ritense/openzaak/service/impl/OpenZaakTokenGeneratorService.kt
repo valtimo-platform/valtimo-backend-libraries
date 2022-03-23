@@ -19,7 +19,6 @@ package com.ritense.openzaak.service.impl
 import com.ritense.openzaak.service.TokenGeneratorService
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import io.jsonwebtoken.JwtBuilder
-import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
@@ -27,6 +26,8 @@ import java.nio.charset.Charset
 import java.util.Date
 import mu.KLogger
 import mu.KotlinLogging
+
+private const val FALLBACK_USER = "Valtimo"
 
 class OpenZaakTokenGeneratorService : TokenGeneratorService {
 
@@ -44,25 +45,25 @@ class OpenZaakTokenGeneratorService : TokenGeneratorService {
             .claim("client_id", clientId)
 
         appendUserInfo(jwtBuilder)
-        appendRolesFromAuthentication(jwtBuilder)
         return jwtBuilder
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact()
     }
 
     private fun appendUserInfo(jwtBuilder: JwtBuilder) {
-        val userLogin = SecurityUtils.getCurrentUserLogin()
-        val userId = userLogin ?: "Valtimo"
+        val authenticated = SecurityUtils.isAuthenticated()
+        val userLogin = if(authenticated) SecurityUtils.getCurrentUserLogin() else FALLBACK_USER
+        val userId = userLogin ?: FALLBACK_USER
 
         jwtBuilder
             .claim("user_id", userId)
             .claim("user_representation", "")
-    }
 
-    private fun appendRolesFromAuthentication(jwtBuilder: JwtBuilder) {
-        val roles = SecurityUtils.getCurrentUserRoles()
-        if(!roles.isNullOrEmpty()) {
-            jwtBuilder.claim("roles", roles)
+        if (authenticated) {
+            val roles = SecurityUtils.getCurrentUserRoles()
+            if(!roles.isNullOrEmpty()) {
+                jwtBuilder.claim("roles", roles)
+            }
         }
     }
 

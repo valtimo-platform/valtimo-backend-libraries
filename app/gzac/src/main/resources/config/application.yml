@@ -119,7 +119,7 @@ server:
         enabled: true
         mime-types: text/html,text/xml,text/plain,text/css, application/javascript, application/json
         min-response-size: 1024
-
+    forward-headers-strategy: NATIVE
 mailing:
     onlyAllowWhitelistedRecipients: true
     redirectAllMails: false
@@ -148,6 +148,10 @@ valtimo:
         removeStacktracesFromReturnedExceptions: true
         allowStacktraceOnIps:
             - 127.0.0.1
+    security:
+        whitelist:
+            hosts:
+                - localhost
     swagger:
         enabled: false
         title: Valtimo Implementation API

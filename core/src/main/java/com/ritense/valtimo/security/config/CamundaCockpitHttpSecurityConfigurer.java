@@ -30,7 +30,7 @@ public class CamundaCockpitHttpSecurityConfigurer implements HttpSecurityConfigu
             http
                 .authorizeRequests()
                 .antMatchers("/app/**")
-                .access("@officeIpRequest.check(request) or @localhostIpRequest.check(request)")
+                .access("@whitelistIpRequest.check(request)")
                 .antMatchers(
                     "/api/admin/**",
                     "/api/cockpit/**",
@@ -38,7 +38,7 @@ public class CamundaCockpitHttpSecurityConfigurer implements HttpSecurityConfigu
                     "/api/engine/**",
                     "/lib/**"
                 )
-                .access("@officeIpRequest.check(request) or @localhostIpRequest.check(request)");
+                .access("@whitelistIpRequest.check(request)");
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

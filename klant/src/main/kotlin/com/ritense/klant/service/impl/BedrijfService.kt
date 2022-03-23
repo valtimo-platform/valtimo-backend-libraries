@@ -20,33 +20,33 @@ import com.ritense.klant.client.OpenKlantClient
 import com.ritense.klant.client.OpenKlantClientProperties
 import com.ritense.klant.domain.Klant
 import com.ritense.klant.domain.KlantCreationRequest
-import com.ritense.klant.domain.NatuurlijkPersoonSubjectIdentificatie
-import com.ritense.klant.service.BurgerService
+import com.ritense.klant.domain.NietNatuurlijkPersoonSubjectIdentificatie
+import com.ritense.klant.service.BedrijfService
 
-class BurgerService(
+class BedrijfService(
     private val openKlantClientProperties: OpenKlantClientProperties,
     private val openKlantClient: OpenKlantClient
-) : OpenKlantService(openKlantClient), BurgerService {
-    override fun getBurger(bsn: String) = openKlantClient.getKlant(bsn = bsn)
+) : OpenKlantService(openKlantClient), BedrijfService {
+    override fun getBedrijf(kvk: String) = openKlantClient.getKlant(kvk = kvk)
 
-    override fun createBurger(bsn: String): Klant {
+    override fun createBedrijf(kvk: String): Klant {
         val klantRequest = KlantCreationRequest(
             openKlantClientProperties.rsin,
             generateKlantNummer(),
             getDefaultWebsiteUrl(),
-            "natuurlijk_persoon",
-            NatuurlijkPersoonSubjectIdentificatie(
-                bsn
+            "niet_natuurlijk_persoon",
+            NietNatuurlijkPersoonSubjectIdentificatie(
+                kvk
             )
         )
 
         return openKlantClient.postKlant(klantRequest)
     }
 
-    override fun ensureBurgerExists(bsn: String): Klant {
-        var klant = getBurger(bsn)
+    override fun ensureBedrijfExists(kvk: String): Klant {
+        var klant = getBedrijf(kvk)
         if (klant == null) {
-            klant = createBurger(bsn)
+            klant = createBedrijf(kvk)
         }
         return klant
     }
