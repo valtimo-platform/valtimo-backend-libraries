@@ -24,8 +24,8 @@ open class OpenKlantService(
     private fun validateKlantnummerNotTaken(klantnummer: String): Boolean {
         val klantPage = openKlantClient.searchKlanten(
             KlantSearchFilter(
-            klantnummer = klantnummer
-        )
+                klantnummer = klantnummer
+            )
         )
         return klantPage.results.size == 0
     }
