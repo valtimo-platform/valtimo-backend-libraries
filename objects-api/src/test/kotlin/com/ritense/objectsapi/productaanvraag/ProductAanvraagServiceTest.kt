@@ -2,6 +2,7 @@ package com.ritense.objectsapi.productaanvraag
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
@@ -10,6 +11,7 @@ import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.result.CreateDocumentResult
 import com.ritense.klant.domain.Klant
+import com.ritense.klant.service.BedrijfService
 import com.ritense.klant.service.BurgerService
 import com.ritense.objectsapi.domain.ProductAanvraag
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
@@ -32,6 +34,7 @@ internal class ProductAanvraagServiceTest {
     val zaakRolService = mock<ZaakRolService>()
     val zaakInstanceLinkService = mock<ZaakInstanceLinkService>()
     val burgerService = mock<BurgerService>()
+    val bedrijfService = mock<BedrijfService>()
 
     val service = ProductAanvraagService(
         processDocumentService,
@@ -39,7 +42,8 @@ internal class ProductAanvraagServiceTest {
         openNotificatieService,
         zaakRolService,
         zaakInstanceLinkService,
-        burgerService
+        burgerService,
+        bedrijfService
     )
 
     @BeforeEach
@@ -57,7 +61,9 @@ internal class ProductAanvraagServiceTest {
         whenever(document.id()).thenReturn(documentId)
         whenever(documentId.id).thenReturn(UUID.randomUUID())
         whenever(zaakInstanceLinkService.getByDocumentId(any())).thenReturn(instanceLink)
+        whenever(instanceLink.zaakInstanceUrl).thenReturn(URI("http://some-zaak-url"))
         whenever(burgerService.ensureBurgerExists(any())).thenReturn(klant)
+        whenever(bedrijfService.ensureBedrijfExists(any())).thenReturn(klant)
         whenever(klant.url).thenReturn("http://some.url")
         whenever(processDocumentService.startProcessForDocument(any())).thenReturn(processStartResult)
         whenever(processStartResult.resultingDocument()).thenReturn(Optional.of(document))
@@ -67,7 +73,7 @@ internal class ProductAanvraagServiceTest {
     fun `createDossier should create klant when klantservice was injected`() {
 
         service.createDossier(
-            getProductAanvraag(),
+            getProductAanvraag(bsn="123"),
             getProductAanvraagTypeMapping(),
             URI("http://some.rol.url")
         )
@@ -83,11 +89,12 @@ internal class ProductAanvraagServiceTest {
             openNotificatieService,
             zaakRolService,
             zaakInstanceLinkService,
+            null,
             null
         )
 
         service.createDossier(
-            getProductAanvraag(),
+            getProductAanvraag(bsn="!23"),
             getProductAanvraagTypeMapping(),
             URI("http://some.rol.url")
         )
@@ -95,14 +102,45 @@ internal class ProductAanvraagServiceTest {
         verify(burgerService, never()).ensureBurgerExists("123")
     }
 
-    fun getProductAanvraag(): ProductAanvraag {
+    @Test
+    fun `createDossier should create natuurlijk persoon when productaanvraag has bsn`() {
+
+        service.createDossier(
+            getProductAanvraag(bsn = "123"),
+            getProductAanvraagTypeMapping(),
+            URI("http://some.rol.url")
+        )
+
+        verify(burgerService).ensureBurgerExists("123")
+        verify(zaakRolService).addNatuurlijkPersoon(any(), any(), any(), eq("123"), any())
+        verify(bedrijfService, never()).ensureBedrijfExists("123")
+        verify(zaakRolService, never()).addNietNatuurlijkPersoon(any(), any(), any(), any(), any())
+    }
+
+    @Test
+    fun `createDossier should create niet natuurlijk persoon when productaanvraag has kvk`() {
+
+        service.createDossier(
+            getProductAanvraag(kvk = "123"),
+            getProductAanvraagTypeMapping(),
+            URI("http://some.rol.url")
+        )
+
+        verify(bedrijfService).ensureBedrijfExists("123")
+        verify(zaakRolService).addNietNatuurlijkPersoon(any(), any(), any(), eq("123"), any())
+        verify(burgerService, never()).ensureBurgerExists("123")
+        verify(zaakRolService, never()).addNatuurlijkPersoon(any(), any(), any(), any(), any())
+    }
+
+    fun getProductAanvraag(bsn: String? = null, kvk: String? = null): ProductAanvraag {
         val mapper = ObjectMapper()
         return ProductAanvraag(
             "type",
             mapper.createObjectNode(),
             emptyList(),
             URI("http://some.attachment.url"),
-            "123"
+            bsn,
+            kvk
         )
     }
 

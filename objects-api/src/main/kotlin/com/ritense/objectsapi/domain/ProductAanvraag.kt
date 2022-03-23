@@ -17,7 +17,6 @@
 package com.ritense.objectsapi.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.JsonNode
 import java.net.URI
 
@@ -27,7 +26,8 @@ data class ProductAanvraag(
     val attachments: List<URI>,
     @JsonProperty("pdf_url")
     val pdfUrl: URI,
-    val bsn: String
+    val bsn: String?,
+    val kvk: String?
 ) {
     fun getAllFiles(): List<URI> {
         val files = attachments.toMutableList()

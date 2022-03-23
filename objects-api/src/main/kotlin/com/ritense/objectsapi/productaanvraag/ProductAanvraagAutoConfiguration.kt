@@ -19,6 +19,7 @@ package com.ritense.objectsapi.productaanvraag
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
+import com.ritense.klant.service.BedrijfService
 import com.ritense.klant.service.BurgerService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.openzaak.service.ZaakInstanceLinkService
@@ -50,7 +51,6 @@ class ProductAanvraagAutoConfiguration {
         return ProductAanvraagProperties()
     }
 
-
     @Bean
     @ConditionalOnMissingBean(ProductAanvraagListener::class)
     fun productAanvraagListener(
@@ -68,7 +68,8 @@ class ProductAanvraagAutoConfiguration {
         openNotificatieService: OpenNotificatieService,
         zaakRolService: ZaakRolService,
         zaakInstanceLinkService: ZaakInstanceLinkService,
-        burgerService: BurgerService?
+        burgerService: BurgerService?,
+        bedrijfService: BedrijfService?
     ): ProductAanvraagService {
         return ProductAanvraagService(
             processDocumentService,
@@ -76,7 +77,8 @@ class ProductAanvraagAutoConfiguration {
             openNotificatieService,
             zaakRolService,
             zaakInstanceLinkService,
-            burgerService
+            burgerService,
+            bedrijfService
         )
     }
 }
