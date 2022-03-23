@@ -17,6 +17,11 @@
 package com.ritense.openzaak.service.impl.model.zaak
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.ritense.openzaak.service.impl.model.zaak.betrokkene.BetrokkeneIdentificatie
+import com.ritense.openzaak.service.impl.model.zaak.betrokkene.RolNatuurlijkPersoon
+import com.ritense.openzaak.service.impl.model.zaak.betrokkene.RolNietNatuurlijkPersoon
 import java.net.URI
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -26,5 +31,16 @@ data class Rol(
     val betrokkeneType: BetrokkeneType,
     val roltype: URI,
     val roltoelichting: String,
-    val betrokkeneIdentificatie: RolNatuurlijkPersoon?
+    @JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
+        property = "betrokkeneType",
+        visible = true
+    )
+    @JsonSubTypes(
+        value = [
+            JsonSubTypes.Type(value = RolNatuurlijkPersoon::class, name = "natuurlijk_persoon"),
+            JsonSubTypes.Type(value = RolNietNatuurlijkPersoon::class, name = "niet_natuurlijk_persoon")
+    ])
+    val betrokkeneIdentificatie: BetrokkeneIdentificatie?
 )

@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.service
+package com.ritense.openzaak.service.impl.model.zaak.betrokkene
 
-import com.ritense.openzaak.service.impl.model.ResultWrapper
-import com.ritense.openzaak.service.impl.model.zaak.Rol
-import java.net.URI
-
-interface ZaakRolService {
-
-    fun addNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, bsn: String, betrokkene: URI?)
-
-    fun addNietNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, kvk: String, betrokkene: URI?)
-
-    fun getZaakInitator(zaakUrl: URI): ResultWrapper<Rol>
-
-}
+data class RolNatuurlijkPersoon(
+    val inpBsn: String
+) : BetrokkeneIdentificatie()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.service.impl.model.zaak
+package com.ritense.klant.domain
 
-data class RolNatuurlijkPersoon(
+data class NatuurlijkPersoonSubjectIdentificatie(
     val inpBsn: String
-)
+): SubjectIdentificatie
