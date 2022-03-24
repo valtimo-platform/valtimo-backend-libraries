@@ -106,7 +106,7 @@ class TaakObjectConnector(
         formulierId: String
     ): TaakObjectDto {
         val taakObject = TaakObjectDto(
-            bsn = "569312863",//bsnProvider?.getBurgerServiceNummer(task),
+            bsn = bsnProvider?.getBurgerServiceNummer(task),
             kvk = kvkProvider?.getKvkNummer(task),
             verwerkerTaakId = UUID.fromString(task.id),
             formulierId = formulierId,
