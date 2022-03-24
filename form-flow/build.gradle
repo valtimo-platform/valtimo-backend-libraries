@@ -17,9 +17,8 @@
 dependencies {
 
     /* DO NOT ADD DEPENDENCIES TO OTHER VALTIMO MODULES */
-    implementation "org.springframework.boot:spring-boot-autoconfigure"
-
     implementation "org.liquibase.ext:liquibase-hibernate5:4.8.0"
+    implementation "com.vladmihalcea:hibernate-types-52:2.14.0"
 
     jar {
         enabled = true

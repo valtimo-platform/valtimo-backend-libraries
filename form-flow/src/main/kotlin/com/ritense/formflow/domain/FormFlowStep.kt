@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.service
+package com.ritense.formflow.domain
 
-import com.ritense.openzaak.service.impl.model.ResultWrapper
-import com.ritense.openzaak.service.impl.model.zaak.Rol
-import java.net.URI
+import org.hibernate.annotations.Type
+import javax.persistence.Column
+import javax.persistence.EmbeddedId
+import javax.persistence.Entity
+import javax.persistence.Table
 
-interface ZaakRolService {
+@Entity
+@Table(name = "form_flow_step")
+data class FormFlowStep(
 
-    fun addNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, bsn: String, betrokkene: URI?)
+    @EmbeddedId
+    val id: FormFlowStepId,
 
-    fun addNietNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, kvk: String, betrokkene: URI?)
-
-    fun getZaakInitator(zaakUrl: URI): ResultWrapper<Rol>
-
-}
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
+    @Column(name = "next_steps", columnDefinition = "JSON")
+    val nextSteps: List<FormFlowNextStep>
+)

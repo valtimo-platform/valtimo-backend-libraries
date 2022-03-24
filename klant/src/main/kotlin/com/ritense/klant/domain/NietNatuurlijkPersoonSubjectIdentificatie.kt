@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.service
+package com.ritense.klant.domain
 
-import com.ritense.openzaak.service.impl.model.ResultWrapper
-import com.ritense.openzaak.service.impl.model.zaak.Rol
-import java.net.URI
-
-interface ZaakRolService {
-
-    fun addNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, bsn: String, betrokkene: URI?)
-
-    fun addNietNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, kvk: String, betrokkene: URI?)
-
-    fun getZaakInitator(zaakUrl: URI): ResultWrapper<Rol>
-
-}
+data class NietNatuurlijkPersoonSubjectIdentificatie(
+    val innNnpId: String
+): SubjectIdentificatie

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.ritense.valtimo.security.interceptor;
 
-import com.ritense.valtimo.contract.utils.IpUtils;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConstructorBinding;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Set;
+import java.util.List;
 
-public class LocalhostIpRequest implements RequestInterceptor {
-
-    private static final Set<String> LOCALHOST_IPS = Set.of("127.0.0.1", "0:0:0:0:0:0:0:1");
-
-    public LocalhostIpRequest() {
-    }
-
-    public boolean check(HttpServletRequest httpServletRequest) {
-        return IpUtils.extractSourceIpsFrom(httpServletRequest)
-            .stream()
-            .anyMatch(LOCALHOST_IPS::contains);
-    }
-
+@ConstructorBinding
+@AllArgsConstructor
+@Getter
+@ConfigurationProperties(prefix = "valtimo.security.whitelist")
+public class SecurityWhitelistProperties {
+    private final List<String> hosts;
 }

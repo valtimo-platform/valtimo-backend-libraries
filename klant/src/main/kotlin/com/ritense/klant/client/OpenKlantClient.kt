@@ -26,9 +26,11 @@ class OpenKlantClient(
     private val openKlantClientProperties: OpenKlantClientProperties,
     private val openKlantTokenGenerator: OpenKlantTokenGenerator
 ) {
-    fun getKlant(bsn: String): Klant? {
+    fun getKlant(bsn: String? = null, kvk: String? = null): Klant? {
+
         val klantPage = searchKlanten(KlantSearchFilter(
             bsn = bsn,
+            kvk = kvk,
             page = 1
         ))
 

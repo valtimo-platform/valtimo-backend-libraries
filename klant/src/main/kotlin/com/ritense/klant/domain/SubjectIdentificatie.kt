@@ -16,6 +16,4 @@
 
 package com.ritense.klant.domain
 
-data class SubjectIdentificatie(
-    val inpBsn: String
-)
+interface SubjectIdentificatie
