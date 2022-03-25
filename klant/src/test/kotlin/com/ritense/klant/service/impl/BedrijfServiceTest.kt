@@ -46,7 +46,7 @@ internal class BedrijfServiceTest {
 
         val klantCreationRequest = captor.firstValue
         assertIs<NietNatuurlijkPersoonSubjectIdentificatie>(klantCreationRequest.subjectIdentificatie)
-        assertEquals("123", (klantCreationRequest.subjectIdentificatie as NietNatuurlijkPersoonSubjectIdentificatie).innNnpId)
+        assertEquals("123", (klantCreationRequest.subjectIdentificatie as NietNatuurlijkPersoonSubjectIdentificatie).annIdentificatie)
         assertEquals("654321", klantCreationRequest.bronorganisatie)
     }
 
@@ -75,7 +75,7 @@ internal class BedrijfServiceTest {
 
         val klantCreationRequest = captor.firstValue
         assertIs<NietNatuurlijkPersoonSubjectIdentificatie>(klantCreationRequest.subjectIdentificatie)
-        assertEquals("123", (klantCreationRequest.subjectIdentificatie as NietNatuurlijkPersoonSubjectIdentificatie).innNnpId)
+        assertEquals("123", (klantCreationRequest.subjectIdentificatie as NietNatuurlijkPersoonSubjectIdentificatie).annIdentificatie)
         assertEquals("654321", klantCreationRequest.bronorganisatie)
     }
 
