@@ -11,7 +11,7 @@ import javax.persistence.OrderBy
 class FormFlowInstanceContext(
     @OneToMany(mappedBy = "form_flow_step_instance", cascade = [CascadeType.ALL], orphanRemoval = true)
     @OrderBy("formFlowStepInstance.order ASC")
-    val history: List<FormFlowStepInstance>,
+    val history: MutableList<FormFlowStepInstance>,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "additional_properties", columnDefinition = "json", nullable = false)
     val additionalProperties: Map<String, Any>
