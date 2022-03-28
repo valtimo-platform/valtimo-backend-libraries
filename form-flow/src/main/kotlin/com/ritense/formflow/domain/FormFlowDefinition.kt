@@ -40,6 +40,4 @@ data class FormFlowDefinition(
 
     @OneToMany(mappedBy = "id.formFlowDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val steps: Set<FormFlowStep>,
-) {
-    fun id() = id
-}
+)

@@ -17,7 +17,6 @@
 package com.ritense.formflow.service
 
 import com.ritense.formflow.domain.FormFlowDefinition
-import com.ritense.formflow.domain.FormFlowDefinitionId
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 
 class FormFlowService(
@@ -30,7 +29,7 @@ class FormFlowService(
 
     fun save(formFlowDefinition: FormFlowDefinition) {
         formFlowDefinitionRepository.findById(formFlowDefinition.id).ifPresentOrElse({
-            throw UnsupportedOperationException("Form Flow already deployed. Can't redeploy: ${formFlowDefinition.id}")
+            throw UnsupportedOperationException("Failed to save From Flow. Form Flow already exists: ${formFlowDefinition.id}")
         }, {
             formFlowDefinitionRepository.saveAndFlush(formFlowDefinition)
         })

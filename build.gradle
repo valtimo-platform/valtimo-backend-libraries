@@ -15,7 +15,6 @@ plugins {
     id "checkstyle"
     id "jacoco"
     id "com.avast.gradle.docker-compose" version "0.14.9"
-    id "org.jsonschema2dataclass" version "3.2.1"
 }
 
 /*

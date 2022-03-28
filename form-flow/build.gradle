@@ -40,8 +40,3 @@ dependencies {
 }
 
 apply from: "gradle/publishing.gradle"
-
-jsonSchema2Pojo {
-    targetPackage = "com.ritense.formflow"
-    source.setFrom files("${sourceSets.main.output.resourcesDir}/config/form-flow/")
-}
