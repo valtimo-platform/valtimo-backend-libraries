@@ -16,28 +16,33 @@
 
 package com.ritense.formflow.domain
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import lombok.EqualsAndHashCode
-import org.hibernate.validator.constraints.Length
 import javax.persistence.Column
 import javax.persistence.Embeddable
 import javax.persistence.FetchType
 import javax.persistence.JoinColumn
 import javax.persistence.JoinColumns
 import javax.persistence.ManyToOne
-import javax.validation.constraints.NotBlank
 
 @Embeddable
 @EqualsAndHashCode(callSuper = false)
-class FormFlowStepId(
+data class FormFlowStepId(
 
     @Column(name = "key")
-    @field:Length(max = 256)
     val key: String,
 
-    @ManyToOne(targetEntity = FormFlowDefinition::class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = FormFlowDefinitionId::class, fetch = FetchType.LAZY)
     @JoinColumns(
         JoinColumn(name = "form_flow_definition_key", referencedColumnName = "key"),
         JoinColumn(name = "form_flow_definition_version", referencedColumnName = "version")
     )
-    val formFlowDefinitionId: FormFlowDefinitionId
-) : AbstractId<FormFlowStepId>()
+    var formFlowDefinitionId: FormFlowDefinitionId? = null
+) : AbstractId<FormFlowStepId>() {
+
+    companion object {
+        @JvmStatic
+        @JsonCreator
+        fun create(value: String) = FormFlowStepId(value).newIdentity()
+    }
+}

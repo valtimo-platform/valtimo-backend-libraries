@@ -16,7 +16,7 @@
 
 package com.ritense.formflow.domain
 
-import org.hibernate.validator.constraints.Length
+import com.fasterxml.jackson.annotation.JsonProperty
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
@@ -30,12 +30,14 @@ import javax.persistence.Table
 data class FormFlowDefinition(
 
     @EmbeddedId
-    val id: FormFlowDefinitionId,
+    @JsonProperty("key")
+    var id: FormFlowDefinitionId,
 
     @Column(name = "start_step")
-    @field:Length(max = 256)
     val startStep: String,
 
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val steps: List<FormFlowStep>,
-)
+) {
+    fun id() = id
+}

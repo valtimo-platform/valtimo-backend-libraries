@@ -20,4 +20,6 @@ import com.ritense.formflow.domain.FormFlowDefinition
 import com.ritense.formflow.domain.FormFlowDefinitionId
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface FormFlowDefinitionRepository : JpaRepository<FormFlowDefinition, FormFlowDefinitionId>
+interface FormFlowDefinitionRepository : JpaRepository<FormFlowDefinition, FormFlowDefinitionId> {
+    fun findFirstByIdKeyOrderByIdVersionDesc(formFlowKey: String): FormFlowDefinition?
+}

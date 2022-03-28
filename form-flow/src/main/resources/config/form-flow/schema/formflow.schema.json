@@ -1,0 +1,69 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://json-schema.org/draft-07/schema#",
+    "title": "Form flow definition",
+    "description": "Representation of a form flow definition",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "key": {
+            "type": "string",
+            "title": "Form flow definition key"
+        },
+        "startStep": {
+            "type": "string",
+            "description": "This must contain the key of the first step of the form flow"
+        },
+        "steps": {
+            "type": "array",
+            "description": "This array should contain all the possible steps of the form flow",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "The id of the step"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "The title that should be shown when this step is active"
+                    },
+                    "nextSteps": {
+                        "type": "array",
+                        "description": "The possible next steps. A condition must be added on all steps but one. The step without a condition is the default step that will be used when all conditions fail",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "step": {
+                                    "type": "string",
+                                    "title": "The name of the next step. This should match one of the keys in the steps array"
+                                },
+                                "condition": {
+                                    "type": "string",
+                                    "title": "This should contain an expression telling what condition should be met to go to this next step"
+                                }
+                            },
+                            "required": [
+                                "step"
+                            ]
+                        }
+                    },
+                    "nextStep:": {
+                        "type": "string",
+                        "description": "The name of the next step in the flow. When multiple steps should be available you should use the property 'nextSteps'"
+                    }
+                },
+                "required": [
+                    "key"
+                ]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        }
+    },
+    "required": [
+        "key",
+        "startStep",
+        "steps"
+    ]
+}

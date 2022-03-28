@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.domain
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
@@ -27,9 +28,16 @@ import javax.persistence.Table
 data class FormFlowStep(
 
     @EmbeddedId
+    @JsonProperty("key")
     val id: FormFlowStepId,
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
     @Column(name = "next_steps", columnDefinition = "JSON")
-    val nextSteps: List<FormFlowNextStep>
-)
+    val nextSteps: ArrayList<FormFlowNextStep>? = ArrayList()
+) {
+
+    @JsonProperty("nextStep")
+    fun nextStep(nextStep: String) {
+        nextSteps!!.add(FormFlowNextStep(step = nextStep))
+    }
+}

@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain
+package com.ritense.formflow.service
 
-data class FormFlowNextStep(
-    val condition: String? = null,
-    val step: String,
-)
+import com.ritense.formflow.BaseIntegrationTest
+import org.junit.jupiter.api.Test
+
+internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
+
+    @Test
+    fun `should deploy all Form Flows`() {
+
+    }
+}
+

@@ -16,21 +16,20 @@
 
 package com.ritense.formflow.domain
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import lombok.EqualsAndHashCode
-import org.hibernate.validator.constraints.Length
 import javax.persistence.Column
 import javax.persistence.Embeddable
 
 @Embeddable
 @EqualsAndHashCode(callSuper = false)
-class FormFlowDefinitionId(
+data class FormFlowDefinitionId(
 
     @Column(name = "key")
-    @field:Length(max = 256)
     val key: String,
 
     @Column(name = "version")
-    val version: Long
+    var version: Long? = null
 
 ) : AbstractId<FormFlowDefinitionId>() {
 
@@ -39,16 +38,20 @@ class FormFlowDefinitionId(
     }
 
     companion object {
+        @JvmStatic
+        @JsonCreator
+        fun create(value: String) = newId(value)
+
         fun newId(key: String): FormFlowDefinitionId {
             return FormFlowDefinitionId(key, 1).newIdentity()
         }
 
         fun nextVersion(id: FormFlowDefinitionId): FormFlowDefinitionId {
-            return FormFlowDefinitionId(id.key, id.version + 1).newIdentity()
+            return FormFlowDefinitionId(id.key, id.version!! + 1).newIdentity()
         }
 
-        fun existingId(key: String, version: Long): FormFlowDefinitionId {
-            return FormFlowDefinitionId(key, version)
+        fun existingId(id: FormFlowDefinitionId): FormFlowDefinitionId {
+            return FormFlowDefinitionId(id.key, id.version)
         }
     }
 }
