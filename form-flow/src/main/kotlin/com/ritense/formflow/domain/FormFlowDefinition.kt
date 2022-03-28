@@ -17,6 +17,7 @@
 package com.ritense.formflow.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import lombok.EqualsAndHashCode
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
@@ -27,6 +28,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "form_flow_definition")
+@EqualsAndHashCode
 data class FormFlowDefinition(
 
     @EmbeddedId
@@ -36,8 +38,8 @@ data class FormFlowDefinition(
     @Column(name = "start_step")
     val startStep: String,
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    val steps: List<FormFlowStep>,
+    @OneToMany(mappedBy = "id.formFlowDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    val steps: Set<FormFlowStep>,
 ) {
     fun id() = id
 }

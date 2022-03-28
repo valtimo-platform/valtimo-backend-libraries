@@ -3,6 +3,59 @@
     "startStep": "woonplaats",
     "steps": [
         {
+            "key": "woonplaats",
+            "nextSteps": [
+                {
+                    "condition": "${submissionData.woonplaats.inUtrecht == true}",
+                    "step": "leeftijd"
+                },
+                {
+                    "condition": null,
+                    "step": "end"
+                }
+            ]
+        },
+
+        {
+            "key": "leeftijd",
+            "nextSteps": [
+                {
+                    "condition": "${submissionData.leeftijd.isOuderDan21 == true && submissionData.leeftijd.isJongerDanAOW == true}",
+                    "step": "gezinssituatie"
+                },
+                {
+                    "step": "end"
+                }
+            ]
+        },
+
+        {
+            "key": "gezinssituatie",
+            "nextStep": "thuiswonende-kinderen"
+        },
+
+        {
+            "key": "thuiswonende-kinderen",
+            "nextStep": "inkomen"
+        },
+        {
+            "key": "inkomen",
+            "nextSteps": [
+                {
+                    "condition": "${submissionData.inkomen.value <= submissionData.gezinssituatie.vermogenGrens}",
+                    "step": "vermogen"
+                },
+                {
+                    "step": "end"
+                }
+            ]
+        },
+
+        {
+            "key": "vermogen",
+            "nextStep": "end"
+        },
+        {
             "key": "end"
         }
     ]

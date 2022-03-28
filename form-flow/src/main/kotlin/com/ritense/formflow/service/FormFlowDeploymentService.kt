@@ -16,7 +16,6 @@
 
 package com.ritense.formflow.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formflow.domain.FormFlowDefinition
 import com.ritense.formflow.domain.FormFlowDefinitionId
 import mu.KotlinLogging
@@ -35,7 +34,6 @@ import java.nio.charset.StandardCharsets
 class FormFlowDeploymentService(
     private val resourceLoader: ResourceLoader,
     private val formFlowService: FormFlowService,
-    private val objectMapper: ObjectMapper
 ) {
 
     private val FORM_FLOW_SCHEMA_PATH = "classpath:config/form-flow/schema/formflow.schema.json"
@@ -65,20 +63,27 @@ class FormFlowDeploymentService(
 
     fun deploy(formFlowKey: String, formFlowJson: String) {
         validate(formFlowKey, formFlowJson)
-        val formFlowDefinition = objectMapper.readValue(formFlowJson, FormFlowDefinition::class.java)
 
-        return try {
+        val formFlowDefinition = Mapper.get().readValue(formFlowJson, FormFlowDefinition::class.java)
+        formFlowDefinition.steps.forEach { step -> step.id.formFlowDefinition = formFlowDefinition }
+
+        try {
             val existingDefinition = formFlowService.findLatestDefinitionByKey(formFlowKey)
             var definitionId = FormFlowDefinitionId.newId(formFlowKey)
 
-            if (existingDefinition != null && formFlowDefinition != existingDefinition) {
-                definitionId = FormFlowDefinitionId.nextVersion(existingDefinition.id)
-                logger.info("Schema changed. Deploying next version - {}", definitionId.toString())
+            if (existingDefinition != null) {
+                if (formFlowDefinition == existingDefinition) {
+                    logger.info("Form Flow already deployed - {}", definitionId.toString())
+                    return
+                } else {
+                    definitionId = FormFlowDefinitionId.nextVersion(existingDefinition.id)
+                    logger.info("Form Flow changed. Deploying next version - {}", definitionId.toString())
+                }
             }
 
             formFlowDefinition.id = definitionId
             formFlowService.save(formFlowDefinition)
-            logger.info("Deployed schema - {}", definitionId.toString())
+            logger.info("Deployed Form Flow - {}", definitionId.toString())
         } catch (e: Exception) {
             throw RuntimeException("Failed to deploy Form Flow $formFlowKey", e)
         }
@@ -87,7 +92,7 @@ class FormFlowDeploymentService(
     private fun validate(formFlowKey: String, formFlowJson: String) {
         val definitionJsonObject = JSONObject(JSONTokener(formFlowJson))
         if (formFlowKey != definitionJsonObject.get("key")) {
-            throw RuntimeException("Form Flow '$formFlowKey' doesn't match '${definitionJsonObject.get("key")}'")
+            throw RuntimeException("Form Flow file name '$formFlowKey' doesn't match key property '${definitionJsonObject.get("key")}'")
         }
         if (definitionJsonObject.toString().isEmpty()) {
             throw RuntimeException("Validating empty schema: $formFlowKey")

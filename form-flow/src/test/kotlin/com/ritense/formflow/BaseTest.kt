@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.besluit
+package com.ritense.formflow
 
 abstract class BaseTest {
-    fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName).readText(Charsets.UTF_8)
+    fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName)!!.readText(Charsets.UTF_8)
 }

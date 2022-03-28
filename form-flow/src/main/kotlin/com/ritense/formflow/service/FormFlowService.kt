@@ -32,10 +32,6 @@ class FormFlowService(
         formFlowDefinitionRepository.findById(formFlowDefinition.id).ifPresentOrElse({
             throw UnsupportedOperationException("Form Flow already deployed. Can't redeploy: ${formFlowDefinition.id}")
         }, {
-            formFlowDefinition.steps.forEach { step ->
-                step.id.formFlowDefinitionId = FormFlowDefinitionId.existingId(formFlowDefinition.id)
-            }
-
             formFlowDefinitionRepository.saveAndFlush(formFlowDefinition)
         })
     }

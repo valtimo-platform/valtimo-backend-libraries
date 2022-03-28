@@ -39,7 +39,10 @@
                                     "title": "The name of the next step. This should match one of the keys in the steps array"
                                 },
                                 "condition": {
-                                    "type": "string",
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
                                     "title": "This should contain an expression telling what condition should be met to go to this next step"
                                 }
                             },

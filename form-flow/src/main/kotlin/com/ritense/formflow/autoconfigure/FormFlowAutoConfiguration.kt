@@ -16,8 +16,6 @@
 
 package com.ritense.formflow.autoconfigure
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowStepRepository
 import com.ritense.formflow.service.FormFlowDeploymentService
@@ -46,17 +44,8 @@ class FormFlowAutoConfiguration {
     @ConditionalOnMissingBean(FormFlowDeploymentService::class)
     fun formFlowDeploymentService(
         resourceLoader: ResourceLoader,
-        formFlowService: FormFlowService,
-        objectMapper: ObjectMapper
+        formFlowService: FormFlowService
     ): FormFlowDeploymentService {
-        return FormFlowDeploymentService(resourceLoader, formFlowService, objectMapper)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(ObjectMapper::class)
-    fun objectMapper(): ObjectMapper {
-        return ObjectMapper()
-            .findAndRegisterModules()
-            .enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+        return FormFlowDeploymentService(resourceLoader, formFlowService)
     }
 }

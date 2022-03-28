@@ -17,24 +17,38 @@
 package com.ritense.formflow.domain
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import lombok.EqualsAndHashCode
+import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.Embeddable
 
 @Embeddable
-@EqualsAndHashCode(callSuper = false)
 data class FormFlowDefinitionId(
 
-    @Column(name = "key")
+    @Column(name = "form_flow_definition_key")
     val key: String,
 
-    @Column(name = "version")
+    @Column(name = "form_flow_definition_version")
     var version: Long? = null
 
 ) : AbstractId<FormFlowDefinitionId>() {
 
     override fun toString(): String {
         return "$key:$version"
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(key)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as FormFlowDefinitionId
+
+        if (key != other.key) return false
+
+        return true
     }
 
     companion object {

@@ -17,13 +17,70 @@
 package com.ritense.formflow.service
 
 import com.ritense.formflow.BaseIntegrationTest
+import com.ritense.formflow.repository.FormFlowDefinitionRepository
+import com.ritense.formflow.repository.FormFlowStepRepository
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 
 internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
 
-    @Test
-    fun `should deploy all Form Flows`() {
+    @Autowired
+    lateinit var formFlowService: FormFlowService
 
+    @Autowired
+    lateinit var formFlowDeploymentService: FormFlowDeploymentService
+
+    @Autowired
+    lateinit var formFlowDefinitionRepository: FormFlowDefinitionRepository
+
+    @Autowired
+    lateinit var formFlowStepRepository: FormFlowStepRepository
+
+    @BeforeEach
+    fun beforeEach() {
+        formFlowDeploymentService.deployAll()
+    }
+
+    @AfterEach
+    fun afterEach() {
+        formFlowStepRepository.deleteAll()
+        formFlowDefinitionRepository.deleteAll()
+    }
+
+    @Test
+    fun `should auto deploy Form Flow from config directory`() {
+
+        val inkomensLoket = formFlowService.findLatestDefinitionByKey("inkomens_loket")
+
+        assertThat(inkomensLoket!!).isNotNull
+        assertThat(inkomensLoket.id.key).isEqualTo("inkomens_loket")
+        assertThat(inkomensLoket.id.version).isEqualTo(1L)
+        assertThat(inkomensLoket.startStep).isEqualTo("woonplaats")
+        assertThat(inkomensLoket.steps).hasSize(7)
+    }
+
+    @Test
+    fun `should not deploy same Form Flow twice`() {
+        formFlowDeploymentService.deployAll()
+        formFlowDeploymentService.deployAll()
+
+        val inkomensLoket = formFlowService.findLatestDefinitionByKey("inkomens_loket")
+
+        assertThat(inkomensLoket!!.id.version).isEqualTo(1L)
+    }
+
+    @Test
+    fun `should deploy new version Form Flow`() {
+        var inkomensLoketJson = readFileAsString("/config/form-flow/inkomens_loket.json")
+        inkomensLoketJson = inkomensLoketJson.replace("isOuderDan21 == true", "isOuderDan21 == false")
+        formFlowDeploymentService.deploy("inkomens_loket", inkomensLoketJson)
+
+        val inkomensLoket = formFlowService.findLatestDefinitionByKey("inkomens_loket")
+
+        assertThat(inkomensLoket!!.id.version).isEqualTo(2L)
     }
 }
 
