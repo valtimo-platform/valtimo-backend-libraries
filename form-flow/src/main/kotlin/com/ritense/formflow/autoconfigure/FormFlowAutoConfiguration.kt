@@ -32,4 +32,31 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @Configuration
 @EnableJpaRepositories(basePackageClasses = [FormFlowDefinitionRepository::class, FormFlowStepRepository::class])
 @EntityScan(basePackages = ["com.ritense.formflow.domain"])
-class FormFlowAutoConfiguration
+class FormFlowAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowService::class)
+    fun formFlowService(
+        formFlowDefinitionRepository: FormFlowDefinitionRepository
+    ): FormFlowService {
+        return FormFlowService(formFlowDefinitionRepository)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowDeploymentService::class)
+    fun formFlowDeploymentService(
+        resourceLoader: ResourceLoader,
+        formFlowService: FormFlowService,
+        objectMapper: ObjectMapper
+    ): FormFlowDeploymentService {
+        return FormFlowDeploymentService(resourceLoader, formFlowService, objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ObjectMapper::class)
+    fun objectMapper(): ObjectMapper {
+        return ObjectMapper()
+            .findAndRegisterModules()
+            .enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+    }
+}
