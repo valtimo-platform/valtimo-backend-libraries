@@ -16,24 +16,20 @@
 
 package com.ritense.processdocument.autoconfigure;
 
-import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import com.ritense.processdocument.security.config.ProcessDocumentHttpSecurityConfigurer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import javax.sql.DataSource;
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Configuration
-@ConditionalOnClass(DataSource.class)
-public class LiquibaseAutoConfiguration {
+public class ProcessDocumentSecurityAutoConfiguration {
 
-    @Order(HIGHEST_PRECEDENCE + 9)
+    @Order(250)
     @Bean
-    @ConditionalOnMissingBean(name = "processDocumentLiquibaseMasterChangeLogLocation")
-    public LiquibaseMasterChangeLogLocation processDocumentLiquibaseMasterChangeLogLocation() {
-        return new LiquibaseMasterChangeLogLocation("config/liquibase/process-document-master.xml");
+    @ConditionalOnMissingBean(ProcessDocumentHttpSecurityConfigurer.class)
+    public ProcessDocumentHttpSecurityConfigurer processDocumentHttpSecurityConfigurer() {
+        return new ProcessDocumentHttpSecurityConfigurer();
     }
 
 }

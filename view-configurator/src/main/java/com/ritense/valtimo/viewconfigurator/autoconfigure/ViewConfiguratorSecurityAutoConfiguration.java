@@ -16,24 +16,20 @@
 
 package com.ritense.valtimo.viewconfigurator.autoconfigure;
 
-import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import com.ritense.valtimo.viewconfigurator.security.config.ViewConfiguratorHttpSecurityConfigurer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import javax.sql.DataSource;
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Configuration
-@ConditionalOnClass(DataSource.class)
-public class LiquibaseAutoConfiguration {
+public class ViewConfiguratorSecurityAutoConfiguration {
 
-    @Order(HIGHEST_PRECEDENCE + 4)
+    @Order(240)
     @Bean
-    @ConditionalOnMissingBean(name = "viewConfigLiquibaseMasterChangeLogLocation")
-    public LiquibaseMasterChangeLogLocation viewConfigLiquibaseMasterChangeLogLocation() {
-        return new LiquibaseMasterChangeLogLocation("config/liquibase/view-configurator-master.xml");
+    @ConditionalOnMissingBean(ViewConfiguratorHttpSecurityConfigurer.class)
+    public ViewConfiguratorHttpSecurityConfigurer viewConfiguratorHttpSecurityConfigurer() {
+        return new ViewConfiguratorHttpSecurityConfigurer();
     }
 
 }

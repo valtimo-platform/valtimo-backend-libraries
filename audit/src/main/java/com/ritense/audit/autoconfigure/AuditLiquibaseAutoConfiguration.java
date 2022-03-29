@@ -27,7 +27,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Configuration
 @ConditionalOnClass(DataSource.class)
-public class LiquibaseAutoConfiguration {
+public class AuditLiquibaseAutoConfiguration {
 
     @Order(HIGHEST_PRECEDENCE + 12)
     @ConditionalOnMissingBean(name = "auditLiquibaseMasterChangeLogLocation")
