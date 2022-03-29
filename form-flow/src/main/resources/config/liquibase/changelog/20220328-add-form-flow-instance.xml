@@ -24,12 +24,14 @@
             <column name="form_flow_instance_id" type="${uuidType}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="additional_properties" type="${jsonType}"/>
+            <column name="additional_properties" type="${jsonType}">
+                <constraints nullable="false"/>
+            </column>
             <column name="current_form_flow_step_instance_id" type="${uuidType}"/>
 
             <!-- Form Flow Definition -->
-            <column name="key" type="varchar(256)"/>
-            <column name="version" type="${intType}"/>
+            <column name="form_flow_definition_key" type="varchar(256)"/>
+            <column name="form_flow_definition_version" type="${intType}"/>
         </createTable>
     </changeSet>
 
@@ -40,12 +42,20 @@
             </column>
             <column name="form_flow_instance_id" type="${uuidType}"/>
             <column name="for_flow_step_key" type="varchar(256)}"/>
-            <column name="order" type="${intType}"/>
+            <column name="`order`" type="${intType}"/>
             <column name="submissionData" type="${jsonType}"/>
 
             <!-- Form Flow Definition -->
             <column name="key" type="varchar(256)"/>
             <column name="version" type="${intType}"/>
         </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <addForeignKeyConstraint baseTableName="form_flow_step_instance"
+                                 baseColumnNames="form_flow_instance_id"
+                                 constraintName="fk_form_flow_instance_id"
+                                 referencedTableName="form_flow_instance"
+                                 referencedColumnNames="form_flow_instance_id"/>
     </changeSet>
 </databaseChangeLog>

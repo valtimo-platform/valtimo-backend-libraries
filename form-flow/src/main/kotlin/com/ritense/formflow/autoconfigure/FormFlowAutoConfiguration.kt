@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.autoconfigure
 
+import com.ritense.formflow.SpringContextHelper
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowStepRepository
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -26,4 +27,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.formflow.repository"])
 @EntityScan(basePackages = ["com.ritense.formflow.domain"])
-class FormFlowAutoConfiguration
+class FormFlowAutoConfiguration {
+    @Bean
+    fun springContextHelper(): SpringContextHelper {
+        return SpringContextHelper()
+    }
+}
