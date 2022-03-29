@@ -30,7 +30,7 @@ class OpenKlantClient(
 
         val klantPage = searchKlanten(KlantSearchFilter(
             bsn = bsn,
-            klantnummer = kvk,
+            kvk = kvk,
             page = 1
         ))
 
