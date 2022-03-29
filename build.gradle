@@ -48,7 +48,7 @@ task jacocoMerge(type: JacocoMerge, group: 'verification') {
 sonarqube {
     properties {
         property "sonar.scm.provider", "git"
-        property "sonar.jacoco.reportPaths", allTestCoverageFile
+        property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
     }
 }
 
@@ -84,17 +84,6 @@ allprojects {
         mavenCentral()
         mavenLocal()
     }
-
-    configurations.all{
-        resolutionStrategy {
-            eachDependency { details ->
-                if ('org.jacoco' == details.requested.group) {
-                    details.useVersion "0.8.7"
-                }
-            }
-        }
-    }
-
 }
 
 apply from: "gradle/deployment.gradle"
@@ -146,7 +135,17 @@ subprojects { subproject ->
 
     sonarqube {
         properties {
-            property "sonar.jacoco.reportPaths", allTestCoverageFile
+            property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
+        }
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            eachDependency { details ->
+                if ('org.jacoco' == details.requested.group) {
+                    details.useVersion "0.8.7"
+                }
+            }
         }
     }
 
