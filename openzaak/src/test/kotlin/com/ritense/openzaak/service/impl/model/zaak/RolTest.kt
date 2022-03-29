@@ -54,7 +54,7 @@ internal class RolTest {
             URI("http://role.type"),
             "role description",
             RolNietNatuurlijkPersoon(
-                innNnpId = "kvk"
+                annIdentificatie = "kvk"
             )
         )
 
@@ -66,7 +66,7 @@ internal class RolTest {
             "\"betrokkeneType\":\"niet_natuurlijk_persoon\"," +
             "\"roltype\":\"http://role.type\"," +
             "\"roltoelichting\":\"role description\"," +
-            "\"betrokkeneIdentificatie\":{\"innNnpId\":\"kvk\"}}"
+            "\"betrokkeneIdentificatie\":{\"annIdentificatie\":\"kvk\"}}"
 
         assertEquals(expectation, result)
     }
@@ -96,12 +96,12 @@ internal class RolTest {
             "\"betrokkeneType\":\"niet_natuurlijk_persoon\"," +
             "\"roltype\":\"http://role.type\"," +
             "\"roltoelichting\":\"role description\"," +
-            "\"betrokkeneIdentificatie\":{\"innNnpId\":\"kvk\"}}"
+            "\"betrokkeneIdentificatie\":{\"annIdentificatie\":\"kvk\"}}"
 
 
         val result = mapper.readValue(json, Rol::class.java)
 
         assertTrue(result.betrokkeneIdentificatie is RolNietNatuurlijkPersoon)
-        assertEquals("kvk", (result.betrokkeneIdentificatie as RolNietNatuurlijkPersoon).innNnpId)
+        assertEquals("kvk", (result.betrokkeneIdentificatie as RolNietNatuurlijkPersoon).annIdentificatie)
     }
 }
