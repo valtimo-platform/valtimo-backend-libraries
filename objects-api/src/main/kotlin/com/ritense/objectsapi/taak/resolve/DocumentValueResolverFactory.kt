@@ -16,10 +16,8 @@
 
 package com.ritense.objectsapi.taak.resolve
 
-import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentService
@@ -105,11 +103,7 @@ class DocumentValueResolverFactory(
     }
 
     private fun toValueNode(value: Any): JsonNode {
-        return try {
-            Mapper.INSTANCE.get().readTree(value.toString())
-        } catch (e: JsonParseException) {
-            TextNode.valueOf(value.toString())
-        }
+        return Mapper.INSTANCE.get().valueToTree(value)
     }
 
 }

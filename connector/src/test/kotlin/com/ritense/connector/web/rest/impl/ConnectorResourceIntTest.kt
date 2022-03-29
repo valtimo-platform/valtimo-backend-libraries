@@ -34,7 +34,9 @@ import com.ritense.connector.web.rest.result.CreateConnectorInstanceResultSuccee
 import com.ritense.valtimo.contract.json.serializer.PageSerializer
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
 import org.mockito.Mockito.`when`
+import org.mockito.Mockito.anyString
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -117,7 +119,7 @@ internal class ConnectorResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should get 200 with all connectorInstances in body`() {
         val typeId = ConnectorTypeId.newId(UUID.randomUUID())
-        val type = ConnectorType(typeId, "name", "class", object: ConnectorProperties{})
+        val type = ConnectorType(typeId, "name", "class", object : ConnectorProperties {})
 
         val paged = PageRequest.of(0, 10, Sort.by("name").descending());
 
@@ -146,6 +148,36 @@ internal class ConnectorResourceIntTest : BaseIntegrationTest() {
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$.content.length()").value(2))
+    }
+
+    @Test
+    fun `should connector instances by type name`() {
+        val typeId = ConnectorTypeId.newId(UUID.randomUUID())
+        val type = ConnectorType(typeId, "MyConnectorType", "class", object : ConnectorProperties {})
+
+        `when`(connectorService.getConnectorInstancesByTypeName(anyString(), any(Pageable::class.java))).thenReturn(
+            PageImpl(
+                listOf(
+                    ConnectorInstance(
+                        ConnectorInstanceId.newId(UUID.randomUUID()),
+                        type,
+                        "test1",
+                        ObjectApiProperties(NestedObject("aaa"))
+                    )
+                ),
+                Pageable.unpaged(),
+                1
+            )
+        )
+
+        mockMvc.perform(
+            get("/api/connector/instance")
+                .queryParam("typeName", "MyConnectorType")
+                .accept(APPLICATION_JSON_VALUE)
+        )
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$.content.length()").value(1))
     }
 
     @Test
@@ -197,5 +229,7 @@ internal class ConnectorResourceIntTest : BaseIntegrationTest() {
         converter.objectMapper = objectMapper
         return converter
     }
+
+    private fun <T> any(type: Class<T>): T = Mockito.any(type)
 }
 

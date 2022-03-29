@@ -28,7 +28,9 @@ import com.ritense.openzaak.listener.GlobalZaakEventListener
 import com.ritense.openzaak.listener.OpenZaakUndeployDocumentDefinitionEventListener
 import com.ritense.openzaak.listener.ServiceTaskListener
 import com.ritense.openzaak.provider.BsnProvider
+import com.ritense.openzaak.provider.KvkProvider
 import com.ritense.openzaak.provider.ZaakBsnProvider
+import com.ritense.openzaak.provider.ZaakKvkProvider
 import com.ritense.openzaak.repository.InformatieObjectTypeLinkRepository
 import com.ritense.openzaak.repository.ZaakInstanceLinkRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
@@ -363,6 +365,21 @@ class OpenZaakAutoConfiguration {
         zaakRolService: ZaakRolService
     ): BsnProvider {
         return ZaakBsnProvider(
+            processDocumentService,
+            zaakInstanceLinkService,
+            zaakRolService
+        )
+    }
+
+    @OptIn(ExperimentalContracts::class)
+    @Bean
+    @ConditionalOnMissingBean(KvkProvider::class)
+    fun kvkProvider(
+        processDocumentService: ProcessDocumentService,
+        zaakInstanceLinkService: com.ritense.openzaak.service.ZaakInstanceLinkService,
+        zaakRolService: ZaakRolService
+    ) : KvkProvider {
+        return ZaakKvkProvider(
             processDocumentService,
             zaakInstanceLinkService,
             zaakRolService

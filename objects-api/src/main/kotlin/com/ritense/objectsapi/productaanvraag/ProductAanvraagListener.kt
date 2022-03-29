@@ -43,9 +43,6 @@ class ProductAanvraagListener(
                 val typeMapping = connector.getTypeMapping(productAanvraag.type)
                 val aanvragerRolTypeUrl = connector.getAanvragerRolTypeUrl()
 
-                //TODO: TP32743 Redflag needs to be refactored ASAP
-                (productAanvraag.data as ObjectNode).set<TextNode>("\$bsn", TextNode(productAanvraag.bsn))
-
                 productAanvraagService.createDossier(productAanvraag, typeMapping, aanvragerRolTypeUrl)
                 connector.deleteProductAanvraag(productAanvraagId)
             }

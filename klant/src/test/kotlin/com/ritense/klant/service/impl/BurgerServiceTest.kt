@@ -5,6 +5,7 @@ import com.ritense.klant.client.OpenKlantClientProperties
 import com.ritense.klant.domain.Klant
 import com.ritense.klant.domain.KlantCreationRequest
 import com.ritense.klant.domain.KlantSearchFilter
+import com.ritense.klant.domain.NatuurlijkPersoonSubjectIdentificatie
 import com.ritense.klant.domain.ResultPage
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -17,6 +18,7 @@ import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.times
+import kotlin.test.assertIs
 
 internal class BurgerServiceTest {
 
@@ -43,7 +45,8 @@ internal class BurgerServiceTest {
         verify(openKlantClient).postKlant(captor.capture())
 
         val klantCreationRequest = captor.firstValue
-        assertEquals("123", klantCreationRequest.subjectIdentificatie.inpBsn)
+        assertIs<NatuurlijkPersoonSubjectIdentificatie>(klantCreationRequest.subjectIdentificatie)
+        assertEquals("123", (klantCreationRequest.subjectIdentificatie as NatuurlijkPersoonSubjectIdentificatie).inpBsn)
         assertEquals("654321", klantCreationRequest.bronorganisatie)
     }
 
@@ -71,7 +74,8 @@ internal class BurgerServiceTest {
         verify(openKlantClient).postKlant(captor.capture())
 
         val klantCreationRequest = captor.firstValue
-        assertEquals("123", klantCreationRequest.subjectIdentificatie.inpBsn)
+        assertIs<NatuurlijkPersoonSubjectIdentificatie>(klantCreationRequest.subjectIdentificatie)
+        assertEquals("123", (klantCreationRequest.subjectIdentificatie as NatuurlijkPersoonSubjectIdentificatie).inpBsn)
         assertEquals("654321", klantCreationRequest.bronorganisatie)
     }
 
