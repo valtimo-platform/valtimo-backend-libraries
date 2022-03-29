@@ -31,7 +31,8 @@ public final class Jsr310DateTimeSerializer extends JsonSerializer<TemporalAcces
 
     public static final Jsr310DateTimeSerializer INSTANCE = new Jsr310DateTimeSerializer();
 
-    private Jsr310DateTimeSerializer() {\n}
+    private Jsr310DateTimeSerializer() {
+}
 
     @Override
     public void serialize(TemporalAccessor value, JsonGenerator generator, SerializerProvider serializerProvider) throws IOException {

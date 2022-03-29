@@ -33,7 +33,8 @@ public class Jsr310LocalDateDeserializer extends JsonDeserializer<LocalDate> {
 
     public static final Jsr310LocalDateDeserializer INSTANCE = new Jsr310LocalDateDeserializer();
 
-    private Jsr310LocalDateDeserializer() {\n}
+    private Jsr310LocalDateDeserializer() {
+}
 
     private static final DateTimeFormatter ISO_DATE_OPTIONAL_TIME;
 
