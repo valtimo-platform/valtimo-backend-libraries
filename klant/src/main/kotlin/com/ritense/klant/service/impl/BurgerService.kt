@@ -20,24 +20,22 @@ import com.ritense.klant.client.OpenKlantClient
 import com.ritense.klant.client.OpenKlantClientProperties
 import com.ritense.klant.domain.Klant
 import com.ritense.klant.domain.KlantCreationRequest
-import com.ritense.klant.domain.KlantSearchFilter
-import com.ritense.klant.domain.SubjectIdentificatie
+import com.ritense.klant.domain.NatuurlijkPersoonSubjectIdentificatie
 import com.ritense.klant.service.BurgerService
-import kotlin.random.Random
 
 class BurgerService(
     private val openKlantClientProperties: OpenKlantClientProperties,
     private val openKlantClient: OpenKlantClient
-) : BurgerService {
-    override fun getBurger(bsn: String) = openKlantClient.getKlant(bsn)
+) : OpenKlantService(openKlantClient), BurgerService {
+    override fun getBurger(bsn: String) = openKlantClient.getKlant(bsn = bsn)
 
     override fun createBurger(bsn: String): Klant {
         val klantRequest = KlantCreationRequest(
             openKlantClientProperties.rsin,
             generateKlantNummer(),
-            "http://example.org",
+            getDefaultWebsiteUrl(),
             "natuurlijk_persoon",
-            SubjectIdentificatie(
+            NatuurlijkPersoonSubjectIdentificatie(
                 bsn
             )
         )
@@ -52,23 +50,4 @@ class BurgerService(
         }
         return klant
     }
-
-    private fun generateKlantNummer(): String {
-        var klantnummerValid = false
-        var klantnummer = ""
-        while (!klantnummerValid) {
-            klantnummer = Random.nextInt(10000000, 99999999).toString()
-            klantnummerValid = validateKlantnummerNotTaken(klantnummer)
-        }
-        return klantnummer
-    }
-
-    private fun validateKlantnummerNotTaken(klantnummer: String): Boolean {
-        val klantPage = openKlantClient.searchKlanten(KlantSearchFilter(
-            klantnummer = klantnummer
-        ))
-        return klantPage.results.size == 0
-    }
-
-
 }

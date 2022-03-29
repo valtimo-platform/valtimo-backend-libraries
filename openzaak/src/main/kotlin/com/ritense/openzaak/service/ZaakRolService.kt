@@ -24,6 +24,8 @@ interface ZaakRolService {
 
     fun addNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, bsn: String, betrokkene: URI?)
 
+    fun addNietNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, kvk: String, betrokkene: URI?)
+
     fun getZaakInitator(zaakUrl: URI): ResultWrapper<Rol>
 
 }

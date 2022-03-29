@@ -16,9 +16,13 @@
 
 package com.ritense.formflow.autoconfigure
 
+import com.ritense.formflow.repository.FormFlowDefinitionRepository
+import com.ritense.formflow.repository.FormFlowStepRepository
+import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
-class FormFlowAutoConfiguration {
-
-}
+@EnableJpaRepositories(basePackageClasses = [FormFlowDefinitionRepository::class, FormFlowStepRepository::class])
+@EntityScan(basePackages = ["com.ritense.formflow.domain"])
+class FormFlowAutoConfiguration

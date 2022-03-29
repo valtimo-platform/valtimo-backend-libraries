@@ -20,4 +20,11 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
+    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
+    <property name="uuidType" value="uuid" dbms="postgresql"/>
+    <property name="intType" value="int" dbms="mysql"/>
+    <property name="intType" value="integer" dbms="postgresql"/>
+
+    <include file="changelog/20220317-add-form-flow-definition.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

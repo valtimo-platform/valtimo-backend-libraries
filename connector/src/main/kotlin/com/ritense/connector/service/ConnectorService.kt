@@ -60,6 +60,10 @@ open class ConnectorService(
         return connectorTypeInstanceRepository.findAllByTypeId(ConnectorTypeId.existingId(typeId), pageable)
     }
 
+    open fun getConnectorInstancesByTypeName(typeName: String, pageable: Pageable = Pageable.unpaged()): Page<ConnectorInstance> {
+        return connectorTypeInstanceRepository.findAllByTypeName(typeName, pageable)
+    }
+
     open fun getConnectorInstanceById(id: UUID): ConnectorInstance {
         return connectorTypeInstanceRepository.getById(ConnectorInstanceId.existingId(id))
     }
