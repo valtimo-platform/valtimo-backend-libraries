@@ -16,9 +16,6 @@
 
 package com.ritense.formflow.domain
 
-import lombok.EqualsAndHashCode
-
-@EqualsAndHashCode(callSuper = false)
 data class FormFlowNextStep(
     val condition: String? = null,
     val step: String,
