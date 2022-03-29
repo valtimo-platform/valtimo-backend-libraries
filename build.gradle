@@ -48,7 +48,7 @@ task jacocoMerge(type: JacocoMerge, group: 'verification') {
 sonarqube {
     properties {
         property "sonar.scm.provider", "git"
-        property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
+        property "sonar.jacoco.reportPaths", allTestCoverageFile
     }
 }
 
@@ -135,7 +135,7 @@ subprojects { subproject ->
 
     sonarqube {
         properties {
-            property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
+            property "sonar.jacoco.reportPaths", allTestCoverageFile
         }
     }
 
