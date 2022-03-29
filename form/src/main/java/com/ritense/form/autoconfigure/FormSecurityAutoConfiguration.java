@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 @Configuration
-public class SecurityAutoConfiguration {
+public class FormSecurityAutoConfiguration {
 
     @Order(270)
     @Bean

@@ -1,6 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.valtimo.viewconfigurator.autoconfigure.ViewConfiguratorAutoConfiguration, \
-  com.ritense.valtimo.viewconfigurator.autoconfigure.SecurityAutoConfiguration, \
-  com.ritense.valtimo.viewconfigurator.autoconfigure.LiquibaseAutoConfiguration
+  com.ritense.valtimo.viewconfigurator.autoconfigure.ViewConfiguratorSecurityAutoConfiguration, \
+  com.ritense.valtimo.viewconfigurator.autoconfigure.ViewConfiguratorLiquibaseAutoConfiguration
 
 
