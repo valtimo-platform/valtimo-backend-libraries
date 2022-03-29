@@ -85,9 +85,5 @@ class HaalCentraalBRPConnector(
             || request.geslachtsnaam?.isNotEmpty() == true && request.geboortedatum == null) {
             throw InvalidParameterException("When not searching with a bsn the name and birthdate must both be filled in")
         }
-
-        if (request.geslachtsnaam?.contains("?", true) == true) {
-            throw InvalidParameterException("The wildcard character '?' is not valid. Try the use of '*'")
-        }
     }
 }
