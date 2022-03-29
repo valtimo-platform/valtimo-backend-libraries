@@ -38,6 +38,16 @@ jacoco {
     toolVersion = "0.8.7"
 }
 
+configurations.all{
+    resolutionStrategy {
+        eachDependency { details ->
+            if ('org.jacoco' == details.requested.group) {
+                details.useVersion "0.8.7"
+            }
+        }
+    }
+}
+
 def allTestCoverageFile = "${rootProject.buildDir}/jacoco/allTestCoverage.exec"
 task jacocoMerge(type: JacocoMerge, group: 'verification') {
     destinationFile = file(allTestCoverageFile)
@@ -141,16 +151,6 @@ subprojects { subproject ->
     }
 
     test.finalizedBy(jacocoMerge)
-
-    configurations.all{
-        resolutionStrategy {
-            eachDependency { details ->
-                if ('org.jacoco' == details.requested.group) {
-                    details.useVersion "0.8.7"
-                }
-            }
-        }
-    }
 
     jar {
         enabled = true
