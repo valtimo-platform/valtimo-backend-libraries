@@ -23,7 +23,7 @@ class ZaakKvkProvider(
             .results
             .firstNotNullOfOrNull {
                 when(it.betrokkeneIdentificatie) {
-                    is RolNietNatuurlijkPersoon -> it.betrokkeneIdentificatie.innNnpId
+                    is RolNietNatuurlijkPersoon -> it.betrokkeneIdentificatie.annIdentificatie
                     else -> null
                 }
             }
