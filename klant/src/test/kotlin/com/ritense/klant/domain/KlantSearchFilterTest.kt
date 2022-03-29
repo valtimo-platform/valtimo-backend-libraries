@@ -16,7 +16,8 @@
 
 package com.ritense.klant.domain
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 
 class KlantSearchFilterTest {
@@ -29,5 +30,30 @@ class KlantSearchFilterTest {
 
         assertEquals("123", map["subjectNatuurlijkPersoon__inpBsn"])
         assertFalse(map.containsKey("klantnummer"))
+        assertFalse(map.containsKey("subjectNietNatuurlijkPersoon__annIdentificatie"))
+    }
+
+    @Test
+    fun `toMap should handle kvk numbers`() {
+        val filter = KlantSearchFilter(kvk = "123")
+
+        val map = filter.toMap()
+
+        assertEquals("123", map["subjectNietNatuurlijkPersoon__annIdentificatie"])
+        assertFalse(map.containsKey("klantnummer"))
+        assertFalse(map.containsKey("subjectNatuurlijkPersoon__inpBsn"))
+    }
+
+    @Test
+    fun `toMap should map multiple values`() {
+        val filter = KlantSearchFilter(
+            kvk = "123",
+            klantnummer = "321")
+
+        val map = filter.toMap()
+
+        assertEquals("123", map["subjectNietNatuurlijkPersoon__annIdentificatie"])
+        assertEquals("321", map["klantnummer"])
+        assertFalse(map.containsKey("subjectNatuurlijkPersoon__inpBsn"))
     }
 }
