@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilde
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
-
 import java.time.format.DateTimeFormatter;
 
 @Configuration

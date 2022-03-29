@@ -17,7 +17,6 @@
 package com.ritense.document.domain.validation;
 
 import com.ritense.document.domain.DocumentContent;
-
 import java.util.List;
 
 public interface DocumentContentValidationResult {

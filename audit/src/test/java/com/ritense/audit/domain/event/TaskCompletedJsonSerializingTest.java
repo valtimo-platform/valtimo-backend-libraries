@@ -23,10 +23,8 @@ import com.ritense.valtimo.contract.json.Mapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TaskCompletedJsonSerializingTest extends AbstractTestHelper {

@@ -24,7 +24,6 @@ import com.ritense.valtimo.milestones.repository.MilestoneRepository;
 import com.ritense.valtimo.milestones.service.exception.DuplicateMilestoneException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.time.LocalDate;
 import java.util.List;
 

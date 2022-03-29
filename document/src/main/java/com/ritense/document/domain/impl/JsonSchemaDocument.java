@@ -40,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -58,7 +57,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 

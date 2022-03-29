@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.valtimo.contract.resource.Resource;
-
 import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.Set;

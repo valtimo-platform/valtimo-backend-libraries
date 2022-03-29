@@ -20,7 +20,6 @@ import org.camunda.bpm.engine.form.FormField;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.rest.dto.task.TaskDto;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;

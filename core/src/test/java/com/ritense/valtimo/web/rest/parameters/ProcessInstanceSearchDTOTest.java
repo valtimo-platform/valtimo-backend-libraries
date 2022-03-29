@@ -17,7 +17,6 @@
 package com.ritense.valtimo.web.rest.parameters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ritense.valtimo.domain.util.Jsr310DateTimeSerializer;
@@ -29,7 +28,6 @@ import com.ritense.valtimo.web.rest.dto.processvariable.type.LongProcessVariable
 import com.ritense.valtimo.web.rest.dto.processvariable.type.StringProcessVariableDTOV2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;

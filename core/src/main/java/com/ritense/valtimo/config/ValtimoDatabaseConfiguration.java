@@ -23,7 +23,6 @@ import org.camunda.bpm.spring.boot.starter.property.DatabaseProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
-
 import javax.sql.DataSource;
 
 @Configuration

@@ -17,7 +17,6 @@
 package com.ritense.document.domain.impl;
 
 import com.ritense.document.domain.DocumentDefinitionRole;
-
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;

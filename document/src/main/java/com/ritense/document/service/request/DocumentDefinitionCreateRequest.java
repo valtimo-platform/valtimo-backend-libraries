@@ -17,7 +17,6 @@ package com.ritense.document.service.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.validation.constraints.NotNull;
 
 public class DocumentDefinitionCreateRequest {

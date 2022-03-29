@@ -19,7 +19,6 @@ package com.ritense.valtimo.contract.result;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 

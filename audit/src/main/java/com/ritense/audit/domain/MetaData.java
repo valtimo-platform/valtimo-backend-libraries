@@ -18,11 +18,9 @@ package com.ritense.audit.domain;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.view.AuditView;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.time.LocalDateTime;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;

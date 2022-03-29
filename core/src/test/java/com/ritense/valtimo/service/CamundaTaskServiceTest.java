@@ -30,10 +30,8 @@ import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
-
 import java.util.HashMap;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.anyMap;

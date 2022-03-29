@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zalando.problem.ProblemBuilder;
 import org.zalando.problem.ThrowableProblem;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
 import java.util.UUID;

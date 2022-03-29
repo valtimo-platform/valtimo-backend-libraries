@@ -18,7 +18,6 @@ package com.ritense.valtimo.viewconfigurator.service;
 
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
 import com.ritense.valtimo.viewconfigurator.domain.ProcessDefinitionVariable;
-
 import java.util.Set;
 
 public interface ProcessDefinitionVariableService {

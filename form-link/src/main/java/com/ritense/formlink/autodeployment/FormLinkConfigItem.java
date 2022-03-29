@@ -17,7 +17,6 @@
 package com.ritense.formlink.autodeployment;
 
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
-
 import java.util.Objects;
 
 public class FormLinkConfigItem {

@@ -23,9 +23,7 @@ import com.ritense.audit.service.AuditEventProcessor;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDateTime;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class NewDocumentRequestTest {

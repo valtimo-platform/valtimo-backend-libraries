@@ -17,7 +17,6 @@
 package com.ritense.valtimo.helper;
 
 import org.camunda.bpm.engine.delegate.VariableScope;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;

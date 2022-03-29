@@ -22,7 +22,6 @@ import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Persistable;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;

@@ -20,14 +20,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.formlink.domain.ProcessFormAssociation;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Persistable;
-
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;

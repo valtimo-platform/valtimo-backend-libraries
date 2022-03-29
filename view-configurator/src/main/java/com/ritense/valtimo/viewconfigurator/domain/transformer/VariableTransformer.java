@@ -21,7 +21,6 @@ import com.ritense.valtimo.viewconfigurator.domain.type.BooleanVariableType;
 import com.ritense.valtimo.viewconfigurator.domain.type.DateVariableType;
 import com.ritense.valtimo.viewconfigurator.domain.type.LongVariableType;
 import com.ritense.valtimo.viewconfigurator.domain.type.StringVariableType;
-
 import java.util.Map;
 import java.util.function.Function;
 

@@ -31,10 +31,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
-
 import java.io.IOException;
 import java.util.ArrayList;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class FormDefinitionDeploymentService {

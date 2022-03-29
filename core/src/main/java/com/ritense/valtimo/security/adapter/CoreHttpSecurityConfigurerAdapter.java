@@ -24,9 +24,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-
 import java.util.List;
-
 import static org.springframework.http.HttpMethod.OPTIONS;
 
 public class CoreHttpSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {

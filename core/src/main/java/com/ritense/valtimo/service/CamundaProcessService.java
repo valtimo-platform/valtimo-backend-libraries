@@ -29,7 +29,6 @@ import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;

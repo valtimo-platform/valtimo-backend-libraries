@@ -19,12 +19,10 @@ package com.ritense.audit.domain;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import com.ritense.valtimo.contract.domain.AbstractId;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable

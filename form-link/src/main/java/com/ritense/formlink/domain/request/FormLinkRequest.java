@@ -19,7 +19,6 @@ package com.ritense.formlink.domain.request;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
-
 import java.util.UUID;
 
 public class FormLinkRequest {

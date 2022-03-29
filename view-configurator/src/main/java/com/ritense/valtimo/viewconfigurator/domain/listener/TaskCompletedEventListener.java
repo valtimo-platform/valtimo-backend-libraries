@@ -23,7 +23,6 @@ import com.ritense.valtimo.viewconfigurator.service.ViewConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
-
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;

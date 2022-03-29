@@ -17,7 +17,6 @@
 package com.ritense.document.domain.impl;
 
 import com.ritense.document.domain.DocumentDefinitionRole;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;

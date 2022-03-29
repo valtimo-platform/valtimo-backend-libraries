@@ -18,7 +18,6 @@ package com.ritense.document.service.result;
 
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.valtimo.contract.result.OperationError;
-
 import java.util.Collections;
 import java.util.List;
 

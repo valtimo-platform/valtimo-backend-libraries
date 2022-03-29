@@ -19,7 +19,6 @@ package com.ritense.audit.service.impl;
 import com.ritense.audit.service.AuditRetentionService;
 import com.ritense.audit.service.AuditService;
 import org.springframework.scheduling.annotation.Scheduled;
-
 import static java.time.LocalDateTime.now;
 
 public class AuditRetentionServiceImpl implements AuditRetentionService {

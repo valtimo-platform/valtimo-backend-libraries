@@ -26,11 +26,9 @@ import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSe
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.scheduling.annotation.Scheduled;
-
 import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import static java.util.stream.Collectors.toList;
 
 public class ReminderServiceImpl implements ReminderService {

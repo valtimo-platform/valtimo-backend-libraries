@@ -21,12 +21,10 @@ import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.engine.variable.value.ObjectValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import static java.lang.String.format;
 
 public class FormUtils {
@@ -38,10 +36,10 @@ public class FormUtils {
         final String[] formKeyArray = formkey.split(FORM_KEY_DELIMETER);
         final String formType = formKeyArray[0];
 
-        if (formType.equals("app") ||
-            formType.equals("external") ||
-            formType.equals("formio") ||
-            formType.equals("form")
+        if (formType.equals("app")
+            || formType.equals("external")
+            || formType.equals("formio")
+            || formType.equals("form")
         ) {
             return formKeyArray[1];
         } else if (formType.equals("embedded") && formKeyArray[1].equals("app")) {

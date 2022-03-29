@@ -26,7 +26,6 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

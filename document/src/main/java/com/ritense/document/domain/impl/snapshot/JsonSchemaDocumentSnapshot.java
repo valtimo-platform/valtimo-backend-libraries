@@ -20,7 +20,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import org.springframework.data.domain.Persistable;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;

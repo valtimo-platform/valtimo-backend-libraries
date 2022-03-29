@@ -17,7 +17,6 @@ package com.ritense.valtimo.security.interceptor;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
-
 import java.util.List;
 
 @ConstructorBinding

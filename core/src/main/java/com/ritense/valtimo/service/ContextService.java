@@ -29,7 +29,6 @@ import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +41,10 @@ public class ContextService {
     private final UserContextRepository userContextRepository;
     private final RepositoryService repositoryService;
 
-    public ContextService(CurrentUserService currentUserService, ContextRepository contextRepository, UserContextRepository userContextRepository, RepositoryService repositoryService) {
+    public ContextService(
+        CurrentUserService currentUserService, ContextRepository contextRepository,
+        UserContextRepository userContextRepository, RepositoryService repositoryService
+    ) {
         this.currentUserService = currentUserService;
         this.contextRepository = contextRepository;
         this.userContextRepository = userContextRepository;
@@ -89,7 +91,10 @@ public class ContextService {
             context = contextRepository.findFirstByRolesIn(valtimoUser.getRoles());
         }
         if (context == null) {
-            throw new ValtimoRuntimeException("Cannot set default context, no context found", null, "apiError", "Cannot set default context, no context found");
+            throw new ValtimoRuntimeException(
+                "Cannot set default context, no context found", null, "apiError",
+                "Cannot set default context, no context found"
+            );
         }
         UserContext userContext = new UserContext(context.getId(), valtimoUser.getId());
         userContextRepository.save(userContext);

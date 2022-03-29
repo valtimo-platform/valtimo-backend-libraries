@@ -18,7 +18,6 @@ package com.ritense.processdocument.domain.impl.request;
 
 import com.ritense.document.domain.Document;
 import com.ritense.processdocument.domain.request.Request;
-
 import java.util.Map;
 import java.util.Objects;
 

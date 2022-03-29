@@ -38,7 +38,6 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
-
 import javax.transaction.Transactional;
 import java.util.UUID;
 

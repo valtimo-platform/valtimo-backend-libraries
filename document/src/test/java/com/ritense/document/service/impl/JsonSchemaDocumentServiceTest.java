@@ -23,7 +23,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;

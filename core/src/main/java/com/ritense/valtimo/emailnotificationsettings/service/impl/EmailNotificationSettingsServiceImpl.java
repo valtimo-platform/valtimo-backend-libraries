@@ -20,7 +20,6 @@ import com.ritense.valtimo.emailnotificationsettings.domain.request.EmailNotific
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettings;
 import com.ritense.valtimo.emailnotificationsettings.repository.EmailNotificationSettingsRepository;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
-
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;

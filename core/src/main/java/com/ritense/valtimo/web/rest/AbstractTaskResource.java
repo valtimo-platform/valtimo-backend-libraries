@@ -28,7 +28,6 @@ import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.rest.dto.task.TaskDto;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;

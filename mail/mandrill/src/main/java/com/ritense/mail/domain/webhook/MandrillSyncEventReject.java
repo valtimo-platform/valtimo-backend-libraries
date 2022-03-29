@@ -17,7 +17,6 @@
 package com.ritense.mail.domain.webhook;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -18,7 +18,6 @@ package com.ritense.valtimo.camunda.task.domain.reminder;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 

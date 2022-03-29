@@ -18,7 +18,6 @@ package com.ritense.valtimo.web.rest;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.http.HttpMethod.DELETE;

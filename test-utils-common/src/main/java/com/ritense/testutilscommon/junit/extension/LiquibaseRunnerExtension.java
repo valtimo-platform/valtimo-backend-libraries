@@ -23,10 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.GLOBAL;
 
 public class LiquibaseRunnerExtension

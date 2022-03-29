@@ -19,12 +19,10 @@ package com.ritense.processdocument.domain.impl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.processdocument.domain.ProcessDocumentInstance;
 import org.springframework.data.domain.Persistable;
-
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;

@@ -29,7 +29,6 @@ import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
 import com.ritense.valtimo.contract.mail.model.value.Recipient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

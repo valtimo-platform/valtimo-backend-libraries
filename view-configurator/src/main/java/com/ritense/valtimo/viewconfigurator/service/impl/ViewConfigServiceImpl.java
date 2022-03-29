@@ -26,7 +26,6 @@ import com.ritense.valtimo.viewconfigurator.service.ProcessDefinitionVariableSer
 import com.ritense.valtimo.viewconfigurator.service.ViewConfigService;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;

@@ -18,9 +18,7 @@ package com.ritense.mail.domain.webhook;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Objects;
-
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.HARD_BOUNCE;
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.REJECT;
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.SPAM;

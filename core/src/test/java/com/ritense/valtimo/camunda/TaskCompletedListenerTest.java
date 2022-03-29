@@ -23,9 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
-
 import java.util.Date;
-
 import static org.camunda.bpm.extension.mockito.CamundaMockito.delegateExecutionFake;
 import static org.camunda.bpm.extension.mockito.CamundaMockito.delegateTaskFake;
 import static org.mockito.Mockito.mock;

@@ -17,7 +17,6 @@
 package com.ritense.valtimo.web.rest.dto.processvariable.type;
 
 import com.ritense.valtimo.web.rest.dto.processvariable.ProcessVariableDTOV2;
-
 import java.util.List;
 import java.util.Objects;
 

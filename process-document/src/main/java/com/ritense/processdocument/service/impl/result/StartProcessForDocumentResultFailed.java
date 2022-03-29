@@ -18,7 +18,6 @@ package com.ritense.processdocument.service.impl.result;
 
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
-
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult;

@@ -47,7 +47,6 @@ import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +55,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
 import static com.ritense.form.domain.FormIoFormDefinition.PROCESS_VAR_PREFIX;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 

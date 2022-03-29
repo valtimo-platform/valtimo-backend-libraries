@@ -17,7 +17,6 @@
 package com.ritense.valtimo.emailnotificationsettings.domain.request.impl;
 
 import com.ritense.valtimo.emailnotificationsettings.domain.request.EmailNotificationSettingsRequest;
-
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -30,7 +29,6 @@ import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static java.time.DayOfWeek.FRIDAY;

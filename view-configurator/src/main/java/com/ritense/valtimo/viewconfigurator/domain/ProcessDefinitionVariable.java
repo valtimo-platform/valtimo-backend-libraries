@@ -29,7 +29,6 @@ import com.ritense.valtimo.viewconfigurator.domain.type.LongVariableType;
 import com.ritense.valtimo.viewconfigurator.domain.type.StringVariableType;
 import com.ritense.valtimo.viewconfigurator.web.rest.view.Views;
 import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;

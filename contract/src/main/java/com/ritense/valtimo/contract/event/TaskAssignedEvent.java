@@ -23,11 +23,9 @@ import com.ritense.valtimo.contract.audit.ProcessIdentity;
 import com.ritense.valtimo.contract.audit.TaskFormerAssignee;
 import com.ritense.valtimo.contract.audit.TaskIdentity;
 import com.ritense.valtimo.contract.audit.TaskMetaData;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 

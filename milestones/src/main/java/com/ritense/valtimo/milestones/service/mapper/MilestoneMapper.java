@@ -19,7 +19,6 @@ package com.ritense.valtimo.milestones.service.mapper;
 import com.ritense.valtimo.milestones.domain.Milestone;
 import com.ritense.valtimo.milestones.web.rest.dto.MilestoneDTO;
 import org.mapstruct.Mapper;
-
 import java.util.List;
 
 /**

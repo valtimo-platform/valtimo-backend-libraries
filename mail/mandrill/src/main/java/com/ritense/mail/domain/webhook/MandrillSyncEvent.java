@@ -18,9 +18,7 @@ package com.ritense.mail.domain.webhook;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Objects;
-
 import static com.ritense.mail.domain.webhook.SyncEventEnum.ADD;
 import static com.ritense.mail.domain.webhook.SyncEventEnum.BLACKLIST;
 

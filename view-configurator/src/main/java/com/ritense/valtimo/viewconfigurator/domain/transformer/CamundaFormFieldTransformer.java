@@ -25,7 +25,6 @@ import com.ritense.valtimo.viewconfigurator.domain.type.FileUploadVariableType;
 import com.ritense.valtimo.viewconfigurator.domain.type.LongVariableType;
 import com.ritense.valtimo.viewconfigurator.domain.type.StringVariableType;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaFormField;
-
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;

@@ -22,9 +22,7 @@ import org.camunda.bpm.engine.impl.db.PersistenceSession;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.sql.SQLException;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

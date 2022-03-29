@@ -40,7 +40,6 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.NameValueExpression;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +50,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)

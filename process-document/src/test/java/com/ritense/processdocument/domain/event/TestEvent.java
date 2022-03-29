@@ -19,7 +19,6 @@ package com.ritense.processdocument.domain.event;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;

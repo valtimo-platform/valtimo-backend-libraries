@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
-
 import java.io.IOException;
 
 public class PageSerializer extends JsonSerializer<PageImpl<?>> {

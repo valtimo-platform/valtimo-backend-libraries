@@ -19,7 +19,6 @@ package com.ritense.valtimo.security.config;
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 public class StatelessHttpSecurityConfigurer implements HttpSecurityConfigurer {

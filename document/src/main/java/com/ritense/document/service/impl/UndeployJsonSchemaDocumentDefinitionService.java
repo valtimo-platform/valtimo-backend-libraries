@@ -26,7 +26,6 @@ import com.ritense.document.service.result.error.DocumentDefinitionError;
 import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 

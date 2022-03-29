@@ -32,7 +32,6 @@ import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class ProcessDocumentStartEventMessageDelegateImpl implements ProcessDocumentStartEventMessageDelegate {

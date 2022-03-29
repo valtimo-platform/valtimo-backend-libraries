@@ -74,7 +74,18 @@ public class CamundaTaskService {
     private final RuntimeService runtimeService;
     private final UserManagementService userManagementService;
 
-    public CamundaTaskService(TaskService taskService, FormService formService, ContextService contextService, DelegateTaskHelper delegateTaskHelper, CamundaTaskRepository camundaTaskRepository, CamundaProcessService camundaProcessService, Optional<ResourceService> optionalResourceService, ApplicationEventPublisher applicationEventPublisher, RuntimeService runtimeService, UserManagementService userManagementService) {
+    public CamundaTaskService(
+        TaskService taskService,
+        FormService formService,
+        ContextService contextService,
+        DelegateTaskHelper delegateTaskHelper,
+        CamundaTaskRepository camundaTaskRepository,
+        CamundaProcessService camundaProcessService,
+        Optional<ResourceService> optionalResourceService,
+        ApplicationEventPublisher applicationEventPublisher,
+        RuntimeService runtimeService,
+        UserManagementService userManagementService
+    ) {
         this.taskService = taskService;
         this.formService = formService;
         this.contextService = contextService;
@@ -160,10 +171,13 @@ public class CamundaTaskService {
 
     public void completeTaskAndDeleteFiles(String taskId, TaskCompletionDTO taskCompletionDTO) {
         completeTask(taskId, taskCompletionDTO.getVariables());
-        optionalResourceService.ifPresent(amazonS3Service -> taskCompletionDTO.getFilesToDelete().forEach(amazonS3Service::removeResource));
+        optionalResourceService.ifPresent(
+            amazonS3Service -> taskCompletionDTO.getFilesToDelete().forEach(amazonS3Service::removeResource));
     }
 
-    public Page<TaskExtended> findTasksFiltered(TaskFilter taskFilter, Pageable pageable) throws IllegalAccessException {
+    public Page<TaskExtended> findTasksFiltered(
+        TaskFilter taskFilter, Pageable pageable
+    ) throws IllegalAccessException {
         var parameters = buildTaskFilterParameters(taskFilter);
         Page<TaskExtended> tasks = camundaTaskRepository.findTasks(pageable, parameters);
         if (!tasks.isEmpty()) {
@@ -266,7 +280,10 @@ public class CamundaTaskService {
 
         //Always filter on context
         Context context = contextService.getContextOfCurrentUser();
-        parameters.put("processDefinitionKeys", context.getProcesses().stream().map(ContextProcess::getProcessDefinitionKey).collect(toSet()));
+        parameters.put(
+            "processDefinitionKeys",
+            context.getProcesses().stream().map(ContextProcess::getProcessDefinitionKey).collect(toSet())
+        );
         return parameters;
     }
 

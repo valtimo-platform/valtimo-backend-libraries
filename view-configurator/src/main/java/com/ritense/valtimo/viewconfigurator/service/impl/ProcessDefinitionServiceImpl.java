@@ -19,7 +19,6 @@ package com.ritense.valtimo.viewconfigurator.service.impl;
 import com.ritense.valtimo.viewconfigurator.service.ProcessDefinitionService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
-
 import java.util.List;
 
 public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
