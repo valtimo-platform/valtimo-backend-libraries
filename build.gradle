@@ -142,6 +142,16 @@ subprojects { subproject ->
 
     test.finalizedBy(jacocoMerge)
 
+    configurations.all{
+        resolutionStrategy {
+            eachDependency { details ->
+                if ('org.jacoco' == details.requested.group) {
+                    details.useVersion "0.8.7"
+                }
+            }
+        }
+    }
+
     jar {
         enabled = true
         manifest {
