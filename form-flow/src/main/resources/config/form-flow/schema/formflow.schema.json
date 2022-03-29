@@ -8,7 +8,8 @@
     "properties": {
         "key": {
             "type": "string",
-            "title": "Form flow definition key"
+            "title": "Form flow definition key",
+            "description": "The identifying human readable key for the Form Flow definition"
         },
         "startStep": {
             "type": "string",
@@ -22,11 +23,7 @@
                 "properties": {
                     "key": {
                         "type": "string",
-                        "description": "The id of the step"
-                    },
-                    "title": {
-                        "type": "string",
-                        "description": "The title that should be shown when this step is active"
+                        "description": "The identifying human readable key of the step"
                     },
                     "nextSteps": {
                         "type": "array",
@@ -36,14 +33,14 @@
                             "properties": {
                                 "step": {
                                     "type": "string",
-                                    "title": "The name of the next step. This should match one of the keys in the steps array"
+                                    "title": "The key of the next step. This should match one of the keys in the steps array"
                                 },
                                 "condition": {
                                     "type": [
                                         "string",
                                         "null"
                                     ],
-                                    "title": "This should contain an expression telling what condition should be met to go to this next step"
+                                    "title": "This should contain an expression telling what condition should be met to go to this next step. If there is no condition this is the default next step."
                                 }
                             },
                             "required": [
@@ -53,7 +50,7 @@
                     },
                     "nextStep:": {
                         "type": "string",
-                        "description": "The name of the next step in the flow. When multiple steps should be available you should use the property 'nextSteps'"
+                        "description": "The key of the next step in the flow. When multiple steps should be available you should use the property 'nextSteps'"
                     }
                 },
                 "required": [

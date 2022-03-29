@@ -53,11 +53,11 @@ class FormFlowDeploymentService(
         }
     }
 
-    fun deploy(formFlow: Resource) {
+    private fun deploy(formFlow: Resource) {
         deploy(formFlow.filename!!.substringBeforeLast("."), formFlow.inputStream)
     }
 
-    fun deploy(formFlowKey: String, formFlowJson: InputStream) {
+    private fun deploy(formFlowKey: String, formFlowJson: InputStream) {
         deploy(formFlowKey, StreamUtils.copyToString(formFlowJson, StandardCharsets.UTF_8))
     }
 
@@ -65,7 +65,6 @@ class FormFlowDeploymentService(
         validate(formFlowKey, formFlowJson)
 
         val formFlowDefinition = Mapper.get().readValue(formFlowJson, FormFlowDefinition::class.java)
-        formFlowDefinition.steps.forEach { step -> step.id.formFlowDefinition = formFlowDefinition }
 
         try {
             val existingDefinition = formFlowService.findLatestDefinitionByKey(formFlowKey)
@@ -81,7 +80,7 @@ class FormFlowDeploymentService(
                 }
             }
 
-            formFlowDefinition.id = definitionId
+            formFlowDefinition.id.version = definitionId.version
             formFlowService.save(formFlowDefinition)
             logger.info("Deployed Form Flow - {}", definitionId.toString())
         } catch (e: Exception) {
@@ -93,9 +92,6 @@ class FormFlowDeploymentService(
         val definitionJsonObject = JSONObject(JSONTokener(formFlowJson))
         if (formFlowKey != definitionJsonObject.get("key")) {
             throw RuntimeException("Form Flow file name '$formFlowKey' doesn't match key property '${definitionJsonObject.get("key")}'")
-        }
-        if (definitionJsonObject.toString().isEmpty()) {
-            throw RuntimeException("Validating empty schema: $formFlowKey")
         }
 
         val schema = SchemaLoader.load(JSONObject(JSONTokener(loadFormFlowSchemaResource().inputStream)))

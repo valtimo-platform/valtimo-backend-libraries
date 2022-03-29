@@ -32,7 +32,7 @@ data class FormFlowDefinition(
 
     @EmbeddedId
     @JsonProperty("key")
-    var id: FormFlowDefinitionId,
+    val id: FormFlowDefinitionId,
 
     @Column(name = "start_step")
     val startStep: String,
@@ -40,6 +40,10 @@ data class FormFlowDefinition(
     @OneToMany(mappedBy = "id.formFlowDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val steps: Set<FormFlowStep>,
 ) {
+    init {
+        steps.forEach { step -> step.id.formFlowDefinition = this }
+    }
+
     override fun hashCode(): Int {
         return Objects.hash(id, startStep, steps)
     }

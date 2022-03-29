@@ -31,7 +31,7 @@ class FormFlowService(
         formFlowDefinitionRepository.findById(formFlowDefinition.id).ifPresentOrElse({
             throw UnsupportedOperationException("Failed to save From Flow. Form Flow already exists: ${formFlowDefinition.id}")
         }, {
-            formFlowDefinitionRepository.saveAndFlush(formFlowDefinition)
+            formFlowDefinitionRepository.save(formFlowDefinition)
         })
     }
 }

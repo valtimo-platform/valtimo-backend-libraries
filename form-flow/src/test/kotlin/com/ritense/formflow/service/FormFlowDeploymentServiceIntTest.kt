@@ -17,14 +17,12 @@
 package com.ritense.formflow.service
 
 import com.ritense.formflow.BaseIntegrationTest
-import com.ritense.formflow.repository.FormFlowDefinitionRepository
-import com.ritense.formflow.repository.FormFlowStepRepository
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
 
     @Autowired
@@ -33,25 +31,9 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var formFlowDeploymentService: FormFlowDeploymentService
 
-    @Autowired
-    lateinit var formFlowDefinitionRepository: FormFlowDefinitionRepository
-
-    @Autowired
-    lateinit var formFlowStepRepository: FormFlowStepRepository
-
-    @BeforeEach
-    fun beforeEach() {
-        formFlowDeploymentService.deployAll()
-    }
-
-    @AfterEach
-    fun afterEach() {
-        formFlowStepRepository.deleteAll()
-        formFlowDefinitionRepository.deleteAll()
-    }
-
     @Test
     fun `should auto deploy Form Flow from config directory`() {
+        formFlowDeploymentService.deployAll()
 
         val inkomensLoket = formFlowService.findLatestDefinitionByKey("inkomens_loket")
 
