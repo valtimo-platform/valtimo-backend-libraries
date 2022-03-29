@@ -18,8 +18,6 @@ package com.ritense.audit.domain;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.view.AuditView;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -30,7 +28,6 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MetaData {
 
     @JsonView(AuditView.Internal.class)
@@ -54,6 +51,9 @@ public class MetaData {
         this.origin = origin;
         this.occurredOn = occurredOn;
         this.user = user;
+    }
+
+    private MetaData() {
     }
 
     public String getOrigin() {

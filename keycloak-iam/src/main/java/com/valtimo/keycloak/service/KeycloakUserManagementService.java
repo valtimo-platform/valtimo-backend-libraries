@@ -22,7 +22,6 @@ import com.ritense.valtimo.contract.authentication.UserNotFoundException;
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
-import lombok.AllArgsConstructor;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.data.domain.Page;
@@ -32,10 +31,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 public class KeycloakUserManagementService implements UserManagementService {
 
     private final KeycloakService keycloakService;
+
+    public KeycloakUserManagementService(KeycloakService keycloakService) {
+        this.keycloakService = keycloakService;
+    }
 
     @Override
     public ManageableUser createUser(ManageableUser user) {

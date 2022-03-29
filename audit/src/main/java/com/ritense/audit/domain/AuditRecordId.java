@@ -19,8 +19,6 @@ package com.ritense.audit.domain;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import com.ritense.valtimo.contract.domain.AbstractId;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -30,7 +28,6 @@ import java.util.UUID;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AuditRecordId extends AbstractId<AuditRecordId> {
 
     @JsonView(AuditView.Public.class)
@@ -40,6 +37,9 @@ public final class AuditRecordId extends AbstractId<AuditRecordId> {
     private AuditRecordId(UUID id) {
         assertArgumentNotNull(id, "id is required");
         this.id = id;
+    }
+
+    private AuditRecordId() {
     }
 
     public UUID id() {

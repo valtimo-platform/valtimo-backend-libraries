@@ -18,18 +18,14 @@ package com.ritense.mail.domain.webhook;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.HARD_BOUNCE;
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.REJECT;
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.SPAM;
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.UNSUB;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MandrillMessageEvent {
 
@@ -42,6 +38,15 @@ public class MandrillMessageEvent {
     @JsonProperty("msg")
     private MandrillMessageEventMessage message;
 
+    public MandrillMessageEvent(String event, Long timestamp, MandrillMessageEventMessage message) {
+        this.event = event;
+        this.timestamp = timestamp;
+        this.message = message;
+    }
+
+    public MandrillMessageEvent() {
+    }
+
     public boolean triggersBlacklisting() {
         return HARD_BOUNCE.equals(event)
             || REJECT.equals(event)
@@ -49,4 +54,52 @@ public class MandrillMessageEvent {
             || SPAM.equals(event);
     }
 
+    public String getEvent() {
+        return this.event;
+    }
+
+    public Long getTimestamp() {
+        return this.timestamp;
+    }
+
+    public MandrillMessageEventMessage getMessage() {
+        return this.message;
+    }
+
+    @JsonProperty("event")
+    public void setEvent(String event) {
+        this.event = event;
+    }
+
+    @JsonProperty("ts")
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    @JsonProperty("msg")
+    public void setMessage(MandrillMessageEventMessage message) {
+        this.message = message;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MandrillMessageEvent that = (MandrillMessageEvent) o;
+        return Objects.equals(getEvent(), that.getEvent()) && Objects.equals(getTimestamp(), that.getTimestamp()) && Objects.equals(getMessage(), that.getMessage());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getEvent(), getTimestamp(), getMessage());
+    }
+
+    @Override
+    public String toString() {
+        return "MandrillMessageEvent{" +
+            "event='" + event + '\'' +
+            ", timestamp=" + timestamp +
+            ", message=" + message +
+            '}';
+    }
 }

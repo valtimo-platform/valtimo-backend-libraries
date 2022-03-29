@@ -24,7 +24,6 @@ import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,12 +32,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotService {
 
     private final DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
     private final JsonSchemaDocumentService documentService;
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
+
+    public JsonSchemaDocumentSnapshotService(DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository, JsonSchemaDocumentService documentService, JsonSchemaDocumentDefinitionService documentDefinitionService) {
+        this.documentSnapshotRepository = documentSnapshotRepository;
+        this.documentService = documentService;
+        this.documentDefinitionService = documentDefinitionService;
+    }
 
     @Override
     public Optional<JsonSchemaDocumentSnapshot> findById(DocumentSnapshot.Id id) {

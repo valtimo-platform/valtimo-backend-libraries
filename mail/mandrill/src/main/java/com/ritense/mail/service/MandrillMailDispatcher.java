@@ -27,7 +27,8 @@ import com.ritense.valtimo.contract.mail.model.MailMessageStatus;
 import com.ritense.valtimo.contract.mail.model.RawMailMessage;
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
 import com.ritense.valtimo.contract.mail.model.value.Recipient;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -38,11 +39,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Slf4j
 public class MandrillMailDispatcher implements MailDispatcher {
 
     //see: https://mandrill.zendesk.com/hc/en-us/articles/205582407-Does-Mandrill-Support-Attachments-
     private static final int MAX_SIZE_ATTACHMENTS = 16250000;
+    private static final Logger logger = LoggerFactory.getLogger(MandrillMailDispatcher.class);
 
     private final DateFormat dateFormat;
     private final MandrillProperties mandrillProperties;

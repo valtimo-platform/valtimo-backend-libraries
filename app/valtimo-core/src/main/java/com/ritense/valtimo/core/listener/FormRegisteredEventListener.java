@@ -19,15 +19,17 @@ package com.ritense.valtimo.core.listener;
 import com.ritense.form.domain.event.FormsAutoDeploymentFinishedEvent;
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
 import com.ritense.formlink.service.FormAssociationService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class FormRegisteredEventListener {
 
     private final FormAssociationService formAssociationService;
+
+    public FormRegisteredEventListener(FormAssociationService formAssociationService) {
+        this.formAssociationService = formAssociationService;
+    }
 
     // When the first event is published we can assume forms are loaded.
     @EventListener(FormsAutoDeploymentFinishedEvent.class)

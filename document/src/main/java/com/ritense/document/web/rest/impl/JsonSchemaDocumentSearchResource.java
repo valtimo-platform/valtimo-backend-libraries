@@ -16,13 +16,10 @@
 
 package com.ritense.document.web.rest.impl;
 
-import static org.springframework.data.domain.Sort.Direction.DESC;
-
 import com.ritense.document.domain.Document;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.impl.SearchRequest;
 import com.ritense.document.web.rest.DocumentSearchResource;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -33,12 +30,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequiredArgsConstructor
+import static org.springframework.data.domain.Sort.Direction.DESC;
+
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class JsonSchemaDocumentSearchResource implements DocumentSearchResource {
 
     private final DocumentSearchService documentSearchService;
+
+    public JsonSchemaDocumentSearchResource(DocumentSearchService documentSearchService) {
+        this.documentSearchService = documentSearchService;
+    }
 
     @Override
     @PostMapping(value = "/document-search")

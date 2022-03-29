@@ -20,17 +20,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.formlink.domain.ProcessFormAssociation;
 import com.ritense.valtimo.contract.domain.AbstractId;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CamundaProcessFormAssociationId extends AbstractId<CamundaProcessFormAssociationId>
     implements ProcessFormAssociation.Id {
 
@@ -41,6 +36,9 @@ public class CamundaProcessFormAssociationId extends AbstractId<CamundaProcessFo
     private CamundaProcessFormAssociationId(UUID id) {
         assertArgumentNotNull(id, "id is required");
         this.id = id;
+    }
+
+    private CamundaProcessFormAssociationId() {
     }
 
     public static CamundaProcessFormAssociationId existingId(UUID id) {

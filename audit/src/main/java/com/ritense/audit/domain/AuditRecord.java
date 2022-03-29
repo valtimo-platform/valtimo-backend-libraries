@@ -20,12 +20,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.view.AuditView;
-import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Persistable;
 
@@ -37,8 +31,7 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import java.util.UUID;
 
 @Entity
 @Table(name = "audit_record", indexes = {
@@ -47,10 +40,6 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
     @Index(name = "occurred_on_index", columnList = "occurred_on"),
     @Index(name = "user_index", columnList = "user")
 })
-@Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuditRecord implements Persistable<AuditRecordId> {
 
     @EmbeddedId
@@ -63,7 +52,6 @@ public class AuditRecord implements Persistable<AuditRecordId> {
 
     @JsonView(AuditView.Public.class)
     @Column(name = "created_on", updatable = false)
-    @Builder.Default
     private LocalDateTime createdOn = LocalDateTime.now();
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
@@ -73,6 +61,25 @@ public class AuditRecord implements Persistable<AuditRecordId> {
 
     @Column(name = "document_id", columnDefinition = "BINARY(16)", updatable = false)
     private UUID documentId;
+
+    public AuditRecord(AuditRecordId auditRecordId, MetaData metaData, LocalDateTime createdOn, AuditEvent auditEvent, UUID documentId) {
+        this.auditRecordId = auditRecordId;
+        this.metaData = metaData;
+        this.createdOn = createdOn;
+        this.auditEvent = auditEvent;
+        this.documentId = documentId;
+    }
+
+    private AuditRecord() {
+    }
+
+    private static LocalDateTime $default$createdOn() {
+        return LocalDateTime.now();
+    }
+
+    public static AuditRecordBuilder builder() {
+        return new AuditRecordBuilder();
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -113,10 +120,78 @@ public class AuditRecord implements Persistable<AuditRecordId> {
             '}';
     }
 
+    public AuditRecordId getAuditRecordId() {
+        return this.auditRecordId;
+    }
+
+    public MetaData getMetaData() {
+        return this.metaData;
+    }
+
+    public LocalDateTime getCreatedOn() {
+        return this.createdOn;
+    }
+
+    public AuditEvent getAuditEvent() {
+        return this.auditEvent;
+    }
+
+    public UUID getDocumentId() {
+        return this.documentId;
+    }
+
     public static class AuditRecordBuilder {
+        private AuditRecordId auditRecordId;
+        private MetaData metaData;
+        private LocalDateTime createdOn$value;
+        private boolean createdOn$set;
+        private AuditEvent auditEvent;
+        private UUID documentId;
+
+        AuditRecordBuilder() {
+        }
+
         public AuditRecordBuilder id(UUID id) {
             this.auditRecordId = AuditRecordId.newId(id);
             return this;
+        }
+
+        public AuditRecordBuilder auditRecordId(AuditRecordId auditRecordId) {
+            this.auditRecordId = auditRecordId;
+            return this;
+        }
+
+        public AuditRecordBuilder metaData(MetaData metaData) {
+            this.metaData = metaData;
+            return this;
+        }
+
+        public AuditRecordBuilder createdOn(LocalDateTime createdOn) {
+            this.createdOn$value = createdOn;
+            this.createdOn$set = true;
+            return this;
+        }
+
+        public AuditRecordBuilder auditEvent(AuditEvent auditEvent) {
+            this.auditEvent = auditEvent;
+            return this;
+        }
+
+        public AuditRecordBuilder documentId(UUID documentId) {
+            this.documentId = documentId;
+            return this;
+        }
+
+        public AuditRecord build() {
+            LocalDateTime createdOn$value = this.createdOn$value;
+            if (!this.createdOn$set) {
+                createdOn$value = AuditRecord.$default$createdOn();
+            }
+            return new AuditRecord(auditRecordId, metaData, createdOn$value, auditEvent, documentId);
+        }
+
+        public String toString() {
+            return "AuditRecord.AuditRecordBuilder(auditRecordId=" + this.auditRecordId + ", metaData=" + this.metaData + ", createdOn$value=" + this.createdOn$value + ", createdOn$set=" + this.createdOn$set + ", auditEvent=" + this.auditEvent + ", documentId=" + this.documentId + ", createdOn$value=" + this.createdOn$value + ")";
         }
     }
 }

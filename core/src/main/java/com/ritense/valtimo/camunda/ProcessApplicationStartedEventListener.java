@@ -18,18 +18,22 @@ package com.ritense.valtimo.camunda;
 
 import com.ritense.valtimo.contract.event.ProcessDefinitionAvailableEvent;
 import com.ritense.valtimo.service.CamundaProcessService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.spring.boot.starter.event.ProcessApplicationStartedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 
-@Slf4j
-@RequiredArgsConstructor
 public class ProcessApplicationStartedEventListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProcessApplicationStartedEventListener.class);
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CamundaProcessService camundaProcessService;
+
+    public ProcessApplicationStartedEventListener(ApplicationEventPublisher applicationEventPublisher, CamundaProcessService camundaProcessService) {
+        this.applicationEventPublisher = applicationEventPublisher;
+        this.camundaProcessService = camundaProcessService;
+    }
 
     @EventListener(ProcessApplicationStartedEvent.class)
     public void engineStarted(ProcessApplicationStartedEvent event) {

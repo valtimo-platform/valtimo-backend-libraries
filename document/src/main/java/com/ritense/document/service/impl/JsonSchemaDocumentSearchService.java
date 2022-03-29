@@ -16,14 +16,10 @@
 
 package com.ritense.document.service.impl;
 
-import com.ritense.document.domain.DocumentDefinitionRole;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.service.DocumentSearchService;
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.criteria.internal.OrderImpl;
 import org.jetbrains.annotations.NotNull;
@@ -49,13 +45,16 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
-@RequiredArgsConstructor
 @Transactional
 public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private static final String LOWER_CASE_FUNTION = "lower";
 
     private final EntityManager entityManager;
+
+    public JsonSchemaDocumentSearchService(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public Page<JsonSchemaDocument> search(

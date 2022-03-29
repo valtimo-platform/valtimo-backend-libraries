@@ -29,7 +29,6 @@ import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskResult;
 import com.ritense.processdocument.service.result.ModifyDocumentAndStartProcessResult;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -52,13 +51,17 @@ import java.util.UUID;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_VALUE)
 public class ProcessDocumentResource {
 
     private final ProcessDocumentService processDocumentService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
+
+    public ProcessDocumentResource(ProcessDocumentService processDocumentService, ProcessDocumentAssociationService processDocumentAssociationService) {
+        this.processDocumentService = processDocumentService;
+        this.processDocumentAssociationService = processDocumentAssociationService;
+    }
 
     @GetMapping(value = "/process-document/definition")
     public ResponseEntity<Page<? extends ProcessDocumentDefinition>> getProcessDocumentDefinitions(

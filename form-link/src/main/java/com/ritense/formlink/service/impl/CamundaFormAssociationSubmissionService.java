@@ -35,17 +35,16 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaTaskService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
 import javax.transaction.Transactional;
 import java.util.UUID;
 
-@Slf4j
-@RequiredArgsConstructor
 public class CamundaFormAssociationSubmissionService implements FormAssociationSubmissionService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CamundaFormAssociationSubmissionService.class);
     private final FormDefinitionService formDefinitionService;
     private final DocumentService documentService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
@@ -54,6 +53,17 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
     private final CamundaTaskService camundaTaskService;
     private final SubmissionTransformerService submissionTransformerService;
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    public CamundaFormAssociationSubmissionService(FormDefinitionService formDefinitionService, DocumentService documentService, ProcessDocumentAssociationService processDocumentAssociationService, FormAssociationService formAssociationService, ProcessDocumentService processDocumentService, CamundaTaskService camundaTaskService, SubmissionTransformerService submissionTransformerService, ApplicationEventPublisher applicationEventPublisher) {
+        this.formDefinitionService = formDefinitionService;
+        this.documentService = documentService;
+        this.processDocumentAssociationService = processDocumentAssociationService;
+        this.formAssociationService = formAssociationService;
+        this.processDocumentService = processDocumentService;
+        this.camundaTaskService = camundaTaskService;
+        this.submissionTransformerService = submissionTransformerService;
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     @Override
     @Transactional

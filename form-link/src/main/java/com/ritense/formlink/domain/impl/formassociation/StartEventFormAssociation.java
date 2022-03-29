@@ -18,7 +18,6 @@ package com.ritense.formlink.domain.impl.formassociation;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.formlink.domain.FormLink;
-
 import java.util.UUID;
 
 public class StartEventFormAssociation extends CamundaFormAssociation {

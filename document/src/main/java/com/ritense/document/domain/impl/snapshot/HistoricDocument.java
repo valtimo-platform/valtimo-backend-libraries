@@ -26,10 +26,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
 import com.ritense.document.domain.relation.DocumentRelation;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -38,12 +34,10 @@ import javax.persistence.Embedded;
 import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode(callSuper = false)
 @Embeddable
 public class HistoricDocument implements Document {
 
@@ -99,6 +93,23 @@ public class HistoricDocument implements Document {
         this.relatedFiles = document.relatedFiles();
     }
 
+    public HistoricDocument(JsonSchemaDocumentId id, JsonDocumentContent content, JsonSchemaDocumentDefinitionId documentDefinitionId, DocumentDefinition documentDefinition, JsonSchemaDocumentVersion version, LocalDateTime createdOn, LocalDateTime modifiedOn, String createdBy, Long sequence, Set<? extends DocumentRelation> documentRelations, Set<? extends RelatedFile> relatedFiles) {
+        this.id = id;
+        this.content = content;
+        this.documentDefinitionId = documentDefinitionId;
+        this.documentDefinition = documentDefinition;
+        this.version = version;
+        this.createdOn = createdOn;
+        this.modifiedOn = modifiedOn;
+        this.createdBy = createdBy;
+        this.sequence = sequence;
+        this.documentRelations = documentRelations;
+        this.relatedFiles = relatedFiles;
+    }
+
+    private HistoricDocument() {
+    }
+
     @Override
     public JsonSchemaDocumentId id() {
         return id;
@@ -149,4 +160,16 @@ public class HistoricDocument implements Document {
         return relatedFiles;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HistoricDocument that = (HistoricDocument) o;
+        return Objects.equals(id, that.id) && Objects.equals(content, that.content) && Objects.equals(documentDefinitionId, that.documentDefinitionId) && Objects.equals(documentDefinition, that.documentDefinition) && Objects.equals(version, that.version) && Objects.equals(createdOn, that.createdOn) && Objects.equals(modifiedOn, that.modifiedOn) && Objects.equals(createdBy, that.createdBy) && Objects.equals(sequence, that.sequence) && Objects.equals(documentRelations, that.documentRelations) && Objects.equals(relatedFiles, that.relatedFiles);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, content, documentDefinitionId, documentDefinition, version, createdOn, modifiedOn, createdBy, sequence, documentRelations, relatedFiles);
+    }
 }

@@ -18,8 +18,8 @@ package com.ritense.mail.web.rest;
 
 import com.ritense.mail.domain.webhook.MandrillWebhookRequest;
 import com.ritense.mail.service.WebhookService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -32,13 +32,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
-@Slf4j
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class WebhookResource {
 
+    private static final Logger logger = LoggerFactory.getLogger(WebhookResource.class);
     private final WebhookService webhookService;
+
+    public WebhookResource(WebhookService webhookService) {
+        this.webhookService = webhookService;
+    }
 
     @GetMapping(value = "/mandrill/webhook")
     public ResponseEntity<Void> exists() {

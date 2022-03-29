@@ -45,7 +45,6 @@ import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
-import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,7 +60,6 @@ import java.util.function.Predicate;
 import static com.ritense.form.domain.FormIoFormDefinition.PROCESS_VAR_PREFIX;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
-@RequiredArgsConstructor
 public class CamundaFormAssociationService implements FormAssociationService {
 
     private final FormDefinitionService formDefinitionService;
@@ -72,6 +70,17 @@ public class CamundaFormAssociationService implements FormAssociationService {
     private final TaskService taskService;
     private final SubmissionTransformerService submissionTransformerService;
     private final List<FormFieldDataResolver> formFieldDataResolvers;
+
+    public CamundaFormAssociationService(FormDefinitionService formDefinitionService, ProcessFormAssociationRepository processFormAssociationRepository, DocumentService documentService, ProcessDocumentAssociationService processDocumentAssociationService, CamundaProcessService camundaProcessService, TaskService taskService, SubmissionTransformerService submissionTransformerService, List<FormFieldDataResolver> formFieldDataResolvers) {
+        this.formDefinitionService = formDefinitionService;
+        this.processFormAssociationRepository = processFormAssociationRepository;
+        this.documentService = documentService;
+        this.processDocumentAssociationService = processDocumentAssociationService;
+        this.camundaProcessService = camundaProcessService;
+        this.taskService = taskService;
+        this.submissionTransformerService = submissionTransformerService;
+        this.formFieldDataResolvers = formFieldDataResolvers;
+    }
 
     @Override
     public Set<CamundaFormAssociation> getAllFormAssociations(String processDefinitionKey) {

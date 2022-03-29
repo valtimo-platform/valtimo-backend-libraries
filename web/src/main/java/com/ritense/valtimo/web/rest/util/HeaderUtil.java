@@ -16,18 +16,20 @@
 
 package com.ritense.valtimo.web.rest.util;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 /**
  * Utility class for HTTP headers creation.
  */
-@Slf4j
-@RequiredArgsConstructor
 public final class HeaderUtil {
 
     private static final String APPLICATION_NAME = "valtimoConsoleApp";
+    private static final Logger logger = LoggerFactory.getLogger(HeaderUtil.class);
+
+    public HeaderUtil() {
+    }
 
     public static HttpHeaders createAlert(String message, String param) {
         HttpHeaders headers = new HttpHeaders();

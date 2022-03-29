@@ -17,18 +17,12 @@
 package com.ritense.document.domain.impl;
 
 import com.ritense.document.domain.DocumentDefinitionRole;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
+import java.util.Objects;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
 @Embeddable
 public class JsonSchemaDocumentDefinitionRoleId implements DocumentDefinitionRole.Id, Serializable {
 
@@ -37,6 +31,14 @@ public class JsonSchemaDocumentDefinitionRoleId implements DocumentDefinitionRol
 
     @Column(name = "role", columnDefinition = "VARCHAR(50)", nullable = false, updatable = false)
     private String role;
+
+    public JsonSchemaDocumentDefinitionRoleId(String documentDefinitionName, String role) {
+        this.documentDefinitionName = documentDefinitionName;
+        this.role = role;
+    }
+
+    private JsonSchemaDocumentDefinitionRoleId() {
+    }
 
     public String documentDefinitionName() {
         return documentDefinitionName;
@@ -51,4 +53,16 @@ public class JsonSchemaDocumentDefinitionRoleId implements DocumentDefinitionRol
         return documentDefinitionName + ":" + role;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JsonSchemaDocumentDefinitionRoleId that = (JsonSchemaDocumentDefinitionRoleId) o;
+        return Objects.equals(documentDefinitionName, that.documentDefinitionName) && Objects.equals(role, that.role);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(documentDefinitionName, role);
+    }
 }

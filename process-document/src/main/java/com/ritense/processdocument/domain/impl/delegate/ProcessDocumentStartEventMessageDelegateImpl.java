@@ -28,24 +28,29 @@ import com.ritense.processdocument.domain.delegate.ProcessDocumentStartEventMess
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.json.JsonPointerHelper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
-@Slf4j
-@RequiredArgsConstructor
 public class ProcessDocumentStartEventMessageDelegateImpl implements ProcessDocumentStartEventMessageDelegate {
 
     public static final String SOURCE_PROCESS_INSTANCE_ID = "sourceProcessInstanceId";
     public static final String RELATION_TYPE = "relationType";
     public static final String PAYLOAD = "payload";
+    private static final Logger logger = LoggerFactory.getLogger(ProcessDocumentStartEventMessageDelegateImpl.class);
 
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final DocumentService documentService;
     private final RuntimeService runtimeService;
+
+    public ProcessDocumentStartEventMessageDelegateImpl(ProcessDocumentAssociationService processDocumentAssociationService, DocumentService documentService, RuntimeService runtimeService) {
+        this.processDocumentAssociationService = processDocumentAssociationService;
+        this.documentService = documentService;
+        this.runtimeService = runtimeService;
+    }
 
     public void deliver(DelegateExecution execution, String message) {
         deliver(execution, message, DocumentRelationType.PREVIOUS.name());

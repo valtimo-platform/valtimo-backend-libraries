@@ -35,11 +35,9 @@ import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.service.DocumentService;
-import com.ritense.document.service.result.error.DocumentOperationError;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,17 +45,22 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
-@RequiredArgsConstructor
 public class JsonSchemaDocumentService implements DocumentService {
 
     private final DocumentRepository documentRepository;
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
     private final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService;
     private final ResourceService resourceService;
+
+    public JsonSchemaDocumentService(DocumentRepository documentRepository, JsonSchemaDocumentDefinitionService documentDefinitionService, JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService, ResourceService resourceService) {
+        this.documentRepository = documentRepository;
+        this.documentDefinitionService = documentDefinitionService;
+        this.documentSequenceGeneratorService = documentSequenceGeneratorService;
+        this.resourceService = resourceService;
+    }
 
     @Override
     public Optional<JsonSchemaDocument> findBy(Document.Id documentId) {

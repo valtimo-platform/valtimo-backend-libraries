@@ -17,9 +17,6 @@
 package com.ritense.document.domain.impl;
 
 import com.ritense.document.domain.DocumentDefinitionRole;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -27,12 +24,17 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "json_schema_document_definition_role")
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-@AllArgsConstructor
 public class JsonSchemaDocumentDefinitionRole implements DocumentDefinitionRole {
 
     @EmbeddedId
     private JsonSchemaDocumentDefinitionRoleId id;
+
+    public JsonSchemaDocumentDefinitionRole(JsonSchemaDocumentDefinitionRoleId id) {
+        this.id = id;
+    }
+
+    JsonSchemaDocumentDefinitionRole() {
+    }
 
     @Override
     public Id id() {

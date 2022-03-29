@@ -17,7 +17,6 @@
 package com.ritense.valtimo.repository;
 
 import com.ritense.valtimo.repository.camunda.dto.TaskExtended;
-import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.SqlSession;
 import org.camunda.bpm.engine.impl.Direction;
 import org.camunda.bpm.engine.impl.QueryOrderingProperty;
@@ -31,10 +30,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@RequiredArgsConstructor
 public class CamundaTaskRepository {
 
     private final SqlSession session;
+
+    public CamundaTaskRepository(SqlSession session) {
+        this.session = session;
+    }
 
     public Page<TaskExtended> findTasks(Pageable pageable, Map<String, Object> parameters) {
         var query = new ListQueryParameterObject(

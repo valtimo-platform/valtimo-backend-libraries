@@ -17,15 +17,12 @@
 package com.ritense.document.domain.impl;
 
 import com.ritense.document.domain.DocumentVersion;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 
 import java.util.Objects;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class JsonSchemaDocumentVersion implements DocumentVersion {
 
     private JsonDocumentContent documentContent;
@@ -47,6 +44,9 @@ public class JsonSchemaDocumentVersion implements DocumentVersion {
         this.documentContent = null;
         this.documentDefinitionId = null;
         this.versionAsString = versionAsString;
+    }
+
+    JsonSchemaDocumentVersion() {
     }
 
     /**

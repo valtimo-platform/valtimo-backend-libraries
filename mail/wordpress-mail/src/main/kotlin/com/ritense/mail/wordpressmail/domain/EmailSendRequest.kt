@@ -19,11 +19,9 @@ package com.ritense.mail.wordpressmail.domain
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.Recipient
 import com.ritense.valtimo.contract.mail.model.value.Subject
-import lombok.extern.slf4j.Slf4j
-import mu.KotlinLogging
 import kotlin.streams.toList
+import mu.KotlinLogging
 
-@Slf4j
 data class EmailSendRequest(
     val variables: Map<String, Any>?,
     val to: String

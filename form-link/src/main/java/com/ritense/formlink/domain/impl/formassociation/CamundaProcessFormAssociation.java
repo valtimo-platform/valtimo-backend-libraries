@@ -18,8 +18,6 @@ package com.ritense.formlink.domain.impl.formassociation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.formlink.domain.ProcessFormAssociation;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Persistable;
 
@@ -40,7 +38,6 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
         @Index(name = "process_definition_key_index", columnList = "process_definition_key")
     }
 )
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CamundaProcessFormAssociation implements ProcessFormAssociation, Persistable<CamundaProcessFormAssociationId> {
 
     @EmbeddedId
@@ -60,6 +57,9 @@ public class CamundaProcessFormAssociation implements ProcessFormAssociation, Pe
         this.id = id;
         this.processDefinitionKey = processDefinitionKey;
         this.formAssociations = formAssociations;
+    }
+
+    private CamundaProcessFormAssociation() {
     }
 
     public void addFormAssociation(CamundaFormAssociation camundaFormAssociation) {

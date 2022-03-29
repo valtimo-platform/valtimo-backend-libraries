@@ -22,24 +22,22 @@ import com.ritense.document.domain.DocumentContent;
 import com.ritense.document.domain.diff.JsonDifferenceService;
 import com.ritense.document.domain.patch.JsonPatchService;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 import java.util.Optional;
-
 import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowArrayRemovalOperations;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonDocumentContent implements DocumentContent {
 
     @Column(name = "json_document_content", columnDefinition = "json")
     private String content;
+
+    private JsonDocumentContent() {
+    }
 
     public static JsonDocumentContent build(JsonNode currentContent, JsonNode modifiedContent) {
         assertArgumentNotNull(currentContent, "currentContent is required");

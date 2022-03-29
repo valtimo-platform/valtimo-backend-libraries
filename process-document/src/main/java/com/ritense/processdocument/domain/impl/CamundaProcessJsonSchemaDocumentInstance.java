@@ -18,8 +18,6 @@ package com.ritense.processdocument.domain.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.processdocument.domain.ProcessDocumentInstance;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.Column;
@@ -33,7 +31,6 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 
 @Entity
 @Table(name = "camunda_process_json_schema_document_instance")
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class CamundaProcessJsonSchemaDocumentInstance
     implements ProcessDocumentInstance, Persistable<CamundaProcessJsonSchemaDocumentInstanceId> {
 
@@ -54,6 +51,9 @@ public class CamundaProcessJsonSchemaDocumentInstance
         }
         this.processDocumentInstanceId = processDocumentInstanceId;
         this.processName = processName;
+    }
+
+    CamundaProcessJsonSchemaDocumentInstance() {
     }
 
     @Override

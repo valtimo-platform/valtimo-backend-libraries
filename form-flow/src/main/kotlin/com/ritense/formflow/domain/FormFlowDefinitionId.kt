@@ -16,14 +16,12 @@
 
 package com.ritense.formflow.domain
 
-import lombok.EqualsAndHashCode
-import org.hibernate.validator.constraints.Length
 import javax.persistence.Column
 import javax.persistence.Embeddable
+import org.hibernate.validator.constraints.Length
 
 @Embeddable
-@EqualsAndHashCode(callSuper = false)
-class FormFlowDefinitionId(
+data class FormFlowDefinitionId(
 
     @Column(name = "key")
     @field:Length(max = 256)

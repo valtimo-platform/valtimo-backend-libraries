@@ -151,9 +151,6 @@ subprojects { subproject ->
             )
         }
     }
-    if(project.name != "app") {
-        apply from: "$rootProject.projectDir/gradle/publishing.gradle"
-    }
 }
 
 tasks.withType(PublishToMavenRepository) {

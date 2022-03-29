@@ -21,8 +21,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.config.validator.UuidValidator;
 import com.ritense.document.domain.DocumentContent;
 import com.ritense.document.domain.impl.meta.MetaJsonSchemaV7Draft;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.everit.json.schema.ReadWriteContext;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.Validator;
@@ -45,7 +43,6 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public final class JsonSchema {
 
     @Transient
@@ -66,6 +63,9 @@ public final class JsonSchema {
 
     @Column(name = "json_schema", columnDefinition = "json")
     private String schema;
+
+    JsonSchema() {
+    }
 
     public static JsonSchema fromString(String schema) {
         assertArgumentNotNull(schema, "schema is required");

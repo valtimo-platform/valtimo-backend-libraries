@@ -16,10 +16,11 @@
 
 package com.ritense.valtimo.service.util;
 
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.engine.variable.value.ObjectValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -28,9 +29,9 @@ import java.util.Map;
 
 import static java.lang.String.format;
 
-@Slf4j
 public class FormUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(FormUtils.class);
     private static final String FORM_KEY_DELIMETER = ":";
 
     public static String getFormLocation(String formkey, HttpServletRequest request) {

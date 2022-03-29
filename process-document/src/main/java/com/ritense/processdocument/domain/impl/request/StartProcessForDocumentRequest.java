@@ -18,12 +18,47 @@ package com.ritense.processdocument.domain.impl.request;
 
 import com.ritense.document.domain.Document;
 import com.ritense.processdocument.domain.request.Request;
-import java.util.Map;
-import lombok.Data;
 
-@Data
+import java.util.Map;
+import java.util.Objects;
+
 public class StartProcessForDocumentRequest implements Request {
     private final Document.Id documentId;
     private final String processDefinitionKey;
     private final Map<String, Object> processVars;
+
+    public StartProcessForDocumentRequest(Document.Id documentId, String processDefinitionKey, Map<String, Object> processVars) {
+        this.documentId = documentId;
+        this.processDefinitionKey = processDefinitionKey;
+        this.processVars = processVars;
+    }
+
+    public Document.Id getDocumentId() {
+        return this.documentId;
+    }
+
+    public String getProcessDefinitionKey() {
+        return this.processDefinitionKey;
+    }
+
+    public Map<String, Object> getProcessVars() {
+        return this.processVars;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StartProcessForDocumentRequest that = (StartProcessForDocumentRequest) o;
+        return Objects.equals(getDocumentId(), that.getDocumentId()) && Objects.equals(getProcessDefinitionKey(), that.getProcessDefinitionKey()) && Objects.equals(getProcessVars(), that.getProcessVars());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDocumentId(), getProcessDefinitionKey(), getProcessVars());
+    }
+
+    public String toString() {
+        return "StartProcessForDocumentRequest(documentId=" + this.getDocumentId() + ", processDefinitionKey=" + this.getProcessDefinitionKey() + ", processVars=" + this.getProcessVars() + ")";
+    }
 }

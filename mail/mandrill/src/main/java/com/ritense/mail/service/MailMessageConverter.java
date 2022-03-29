@@ -26,17 +26,19 @@ import com.ritense.valtimo.contract.mail.model.value.Recipient;
 import com.ritense.valtimo.contract.mail.model.value.RecipientCollection;
 import com.ritense.valtimo.contract.mail.model.value.Sender;
 import com.ritense.valtimo.contract.mail.model.value.Subject;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class MailMessageConverter {
 
     private final MandrillProperties mandrillProperties;
     private static final Base64 base64 = new Base64();
+
+    public MailMessageConverter(MandrillProperties mandrillProperties) {
+        this.mandrillProperties = mandrillProperties;
+    }
 
     public MandrillMessage convert(RawMailMessage rawMailMessage) {
         MandrillMessage mandrillMessageWithContent = convertBaseline(

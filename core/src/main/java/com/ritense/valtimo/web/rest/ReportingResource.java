@@ -21,7 +21,6 @@ import com.ritense.valtimo.repository.camunda.dto.ChartInstance;
 import com.ritense.valtimo.repository.camunda.dto.ChartInstanceSeries;
 import com.ritense.valtimo.repository.camunda.dto.InstanceCountChart;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceStatisticsDTO;
-import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.SqlSession;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.history.HistoricActivityInstance;
@@ -50,7 +49,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/reporting", produces = MediaType.APPLICATION_JSON_VALUE)
-@RequiredArgsConstructor
 @Transactional
 public class ReportingResource {
 
@@ -58,6 +56,12 @@ public class ReportingResource {
     private final SqlSession session;
     private final HistoryService historyService;
     private final CamundaReportingRepository camundaReportingRepository;
+
+    public ReportingResource(SqlSession session, HistoryService historyService, CamundaReportingRepository camundaReportingRepository) {
+        this.session = session;
+        this.historyService = historyService;
+        this.camundaReportingRepository = camundaReportingRepository;
+    }
 
     @GetMapping(value = "/instancecount")
     public ResponseEntity<InstanceCountChart> instanceCount(

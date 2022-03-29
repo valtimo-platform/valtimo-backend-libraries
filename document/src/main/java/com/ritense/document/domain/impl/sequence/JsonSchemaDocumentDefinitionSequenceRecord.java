@@ -19,8 +19,6 @@ package com.ritense.document.domain.impl.sequence;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.sequence.DocumentDefinitionSequenceRecord;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.Column;
@@ -33,7 +31,6 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 
 @Entity
 @Table(name = "json_schema_document_definition_sequence_record")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonSchemaDocumentDefinitionSequenceRecord
     implements DocumentDefinitionSequenceRecord, Persistable<JsonSchemaDocumentDefinitionId> {
 
@@ -51,6 +48,9 @@ public class JsonSchemaDocumentDefinitionSequenceRecord
         assertArgumentNotNull(id, "id is required");
         this.id = id;
         this.sequence = 1L;
+    }
+
+    private JsonSchemaDocumentDefinitionSequenceRecord() {
     }
 
     @Override

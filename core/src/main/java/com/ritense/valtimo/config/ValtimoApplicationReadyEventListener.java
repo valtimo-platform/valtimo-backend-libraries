@@ -16,16 +16,17 @@
 
 package com.ritense.valtimo.config;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
 import java.util.Optional;
 import java.util.TimeZone;
 
-@Slf4j
 public class ValtimoApplicationReadyEventListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(ValtimoApplicationReadyEventListener.class);
     private TimeZone defaultTimeZone = TimeZone.getTimeZone("UTC");
 
     public ValtimoApplicationReadyEventListener(Optional<String> timeZone) {

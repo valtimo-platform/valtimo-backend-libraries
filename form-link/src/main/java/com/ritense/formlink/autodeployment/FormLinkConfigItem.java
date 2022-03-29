@@ -17,11 +17,60 @@
 package com.ritense.formlink.autodeployment;
 
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
-import lombok.Data;
 
-@Data
+import java.util.Objects;
+
 public class FormLinkConfigItem {
     private String formName;
     private String formLinkElementId;
     private FormAssociationType formAssociationType;
+
+    public FormLinkConfigItem() {
+    }
+
+    public String getFormName() {
+        return this.formName;
+    }
+
+    public String getFormLinkElementId() {
+        return this.formLinkElementId;
+    }
+
+    public FormAssociationType getFormAssociationType() {
+        return this.formAssociationType;
+    }
+
+    public void setFormName(String formName) {
+        this.formName = formName;
+    }
+
+    public void setFormLinkElementId(String formLinkElementId) {
+        this.formLinkElementId = formLinkElementId;
+    }
+
+    public void setFormAssociationType(FormAssociationType formAssociationType) {
+        this.formAssociationType = formAssociationType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FormLinkConfigItem that = (FormLinkConfigItem) o;
+        return Objects.equals(getFormName(), that.getFormName()) && Objects.equals(getFormLinkElementId(), that.getFormLinkElementId()) && getFormAssociationType() == that.getFormAssociationType();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getFormName(), getFormLinkElementId(), getFormAssociationType());
+    }
+
+    @Override
+    public String toString() {
+        return "FormLinkConfigItem{" +
+            "formName='" + formName + '\'' +
+            ", formLinkElementId='" + formLinkElementId + '\'' +
+            ", formAssociationType=" + formAssociationType +
+            '}';
+    }
 }

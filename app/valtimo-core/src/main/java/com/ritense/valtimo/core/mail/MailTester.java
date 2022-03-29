@@ -24,7 +24,6 @@ import com.ritense.valtimo.contract.mail.model.value.MailTemplateIdentifier;
 import com.ritense.valtimo.contract.mail.model.value.attachment.Content;
 import com.ritense.valtimo.contract.mail.model.value.attachment.Name;
 import com.ritense.valtimo.contract.mail.model.value.attachment.Type;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.springframework.core.io.Resource;
@@ -37,11 +36,16 @@ import java.util.Arrays;
 import java.util.Base64;
 
 @Service
-@RequiredArgsConstructor
 public class MailTester {
     private final ResourceLoader resourceLoader;
     private final MailService mailService;
     private final MailDispatcher mailDispatcher;
+
+    public MailTester(ResourceLoader resourceLoader, MailService mailService, MailDispatcher mailDispatcher) {
+        this.resourceLoader = resourceLoader;
+        this.mailService = mailService;
+        this.mailDispatcher = mailDispatcher;
+    }
 
     public void sendEmail(DelegateExecution delegateExecution) throws IOException {
         final var serviceMailSettings = mailService.getMailSettings(delegateExecution);

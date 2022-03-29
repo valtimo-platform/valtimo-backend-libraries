@@ -20,10 +20,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.formlink.domain.FormAssociation;
 import com.ritense.formlink.domain.FormLink;
-
 import java.io.Serializable;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public abstract class CamundaFormAssociation implements FormAssociation, Serializable {

@@ -32,8 +32,8 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceed
 import com.ritense.document.service.result.error.DocumentDefinitionError;
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
@@ -52,16 +52,21 @@ import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
-@Slf4j
-@RequiredArgsConstructor
 @Transactional
 public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionService {
 
+    private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentDefinitionService.class);
     private static final String PATH = "classpath*:config/document/definition/*.json";
 
     private final ResourceLoader resourceLoader;
     private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
     private final DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository;
+
+    public JsonSchemaDocumentDefinitionService(ResourceLoader resourceLoader, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository) {
+        this.resourceLoader = resourceLoader;
+        this.documentDefinitionRepository = documentDefinitionRepository;
+        this.documentDefinitionRoleRepository = documentDefinitionRoleRepository;
+    }
 
     @Override
     public Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable) {

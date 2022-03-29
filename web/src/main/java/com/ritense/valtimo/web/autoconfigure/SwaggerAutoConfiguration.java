@@ -17,7 +17,8 @@
 package com.ritense.valtimo.web.autoconfigure;
 
 import com.ritense.valtimo.web.config.SwaggerProperties;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -47,10 +48,10 @@ import static springfox.documentation.builders.PathSelectors.regex;
 @EnableConfigurationProperties(value = {SwaggerProperties.class})
 @ConditionalOnProperty(value = {"valtimo.swagger.enabled"})
 @EnableSwagger2
-@Slf4j
 public class SwaggerAutoConfiguration {
 
     public static final String DEFAULT_INCLUDE_PATTERN = "/api/.*";
+    private static final Logger logger = LoggerFactory.getLogger(SwaggerAutoConfiguration.class);
 
     /**
      * Swagger Springfox configuration.

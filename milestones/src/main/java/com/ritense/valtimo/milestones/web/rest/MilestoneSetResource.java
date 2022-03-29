@@ -20,8 +20,8 @@ import com.ritense.valtimo.milestones.domain.MilestoneSet;
 import com.ritense.valtimo.milestones.repository.MilestoneSetRepository;
 import com.ritense.valtimo.milestones.service.MilestoneSetService;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,16 +36,20 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class MilestoneSetResource {
 
     private static final String ENTITY_NAME = "milestoneSet";
+    private static final Logger logger = LoggerFactory.getLogger(MilestoneSetResource.class);
 
     private final MilestoneSetService milestoneSetService;
     private final MilestoneSetRepository milestoneSetRepository;
+
+    public MilestoneSetResource(MilestoneSetService milestoneSetService, MilestoneSetRepository milestoneSetRepository) {
+        this.milestoneSetService = milestoneSetService;
+        this.milestoneSetRepository = milestoneSetRepository;
+    }
 
     @GetMapping("/milestone-sets/{id}")
     public ResponseEntity<MilestoneSet> getMilestoneSet(@PathVariable Long id) {

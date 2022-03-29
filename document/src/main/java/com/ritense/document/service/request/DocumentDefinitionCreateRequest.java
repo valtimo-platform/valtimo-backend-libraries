@@ -17,11 +17,9 @@ package com.ritense.document.service.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
 
-@Getter
 public class DocumentDefinitionCreateRequest {
 
     @JsonProperty
@@ -32,5 +30,9 @@ public class DocumentDefinitionCreateRequest {
         @JsonProperty(value = "definition", required = true) @NotNull String definition
     ) {
         this.definition = definition;
+    }
+
+    public String getDefinition() {
+        return this.definition;
     }
 }

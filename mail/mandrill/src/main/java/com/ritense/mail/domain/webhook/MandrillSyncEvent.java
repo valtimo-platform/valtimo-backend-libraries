@@ -18,16 +18,12 @@ package com.ritense.mail.domain.webhook;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 import static com.ritense.mail.domain.webhook.SyncEventEnum.ADD;
 import static com.ritense.mail.domain.webhook.SyncEventEnum.BLACKLIST;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MandrillSyncEvent {
     @JsonProperty("type")
@@ -39,8 +35,60 @@ public class MandrillSyncEvent {
     @JsonProperty("reject")
     private MandrillSyncEventReject reject;
 
+    public MandrillSyncEvent(String type, String action, MandrillSyncEventReject reject) {
+        this.type = type;
+        this.action = action;
+        this.reject = reject;
+    }
+
+    public MandrillSyncEvent() {
+    }
+
     public boolean triggersBlacklisting() {
         return BLACKLIST.name().equals(type) && ADD.name().equals(action);
     }
 
+    public String getType() {
+        return this.type;
+    }
+
+    public String getAction() {
+        return this.action;
+    }
+
+    public MandrillSyncEventReject getReject() {
+        return this.reject;
+    }
+
+    @JsonProperty("type")
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @JsonProperty("action")
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    @JsonProperty("reject")
+    public void setReject(MandrillSyncEventReject reject) {
+        this.reject = reject;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MandrillSyncEvent that = (MandrillSyncEvent) o;
+        return Objects.equals(getType(), that.getType()) && Objects.equals(getAction(), that.getAction()) && Objects.equals(getReject(), that.getReject());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getType(), getAction(), getReject());
+    }
+
+    public String toString() {
+        return "MandrillSyncEvent(type=" + this.getType() + ", action=" + this.getAction() + ", reject=" + this.getReject() + ")";
+    }
 }

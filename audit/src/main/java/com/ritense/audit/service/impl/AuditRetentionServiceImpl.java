@@ -18,16 +18,19 @@ package com.ritense.audit.service.impl;
 
 import com.ritense.audit.service.AuditRetentionService;
 import com.ritense.audit.service.AuditService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import static java.time.LocalDateTime.now;
 
-@RequiredArgsConstructor
 public class AuditRetentionServiceImpl implements AuditRetentionService {
 
     private final AuditService auditService;
     private final long retention;
+
+    public AuditRetentionServiceImpl(AuditService auditService, long retention) {
+        this.auditService = auditService;
+        this.retention = retention;
+    }
 
     @Override
     @Scheduled(cron = "${scheduling.job.cron.cleanupAuditEvents:-}")
