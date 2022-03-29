@@ -17,5 +17,5 @@
 package com.ritense.klant.domain
 
 data class NietNatuurlijkPersoonSubjectIdentificatie(
-    val innNnpId: String
+    val annIdentificatie: String
 ): SubjectIdentificatie
