@@ -30,6 +30,7 @@ import com.ritense.externalevent.messaging.out.UpdatePortalCaseMessage
 import com.ritense.externalevent.messaging.out.UpdateStatusPortalCaseMessage
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.annotation.Transactional
@@ -58,8 +59,16 @@ class ExternalCaseService(
             portalMapping.processDefinitionKey,
             newDocumentRequest
         )
-        val document = processDocumentService
-            .newDocumentAndStartProcess(newDocumentAndStartProcessRequest).resultingDocument().orElseThrow()
+        val documentResult = processDocumentService
+            .newDocumentAndStartProcess(newDocumentAndStartProcessRequest)
+
+        if (documentResult.resultingDocument().isEmpty) {
+            var logMessage = "Errors occurred during creation of external case (external caseId=${createExternalCaseMessage.caseId}, caseDefinitionId=${createExternalCaseMessage.caseDefinitionId}):"
+            documentResult.errors().forEach { logMessage += "\n - " + it.asString() }
+            logger.error { logMessage }
+        }
+
+        val document = documentResult.resultingDocument().orElseThrow()
 
         sink.tryEmitNext(
             UpdateExternalIdPortalCaseMessage(
@@ -105,4 +114,7 @@ class ExternalCaseService(
             .correlateWithResult()
     }
 
+    companion object {
+        val logger = KotlinLogging.logger {}
+    }
 }
