@@ -71,7 +71,7 @@ class FormFlowDeploymentService(
             var definitionId = FormFlowDefinitionId.newId(formFlowKey)
 
             if (existingDefinition != null) {
-                if (formFlowDefinition == existingDefinition) {
+                if (formFlowDefinition.contentEquals(existingDefinition)) {
                     logger.info("Form Flow already deployed - {}", definitionId.toString())
                     return
                 } else {

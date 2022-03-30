@@ -22,7 +22,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 internal class FormFlowInstanceIT : BaseIntegrationTest() {
 
     @Autowired
@@ -36,6 +38,7 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
         formFlowInstanceRepository.save(formFlowInstance)
 
         val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
+
         assertEquals(storedInstance, formFlowInstance)
     }
 
@@ -45,14 +48,14 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
                 formFlowDefinitionId = FormFlowDefinitionId.newId("test")
         )
         formFlowInstanceRepository.save(formFlowInstance)
-        formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, "something")
+        formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, "{\"data\": \"data\"}")
         formFlowInstanceRepository.save(formFlowInstance)
 
         val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
-        assertEquals(storedInstance.context.getHistory().size, 2)
-        val firstStep = storedInstance.context.getHistory()[0]
-        assertEquals(firstStep.submissionData, "something")
-        val secondStep = storedInstance.context.getHistory()[1]
+        assertEquals(storedInstance.getHistory().size, 2)
+        val firstStep = storedInstance.getHistory()[0]
+        assertEquals(firstStep.submissionData, "{\"data\": \"data\"}")
+        val secondStep = storedInstance.getHistory()[1]
         assertNull(secondStep.submissionData)
     }
 }

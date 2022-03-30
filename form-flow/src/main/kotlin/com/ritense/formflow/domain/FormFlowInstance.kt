@@ -16,11 +16,15 @@
 
 package com.ritense.formflow.domain
 
+import org.hibernate.annotations.Type
 import javax.persistence.AttributeOverride
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
+import javax.persistence.OneToMany
+import javax.persistence.OrderBy
 import javax.persistence.Table
 
 @Entity
@@ -30,13 +34,15 @@ class FormFlowInstance(
     val id: FormFlowInstanceId = FormFlowInstanceId.newId(),
     @Embedded
     val formFlowDefinitionId: FormFlowDefinitionId,
-    additionalProperties: Map<String, Any> = emptyMap(),
-    @Embedded
-    val context: FormFlowInstanceContext =
-        FormFlowInstanceContext(additionalProperties = additionalProperties.toMutableMap()),
     @Embedded
     @AttributeOverride(name = "id", column = Column(name = "current_form_flow_step_instance_id"))
-    var currentFormFlowStepInstanceId: FormFlowStepInstanceId? = null
+    var currentFormFlowStepInstanceId: FormFlowStepInstanceId? = null,
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "instance")
+    @OrderBy("order ASC")
+    private val history: MutableList<FormFlowStepInstance> = mutableListOf(),
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "additional_properties", columnDefinition = "json", nullable = false)
+    private val additionalProperties: MutableMap<String, Any> = mutableMapOf()
 ) {
     init {
         navigateToNextStep()
@@ -48,7 +54,7 @@ class FormFlowInstance(
     ) : FormFlowStepInstance {
         assert(this.currentFormFlowStepInstanceId == currentFormFlowStepInstanceId)
 
-        val formFlowStepInstance = context.getHistory()
+        val formFlowStepInstance = history
             .first { formFlowStepInstance -> formFlowStepInstance.id == currentFormFlowStepInstanceId }
 
         formFlowStepInstance.submissionData = submissionData
@@ -56,15 +62,23 @@ class FormFlowInstance(
         return navigateToNextStep()
     }
 
+    fun getHistory() : List<FormFlowStepInstance> {
+        return history
+    }
+
+    fun getAdditionalProperties() : Map<String, Any> {
+        return additionalProperties
+    }
+
     private fun navigateToNextStep() : FormFlowStepInstance {
         val nextStep = determineNextStep()
-        context.addStep(nextStep)
+        history.add(nextStep)
         currentFormFlowStepInstanceId = nextStep.id
         return nextStep
     }
 
     private fun determineNextStep() : FormFlowStepInstance {
-        return FormFlowStepInstance(instance = this, stepKey = "henk", order = context.getHistory().size)
+        return FormFlowStepInstance(instance = this, stepKey = "henk", order = history.size)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -75,8 +89,9 @@ class FormFlowInstance(
 
         if (id != other.id) return false
         if (formFlowDefinitionId != other.formFlowDefinitionId) return false
-        if (context != other.context) return false
         if (currentFormFlowStepInstanceId != other.currentFormFlowStepInstanceId) return false
+        if (history != other.history) return false
+        if (additionalProperties != other.additionalProperties) return false
 
         return true
     }
@@ -84,10 +99,10 @@ class FormFlowInstance(
     override fun hashCode(): Int {
         var result = id.hashCode()
         result = 31 * result + formFlowDefinitionId.hashCode()
-        result = 31 * result + context.hashCode()
         result = 31 * result + (currentFormFlowStepInstanceId?.hashCode() ?: 0)
+        result = 31 * result + history.hashCode()
+        result = 31 * result + additionalProperties.hashCode()
         return result
     }
-
 
 }

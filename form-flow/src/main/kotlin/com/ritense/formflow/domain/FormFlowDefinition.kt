@@ -30,12 +30,10 @@ import javax.persistence.Table
 @Entity
 @Table(name = "form_flow_definition")
 class FormFlowDefinition(
-    @JsonProperty("key")
-    key: String = "",
 
     @EmbeddedId
     @JsonIgnore
-    val id: FormFlowDefinitionId = FormFlowDefinitionId.newId(key),
+    val id: FormFlowDefinitionId = FormFlowDefinitionId.newId(),
 
     @Column(name = "start_step")
     val startStep: String,
@@ -47,17 +45,7 @@ class FormFlowDefinition(
         steps.forEach { step -> step.id.formFlowDefinition = this }
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(id, startStep, steps)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as FormFlowDefinition
-
-        if (id != other.id) return false
+    fun contentEquals(other: FormFlowDefinition): Boolean {
         if (startStep != other.startStep) return false
         if (steps != other.steps) return false
 

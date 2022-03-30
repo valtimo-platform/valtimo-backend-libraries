@@ -17,7 +17,6 @@
 package com.ritense.formflow.domain
 
 import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -33,7 +32,7 @@ internal class FormFlowInstanceTest {
         //complete task
         instance.complete(instance.currentFormFlowStepInstanceId!!, "data")
 
-        assertThat(instance.context.getHistory()[0].submissionData, equalTo("data"))
+        assertThat(instance.getHistory()[0].submissionData, equalTo("data"))
     }
 
     @Test
