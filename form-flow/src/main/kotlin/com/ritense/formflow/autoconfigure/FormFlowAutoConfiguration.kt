@@ -19,17 +19,38 @@ package com.ritense.formflow.autoconfigure
 import com.ritense.formflow.SpringContextHelper
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowStepRepository
+import com.ritense.formflow.service.FormFlowDeploymentService
+import com.ritense.formflow.service.FormFlowService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
-@EnableJpaRepositories(basePackages = ["com.ritense.formflow.repository"])
+@EnableJpaRepositories(basePackageClasses = [FormFlowDefinitionRepository::class, FormFlowStepRepository::class])
 @EntityScan(basePackages = ["com.ritense.formflow.domain"])
 class FormFlowAutoConfiguration {
     @Bean
     fun springContextHelper(): SpringContextHelper {
         return SpringContextHelper()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowService::class)
+    fun formFlowService(
+        formFlowDefinitionRepository: FormFlowDefinitionRepository
+    ): FormFlowService {
+        return FormFlowService(formFlowDefinitionRepository)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowDeploymentService::class)
+    fun formFlowDeploymentService(
+        resourceLoader: ResourceLoader,
+        formFlowService: FormFlowService
+    ): FormFlowDeploymentService {
+        return FormFlowDeploymentService(resourceLoader, formFlowService)
     }
 }

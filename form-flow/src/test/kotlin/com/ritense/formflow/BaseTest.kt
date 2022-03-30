@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.klant.domain
+package com.ritense.formflow
 
-data class KlantSearchFilter(
-    val bsn: String? = null,
-    val kvk: String? = null,
-    val klantnummer: String? = null,
-    val page: Int? = null
-) {
-    fun toMap(): MutableMap<String, Any> {
-        val map = mutableMapOf<String, Any>()
-        bsn?.let { map.put("subjectNatuurlijkPersoon__inpBsn", it) }
-        kvk?.let { map.put("subjectNietNatuurlijkPersoon__annIdentificatie", it) }
-        klantnummer?.let { map.put("klantnummer", it) }
-        page?.let { map.put("page", it) }
-        return map
-    }
+abstract class BaseTest {
+    fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName)!!.readText(Charsets.UTF_8)
 }

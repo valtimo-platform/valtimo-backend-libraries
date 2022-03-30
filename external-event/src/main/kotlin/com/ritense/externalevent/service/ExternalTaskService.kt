@@ -92,7 +92,13 @@ class ExternalTaskService(
         )
         val request = ModifyDocumentAndCompleteTaskRequest(modifyDocumentRequest, completeTaskMessage.taskId)
 
-        processDocumentService.modifyDocumentAndCompleteTask(request).resultingDocument().orElseThrow()
+        val taskResult = processDocumentService.modifyDocumentAndCompleteTask(request)
+
+        if (taskResult.resultingDocument().isEmpty) {
+            var logMessage = "Errors occurred during completion of external task (id=${completeTaskMessage.taskId}):"
+            taskResult.errors().forEach { logMessage += "\n - " + it.asString() }
+            logger.error { logMessage }
+        }
     }
 
     /**

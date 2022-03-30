@@ -29,7 +29,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @ConditionalOnClass(DataSource.class)
-public class SecurityAutoConfiguration {
+public class MilestonesSecurityAutoConfiguration {
 
     @Order(270)
     @Bean

@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.processdocument.autoconfigure;
+package com.ritense.valtimo.viewconfigurator.autoconfigure;
 
-import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import com.ritense.valtimo.viewconfigurator.security.config.ViewConfiguratorHttpSecurityConfigurer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
-import javax.sql.DataSource;
-
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
-
 @Configuration
-@ConditionalOnClass(DataSource.class)
-public class LiquibaseAutoConfiguration {
+public class ViewConfiguratorSecurityAutoConfiguration {
 
-    @Order(HIGHEST_PRECEDENCE + 9)
+    @Order(240)
     @Bean
-    @ConditionalOnMissingBean(name = "processDocumentLiquibaseMasterChangeLogLocation")
-    public LiquibaseMasterChangeLogLocation processDocumentLiquibaseMasterChangeLogLocation() {
-        return new LiquibaseMasterChangeLogLocation("config/liquibase/process-document-master.xml");
+    @ConditionalOnMissingBean(ViewConfiguratorHttpSecurityConfigurer.class)
+    public ViewConfiguratorHttpSecurityConfigurer viewConfiguratorHttpSecurityConfigurer() {
+        return new ViewConfiguratorHttpSecurityConfigurer();
     }
 
 }

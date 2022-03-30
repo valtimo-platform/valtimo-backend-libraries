@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.klant.domain
+package com.ritense.formflow.service
 
-data class KlantSearchFilter(
-    val bsn: String? = null,
-    val kvk: String? = null,
-    val klantnummer: String? = null,
-    val page: Int? = null
-) {
-    fun toMap(): MutableMap<String, Any> {
-        val map = mutableMapOf<String, Any>()
-        bsn?.let { map.put("subjectNatuurlijkPersoon__inpBsn", it) }
-        kvk?.let { map.put("subjectNietNatuurlijkPersoon__annIdentificatie", it) }
-        klantnummer?.let { map.put("klantnummer", it) }
-        page?.let { map.put("page", it) }
-        return map
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+
+object Mapper {
+
+    private val mapper = ObjectMapper()
+
+    fun get(): ObjectMapper {
+        return mapper
     }
+
+    init {
+        mapper.registerModule(KotlinModule())
+    }
+
 }
