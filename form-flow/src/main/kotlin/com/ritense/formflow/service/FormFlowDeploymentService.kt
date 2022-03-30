@@ -80,8 +80,13 @@ class FormFlowDeploymentService(
                 }
             }
 
-            formFlowDefinition.id.version = definitionId.version
-            formFlowService.save(formFlowDefinition)
+            val newFormFlowDefinition = FormFlowDefinition(
+                id = definitionId,
+                startStep = formFlowDefinition.startStep,
+                steps = formFlowDefinition.steps
+            )
+
+            formFlowService.save(newFormFlowDefinition)
             logger.info("Deployed Form Flow - {}", definitionId.toString())
         } catch (e: Exception) {
             throw RuntimeException("Failed to deploy Form Flow $formFlowKey", e)

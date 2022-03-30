@@ -16,7 +16,6 @@
 
 package com.ritense.formflow.domain
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.Embeddable
@@ -28,7 +27,7 @@ data class FormFlowDefinitionId(
     val key: String,
 
     @Column(name = "form_flow_definition_version")
-    var version: Long? = null
+    val version: Long
 
 ) : AbstractId<FormFlowDefinitionId>() {
 
@@ -52,10 +51,6 @@ data class FormFlowDefinitionId(
     }
 
     companion object {
-        @JvmStatic
-        @JsonCreator
-        fun create(value: String) = newId(value)
-
         fun newId(key: String): FormFlowDefinitionId {
             return FormFlowDefinitionId(key, 1).newIdentity()
         }

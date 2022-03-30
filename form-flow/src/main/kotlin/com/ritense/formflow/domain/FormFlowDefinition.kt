@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.Objects
 import javax.persistence.CascadeType
@@ -28,11 +29,13 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "form_flow_definition")
-data class FormFlowDefinition(
+class FormFlowDefinition(
+    @JsonProperty("key")
+    key: String = "",
 
     @EmbeddedId
-    @JsonProperty("key")
-    val id: FormFlowDefinitionId,
+    @JsonIgnore
+    val id: FormFlowDefinitionId = FormFlowDefinitionId.newId(key),
 
     @Column(name = "start_step")
     val startStep: String,
@@ -60,4 +63,5 @@ data class FormFlowDefinition(
 
         return true
     }
+
 }
