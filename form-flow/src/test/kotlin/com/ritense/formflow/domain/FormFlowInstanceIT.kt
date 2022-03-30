@@ -14,38 +14,45 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.repository
+package com.ritense.formflow.domain
 
 import com.ritense.formflow.BaseIntegrationTest
-import com.ritense.formflow.domain.FormFlowDefinitionId
-import com.ritense.formflow.domain.FormFlowInstance
-import org.assertj.core.api.Assertions.assertThat
+import com.ritense.formflow.repository.FormFlowInstanceRepository
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 
-internal class FormFlowInstanceRepositoryIT : BaseIntegrationTest() {
+internal class FormFlowInstanceIT : BaseIntegrationTest() {
+
+    @Autowired
+    lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
 
     @Test
     fun `create form flow instance successfully`() {
         val formFlowInstance = FormFlowInstance(
             formFlowDefinitionId = FormFlowDefinitionId.newId("test")
         )
-        val savedFormFlowInstance = formFlowInstance.save()
+        formFlowInstance.save()
 
-        assertThat(savedFormFlowInstance == formFlowInstance)
+        val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
+        assertEquals(storedInstance, formFlowInstance)
     }
 
     @Test
     fun `update form flow instance successfully`() {
         val formFlowInstance = FormFlowInstance(
-                formFlowDefinitionId = FormFlowDefinitionId.newId("test")).save()
+                formFlowDefinitionId = FormFlowDefinitionId.newId("test")
+        )
+        formFlowInstance.save()
 
         formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, "something")
 
-
-    }
-
-    @Test
-    fun `delete form flow instance successfully`() {
-
+        val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
+        assertEquals(storedInstance.context.getHistory().size, 2)
+        val firstStep = storedInstance.context.getHistory()[0]
+        assertEquals(firstStep.submissionData, "something")
+        val secondStep = storedInstance.context.getHistory()[1]
+        assertNull(secondStep.submissionData)
     }
 }

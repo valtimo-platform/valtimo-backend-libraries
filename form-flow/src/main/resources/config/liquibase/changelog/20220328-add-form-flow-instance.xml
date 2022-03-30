@@ -41,13 +41,9 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="form_flow_instance_id" type="${uuidType}"/>
-            <column name="for_flow_step_key" type="varchar(256)}"/>
-            <column name="`order`" type="${intType}"/>
-            <column name="submissionData" type="${jsonType}"/>
-
-            <!-- Form Flow Definition -->
-            <column name="key" type="varchar(256)"/>
-            <column name="version" type="${intType}"/>
+            <column name="form_flow_step_key" type="varchar(256)"/>
+            <column name="order" type="${intType}"/>
+            <column name="submission_data" type="${jsonType}"/>
         </createTable>
     </changeSet>
 

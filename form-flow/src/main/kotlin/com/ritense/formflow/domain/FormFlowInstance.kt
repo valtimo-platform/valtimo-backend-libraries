@@ -43,8 +43,7 @@ class FormFlowInstance(
     var currentFormFlowStepInstanceId: FormFlowStepInstanceId? = null
 ) {
     init {
-        context.addStep(FormFlowStepInstance(instance = this, stepKey = "henk", order = context.getHistory().size))
-        currentFormFlowStepInstanceId = context.getHistory().first().id
+        navigateToNextStep()
     }
 
     fun complete(
@@ -57,17 +56,48 @@ class FormFlowInstance(
             .first { formFlowStepInstance -> formFlowStepInstance.id == currentFormFlowStepInstanceId }
 
         formFlowStepInstance.submissionData = submissionData
-        return FormFlowStepInstance(instance = this, stepKey = "henk", order = context.getHistory().size).id
+
+        val nextStep = navigateToNextStep()
+        save()
+        return nextStep.id
     }
 
     fun save() : FormFlowInstance {
         return SpringContextHelper.getBean(FormFlowInstanceRepository::class.java).save(this)
     }
 
-//    private fun determineNextStep() : FormFlowStep {
-//        if (currentFormFlowStepInstanceId == null) {
-//            return FormFlowStep(FormFlowStepId.())
-//        }
-//        return FormFlowStep()
-//    }
+    private fun navigateToNextStep() : FormFlowStepInstance {
+        val nextStep = determineNextStep()
+        context.addStep(nextStep)
+        currentFormFlowStepInstanceId = nextStep.id
+        return nextStep
+    }
+
+    private fun determineNextStep() : FormFlowStepInstance {
+        return FormFlowStepInstance(instance = this, stepKey = "henk", order = context.getHistory().size)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as FormFlowInstance
+
+        if (id != other.id) return false
+        if (formFlowDefinitionId != other.formFlowDefinitionId) return false
+        if (context != other.context) return false
+        if (currentFormFlowStepInstanceId != other.currentFormFlowStepInstanceId) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + formFlowDefinitionId.hashCode()
+        result = 31 * result + context.hashCode()
+        result = 31 * result + (currentFormFlowStepInstanceId?.hashCode() ?: 0)
+        return result
+    }
+
+
 }

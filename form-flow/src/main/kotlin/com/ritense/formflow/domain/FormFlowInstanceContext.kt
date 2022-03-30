@@ -25,7 +25,7 @@ import javax.persistence.OrderBy
 
 @Embeddable
 class FormFlowInstanceContext(
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "instance")
     @OrderBy("order ASC")
     private val history: MutableList<FormFlowStepInstance> = mutableListOf(),
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
@@ -42,5 +42,23 @@ class FormFlowInstanceContext(
 
     fun getAdditionalProperties() : Map<String, Any> {
         return additionalProperties
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as FormFlowInstanceContext
+
+        if (history != other.history) return false
+        if (additionalProperties != other.additionalProperties) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = history.hashCode()
+        result = 31 * result + additionalProperties.hashCode()
+        return result
     }
 }

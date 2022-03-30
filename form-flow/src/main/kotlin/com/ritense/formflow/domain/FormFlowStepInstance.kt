@@ -38,4 +38,27 @@ data class FormFlowStepInstance(
     val order: Int,
     @Column(name = "submission_data")
     var submissionData: String? = null
-)
+) {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as FormFlowStepInstance
+
+        if (id != other.id) return false
+        if (stepKey != other.stepKey) return false
+        if (order != other.order) return false
+        if (submissionData != other.submissionData) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + stepKey.hashCode()
+        result = 31 * result + order
+        result = 31 * result + (submissionData?.hashCode() ?: 0)
+        return result
+    }
+}
