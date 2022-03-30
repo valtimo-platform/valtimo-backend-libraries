@@ -31,9 +31,8 @@ internal class FormFlowInstanceTest {
         )
 
         //complete task
-        val newInstanceId = instance.complete(instance.currentFormFlowStepInstanceId!!, "data")
+        instance.complete(instance.currentFormFlowStepInstanceId!!, "data")
 
-        assertThat(newInstanceId, instanceOf(FormFlowStepInstanceId::class.java))
         assertThat(instance.context.getHistory()[0].submissionData, equalTo("data"))
     }
 

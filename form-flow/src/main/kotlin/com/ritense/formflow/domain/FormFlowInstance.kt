@@ -16,8 +16,6 @@
 
 package com.ritense.formflow.domain
 
-import com.ritense.formflow.SpringContextHelper
-import com.ritense.formflow.repository.FormFlowInstanceRepository
 import javax.persistence.AttributeOverride
 import javax.persistence.Column
 import javax.persistence.Embedded
@@ -31,8 +29,6 @@ class FormFlowInstance(
     @EmbeddedId
     val id: FormFlowInstanceId = FormFlowInstanceId.newId(),
     @Embedded
-    @AttributeOverride(name = "key", column = Column(name = "form_flow_definition_key"))
-    @AttributeOverride(name = "version", column = Column(name = "form_flow_definition_version"))
     val formFlowDefinitionId: FormFlowDefinitionId,
     additionalProperties: Map<String, Any> = emptyMap(),
     @Embedded
@@ -49,7 +45,7 @@ class FormFlowInstance(
     fun complete(
         currentFormFlowStepInstanceId: FormFlowStepInstanceId,
         submissionData: String
-    ) : FormFlowStepInstanceId {
+    ) : FormFlowStepInstance {
         assert(this.currentFormFlowStepInstanceId == currentFormFlowStepInstanceId)
 
         val formFlowStepInstance = context.getHistory()
@@ -57,13 +53,7 @@ class FormFlowInstance(
 
         formFlowStepInstance.submissionData = submissionData
 
-        val nextStep = navigateToNextStep()
-        save()
-        return nextStep.id
-    }
-
-    fun save() : FormFlowInstance {
-        return SpringContextHelper.getBean(FormFlowInstanceRepository::class.java).save(this)
+        return navigateToNextStep()
     }
 
     private fun navigateToNextStep() : FormFlowStepInstance {

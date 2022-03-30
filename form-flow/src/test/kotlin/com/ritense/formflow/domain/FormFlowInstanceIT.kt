@@ -33,7 +33,7 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
         val formFlowInstance = FormFlowInstance(
             formFlowDefinitionId = FormFlowDefinitionId.newId("test")
         )
-        formFlowInstance.save()
+        formFlowInstanceRepository.save(formFlowInstance)
 
         val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
         assertEquals(storedInstance, formFlowInstance)
@@ -44,9 +44,9 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
         val formFlowInstance = FormFlowInstance(
                 formFlowDefinitionId = FormFlowDefinitionId.newId("test")
         )
-        formFlowInstance.save()
-
+        formFlowInstanceRepository.save(formFlowInstance)
         formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, "something")
+        formFlowInstanceRepository.save(formFlowInstance)
 
         val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
         assertEquals(storedInstance.context.getHistory().size, 2)
