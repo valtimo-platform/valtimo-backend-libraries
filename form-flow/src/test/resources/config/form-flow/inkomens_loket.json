@@ -1,5 +1,4 @@
 {
-    "key": "inkomens_loket",
     "startStep": "woonplaats",
     "steps": [
         {
