@@ -16,28 +16,51 @@
 
 package com.ritense.formflow.domain
 
-import lombok.EqualsAndHashCode
-import org.hibernate.validator.constraints.Length
+import com.fasterxml.jackson.annotation.JsonCreator
+import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.Embeddable
 import javax.persistence.FetchType
 import javax.persistence.JoinColumn
 import javax.persistence.JoinColumns
 import javax.persistence.ManyToOne
-import javax.validation.constraints.NotBlank
 
 @Embeddable
-@EqualsAndHashCode(callSuper = false)
-class FormFlowStepId(
+data class FormFlowStepId(
 
-    @Column(name = "key")
-    @field:Length(max = 256)
+    @Column(name = "form_flow_step_key")
     val key: String,
 
     @ManyToOne(targetEntity = FormFlowDefinition::class, fetch = FetchType.LAZY)
     @JoinColumns(
-        JoinColumn(name = "form_flow_definition_key", referencedColumnName = "key"),
-        JoinColumn(name = "form_flow_definition_version", referencedColumnName = "version")
+        JoinColumn(name = "form_flow_definition_key", referencedColumnName = "form_flow_definition_key"),
+        JoinColumn(name = "form_flow_definition_version", referencedColumnName = "form_flow_definition_version")
     )
-    val formFlowDefinitionId: FormFlowDefinitionId
-) : AbstractId<FormFlowStepId>()
+    var formFlowDefinition: FormFlowDefinition? = null
+) : AbstractId<FormFlowStepId>() {
+
+    override fun hashCode(): Int {
+        return Objects.hash(key)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as FormFlowStepId
+
+        if (key != other.key) return false
+
+        return true
+    }
+
+    override fun toString(): String {
+        return "${formFlowDefinition?.id}:$key"
+    }
+
+    companion object {
+        @JvmStatic
+        @JsonCreator
+        fun create(value: String) = FormFlowStepId(value).newIdentity()
+    }
+}

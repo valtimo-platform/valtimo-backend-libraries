@@ -21,10 +21,10 @@
 
     <changeSet id="1" author="Klaas Schuijtemaker">
         <createTable tableName="form_flow_definition">
-            <column name="key" type="varchar(256)">
+            <column name="form_flow_definition_key" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="version" type="${intType}">
+            <column name="form_flow_definition_version" type="${intType}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="start_step" type="varchar(256)"/>
@@ -33,11 +33,15 @@
 
     <changeSet id="2" author="Rick Veenstra">
         <createTable tableName="form_flow_step">
-            <column name="key" type="varchar(256)">
+            <column name="form_flow_step_key" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="form_flow_definition_key" type="varchar(256)"/>
-            <column name="form_flow_definition_version" type="${intType}"/>
+            <column name="form_flow_definition_key" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="form_flow_definition_version" type="${intType}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
             <column name="next_steps" type="JSON"/>
         </createTable>
     </changeSet>
@@ -47,7 +51,7 @@
                                  baseColumnNames="form_flow_definition_key,form_flow_definition_version"
                                  constraintName="fk_form_flow_definition_id"
                                  referencedTableName="form_flow_definition"
-                                 referencedColumnNames="key,version"/>
+                                 referencedColumnNames="form_flow_definition_key,form_flow_definition_version"/>
     </changeSet>
 
 

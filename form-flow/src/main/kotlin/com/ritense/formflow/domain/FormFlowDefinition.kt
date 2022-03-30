@@ -16,7 +16,9 @@
 
 package com.ritense.formflow.domain
 
-import org.hibernate.validator.constraints.Length
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import java.util.Objects
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
@@ -27,15 +29,39 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "form_flow_definition")
-data class FormFlowDefinition(
+class FormFlowDefinition(
+    @JsonProperty("key")
+    key: String = "",
 
     @EmbeddedId
-    val id: FormFlowDefinitionId,
+    @JsonIgnore
+    val id: FormFlowDefinitionId = FormFlowDefinitionId.newId(key),
 
     @Column(name = "start_step")
-    @field:Length(max = 256)
     val startStep: String,
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    val steps: List<FormFlowStep>,
-)
+    @OneToMany(mappedBy = "id.formFlowDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    val steps: Set<FormFlowStep>,
+) {
+    init {
+        steps.forEach { step -> step.id.formFlowDefinition = this }
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(id, startStep, steps)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as FormFlowDefinition
+
+        if (id != other.id) return false
+        if (startStep != other.startStep) return false
+        if (steps != other.steps) return false
+
+        return true
+    }
+
+}

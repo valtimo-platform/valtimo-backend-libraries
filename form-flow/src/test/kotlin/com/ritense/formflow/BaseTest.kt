@@ -16,12 +16,6 @@
 
 package com.ritense.formflow
 
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringExtension
-
-@SpringBootTest
-@ExtendWith(value = [SpringExtension::class])
-@Tag("integration")
-class BaseIntegrationTest : BaseTest()
+abstract class BaseTest {
+    fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName)!!.readText(Charsets.UTF_8)
+}

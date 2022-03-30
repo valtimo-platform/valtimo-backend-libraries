@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow
+package com.ritense.formflow.service
 
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringExtension
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 
-@SpringBootTest
-@ExtendWith(value = [SpringExtension::class])
-@Tag("integration")
-class BaseIntegrationTest : BaseTest()
+object Mapper {
+
+    private val mapper = ObjectMapper()
+
+    fun get(): ObjectMapper {
+        return mapper
+    }
+
+    init {
+        mapper.registerModule(KotlinModule())
+    }
+
+}
