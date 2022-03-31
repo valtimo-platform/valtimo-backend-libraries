@@ -120,6 +120,31 @@ public class FormIoJsonPatchSubmissionTransformerServiceTest extends BaseTest {
     }
 
     @Test
+    public void preProcessNewArrayItemMissingKeysInSubmission() throws IOException {
+
+        final var formDefinition = formDefinitionOf("new-item-array-form-example");
+
+        ObjectNode submission = emptySubmission();
+        ObjectNode placeholders = placeholders();
+        ObjectNode source = source();
+
+        JsonPatch jsonPatch = formIoJsonPatchSubmissionTransformerService.preSubmissionTransform(
+            formDefinition,
+            submission,
+            placeholders,
+            source
+        );
+
+        //Assert initial submission is cleaned up
+        assertThat(submission.get("name")).isNullOrEmpty();
+        assertThat(jsonPatch.patches().size()).isEqualTo(0);
+
+        JsonPatchService.apply(jsonPatch, source);
+        assertThat(source.at("/favorites").size()).isEqualTo(2);
+        assertThat(source.at("/favorites/2/name").isMissingNode()).isEqualTo(true);
+    }
+
+    @Test
     public void preProcessNewArrayItemCombinedPatch() throws IOException {
 
         final var formDefinition = formDefinitionOf("new-item-combined-array-form-example");
@@ -165,6 +190,10 @@ public class FormIoJsonPatchSubmissionTransformerServiceTest extends BaseTest {
         submission.put("name", "Focaccia");
         submission.put("size", "big");
         return submission;
+    }
+
+    private ObjectNode emptySubmission() {
+        return JsonNodeFactory.instance.objectNode();
     }
 
     private ObjectNode submissionNewArray() {

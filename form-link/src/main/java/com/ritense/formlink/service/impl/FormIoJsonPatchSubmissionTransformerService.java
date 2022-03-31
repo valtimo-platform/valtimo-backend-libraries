@@ -171,7 +171,7 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
         final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionData);
 
         inputFields.forEach(field -> {
-            if (field.has(CUSTOM_PROPERTIES) && !field.get(CUSTOM_PROPERTIES).isEmpty()) {
+            if (field.has(CUSTOM_PROPERTIES) && !field.get(CUSTOM_PROPERTIES).isEmpty() && submission.has(field.get(PROPERTY_KEY).textValue())) {
                 final String container = field.get(CUSTOM_PROPERTIES).get(CONTAINER_KEY).asText();
                 final String propertyName = field.get(PROPERTY_KEY).textValue();
                 final JsonNode propertyValue = submission.at("/" + propertyName);
