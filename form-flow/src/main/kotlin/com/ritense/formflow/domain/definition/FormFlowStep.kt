@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain
+package com.ritense.formflow.domain.definition
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Type
@@ -36,11 +36,6 @@ data class FormFlowStep(
     @Column(name = "next_steps", columnDefinition = "JSON")
     val nextSteps: MutableList<FormFlowNextStep>? = ArrayList()
 ) {
-
-    @JsonProperty("nextStep")
-    fun nextStep(nextStep: String) {
-        nextSteps!!.add(FormFlowNextStep(step = nextStep))
-    }
 
     override fun hashCode(): Int {
         return Objects.hash(id, nextSteps)

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain
+package com.ritense.formflow.domain.instance
 
+import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import org.hibernate.annotations.Type
 import javax.persistence.AttributeOverride
 import javax.persistence.CascadeType

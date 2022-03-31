@@ -17,6 +17,8 @@
 package com.ritense.formflow.domain
 
 import com.ritense.formflow.BaseIntegrationTest
+import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull

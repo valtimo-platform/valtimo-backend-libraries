@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain
+package com.ritense.formflow.domain.definition
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Objects
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
@@ -32,8 +29,7 @@ import javax.persistence.Table
 class FormFlowDefinition(
 
     @EmbeddedId
-    @JsonIgnore
-    val id: FormFlowDefinitionId = FormFlowDefinitionId.newId(),
+    val id: FormFlowDefinitionId,
 
     @Column(name = "start_step")
     val startStep: String,
@@ -43,13 +39,6 @@ class FormFlowDefinition(
 ) {
     init {
         steps.forEach { step -> step.id.formFlowDefinition = this }
-    }
-
-    fun contentEquals(other: FormFlowDefinition): Boolean {
-        if (startStep != other.startStep) return false
-        if (steps != other.steps) return false
-
-        return true
     }
 
 }

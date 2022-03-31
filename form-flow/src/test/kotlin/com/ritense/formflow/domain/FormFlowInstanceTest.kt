@@ -16,6 +16,9 @@
 
 package com.ritense.formflow.domain
 
+import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.ritense.formflow.domain.instance.FormFlowInstance
+import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Test

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain
+package com.ritense.formflow.domain.instance
 
 import javax.persistence.Column
 import javax.persistence.EmbeddedId

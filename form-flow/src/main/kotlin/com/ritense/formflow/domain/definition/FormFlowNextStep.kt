@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain
+package com.ritense.formflow.domain.definition
 
 data class FormFlowNextStep(
     val condition: String? = null,
-    val step: String,
+    val step: String
 )
