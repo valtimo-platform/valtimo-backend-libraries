@@ -16,33 +16,40 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.valtimo.context.repository.ContextRepository;
+import com.ritense.valtimo.context.repository.UserContextRepository;
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.exception.ValtimoRuntimeException;
 import com.ritense.valtimo.domain.contexts.Context;
 import com.ritense.valtimo.domain.contexts.UserContext;
-import com.ritense.valtimo.context.repository.ContextRepository;
-import com.ritense.valtimo.context.repository.UserContextRepository;
-import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class ContextService {
 
     private final CurrentUserService currentUserService;
     private final ContextRepository contextRepository;
     private final UserContextRepository userContextRepository;
     private final RepositoryService repositoryService;
+
+    public ContextService(
+        CurrentUserService currentUserService, ContextRepository contextRepository,
+        UserContextRepository userContextRepository, RepositoryService repositoryService
+    ) {
+        this.currentUserService = currentUserService;
+        this.contextRepository = contextRepository;
+        this.userContextRepository = userContextRepository;
+        this.repositoryService = repositoryService;
+    }
 
     public void setContextOfCurrentUser(Long contextId) throws IllegalAccessException {
         ValtimoUser valtimoUser = currentUserService.getCurrentUser();
@@ -84,7 +91,10 @@ public class ContextService {
             context = contextRepository.findFirstByRolesIn(valtimoUser.getRoles());
         }
         if (context == null) {
-            throw new ValtimoRuntimeException("Cannot set default context, no context found", null, "apiError", "Cannot set default context, no context found");
+            throw new ValtimoRuntimeException(
+                "Cannot set default context, no context found", null, "apiError",
+                "Cannot set default context, no context found"
+            );
         }
         UserContext userContext = new UserContext(context.getId(), valtimoUser.getId());
         userContextRepository.save(userContext);

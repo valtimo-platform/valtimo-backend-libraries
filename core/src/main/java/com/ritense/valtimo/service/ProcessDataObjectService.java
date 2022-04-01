@@ -36,7 +36,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.orm.jpa.JpaSystemException;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;

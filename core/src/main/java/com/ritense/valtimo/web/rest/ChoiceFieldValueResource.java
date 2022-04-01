@@ -16,14 +16,14 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.valtimo.choicefield.repository.ChoiceFieldRepository;
 import com.ritense.valtimo.domain.choicefield.ChoiceField;
 import com.ritense.valtimo.domain.choicefield.ChoiceFieldValue;
-import com.ritense.valtimo.choicefield.repository.ChoiceFieldRepository;
 import com.ritense.valtimo.service.ChoiceFieldValueService;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import com.ritense.valtimo.web.rest.util.PaginationUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -38,20 +38,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-@Slf4j
-@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ChoiceFieldValueResource {
 
+    private static final Logger logger = LoggerFactory.getLogger(ChoiceFieldValueResource.class);
     private final ChoiceFieldValueService choiceFieldValueService;
     private final ChoiceFieldRepository choiceFieldRepository;
+
+    public ChoiceFieldValueResource(ChoiceFieldValueService choiceFieldValueService, ChoiceFieldRepository choiceFieldRepository) {
+        this.choiceFieldValueService = choiceFieldValueService;
+        this.choiceFieldRepository = choiceFieldRepository;
+    }
 
     @PostMapping(value = "/choice-field-values")
     public ResponseEntity<ChoiceFieldValue> createChoiceFieldValue(

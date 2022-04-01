@@ -24,7 +24,6 @@ import com.ritense.valtimo.service.AuthorizedUsersService;
 import com.ritense.valtimo.web.rest.error.EntityException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import java.util.Optional;
 
 public class AuthorityServiceImpl implements AuthorityService {

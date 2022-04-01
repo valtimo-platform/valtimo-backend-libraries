@@ -19,9 +19,7 @@ package com.ritense.valtimo.viewconfigurator.domain;
 import com.ritense.valtimo.viewconfigurator.domain.type.BooleanVariableType;
 import com.ritense.valtimo.viewconfigurator.domain.type.DateVariableType;
 import com.ritense.valtimo.viewconfigurator.domain.type.StringVariableType;
-
 import java.util.LinkedHashSet;
-
 import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariableGroupsConstants.DEFAULT_GROUP_LABEL;
 import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.ACTIVE_LABEL;
 import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.ACTIVE_REF;

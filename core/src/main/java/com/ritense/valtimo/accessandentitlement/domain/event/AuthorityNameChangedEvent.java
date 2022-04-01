@@ -18,7 +18,6 @@ package com.ritense.valtimo.accessandentitlement.domain.event;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.valtimo.accessandentitlement.domain.Money;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;

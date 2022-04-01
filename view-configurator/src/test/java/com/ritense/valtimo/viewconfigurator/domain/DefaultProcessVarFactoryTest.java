@@ -22,12 +22,10 @@ import com.ritense.valtimo.viewconfigurator.domain.type.StringVariableType;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariableGroupsConstants.DEFAULT_GROUP_LABEL;
 import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.ACTIVE_LABEL;
 import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.ACTIVE_REF;

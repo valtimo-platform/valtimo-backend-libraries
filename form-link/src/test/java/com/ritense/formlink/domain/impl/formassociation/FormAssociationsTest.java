@@ -19,7 +19,6 @@ package com.ritense.formlink.domain.impl.formassociation;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class FormAssociationsTest {

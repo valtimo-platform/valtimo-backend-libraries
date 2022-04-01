@@ -23,11 +23,9 @@ import com.ritense.valtimo.camunda.task.domain.reminder.Task;
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNot.not;

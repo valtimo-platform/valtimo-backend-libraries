@@ -19,7 +19,6 @@ package com.ritense.valtimo.contract.mail.model.value;
 import com.ritense.valtimo.contract.mail.model.value.attachment.Content;
 import com.ritense.valtimo.contract.mail.model.value.attachment.Name;
 import com.ritense.valtimo.contract.mail.model.value.attachment.Type;
-
 import java.util.Objects;
 
 public class Attachment {

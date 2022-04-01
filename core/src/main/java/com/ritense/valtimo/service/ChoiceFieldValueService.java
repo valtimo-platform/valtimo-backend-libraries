@@ -16,23 +16,25 @@
 
 package com.ritense.valtimo.service;
 
-import com.ritense.valtimo.domain.choicefield.ChoiceFieldValue;
 import com.ritense.valtimo.choicefield.repository.ChoiceFieldValueRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.ritense.valtimo.domain.choicefield.ChoiceFieldValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 
 @Transactional
-@Slf4j
-@RequiredArgsConstructor
 public class ChoiceFieldValueService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ChoiceFieldValueService.class);
     private final ChoiceFieldValueRepository choiceFieldValueRepository;
+
+    public ChoiceFieldValueService(ChoiceFieldValueRepository choiceFieldValueRepository) {
+        this.choiceFieldValueRepository = choiceFieldValueRepository;
+    }
 
     /**
      * Save a choiceFieldValue.

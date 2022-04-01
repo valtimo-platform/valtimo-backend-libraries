@@ -19,14 +19,15 @@ package com.ritense.mail.service;
 import com.microtripit.mandrillapp.lutung.MandrillApi;
 import com.microtripit.mandrillapp.lutung.model.MandrillApiError;
 import com.ritense.mail.config.MandrillProperties;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 
-@Slf4j
 public class MandrillHealthIndicator extends AbstractHealthIndicator {
 
     public static final String PONG = "PONG!";
+    private static final Logger logger = LoggerFactory.getLogger(MandrillHealthIndicator.class);
     private final MandrillApi mandrillApi;
 
     public MandrillHealthIndicator(MandrillProperties mandrillProperties) {

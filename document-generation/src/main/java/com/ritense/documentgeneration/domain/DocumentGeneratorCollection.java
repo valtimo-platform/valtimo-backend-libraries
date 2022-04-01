@@ -18,7 +18,6 @@ package com.ritense.documentgeneration.domain;
 
 import com.ritense.documentgeneration.service.DocumentGenerator;
 import org.springframework.http.MediaType;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;

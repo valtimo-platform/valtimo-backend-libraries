@@ -25,7 +25,6 @@ import com.ritense.valtimo.contract.utils.RequestHelper;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.data.domain.AbstractAggregateRoot;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -36,7 +35,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
@@ -165,8 +163,8 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
             return false;
         }
         Authority authority = (Authority) o;
-        return getName().equals(authority.getName()) &&
-            getSystemAuthority().equals(authority.getSystemAuthority());
+        return getName().equals(authority.getName())
+            && getSystemAuthority().equals(authority.getSystemAuthority());
     }
 
     @Override

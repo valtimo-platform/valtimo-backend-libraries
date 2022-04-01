@@ -17,10 +17,8 @@
 package com.ritense.valtimo.camunda.processaudit;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import lombok.Getter;
 
 public class DeletePortalTaskEvent {
-    @Getter
     private String taskId;
 
     @JsonCreator
@@ -28,5 +26,9 @@ public class DeletePortalTaskEvent {
         final String taskId
     ) {
         this.taskId = taskId;
+    }
+
+    public String getTaskId() {
+        return this.taskId;
     }
 }

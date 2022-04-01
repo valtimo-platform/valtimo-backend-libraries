@@ -24,17 +24,17 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
-
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-@Slf4j
 public class LiquibaseRunner {
 
+    private static final Logger logger = LoggerFactory.getLogger(LiquibaseRunner.class);
     private final List<LiquibaseMasterChangeLogLocation> liquibaseMasterChangeLogLocations;
     private final Contexts context;
     private final DataSource datasource;

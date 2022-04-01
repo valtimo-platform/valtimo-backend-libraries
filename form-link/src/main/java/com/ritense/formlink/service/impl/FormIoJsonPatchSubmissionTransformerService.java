@@ -18,7 +18,6 @@ package com.ritense.formlink.service.impl;
 
 import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowRemovalOperations;
 import static com.ritense.form.domain.FormIoFormDefinition.PROPERTY_KEY;
-
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;

@@ -38,13 +38,11 @@ import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentD
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
 import org.apache.commons.io.IOUtils;
 import org.mockito.MockitoAnnotations;
-
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.UUID;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

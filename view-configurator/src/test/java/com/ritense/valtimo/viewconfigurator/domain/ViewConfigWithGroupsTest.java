@@ -19,11 +19,9 @@ package com.ritense.valtimo.viewconfigurator.domain;
 import com.ritense.valtimo.viewconfigurator.domain.type.LongVariableType;
 import com.ritense.valtimo.viewconfigurator.domain.type.StringVariableType;
 import org.junit.jupiter.api.Test;
-
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;

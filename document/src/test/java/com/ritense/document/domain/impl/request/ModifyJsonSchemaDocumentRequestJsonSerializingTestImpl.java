@@ -20,9 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
-
 import java.io.IOException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModifyJsonSchemaDocumentRequestJsonSerializingTestImpl {

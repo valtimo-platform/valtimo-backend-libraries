@@ -19,9 +19,7 @@ package com.ritense.valtimo.security.permission;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.IdentityLink;
 import org.springframework.security.core.Authentication;
-
 import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.contract.utils.SecurityUtils.getCurrentUserLogin;
 import static com.ritense.valtimo.contract.utils.SecurityUtils.isCurrentUserInRole;
 import static org.camunda.bpm.engine.task.IdentityLinkType.ASSIGNEE;

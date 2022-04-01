@@ -18,7 +18,6 @@ package com.ritense.valtimo.emailnotificationsettings.service;
 
 import com.ritense.valtimo.emailnotificationsettings.domain.request.EmailNotificationSettingsRequest;
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettings;
-
 import java.util.List;
 import java.util.Optional;
 

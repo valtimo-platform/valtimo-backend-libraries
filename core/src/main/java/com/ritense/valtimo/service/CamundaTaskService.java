@@ -32,7 +32,6 @@ import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import com.ritense.valtimo.service.util.FormUtils;
 import com.ritense.valtimo.web.rest.dto.TaskCompletionDTO;
-import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.AuthorizationException;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.ProcessEngineException;
@@ -49,7 +48,6 @@ import org.camunda.bpm.engine.task.Task;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -59,11 +57,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toSet;
 
-@RequiredArgsConstructor
 public class CamundaTaskService {
 
     private static final String NO_USER = null;
@@ -77,6 +73,30 @@ public class CamundaTaskService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RuntimeService runtimeService;
     private final UserManagementService userManagementService;
+
+    public CamundaTaskService(
+        TaskService taskService,
+        FormService formService,
+        ContextService contextService,
+        DelegateTaskHelper delegateTaskHelper,
+        CamundaTaskRepository camundaTaskRepository,
+        CamundaProcessService camundaProcessService,
+        Optional<ResourceService> optionalResourceService,
+        ApplicationEventPublisher applicationEventPublisher,
+        RuntimeService runtimeService,
+        UserManagementService userManagementService
+    ) {
+        this.taskService = taskService;
+        this.formService = formService;
+        this.contextService = contextService;
+        this.delegateTaskHelper = delegateTaskHelper;
+        this.camundaTaskRepository = camundaTaskRepository;
+        this.camundaProcessService = camundaProcessService;
+        this.optionalResourceService = optionalResourceService;
+        this.applicationEventPublisher = applicationEventPublisher;
+        this.runtimeService = runtimeService;
+        this.userManagementService = userManagementService;
+    }
 
     public Task findTaskById(String taskId) {
         Task task;
@@ -151,10 +171,13 @@ public class CamundaTaskService {
 
     public void completeTaskAndDeleteFiles(String taskId, TaskCompletionDTO taskCompletionDTO) {
         completeTask(taskId, taskCompletionDTO.getVariables());
-        optionalResourceService.ifPresent(amazonS3Service -> taskCompletionDTO.getFilesToDelete().forEach(amazonS3Service::removeResource));
+        optionalResourceService.ifPresent(
+            amazonS3Service -> taskCompletionDTO.getFilesToDelete().forEach(amazonS3Service::removeResource));
     }
 
-    public Page<TaskExtended> findTasksFiltered(TaskFilter taskFilter, Pageable pageable) throws IllegalAccessException {
+    public Page<TaskExtended> findTasksFiltered(
+        TaskFilter taskFilter, Pageable pageable
+    ) throws IllegalAccessException {
         var parameters = buildTaskFilterParameters(taskFilter);
         Page<TaskExtended> tasks = camundaTaskRepository.findTasks(pageable, parameters);
         if (!tasks.isEmpty()) {
@@ -257,7 +280,10 @@ public class CamundaTaskService {
 
         //Always filter on context
         Context context = contextService.getContextOfCurrentUser();
-        parameters.put("processDefinitionKeys", context.getProcesses().stream().map(ContextProcess::getProcessDefinitionKey).collect(toSet()));
+        parameters.put(
+            "processDefinitionKeys",
+            context.getProcesses().stream().map(ContextProcess::getProcessDefinitionKey).collect(toSet())
+        );
         return parameters;
     }
 

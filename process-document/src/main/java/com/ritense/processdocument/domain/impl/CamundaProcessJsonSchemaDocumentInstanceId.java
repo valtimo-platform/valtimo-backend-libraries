@@ -19,17 +19,12 @@ package com.ritense.processdocument.domain.impl;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.processdocument.domain.ProcessDocumentInstanceId;
 import com.ritense.valtimo.contract.domain.AbstractId;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import java.util.Objects;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class CamundaProcessJsonSchemaDocumentInstanceId
     extends AbstractId<CamundaProcessJsonSchemaDocumentInstanceId>
     implements ProcessDocumentInstanceId {
@@ -48,6 +43,9 @@ public class CamundaProcessJsonSchemaDocumentInstanceId
         assertArgumentNotNull(documentId, "documentId is required");
         this.processInstanceId = processInstanceId;
         this.documentId = documentId;
+    }
+
+    CamundaProcessJsonSchemaDocumentInstanceId() {
     }
 
     public static CamundaProcessJsonSchemaDocumentInstanceId existingId(

@@ -18,8 +18,6 @@ package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.service.util.FormUtils;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RepositoryService;
@@ -28,8 +26,9 @@ import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -38,16 +37,22 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Slf4j
-@RequiredArgsConstructor
 public class CamundaProcessService {
 
     private static final String UNDEFINED_BUSINESS_KEY = "UNDEFINED_BUSINESS_KEY";
+    private static final Logger logger = LoggerFactory.getLogger(CamundaProcessService.class);
 
     private final RuntimeService runtimeService;
     private final RepositoryService repositoryService;
     private final FormService formService;
     private final HistoryService historyService;
+
+    public CamundaProcessService(RuntimeService runtimeService, RepositoryService repositoryService, FormService formService, HistoryService historyService) {
+        this.runtimeService = runtimeService;
+        this.repositoryService = repositoryService;
+        this.formService = formService;
+        this.historyService = historyService;
+    }
 
     public ProcessDefinition findProcessDefinitionById(String processDefintionId) {
         return repositoryService

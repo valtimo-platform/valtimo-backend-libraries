@@ -17,7 +17,6 @@
 package com.ritense.valtimo.repository.camunda.dto;
 
 import org.camunda.bpm.engine.repository.ProcessDefinition;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
