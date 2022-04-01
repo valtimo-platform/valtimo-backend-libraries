@@ -1,7 +1,7 @@
 plugins {
     id "idea"
 
-    id "org.springframework.boot" version "${springVersion}"
+    id "org.springframework.boot" version "${springBootVersion}"
     id "io.spring.dependency-management" version "${springDependencyManagementVersion}"
 
     id "org.jetbrains.kotlin.jvm" version "${kotlinVersion}"
