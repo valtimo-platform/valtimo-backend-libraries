@@ -21,9 +21,7 @@ import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSeq
 import com.ritense.document.repository.impl.JsonSchemaDocumentDefinitionSequenceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.Optional;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

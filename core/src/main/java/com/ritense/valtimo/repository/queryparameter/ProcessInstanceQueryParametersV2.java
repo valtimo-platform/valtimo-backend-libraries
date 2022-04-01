@@ -30,7 +30,6 @@ import com.ritense.valtimo.web.rest.dto.processvariable.type.EnumProcessVariable
 import com.ritense.valtimo.web.rest.dto.processvariable.type.FileUploadProcessVariableDTOV2;
 import com.ritense.valtimo.web.rest.dto.processvariable.type.LongProcessVariableDTOV2;
 import com.ritense.valtimo.web.rest.dto.processvariable.type.StringProcessVariableDTOV2;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -17,7 +17,6 @@
 package com.ritense.valtimo.repository.utils;
 
 import org.springframework.data.domain.Sort;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.stream.Collectors;

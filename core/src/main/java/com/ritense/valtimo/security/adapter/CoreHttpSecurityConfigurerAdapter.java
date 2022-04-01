@@ -18,19 +18,18 @@ package com.ritense.valtimo.security.adapter;
 
 import com.ritense.valtimo.contract.security.config.AuthenticationSecurityConfigurer;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-
 import java.util.List;
-
 import static org.springframework.http.HttpMethod.OPTIONS;
 
-@Slf4j
 public class CoreHttpSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
+    private static final Logger logger = LoggerFactory.getLogger(CoreHttpSecurityConfigurerAdapter.class);
     private final List<HttpSecurityConfigurer> httpSecurityConfigurers;
     private final List<AuthenticationSecurityConfigurer> authenticationSecurityConfigurers;
 

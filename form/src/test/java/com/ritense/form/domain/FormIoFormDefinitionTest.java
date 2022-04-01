@@ -23,11 +23,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.form.BaseTest;
 import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 

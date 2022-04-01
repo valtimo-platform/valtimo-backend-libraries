@@ -23,28 +23,30 @@ import com.ritense.mail.domain.webhook.MandrillMessageEvent;
 import com.ritense.mail.domain.webhook.MandrillSyncEvent;
 import com.ritense.mail.domain.webhook.MandrillWebhookRequest;
 import com.ritense.valtimo.contract.basictype.EmailAddress;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.MultiValueMap;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
 import static com.ritense.mail.domain.webhook.SyncEventEnum.BLACKLIST;
 
-@Slf4j
-@RequiredArgsConstructor
 public class WebhookService {
 
+    private static final Logger logger = LoggerFactory.getLogger(WebhookService.class);
     private final MandrillProperties mandrillProperties;
     private final BlacklistService blacklistService;
+
+    public WebhookService(MandrillProperties mandrillProperties, BlacklistService blacklistService) {
+        this.mandrillProperties = mandrillProperties;
+        this.blacklistService = blacklistService;
+    }
 
     public boolean isRequestValid(String authenticationKey, MultiValueMap<String, String> body) {
         String url = mandrillProperties.getWebhookUrl();

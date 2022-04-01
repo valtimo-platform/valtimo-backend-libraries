@@ -50,7 +50,7 @@ abstract class BaseTest {
     fun templatedMailMessage(
         recipient: Recipient,
         subject: String,
-        placeholders: Map<String, String>
+        placeholders: Map<String, Any>
     ): TemplatedMailMessage {
         return TemplatedMailMessage.with(recipient, MailTemplateIdentifier.from("Template"))
             .subject(Subject.from(subject))

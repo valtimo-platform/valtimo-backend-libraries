@@ -20,11 +20,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.valtimo.accessandentitlement.domain.Money;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public abstract class AuthorityEvent extends AuditMetaData implements AuditEvent {

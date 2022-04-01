@@ -18,10 +18,8 @@ package com.ritense.valtimo.security.permission;
 
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
-
 import java.io.Serializable;
 import java.util.Map;
-
 import static java.util.Objects.requireNonNull;
 
 public class ValtimoPermissionEvaluator implements PermissionEvaluator {

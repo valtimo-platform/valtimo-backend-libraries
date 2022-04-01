@@ -18,7 +18,6 @@ package com.ritense.valtimo.contract.mail.model.value;
 
 import com.ritense.valtimo.contract.basictype.EmailAddress;
 import com.ritense.valtimo.contract.basictype.SimpleName;
-
 import java.util.Objects;
 
 public class Recipient {

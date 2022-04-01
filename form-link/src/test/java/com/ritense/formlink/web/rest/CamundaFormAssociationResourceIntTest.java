@@ -31,12 +31,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Collections;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

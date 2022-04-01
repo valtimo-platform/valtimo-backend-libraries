@@ -19,10 +19,10 @@ package com.ritense.valtimo.milestones.web.rest;
 import com.ritense.valtimo.milestones.service.MilestoneInstanceService;
 import com.ritense.valtimo.milestones.web.rest.dto.FlowNodeDTO;
 import com.ritense.valtimo.milestones.web.rest.dto.MilestoneInstanceDTO;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.model.bpmn.instance.FlowNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,20 +30,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Slf4j
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class MilestoneInstanceResource {
 
+    private static final Logger logger = LoggerFactory.getLogger(MilestoneInstanceResource.class);
     private final RepositoryService repositoryService;
     private final MilestoneInstanceService milestoneInstanceService;
+
+    public MilestoneInstanceResource(RepositoryService repositoryService, MilestoneInstanceService milestoneInstanceService) {
+        this.repositoryService = repositoryService;
+        this.milestoneInstanceService = milestoneInstanceService;
+    }
 
     @GetMapping(value = "/milestone-instances")
     public ResponseEntity<List<MilestoneInstanceDTO>> getMilestoneInstances() {

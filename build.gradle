@@ -1,14 +1,14 @@
 plugins {
     id "idea"
 
-    id "org.springframework.boot" version "${springVersion}"
+    id "org.springframework.boot" version "${springBootVersion}"
     id "io.spring.dependency-management" version "${springDependencyManagementVersion}"
 
     id "org.jetbrains.kotlin.jvm" version "${kotlinVersion}"
     id "org.jetbrains.kotlin.plugin.spring" version "${kotlinVersion}"
     id "org.jetbrains.kotlin.plugin.jpa" version "${kotlinVersion}"
     id "org.jetbrains.kotlin.plugin.allopen" version "${kotlinVersion}"
-
+    id "org.jetbrains.dokka" version "${kotlinVersion}"
     id "com.github.ben-manes.versions" version "0.20.0"
     id "io.freefair.lombok" version "6.3.0"
     id "org.sonarqube" version "2.7"
@@ -70,6 +70,7 @@ allprojects {
             mavenBom "org.testcontainers:testcontainers-bom:1.15.1"
             mavenBom "com.fasterxml.jackson:jackson-bom:2.12.5"
             mavenBom "org.junit:junit-bom:5.7.2"
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
         }
     }
 
@@ -84,7 +85,6 @@ allprojects {
         mavenCentral()
         mavenLocal()
     }
-
 }
 
 apply from: "gradle/deployment.gradle"
@@ -107,22 +107,12 @@ subprojects { subproject ->
 
     task sourceJar(type: Jar) {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        // from sourceSets.main.allJava
-        // Known issue: with Kotlin sources running publishMavenLocal need to run it twice.
-        from sourceSets.main.delombokTask
+        from sourceSets.main.allSource
         classifier "sources"
     }
 
-    task valtimoJavadocs(type: Javadoc) {
-        source = sourceSets.main.delombokTask
-        classpath = sourceSets.main.runtimeClasspath + delombok.classpath
-        excludes = ['**/*.kt'] // < ---- Exclude all kotlin files from javadoc file.
-    }
-
-    delombok.dependsOn compileKotlin
-
     task javadocJar(type: Jar) {
-        from valtimoJavadocs
+        from dokkaJavadoc
         classifier "javadoc"
     }
 
@@ -147,6 +137,16 @@ subprojects { subproject ->
     sonarqube {
         properties {
             property "sonar.jacoco.reportPaths", allTestCoverageFile
+        }
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            eachDependency { details ->
+                if ('org.jacoco' == details.requested.group) {
+                    details.useVersion "0.8.7"
+                }
+            }
         }
     }
 

@@ -22,9 +22,7 @@ import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormLoaderService;
-
 import java.util.Optional;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class FormIoFormLoaderService implements FormLoaderService {

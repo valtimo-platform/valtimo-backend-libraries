@@ -19,7 +19,6 @@ package com.ritense.document.domain.impl;
 import com.ritense.document.TestHelper;
 import org.everit.json.schema.ValidationException;
 import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

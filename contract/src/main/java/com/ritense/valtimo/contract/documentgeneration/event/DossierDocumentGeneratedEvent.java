@@ -19,7 +19,6 @@ package com.ritense.valtimo.contract.documentgeneration.event;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;

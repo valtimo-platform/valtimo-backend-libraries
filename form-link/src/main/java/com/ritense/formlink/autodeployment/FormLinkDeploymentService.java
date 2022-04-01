@@ -22,27 +22,30 @@ import com.ritense.form.domain.Mapper;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.formlink.domain.request.FormLinkRequest;
 import com.ritense.formlink.service.FormAssociationService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
-
 import java.io.IOException;
 import java.util.List;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@Slf4j
-@RequiredArgsConstructor
 public class FormLinkDeploymentService {
 
+    private static final Logger logger = LoggerFactory.getLogger(FormLinkDeploymentService.class);
     public static final String DEFAULT_PATH = "classpath*:config/formlink/*.json";
     private final ResourceLoader resourceLoader;
     private final FormAssociationService formAssociationService;
     private final FormDefinitionService formDefinitionService;
+
+    public FormLinkDeploymentService(ResourceLoader resourceLoader, FormAssociationService formAssociationService, FormDefinitionService formDefinitionService) {
+        this.resourceLoader = resourceLoader;
+        this.formAssociationService = formAssociationService;
+        this.formDefinitionService = formDefinitionService;
+    }
 
     void deployAllFromResourceFiles() {
         logger.info("Deploying all form links from {}", DEFAULT_PATH);

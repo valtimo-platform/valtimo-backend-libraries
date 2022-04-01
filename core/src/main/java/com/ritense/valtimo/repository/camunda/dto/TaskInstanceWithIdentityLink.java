@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import org.camunda.bpm.engine.rest.dto.task.IdentityLinkDto;
 import org.camunda.bpm.engine.rest.dto.task.TaskDto;
-
 import java.util.List;
 
 public class TaskInstanceWithIdentityLink {

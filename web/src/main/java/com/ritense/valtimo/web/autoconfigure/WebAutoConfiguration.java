@@ -21,7 +21,8 @@ import com.ritense.valtimo.contract.hardening.service.HardeningService;
 import com.ritense.valtimo.contract.hardening.service.impl.HardeningServiceImpl;
 import com.ritense.valtimo.web.config.WebProperties;
 import com.ritense.valtimo.web.rest.error.WebModuleExceptionTranslator;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -31,13 +32,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.zalando.problem.ProblemModule;
 import org.zalando.problem.violations.ConstraintViolationProblemModule;
-
 import java.util.Optional;
 
 @Configuration
 @EnableConfigurationProperties(value = {WebProperties.class})
-@Slf4j
 public class WebAutoConfiguration {
+
+    private static final Logger logger = LoggerFactory.getLogger(WebAutoConfiguration.class);
 
     @Bean
     @ConditionalOnMissingBean

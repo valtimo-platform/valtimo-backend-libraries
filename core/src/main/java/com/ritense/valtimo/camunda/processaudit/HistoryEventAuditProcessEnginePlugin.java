@@ -23,7 +23,6 @@ import org.camunda.bpm.engine.impl.history.handler.CompositeHistoryEventHandler;
 import org.camunda.bpm.engine.impl.history.handler.DbHistoryEventHandler;
 import org.camunda.bpm.engine.impl.history.handler.HistoryEventHandler;
 import org.springframework.context.ApplicationEventPublisher;
-
 import java.util.ArrayList;
 import java.util.List;
 

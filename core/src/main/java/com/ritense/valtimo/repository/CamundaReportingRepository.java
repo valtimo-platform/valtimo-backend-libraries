@@ -21,12 +21,10 @@ import com.ritense.valtimo.repository.camunda.dto.ChartInstanceSeries;
 import com.ritense.valtimo.repository.camunda.dto.InstanceCount;
 import com.ritense.valtimo.repository.camunda.dto.InstanceCountChart;
 import com.ritense.valtimo.repository.camunda.dto.Serie;
-import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.SqlSession;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
-
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -37,11 +35,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public class CamundaReportingRepository {
 
     private final SqlSession session;
     private final RepositoryService repositoryService;
+
+    public CamundaReportingRepository(SqlSession session, RepositoryService repositoryService) {
+        this.session = session;
+        this.repositoryService = repositoryService;
+    }
 
     public InstanceCountChart getProcessInstanceCounts(String processDefinitionKey) {
         Map<String, Object> parameters = new HashMap<>();

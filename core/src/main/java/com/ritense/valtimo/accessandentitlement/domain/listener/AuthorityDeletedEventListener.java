@@ -21,7 +21,6 @@ import com.ritense.valtimo.accessandentitlement.domain.event.AuthorityDeletedEve
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import org.springframework.context.ApplicationEventPublisher;
-
 import javax.persistence.PostRemove;
 import java.time.LocalDateTime;
 import java.util.UUID;

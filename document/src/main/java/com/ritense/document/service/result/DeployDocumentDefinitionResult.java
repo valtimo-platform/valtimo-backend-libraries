@@ -19,7 +19,6 @@ package com.ritense.document.service.result;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.valtimo.contract.result.OperationError;
-
 import java.util.List;
 
 public interface DeployDocumentDefinitionResult {

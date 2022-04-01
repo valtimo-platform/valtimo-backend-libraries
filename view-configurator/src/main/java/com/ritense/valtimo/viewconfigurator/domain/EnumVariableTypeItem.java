@@ -19,7 +19,6 @@ package com.ritense.valtimo.viewconfigurator.domain;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.viewconfigurator.web.rest.view.Views;
 import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

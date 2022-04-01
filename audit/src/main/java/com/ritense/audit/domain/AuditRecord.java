@@ -20,15 +20,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.view.AuditView;
-import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Persistable;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -37,8 +31,7 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import java.util.UUID;
 
 @Entity
 @Table(name = "audit_record", indexes = {
@@ -47,10 +40,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
     @Index(name = "occurred_on_index", columnList = "occurred_on"),
     @Index(name = "user_index", columnList = "user")
 })
-@Getter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuditRecord implements Persistable<AuditRecordId> {
 
     @EmbeddedId
@@ -73,6 +63,20 @@ public class AuditRecord implements Persistable<AuditRecordId> {
 
     @Column(name = "document_id", columnDefinition = "BINARY(16)", updatable = false)
     private UUID documentId;
+
+    public AuditRecord(
+        AuditRecordId auditRecordId, MetaData metaData, LocalDateTime createdOn, AuditEvent auditEvent,
+        UUID documentId
+    ) {
+        this.auditRecordId = auditRecordId;
+        this.metaData = metaData;
+        this.createdOn = createdOn;
+        this.auditEvent = auditEvent;
+        this.documentId = documentId;
+    }
+
+    private AuditRecord() {
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -111,6 +115,26 @@ public class AuditRecord implements Persistable<AuditRecordId> {
             ", createdOn=" + createdOn +
             ", auditEvent=" + auditEvent +
             '}';
+    }
+
+    public AuditRecordId getAuditRecordId() {
+        return this.auditRecordId;
+    }
+
+    public MetaData getMetaData() {
+        return this.metaData;
+    }
+
+    public LocalDateTime getCreatedOn() {
+        return this.createdOn;
+    }
+
+    public AuditEvent getAuditEvent() {
+        return this.auditEvent;
+    }
+
+    public UUID getDocumentId() {
+        return this.documentId;
     }
 
     public static class AuditRecordBuilder {

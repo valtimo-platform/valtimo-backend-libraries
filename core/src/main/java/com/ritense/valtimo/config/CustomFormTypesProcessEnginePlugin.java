@@ -23,7 +23,6 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.cfg.ProcessEnginePlugin;
 import org.camunda.bpm.engine.impl.form.type.AbstractFormFieldType;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -21,9 +21,9 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -31,11 +31,14 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
-@RequiredArgsConstructor
 public class JsonSchemaDocumentDefinitionSequenceGeneratorService implements DocumentSequenceGeneratorService {
 
+    private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentDefinitionSequenceGeneratorService.class);
     private final DocumentDefinitionSequenceRepository<JsonSchemaDocumentDefinitionSequenceRecord> documentDefinitionSequenceRepository;
+
+    public JsonSchemaDocumentDefinitionSequenceGeneratorService(DocumentDefinitionSequenceRepository<JsonSchemaDocumentDefinitionSequenceRecord> documentDefinitionSequenceRepository) {
+        this.documentDefinitionSequenceRepository = documentDefinitionSequenceRepository;
+    }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.SERIALIZABLE)

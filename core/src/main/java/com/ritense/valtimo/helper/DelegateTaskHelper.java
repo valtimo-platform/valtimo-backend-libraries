@@ -26,7 +26,6 @@ import org.camunda.bpm.engine.task.IdentityLink;
 import org.camunda.bpm.engine.task.IdentityLinkType;
 import org.camunda.bpm.model.bpmn.instance.Task;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

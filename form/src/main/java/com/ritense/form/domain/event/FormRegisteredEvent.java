@@ -17,9 +17,7 @@
 package com.ritense.form.domain.event;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class FormRegisteredEvent {

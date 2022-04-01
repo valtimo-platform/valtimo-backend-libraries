@@ -25,11 +25,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-
 import static com.ritense.valtimo.service.ProcessShortTimerService.NAMESPACE_URL_BPMN;
 import static com.ritense.valtimo.service.ProcessShortTimerService.NAMESPACE_URL_BPMNDI;
 import static org.junit.jupiter.api.Assertions.assertEquals;

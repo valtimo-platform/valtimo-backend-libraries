@@ -17,7 +17,6 @@
 package com.ritense.valtimo.viewconfigurator.domain.type;
 
 import com.ritense.valtimo.viewconfigurator.domain.ProcessDefinitionVariable;
-
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 

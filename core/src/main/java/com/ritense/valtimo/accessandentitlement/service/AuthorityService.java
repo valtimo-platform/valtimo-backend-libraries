@@ -20,7 +20,6 @@ import com.ritense.valtimo.accessandentitlement.domain.Authority;
 import com.ritense.valtimo.accessandentitlement.domain.AuthorityRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import java.util.Optional;
 
 public interface AuthorityService {

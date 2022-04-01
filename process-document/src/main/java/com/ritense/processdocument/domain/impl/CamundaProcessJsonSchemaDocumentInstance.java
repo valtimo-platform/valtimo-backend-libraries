@@ -18,22 +18,17 @@ package com.ritense.processdocument.domain.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.processdocument.domain.ProcessDocumentInstance;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Persistable;
-
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Entity
 @Table(name = "camunda_process_json_schema_document_instance")
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class CamundaProcessJsonSchemaDocumentInstance
     implements ProcessDocumentInstance, Persistable<CamundaProcessJsonSchemaDocumentInstanceId> {
 
@@ -54,6 +49,9 @@ public class CamundaProcessJsonSchemaDocumentInstance
         }
         this.processDocumentInstanceId = processDocumentInstanceId;
         this.processName = processName;
+    }
+
+    CamundaProcessJsonSchemaDocumentInstance() {
     }
 
     @Override

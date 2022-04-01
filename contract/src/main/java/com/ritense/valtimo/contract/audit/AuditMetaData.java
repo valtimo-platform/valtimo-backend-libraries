@@ -19,11 +19,9 @@ package com.ritense.valtimo.contract.audit;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
-
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 

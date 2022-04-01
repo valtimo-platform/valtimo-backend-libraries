@@ -19,11 +19,9 @@ package com.ritense.valtimo.viewconfigurator.domain;
 import com.ritense.valtimo.viewconfigurator.domain.type.StringVariableType;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.IsEqual;
-
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
-
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.CombinableMatcher.both;

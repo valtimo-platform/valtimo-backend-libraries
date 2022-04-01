@@ -18,18 +18,20 @@ package com.ritense.document.domain.impl.event;
 
 import com.ritense.document.domain.event.DocumentSnapshotCapturedEvent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-@EqualsAndHashCode
-@RequiredArgsConstructor
 public class JsonSchemaDocumentSnapshotCapturedEvent implements DocumentSnapshotCapturedEvent {
 
     private final JsonSchemaDocumentId documentId;
     private final LocalDateTime createdOn;
     private final String createdBy;
+
+    public JsonSchemaDocumentSnapshotCapturedEvent(JsonSchemaDocumentId documentId, LocalDateTime createdOn, String createdBy) {
+        this.documentId = documentId;
+        this.createdOn = createdOn;
+        this.createdBy = createdBy;
+    }
 
     @Override
     public JsonSchemaDocumentId documentId() {
@@ -46,4 +48,16 @@ public class JsonSchemaDocumentSnapshotCapturedEvent implements DocumentSnapshot
         return createdBy;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JsonSchemaDocumentSnapshotCapturedEvent that = (JsonSchemaDocumentSnapshotCapturedEvent) o;
+        return Objects.equals(documentId, that.documentId) && Objects.equals(createdOn, that.createdOn) && Objects.equals(createdBy, that.createdBy);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(documentId, createdOn, createdBy);
+    }
 }

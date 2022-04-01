@@ -19,7 +19,6 @@ package com.ritense.formlink.security.config;
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;

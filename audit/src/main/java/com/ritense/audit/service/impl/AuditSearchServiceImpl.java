@@ -18,12 +18,10 @@ package com.ritense.audit.service.impl;
 
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.service.AuditSearchService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -34,10 +32,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Transactional
-@RequiredArgsConstructor
 public class AuditSearchServiceImpl implements AuditSearchService {
 
     private final EntityManager entityManager;
+
+    public AuditSearchServiceImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public Page<AuditRecord> search(List<SearchCriteria> criteriaList, Pageable pageable) {

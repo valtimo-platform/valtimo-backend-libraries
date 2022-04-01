@@ -18,7 +18,6 @@ package com.ritense.valtimo.viewconfigurator.domain.type;
 
 import com.ritense.valtimo.viewconfigurator.domain.EnumVariableTypeItem;
 import com.ritense.valtimo.viewconfigurator.domain.ProcessDefinitionVariable;
-
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

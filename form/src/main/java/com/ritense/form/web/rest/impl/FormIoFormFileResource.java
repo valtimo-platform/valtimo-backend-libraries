@@ -20,7 +20,6 @@ import com.ritense.form.web.rest.FormFileResource;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.resource.FileStatus;
 import com.ritense.valtimo.contract.resource.Resource;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,10 +29,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
-@RequiredArgsConstructor
 public class FormIoFormFileResource implements FormFileResource {
 
     private final ResourceService resourceService;
+
+    public FormIoFormFileResource(ResourceService resourceService) {
+        this.resourceService = resourceService;
+    }
 
     @Override
     @PostMapping(value = "/form-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

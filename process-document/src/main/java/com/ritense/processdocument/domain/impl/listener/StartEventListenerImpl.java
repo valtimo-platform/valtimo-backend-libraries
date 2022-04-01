@@ -30,31 +30,34 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentForRunningProc
 import com.ritense.processdocument.domain.listener.StartEventListener;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.ActivityTypes;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
 import org.camunda.bpm.engine.variable.value.StringValue;
 import org.camunda.bpm.extension.reactor.bus.CamundaSelector;
 import org.camunda.bpm.extension.reactor.spring.listener.ReactorExecutionListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
-
 import java.io.IOException;
 import java.util.UUID;
-
 import static com.ritense.processdocument.domain.impl.delegate.ProcessDocumentStartEventMessageDelegateImpl.PAYLOAD;
 import static com.ritense.processdocument.domain.impl.delegate.ProcessDocumentStartEventMessageDelegateImpl.RELATION_TYPE;
 import static com.ritense.processdocument.domain.impl.delegate.ProcessDocumentStartEventMessageDelegateImpl.SOURCE_PROCESS_INSTANCE_ID;
 
-@Slf4j
-@RequiredArgsConstructor
 @CamundaSelector(type = ActivityTypes.START_EVENT, event = ExecutionListener.EVENTNAME_START)
 public class StartEventListenerImpl extends ReactorExecutionListener implements StartEventListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(StartEventListenerImpl.class);
     private final ProcessDocumentService processDocumentService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    public StartEventListenerImpl(ProcessDocumentService processDocumentService, ProcessDocumentAssociationService processDocumentAssociationService, ApplicationEventPublisher applicationEventPublisher) {
+        this.processDocumentService = processDocumentService;
+        this.processDocumentAssociationService = processDocumentAssociationService;
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     @Override
     public void notify(DelegateExecution execution) {

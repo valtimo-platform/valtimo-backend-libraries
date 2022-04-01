@@ -22,18 +22,21 @@ import com.ritense.valtimo.milestones.domain.MilestoneSet;
 import com.ritense.valtimo.milestones.repository.MilestoneInstanceRepository;
 import com.ritense.valtimo.milestones.repository.MilestoneRepository;
 import com.ritense.valtimo.milestones.service.exception.DuplicateMilestoneException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.List;
 
-@Slf4j
-@RequiredArgsConstructor
 public class MilestoneInstanceGenerator {
 
+    private static final Logger logger = LoggerFactory.getLogger(MilestoneInstanceGenerator.class);
     private final MilestoneRepository milestoneRepository;
     private final MilestoneInstanceRepository milestoneInstanceRepository;
+
+    public MilestoneInstanceGenerator(MilestoneRepository milestoneRepository, MilestoneInstanceRepository milestoneInstanceRepository) {
+        this.milestoneRepository = milestoneRepository;
+        this.milestoneInstanceRepository = milestoneInstanceRepository;
+    }
 
     // TODO: Add option that also allows to generate milestones even when there are duplicates.
     public void generateMilestoneInstancesFromSetIgnoreOnDuplicate(

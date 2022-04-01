@@ -19,16 +19,11 @@ package com.ritense.processdocument.domain.impl;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.processdocument.domain.ProcessDocumentDefinitionId;
 import com.ritense.valtimo.contract.domain.AbstractId;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import java.util.Objects;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Embeddable
 public class CamundaProcessJsonSchemaDocumentDefinitionId extends AbstractId<CamundaProcessJsonSchemaDocumentDefinitionId>
     implements ProcessDocumentDefinitionId {
@@ -47,6 +42,9 @@ public class CamundaProcessJsonSchemaDocumentDefinitionId extends AbstractId<Cam
         assertArgumentNotNull(documentDefinitionId, "documentDefinitionId is required");
         this.processDefinitionKey = processDefinitionKey;
         this.documentDefinitionId = documentDefinitionId;
+    }
+
+    private CamundaProcessJsonSchemaDocumentDefinitionId() {
     }
 
     public static CamundaProcessJsonSchemaDocumentDefinitionId existingId(

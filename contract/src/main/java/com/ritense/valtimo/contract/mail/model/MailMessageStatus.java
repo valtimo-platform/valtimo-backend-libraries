@@ -17,7 +17,6 @@
 package com.ritense.valtimo.contract.mail.model;
 
 import com.ritense.valtimo.contract.basictype.EmailAddress;
-
 import java.util.Objects;
 
 public class MailMessageStatus {

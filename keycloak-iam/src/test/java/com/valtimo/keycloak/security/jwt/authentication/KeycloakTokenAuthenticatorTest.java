@@ -28,10 +28,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-
 import java.security.KeyPair;
 import java.util.List;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;

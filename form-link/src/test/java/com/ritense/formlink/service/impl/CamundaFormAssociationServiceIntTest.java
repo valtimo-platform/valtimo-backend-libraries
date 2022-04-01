@@ -22,11 +22,9 @@ import com.ritense.formlink.BaseIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.io.IOException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")

@@ -22,9 +22,7 @@ import com.ritense.valtimo.repository.queryparameter.type.EnumProcessVariableQue
 import com.ritense.valtimo.repository.queryparameter.type.FileUploadProcessVariableQueryParameterV2;
 import com.ritense.valtimo.repository.queryparameter.type.LongProcessVariableQueryParameterV2;
 import com.ritense.valtimo.repository.queryparameter.type.StringProcessVariableQueryParameterV2;
-
 import java.util.Objects;
-
 import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.ACTIVE_REF;
 import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.BUSINESS_KEY_REF;
 import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.PROCESS_ENDED_REF;

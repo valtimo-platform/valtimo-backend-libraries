@@ -19,7 +19,6 @@ package com.ritense.document.service.result;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.document.domain.Document;
 import com.ritense.document.service.result.error.DocumentOperationError;
-
 import java.util.List;
 import java.util.Optional;
 
