@@ -1,7 +1,7 @@
 plugins {
     id "idea"
 
-    id "org.springframework.boot" version "${springVersion}"
+    id "org.springframework.boot" version "${springBootVersion}"
     id "io.spring.dependency-management" version "${springDependencyManagementVersion}"
 
     id "org.jetbrains.kotlin.jvm" version "${kotlinVersion}"
@@ -70,6 +70,7 @@ allprojects {
             mavenBom "org.testcontainers:testcontainers-bom:1.15.1"
             mavenBom "com.fasterxml.jackson:jackson-bom:2.12.5"
             mavenBom "org.junit:junit-bom:5.7.2"
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
         }
     }
 
