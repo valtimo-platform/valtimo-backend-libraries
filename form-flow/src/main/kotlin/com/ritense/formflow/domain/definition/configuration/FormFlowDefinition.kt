@@ -38,8 +38,6 @@ class FormFlowDefinition(
             if (!hasMatch) return false
         }
 
-        if (steps != other.steps) return false
-
         return true
     }
 

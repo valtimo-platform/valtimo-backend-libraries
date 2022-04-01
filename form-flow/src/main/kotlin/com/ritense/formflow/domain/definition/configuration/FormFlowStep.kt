@@ -33,9 +33,15 @@ class FormFlowStep(
         if (key != other.id.key) return false
         if (nextSteps!!.size != other.nextSteps!!.size) return false
         for (otherNextStep in other.nextSteps!!) {
-
+            var hasMatch = false
+            for (nextStep in nextSteps) {
+                if (nextStep.contentEquals(otherNextStep)) {
+                    hasMatch = true
+                    break
+                }
+            }
+            if (!hasMatch) return false
         }
-        if (nextSteps != other.nextSteps) return false
 
         return true
     }
