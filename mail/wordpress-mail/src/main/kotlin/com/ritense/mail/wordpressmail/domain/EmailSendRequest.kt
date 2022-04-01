@@ -46,28 +46,24 @@ data class EmailSendRequest(
         }
 
         private fun toVariablesField(placeholders: Map<String, Any>?, subject: Subject): Map<String, Any> {
-            val variables = mutableMapOf<String, Any>()
-            if (placeholders != null) {
-                toVariablesField("", placeholders, variables)
-            }
+            val variables = toVariablesField("", placeholders).associateTo(mutableMapOf()) { it.first to it.second }
             if (subject.isPresent) {
                 variables["SUBJECT"] = subject.get()
             }
             return variables
         }
 
-        private fun toVariablesField(
-            prefix: String,
-            placeholders: Map<String, Any>,
-            variables: MutableMap<String, Any>
-        ) {
-            placeholders.entries.forEach {
+        private fun toVariablesField(prefix: String, placeholders: Map<String, Any>?): List<Pair<String, Any>> {
+            val entries = mutableListOf<Pair<String, Any>>()
+            placeholders?.entries?.forEach {
+                val key = "$prefix${toVariableKey(it.key)}"
                 if (it.value is Map<*, *>) {
-                    toVariablesField("${toVariableKey(it.key)}_", it.value as Map<String, Any>, variables)
+                    entries.addAll(toVariablesField("${key}_", it.value as Map<String, Any>))
                 } else {
-                    variables["$prefix${toVariableKey(it.key)}"] = it.value
+                    entries.add(Pair(key, it.value))
                 }
             }
+            return entries
         }
 
         /* Wordpress Mail placeholder-key can only handle uppercase letters and underscore. So, no lower case and no numbers */

@@ -63,14 +63,14 @@ class EmailSendRequestTest : BaseTest() {
             recipient = Recipient.to(EmailAddress.from("john@example.com"), SimpleName.from("John Doe")),
             subject = "Welcome",
             placeholders = mapOf(
-                "var" to mapOf("status" to "Geregistreerd","emailadres" to "john.doe@ritense.com")
+                "var" to mapOf("status" to "Geregistreerd","emailadres" to "john@example.com")
             )
         )
 
         val sendRequests = EmailSendRequest.from(templatedMailMessage)
 
         assertThat(sendRequests[0].variables).containsEntry("VAR_STATUS", "Geregistreerd")
-        assertThat(sendRequests[0].variables).containsEntry("VAR_EMAILADRES", "john.doe@ritense.com")
+        assertThat(sendRequests[0].variables).containsEntry("VAR_EMAILADRES", "john@example.com")
     }
 
 }
