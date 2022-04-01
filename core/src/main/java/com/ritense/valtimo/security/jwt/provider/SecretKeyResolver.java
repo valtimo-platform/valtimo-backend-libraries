@@ -23,8 +23,6 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SigningKeyResolver;
 import io.jsonwebtoken.lang.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.security.Key;
 import java.util.List;
 
