@@ -89,7 +89,7 @@ class FormFlowInstance(
     }
 
     private fun determineNextStep() : FormFlowStepInstance {
-        return FormFlowStepInstance(instance = this, stepKey = "henk", order = history.size)
+        return FormFlowStepInstance(instance = this, stepKey = "temporary", order = history.size)
     }
 
     override fun equals(other: Any?): Boolean {
