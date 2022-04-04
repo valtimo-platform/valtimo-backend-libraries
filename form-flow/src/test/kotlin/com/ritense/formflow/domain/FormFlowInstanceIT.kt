@@ -17,11 +17,12 @@
 package com.ritense.formflow.domain
 
 import com.ritense.formflow.BaseIntegrationTest
-import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.instance.FormFlowInstance
+import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
@@ -32,26 +33,35 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
     @Autowired
     lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
 
+    @Autowired
+    lateinit var formFlowDefinitionRepository: FormFlowDefinitionRepository
+
     @Test
     fun `create form flow instance successfully`() {
+        val formFlowDefinition =
+            formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc("inkomens_loket")
+
         val formFlowInstance = FormFlowInstance(
-            formFlowDefinitionId = FormFlowDefinitionId.newId("test")
+            formFlowDefinition = formFlowDefinition!!
         )
-        formFlowInstanceRepository.save(formFlowInstance)
+        formFlowInstanceRepository.saveAndFlush(formFlowInstance)
 
         val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
 
-        assertEquals(storedInstance, formFlowInstance)
+        assertTrue(storedInstance.equals(formFlowInstance))
     }
 
     @Test
     fun `update form flow instance successfully`() {
+        val formFlowDefinition =
+            formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc("inkomens_loket")
+
         val formFlowInstance = FormFlowInstance(
-                formFlowDefinitionId = FormFlowDefinitionId.newId("test")
+            formFlowDefinition = formFlowDefinition!!
         )
-        formFlowInstanceRepository.save(formFlowInstance)
+        formFlowInstanceRepository.saveAndFlush(formFlowInstance)
         formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, "{\"data\": \"data\"}")
-        formFlowInstanceRepository.save(formFlowInstance)
+        formFlowInstanceRepository.saveAndFlush(formFlowInstance)
 
         val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
         assertEquals(storedInstance.getHistory().size, 2)

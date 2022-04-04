@@ -16,25 +16,35 @@
 
 package com.ritense.formflow.domain.instance
 
-import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.ritense.formflow.domain.definition.FormFlowDefinition
 import org.hibernate.annotations.Type
+import java.util.Objects
 import javax.persistence.AttributeOverride
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.JoinColumn
+import javax.persistence.JoinColumns
+import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.OrderBy
 import javax.persistence.Table
+
 
 @Entity
 @Table(name = "form_flow_instance")
 class FormFlowInstance(
     @EmbeddedId
     val id: FormFlowInstanceId = FormFlowInstanceId.newId(),
-    @Embedded
-    val formFlowDefinitionId: FormFlowDefinitionId,
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumns(
+        JoinColumn(name = "form_flow_definition_key", referencedColumnName = "form_flow_definition_key"),
+        JoinColumn(name = "form_flow_definition_version", referencedColumnName = "form_flow_definition_version")
+    )
+    val formFlowDefinition: FormFlowDefinition,
     @Embedded
     @AttributeOverride(name = "id", column = Column(name = "current_form_flow_step_instance_id"))
     var currentFormFlowStepInstanceId: FormFlowStepInstanceId? = null,
@@ -89,21 +99,16 @@ class FormFlowInstance(
         other as FormFlowInstance
 
         if (id != other.id) return false
-        if (formFlowDefinitionId != other.formFlowDefinitionId) return false
+        if (formFlowDefinition.id != other.formFlowDefinition.id) return false
         if (currentFormFlowStepInstanceId != other.currentFormFlowStepInstanceId) return false
-        if (history != other.history) return false
-        if (additionalProperties != other.additionalProperties) return false
+        //wrapping in arraylist to prevent issues with hibernate PersistentBag equals implementation
+        if (ArrayList(history) != ArrayList(other.history)) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + formFlowDefinitionId.hashCode()
-        result = 31 * result + (currentFormFlowStepInstanceId?.hashCode() ?: 0)
-        result = 31 * result + history.hashCode()
-        result = 31 * result + additionalProperties.hashCode()
-        return result
+        return Objects.hash(id, formFlowDefinition.id, currentFormFlowStepInstanceId, history, additionalProperties)
     }
 
 }
