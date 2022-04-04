@@ -16,7 +16,7 @@
 
 package com.ritense.formflow.domain
 
-import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.nhaarman.mockitokotlin2.mock
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import org.hamcrest.CoreMatchers.equalTo
@@ -29,7 +29,7 @@ internal class FormFlowInstanceTest {
     @Test
     fun `complete should return new step id` () {
         val instance = FormFlowInstance(
-            formFlowDefinitionId = FormFlowDefinitionId.newId("test")
+            formFlowDefinition = mock()
         )
 
         //complete task
@@ -41,7 +41,7 @@ internal class FormFlowInstanceTest {
     @Test
     fun `complete should throw exception when step in not current active step` () {
         val instance = FormFlowInstance(
-            formFlowDefinitionId = FormFlowDefinitionId.newId("test")
+            formFlowDefinition = mock()
         )
 
         assertThrows<AssertionError> {

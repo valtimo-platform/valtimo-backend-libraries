@@ -64,4 +64,12 @@
                                  referencedTableName="form_flow_instance"
                                  referencedColumnNames="form_flow_instance_id"/>
     </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <addForeignKeyConstraint baseTableName="form_flow_instance"
+                                 baseColumnNames="form_flow_definition_key,form_flow_definition_version"
+                                 constraintName="fk_form_flow_definition_key_version"
+                                 referencedTableName="form_flow_definition"
+                                 referencedColumnNames="form_flow_definition_key,form_flow_definition_version"/>
+    </changeSet>
 </databaseChangeLog>
