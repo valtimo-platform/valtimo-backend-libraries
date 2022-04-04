@@ -1,12 +1,9 @@
-package com.ritense.formflow.domain.configuration
+package com.ritense.formflow.domain.definition.configuration
 
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStepId
-import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
-import com.ritense.formflow.domain.definition.configuration.FormFlowStep
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -60,6 +57,7 @@ class FormFlowDefinitionTest {
             id = FormFlowDefinitionId.newId("key1"), "test1", mutableSetOf(otherStep1))
 
         whenever(thisStep1.contentEquals(otherStep1)).thenReturn(true)
+        whenever(thisStep2.contentEquals(otherStep1)).thenReturn(true)
 
         assertFalse(thisDefinition.contentEquals(otherDefinition))
     }
