@@ -14,9 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain
+package com.ritense.formflow.domain.definition.configuration
 
-data class FormFlowNextStep(
+import com.ritense.formflow.domain.definition.FormFlowNextStep as FormFlowNextStepEntity
+
+class FormFlowNextStep(
     val condition: String? = null,
-    val step: String,
-)
+    val step: String
+) {
+
+    fun contentEquals(other: FormFlowNextStepEntity): Boolean {
+        if (condition != other.condition) return false
+        if (step != other.step) return false
+
+        return true
+    }
+
+    fun toDefinition() : FormFlowNextStepEntity {
+        return FormFlowNextStepEntity(condition, step)
+    }
+}

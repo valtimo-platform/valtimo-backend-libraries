@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.repository
+package com.ritense.formflow.domain.definition
 
-import com.ritense.formflow.domain.definition.FormFlowDefinition
-import com.ritense.formflow.domain.definition.FormFlowDefinitionId
-import org.springframework.data.jpa.repository.JpaRepository
-
-interface FormFlowDefinitionRepository : JpaRepository<FormFlowDefinition, FormFlowDefinitionId> {
-
-    /**
-     *  Find the latest definition by key
-     *
-     * @param formFlowKey The key of the form-flow
-     * @return The FormFlow definition
-     */
-    fun findFirstByIdKeyOrderByIdVersionDesc(formFlowKey: String): FormFlowDefinition?
-}
+data class FormFlowNextStep(
+    val condition: String? = null,
+    val step: String
+)

@@ -16,8 +16,8 @@
 
 package com.ritense.formflow.service
 
-import com.ritense.formflow.domain.FormFlowDefinition
-import com.ritense.formflow.domain.FormFlowDefinitionId
+import com.ritense.formflow.domain.definition.FormFlowDefinition
+import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import mu.KotlinLogging
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONObject
@@ -64,14 +64,18 @@ class FormFlowDeploymentService(
     fun deploy(formFlowKey: String, formFlowJson: String) {
         validate(formFlowJson)
 
-        val formFlowDefinition = Mapper.get().readValue(formFlowJson, FormFlowDefinition::class.java)
+        val formFlowDefinitionConfig = Mapper.get()
+            .readValue(
+                formFlowJson,
+                com.ritense.formflow.domain.definition.configuration.FormFlowDefinition::class.java
+            )
 
         try {
             val existingDefinition = formFlowService.findLatestDefinitionByKey(formFlowKey)
             var definitionId = FormFlowDefinitionId.newId(formFlowKey)
 
             if (existingDefinition != null) {
-                if (formFlowDefinition == existingDefinition) {
+                if (formFlowDefinitionConfig.contentEquals(existingDefinition)) {
                     logger.info("Form Flow already deployed - {}", definitionId.toString())
                     return
                 } else {
@@ -80,13 +84,7 @@ class FormFlowDeploymentService(
                 }
             }
 
-            val newFormFlowDefinition = FormFlowDefinition(
-                id = definitionId,
-                startStep = formFlowDefinition.startStep,
-                steps = formFlowDefinition.steps
-            )
-
-            formFlowService.save(newFormFlowDefinition)
+            formFlowService.save(formFlowDefinitionConfig.toDefinition(definitionId))
             logger.info("Deployed Form Flow - {}", definitionId.toString())
         } catch (e: Exception) {
             throw RuntimeException("Failed to deploy Form Flow $formFlowKey", e)

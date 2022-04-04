@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain
+package com.ritense.formflow.domain.definition
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.ritense.formflow.domain.AbstractId
 import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.Embeddable
+import javax.persistence.FetchType
+import javax.persistence.JoinColumn
+import javax.persistence.JoinColumns
+import javax.persistence.ManyToOne
 
 @Embeddable
-data class FormFlowDefinitionId(
+data class FormFlowStepId(
 
-    @Column(name = "form_flow_definition_key")
+    @Column(name = "form_flow_step_key")
     val key: String,
 
-    @Column(name = "form_flow_definition_version")
-    val version: Long
-
-) : AbstractId<FormFlowDefinitionId>() {
-
-    override fun toString(): String {
-        return "$key:$version"
-    }
+    @ManyToOne(targetEntity = FormFlowDefinition::class, fetch = FetchType.LAZY)
+    @JoinColumns(
+        JoinColumn(name = "form_flow_definition_key", referencedColumnName = "form_flow_definition_key"),
+        JoinColumn(name = "form_flow_definition_version", referencedColumnName = "form_flow_definition_version")
+    )
+    var formFlowDefinition: FormFlowDefinition? = null
+) : AbstractId<FormFlowStepId>() {
 
     override fun hashCode(): Int {
         return Objects.hash(key)
@@ -43,24 +48,20 @@ data class FormFlowDefinitionId(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as FormFlowDefinitionId
+        other as FormFlowStepId
 
         if (key != other.key) return false
 
         return true
     }
 
+    override fun toString(): String {
+        return "${formFlowDefinition?.id}:$key"
+    }
+
     companion object {
-        fun newId(key: String): FormFlowDefinitionId {
-            return FormFlowDefinitionId(key, 1).newIdentity()
-        }
-
-        fun nextVersion(id: FormFlowDefinitionId): FormFlowDefinitionId {
-            return FormFlowDefinitionId(id.key, id.version!! + 1).newIdentity()
-        }
-
-        fun existingId(id: FormFlowDefinitionId): FormFlowDefinitionId {
-            return FormFlowDefinitionId(id.key, id.version)
-        }
+        @JvmStatic
+        @JsonCreator
+        fun create(value: String) = FormFlowStepId(value).newIdentity()
     }
 }

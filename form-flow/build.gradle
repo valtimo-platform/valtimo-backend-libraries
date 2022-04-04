@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+dockerCompose {
+    projectName = "form-flow"
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
+    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+}
+
 dependencies {
 
     /* DO NOT ADD DEPENDENCIES TO OTHER VALTIMO MODULES */
@@ -29,6 +36,8 @@ dependencies {
     implementation "com.github.erosb:everit-json-schema:1.14.0"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "mysql:mysql-connector-java"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
     jar {
         enabled = true

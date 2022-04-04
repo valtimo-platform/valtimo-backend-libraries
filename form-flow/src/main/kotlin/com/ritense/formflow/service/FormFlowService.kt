@@ -16,7 +16,7 @@
 
 package com.ritense.formflow.service
 
-import com.ritense.formflow.domain.FormFlowDefinition
+import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 
 class FormFlowService(

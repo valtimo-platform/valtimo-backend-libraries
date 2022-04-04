@@ -24,7 +24,10 @@
     <property name="uuidType" value="uuid" dbms="postgresql"/>
     <property name="intType" value="int" dbms="mysql"/>
     <property name="intType" value="integer" dbms="postgresql"/>
+    <property name="jsonType" value="JSON" dbms="mysql"/>
+    <property name="jsonType" value="JSON" dbms="postgresql"/>
 
     <include file="changelog/20220317-add-form-flow-definition.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20220328-add-form-flow-instance.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
