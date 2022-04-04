@@ -35,7 +35,7 @@ data class FormFlowStepInstance(
     val instance: FormFlowInstance,
     @Column(name = "form_flow_step_key", updatable = false, nullable = false)
     val stepKey: String,
-    @Column(name = "`order`", updatable = false, nullable = false)
+    @Column(name = "form_flow_step_instance_order", updatable = false, nullable = false)
     val order: Int,
     @Column(name = "submission_data")
     var submissionData: String? = null

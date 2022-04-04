@@ -50,7 +50,7 @@
             <column name="form_flow_step_key" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
-            <column name="order" type="${intType}">
+            <column name="form_flow_step_instance_order" type="${intType}">
                 <constraints nullable="false"/>
             </column>
             <column name="submission_data" type="${jsonType}"/>
