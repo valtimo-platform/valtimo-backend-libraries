@@ -16,6 +16,8 @@
 
 package com.ritense.formflow.domain.definition.configuration
 
+import com.ritense.formflow.domain.definition.FormFlowNextStep as FormFlowNextStepEntity
+import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
@@ -28,7 +30,7 @@ internal class FormFlowStepTest {
 
     @Test
     fun `contentEquals should match when nextsteps match with single entry`() {
-        val otherMock: com.ritense.formflow.domain.definition.FormFlowNextStep = mock()
+        val otherMock: FormFlowNextStepEntity = mock()
 
         val mockStep: FormFlowNextStep = mock()
         whenever(mockStep.contentEquals(otherMock)).thenReturn(true)
@@ -39,7 +41,7 @@ internal class FormFlowStepTest {
                 mockStep
             )
         )
-        val otherStep = com.ritense.formflow.domain.definition.FormFlowStep(
+        val otherStep = FormFlowStepEntity(
             FormFlowStepId("step-key"),
             mutableListOf(
                 otherMock
@@ -51,8 +53,8 @@ internal class FormFlowStepTest {
 
     @Test
     fun `contentEquals should match when nextsteps match with multiple entries`() {
-        val otherMock1: com.ritense.formflow.domain.definition.FormFlowNextStep = mock()
-        val otherMock2: com.ritense.formflow.domain.definition.FormFlowNextStep = mock()
+        val otherMock1: FormFlowNextStepEntity = mock()
+        val otherMock2: FormFlowNextStepEntity = mock()
 
         val mockStep1: FormFlowNextStep = mock()
         whenever(mockStep1.contentEquals(otherMock1)).thenReturn(true)
@@ -69,7 +71,7 @@ internal class FormFlowStepTest {
                 mockStep2
             )
         )
-        val otherStep = com.ritense.formflow.domain.definition.FormFlowStep(
+        val otherStep = FormFlowStepEntity(
             FormFlowStepId("step-key"),
             mutableListOf(
                 otherMock1,
@@ -95,7 +97,7 @@ internal class FormFlowStepTest {
                 mockStep2
             )
         )
-        val otherStep = com.ritense.formflow.domain.definition.FormFlowStep(
+        val otherStep = FormFlowStepEntity(
             FormFlowStepId("step-key"),
             mutableListOf(
                 mock()
@@ -116,7 +118,7 @@ internal class FormFlowStepTest {
                 mockStep
             )
         )
-        val otherStep = com.ritense.formflow.domain.definition.FormFlowStep(
+        val otherStep = FormFlowStepEntity(
             FormFlowStepId("step-key"),
             mutableListOf(
                 mock(),
@@ -129,8 +131,8 @@ internal class FormFlowStepTest {
 
     @Test
     fun `contentEquals should not match when equal number of nextsteps but content is different`() {
-        val otherMock1: com.ritense.formflow.domain.definition.FormFlowNextStep = mock()
-        val otherMock2: com.ritense.formflow.domain.definition.FormFlowNextStep = mock()
+        val otherMock1: FormFlowNextStepEntity = mock()
+        val otherMock2: FormFlowNextStepEntity = mock()
 
         val mockStep1: FormFlowNextStep = mock()
         whenever(mockStep1.contentEquals(otherMock1)).thenReturn(true)
@@ -147,7 +149,7 @@ internal class FormFlowStepTest {
                 mockStep2
             )
         )
-        val otherStep = com.ritense.formflow.domain.definition.FormFlowStep(
+        val otherStep = FormFlowStepEntity(
             FormFlowStepId("step-key"),
             mutableListOf(
                 otherMock1,
@@ -169,7 +171,7 @@ internal class FormFlowStepTest {
                 mockStep
             )
         )
-        val otherStep = com.ritense.formflow.domain.definition.FormFlowStep(
+        val otherStep = FormFlowStepEntity(
             FormFlowStepId("other-key"),
             mutableListOf(
                 mock()

@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.domain.definition.configuration
 
+import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.formflow.domain.definition.FormFlowStepId
 
@@ -29,7 +30,7 @@ class FormFlowStep(
         nextSteps!!.add(FormFlowNextStep(step = nextStep))
     }
 
-    fun contentEquals(other: com.ritense.formflow.domain.definition.FormFlowStep): Boolean {
+    fun contentEquals(other: FormFlowStepEntity): Boolean {
         if (key != other.id.key) return false
         if (nextSteps!!.size != other.nextSteps!!.size) return false
         for (otherNextStep in other.nextSteps!!) {
@@ -46,10 +47,10 @@ class FormFlowStep(
         return true
     }
 
-    fun toDefinition() : com.ritense.formflow.domain.definition.FormFlowStep {
+    fun toDefinition() : FormFlowStepEntity {
         val nextSteps = this.nextSteps?.map{
             it.toDefinition()
         }?.toMutableList()
-        return com.ritense.formflow.domain.definition.FormFlowStep(FormFlowStepId.create(key), nextSteps)
+        return FormFlowStepEntity(FormFlowStepId.create(key), nextSteps)
     }
 }

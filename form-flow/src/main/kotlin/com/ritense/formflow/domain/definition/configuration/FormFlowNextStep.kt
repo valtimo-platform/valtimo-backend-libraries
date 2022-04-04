@@ -16,19 +16,21 @@
 
 package com.ritense.formflow.domain.definition.configuration
 
+import com.ritense.formflow.domain.definition.FormFlowNextStep as FormFlowNextStepEntity
+
 class FormFlowNextStep(
     val condition: String? = null,
     val step: String
 ) {
 
-    fun contentEquals(other: com.ritense.formflow.domain.definition.FormFlowNextStep): Boolean {
+    fun contentEquals(other: FormFlowNextStepEntity): Boolean {
         if (condition != other.condition) return false
         if (step != other.step) return false
 
         return true
     }
 
-    fun toDefinition() : com.ritense.formflow.domain.definition.FormFlowNextStep {
-        return com.ritense.formflow.domain.definition.FormFlowNextStep(condition, step)
+    fun toDefinition() : FormFlowNextStepEntity {
+        return FormFlowNextStepEntity(condition, step)
     }
 }

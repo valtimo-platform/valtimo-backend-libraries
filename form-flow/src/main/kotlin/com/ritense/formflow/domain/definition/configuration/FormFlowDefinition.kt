@@ -16,6 +16,8 @@
 
 package com.ritense.formflow.domain.definition.configuration
 
+import com.ritense.formflow.domain.definition.FormFlowDefinition as FormFlowDefinitionEntity
+import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 
 class FormFlowDefinition(
@@ -23,7 +25,7 @@ class FormFlowDefinition(
 
     val steps: Set<FormFlowStep>
 ) {
-    fun contentEquals(other: com.ritense.formflow.domain.definition.FormFlowDefinition): Boolean {
+    fun contentEquals(other: FormFlowDefinitionEntity): Boolean {
         if (startStep != other.startStep) return false
         if (steps.size != other.steps.size) return false
 
@@ -41,12 +43,12 @@ class FormFlowDefinition(
         return true
     }
 
-    fun toDefinition(id: FormFlowDefinitionId) : com.ritense.formflow.domain.definition.FormFlowDefinition {
-        val definitionSteps: Set<com.ritense.formflow.domain.definition.FormFlowStep> = steps.map {
+    fun toDefinition(id: FormFlowDefinitionId) : FormFlowDefinitionEntity {
+        val definitionSteps: Set<FormFlowStepEntity> = steps.map {
             it.toDefinition()
         }.toSet()
 
-        return com.ritense.formflow.domain.definition.FormFlowDefinition(id, startStep, definitionSteps)
+        return FormFlowDefinitionEntity(id, startStep, definitionSteps)
     }
 
 }
