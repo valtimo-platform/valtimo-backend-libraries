@@ -30,8 +30,12 @@
             <column name="current_form_flow_step_instance_id" type="${uuidType}"/>
 
             <!-- Form Flow Definition -->
-            <column name="form_flow_definition_key" type="varchar(256)"/>
-            <column name="form_flow_definition_version" type="${intType}"/>
+            <column name="form_flow_definition_key" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="form_flow_definition_version" type="${intType}">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 
@@ -40,9 +44,15 @@
             <column name="form_flow_step_instance_id" type="${uuidType}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="form_flow_instance_id" type="${uuidType}"/>
-            <column name="form_flow_step_key" type="varchar(256)"/>
-            <column name="order" type="${intType}"/>
+            <column name="form_flow_instance_id" type="${uuidType}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="form_flow_step_key" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order" type="${intType}">
+                <constraints nullable="false"/>
+            </column>
             <column name="submission_data" type="${jsonType}"/>
         </createTable>
     </changeSet>
