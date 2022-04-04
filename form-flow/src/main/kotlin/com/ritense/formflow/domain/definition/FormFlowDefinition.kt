@@ -43,7 +43,7 @@ class FormFlowDefinition(
     }
 
     fun createInstance(additionalProperties: MutableMap<String, Any>) : FormFlowInstance {
-        return FormFlowInstance(formFlowDefinitionId = this.id,
+        return FormFlowInstance(formFlowDefinition = this,
             additionalProperties = additionalProperties)
     }
 

@@ -62,7 +62,7 @@ class FormFlowInstance(
     fun complete(
         currentFormFlowStepInstanceId: FormFlowStepInstanceId,
         submissionData: String
-    ) : FormFlowStepInstance {
+    ): FormFlowStepInstance? {
         assert(this.currentFormFlowStepInstanceId == currentFormFlowStepInstanceId)
 
         val formFlowStepInstance = history
@@ -73,6 +73,12 @@ class FormFlowInstance(
         return navigateToNextStep()
     }
 
+    fun getCurrentStep(): FormFlowStepInstance {
+        return history.first {
+            it.id == currentFormFlowStepInstanceId
+        }
+    }
+
     fun getHistory() : List<FormFlowStepInstance> {
         return history
     }
@@ -81,15 +87,32 @@ class FormFlowInstance(
         return additionalProperties
     }
 
-    private fun navigateToNextStep() : FormFlowStepInstance {
+    private fun navigateToNextStep() : FormFlowStepInstance? {
         val nextStep = determineNextStep()
+        if (nextStep == null) {
+            this.currentFormFlowStepInstanceId = null
+            return null
+        }
         history.add(nextStep)
         currentFormFlowStepInstanceId = nextStep.id
         return nextStep
     }
 
-    private fun determineNextStep() : FormFlowStepInstance {
-        return FormFlowStepInstance(instance = this, stepKey = "henk", order = history.size)
+    private fun determineNextStep() : FormFlowStepInstance? {
+        var stepKey = formFlowDefinition.startStep
+        if (currentFormFlowStepInstanceId != null) {
+            val currentStepInstance = getCurrentStep()
+            val currentStep = formFlowDefinition.steps.first {
+                it.id.key == currentStepInstance.stepKey
+            }
+
+            if (currentStep.nextSteps == null || currentStep.nextSteps.isEmpty()) {
+                return null
+            }
+
+            stepKey = currentStep.nextSteps.first().step
+        }
+        return FormFlowStepInstance(instance = this, stepKey = stepKey, order = history.size)
     }
 
     override fun equals(other: Any?): Boolean {

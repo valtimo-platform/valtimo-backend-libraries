@@ -19,6 +19,9 @@ package com.ritense.formflow.service
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.instance.FormFlowInstance
+import com.ritense.formflow.domain.instance.FormFlowInstanceId
+import com.ritense.formflow.domain.instance.FormFlowStepInstance
+import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 
@@ -39,13 +42,7 @@ class FormFlowService(
         })
     }
 
-    fun createInstance(
-        definitionId: FormFlowDefinitionId,
-        additionalProperties: MutableMap<String, Any>
-    ): FormFlowInstance {
-        val definition = formFlowDefinitionRepository.getById(definitionId)
-        val instance = definition.createInstance(additionalProperties)
-        formFlowInstanceRepository.save(instance)
-        return instance
+    fun save(formFlowInstance: FormFlowInstance) {
+        formFlowInstanceRepository.save(formFlowInstance)
     }
 }
