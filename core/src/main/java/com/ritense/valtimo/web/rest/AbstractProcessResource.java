@@ -28,7 +28,6 @@ import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDiagramDto;
 import org.camunda.bpm.engine.task.TaskQuery;
 import org.camunda.bpm.model.bpmn.instance.FlowNode;
 import org.camunda.bpm.model.bpmn.instance.Task;
-
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -77,8 +76,8 @@ public abstract class AbstractProcessResource {
             .getModelElementsByType(FlowNode.class);
         flowNodeCollection.forEach(flowNode -> {
             if (
-                !flowNode.getElementType().getTypeName().equals("endEvent") &&
-                    !flowNode.getElementType().getTypeName().equals("startEvent")
+                !flowNode.getElementType().getTypeName().equals("endEvent")
+                    && !flowNode.getElementType().getTypeName().equals("startEvent")
             ) {
                 if (flowNode.getName() == null) {
                     flowNodeMap.put(flowNode.getId(), flowNode.getId());

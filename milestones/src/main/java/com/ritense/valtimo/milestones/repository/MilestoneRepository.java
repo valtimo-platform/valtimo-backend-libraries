@@ -20,7 +20,6 @@ import com.ritense.valtimo.milestones.domain.Milestone;
 import com.ritense.valtimo.milestones.domain.MilestoneSet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 

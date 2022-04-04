@@ -23,7 +23,6 @@ import com.ritense.valtimo.security.jwt.token.TokenClaims;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
 import java.security.Key;
 import java.util.Date;
 import java.util.List;

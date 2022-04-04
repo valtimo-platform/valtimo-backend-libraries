@@ -20,23 +20,26 @@ import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent;
 import com.ritense.valtimo.service.CamundaProcessService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-
 import java.util.Optional;
 
-@Slf4j
-@RequiredArgsConstructor
 public class UndeployDocumentDefinitionEventListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(UndeployDocumentDefinitionEventListener.class);
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final CamundaProcessService camundaProcessService;
     private static final String REASON = "Triggerd undeployment of document definition";
+
+    public UndeployDocumentDefinitionEventListener(ProcessDocumentAssociationService processDocumentAssociationService, CamundaProcessService camundaProcessService) {
+        this.processDocumentAssociationService = processDocumentAssociationService;
+        this.camundaProcessService = camundaProcessService;
+    }
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)

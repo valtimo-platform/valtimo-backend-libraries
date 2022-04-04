@@ -21,18 +21,21 @@ import com.ritense.valtimo.milestones.domain.MilestoneSet;
 import com.ritense.valtimo.milestones.repository.MilestoneRepository;
 import com.ritense.valtimo.milestones.repository.MilestoneSetRepository;
 import com.ritense.valtimo.milestones.service.exception.IllegalMilestoneSetDeletionException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
-@RequiredArgsConstructor
 public class MilestoneSetService {
 
+    private static final Logger logger = LoggerFactory.getLogger(MilestoneSetService.class);
     private final MilestoneSetRepository milestoneSetRepository;
     private final MilestoneRepository milestoneRepository;
+
+    public MilestoneSetService(MilestoneSetRepository milestoneSetRepository, MilestoneRepository milestoneRepository) {
+        this.milestoneSetRepository = milestoneSetRepository;
+        this.milestoneRepository = milestoneRepository;
+    }
 
     public MilestoneSet saveMilestoneSet(MilestoneSet milestoneSet) {
         logger.debug("Service request to save milestone set {}", milestoneSet.getTitle());

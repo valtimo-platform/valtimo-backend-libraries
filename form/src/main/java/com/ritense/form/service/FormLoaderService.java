@@ -18,7 +18,6 @@ package com.ritense.form.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.Document;
-
 import java.util.Optional;
 
 public interface FormLoaderService {

@@ -19,7 +19,6 @@ package com.ritense.valtimo.helper;
 import com.ritense.valtimo.exception.ExpectedElementTemplatePropertyNotFoundException;
 import com.ritense.valtimo.exception.IllegalElementTemplatePropertyValueException;
 import org.apache.commons.lang3.StringUtils;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;

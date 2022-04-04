@@ -25,27 +25,31 @@ import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
-
 import java.io.IOException;
 import java.util.ArrayList;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@Slf4j
-@RequiredArgsConstructor
 public class FormDefinitionDeploymentService {
 
+    private static final Logger logger = LoggerFactory.getLogger(FormDefinitionDeploymentService.class);
     public static final String PATH = "classpath*:config/form/*.json";
     private final ResourceLoader resourceLoader;
     private final FormDefinitionService formDefinitionService;
     private final FormDefinitionRepository formDefinitionRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    public FormDefinitionDeploymentService(ResourceLoader resourceLoader, FormDefinitionService formDefinitionService, FormDefinitionRepository formDefinitionRepository, ApplicationEventPublisher applicationEventPublisher) {
+        this.resourceLoader = resourceLoader;
+        this.formDefinitionService = formDefinitionService;
+        this.formDefinitionRepository = formDefinitionRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     void deployAllFromResourceFiles() {
         logger.info("Deploying all forms from {}", PATH);

@@ -22,10 +22,8 @@ import com.ritense.document.domain.relation.DocumentRelationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
-
 import java.io.IOException;
 import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DocumentRelationJsonSerializingTest {

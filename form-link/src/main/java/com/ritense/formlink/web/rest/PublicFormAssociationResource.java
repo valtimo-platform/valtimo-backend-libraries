@@ -19,7 +19,6 @@ package com.ritense.formlink.web.rest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.formlink.service.result.FormSubmissionResult;
 import org.springframework.http.ResponseEntity;
-
 import java.util.UUID;
 
 public interface PublicFormAssociationResource {

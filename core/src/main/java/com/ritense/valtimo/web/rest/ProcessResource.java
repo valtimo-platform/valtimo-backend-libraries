@@ -74,7 +74,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -84,7 +83,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @RestController
@@ -143,7 +141,9 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     @GetMapping(value = "/process/definition/{processDefinitionKey}/versions")
-    public ResponseEntity<List<ProcessDefinitionDto>> getProcessDefinitionVersions(@PathVariable String processDefinitionKey) {
+    public ResponseEntity<List<ProcessDefinitionDto>> getProcessDefinitionVersions(
+        @PathVariable String processDefinitionKey
+    ) {
         List<ProcessDefinition> deployedDefinitions = repositoryService.createProcessDefinitionQuery()
             .processDefinitionKey(processDefinitionKey)
             .orderByProcessDefinitionVersion()
@@ -156,7 +156,9 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     @GetMapping(value = "/process/definition/{processDefinitionId}/xml")
-    public ResponseEntity<ProcessDefinitionDiagramDto> getProcessDefinitionXml(@PathVariable String processDefinitionId) {
+    public ResponseEntity<ProcessDefinitionDiagramDto> getProcessDefinitionXml(
+        @PathVariable String processDefinitionId
+    ) {
         try {
             ProcessDefinitionDiagramDto definitionDiagramDto = createProcessDefinitionDiagramDto(processDefinitionId);
             return Optional.ofNullable(definitionDiagramDto)
@@ -168,11 +170,16 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     @GetMapping(value = "/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/flownodes")
-    public ResponseEntity<FlowNodeMigrationDTO> getFlowNodes(@PathVariable String sourceProcessDefinitionId, @PathVariable String targetProcessDefinitionId) {
-        final Map<String, String> sourceFlowNodeMap = findAllTasksEventsAndGatewaysForProcessDefinitionId(sourceProcessDefinitionId);
-        final Map<String, String> targetFlowNodeMap = findAllTasksEventsAndGatewaysForProcessDefinitionId(targetProcessDefinitionId);
+    public ResponseEntity<FlowNodeMigrationDTO> getFlowNodes(
+        @PathVariable String sourceProcessDefinitionId, @PathVariable String targetProcessDefinitionId
+    ) {
+        final Map<String, String> sourceFlowNodeMap = findAllTasksEventsAndGatewaysForProcessDefinitionId(
+            sourceProcessDefinitionId);
+        final Map<String, String> targetFlowNodeMap = findAllTasksEventsAndGatewaysForProcessDefinitionId(
+            targetProcessDefinitionId);
         final Map<String, String> uniqueFlowNodeMap = getUniqueFlowNodeMap(sourceFlowNodeMap, targetFlowNodeMap);
-        final FlowNodeMigrationDTO flowNodeMigrationDTO = new FlowNodeMigrationDTO(sourceFlowNodeMap, targetFlowNodeMap, uniqueFlowNodeMap);
+        final FlowNodeMigrationDTO flowNodeMigrationDTO = new FlowNodeMigrationDTO(
+            sourceFlowNodeMap, targetFlowNodeMap, uniqueFlowNodeMap);
         return ResponseEntity.ok(flowNodeMigrationDTO);
     }
 
@@ -204,7 +211,8 @@ public class ProcessResource extends AbstractProcessResource {
 
         if (Optional.ofNullable(duration).isPresent()) {
             LocalDate dayinPast = LocalDate.now().minusDays(duration);
-            historicActivityInstanceQuery.startedBefore(Date.from(dayinPast.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            historicActivityInstanceQuery.startedBefore(
+                Date.from(dayinPast.atStartOfDay(ZoneId.systemDefault()).toInstant()));
         }
 
         List<HistoricActivityInstance> historicActivityInstances = historicActivityInstanceQuery.finished()
@@ -215,7 +223,8 @@ public class ProcessResource extends AbstractProcessResource {
         Map<String, Long> heatmapDataCount = historicActivityInstances.stream()
             .collect(Collectors.groupingBy(HistoricActivityInstance::getActivityId, Collectors.counting()));
 
-        Map<String, HeatmapTaskCountDTO> activeTasksCount = getActiveTasksCounts(processDefinition, searchStatus, fromDate, toDate, duration);
+        Map<String, HeatmapTaskCountDTO> activeTasksCount = getActiveTasksCounts(
+            processDefinition, searchStatus, fromDate, toDate, duration);
 
         for (Map.Entry<String, Long> entry : heatmapDataCount.entrySet()) {
             HeatmapTaskCountDTO heatmapTaskCountDTO = activeTasksCount.get(entry.getKey());
@@ -260,7 +269,8 @@ public class ProcessResource extends AbstractProcessResource {
 
         if (Optional.ofNullable(duration).isPresent()) {
             LocalDate dayinPast = LocalDate.now().minusDays(duration);
-            historicActivityInstanceQuery.startedBefore(Date.from(dayinPast.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            historicActivityInstanceQuery.startedBefore(
+                Date.from(dayinPast.atStartOfDay(ZoneId.systemDefault()).toInstant()));
         }
 
         List<HistoricActivityInstance> historicActivityInstances = historicActivityInstanceQuery.finished()
@@ -271,12 +281,17 @@ public class ProcessResource extends AbstractProcessResource {
         Map<String, HeatmapTaskAverageDurationDTO> allTasksAverageDuration = new HashMap<>();
 
         for (HistoricActivityInstance h : historicActivityInstances) {
-            HeatmapTaskAverageDurationDTO heatmapTaskAverageDurationDTO = allTasksAverageDuration.get(h.getActivityId());
+            HeatmapTaskAverageDurationDTO heatmapTaskAverageDurationDTO = allTasksAverageDuration.get(
+                h.getActivityId());
             if (heatmapTaskAverageDurationDTO == null) {
-                allTasksAverageDuration.put(h.getActivityId(), new HeatmapTaskAverageDurationDTO(h.getActivityName(), 0, 1, h.getDurationInMillis()));
+                allTasksAverageDuration.put(
+                    h.getActivityId(),
+                    new HeatmapTaskAverageDurationDTO(h.getActivityName(), 0, 1, h.getDurationInMillis())
+                );
             } else {
                 heatmapTaskAverageDurationDTO.setTotalCount(heatmapTaskAverageDurationDTO.getTotalCount() + 1);
-                heatmapTaskAverageDurationDTO.setAverageDurationInMilliseconds(heatmapTaskAverageDurationDTO.getAverageDurationInMilliseconds());
+                heatmapTaskAverageDurationDTO.setAverageDurationInMilliseconds(
+                    heatmapTaskAverageDurationDTO.getAverageDurationInMilliseconds());
             }
         }
 
@@ -304,7 +319,8 @@ public class ProcessResource extends AbstractProcessResource {
         @PathVariable String businessKey,
         @RequestBody Map<String, Object> variables
     ) {
-        final var processInstanceWithDefinition = camundaProcessService.startProcess(processDefinitionKey, businessKey, variables);
+        final var processInstanceWithDefinition = camundaProcessService.startProcess(
+            processDefinitionKey, businessKey, variables);
         return ResponseEntity.ok(processInstanceWithDefinition.getProcessInstanceDto());
     }
 
@@ -312,12 +328,15 @@ public class ProcessResource extends AbstractProcessResource {
     public ResponseEntity<HistoricProcessInstanceDto> getProcessInstance(@PathVariable String processInstanceId) {
         HistoricProcessInstance historicProcessInstance = getHistoricProcessInstance(processInstanceId);
         return Optional.ofNullable(historicProcessInstance)
-            .map(process -> ResponseEntity.ok(HistoricProcessInstanceDto.fromHistoricProcessInstance(historicProcessInstance)))
+            .map(process -> ResponseEntity.ok(
+                HistoricProcessInstanceDto.fromHistoricProcessInstance(historicProcessInstance)))
             .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping(value = "/process/{processInstanceId}/history")
-    public ResponseEntity<List<HistoricActivityInstanceDto>> getProcessInstanceHistory(@PathVariable String processInstanceId) {
+    public ResponseEntity<List<HistoricActivityInstanceDto>> getProcessInstanceHistory(
+        @PathVariable String processInstanceId
+    ) {
         List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery()
             .processInstanceId(processInstanceId)
             .orderPartiallyByOccurrence()
@@ -335,7 +354,9 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     @GetMapping(value = "/process/{processInstanceId}/log")
-    public ResponseEntity<List<UserOperationLogEntryDto>> getProcessInstanceOperationLog(@PathVariable String processInstanceId) {
+    public ResponseEntity<List<UserOperationLogEntryDto>> getProcessInstanceOperationLog(
+        @PathVariable String processInstanceId
+    ) {
         List<UserOperationLogEntry> userOperationLogEntries = historyService.createUserOperationLogQuery()
             .processDefinitionId(processInstanceId)
             .list();
@@ -350,7 +371,8 @@ public class ProcessResource extends AbstractProcessResource {
         @PathVariable String processInstanceId
     ) {
         return camundaProcessService.findProcessInstanceById(processInstanceId)
-            .map(processInstance -> ResponseEntity.ok(camundaTaskService.getProcessInstanceTasks(processInstance.getId(), processInstance.getBusinessKey())))
+            .map(processInstance -> ResponseEntity.ok(
+                camundaTaskService.getProcessInstanceTasks(processInstance.getId(), processInstance.getBusinessKey())))
             .orElse(ResponseEntity.noContent().build());
     }
 
@@ -370,14 +392,16 @@ public class ProcessResource extends AbstractProcessResource {
     public ResponseEntity<ProcessInstanceDiagramDto> getProcessInstanceXml(@PathVariable String processInstanceId) {
         HistoricProcessInstance processInstance = getHistoricProcessInstance(processInstanceId);
         try {
-            ProcessDefinitionDiagramDto definitionDiagramDto = createProcessDefinitionDiagramDto(processInstance.getProcessDefinitionId());
+            ProcessDefinitionDiagramDto definitionDiagramDto = createProcessDefinitionDiagramDto(
+                processInstance.getProcessDefinitionId());
             List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery()
                 .processInstanceId(processInstanceId)
                 .orderPartiallyByOccurrence()
                 .asc()
                 .list();
             return Optional.ofNullable(definitionDiagramDto)
-                .map(process -> ResponseEntity.ok(ProcessInstanceDiagramDto.create(definitionDiagramDto, historicActivityInstances)))
+                .map(process -> ResponseEntity.ok(
+                    ProcessInstanceDiagramDto.create(definitionDiagramDto, historicActivityInstances)))
                 .orElse(ResponseEntity.notFound().build());
         } catch (UnsupportedEncodingException e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
@@ -411,7 +435,8 @@ public class ProcessResource extends AbstractProcessResource {
             processInstanceSearchDTO,
             pageable
         );
-        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/v2/process/{processDefinitionName}/search");
+        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(
+            page, "/v2/process/{processDefinitionName}/search");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
@@ -432,7 +457,8 @@ public class ProcessResource extends AbstractProcessResource {
         @PathVariable String processDefinitionId,
         @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO
     ) {
-        final Long count = camundaSearchProcessInstanceRepository.searchInstancesCountByDefinitionId(processDefinitionId, processInstanceSearchDTO);
+        final Long count = camundaSearchProcessInstanceRepository.searchInstancesCountByDefinitionId(
+            processDefinitionId, processInstanceSearchDTO);
         return ResponseEntity.ok(new ResultCount(count));
     }
 
@@ -455,8 +481,10 @@ public class ProcessResource extends AbstractProcessResource {
             }
         }
         MigrationPlan migrationPlan = migrationPlanBuilder.build();
-        ProcessInstanceQuery processInstanceQuery = runtimeService.createProcessInstanceQuery().processDefinitionId(sourceProcessDefinitionId);
-        Batch migrationBatch = runtimeService.newMigration(migrationPlan).processInstanceQuery(processInstanceQuery).executeAsync();
+        ProcessInstanceQuery processInstanceQuery = runtimeService.createProcessInstanceQuery().processDefinitionId(
+            sourceProcessDefinitionId);
+        Batch migrationBatch = runtimeService.newMigration(migrationPlan).processInstanceQuery(
+            processInstanceQuery).executeAsync();
         return new ResponseEntity<>(BatchDto.fromBatch(migrationBatch), HttpStatus.OK);
     }
 

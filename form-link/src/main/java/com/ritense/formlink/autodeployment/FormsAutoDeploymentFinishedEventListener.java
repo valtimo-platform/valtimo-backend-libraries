@@ -17,13 +17,15 @@
 package com.ritense.formlink.autodeployment;
 
 import com.ritense.form.domain.event.FormsAutoDeploymentFinishedEvent;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 
-@RequiredArgsConstructor
 public class FormsAutoDeploymentFinishedEventListener {
 
     private final FormLinkDeploymentService formLinkDeploymentService;
+
+    public FormsAutoDeploymentFinishedEventListener(FormLinkDeploymentService formLinkDeploymentService) {
+        this.formLinkDeploymentService = formLinkDeploymentService;
+    }
 
     @EventListener(FormsAutoDeploymentFinishedEvent.class)
     public void handle(FormsAutoDeploymentFinishedEvent event) {

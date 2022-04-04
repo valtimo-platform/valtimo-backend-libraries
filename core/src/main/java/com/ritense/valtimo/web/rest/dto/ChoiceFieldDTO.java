@@ -17,7 +17,6 @@
 package com.ritense.valtimo.web.rest.dto;
 
 import com.ritense.valtimo.domain.choicefield.ChoiceFieldValue;
-
 import java.util.List;
 
 public class ChoiceFieldDTO {

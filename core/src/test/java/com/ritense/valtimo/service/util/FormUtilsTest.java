@@ -19,11 +19,9 @@ package com.ritense.valtimo.service.util;
 import org.camunda.bpm.engine.variable.VariableMap;
 import org.hamcrest.collection.IsMapContaining;
 import org.junit.jupiter.api.Test;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.CombinableMatcher.both;
 

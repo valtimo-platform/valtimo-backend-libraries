@@ -20,19 +20,21 @@ import com.ritense.valtimo.contract.event.TaskCompletedEvent;
 import com.ritense.valtimo.viewconfigurator.domain.ProcessDefinitionVariable;
 import com.ritense.valtimo.viewconfigurator.domain.transformer.VariableTransformer;
 import com.ritense.valtimo.viewconfigurator.service.ViewConfigService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
-
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Slf4j
-@RequiredArgsConstructor
 public class TaskCompletedEventListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(TaskCompletedEventListener.class);
     private final ViewConfigService viewConfigService;
+
+    public TaskCompletedEventListener(ViewConfigService viewConfigService) {
+        this.viewConfigService = viewConfigService;
+    }
 
     @EventListener(TaskCompletedEvent.class)
     public void handle(TaskCompletedEvent event) {

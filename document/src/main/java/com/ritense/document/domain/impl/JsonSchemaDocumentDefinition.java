@@ -25,12 +25,9 @@ import com.ritense.document.domain.impl.event.JsonSchemaDocumentDefinitionDeploy
 import com.ritense.document.domain.validation.DocumentContentValidationError;
 import com.ritense.document.domain.validation.DocumentContentValidationResult;
 import com.ritense.document.exception.DocumentDefinitionNameMismatchException;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.everit.json.schema.ValidationException;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -41,12 +38,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Entity
 @Table(name = "json_schema_document_definition")
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSchemaDocumentDefinition>
     implements DocumentDefinition, Persistable<JsonSchemaDocumentDefinitionId> {
 
@@ -83,6 +78,9 @@ public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSche
         id = another.id();
         schema = another.schema;
         createdOn = another.createdOn();
+    }
+
+    JsonSchemaDocumentDefinition() {
     }
 
     @Override

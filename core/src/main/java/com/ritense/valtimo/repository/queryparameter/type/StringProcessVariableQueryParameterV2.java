@@ -17,7 +17,6 @@
 package com.ritense.valtimo.repository.queryparameter.type;
 
 import com.ritense.valtimo.repository.queryparameter.ProcessVariableQueryParameterV2;
-
 import java.util.Objects;
 
 public class StringProcessVariableQueryParameterV2 extends ProcessVariableQueryParameterV2 {

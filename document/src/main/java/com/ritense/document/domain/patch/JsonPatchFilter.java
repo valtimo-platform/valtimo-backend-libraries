@@ -17,7 +17,6 @@
 package com.ritense.document.domain.patch;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.regex.Pattern;

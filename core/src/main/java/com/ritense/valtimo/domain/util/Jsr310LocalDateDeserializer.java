@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -34,7 +33,8 @@ public class Jsr310LocalDateDeserializer extends JsonDeserializer<LocalDate> {
 
     public static final Jsr310LocalDateDeserializer INSTANCE = new Jsr310LocalDateDeserializer();
 
-    private Jsr310LocalDateDeserializer() {}
+    private Jsr310LocalDateDeserializer() {
+    }
 
     private static final DateTimeFormatter ISO_DATE_OPTIONAL_TIME;
 

@@ -17,7 +17,6 @@
 package com.ritense.valtimo.config;
 
 import org.springframework.boot.SpringApplication;
-
 import java.util.HashMap;
 import java.util.Map;
 

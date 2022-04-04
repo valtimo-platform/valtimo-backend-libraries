@@ -18,7 +18,6 @@ package com.ritense.valtimo.validator;
 
 import org.camunda.bpm.engine.impl.form.validator.FormFieldValidator;
 import org.camunda.bpm.engine.impl.form.validator.FormFieldValidatorContext;
-
 import java.util.Optional;
 
 public class MinDateValidator extends BaseDateValidator implements FormFieldValidator {

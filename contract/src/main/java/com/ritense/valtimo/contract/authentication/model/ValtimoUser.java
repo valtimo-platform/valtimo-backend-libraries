@@ -17,7 +17,6 @@
 package com.ritense.valtimo.contract.authentication.model;
 
 import com.ritense.valtimo.contract.authentication.ManageableUser;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;

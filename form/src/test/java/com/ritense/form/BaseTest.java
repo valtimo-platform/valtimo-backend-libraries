@@ -21,7 +21,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.form.domain.FormIoFormDefinition;
 import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;

@@ -18,7 +18,6 @@ package com.ritense.processdocument.domain.impl.event;
 
 import com.ritense.document.domain.relation.DocumentRelationType;
 import com.ritense.valtimo.contract.processdocument.event.NextDocumentRelationAvailableEvent;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class NextJsonSchemaDocumentRelationAvailableEvent implements NextDocumentRelationAvailableEvent {

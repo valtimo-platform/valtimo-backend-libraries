@@ -16,17 +16,17 @@
 
 package com.ritense.valtimo.validator;
 
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.impl.form.validator.FormFieldValidatorContext;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
-@Slf4j
 public abstract class BaseDateValidator {
+    private static final Logger logger = LoggerFactory.getLogger(BaseDateValidator.class);
     private static final String DATE_FORMAT = "dd/MM/yyyy";
     private final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 

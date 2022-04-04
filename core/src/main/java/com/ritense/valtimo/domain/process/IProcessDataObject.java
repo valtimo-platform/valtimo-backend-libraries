@@ -18,7 +18,6 @@ package com.ritense.valtimo.domain.process;
 
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.springframework.data.repository.CrudRepository;
-
 import java.io.Serializable;
 
 /**

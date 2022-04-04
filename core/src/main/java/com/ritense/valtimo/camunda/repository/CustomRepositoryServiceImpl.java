@@ -24,7 +24,6 @@ import org.camunda.bpm.engine.impl.repository.DeploymentBuilderImpl;
 import org.camunda.bpm.engine.repository.DeploymentWithDefinitions;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.springframework.context.ApplicationEventPublisher;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 

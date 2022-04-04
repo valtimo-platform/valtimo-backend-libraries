@@ -20,7 +20,6 @@ import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
 import com.ritense.valtimo.viewconfigurator.domain.ProcessDefinitionVariable;
 import com.ritense.valtimo.viewconfigurator.domain.ViewConfig;
 import com.ritense.valtimo.viewconfigurator.domain.ViewConfigurationRequestGroup;
-
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;

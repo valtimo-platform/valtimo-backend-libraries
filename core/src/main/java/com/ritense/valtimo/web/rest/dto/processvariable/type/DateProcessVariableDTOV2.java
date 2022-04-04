@@ -18,7 +18,6 @@ package com.ritense.valtimo.web.rest.dto.processvariable.type;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.valtimo.web.rest.dto.processvariable.ProcessVariableDTOV2;
-
 import java.time.LocalDate;
 import java.util.Objects;
 

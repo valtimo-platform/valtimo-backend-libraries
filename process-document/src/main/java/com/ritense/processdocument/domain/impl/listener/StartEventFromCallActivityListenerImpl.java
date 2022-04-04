@@ -19,23 +19,25 @@ package com.ritense.processdocument.domain.impl.listener;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.listener.StartEventFromCallActivityListener;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.ActivityTypes;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
 import org.camunda.bpm.extension.reactor.bus.CamundaSelector;
 import org.camunda.bpm.extension.reactor.spring.listener.ReactorExecutionListener;
 import org.camunda.bpm.model.bpmn.impl.instance.ProcessImpl;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.UUID;
 
-@Slf4j
-@RequiredArgsConstructor
 @CamundaSelector(type = ActivityTypes.START_EVENT, event = ExecutionListener.EVENTNAME_START)
 public class StartEventFromCallActivityListenerImpl extends ReactorExecutionListener implements StartEventFromCallActivityListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(StartEventFromCallActivityListenerImpl.class);
     private final ProcessDocumentAssociationService processDocumentAssociationService;
+
+    public StartEventFromCallActivityListenerImpl(ProcessDocumentAssociationService processDocumentAssociationService) {
+        this.processDocumentAssociationService = processDocumentAssociationService;
+    }
 
     @Override
     public void notify(DelegateExecution execution) {

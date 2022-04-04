@@ -21,10 +21,8 @@ import org.camunda.bpm.engine.impl.HistoricProcessInstanceQueryProperty;
 import org.camunda.bpm.engine.impl.QueryOrderingProperty;
 import org.camunda.bpm.engine.query.QueryProperty;
 import org.springframework.data.domain.Sort;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.apache.commons.lang3.exception.ExceptionUtils.rethrow;
 
 public class CamundaOrderByHelper {
