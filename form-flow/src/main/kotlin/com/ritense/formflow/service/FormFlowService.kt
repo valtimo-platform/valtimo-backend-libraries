@@ -17,10 +17,14 @@
 package com.ritense.formflow.service
 
 import com.ritense.formflow.domain.definition.FormFlowDefinition
+import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
+import com.ritense.formflow.repository.FormFlowInstanceRepository
 
 class FormFlowService(
-    private val formFlowDefinitionRepository: FormFlowDefinitionRepository
+    private val formFlowDefinitionRepository: FormFlowDefinitionRepository,
+    private val formFlowInstanceRepository: FormFlowInstanceRepository
 ) {
 
     fun findLatestDefinitionByKey(formFlowKey: String): FormFlowDefinition? {
@@ -33,5 +37,15 @@ class FormFlowService(
         }, {
             formFlowDefinitionRepository.save(formFlowDefinition)
         })
+    }
+
+    fun createInstance(
+        definitionId: FormFlowDefinitionId,
+        additionalProperties: MutableMap<String, Any>
+    ): FormFlowInstance {
+        val definition = formFlowDefinitionRepository.getById(definitionId)
+        val instance = definition.createInstance(additionalProperties)
+        formFlowInstanceRepository.save(instance)
+        return instance
     }
 }
