@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.domain.instance
 
+import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
@@ -55,10 +56,6 @@ data class FormFlowStepInstance(
     }
 
     override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + stepKey.hashCode()
-        result = 31 * result + order
-        result = 31 * result + (submissionData?.hashCode() ?: 0)
-        return result
+        return Objects.hash(id, stepKey, order, submissionData)
     }
 }

@@ -18,6 +18,7 @@ package com.ritense.formflow.domain.instance
 
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import org.hibernate.annotations.Type
+import java.util.Objects
 import javax.persistence.AttributeOverride
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -107,12 +108,7 @@ class FormFlowInstance(
     }
 
     override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + formFlowDefinition.id.hashCode()
-        result = 31 * result + (currentFormFlowStepInstanceId?.hashCode() ?: 0)
-        result = 31 * result + history.hashCode()
-        result = 31 * result + additionalProperties.hashCode()
-        return result
+        return Objects.hash(id, formFlowDefinition.id, currentFormFlowStepInstanceId, history, additionalProperties)
     }
 
 }
