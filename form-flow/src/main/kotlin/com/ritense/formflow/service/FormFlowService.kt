@@ -17,7 +17,9 @@
 package com.ritense.formflow.service
 
 import com.ritense.formflow.domain.definition.FormFlowDefinition
+import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.instance.FormFlowInstance
+import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 
@@ -30,12 +32,20 @@ class FormFlowService(
         return formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc(formFlowKey)
     }
 
+    fun getDefinitionById(formFlowDefinitionId: FormFlowDefinitionId): FormFlowDefinition {
+        return formFlowDefinitionRepository.getById(formFlowDefinitionId)
+    }
+
     fun save(formFlowDefinition: FormFlowDefinition) {
         formFlowDefinitionRepository.findById(formFlowDefinition.id).ifPresentOrElse({
             throw UnsupportedOperationException("Failed to save From Flow. Form Flow already exists: ${formFlowDefinition.id}")
         }, {
             formFlowDefinitionRepository.save(formFlowDefinition)
         })
+    }
+
+    fun getInstanceById(formFlowInstanceId: FormFlowInstanceId): FormFlowInstance {
+        return formFlowInstanceRepository.getById(formFlowInstanceId)
     }
 
     fun save(formFlowInstance: FormFlowInstance) {
