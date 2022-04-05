@@ -61,10 +61,12 @@ class FormFlowResource(
         val instance = formFlowService.getInstanceById(
             FormFlowInstanceId.existingId(UUID.fromString(instanceId))
         )
+
         val formFlowStepInstance = instance.complete(
             FormFlowStepInstanceId.existingId(UUID.fromString(stepId)),
-            (submissionData?:JsonNodeFactory.instance.objectNode()).asText()
+            (submissionData?:JsonNodeFactory.instance.objectNode()).toString()
         )
+
         formFlowService.save(instance)
         return ResponseEntity.ok(CompleteStepResult(instance.id, formFlowStepInstance?.id))
     }
