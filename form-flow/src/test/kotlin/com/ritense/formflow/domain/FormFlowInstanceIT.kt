@@ -64,10 +64,33 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
         formFlowInstanceRepository.saveAndFlush(formFlowInstance)
 
         val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
-        assertEquals(storedInstance.getHistory().size, 2)
+        assertEquals(2, storedInstance.getHistory().size)
         val firstStep = storedInstance.getHistory()[0]
         assertEquals(firstStep.submissionData, "{\"data\": \"data\"}")
         val secondStep = storedInstance.getHistory()[1]
         assertNull(secondStep.submissionData)
+    }
+
+
+
+    @Test
+    fun `complete goes through the entire flow`() {
+        val formFlowDefinition =
+            formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc("inkomens_loket")
+
+        val formFlowInstance = FormFlowInstance(
+            formFlowDefinition = formFlowDefinition!!
+        )
+        formFlowInstanceRepository.saveAndFlush(formFlowInstance)
+        while (formFlowInstance.currentFormFlowStepInstanceId != null) {
+            formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, "{\"data\": \"data\"}")
+            formFlowInstanceRepository.saveAndFlush(formFlowInstance)
+        }
+
+        val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
+        assertEquals(7, storedInstance.getHistory().size)
+        storedInstance.getHistory().forEach{
+            assertEquals(it.submissionData, "{\"data\": \"data\"}")
+        }
     }
 }

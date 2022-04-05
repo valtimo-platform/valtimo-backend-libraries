@@ -41,9 +41,10 @@ class FormFlowAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(FormFlowService::class)
     fun formFlowService(
-        formFlowDefinitionRepository: FormFlowDefinitionRepository
+        formFlowDefinitionRepository: FormFlowDefinitionRepository,
+        formFlowInstanceRepository: FormFlowInstanceRepository
     ): FormFlowService {
-        return FormFlowService(formFlowDefinitionRepository)
+        return FormFlowService(formFlowDefinitionRepository, formFlowInstanceRepository)
     }
 
     @Bean

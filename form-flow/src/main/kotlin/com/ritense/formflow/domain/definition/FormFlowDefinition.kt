@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.domain.definition
 
+import com.ritense.formflow.domain.instance.FormFlowInstance
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
@@ -39,6 +40,11 @@ class FormFlowDefinition(
 ) {
     init {
         steps.forEach { step -> step.id.formFlowDefinition = this }
+    }
+
+    fun createInstance(additionalProperties: MutableMap<String, Any>) : FormFlowInstance {
+        return FormFlowInstance(formFlowDefinition = this,
+            additionalProperties = additionalProperties)
     }
 
 }
