@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
+import javax.transaction.Transactional
 
 @RestController
 @RequestMapping(value = ["/api/form-flow/demo"])
@@ -50,6 +51,7 @@ class FormFlowResource(
     }
 
     @PostMapping("instance/{instanceId}/step/{stepId}/complete")
+    @Transactional
     fun completeStep(
         @PathVariable(name = "instanceId") instanceId: String,
         @PathVariable(name = "stepId") stepId: String,
