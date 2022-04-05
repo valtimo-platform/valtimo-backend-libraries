@@ -58,7 +58,7 @@ internal class FormFlowInstanceTest {
 
         assertThat(instance.getHistory()[0].submissionData, equalTo("data"))
         assertNotNull(result)
-        assertEquals(result!!.stepKey, "test2")
+        assertEquals("test2", result!!.stepKey)
     }
 
     @Test
