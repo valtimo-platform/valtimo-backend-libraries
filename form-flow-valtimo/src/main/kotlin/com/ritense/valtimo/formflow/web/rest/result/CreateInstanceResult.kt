@@ -24,5 +24,7 @@ class CreateInstanceResult(
     @JsonProperty
     val formFlowInstanceId: FormFlowInstanceId,
     @JsonProperty
-    val currentStepId: FormFlowStepInstanceId?
+    val currentStepId: FormFlowStepInstanceId?,
+    @JsonProperty
+    val currentStepKey: String?
 )

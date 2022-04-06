@@ -46,8 +46,13 @@ class FormFlowResource(
         val latestDefinition = formFlowService.findLatestDefinitionByKey(definitionKey)
         val createdInstance = latestDefinition!!.createInstance(additionalParameters?: mutableMapOf())
         formFlowService.save(createdInstance)
+
         return ResponseEntity.ok(
-            CreateInstanceResult(createdInstance.id, createdInstance.currentFormFlowStepInstanceId))
+            CreateInstanceResult(
+                createdInstance.id,
+                createdInstance.currentFormFlowStepInstanceId,
+                createdInstance.getCurrentStep().stepKey)
+        )
     }
 
     @PostMapping("instance/{instanceId}/step/{stepId}/complete")
@@ -68,6 +73,7 @@ class FormFlowResource(
         )
 
         formFlowService.save(instance)
-        return ResponseEntity.ok(CompleteStepResult(instance.id, formFlowStepInstance?.id))
+        return ResponseEntity.ok(
+            CompleteStepResult(instance.id, formFlowStepInstance?.id, formFlowStepInstance?.stepKey))
     }
 }
