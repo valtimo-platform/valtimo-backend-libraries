@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
+import javax.transaction.Transactional
 
 @RestController
 @RequestMapping(value = ["/api/form-flow/demo"])
@@ -55,6 +56,7 @@ class FormFlowResource(
     }
 
     @PostMapping("instance/{instanceId}/step/{stepId}/complete")
+    @Transactional
     fun completeStep(
         @PathVariable(name = "instanceId") instanceId: String,
         @PathVariable(name = "stepId") stepId: String,
@@ -64,10 +66,12 @@ class FormFlowResource(
         val instance = formFlowService.getInstanceById(
             FormFlowInstanceId.existingId(UUID.fromString(instanceId))
         )
+
         val formFlowStepInstance = instance.complete(
             FormFlowStepInstanceId.existingId(UUID.fromString(stepId)),
-            (submissionData?:JsonNodeFactory.instance.objectNode()).asText()
+            (submissionData?:JsonNodeFactory.instance.objectNode()).toString()
         )
+
         formFlowService.save(instance)
         return ResponseEntity.ok(
             CompleteStepResult(instance.id, formFlowStepInstance?.id, formFlowStepInstance?.stepKey))
