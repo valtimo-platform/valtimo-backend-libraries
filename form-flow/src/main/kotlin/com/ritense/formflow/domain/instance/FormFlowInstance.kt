@@ -99,6 +99,9 @@ class FormFlowInstance(
     }
 
     private fun determineNextStep() : FormFlowStepInstance? {
+        if (currentFormFlowStepInstanceId == null && history.isNotEmpty()) {
+            return null
+        }
         var stepKey = formFlowDefinition.startStep
         if (currentFormFlowStepInstanceId != null) {
             val currentStepInstance = getCurrentStep()
