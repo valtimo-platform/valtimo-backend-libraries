@@ -23,7 +23,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
@@ -164,7 +163,7 @@ public class CamundaProcessJsonSchemaDocumentServiceTest {
         StartProcessForDocumentResult result = processDocumentService.startProcessForDocument(request);
 
         assertTrue(result instanceof StartProcessForDocumentResultSucceeded);
-        
+
         verify(camundaProcessService).startProcess(
             "test-name",
             documentUuid.toString(),

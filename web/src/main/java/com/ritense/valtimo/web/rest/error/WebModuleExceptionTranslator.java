@@ -34,7 +34,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.spring.web.advice.ProblemHandling;
-
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.NoSuchElementException;

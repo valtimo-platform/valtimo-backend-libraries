@@ -24,19 +24,23 @@ import com.ritense.valtimo.milestones.service.exception.MultipleProcessesWithinM
 import com.ritense.valtimo.milestones.service.mapper.MilestoneMapper;
 import com.ritense.valtimo.milestones.web.rest.dto.MilestoneDTO;
 import com.ritense.valtimo.milestones.web.rest.dto.MilestoneSaveDTO;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
-@RequiredArgsConstructor
 public class MilestoneService {
 
+    private static final Logger logger = LoggerFactory.getLogger(MilestoneService.class);
     private final MilestoneSetRepository milestoneSetRepository;
     private final MilestoneRepository milestoneRepository;
     private final MilestoneMapper milestoneMapper;
+
+    public MilestoneService(MilestoneSetRepository milestoneSetRepository, MilestoneRepository milestoneRepository, MilestoneMapper milestoneMapper) {
+        this.milestoneSetRepository = milestoneSetRepository;
+        this.milestoneRepository = milestoneRepository;
+        this.milestoneMapper = milestoneMapper;
+    }
 
     /**
      * Saves the milestone. It creates a new one if the id is not present, otherwise it updates the existing one.

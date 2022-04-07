@@ -16,12 +16,10 @@
 
 package com.ritense.document.domain.event;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import com.ritense.document.config.SpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentFieldChangedEvent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;

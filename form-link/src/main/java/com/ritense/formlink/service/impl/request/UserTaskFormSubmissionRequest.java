@@ -18,7 +18,6 @@ package com.ritense.formlink.service.impl.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.formlink.service.result.SubmissionRequest;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class UserTaskFormSubmissionRequest implements SubmissionRequest {

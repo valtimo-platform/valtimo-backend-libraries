@@ -17,7 +17,6 @@
 package com.ritense.valtimo.autoconfigure;
 
 import com.ritense.valtimo.security.permission.ValtimoPermissionEvaluator;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
@@ -26,10 +25,13 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-@RequiredArgsConstructor
 public class ValtimoMethodSecurityAutoConfiguration extends GlobalMethodSecurityConfiguration {
 
     private final ValtimoPermissionEvaluator valtimoPermissionEvaluator;
+
+    public ValtimoMethodSecurityAutoConfiguration(ValtimoPermissionEvaluator valtimoPermissionEvaluator) {
+        this.valtimoPermissionEvaluator = valtimoPermissionEvaluator;
+    }
 
     @Override
     protected MethodSecurityExpressionHandler createExpressionHandler() {

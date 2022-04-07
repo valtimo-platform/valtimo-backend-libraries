@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.audit.autoconfigure;
+package com.ritense.processdocument.autoconfigure;
 
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -22,20 +22,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-
 import javax.sql.DataSource;
-
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Configuration
 @ConditionalOnClass(DataSource.class)
-public class LiquibaseAutoConfiguration {
+public class ProcessDocumentLiquibaseAutoConfiguration {
 
-    @Order(HIGHEST_PRECEDENCE + 12)
-    @ConditionalOnMissingBean(name = "auditLiquibaseMasterChangeLogLocation")
+    @Order(HIGHEST_PRECEDENCE + 9)
     @Bean
-    public LiquibaseMasterChangeLogLocation auditLiquibaseMasterChangeLogLocation() {
-        return new LiquibaseMasterChangeLogLocation("config/liquibase/audit-master.xml");
+    @ConditionalOnMissingBean(name = "processDocumentLiquibaseMasterChangeLogLocation")
+    public LiquibaseMasterChangeLogLocation processDocumentLiquibaseMasterChangeLogLocation() {
+        return new LiquibaseMasterChangeLogLocation("config/liquibase/process-document-master.xml");
     }
 
 }

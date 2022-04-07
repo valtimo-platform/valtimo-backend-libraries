@@ -20,7 +20,6 @@ import com.ritense.formlink.domain.FormLink;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementAngularStateUrlLink;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink;
-
 import java.util.UUID;
 
 public class FormAssociationFactory {

@@ -16,8 +16,17 @@
 
 package com.ritense.formflow.repository
 
-import com.ritense.formflow.domain.FormFlowDefinition
-import com.ritense.formflow.domain.FormFlowDefinitionId
+import com.ritense.formflow.domain.definition.FormFlowDefinition
+import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface FormFlowDefinitionRepository : JpaRepository<FormFlowDefinition, FormFlowDefinitionId>
+interface FormFlowDefinitionRepository : JpaRepository<FormFlowDefinition, FormFlowDefinitionId> {
+
+    /**
+     *  Find the latest definition by key
+     *
+     * @param formFlowKey The key of the form-flow
+     * @return The FormFlow definition
+     */
+    fun findFirstByIdKeyOrderByIdVersionDesc(formFlowKey: String): FormFlowDefinition?
+}

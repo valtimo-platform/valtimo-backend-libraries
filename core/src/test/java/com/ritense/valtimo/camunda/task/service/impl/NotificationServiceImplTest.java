@@ -27,10 +27,8 @@ import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-
 import java.util.List;
 import java.util.Optional;
-
 import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.mockTask;
 import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.user;
 import static org.mockito.ArgumentMatchers.anyString;

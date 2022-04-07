@@ -19,13 +19,10 @@ package com.ritense.document.domain.impl.request;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-
-import com.ritense.document.domain.RelatedFile;
 import com.ritense.valtimo.contract.resource.Resource;
+import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
-import lombok.Getter;
 
 public class NewDocumentRequest {
 
@@ -37,7 +34,6 @@ public class NewDocumentRequest {
 
     private DocumentRelationRequest documentRelation;
 
-    @Getter
     private Set<Resource> resources = Collections.emptySet();
 
     @JsonCreator
@@ -71,4 +67,7 @@ public class NewDocumentRequest {
         return documentRelation;
     }
 
+    public Set<Resource> getResources() {
+        return this.resources;
+    }
 }

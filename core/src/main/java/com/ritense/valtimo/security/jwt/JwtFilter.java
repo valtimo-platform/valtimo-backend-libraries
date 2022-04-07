@@ -18,7 +18,6 @@ package com.ritense.valtimo.security.jwt;
 
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
 import io.jsonwebtoken.ExpiredJwtException;
-import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.IdentityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -34,19 +32,22 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.AUTHORIZATION_HEADER;
 
 /**
  * Filters incoming requests and installs a Spring Security principal if a header corresponding to a valid user is
  * found.
  */
-@RequiredArgsConstructor
 public class JwtFilter extends GenericFilterBean {
 
     private final Logger slf4jLogger = LoggerFactory.getLogger(JwtFilter.class);
     private final IdentityService identityService;
     private final TokenAuthenticationService tokenAuthenticationService;
+
+    public JwtFilter(IdentityService identityService, TokenAuthenticationService tokenAuthenticationService) {
+        this.identityService = identityService;
+        this.tokenAuthenticationService = tokenAuthenticationService;
+    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

@@ -23,12 +23,9 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SigningKeyResolver;
 import io.jsonwebtoken.lang.Strings;
-import lombok.extern.slf4j.Slf4j;
-
 import java.security.Key;
 import java.util.List;
 
-@Slf4j
 public class SecretKeyResolver implements SigningKeyResolver {
 
     private final List<SecretKeyProvider> secretKeyProviders;

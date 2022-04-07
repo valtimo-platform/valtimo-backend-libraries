@@ -16,31 +16,30 @@
 
 package com.ritense.valtimo.service.util;
 
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.engine.variable.value.ObjectValue;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import static java.lang.String.format;
 
-@Slf4j
 public class FormUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(FormUtils.class);
     private static final String FORM_KEY_DELIMETER = ":";
 
     public static String getFormLocation(String formkey, HttpServletRequest request) {
         final String[] formKeyArray = formkey.split(FORM_KEY_DELIMETER);
         final String formType = formKeyArray[0];
 
-        if (formType.equals("app") ||
-            formType.equals("external") ||
-            formType.equals("formio") ||
-            formType.equals("form")
+        if (formType.equals("app")
+            || formType.equals("external")
+            || formType.equals("formio")
+            || formType.equals("form")
         ) {
             return formKeyArray[1];
         } else if (formType.equals("embedded") && formKeyArray[1].equals("app")) {

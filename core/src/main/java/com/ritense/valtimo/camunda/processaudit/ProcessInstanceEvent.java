@@ -18,7 +18,6 @@ package com.ritense.valtimo.camunda.processaudit;
 
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;

@@ -23,7 +23,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +49,7 @@ public class ProcessVariablesResolver implements HandlerMethodArgumentResolver {
         String variablesJson = webRequest.getParameter(VARIABLES);
         if (variablesJson != null) {
             ObjectMapper mapper = new ObjectMapper();
-            map = mapper.readValue(variablesJson, new TypeReference<Map<String, String>>() {});
+            map = mapper.readValue(variablesJson, new TypeReference<>() {});
         }
         return new ProcessVariables(map);
     }

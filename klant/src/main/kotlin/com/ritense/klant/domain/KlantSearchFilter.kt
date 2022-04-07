@@ -25,7 +25,7 @@ data class KlantSearchFilter(
     fun toMap(): MutableMap<String, Any> {
         val map = mutableMapOf<String, Any>()
         bsn?.let { map.put("subjectNatuurlijkPersoon__inpBsn", it) }
-        kvk?.let { map.put("subjectNietNatuurlijkPersoon__innNnpId", it) }
+        kvk?.let { map.put("subjectNietNatuurlijkPersoon__annIdentificatie", it) }
         klantnummer?.let { map.put("klantnummer", it) }
         page?.let { map.put("page", it) }
         return map

@@ -16,40 +16,24 @@
 
 package com.ritense.valtimo.milestones.autoconfigure;
 
-import com.ritense.valtimo.milestones.security.config.MilestoneHttpSecurityConfigurer;
-import com.ritense.valtimo.milestones.security.config.MilestoneInstanceHttpSecurityConfigurer;
-import com.ritense.valtimo.milestones.security.config.MilestoneSetHttpSecurityConfigurer;
+import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-
 import javax.sql.DataSource;
+import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Configuration
 @ConditionalOnClass(DataSource.class)
-public class SecurityAutoConfiguration {
+public class MilestonesLiquibaseAutoConfiguration {
 
-    @Order(270)
+    @Order(HIGHEST_PRECEDENCE + 3)
     @Bean
-    @ConditionalOnMissingBean(MilestoneHttpSecurityConfigurer.class)
-    public MilestoneHttpSecurityConfigurer milestoneHttpSecurityConfigurer() {
-        return new MilestoneHttpSecurityConfigurer();
-    }
-
-    @Order(271)
-    @Bean
-    @ConditionalOnMissingBean(MilestoneSetHttpSecurityConfigurer.class)
-    public MilestoneSetHttpSecurityConfigurer milestoneSetHttpSecurityConfigurer() {
-        return new MilestoneSetHttpSecurityConfigurer();
-    }
-
-    @Order(272)
-    @Bean
-    @ConditionalOnMissingBean(MilestoneInstanceHttpSecurityConfigurer.class)
-    public MilestoneInstanceHttpSecurityConfigurer milestoneInstanceHttpSecurityConfigurer() {
-        return new MilestoneInstanceHttpSecurityConfigurer();
+    @ConditionalOnMissingBean(name = "milestonesLiquibaseMasterChangeLogLocation")
+    public LiquibaseMasterChangeLogLocation milestonesLiquibaseMasterChangeLogLocation() {
+        return new LiquibaseMasterChangeLogLocation("config/liquibase/milestones-master.xml");
     }
 
 }

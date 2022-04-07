@@ -22,7 +22,6 @@ import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.document.web.rest.DocumentSnapshotResource;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,17 +32,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/api/document-snapshot", produces = MediaType.APPLICATION_JSON_VALUE)
 public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResource {
 
     private final DocumentSnapshotService documentSnapshotService;
     private final DocumentDefinitionService documentDefinitionService;
+
+    public JsonSchemaDocumentSnapshotResource(DocumentSnapshotService documentSnapshotService, DocumentDefinitionService documentDefinitionService) {
+        this.documentSnapshotService = documentSnapshotService;
+        this.documentDefinitionService = documentDefinitionService;
+    }
 
     @Override
     @GetMapping(value = "/{id}")

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.milestones.autoconfigure;
+package com.ritense.audit.autoconfigure;
 
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -22,20 +22,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-
 import javax.sql.DataSource;
-
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Configuration
 @ConditionalOnClass(DataSource.class)
-public class LiquibaseAutoConfiguration {
+public class AuditLiquibaseAutoConfiguration {
 
-    @Order(HIGHEST_PRECEDENCE + 3)
+    @Order(HIGHEST_PRECEDENCE + 12)
+    @ConditionalOnMissingBean(name = "auditLiquibaseMasterChangeLogLocation")
     @Bean
-    @ConditionalOnMissingBean(name = "milestonesLiquibaseMasterChangeLogLocation")
-    public LiquibaseMasterChangeLogLocation milestonesLiquibaseMasterChangeLogLocation() {
-        return new LiquibaseMasterChangeLogLocation("config/liquibase/milestones-master.xml");
+    public LiquibaseMasterChangeLogLocation auditLiquibaseMasterChangeLogLocation() {
+        return new LiquibaseMasterChangeLogLocation("config/liquibase/audit-master.xml");
     }
 
 }

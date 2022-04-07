@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain
+package com.ritense.formflow.domain.definition
 
-import org.hibernate.validator.constraints.Length
+import com.ritense.formflow.domain.instance.FormFlowInstance
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
@@ -27,15 +27,24 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "form_flow_definition")
-data class FormFlowDefinition(
+class FormFlowDefinition(
 
     @EmbeddedId
     val id: FormFlowDefinitionId,
 
     @Column(name = "start_step")
-    @field:Length(max = 256)
     val startStep: String,
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    val steps: List<FormFlowStep>,
-)
+    @OneToMany(mappedBy = "id.formFlowDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    val steps: Set<FormFlowStep>,
+) {
+    init {
+        steps.forEach { step -> step.id.formFlowDefinition = this }
+    }
+
+    fun createInstance(additionalProperties: MutableMap<String, Any>) : FormFlowInstance {
+        return FormFlowInstance(formFlowDefinition = this,
+            additionalProperties = additionalProperties)
+    }
+
+}

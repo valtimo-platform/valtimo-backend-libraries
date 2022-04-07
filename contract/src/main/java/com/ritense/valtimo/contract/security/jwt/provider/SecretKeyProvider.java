@@ -18,7 +18,6 @@ package com.ritense.valtimo.contract.security.jwt.provider;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
-
 import java.security.Key;
 
 public interface SecretKeyProvider {

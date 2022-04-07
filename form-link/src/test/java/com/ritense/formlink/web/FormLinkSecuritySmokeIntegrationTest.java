@@ -17,7 +17,6 @@
 package com.ritense.formlink.web;
 
 import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest;
-
 import java.util.Set;
 
 public class FormLinkSecuritySmokeIntegrationTest extends CoreSecuritySmokeIntegrationTest {

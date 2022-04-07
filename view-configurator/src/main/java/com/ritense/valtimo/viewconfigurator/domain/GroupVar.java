@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.viewconfigurator.domain.type.EnumVariableType;
 import com.ritense.valtimo.viewconfigurator.web.rest.view.Views;
-
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;

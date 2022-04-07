@@ -17,21 +17,20 @@
 package com.ritense.testutilscommon.junit.extension;
 
 import com.ritense.valtimo.contract.config.LiquibaseRunner;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.GLOBAL;
 
-@Slf4j
 public class LiquibaseRunnerExtension
     implements BeforeAllCallback, ExtensionContext.Store.CloseableResource {
 
+    private static final Logger logger = LoggerFactory.getLogger(LiquibaseRunnerExtension.class);
     private static boolean started = false;
     // Gate keeper to prevent multiple Threads within the same routine
     static final Lock lock = new ReentrantLock();

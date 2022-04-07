@@ -25,12 +25,10 @@ import com.ritense.valtimo.viewconfigurator.service.impl.ProcessDefinitionVariab
 import com.ritense.valtimo.viewconfigurator.service.impl.ViewConfigServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;

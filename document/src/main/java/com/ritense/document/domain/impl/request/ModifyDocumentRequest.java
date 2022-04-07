@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.Document;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
-
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 

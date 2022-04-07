@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain
+package com.ritense.formflow.repository
 
-data class FormFlowNextStep(
-    val condition: String,
-    val step: String,
-)
+import com.ritense.formflow.domain.instance.FormFlowStepInstance
+import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface FormFlowStepInstanceRepository: JpaRepository<FormFlowStepInstance, FormFlowStepInstanceId>

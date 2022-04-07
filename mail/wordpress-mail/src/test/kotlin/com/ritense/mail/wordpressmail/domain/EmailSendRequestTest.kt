@@ -57,4 +57,20 @@ class EmailSendRequestTest : BaseTest() {
         assertThat(sendRequests[0].variables).containsEntry("THIS_IS_AN_INVALID_CHAR_TEST", "value2")
     }
 
+    @Test
+    fun `should fix placeholders from process variables`() {
+        val templatedMailMessage = templatedMailMessage(
+            recipient = Recipient.to(EmailAddress.from("john@example.com"), SimpleName.from("John Doe")),
+            subject = "Welcome",
+            placeholders = mapOf(
+                "var" to mapOf("status" to "Geregistreerd","emailadres" to "john@example.com")
+            )
+        )
+
+        val sendRequests = EmailSendRequest.from(templatedMailMessage)
+
+        assertThat(sendRequests[0].variables).containsEntry("VAR_STATUS", "Geregistreerd")
+        assertThat(sendRequests[0].variables).containsEntry("VAR_EMAILADRES", "john@example.com")
+    }
+
 }

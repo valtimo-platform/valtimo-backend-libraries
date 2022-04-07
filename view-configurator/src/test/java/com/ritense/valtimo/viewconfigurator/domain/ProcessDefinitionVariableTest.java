@@ -19,10 +19,8 @@ package com.ritense.valtimo.viewconfigurator.domain;
 import com.ritense.valtimo.viewconfigurator.domain.type.EnumVariableType;
 import com.ritense.valtimo.viewconfigurator.domain.type.StringVariableType;
 import org.junit.jupiter.api.Test;
-
 import java.util.HashSet;
 import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProcessDefinitionVariableTest {

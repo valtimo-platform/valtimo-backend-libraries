@@ -27,7 +27,6 @@ import org.camunda.bpm.engine.impl.form.validator.FormFieldValidator;
 import org.camunda.bpm.engine.impl.persistence.StrongUuidGenerator;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.spring.boot.starter.configuration.CamundaProcessEngineConfiguration;
-
 import java.util.HashMap;
 
 public class CamundaConfiguration implements CamundaProcessEngineConfiguration {

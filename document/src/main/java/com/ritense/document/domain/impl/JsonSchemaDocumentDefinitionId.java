@@ -19,23 +19,16 @@ package com.ritense.document.domain.impl;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.valtimo.contract.domain.AbstractId;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 import java.io.Serializable;
-import java.net.URI;
-
+import java.util.Objects;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentRange;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode(callSuper = false)
 @Embeddable
 public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumentDefinitionId>
     implements DocumentDefinition.Id, Serializable {
@@ -63,6 +56,9 @@ public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumen
         assertArgumentId(name, version);
         this.name = name;
         this.version = version;
+    }
+
+    private JsonSchemaDocumentDefinitionId() {
     }
 
     private void assertArgumentId(String name, long version) {
@@ -103,4 +99,16 @@ public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumen
         return name + ":" + version;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JsonSchemaDocumentDefinitionId that = (JsonSchemaDocumentDefinitionId) o;
+        return version == that.version && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, version);
+    }
 }

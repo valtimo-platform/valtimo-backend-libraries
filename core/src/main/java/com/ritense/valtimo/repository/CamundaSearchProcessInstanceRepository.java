@@ -20,19 +20,20 @@ import com.ritense.valtimo.helper.CamundaOrderByHelper;
 import com.ritense.valtimo.repository.camunda.dto.ProcessInstance;
 import com.ritense.valtimo.repository.queryparameter.ProcessInstanceQueryParametersV2;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceSearchDTO;
-import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.SqlSession;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 
-@RequiredArgsConstructor
 public class CamundaSearchProcessInstanceRepository {
 
     private final SqlSession session;
+
+    public CamundaSearchProcessInstanceRepository(SqlSession session) {
+        this.session = session;
+    }
 
     public Long searchInstancesCountByDefinitionId(String processDefinitionId, ProcessInstanceSearchDTO processInstanceSearchDTO) {
         ProcessInstanceQueryParametersV2 processInstanceQueryParametersV2 = new ProcessInstanceQueryParametersV2()

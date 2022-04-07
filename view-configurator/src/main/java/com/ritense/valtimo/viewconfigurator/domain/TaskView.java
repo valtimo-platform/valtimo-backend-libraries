@@ -18,7 +18,6 @@ package com.ritense.valtimo.viewconfigurator.domain;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.viewconfigurator.web.rest.view.Views;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

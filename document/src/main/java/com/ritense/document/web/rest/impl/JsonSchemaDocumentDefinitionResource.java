@@ -23,22 +23,23 @@ import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
 import com.ritense.document.web.rest.DocumentDefinitionResource;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import java.util.Set;
-
 import static org.springframework.http.ResponseEntity.ok;
 
-@RequiredArgsConstructor
 public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionResource {
 
     private final DocumentDefinitionService documentDefinitionService;
     private final UndeployDocumentDefinitionService undeployDocumentDefinitionService;
+
+    public JsonSchemaDocumentDefinitionResource(DocumentDefinitionService documentDefinitionService, UndeployDocumentDefinitionService undeployDocumentDefinitionService) {
+        this.documentDefinitionService = documentDefinitionService;
+        this.undeployDocumentDefinitionService = undeployDocumentDefinitionService;
+    }
 
     @Override
     public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(boolean filteredOnRole, Pageable pageable) {

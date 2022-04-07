@@ -18,9 +18,7 @@ package com.ritense.valtimo.security.jwt.token;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.impl.DefaultClaims;
-
 import java.util.Set;
-
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.NAME_KEY;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
 

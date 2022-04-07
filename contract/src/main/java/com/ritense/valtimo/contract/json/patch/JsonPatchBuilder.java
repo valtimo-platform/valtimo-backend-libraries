@@ -24,7 +24,6 @@ import com.ritense.valtimo.contract.json.patch.operation.JsonPatchOperation;
 import com.ritense.valtimo.contract.json.patch.operation.MoveOperation;
 import com.ritense.valtimo.contract.json.patch.operation.RemoveOperation;
 import com.ritense.valtimo.contract.json.patch.operation.ReplaceOperation;
-
 import java.util.LinkedHashSet;
 
 /**

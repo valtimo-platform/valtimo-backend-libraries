@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.ritense.document.domain.relation.DocumentRelation;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;

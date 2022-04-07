@@ -18,7 +18,6 @@ package com.ritense.formlink.service.impl.result;
 
 import com.ritense.formlink.service.result.FormSubmissionResult;
 import com.ritense.valtimo.contract.result.OperationError;
-
 import java.util.Collections;
 import java.util.List;
 

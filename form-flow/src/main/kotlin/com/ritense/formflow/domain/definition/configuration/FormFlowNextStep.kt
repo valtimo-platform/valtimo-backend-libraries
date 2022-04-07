@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain
+package com.ritense.formflow.domain.definition.configuration
 
-import org.hibernate.annotations.Type
-import javax.persistence.Column
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
+import com.ritense.formflow.domain.definition.FormFlowNextStep as FormFlowNextStepEntity
 
-@Entity
-@Table(name = "form_flow_step")
-data class FormFlowStep(
+class FormFlowNextStep(
+    val condition: String? = null,
+    val step: String
+) {
 
-    @EmbeddedId
-    val id: FormFlowStepId,
+    fun contentEquals(other: FormFlowNextStepEntity): Boolean {
+        if (condition != other.condition) return false
+        if (step != other.step) return false
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
-    @Column(name = "next_steps", columnDefinition = "JSON")
-    val nextSteps: List<FormFlowNextStep>
-)
+        return true
+    }
+
+    fun toDefinition() : FormFlowNextStepEntity {
+        return FormFlowNextStepEntity(condition, step)
+    }
+}

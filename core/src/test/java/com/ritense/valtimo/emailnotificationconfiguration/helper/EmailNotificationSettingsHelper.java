@@ -19,7 +19,6 @@ package com.ritense.valtimo.emailnotificationconfiguration.helper;
 import com.ritense.valtimo.emailnotificationsettings.domain.request.EmailNotificationSettingsRequest;
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettings;
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettingsRequestImpl;
-
 import java.util.Optional;
 
 public class EmailNotificationSettingsHelper {

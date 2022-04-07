@@ -18,18 +18,21 @@ package com.ritense.document.domain.impl.listener;
 
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-@Slf4j
-@RequiredArgsConstructor
 public class UndeployDocumentDefinitionEventListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(UndeployDocumentDefinitionEventListener.class);
     private final DocumentSnapshotService documentSnapshotService;
+
+    public UndeployDocumentDefinitionEventListener(DocumentSnapshotService documentSnapshotService) {
+        this.documentSnapshotService = documentSnapshotService;
+    }
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)

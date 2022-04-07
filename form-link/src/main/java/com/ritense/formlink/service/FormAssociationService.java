@@ -24,7 +24,6 @@ import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
 import com.ritense.formlink.domain.request.CreateFormAssociationRequest;
 import com.ritense.formlink.domain.request.FormLinkRequest;
 import com.ritense.formlink.domain.request.ModifyFormAssociationRequest;
-
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;

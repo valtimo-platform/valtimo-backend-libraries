@@ -22,7 +22,6 @@ import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-
 import static com.ritense.valtimo.contract.utils.SecurityUtils.getCurrentUserRoles;
 
 public class KeycloakCurrentUserRepository implements CurrentUserRepository {

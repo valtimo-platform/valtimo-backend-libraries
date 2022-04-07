@@ -17,7 +17,6 @@
 package com.ritense.valtimo.web.rest.dto;
 
 import com.ritense.valtimo.contract.Constants;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;

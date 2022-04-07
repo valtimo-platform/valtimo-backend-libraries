@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain
+package com.ritense.formflow.domain.definition
 
-import lombok.EqualsAndHashCode
-import org.hibernate.validator.constraints.Length
+import com.ritense.formflow.domain.AbstractId
+import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.Embeddable
 
 @Embeddable
-@EqualsAndHashCode(callSuper = false)
-class FormFlowDefinitionId(
+data class FormFlowDefinitionId(
 
-    @Column(name = "key")
-    @field:Length(max = 256)
+    @Column(name = "form_flow_definition_key")
     val key: String,
 
-    @Column(name = "version")
+    @Column(name = "form_flow_definition_version")
     val version: Long
 
 ) : AbstractId<FormFlowDefinitionId>() {
@@ -38,17 +36,32 @@ class FormFlowDefinitionId(
         return "$key:$version"
     }
 
+    override fun hashCode(): Int {
+        return Objects.hash(key)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as FormFlowDefinitionId
+
+        if (key != other.key) return false
+
+        return true
+    }
+
     companion object {
         fun newId(key: String): FormFlowDefinitionId {
             return FormFlowDefinitionId(key, 1).newIdentity()
         }
 
         fun nextVersion(id: FormFlowDefinitionId): FormFlowDefinitionId {
-            return FormFlowDefinitionId(id.key, id.version + 1).newIdentity()
+            return FormFlowDefinitionId(id.key, id.version!! + 1).newIdentity()
         }
 
-        fun existingId(key: String, version: Long): FormFlowDefinitionId {
-            return FormFlowDefinitionId(key, version)
+        fun existingId(id: FormFlowDefinitionId): FormFlowDefinitionId {
+            return FormFlowDefinitionId(id.key, id.version)
         }
     }
 }

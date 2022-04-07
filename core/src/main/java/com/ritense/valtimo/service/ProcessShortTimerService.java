@@ -18,17 +18,16 @@ package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.contract.exception.DocumentParserException;
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -43,13 +42,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-@Slf4j
-@RequiredArgsConstructor
 public class ProcessShortTimerService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProcessShortTimerService.class);
     public static final String NAMESPACE_URL_BPMN = "http://www.omg.org/spec/BPMN/20100524/MODEL";
     public static final String NAMESPACE_URL_BPMNDI = "http://www.omg.org/spec/BPMN/20100524/DI";
     private final RepositoryService repositoryService;
+
+    public ProcessShortTimerService(RepositoryService repositoryService) {
+        this.repositoryService = repositoryService;
+    }
 
     public void modifyAndDeployShortTimerVersion(String processDefinitionId) throws ProcessNotFoundException, DocumentParserException {
         Document doc = processModelChangeTimersToOneMinute(processDefinitionId);

@@ -25,10 +25,8 @@ import com.ritense.valtimo.contract.mail.model.value.AttachmentCollection;
 import com.ritense.valtimo.contract.mail.model.value.MailTemplateIdentifier;
 import com.ritense.valtimo.contract.mail.model.value.Recipient;
 import org.camunda.bpm.engine.delegate.DelegateTask;
-
 import java.util.Map;
 import java.util.Optional;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 

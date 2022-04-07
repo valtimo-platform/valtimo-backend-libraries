@@ -21,17 +21,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.domain.delegate.DocumentVariableDelegate;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.UUID;
 
-@Slf4j
-@RequiredArgsConstructor
 public class DocumentVariableDelegateImpl implements DocumentVariableDelegate {
 
+    private static final Logger logger = LoggerFactory.getLogger(DocumentVariableDelegateImpl.class);
     private final DocumentService documentService;
+
+    public DocumentVariableDelegateImpl(DocumentService documentService) {
+        this.documentService = documentService;
+    }
 
     @Override
     public Object findValueByJsonPointer(String jsonPointer, DelegateExecution execution) {

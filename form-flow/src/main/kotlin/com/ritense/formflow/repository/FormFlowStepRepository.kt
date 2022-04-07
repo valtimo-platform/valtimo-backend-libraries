@@ -16,8 +16,8 @@
 
 package com.ritense.formflow.repository
 
-import com.ritense.formflow.domain.FormFlowStep
-import com.ritense.formflow.domain.FormFlowStepId
+import com.ritense.formflow.domain.definition.FormFlowStep
+import com.ritense.formflow.domain.definition.FormFlowStepId
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface FormFlowStepRepository : JpaRepository<FormFlowStep, FormFlowStepId>

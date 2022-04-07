@@ -34,7 +34,8 @@ public class ContextProcess implements Serializable {
     @Column(name = "visible_in_menu", nullable = false)
     private boolean visibleInMenu = true;
 
-    private ContextProcess() {}
+    private ContextProcess() {
+    }
 
     public ContextProcess(String processDefinitionKey, boolean visibleInMenu) {
         if (processDefinitionKey == null || processDefinitionKey.length() == 0) {
