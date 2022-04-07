@@ -76,7 +76,16 @@ internal class OpenZaakServiceTest {
     }
 
     @Test
-    fun `getResourceUrl gets resource and builds download url`() {
+    fun `getResourceUrl gets resource and builds download url via http request`() {
+        `getResourceUrl gets resource and builds download url`(false)
+    }
+
+    @Test
+    fun `getResourceUrl gets resource and builds download url via proxied https request`() {
+        `getResourceUrl gets resource and builds download url`(true)
+    }
+
+    fun `getResourceUrl gets resource and builds download url`(behindReverseProxy: Boolean) {
         val resourceId = UUID.randomUUID()
         val resource = OpenZaakResource(
             ResourceId.newId(resourceId),
@@ -88,7 +97,13 @@ internal class OpenZaakServiceTest {
         )
 
         `when`(repository.getById(MockitoHelper.anyObject())).thenReturn(resource)
-        `when`(request.requestURL).thenReturn(StringBuffer().append("http://some.base.url/with/some/path"))
+
+        if(!behindReverseProxy) {
+            `when`(request.requestURL).thenReturn(StringBuffer().append("http://some.base.url/with/some/path"))
+        } else {
+            `when`(request.requestURL).thenReturn(StringBuffer().append("http://some.base.url/with/some/path"))
+            `when`(request.getHeader("x-forwarded-proto")).thenReturn("https")
+        }
 
         val objectUrlDTO = service.getResourceUrl(resourceId)
 
@@ -99,7 +114,11 @@ internal class OpenZaakServiceTest {
         assertEquals("extension", returnedResource.extension)
         assertEquals(321L, returnedResource.sizeInBytes)
         assertEquals(LocalDateTime.of(2000, 1, 1, 0, 0, 0), returnedResource.createdOn)
-        assertEquals(URL("http://some.base.url/api/resource/${resourceId}/download"), objectUrlDTO.url)
+        if(!behindReverseProxy) {
+            assertEquals(URL("http://some.base.url/api/resource/${resourceId}/download"), objectUrlDTO.url)
+        } else {
+            assertEquals(URL("https://some.base.url/api/resource/${resourceId}/download"), objectUrlDTO.url)
+        }
     }
 
     @Test

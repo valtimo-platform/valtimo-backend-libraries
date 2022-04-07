@@ -164,7 +164,14 @@ class OpenZaakService(
     }
 
     private fun getDownloadUrl(resource: OpenZaakResource): URL {
-        val currentRequestUrl = URL(request.requestURL.toString())
+        var currentRequestUrl = URL(request.requestURL.toString())
+
+        val forwardedProtocol = request.getHeader("x-forwarded-proto")
+        if(forwardedProtocol != null && forwardedProtocol.equals("https")) {
+            currentRequestUrl = URL("https", currentRequestUrl.host, currentRequestUrl.port,
+                currentRequestUrl.file);
+        }
+
         return URL(currentRequestUrl, "/api/resource/${resource.resourceId.id}/download")
     }
 }
