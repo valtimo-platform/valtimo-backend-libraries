@@ -20,8 +20,14 @@ import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
+import com.ritense.formflow.exception.FormFlowExpressionExecutionException
+import com.ritense.formflow.exception.FormFlowExpressionParseException
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
+import org.springframework.expression.Expression
+import org.springframework.expression.ParseException
+import org.springframework.expression.ParserContext
+import org.springframework.expression.spel.standard.SpelExpressionParser
 
 class FormFlowService(
     private val formFlowDefinitionRepository: FormFlowDefinitionRepository,
@@ -34,6 +40,36 @@ class FormFlowService(
 
     fun getDefinitionById(formFlowDefinitionId: FormFlowDefinitionId): FormFlowDefinition {
         return formFlowDefinitionRepository.getById(formFlowDefinitionId)
+    }
+
+    fun open(formFlowInstance: FormFlowInstance) {
+        val step = formFlowInstance.formFlowDefinition.getStepByKey(formFlowInstance.getCurrentStep().stepKey)
+
+        step.onOpen?.forEach { expression ->
+            val spelExpression = parseSpelExpression(expression)
+
+            if (spelExpression != null) {
+                try {
+                    spelExpression.value
+                } catch (e: RuntimeException) {
+                    throw FormFlowExpressionExecutionException(
+                        formFlowInstance.formFlowDefinition.id.key,
+                        expression,
+                        e
+                    )
+                }
+            }
+        }
+    }
+
+    fun parseSpelExpression(expression: String, context: ParserContext? = null): Expression? {
+        val expressionMatcher = "^\\\$\\{(.*)\\}\$".toRegex().find(expression) ?: return null
+        val parser = SpelExpressionParser()
+        try {
+            return parser.parseExpression(expressionMatcher.groupValues[1], context)
+        } catch (e: ParseException) {
+            throw FormFlowExpressionParseException(expression, e)
+        }
     }
 
     fun save(formFlowDefinition: FormFlowDefinition) {

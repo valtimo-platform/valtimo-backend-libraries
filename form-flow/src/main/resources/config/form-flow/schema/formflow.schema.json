@@ -20,6 +20,14 @@
                         "type": "string",
                         "description": "The identifying human readable key of the step"
                     },
+                    "onOpen": {
+                        "type": "array",
+                        "description": "An array SPeL expressions that are executed in order when opening the step",
+                        "items": {
+                            "type": "string",
+                            "description": "A SPeL expression that is executed when opening the step"
+                        }
+                    },
                     "nextSteps": {
                         "type": "array",
                         "description": "The possible next steps. A condition must be added on all steps but one. The step without a condition is the default step that will be used when all conditions fail",

@@ -17,8 +17,10 @@
 package com.ritense.formflow.service
 
 import com.ritense.formflow.BaseIntegrationTest
+import com.ritense.formflow.exception.FormFlowExpressionParseException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
@@ -63,6 +65,26 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
         val inkomensLoket = formFlowService.findLatestDefinitionByKey("inkomens_loket")
 
         assertThat(inkomensLoket!!.id.version).isEqualTo(2L)
+    }
+
+    @Test
+    fun `should fail to deploy Form Flow when error in onOpenExpression`() {
+        assertThrows<FormFlowExpressionParseException> {
+            formFlowDeploymentService.deploy(
+                "test", """
+                {
+                    "startStep": "woonplaats",
+                    "steps": [
+                        {
+                            "key": "woonplaats",
+                            "onOpen": ["${'$'}{'Hello +'world!'}"],
+                            "nextStep": "leeftijd"
+                        }
+                    ]
+                }
+            """.trimIndent()
+            )
+        }
     }
 }
 

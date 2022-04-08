@@ -16,13 +16,14 @@
 
 package com.ritense.formflow.domain.definition.configuration
 
-import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.formflow.domain.definition.FormFlowStepId
+import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 
 class FormFlowStep(
     val key: String,
-    val nextSteps: MutableList<FormFlowNextStep>? = ArrayList()
+    val nextSteps: MutableList<FormFlowNextStep>? = ArrayList(),
+    val onOpen: MutableList<String>? = ArrayList()
 ) {
 
     @JsonProperty("nextStep")
@@ -33,6 +34,7 @@ class FormFlowStep(
     fun contentEquals(other: FormFlowStepEntity): Boolean {
         if (key != other.id.key) return false
         if (nextSteps!!.size != other.nextSteps!!.size) return false
+        if (onOpen != other.onOpen) return false
         for (otherNextStep in other.nextSteps!!) {
             var hasMatch = false
             for (nextStep in nextSteps) {
@@ -47,10 +49,10 @@ class FormFlowStep(
         return true
     }
 
-    fun toDefinition() : FormFlowStepEntity {
-        val nextSteps = this.nextSteps?.map{
+    fun toDefinition(): FormFlowStepEntity {
+        val nextSteps = this.nextSteps?.map {
             it.toDefinition()
         }?.toMutableList()
-        return FormFlowStepEntity(FormFlowStepId.create(key), nextSteps)
+        return FormFlowStepEntity(FormFlowStepId.create(key), nextSteps, onOpen ?: ArrayList())
     }
 }

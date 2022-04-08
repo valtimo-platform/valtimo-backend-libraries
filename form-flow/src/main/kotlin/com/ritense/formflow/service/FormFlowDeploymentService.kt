@@ -16,8 +16,8 @@
 
 package com.ritense.formflow.service
 
-import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
 import mu.KotlinLogging
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONObject
@@ -64,11 +64,9 @@ class FormFlowDeploymentService(
     fun deploy(formFlowKey: String, formFlowJson: String) {
         validate(formFlowJson)
 
-        val formFlowDefinitionConfig = Mapper.get()
-            .readValue(
-                formFlowJson,
-                com.ritense.formflow.domain.definition.configuration.FormFlowDefinition::class.java
-            )
+        val formFlowDefinitionConfig = Mapper.get().readValue(formFlowJson, FormFlowDefinition::class.java)
+
+        validate(formFlowDefinitionConfig)
 
         try {
             val existingDefinition = formFlowService.findLatestDefinitionByKey(formFlowKey)
@@ -96,6 +94,14 @@ class FormFlowDeploymentService(
 
         val schema = SchemaLoader.load(JSONObject(JSONTokener(loadFormFlowSchemaResource().inputStream)))
         schema.validate(definitionJsonObject)
+    }
+
+    private fun validate(formFlowDefinitionConfig: FormFlowDefinition) {
+        formFlowDefinitionConfig.steps.forEach { step ->
+            step.onOpen?.forEach { expression ->
+                formFlowService.parseSpelExpression(expression)
+            }
+        }
     }
 
     private fun loadFormFlowSchemaResource(): Resource {
