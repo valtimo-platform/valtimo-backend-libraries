@@ -16,7 +16,7 @@
 
 package com.ritense.formflow.exception
 
-class FormFlowExpressionParseException(
+class ExpressionExecutionException(
     expression: String,
-    cause: RuntimeException
-) : RuntimeException("Failed to parse Form Flow expression, $expression", cause)
+    cause: Throwable
+) : RuntimeException("Error while executing expression: '$expression'", cause)

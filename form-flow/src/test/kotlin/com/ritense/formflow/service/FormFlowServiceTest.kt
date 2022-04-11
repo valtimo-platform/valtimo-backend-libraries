@@ -21,14 +21,10 @@ import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.instance.FormFlowInstance
-import com.ritense.formflow.exception.FormFlowExpressionExecutionException
-import com.ritense.formflow.exception.FormFlowExpressionParseException
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 
 internal class FormFlowServiceTest {
@@ -45,39 +41,15 @@ internal class FormFlowServiceTest {
     }
 
     @Test
-    fun `should parse SPeL expression`() {
-        val spelExpression = formFlowService.parseSpelExpression("\${'Hello '+'World!'}")
-
-        assertThat(spelExpression).isNotNull
-    }
-
-    @Test
-    fun `should throw exception when error in syntax of onOpenExpression`() {
-        assertThat(assertThrows<FormFlowExpressionParseException> {
-            formFlowService.parseSpelExpression("\${'Hello +'World!'}")
-        }.message).isEqualTo("Failed to parse Form Flow expression, \${'Hello +'World!'}")
-    }
-
-    @Test
     fun `should handle multiple onOpen expressions when opening a form flow instance`() {
         val instance = createAndOpenFormFlowInstance(
             onOpen = mutableListOf(
-                "\${'Hello '+'World!'}", "\${3 / 1}"
+                "#{'Hello '+'World!'}",
+                "#{3 / 1}"
             )
         )
 
-        formFlowService.open(instance)
-    }
-
-    @Test
-    fun `should throw exception when error while executing onOpenExpression`() {
-        val instance = createAndOpenFormFlowInstance(
-            onOpen = mutableListOf("\${3 / 0}")
-        )
-
-        assertThat(assertThrows<FormFlowExpressionExecutionException> {
-            formFlowService.open(instance)
-        }.message).isEqualTo("Error while executing Form Flow onOpen expression. In 'test' with '\${3 / 0}'")
+        formFlowService.open(instance.id)
     }
 
     private fun createAndOpenFormFlowInstance(onOpen: MutableList<String>): FormFlowInstance {

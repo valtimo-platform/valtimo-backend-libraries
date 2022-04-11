@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.domain.instance
 
+import com.ritense.formflow.domain.definition.FormFlowStep
 import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
@@ -40,6 +41,9 @@ data class FormFlowStepInstance(
     @Column(name = "submission_data")
     var submissionData: String? = null
 ) {
+
+    val definition: FormFlowStep
+        get() = instance.formFlowDefinition.getStepByKey(stepKey)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

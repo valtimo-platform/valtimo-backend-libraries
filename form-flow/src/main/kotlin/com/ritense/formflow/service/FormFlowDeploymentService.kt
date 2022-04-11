@@ -18,6 +18,7 @@ package com.ritense.formflow.service
 
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
+import com.ritense.formflow.expression.SpelExpressionProcessor
 import mu.KotlinLogging
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONObject
@@ -97,9 +98,10 @@ class FormFlowDeploymentService(
     }
 
     private fun validate(formFlowDefinitionConfig: FormFlowDefinition) {
+        val expressionProcessor = SpelExpressionProcessor()
         formFlowDefinitionConfig.steps.forEach { step ->
             step.onOpen?.forEach { expression ->
-                formFlowService.parseSpelExpression(expression)
+                expressionProcessor.validate(expression)
             }
         }
     }

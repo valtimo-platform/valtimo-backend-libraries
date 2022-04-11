@@ -17,7 +17,7 @@
 package com.ritense.formflow.service
 
 import com.ritense.formflow.BaseIntegrationTest
-import com.ritense.formflow.exception.FormFlowExpressionParseException
+import com.ritense.formflow.exception.ExpressionParseException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -69,7 +69,7 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should fail to deploy Form Flow when error in onOpenExpression`() {
-        assertThrows<FormFlowExpressionParseException> {
+        assertThrows<ExpressionParseException> {
             formFlowDeploymentService.deploy(
                 "test", """
                 {
@@ -77,7 +77,7 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
                     "steps": [
                         {
                             "key": "woonplaats",
-                            "onOpen": ["${'$'}{'Hello +'world!'}"],
+                            "onOpen": ["#{'Hello +'world!'}"],
                             "nextStep": "leeftijd"
                         }
                     ]
