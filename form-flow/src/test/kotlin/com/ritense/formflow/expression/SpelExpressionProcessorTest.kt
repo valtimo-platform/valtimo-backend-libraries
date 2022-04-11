@@ -28,7 +28,7 @@ internal class SpelExpressionProcessorTest {
     fun `should validate SPeL expression`() {
         val expressionProcessor = SpelExpressionProcessor()
 
-        expressionProcessor.validate("#{'Hello '+'World!'}")
+        expressionProcessor.validate("\${'Hello '+'World!'}")
     }
 
     @Test
@@ -36,15 +36,15 @@ internal class SpelExpressionProcessorTest {
         val expressionProcessor = SpelExpressionProcessor()
 
         assertThat(assertThrows<ExpressionParseException> {
-            expressionProcessor.validate("#{'Hello +'World!'}")
-        }.message).isEqualTo("Failed to parse expression: '#{'Hello +'World!'}'")
+            expressionProcessor.validate("\${'Hello +'World!'}")
+        }.message).isEqualTo("Failed to parse expression: '\${'Hello +'World!'}'")
     }
 
     @Test
     fun `should return result when executing valid expression`() {
         val expressionProcessor = SpelExpressionProcessor()
 
-        val result = expressionProcessor.process<Number>("#{3 / 1}")
+        val result = expressionProcessor.process<Number>("\${3 / 1}")
 
         assertThat(result).isEqualTo(3)
     }
@@ -54,7 +54,7 @@ internal class SpelExpressionProcessorTest {
         val expressionProcessor = SpelExpressionProcessor()
 
         assertThat(assertThrows<ExpressionExecutionException> {
-            expressionProcessor.process<Number>("#{3 / 0}")
-        }.message).isEqualTo("Error while executing expression: '#{3 / 0}'")
+            expressionProcessor.process<Number>("\${3 / 0}")
+        }.message).isEqualTo("Error while executing expression: '\${3 / 0}'")
     }
 }

@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.service
 
+import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
@@ -31,12 +32,15 @@ internal class FormFlowServiceTest {
 
     lateinit var formFlowService: FormFlowService
 
+    lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
+
     @BeforeEach
     fun beforeAll() {
         val formFlowDefinitionRepository = mock(FormFlowDefinitionRepository::class.java)
-        val formFlowInstanceRepository = mock(FormFlowInstanceRepository::class.java)
+        formFlowInstanceRepository = mock(FormFlowInstanceRepository::class.java)
         formFlowService = FormFlowService(
-            formFlowDefinitionRepository, formFlowInstanceRepository
+            formFlowDefinitionRepository,
+            formFlowInstanceRepository
         )
     }
 
@@ -44,8 +48,8 @@ internal class FormFlowServiceTest {
     fun `should handle multiple onOpen expressions when opening a form flow instance`() {
         val instance = createAndOpenFormFlowInstance(
             onOpen = mutableListOf(
-                "#{'Hello '+'World!'}",
-                "#{3 / 1}"
+                "\${'Hello '+'World!'}",
+                "\${3 / 1}"
             )
         )
 
@@ -61,8 +65,12 @@ internal class FormFlowServiceTest {
         val definition = FormFlowDefinition(
             FormFlowDefinitionId("test", 1L), "start-step", setOf(step)
         )
-        return FormFlowInstance(
+        val formFlowInstance = FormFlowInstance(
             formFlowDefinition = definition
         )
+
+        whenever(formFlowInstanceRepository.getById(formFlowInstance.id)).thenReturn(formFlowInstance)
+
+        return formFlowInstance
     }
 }
