@@ -63,7 +63,7 @@ class FormFlowService(
     }
 
     fun parseSpelExpression(expression: String, context: ParserContext? = null): Expression? {
-        val expressionMatcher = "^\\\$\\{(.*)\\}\$".toRegex().find(expression) ?: return null
+        val expressionMatcher ="""^\$\{(.*)\}$""".toRegex().find(expression) ?: return null
         val parser = SpelExpressionParser()
         try {
             return parser.parseExpression(expressionMatcher.groupValues[1], context)

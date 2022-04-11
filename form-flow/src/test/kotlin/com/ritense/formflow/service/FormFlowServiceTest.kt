@@ -82,7 +82,7 @@ internal class FormFlowServiceTest {
 
     private fun createAndOpenFormFlowInstance(onOpen: MutableList<String>): FormFlowInstance {
         val step = FormFlowStep(
-            FormFlowStepId("test"),
+            FormFlowStepId("start-step"),
             ArrayList(),
             onOpen
         )
