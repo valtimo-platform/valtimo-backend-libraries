@@ -47,4 +47,8 @@ class FormFlowDefinition(
             additionalProperties = additionalProperties)
     }
 
+    fun getStepByKey(key: String): FormFlowStep {
+        return steps.first { it.id.key == key }
+    }
+
 }

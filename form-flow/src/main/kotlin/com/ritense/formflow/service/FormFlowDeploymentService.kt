@@ -16,8 +16,11 @@
 
 package com.ritense.formflow.service
 
-import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
+import com.ritense.formflow.expression.ExpressionProcessorFactory
+import com.ritense.formflow.expression.spel.SpelExpressionProcessor
+import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
 import mu.KotlinLogging
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONObject
@@ -34,6 +37,7 @@ import java.nio.charset.StandardCharsets
 class FormFlowDeploymentService(
     private val resourceLoader: ResourceLoader,
     private val formFlowService: FormFlowService,
+    private val expressionProcessorFactory: ExpressionProcessorFactory
 ) {
 
     private val FORM_FLOW_SCHEMA_PATH = "classpath:config/form-flow/schema/formflow.schema.json"
@@ -64,11 +68,9 @@ class FormFlowDeploymentService(
     fun deploy(formFlowKey: String, formFlowJson: String) {
         validate(formFlowJson)
 
-        val formFlowDefinitionConfig = Mapper.get()
-            .readValue(
-                formFlowJson,
-                com.ritense.formflow.domain.definition.configuration.FormFlowDefinition::class.java
-            )
+        val formFlowDefinitionConfig = Mapper.get().readValue(formFlowJson, FormFlowDefinition::class.java)
+
+        validate(formFlowDefinitionConfig)
 
         try {
             val existingDefinition = formFlowService.findLatestDefinitionByKey(formFlowKey)
@@ -96,6 +98,15 @@ class FormFlowDeploymentService(
 
         val schema = SchemaLoader.load(JSONObject(JSONTokener(loadFormFlowSchemaResource().inputStream)))
         schema.validate(definitionJsonObject)
+    }
+
+    private fun validate(formFlowDefinitionConfig: FormFlowDefinition) {
+        val expressionProcessor = expressionProcessorFactory.create()
+        formFlowDefinitionConfig.steps.forEach { step ->
+            step.onOpen?.forEach { expression ->
+                expressionProcessor.validate(expression)
+            }
+        }
     }
 
     private fun loadFormFlowSchemaResource(): Resource {

@@ -34,11 +34,15 @@ data class FormFlowStep(
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "next_steps", columnDefinition = "JSON")
-    val nextSteps: MutableList<FormFlowNextStep>? = ArrayList()
+    val nextSteps: MutableList<FormFlowNextStep>? = ArrayList(),
+
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "on_open", columnDefinition = "JSON")
+    val onOpen: MutableList<String>? = ArrayList()
 ) {
 
     override fun hashCode(): Int {
-        return Objects.hash(id, nextSteps)
+        return Objects.hash(id, nextSteps, onOpen)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -49,6 +53,7 @@ data class FormFlowStep(
 
         if (id != other.id) return false
         if (nextSteps != other.nextSteps) return false
+        if (onOpen != other.onOpen) return false
 
         return true
     }

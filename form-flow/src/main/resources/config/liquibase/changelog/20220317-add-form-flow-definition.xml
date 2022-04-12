@@ -54,5 +54,10 @@
                                  referencedColumnNames="form_flow_definition_key,form_flow_definition_version"/>
     </changeSet>
 
+    <changeSet id="4" author="Ritense">
+        <addColumn tableName="form_flow_step">
+            <column name="on_open" type="JSON"/>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>
