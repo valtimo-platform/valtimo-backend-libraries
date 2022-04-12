@@ -18,6 +18,7 @@ package com.ritense.formflow.service
 
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.expression.ExpressionProcessorFactory
@@ -39,13 +40,20 @@ class FormFlowService(
     }
 
     fun open(formFlowInstanceId: FormFlowInstanceId) {
+        processExpressions(formFlowInstanceId, FormFlowStep::onOpen)
+    }
+
+    fun complete(formFlowInstanceId: FormFlowInstanceId) {
+        processExpressions(formFlowInstanceId, FormFlowStep::onComplete)
+    }
+
+    private fun processExpressions(formFlowInstanceId: FormFlowInstanceId, expressionist: (FormFlowStep)-> List<String>?) {
         val formFlowInstance = formFlowInstanceRepository.getById(formFlowInstanceId)
         val currentStep = formFlowInstance.getCurrentStep()
-
-        val expressionProcessor = expressionProcessorFactory.create(currentStep)
+        val expressionProcessor = expressionProcessorFactory.create(mapOf("step" to currentStep))
 
         val stepDefinition = currentStep.definition
-        stepDefinition.onOpen?.forEach { expression ->
+        expressionist(stepDefinition)?.forEach { expression ->
             expressionProcessor.process<Any>(expression)
         }
     }

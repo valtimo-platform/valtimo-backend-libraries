@@ -38,7 +38,11 @@ data class FormFlowStep(
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "on_open", columnDefinition = "JSON")
-    val onOpen: MutableList<String>? = ArrayList()
+    val onOpen: MutableList<String>? = ArrayList(),
+
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "on_complete", columnDefinition = "JSON")
+    val onComplete: MutableList<String>? = ArrayList()
 ) {
 
     override fun hashCode(): Int {

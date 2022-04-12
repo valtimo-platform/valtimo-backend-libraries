@@ -16,53 +16,81 @@
 
 package com.ritense.formflow.service
 
+import com.nhaarman.mockitokotlin2.isNull
+import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.instance.FormFlowInstance
+import com.ritense.formflow.expression.ExpressionProcessor
+import com.ritense.formflow.expression.ExpressionProcessorFactory
+import com.ritense.formflow.expression.spel.SpelExpressionProcessor
 import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.any
+import org.mockito.Mockito.anyString
 import org.mockito.Mockito.mock
 
 internal class FormFlowServiceTest {
 
     lateinit var formFlowService: FormFlowService
-
     lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
+    lateinit var expressionProcessor: ExpressionProcessor
 
     @BeforeEach
     fun beforeAll() {
         val formFlowDefinitionRepository = mock(FormFlowDefinitionRepository::class.java)
         formFlowInstanceRepository = mock(FormFlowInstanceRepository::class.java)
+        val expressionProcessorFactory = mock(ExpressionProcessorFactory::class.java)
         formFlowService = FormFlowService(
             formFlowDefinitionRepository,
             formFlowInstanceRepository,
-            SpelExpressionProcessorFactory()
+            expressionProcessorFactory
         )
+
+        expressionProcessor = spy(SpelExpressionProcessor())
+        whenever(expressionProcessorFactory.create(any())).thenReturn(expressionProcessor)
     }
 
     @Test
     fun `should handle multiple onOpen expressions when opening a form flow instance`() {
         val instance = createAndOpenFormFlowInstance(
-            onOpen = mutableListOf(
+            onOpen = listOf(
                 "\${'Hello '+'World!'}",
                 "\${3 / 1}"
             )
         )
 
         formFlowService.open(instance.id)
+        verify(expressionProcessor, times(2)).process<Any>(anyString(), isNull())
     }
 
-    private fun createAndOpenFormFlowInstance(onOpen: MutableList<String>): FormFlowInstance {
+    @Test
+    fun `should handle multiple onComplete expressions when completing a form flow instance`() {
+        val instance = createAndOpenFormFlowInstance(
+            onComplete = listOf(
+                "\${'Hello '+'World!'}",
+                "\${3 / 1}"
+            )
+        )
+
+        formFlowService.complete(instance.id)
+        verify(expressionProcessor, times(2)).process<Any>(anyString(), isNull())
+    }
+
+    private fun createAndOpenFormFlowInstance(onOpen: List<String>? = null, onComplete: List<String>? = null): FormFlowInstance {
         val step = FormFlowStep(
             FormFlowStepId("start-step"),
             ArrayList(),
-            onOpen
+            onOpen?.toMutableList(),
+            onComplete?.toMutableList()
         )
         val definition = FormFlowDefinition(
             FormFlowDefinitionId("test", 1L), "start-step", setOf(step)
