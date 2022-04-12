@@ -41,10 +41,10 @@ class FormFlowService(
     fun open(formFlowInstanceId: FormFlowInstanceId) {
         val formFlowInstance = formFlowInstanceRepository.getById(formFlowInstanceId)
         val currentStep = formFlowInstance.getCurrentStep()
-        val stepDefinition = currentStep.definition
 
         val expressionProcessor = expressionProcessorFactory.create(currentStep)
 
+        val stepDefinition = currentStep.definition
         stepDefinition.onOpen?.forEach { expression ->
             expressionProcessor.process<Any>(expression)
         }
