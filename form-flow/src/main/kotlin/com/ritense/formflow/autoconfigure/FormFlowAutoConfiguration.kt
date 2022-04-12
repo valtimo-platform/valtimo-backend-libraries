@@ -60,8 +60,9 @@ class FormFlowAutoConfiguration {
     @ConditionalOnMissingBean(FormFlowDeploymentService::class)
     fun formFlowDeploymentService(
         resourceLoader: ResourceLoader,
-        formFlowService: FormFlowService
+        formFlowService: FormFlowService,
+        expressionProcessorFactory: ExpressionProcessorFactory
     ): FormFlowDeploymentService {
-        return FormFlowDeploymentService(resourceLoader, formFlowService)
+        return FormFlowDeploymentService(resourceLoader, formFlowService, expressionProcessorFactory)
     }
 }
