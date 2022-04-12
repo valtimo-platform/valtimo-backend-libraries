@@ -16,6 +16,8 @@
 
 package com.ritense.formflow.autoconfigure
 
+import com.ritense.formflow.expression.ExpressionProcessorFactory
+import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import com.ritense.formflow.repository.FormFlowStepInstanceRepository
@@ -39,12 +41,19 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 class FormFlowAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(ExpressionProcessorFactory::class)
+    fun expressionProcessorFactory(): ExpressionProcessorFactory {
+        return SpelExpressionProcessorFactory()
+    }
+
+    @Bean
     @ConditionalOnMissingBean(FormFlowService::class)
     fun formFlowService(
         formFlowDefinitionRepository: FormFlowDefinitionRepository,
-        formFlowInstanceRepository: FormFlowInstanceRepository
+        formFlowInstanceRepository: FormFlowInstanceRepository,
+        expressionProcessorFactory: ExpressionProcessorFactory
     ): FormFlowService {
-        return FormFlowService(formFlowDefinitionRepository, formFlowInstanceRepository)
+        return FormFlowService(formFlowDefinitionRepository, formFlowInstanceRepository, expressionProcessorFactory)
     }
 
     @Bean

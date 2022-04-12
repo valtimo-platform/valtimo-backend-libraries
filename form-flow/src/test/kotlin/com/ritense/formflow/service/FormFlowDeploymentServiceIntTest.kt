@@ -17,7 +17,7 @@
 package com.ritense.formflow.service
 
 import com.ritense.formflow.BaseIntegrationTest
-import com.ritense.formflow.exception.ExpressionParseException
+import com.ritense.formflow.expression.ExpressionParseException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

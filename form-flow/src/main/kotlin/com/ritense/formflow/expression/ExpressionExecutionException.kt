@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.exception
+package com.ritense.formflow.expression
 
 class ExpressionExecutionException(
     expression: String,

@@ -20,14 +20,14 @@ import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
-import com.ritense.formflow.expression.SpelExpressionProcessor
+import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
-import org.springframework.expression.spel.support.StandardEvaluationContext
 
 class FormFlowService(
     private val formFlowDefinitionRepository: FormFlowDefinitionRepository,
-    private val formFlowInstanceRepository: FormFlowInstanceRepository
+    private val formFlowInstanceRepository: FormFlowInstanceRepository,
+    private val expressionProcessorFactory: ExpressionProcessorFactory
 ) {
 
     fun findLatestDefinitionByKey(formFlowKey: String): FormFlowDefinition? {
@@ -40,12 +40,12 @@ class FormFlowService(
 
     fun open(formFlowInstanceId: FormFlowInstanceId) {
         val formFlowInstance = formFlowInstanceRepository.getById(formFlowInstanceId)
-        val step = formFlowInstance.getCurrentStep().definition
+        val currentStep = formFlowInstance.getCurrentStep()
+        val stepDefinition = currentStep.definition
 
-        val context = StandardEvaluationContext()
-        val expressionProcessor = SpelExpressionProcessor(evaluationContext = context)
+        val expressionProcessor = expressionProcessorFactory.create(currentStep)
 
-        step.onOpen?.forEach { expression ->
+        stepDefinition.onOpen?.forEach { expression ->
             expressionProcessor.process<Any>(expression)
         }
     }

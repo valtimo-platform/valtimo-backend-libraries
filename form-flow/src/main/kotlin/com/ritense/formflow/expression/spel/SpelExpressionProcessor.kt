@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.expression
+package com.ritense.formflow.expression.spel
 
-import com.ritense.formflow.exception.ExpressionExecutionException
-import com.ritense.formflow.exception.ExpressionParseException
+import com.ritense.formflow.expression.ExpressionExecutionException
+import com.ritense.formflow.expression.ExpressionParseException
+import com.ritense.formflow.expression.ExpressionProcessor
 import org.springframework.expression.EvaluationContext
 import org.springframework.expression.Expression
 import org.springframework.expression.ParseException
@@ -29,9 +30,9 @@ import org.springframework.expression.spel.support.StandardEvaluationContext
 class SpelExpressionProcessor(
     private val parserContext: ParserContext = TemplateParserContext("\${", "}"),
     private val evaluationContext: EvaluationContext = StandardEvaluationContext()
-) {
+) : ExpressionProcessor {
 
-    fun <T> process(expression: String, resultType: Class<T>? = null): T? {
+    override fun <T> process(expression: String, resultType: Class<T>?): T? {
         val spelExpression = parseSpelExpression(expression)
 
         return if (spelExpression != null) {
@@ -45,7 +46,7 @@ class SpelExpressionProcessor(
         }
     }
 
-    fun validate(expression: String) {
+    override fun validate(expression: String) {
         parseSpelExpression(expression)
     }
 

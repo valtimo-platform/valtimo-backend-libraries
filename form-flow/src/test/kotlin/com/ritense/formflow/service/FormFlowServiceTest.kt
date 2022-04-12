@@ -22,6 +22,7 @@ import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.instance.FormFlowInstance
+import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import org.junit.jupiter.api.BeforeEach
@@ -40,7 +41,8 @@ internal class FormFlowServiceTest {
         formFlowInstanceRepository = mock(FormFlowInstanceRepository::class.java)
         formFlowService = FormFlowService(
             formFlowDefinitionRepository,
-            formFlowInstanceRepository
+            formFlowInstanceRepository,
+            SpelExpressionProcessorFactory()
         )
     }
 
