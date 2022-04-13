@@ -68,7 +68,7 @@ class FormFlowInstance(
         val formFlowStepInstance = history
             .first { formFlowStepInstance -> formFlowStepInstance.id == currentFormFlowStepInstanceId }
 
-        formFlowStepInstance.submissionData = submissionData
+        formFlowStepInstance.complete(submissionData)
 
         return navigateToNextStep()
     }

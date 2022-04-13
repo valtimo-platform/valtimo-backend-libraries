@@ -28,8 +28,8 @@ import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.expression.ExpressionProcessor
 import com.ritense.formflow.expression.ExpressionProcessorFactory
+import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessor
-import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import org.junit.jupiter.api.BeforeEach
@@ -48,15 +48,15 @@ internal class FormFlowServiceTest {
     fun beforeAll() {
         val formFlowDefinitionRepository = mock(FormFlowDefinitionRepository::class.java)
         formFlowInstanceRepository = mock(FormFlowInstanceRepository::class.java)
-        val expressionProcessorFactory = mock(ExpressionProcessorFactory::class.java)
         formFlowService = FormFlowService(
             formFlowDefinitionRepository,
-            formFlowInstanceRepository,
-            expressionProcessorFactory
+            formFlowInstanceRepository
         )
 
+        val expressionProcessorFactory = mock(ExpressionProcessorFactory::class.java)
         expressionProcessor = spy(SpelExpressionProcessor())
         whenever(expressionProcessorFactory.create(any())).thenReturn(expressionProcessor)
+        ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory)
     }
 
     @Test
@@ -68,7 +68,7 @@ internal class FormFlowServiceTest {
             )
         )
 
-        formFlowService.open(instance.id)
+        instance.getCurrentStep().open()
         verify(expressionProcessor, times(2)).process<Any>(anyString(), isNull())
     }
 
@@ -81,7 +81,7 @@ internal class FormFlowServiceTest {
             )
         )
 
-        formFlowService.complete(instance.id)
+        instance.getCurrentStep().complete("{}")
         verify(expressionProcessor, times(2)).process<Any>(anyString(), isNull())
     }
 
