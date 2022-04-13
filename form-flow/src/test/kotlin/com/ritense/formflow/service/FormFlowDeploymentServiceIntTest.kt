@@ -77,7 +77,7 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
                     "steps": [
                         {
                             "key": "woonplaats",
-                            "onOpen": ["$\{'Hello +'world!'}"],
+                            "onOpen": ["${'$'}{'Hello +'world!'}"],
                             "nextStep": "leeftijd"
                         }
                     ]
