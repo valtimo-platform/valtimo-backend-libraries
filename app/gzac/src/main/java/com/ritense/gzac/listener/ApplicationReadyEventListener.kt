@@ -6,7 +6,7 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.document.service.DocumentDefinitionService
-import com.ritense.haalcentraal.connector.HaalCentraalBRPProperties
+import com.ritense.haalcentraal.brp.connector.HaalCentraalBRPProperties
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagTypeMapping

@@ -1,7 +1,0 @@
-version: '3.9'
-services:
-    db:
-        ports:
-            - "3319:3306"
-        environment:
-            - MYSQL_DATABASE=haalcentraal-test

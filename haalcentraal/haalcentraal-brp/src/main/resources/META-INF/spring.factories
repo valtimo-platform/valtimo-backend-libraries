@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.ritense.haalcentraal.brp.autoconfigure.HaalCentraalAutoConfiguration, \
+  com.ritense.haalcentraal.brp.autoconfigure.HaalCentraalSecurityAutoConfiguration
