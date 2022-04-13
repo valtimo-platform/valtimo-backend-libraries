@@ -19,7 +19,7 @@ package com.ritense.haalcentraal.brp.connector
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
-import com.ritense.haalcentraal.brp.client.HaalCentraalBRPClient
+import com.ritense.haalcentraal.brp.client.HaalCentraalBrpClient
 import com.ritense.haalcentraal.brp.domain.Person
 import com.ritense.haalcentraal.brp.domain.Personen
 import com.ritense.haalcentraal.brp.web.rest.request.GetPeopleRequest
@@ -28,21 +28,21 @@ import java.security.InvalidParameterException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-@ConnectorType(name = "HaalCentraal")
-class HaalCentraalBRPConnector(
-    private var haalCentraalBRPProperties: HaalCentraalBRPProperties,
-    private var haalCentraalBRPClient: HaalCentraalBRPClient
+@ConnectorType(name = "HaalCentraalBrp")
+class HaalCentraalBrpConnector(
+    private var haalCentraalBrpProperties: HaalCentraalBrpProperties,
+    private var haalCentraalBrpClient: HaalCentraalBrpClient
 ) : Connector {
 
 
     fun findPeople(request: GetPeopleRequest): List<Person> {
         validateRequest(request)
         val personen: Personen = runBlocking {
-            haalCentraalBRPClient.findPeople(
+            haalCentraalBrpClient.findPeople(
                 request.geboortedatum,
                 request.geslachtsnaam,
                 request.bsn,
-                haalCentraalBRPProperties
+                haalCentraalBrpProperties
             )
         }
 
@@ -60,12 +60,12 @@ class HaalCentraalBRPConnector(
         } ?: emptyList()
     }
 
-    override fun getProperties(): HaalCentraalBRPProperties {
-        return haalCentraalBRPProperties
+    override fun getProperties(): HaalCentraalBrpProperties {
+        return haalCentraalBrpProperties
     }
 
     override fun setProperties(connectorProperties: ConnectorProperties) {
-        haalCentraalBRPProperties = connectorProperties as HaalCentraalBRPProperties
+        haalCentraalBrpProperties = connectorProperties as HaalCentraalBrpProperties
     }
 
     private fun toIsoLocalDate(year: Int?, month: Int?, day: Int?): String? {

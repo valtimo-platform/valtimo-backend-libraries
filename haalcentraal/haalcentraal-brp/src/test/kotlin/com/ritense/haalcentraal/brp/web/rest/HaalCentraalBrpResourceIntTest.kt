@@ -32,7 +32,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 
 @EnableAutoConfiguration
-class HaalCentraalBRPResourceIntTest : BaseIntegrationTest() {
+class HaalCentraalBrpResourceIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext

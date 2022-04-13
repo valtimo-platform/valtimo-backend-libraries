@@ -21,8 +21,8 @@ import com.ritense.connector.domain.ConnectorInstanceId
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
 import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorService
-import com.ritense.haalcentraal.brp.connector.HaalCentraalBRPConnector
-import com.ritense.haalcentraal.brp.connector.HaalCentraalBRPProperties
+import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpConnector
+import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import okhttp3.mockwebserver.Dispatcher
@@ -45,10 +45,10 @@ import java.util.UUID
 class BaseIntegrationTest : BaseTest() {
 
     @Autowired
-    lateinit var haalCentraalBRPConnector: HaalCentraalBRPConnector
+    lateinit var haalCentraalBrpConnector: HaalCentraalBrpConnector
 
     @Autowired
-    lateinit var haalCentraalBRPProperties: HaalCentraalBRPProperties
+    lateinit var haalCentraalBrpProperties: HaalCentraalBrpProperties
 
     @Autowired
     lateinit var connectorTypeInstanceRepository: ConnectorTypeInstanceRepository
@@ -104,22 +104,22 @@ class BaseIntegrationTest : BaseTest() {
     }
 
     private fun setupConnector() {
-        haalCentraalBRPProperties.url = server.url("/").toString()
-        haalCentraalBRPProperties.apiKey = "8b5c1ce2-0942-4046-b20b-43a01b897d5a"
-        connectorDeploymentService.deployAll(listOf(haalCentraalBRPConnector))
+        haalCentraalBrpProperties.url = server.url("/").toString()
+        haalCentraalBrpProperties.apiKey = "8b5c1ce2-0942-4046-b20b-43a01b897d5a"
+        connectorDeploymentService.deployAll(listOf(haalCentraalBrpConnector))
 
-        val connectorType = connectorService.getConnectorTypes().first { it.name == "HaalCentraal" }
+        val connectorType = connectorService.getConnectorTypes().first { it.name == "HaalCentraalBrp" }
         val connectorInstanceId = ConnectorInstanceId.newId(UUID.fromString("731008ba-a062-4840-9d32-e29c08d32944"))
         val connectorInstance = ConnectorInstance(
             connectorInstanceId,
             connectorType,
-            "HaalCentraal",
-            haalCentraalBRPProperties
+            "HaalCentraalBrp",
+            haalCentraalBrpProperties
         )
 
         connectorTypeInstanceRepository.save(connectorInstance)
 
-        haalCentraalBRPConnector = connectorService.loadByClassName(HaalCentraalBRPConnector::class.java)
+        haalCentraalBrpConnector = connectorService.loadByClassName(HaalCentraalBrpConnector::class.java)
     }
 
 }

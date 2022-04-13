@@ -16,19 +16,21 @@
 
 package com.ritense.haalcentraal.brp.autoconfigure
 
-import com.ritense.haalcentraal.brp.security.config.HaalCentraalBrpSecurityConfigurer
+import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.Ordered
+import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 
 @Configuration
-class HaalCentraalSecurityAutoConfiguration {
+internal class HaalCentraalLiquibaseAutoConfiguration {
 
+    @Order(HIGHEST_PRECEDENCE + 21)
     @Bean
-    @Order(270)
-    @ConditionalOnMissingBean(HaalCentraalBrpSecurityConfigurer::class)
-    fun haalCentraalSecurityConfigurer(): HaalCentraalBrpSecurityConfigurer {
-        return HaalCentraalBrpSecurityConfigurer()
+    @ConditionalOnMissingBean(name = ["haalcentraalBrpLiquibaseMasterChangeLogLocation"])
+    fun haalcentraalBrpLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation? {
+        return LiquibaseMasterChangeLogLocation("config/liquibase/haalcentraal-brp-master.xml")
     }
 }

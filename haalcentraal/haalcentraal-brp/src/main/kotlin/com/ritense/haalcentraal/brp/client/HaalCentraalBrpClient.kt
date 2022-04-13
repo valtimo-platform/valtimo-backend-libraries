@@ -16,21 +16,21 @@
 
 package com.ritense.haalcentraal.brp.client
 
-import com.ritense.haalcentraal.brp.connector.HaalCentraalBRPProperties
+import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
 import com.ritense.haalcentraal.brp.domain.Personen
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 
-class HaalCentraalBRPClient(
+class HaalCentraalBrpClient(
     private val haalcentraalWebClient: WebClient
 ) {
     suspend fun findPeople(
         geboortedatum: String?,
         geslachtsnaam: String?,
         burgerservicenummer: String?,
-        haalcentraalBRPProperties: HaalCentraalBRPProperties
+        haalcentraalBrpProperties: HaalCentraalBrpProperties
     ): Personen {
-        val people = webClient(haalcentraalBRPProperties)
+        val people = webClient(haalcentraalBrpProperties)
             .get()
             .uri {
                 val uriBUilder = it.path("/ingeschrevenpersonen")
@@ -51,11 +51,11 @@ class HaalCentraalBRPClient(
         return people
     }
 
-    private fun webClient(haalcentraalBRPProperties: HaalCentraalBRPProperties): WebClient {
+    private fun webClient(haalCentraalBrpProperties: HaalCentraalBrpProperties): WebClient {
         return haalcentraalWebClient
             .mutate()
-            .baseUrl(haalcentraalBRPProperties.url!!)
-            .defaultHeader("X-API-KEY", haalcentraalBRPProperties.apiKey!!)
+            .baseUrl(haalCentraalBrpProperties.url!!)
+            .defaultHeader("X-API-KEY", haalCentraalBrpProperties.apiKey!!)
             .build()
     }
 }

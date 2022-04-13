@@ -22,7 +22,7 @@ import com.ritense.connector.config.Decryptor
 import com.ritense.connector.config.Encryptor
 import com.ritense.connector.domain.ConnectorProperties
 
-data class HaalCentraalBRPProperties(
+data class HaalCentraalBrpProperties(
     var url: String? = "",
     @set:JsonSerialize(using = Encryptor::class)
     @get:JsonDeserialize(using = Decryptor::class)

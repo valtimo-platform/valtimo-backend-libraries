@@ -48,6 +48,10 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:2.0.4"
 
+    implementation group: 'org.liquibase', name: 'liquibase-core'
+    implementation group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.3.3'
+    implementation group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
+
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"

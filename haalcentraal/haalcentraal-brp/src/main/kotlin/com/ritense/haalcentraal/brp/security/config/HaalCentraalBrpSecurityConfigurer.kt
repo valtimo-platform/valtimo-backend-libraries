@@ -22,7 +22,7 @@ import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import javax.ws.rs.HttpMethod.GET
 
-class HaalCentraalBRPSecurityConfigurer : HttpSecurityConfigurer {
+class HaalCentraalBrpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {

@@ -16,10 +16,10 @@
 
 package com.ritense.haalcentraal.brp.autoconfigure
 
-import com.ritense.haalcentraal.brp.client.HaalCentraalBRPClient
-import com.ritense.haalcentraal.brp.connector.HaalCentraalBRPConnector
-import com.ritense.haalcentraal.brp.connector.HaalCentraalBRPProperties
-import com.ritense.haalcentraal.brp.web.rest.HaalCentraalBRPResource
+import com.ritense.haalcentraal.brp.client.HaalCentraalBrpClient
+import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpConnector
+import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
+import com.ritense.haalcentraal.brp.web.rest.HaalCentraalBrpResource
 import io.netty.handler.logging.LogLevel
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -51,35 +51,35 @@ internal class HaalCentraalAutoConfiguration {
 
     // Connector
     @Bean
-    @ConditionalOnMissingBean(HaalCentraalBRPConnector::class)
+    @ConditionalOnMissingBean(HaalCentraalBrpConnector::class)
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    fun haalCentraalBRPConnector(
-        haalCentraalBRPProperties: HaalCentraalBRPProperties,
-        haalCentraalBRPClient: HaalCentraalBRPClient
-    ) : HaalCentraalBRPConnector {
-        return HaalCentraalBRPConnector(haalCentraalBRPProperties, haalCentraalBRPClient)
+    fun haalCentraalBrpConnector(
+        haalCentraalBrpProperties: HaalCentraalBrpProperties,
+        haalCentraalBrpClient: HaalCentraalBrpClient
+    ) : HaalCentraalBrpConnector {
+        return HaalCentraalBrpConnector(haalCentraalBrpProperties, haalCentraalBrpClient)
     }
 
     @Bean
-    @ConditionalOnMissingBean(HaalCentraalBRPProperties::class)
+    @ConditionalOnMissingBean(HaalCentraalBrpProperties::class)
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    fun haalCentraalBRPProperties() : HaalCentraalBRPProperties {
-        return HaalCentraalBRPProperties()
+    fun haalCentraalBrpProperties() : HaalCentraalBrpProperties {
+        return HaalCentraalBrpProperties()
     }
 
     @Bean
-    @ConditionalOnMissingBean(HaalCentraalBRPClient::class)
-    fun haalCentraalBRPClient(
+    @ConditionalOnMissingBean(HaalCentraalBrpClient::class)
+    fun haalCentraalBrpClient(
         haalcentraalWebClient: WebClient
-    ) : HaalCentraalBRPClient {
-        return HaalCentraalBRPClient(haalcentraalWebClient)
+    ) : HaalCentraalBrpClient {
+        return HaalCentraalBrpClient(haalcentraalWebClient)
     }
 
     // Resource
 
     @Bean
-    @ConditionalOnMissingBean(HaalCentraalBRPResource::class)
-    fun haalcentraalBRPResource() : HaalCentraalBRPResource {
-        return haalcentraalBRPResource()
+    @ConditionalOnMissingBean(HaalCentraalBrpResource::class)
+    fun haalCentraalBrpResource() : HaalCentraalBrpResource {
+        return haalCentraalBrpResource()
     }
 }
