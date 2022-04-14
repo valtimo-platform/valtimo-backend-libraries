@@ -16,17 +16,20 @@
 
 package com.ritense.valtimo.camunda.processaudit;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 
-@Slf4j
-@RequiredArgsConstructor
 public class TaskEventHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(TaskEventHandler.class);
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    public TaskEventHandler(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     /**
      * A 'complete' event is triggered when a task has finished normally.

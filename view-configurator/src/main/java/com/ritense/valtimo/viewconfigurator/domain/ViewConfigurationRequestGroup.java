@@ -17,7 +17,6 @@
 package com.ritense.valtimo.viewconfigurator.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 public class ViewConfigurationRequestGroup {

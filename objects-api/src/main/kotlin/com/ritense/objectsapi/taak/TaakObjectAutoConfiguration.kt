@@ -25,6 +25,7 @@ import com.ritense.objectsapi.taak.resolve.ProcessVariableValueResolverFactory
 import com.ritense.objectsapi.taak.resolve.ValueResolverFactory
 import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.openzaak.provider.BsnProvider
+import com.ritense.openzaak.provider.KvkProvider
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.OpenZaakService
@@ -74,14 +75,15 @@ class TaakObjectAutoConfiguration {
         taakProperties: TaakProperties,
         valueResolverService: ValueResolverService,
         connectorService: ConnectorService,
-        bsnProvider: BsnProvider
+        bsnProvider: BsnProvider,
+        kvkProvider: KvkProvider
     ): TaakObjectConnector {
         return TaakObjectConnector(
             taakProperties,
             valueResolverService,
             connectorService,
             bsnProvider,
-            null
+            kvkProvider
         )
     }
 

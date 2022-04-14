@@ -20,7 +20,6 @@ import com.ritense.valtimo.contract.utils.SecurityUtils;
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettings;
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettingsRequestImpl;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,15 +27,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
-@RequiredArgsConstructor
 public class EmailNotificationSettingsResource {
 
     private final EmailNotificationSettingsService emailNotificationService;
+
+    public EmailNotificationSettingsResource(EmailNotificationSettingsService emailNotificationService) {
+        this.emailNotificationService = emailNotificationService;
+    }
 
     @GetMapping(value = "/email-notification-settings")
     public ResponseEntity<EmailNotificationSettings.JsonViewResult> getSettingsFor() {

@@ -17,7 +17,6 @@
 package com.ritense.valtimo.web.config;
 
 import java.util.Set;
-
 import static java.util.Set.of;
 
 public class WebDefaults {

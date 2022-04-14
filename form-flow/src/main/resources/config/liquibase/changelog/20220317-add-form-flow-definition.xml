@@ -1,0 +1,69 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2022 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="1" author="Klaas Schuijtemaker">
+        <createTable tableName="form_flow_definition">
+            <column name="form_flow_definition_key" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="form_flow_definition_version" type="${intType}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="start_step" type="varchar(256)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="Rick Veenstra">
+        <createTable tableName="form_flow_step">
+            <column name="form_flow_step_key" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="form_flow_definition_key" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="form_flow_definition_version" type="${intType}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="next_steps" type="JSON"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="Klaas Schuijtemaker">
+        <addForeignKeyConstraint baseTableName="form_flow_step"
+                                 baseColumnNames="form_flow_definition_key,form_flow_definition_version"
+                                 constraintName="fk_form_flow_definition_id"
+                                 referencedTableName="form_flow_definition"
+                                 referencedColumnNames="form_flow_definition_key,form_flow_definition_version"/>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <addColumn tableName="form_flow_step">
+            <column name="on_open" type="JSON"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <addColumn tableName="form_flow_step">
+            <column name="on_complete" type="JSON"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

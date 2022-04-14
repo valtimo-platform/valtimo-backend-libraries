@@ -24,12 +24,16 @@ import org.camunda.bpm.engine.SchemaOperationsCommand;
 import org.camunda.bpm.engine.impl.db.PersistenceSession;
 import org.camunda.bpm.engine.impl.db.sql.DbSqlSession;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
+import org.slf4j.Logger;
 
-@Slf4j
-@RequiredArgsConstructor
 public class ValtimoSchemaOperationsCommand implements SchemaOperationsCommand {
 
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(ValtimoSchemaOperationsCommand.class);
     private final LiquibaseRunner liquibaseRunner;
+
+    public ValtimoSchemaOperationsCommand(LiquibaseRunner liquibaseRunner) {
+        this.liquibaseRunner = liquibaseRunner;
+    }
 
     @Override
     public Void execute(CommandContext commandContext) {

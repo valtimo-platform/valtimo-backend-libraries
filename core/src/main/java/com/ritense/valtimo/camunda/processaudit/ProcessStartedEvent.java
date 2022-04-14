@@ -17,7 +17,6 @@
 package com.ritense.valtimo.camunda.processaudit;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 

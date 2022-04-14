@@ -17,15 +17,16 @@
 package com.ritense.document.service.result;
 
 import com.ritense.valtimo.contract.result.OperationError;
-import lombok.RequiredArgsConstructor;
-
 import java.util.Collections;
 import java.util.List;
 
-@RequiredArgsConstructor
 public class UndeployDocumentDefinitionResultSucceeded implements UndeployDocumentDefinitionResult {
 
     private final String documentDefinitionName;
+
+    public UndeployDocumentDefinitionResultSucceeded(String documentDefinitionName) {
+        this.documentDefinitionName = documentDefinitionName;
+    }
 
     @Override
     public String documentDefinitionName() {

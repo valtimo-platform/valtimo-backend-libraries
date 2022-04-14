@@ -23,7 +23,6 @@ import com.ritense.valtimo.contract.mail.model.value.Recipient;
 import com.ritense.valtimo.contract.mail.model.value.RecipientCollection;
 import com.ritense.valtimo.contract.mail.model.value.Sender;
 import com.ritense.valtimo.contract.mail.model.value.Subject;
-
 import java.util.Objects;
 
 /**

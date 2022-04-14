@@ -27,17 +27,24 @@ import com.ritense.audit.exception.AuditRuntimeException;
 import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.audit.service.AuditEventProcessor;
 import com.ritense.valtimo.contract.audit.AuditEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.sql.SQLIntegrityConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
+import java.sql.SQLIntegrityConstraintViolationException;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
-@Slf4j
-@RequiredArgsConstructor
 public class AuditEventProcessorImpl implements AuditEventProcessor {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuditEventProcessorImpl.class);
     private final AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository;
+
+    public AuditEventProcessorImpl(AuditRecordImplRepository auditRecordRepository) {
+        this.auditRecordRepository = auditRecordRepository;
+    }
 
     @Override
     @Transactional

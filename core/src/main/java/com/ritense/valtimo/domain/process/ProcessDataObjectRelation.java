@@ -17,7 +17,6 @@
 package com.ritense.valtimo.domain.process;
 
 import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

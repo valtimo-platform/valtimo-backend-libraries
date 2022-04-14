@@ -17,7 +17,6 @@
 package com.ritense.valtimo.contract.audit;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.time.LocalDateTime;
 
 public interface TaskMetaData {

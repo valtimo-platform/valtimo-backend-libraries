@@ -21,17 +21,20 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.domain.contexts.ContextProcess;
 import com.ritense.valtimo.service.ContextService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class DocumentDefinitionDeployedListener {
 
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final ContextService contextService;
+
+    public DocumentDefinitionDeployedListener(ProcessDocumentAssociationService processDocumentAssociationService, ContextService contextService) {
+        this.processDocumentAssociationService = processDocumentAssociationService;
+        this.contextService = contextService;
+    }
 
     @EventListener(DocumentDefinitionDeployedEvent.class)
     public void handle(DocumentDefinitionDeployedEvent documentDefinitionDeployedEvent) {

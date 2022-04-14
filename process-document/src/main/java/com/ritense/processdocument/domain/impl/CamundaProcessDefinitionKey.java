@@ -17,18 +17,13 @@
 package com.ritense.processdocument.domain.impl;
 
 import com.ritense.processdocument.domain.ProcessDefinitionKey;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class CamundaProcessDefinitionKey implements ProcessDefinitionKey {
 
     @Column(name = "camunda_process_definition_key", columnDefinition = "VARCHAR(64)")
@@ -38,6 +33,9 @@ public class CamundaProcessDefinitionKey implements ProcessDefinitionKey {
         assertArgumentNotNull(key, "key is required");
         assertArgumentLength(key, 64, "key max length is 64");
         this.key = key;
+    }
+
+    CamundaProcessDefinitionKey() {
     }
 
     @Override

@@ -20,11 +20,8 @@ import com.jayway.jsonpath.JsonPath
 import com.ritense.klant.client.OpenKlantClient
 import com.ritense.klant.domain.KlantCreationRequest
 import com.ritense.klant.domain.KlantSearchFilter
-import com.ritense.klant.domain.SubjectIdentificatie
+import com.ritense.klant.domain.NatuurlijkPersoonSubjectIdentificatie
 import com.ritense.klant.service.BaseIntegrationTest
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.fail
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -40,6 +37,9 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.fail
 
 class OpenKlantClientIT : BaseIntegrationTest() {
 
@@ -76,12 +76,12 @@ class OpenKlantClientIT : BaseIntegrationTest() {
             "klantnummer",
             "websiteUrl",
             "subjectType",
-            SubjectIdentificatie(
+            NatuurlijkPersoonSubjectIdentificatie(
                 "123"
             )
         )
 
-        val klant = openKlantClient.postKlant(klantRequest)
+        openKlantClient.postKlant(klantRequest)
 
         verifyRequestSent(HttpMethod.POST, "/klanten/api/v1/klanten")
         val request = findRequest(HttpMethod.POST, "/klanten/api/v1/klanten")

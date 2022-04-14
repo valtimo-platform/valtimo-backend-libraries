@@ -19,7 +19,6 @@ package com.ritense.valtimo.contract.mail.model.value;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.valtimo.contract.basictype.StringValue;
-
 import java.util.Objects;
 
 public class Subject extends StringValue {

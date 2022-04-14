@@ -20,21 +20,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.document.domain.Document;
 import com.ritense.valtimo.contract.domain.AbstractId;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.Objects;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
-@Data
-@EqualsAndHashCode(callSuper = false)
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class JsonSchemaDocumentId extends AbstractId<JsonSchemaDocumentId> implements Document.Id {
 
     @Column(name = "json_schema_document_id", updatable = false)
@@ -44,6 +36,9 @@ public class JsonSchemaDocumentId extends AbstractId<JsonSchemaDocumentId> imple
     private JsonSchemaDocumentId(UUID id) {
         assertArgumentNotNull(id, "id is required");
         this.id = id;
+    }
+
+    JsonSchemaDocumentId() {
     }
 
     public static JsonSchemaDocumentId existingId(UUID id) {
@@ -60,4 +55,24 @@ public class JsonSchemaDocumentId extends AbstractId<JsonSchemaDocumentId> imple
         return id.toString();
     }
 
+    public UUID getId() {
+        return this.id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JsonSchemaDocumentId that = (JsonSchemaDocumentId) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
 }

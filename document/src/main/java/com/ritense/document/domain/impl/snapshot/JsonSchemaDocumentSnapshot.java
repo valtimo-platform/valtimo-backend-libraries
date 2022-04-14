@@ -19,10 +19,7 @@ package com.ritense.document.domain.impl.snapshot;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Persistable;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -32,7 +29,6 @@ import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "json_schema_document_snapshot")
 public class JsonSchemaDocumentSnapshot implements DocumentSnapshot, Persistable<JsonSchemaDocumentSnapshotId> {
@@ -63,6 +59,9 @@ public class JsonSchemaDocumentSnapshot implements DocumentSnapshot, Persistable
         this.createdBy = createdBy;
         this.document = new HistoricDocument(document, documentDefinition);
         this.isNew = true;
+    }
+
+    private JsonSchemaDocumentSnapshot() {
     }
 
     @Override

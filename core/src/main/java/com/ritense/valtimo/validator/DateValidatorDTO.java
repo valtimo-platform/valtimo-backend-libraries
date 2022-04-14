@@ -17,7 +17,6 @@
 package com.ritense.valtimo.validator;
 
 import io.jsonwebtoken.lang.Assert;
-
 import java.util.Date;
 
 public class DateValidatorDTO {

@@ -31,8 +31,8 @@ import com.ritense.objectsapi.domain.ProductAanvraag
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.repository.AbonnementLinkRepository
 import com.ritense.objectsapi.service.ObjectsApiConnector
-import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
@@ -42,7 +42,6 @@ import org.mockito.Mockito.verify
 import org.springframework.core.ParameterizedTypeReference
 import java.net.URI
 import java.util.UUID
-
 
 class ProductAanvraagConnectorTest : BaseTest() {
     lateinit var productAanvraagProperties: ProductAanvraagProperties
@@ -79,13 +78,14 @@ class ProductAanvraagConnectorTest : BaseTest() {
 
     @Test
     fun `getProductAanvraag get productAanvraag from Objects API`() {
-        val productAanvraagId = UUID.randomUUID();
+        val productAanvraagId = UUID.randomUUID()
         val productAanvraag = ProductAanvraag(
             "aanvraagType",
             ObjectMapper().createObjectNode(),
             emptyList(),
             URI.create("http://pdf.url"),
-            "123456789"
+            "123456789",
+            null
         )
         val objectRecord = GenericObject(
             UUID.randomUUID(),
@@ -104,7 +104,7 @@ class ProductAanvraagConnectorTest : BaseTest() {
     @Test
     fun `deleteProductAanvraag deletes object`() {
         whenever(connectorService.loadByName(any())).thenReturn(objectsApiConnector)
-        val productAanvraagId = UUID.randomUUID();
+        val productAanvraagId = UUID.randomUUID()
 
         productAanvraagConnector.deleteProductAanvraag(productAanvraagId)
 
@@ -136,7 +136,7 @@ class ProductAanvraagConnectorTest : BaseTest() {
     @Test
     fun `onCreate should ensure kanaal exists and create abonnement`() {
         whenever(connectorService.loadByName(any())).thenReturn(openNotificatieConnector)
-        val connectorId = ConnectorInstanceId.existingId(UUID.randomUUID());
+        val connectorId = ConnectorInstanceId.existingId(UUID.randomUUID())
         val connectorInstance = ConnectorInstance(
             connectorId,
             mock(ConnectorType::class.java),
@@ -153,7 +153,7 @@ class ProductAanvraagConnectorTest : BaseTest() {
     @Test
     fun onEdit() {
         whenever(connectorService.loadByName(any())).thenReturn(openNotificatieConnector)
-        val connectorId = ConnectorInstanceId.existingId(UUID.randomUUID());
+        val connectorId = ConnectorInstanceId.existingId(UUID.randomUUID())
         val connectorInstance = ConnectorInstance(
             connectorId,
             mock(ConnectorType::class.java),
@@ -170,7 +170,7 @@ class ProductAanvraagConnectorTest : BaseTest() {
     @Test
     fun onDelete() {
         whenever(connectorService.loadByName(any())).thenReturn(openNotificatieConnector)
-        val connectorId = ConnectorInstanceId.existingId(UUID.randomUUID());
+        val connectorId = ConnectorInstanceId.existingId(UUID.randomUUID())
         val connectorInstance = ConnectorInstance(
             connectorId,
             mock(ConnectorType::class.java),

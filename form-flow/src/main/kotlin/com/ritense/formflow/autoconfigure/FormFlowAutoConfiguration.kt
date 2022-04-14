@@ -16,9 +16,57 @@
 
 package com.ritense.formflow.autoconfigure
 
+import com.ritense.formflow.expression.ExpressionProcessorFactory
+import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
+import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
+import com.ritense.formflow.repository.FormFlowDefinitionRepository
+import com.ritense.formflow.repository.FormFlowInstanceRepository
+import com.ritense.formflow.repository.FormFlowStepInstanceRepository
+import com.ritense.formflow.repository.FormFlowStepRepository
+import com.ritense.formflow.service.FormFlowDeploymentService
+import com.ritense.formflow.service.FormFlowService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.io.ResourceLoader
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
+@EnableJpaRepositories(basePackageClasses = [
+    FormFlowDefinitionRepository::class,
+    FormFlowStepRepository::class,
+    FormFlowInstanceRepository::class,
+    FormFlowStepInstanceRepository::class])
+@EntityScan(basePackages = ["com.ritense.formflow.domain"])
 class FormFlowAutoConfiguration {
 
+    @Bean
+    @ConditionalOnMissingBean(ExpressionProcessorFactory::class)
+    fun expressionProcessorFactory(): ExpressionProcessorFactory {
+        val spelExpressionProcessorFactory = SpelExpressionProcessorFactory()
+
+        ExpressionProcessorFactoryHolder.setInstance(spelExpressionProcessorFactory)
+        return spelExpressionProcessorFactory
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowService::class)
+    fun formFlowService(
+        formFlowDefinitionRepository: FormFlowDefinitionRepository,
+        formFlowInstanceRepository: FormFlowInstanceRepository,
+        expressionProcessorFactory: ExpressionProcessorFactory
+    ): FormFlowService {
+        return FormFlowService(formFlowDefinitionRepository, formFlowInstanceRepository)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowDeploymentService::class)
+    fun formFlowDeploymentService(
+        resourceLoader: ResourceLoader,
+        formFlowService: FormFlowService,
+        expressionProcessorFactory: ExpressionProcessorFactory
+    ): FormFlowDeploymentService {
+        return FormFlowDeploymentService(resourceLoader, formFlowService, expressionProcessorFactory)
+    }
 }

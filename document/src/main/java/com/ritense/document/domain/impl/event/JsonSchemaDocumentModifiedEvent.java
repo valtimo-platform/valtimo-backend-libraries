@@ -24,13 +24,11 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentFieldChangedEvent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
-
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class JsonSchemaDocumentModifiedEvent extends AuditMetaData implements DocumentModifiedEvent, AuditEvent {

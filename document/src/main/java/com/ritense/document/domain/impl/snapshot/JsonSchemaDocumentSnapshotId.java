@@ -18,25 +18,28 @@ package com.ritense.document.domain.impl.snapshot;
 
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.valtimo.contract.domain.AbstractId;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.validation.constraints.NotNull;
+import java.util.Objects;
 import java.util.UUID;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode(callSuper = false)
 @Embeddable
 public class JsonSchemaDocumentSnapshotId extends AbstractId<JsonSchemaDocumentSnapshotId> implements DocumentSnapshot.Id {
 
     @NonNull
     @Column(name = "json_schema_document_snapshot_id", unique = true, nullable = false, updatable = false)
     private UUID id;
+
+    private JsonSchemaDocumentSnapshotId(@NotNull UUID id) {
+        if (id == null) {
+            throw new NullPointerException(("id is marked non-null but is null"));
+        }
+        this.id = id;
+    }
+
+    private JsonSchemaDocumentSnapshotId() {
+    }
 
     public static JsonSchemaDocumentSnapshotId existingId(UUID id) {
         return new JsonSchemaDocumentSnapshotId(id);
@@ -51,4 +54,16 @@ public class JsonSchemaDocumentSnapshotId extends AbstractId<JsonSchemaDocumentS
         return id.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JsonSchemaDocumentSnapshotId that = (JsonSchemaDocumentSnapshotId) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

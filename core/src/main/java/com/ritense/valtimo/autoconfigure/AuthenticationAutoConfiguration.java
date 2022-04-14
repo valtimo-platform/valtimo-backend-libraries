@@ -23,7 +23,6 @@ import com.ritense.valtimo.security.jwt.provider.SecretKeyResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.util.List;
 
 @Configuration

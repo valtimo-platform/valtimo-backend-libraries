@@ -16,7 +16,6 @@
 
 package com.valtimo.keycloak.service;
 
-import lombok.RequiredArgsConstructor;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
@@ -26,10 +25,13 @@ import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.admin.client.resource.UsersResource;
 
-@RequiredArgsConstructor
 public class KeycloakService {
 
     private final KeycloakSpringBootProperties properties;
+
+    public KeycloakService(KeycloakSpringBootProperties properties) {
+        this.properties = properties;
+    }
 
     public Keycloak keycloak() {
         return KeycloakBuilder.builder()

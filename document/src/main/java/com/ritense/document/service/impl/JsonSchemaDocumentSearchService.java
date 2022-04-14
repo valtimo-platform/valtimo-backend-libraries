@@ -21,6 +21,13 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.query.criteria.internal.OrderImpl;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +41,11 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.criteria.internal.OrderImpl;
@@ -45,13 +57,16 @@ import org.springframework.data.domain.Sort;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
-@RequiredArgsConstructor
 @Transactional
 public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private final EntityManager entityManager;
 
     private final QueryDialectHelper queryDialectHelper;
+
+    public JsonSchemaDocumentSearchService(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public Page<JsonSchemaDocument> search(

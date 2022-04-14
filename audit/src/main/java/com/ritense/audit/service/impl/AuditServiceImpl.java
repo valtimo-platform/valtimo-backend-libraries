@@ -29,12 +29,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Transactional
-@RequiredArgsConstructor
 public class AuditServiceImpl implements AuditService {
 
     private final AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository;
+
+    public AuditServiceImpl(AuditRecordImplRepository auditRecordRepository) {
+        this.auditRecordRepository = auditRecordRepository;
+    }
 
     @Override
     public AuditRecord findById(AuditRecordId auditRecordId) {

@@ -24,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -35,12 +34,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Transactional
-@RequiredArgsConstructor
 public class AuditSearchServiceImpl implements AuditSearchService {
 
     private final EntityManager entityManager;
 
     private final QueryDialectHelper queryDialectHelper;
+
+    public AuditSearchServiceImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public Page<AuditRecord> search(List<SearchCriteria> criteriaList, Pageable pageable) {
@@ -68,7 +70,7 @@ public class AuditSearchServiceImpl implements AuditSearchService {
 
         return new PageImpl<>(typedQuery.getResultList());
     }
-    
+
     private Predicate isNotNull(CriteriaBuilder cb, Root<AuditRecord> root, String path, String value) {
         return queryDialectHelper.getJsonValueExistsInPathExpression(cb, root.get("auditEvent"), path, value);
     }

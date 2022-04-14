@@ -25,7 +25,6 @@ import org.camunda.bpm.engine.delegate.TaskListener;
 import org.camunda.bpm.extension.reactor.bus.CamundaSelector;
 import org.camunda.bpm.extension.reactor.spring.listener.ReactorTaskListener;
 import org.springframework.context.ApplicationEventPublisher;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;

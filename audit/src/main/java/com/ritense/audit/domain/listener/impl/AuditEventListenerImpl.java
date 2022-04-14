@@ -20,14 +20,17 @@ import com.ritense.audit.domain.listener.AuditEventListener;
 import com.ritense.audit.exception.AuditRecordAlreadyProcessedException;
 import com.ritense.audit.service.AuditEventProcessor;
 import com.ritense.valtimo.contract.audit.AuditEvent;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
-@RequiredArgsConstructor
 public class AuditEventListenerImpl implements AuditEventListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuditEventListenerImpl.class);
     private final AuditEventProcessor auditEventProcessor;
+
+    public AuditEventListenerImpl(AuditEventProcessor auditEventProcessor) {
+        this.auditEventProcessor = auditEventProcessor;
+    }
 
     public void handle(AuditEvent event) {
         logger.debug("Enter: {}.{} with argument[s] = {}",

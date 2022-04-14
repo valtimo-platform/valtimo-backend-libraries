@@ -19,7 +19,6 @@ package com.ritense.valtimo.contract.mail;
 import com.ritense.valtimo.contract.mail.model.MailMessageStatus;
 import com.ritense.valtimo.contract.mail.model.RawMailMessage;
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
-
 import java.util.List;
 import java.util.Optional;
 

@@ -18,15 +18,18 @@ package com.ritense.document.domain.impl.listener;
 
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentSnapshotCapturedEvent;
 import com.ritense.document.service.DocumentSnapshotService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 
-@RequiredArgsConstructor
-@Slf4j
 public class DocumentSnapshotCapturedEventListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(DocumentSnapshotCapturedEventListener.class);
     private final DocumentSnapshotService documentSnapshotService;
+
+    public DocumentSnapshotCapturedEventListener(DocumentSnapshotService documentSnapshotService) {
+        this.documentSnapshotService = documentSnapshotService;
+    }
 
     @EventListener(JsonSchemaDocumentSnapshotCapturedEvent.class)
     public void handleDocumentCreatedEvent(JsonSchemaDocumentSnapshotCapturedEvent event) {

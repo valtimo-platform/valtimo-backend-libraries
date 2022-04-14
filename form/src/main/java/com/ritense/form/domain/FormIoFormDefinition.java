@@ -16,10 +16,6 @@
 
 package com.ritense.form.domain;
 
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,6 +24,16 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.form.domain.event.FormRegisteredEvent;
 import com.ritense.valtimo.contract.form.ExternalFormFieldType;
+import org.hibernate.annotations.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.AbstractAggregateRoot;
+import org.springframework.data.domain.Persistable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,25 +42,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.Type;
-import org.springframework.data.domain.AbstractAggregateRoot;
-import org.springframework.data.domain.Persistable;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
-@Slf4j
 @Entity
 @Table(name = "form_io_form_definition")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefinition>
     implements FormDefinition, Persistable<UUID> {
 
+    private static final Logger logger = LoggerFactory.getLogger(FormIoFormDefinition.class);
     public static final String PROPERTY_KEY = "key";
     public static final String COMPONENTS_KEY = "components";
     public static final String DEFAULT_VALUE_FIELD = "defaultValue";
@@ -99,6 +96,9 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         setReadOnly(isReadOnly);
         this.isNew = true;
         registerEvent(new FormRegisteredEvent(id, name));
+    }
+
+    private FormIoFormDefinition() {
     }
 
     public void setReadOnly(Boolean value) {

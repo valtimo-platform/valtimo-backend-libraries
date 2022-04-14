@@ -43,27 +43,32 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
-@Slf4j
-@RequiredArgsConstructor
 public class CamundaProcessJsonSchemaDocumentAssociationService implements ProcessDocumentAssociationService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CamundaProcessJsonSchemaDocumentAssociationService.class);
     private final ProcessDocumentDefinitionRepository processDocumentDefinitionRepository;
     private final ProcessDocumentInstanceRepository processDocumentInstanceRepository;
     private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
     private final DocumentDefinitionService documentDefinitionService;
     private final CamundaProcessService camundaProcessService;
+
+    public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaProcessService camundaProcessService) {
+        this.processDocumentDefinitionRepository = processDocumentDefinitionRepository;
+        this.processDocumentInstanceRepository = processDocumentInstanceRepository;
+        this.documentDefinitionRepository = documentDefinitionRepository;
+        this.documentDefinitionService = documentDefinitionService;
+        this.camundaProcessService = camundaProcessService;
+    }
 
     @Override
     public Page<CamundaProcessJsonSchemaDocumentDefinition> getAllProcessDocumentDefinitions(Pageable pageable) {

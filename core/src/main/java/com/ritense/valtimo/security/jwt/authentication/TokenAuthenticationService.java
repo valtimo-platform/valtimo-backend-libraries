@@ -21,18 +21,21 @@ import com.ritense.valtimo.security.jwt.provider.SecretKeyResolver;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
-
 import java.util.List;
 
-@Slf4j
-@RequiredArgsConstructor
 public class TokenAuthenticationService {
 
+    private static final Logger logger = LoggerFactory.getLogger(TokenAuthenticationService.class);
     private final List<TokenAuthenticator> tokenAuthenticators;
     private final SecretKeyResolver secretKeyResolver;
+
+    public TokenAuthenticationService(List<TokenAuthenticator> tokenAuthenticators, SecretKeyResolver secretKeyResolver) {
+        this.tokenAuthenticators = tokenAuthenticators;
+        this.secretKeyResolver = secretKeyResolver;
+    }
 
     public Authentication getAuthentication(String jwt) {
         final Claims claims = getClaims(jwt);

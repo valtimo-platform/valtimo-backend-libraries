@@ -21,16 +21,16 @@ import com.ritense.valtimo.contract.hardening.domain.SourceIpList;
 import com.ritense.valtimo.contract.hardening.service.HardeningService;
 import com.ritense.valtimo.contract.hardening.throwable.SanitizedThrowable;
 import com.ritense.valtimo.contract.hardening.throwable.UnsanitizedThrowable;
-import com.ritense.valtimo.contract.utils.IpUtils;
-import java.util.Set;
-import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zalando.problem.ProblemBuilder;
 import org.zalando.problem.ThrowableProblem;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Set;
+import java.util.UUID;
 
-@Slf4j
 public class HardeningServiceImpl implements HardeningService {
+    private static final Logger logger = LoggerFactory.getLogger(HardeningServiceImpl.class);
     private final HardeningProperties hardeningProperties;
     private static String WHITELIST_MESSSAGE = "IP address is whitelisted: ";
 
@@ -40,8 +40,7 @@ public class HardeningServiceImpl implements HardeningService {
 
     public Throwable harden(Throwable ex, HttpServletRequest request) {
         final Set<String> whitelists = hardeningProperties.getAllowStacktraceOnIps();
-        final Set<String> sourceIps = IpUtils.extractSourceIpsFrom(request);
-        final SourceIpList sourceIpList = new SourceIpList(whitelists, sourceIps);
+        final SourceIpList sourceIpList = new SourceIpList(whitelists, Set.of(request.getRemoteAddr()));
 
         if (sourceIpList.isWhitelisted()) {
             return UnsanitizedThrowable.withReason(ex, WHITELIST_MESSSAGE + sourceIpList.getWhiteListedIp());
@@ -53,8 +52,7 @@ public class HardeningServiceImpl implements HardeningService {
     @Override
     public ProblemBuilder harden(ThrowableProblem throwableProblem, ProblemBuilder problemBuilder, HttpServletRequest request) {
         final Set<String> whitelists = hardeningProperties.getAllowStacktraceOnIps();
-        final Set<String> sourceIps = IpUtils.extractSourceIpsFrom(request);
-        final SourceIpList sourceIpList = new SourceIpList(whitelists, sourceIps);
+        final SourceIpList sourceIpList = new SourceIpList(whitelists, Set.of(request.getRemoteAddr()));
         if (sourceIpList.isWhitelisted()) {
             return problemBuilder
                 .with("reason-not-sanitized", WHITELIST_MESSSAGE + sourceIpList.getWhiteListedIp())

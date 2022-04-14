@@ -22,13 +22,16 @@ import com.ritense.document.service.DocumentService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent;
 import com.ritense.valtimo.contract.listener.DocumentRelatedFileEventListener;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 public class DocumentRelatedFileSubmittedEventListenerImpl implements DocumentRelatedFileEventListener {
 
     private final DocumentService documentService;
     private final ResourceService resourceService;
+
+    public DocumentRelatedFileSubmittedEventListenerImpl(DocumentService documentService, ResourceService resourceService) {
+        this.documentService = documentService;
+        this.resourceService = resourceService;
+    }
 
     @Override
     public void handle(DocumentRelatedFileSubmittedEvent event) {

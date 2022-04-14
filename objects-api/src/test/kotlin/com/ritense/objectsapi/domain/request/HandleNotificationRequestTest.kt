@@ -18,7 +18,6 @@ package com.ritense.objectsapi.domain.request
 
 import java.util.UUID
 import org.junit.Assert.assertEquals
-
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.jupiter.api.Test

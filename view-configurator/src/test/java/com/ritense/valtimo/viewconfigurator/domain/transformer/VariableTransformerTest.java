@@ -22,13 +22,11 @@ import com.ritense.valtimo.viewconfigurator.domain.type.DateVariableType;
 import com.ritense.valtimo.viewconfigurator.domain.type.LongVariableType;
 import com.ritense.valtimo.viewconfigurator.domain.type.StringVariableType;
 import org.junit.jupiter.api.Test;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;

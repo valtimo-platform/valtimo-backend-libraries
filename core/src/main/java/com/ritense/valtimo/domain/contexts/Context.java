@@ -17,7 +17,6 @@
 package com.ritense.valtimo.domain.contexts;
 
 import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -63,7 +62,8 @@ public class Context implements Serializable {
     @JoinColumn(name = "context_id", nullable = false)
     private Set<MenuItem> menuItems = new HashSet<>();
 
-    private Context() {}
+    private Context() {
+    }
 
     public Context(String name) {
         Objects.requireNonNull(name, "Context name cannot be null");

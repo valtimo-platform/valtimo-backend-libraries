@@ -18,15 +18,18 @@ package com.ritense.valtimo.viewconfigurator.domain.listener;
 
 import com.ritense.valtimo.contract.event.ProcessDefinitionAvailableEvent;
 import com.ritense.valtimo.viewconfigurator.service.ViewConfigService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 
-@Slf4j
-@RequiredArgsConstructor
 public class ProcessDefinitionAvailableEventListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProcessDefinitionAvailableEventListener.class);
     private final ViewConfigService viewConfigService;
+
+    public ProcessDefinitionAvailableEventListener(ViewConfigService viewConfigService) {
+        this.viewConfigService = viewConfigService;
+    }
 
     @EventListener(ProcessDefinitionAvailableEvent.class)
     public void handle(ProcessDefinitionAvailableEvent event) throws Exception {

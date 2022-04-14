@@ -19,7 +19,6 @@ package com.ritense.valtimo.web.util;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import java.util.Optional;
 
 /**

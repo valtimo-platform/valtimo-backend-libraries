@@ -18,7 +18,6 @@ package com.ritense.formlink.service.impl;
 
 import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowRemovalOperations;
 import static com.ritense.form.domain.FormIoFormDefinition.PROPERTY_KEY;
-
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -172,7 +171,7 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
         final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionData);
 
         inputFields.forEach(field -> {
-            if (field.has(CUSTOM_PROPERTIES) && !field.get(CUSTOM_PROPERTIES).isEmpty()) {
+            if (field.has(CUSTOM_PROPERTIES) && !field.get(CUSTOM_PROPERTIES).isEmpty() && submission.has(field.get(PROPERTY_KEY).textValue())) {
                 final String container = field.get(CUSTOM_PROPERTIES).get(CONTAINER_KEY).asText();
                 final String propertyName = field.get(PROPERTY_KEY).textValue();
                 final JsonNode propertyValue = submission.at("/" + propertyName);

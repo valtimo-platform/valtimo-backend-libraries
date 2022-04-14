@@ -55,27 +55,33 @@ import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.BaseDelegateExecution;
 import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.camunda.bpm.engine.delegate.VariableScope;
 import org.camunda.bpm.engine.task.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-@Slf4j
-@RequiredArgsConstructor
 public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CamundaProcessJsonSchemaDocumentService.class);
     private final DocumentService documentService;
     private final DocumentDefinitionService documentDefinitionService;
     private final CamundaTaskService camundaTaskService;
     private final CamundaProcessService camundaProcessService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
+
+    public CamundaProcessJsonSchemaDocumentService(DocumentService documentService, DocumentDefinitionService documentDefinitionService, CamundaTaskService camundaTaskService, CamundaProcessService camundaProcessService, ProcessDocumentAssociationService processDocumentAssociationService) {
+        this.documentService = documentService;
+        this.documentDefinitionService = documentDefinitionService;
+        this.camundaTaskService = camundaTaskService;
+        this.camundaProcessService = camundaProcessService;
+        this.processDocumentAssociationService = processDocumentAssociationService;
+    }
 
     @Override
     public DocumentFunctionResult dispatch(Request request) {

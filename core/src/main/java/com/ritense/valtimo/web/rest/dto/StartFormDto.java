@@ -18,7 +18,6 @@ package com.ritense.valtimo.web.rest.dto;
 
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.form.FormField;
-
 import java.util.List;
 
 public class StartFormDto {

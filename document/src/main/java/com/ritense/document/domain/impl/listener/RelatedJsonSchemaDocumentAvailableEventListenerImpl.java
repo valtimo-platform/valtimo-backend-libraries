@@ -22,7 +22,6 @@ import com.ritense.document.domain.listener.RelatedDocumentAvailableEventListene
 import com.ritense.document.domain.relation.DocumentRelationType;
 import com.ritense.document.service.DocumentService;
 import com.ritense.valtimo.contract.processdocument.event.NextDocumentRelationAvailableEvent;
-
 import java.util.UUID;
 
 public class RelatedJsonSchemaDocumentAvailableEventListenerImpl implements RelatedDocumentAvailableEventListener {

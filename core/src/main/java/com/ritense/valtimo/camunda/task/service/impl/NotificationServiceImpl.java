@@ -25,19 +25,26 @@ import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.contract.mail.model.value.MailTemplateIdentifier;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
-@RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
+    private static final Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
     private final EmailNotificationSettingsService emailNotificationService;
     private final MailSender mailSender;
     private final ValtimoProperties valtimoProperties;
     private final DelegateTaskHelper delegateTaskHelper;
     private final UserManagementService userManagementService;
+
+    public NotificationServiceImpl(EmailNotificationSettingsService emailNotificationService, MailSender mailSender, ValtimoProperties valtimoProperties, DelegateTaskHelper delegateTaskHelper, UserManagementService userManagementService) {
+        this.emailNotificationService = emailNotificationService;
+        this.mailSender = mailSender;
+        this.valtimoProperties = valtimoProperties;
+        this.delegateTaskHelper = delegateTaskHelper;
+        this.userManagementService = userManagementService;
+    }
 
     @Override
     public void sendNotification(DelegateTask task) {

@@ -24,19 +24,22 @@ import com.ritense.document.service.result.UndeployDocumentDefinitionResultFaile
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.service.result.error.DocumentDefinitionError;
 import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public class UndeployJsonSchemaDocumentDefinitionService implements UndeployDocumentDefinitionService {
 
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
     private final DocumentService documentService;
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    public UndeployJsonSchemaDocumentDefinitionService(JsonSchemaDocumentDefinitionService documentDefinitionService, DocumentService documentService, ApplicationEventPublisher applicationEventPublisher) {
+        this.documentDefinitionService = documentDefinitionService;
+        this.documentService = documentService;
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     @Override
     @Transactional

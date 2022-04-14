@@ -27,12 +27,13 @@ class ProductAanvraagTest {
 
     @Test
     fun `should return all files`() {
-        var productAanvraag = ProductAanvraag(
+        val productAanvraag = ProductAanvraag(
             "type",
             ObjectMapper().createObjectNode(),
             listOf(URI("http://test.com")),
             URI("http://example.com"),
-            "123"
+            "123",
+            null
         )
 
         assertThat(productAanvraag.getAllFiles(), contains(
