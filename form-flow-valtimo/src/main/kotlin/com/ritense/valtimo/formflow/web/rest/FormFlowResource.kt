@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 import javax.transaction.Transactional
+import org.springframework.web.bind.annotation.RequestParam
 
 @RestController
 @RequestMapping(value = ["/api/form-flow/demo"])
@@ -60,6 +61,7 @@ class FormFlowResource(
     fun completeStep(
         @PathVariable(name = "instanceId") instanceId: String,
         @PathVariable(name = "stepId") stepId: String,
+        @RequestParam(name = "openNext", defaultValue = "false") openNext: Boolean = false,
         @RequestBody submissionData: JsonNode?
     ): ResponseEntity<CompleteStepResult> {
 
@@ -71,6 +73,10 @@ class FormFlowResource(
             FormFlowStepInstanceId.existingId(UUID.fromString(stepId)),
             (submissionData?:JsonNodeFactory.instance.objectNode()).toString()
         )
+
+        if(openNext) {
+            formFlowStepInstance?.open()
+        }
 
         formFlowService.save(instance)
         return ResponseEntity.ok(
