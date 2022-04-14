@@ -39,6 +39,6 @@ services:
 #   url: jdbc:mysql://localhost:3316/wordpress-mail-test
 #   url: jdbc:mysql://localhost:3317/smartdocuments-test
 #   url: jdbc:mysql://localhost:3318/besluit-test
-#   url: jdbc:mysql://localhost:3319/haalcentraal-bpr-test
+#   url: jdbc:mysql://localhost:3319/haalcentraal-brp-test
 #   url: jdbc:mysql://localhost:3320/form-flow-valtimo-test
 #   url: jdbc:mysql://localhost:3321/form-flow-test

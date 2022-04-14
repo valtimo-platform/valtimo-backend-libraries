@@ -30,7 +30,7 @@ internal class HaalCentraalLiquibaseAutoConfiguration {
     @Order(HIGHEST_PRECEDENCE + 21)
     @Bean
     @ConditionalOnMissingBean(name = ["haalcentraalBrpLiquibaseMasterChangeLogLocation"])
-    fun haalcentraalBrpLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation? {
+    fun haalcentraalBrpLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
         return LiquibaseMasterChangeLogLocation("config/liquibase/haalcentraal-brp-master.xml")
     }
 }
