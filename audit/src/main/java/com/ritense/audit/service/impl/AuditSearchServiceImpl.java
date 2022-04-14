@@ -19,19 +19,18 @@ package com.ritense.audit.service.impl;
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.service.AuditSearchService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class AuditSearchServiceImpl implements AuditSearchService {
@@ -40,8 +39,9 @@ public class AuditSearchServiceImpl implements AuditSearchService {
 
     private final QueryDialectHelper queryDialectHelper;
 
-    public AuditSearchServiceImpl(EntityManager entityManager) {
+    public AuditSearchServiceImpl(EntityManager entityManager, QueryDialectHelper queryDialectHelper) {
         this.entityManager = entityManager;
+        this.queryDialectHelper = queryDialectHelper;
     }
 
     @Override

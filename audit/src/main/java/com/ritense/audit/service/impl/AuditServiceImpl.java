@@ -25,20 +25,16 @@ import com.ritense.valtimo.contract.audit.AuditEvent;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 
 @Transactional
 public class AuditServiceImpl implements AuditService {
 
     private final AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository;
 
-    public AuditServiceImpl(AuditRecordImplRepository auditRecordRepository) {
+    public AuditServiceImpl(AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository) {
         this.auditRecordRepository = auditRecordRepository;
     }
 

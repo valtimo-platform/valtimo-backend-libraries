@@ -18,16 +18,15 @@ package com.ritense.document.domain.impl.snapshot;
 
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.valtimo.contract.domain.AbstractId;
+import java.util.Objects;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
-import java.util.UUID;
 
 @Embeddable
 public class JsonSchemaDocumentSnapshotId extends AbstractId<JsonSchemaDocumentSnapshotId> implements DocumentSnapshot.Id {
 
-    @NonNull
     @Column(name = "json_schema_document_snapshot_id", unique = true, nullable = false, updatable = false)
     private UUID id;
 

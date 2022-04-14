@@ -18,8 +18,6 @@ package com.ritense.valtimo.camunda.command;
 
 import com.ritense.valtimo.contract.config.LiquibaseRunner;
 import java.sql.SQLException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.SchemaOperationsCommand;
 import org.camunda.bpm.engine.impl.db.PersistenceSession;
 import org.camunda.bpm.engine.impl.db.sql.DbSqlSession;
