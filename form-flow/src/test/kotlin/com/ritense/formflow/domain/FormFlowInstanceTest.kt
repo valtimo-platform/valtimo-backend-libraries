@@ -19,6 +19,7 @@ package com.ritense.formflow.domain
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.formflow.domain.definition.FormFlowDefinition
+import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowNextStep
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
@@ -36,21 +37,19 @@ internal class FormFlowInstanceTest {
 
     @Test
     fun `complete should return new step` () {
-        val definition: FormFlowDefinition = mock()
-        val steps: Set<FormFlowStep> = mutableSetOf(
-            FormFlowStep(
-                FormFlowStepId.create("test"),
-                mutableListOf(FormFlowNextStep("123", "test2"))),
-            FormFlowStep(
-                FormFlowStepId.create("test2")
-            )
-        )
-
-        whenever(definition.startStep).thenReturn("test")
-        whenever(definition.steps).thenReturn(steps)
-
         val instance = FormFlowInstance(
-            formFlowDefinition = definition
+            formFlowDefinition = FormFlowDefinition(
+                FormFlowDefinitionId("test", 1L),
+                "test",
+                mutableSetOf(
+                    FormFlowStep(
+                        FormFlowStepId.create("test"),
+                        mutableListOf(FormFlowNextStep("123", "test2"))),
+                    FormFlowStep(
+                        FormFlowStepId.create("test2")
+                    )
+                )
+            )
         )
 
         //complete task
@@ -63,14 +62,12 @@ internal class FormFlowInstanceTest {
 
     @Test
     fun `complete should return null when there are no next steps` () {
-        val definition: FormFlowDefinition = mock()
-        val steps: Set<FormFlowStep> = mutableSetOf(FormFlowStep(FormFlowStepId.create("test")))
-
-        whenever(definition.startStep).thenReturn("test")
-        whenever(definition.steps).thenReturn(steps)
-
         val instance = FormFlowInstance(
-            formFlowDefinition = definition
+            formFlowDefinition = FormFlowDefinition(
+                FormFlowDefinitionId("test",1L),
+                "test",
+                mutableSetOf(FormFlowStep(FormFlowStepId.create("test")))
+            )
         )
 
         //complete task

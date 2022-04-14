@@ -21,8 +21,11 @@ import com.ritense.formflow.expression.ExpressionProcessorFactory
 import org.springframework.expression.spel.support.StandardEvaluationContext
 
 class SpelExpressionProcessorFactory: ExpressionProcessorFactory {
-    override fun create(rootObject: Any?): ExpressionProcessor {
-        val context = StandardEvaluationContext(rootObject)
+    override fun create(variables: Map<String, Any>?): ExpressionProcessor {
+        val context = StandardEvaluationContext()
+        variables?.let {
+            context.setVariables(variables)
+        }
         return SpelExpressionProcessor(evaluationContext = context)
     }
 }

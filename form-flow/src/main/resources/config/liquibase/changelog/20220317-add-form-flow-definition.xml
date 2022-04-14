@@ -60,4 +60,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="5" author="Ritense">
+        <addColumn tableName="form_flow_step">
+            <column name="on_complete" type="JSON"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

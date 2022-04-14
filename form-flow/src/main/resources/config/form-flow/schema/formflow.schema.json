@@ -22,10 +22,18 @@
                     },
                     "onOpen": {
                         "type": "array",
-                        "description": "An array SPeL expressions that are executed in order when opening the step",
+                        "description": "An array of expressions which are executed in order when opening the step",
                         "items": {
                             "type": "string",
-                            "description": "A SPeL expression that is executed when opening the step"
+                            "description": "An expression that is executed when opening the step"
+                        }
+                    },
+                    "onComplete": {
+                        "type": "array",
+                        "description": "An array of expressions which are executed in order when completing the step",
+                        "items": {
+                            "type": "string",
+                            "description": "An expression that is executed when completing the step"
                         }
                     },
                     "nextSteps": {
