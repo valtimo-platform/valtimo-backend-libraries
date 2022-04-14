@@ -17,6 +17,7 @@
 package com.ritense.formflow.autoconfigure
 
 import com.ritense.formflow.expression.ExpressionProcessorFactory
+import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
@@ -43,7 +44,10 @@ class FormFlowAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ExpressionProcessorFactory::class)
     fun expressionProcessorFactory(): ExpressionProcessorFactory {
-        return SpelExpressionProcessorFactory()
+        val spelExpressionProcessorFactory = SpelExpressionProcessorFactory()
+
+        ExpressionProcessorFactoryHolder.setInstance(spelExpressionProcessorFactory)
+        return spelExpressionProcessorFactory
     }
 
     @Bean
@@ -53,7 +57,7 @@ class FormFlowAutoConfiguration {
         formFlowInstanceRepository: FormFlowInstanceRepository,
         expressionProcessorFactory: ExpressionProcessorFactory
     ): FormFlowService {
-        return FormFlowService(formFlowDefinitionRepository, formFlowInstanceRepository, expressionProcessorFactory)
+        return FormFlowService(formFlowDefinitionRepository, formFlowInstanceRepository)
     }
 
     @Bean
