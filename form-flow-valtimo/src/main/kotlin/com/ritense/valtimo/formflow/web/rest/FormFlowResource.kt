@@ -42,10 +42,15 @@ class FormFlowResource(
     @PostMapping("/definition/{definitionKey}/instance")
     fun createInstance(
         @PathVariable(name = "definitionKey") definitionKey: String,
+        @RequestParam(name = "openFirstStep", defaultValue = "false") openFirstStep: Boolean = false,
         @RequestBody additionalParameters: MutableMap<String, Any>?
     ): ResponseEntity<CreateInstanceResult> {
         val latestDefinition = formFlowService.findLatestDefinitionByKey(definitionKey)
         val createdInstance = latestDefinition!!.createInstance(additionalParameters?: mutableMapOf())
+
+        if(openFirstStep) {
+            createdInstance.getCurrentStep().open()
+        }
         formFlowService.save(createdInstance)
 
         return ResponseEntity.ok(
