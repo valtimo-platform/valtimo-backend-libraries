@@ -20,14 +20,12 @@ import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
-import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 
 class FormFlowService(
     private val formFlowDefinitionRepository: FormFlowDefinitionRepository,
-    private val formFlowInstanceRepository: FormFlowInstanceRepository,
-    private val expressionProcessorFactory: ExpressionProcessorFactory
+    private val formFlowInstanceRepository: FormFlowInstanceRepository
 ) {
 
     fun findLatestDefinitionByKey(formFlowKey: String): FormFlowDefinition? {
@@ -36,18 +34,6 @@ class FormFlowService(
 
     fun getDefinitionById(formFlowDefinitionId: FormFlowDefinitionId): FormFlowDefinition {
         return formFlowDefinitionRepository.getById(formFlowDefinitionId)
-    }
-
-    fun open(formFlowInstanceId: FormFlowInstanceId) {
-        val formFlowInstance = formFlowInstanceRepository.getById(formFlowInstanceId)
-        val currentStep = formFlowInstance.getCurrentStep()
-
-        val expressionProcessor = expressionProcessorFactory.create(currentStep)
-
-        val stepDefinition = currentStep.definition
-        stepDefinition.onOpen?.forEach { expression ->
-            expressionProcessor.process<Any>(expression)
-        }
     }
 
     fun save(formFlowDefinition: FormFlowDefinition) {

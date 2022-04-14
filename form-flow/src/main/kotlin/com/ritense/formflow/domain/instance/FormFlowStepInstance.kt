@@ -17,6 +17,8 @@
 package com.ritense.formflow.domain.instance
 
 import com.ritense.formflow.domain.definition.FormFlowStep
+import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
+import java.io.Serializable
 import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
@@ -44,6 +46,40 @@ data class FormFlowStepInstance(
 
     val definition: FormFlowStep
         get() = instance.formFlowDefinition.getStepByKey(stepKey)
+
+    fun open() {
+        processExpressions(FormFlowStep::onOpen)
+    }
+
+    fun complete(submissionData: String) {
+        this.submissionData = submissionData
+
+        processExpressions(FormFlowStep::onComplete)
+    }
+
+    private fun processExpressions(expressionist: (FormFlowStep)-> List<String>?) {
+        ExpressionProcessorFactoryHolder.getinstance()?.let {
+            val variables = createVarMap()
+            val expressionProcessor = it.create(variables)
+
+            expressionist(definition)?.forEach { expression ->
+                expressionProcessor.process<Any>(expression)
+            }
+        }
+    }
+
+    private fun createVarMap(): Map<String, Map<String, Serializable>> {
+        return mapOf(
+            "step" to mapOf(
+                "id" to id,
+                "key" to stepKey
+            ),
+            "flowInstance" to mapOf(
+                "id" to instance.id,
+                "definition_id" to instance.formFlowDefinition.id
+            )
+        )
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
