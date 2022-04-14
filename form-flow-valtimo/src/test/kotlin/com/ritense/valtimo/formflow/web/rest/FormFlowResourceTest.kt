@@ -17,13 +17,18 @@
 package com.ritense.valtimo.formflow.web.rest
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowNextStep
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
+import com.ritense.formflow.expression.ExpressionProcessor
+import com.ritense.formflow.expression.ExpressionProcessorFactory
+import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.contract.utils.TestUtil
 import org.junit.jupiter.api.BeforeEach
@@ -66,6 +71,29 @@ internal class FormFlowResourceTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.formFlowInstanceId").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.currentStepId").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.currentStepKey").isNotEmpty)
+    }
+
+    @Test
+    fun `should create form flow instance for definition key and open the current step`() {
+        val expression = "\${1+1}"
+        val step1 = FormFlowStep(FormFlowStepId("step1"), onOpen = mutableListOf(expression))
+        val step2 = FormFlowStep(FormFlowStepId("step2"))
+        val definition = FormFlowDefinition(
+            id = FormFlowDefinitionId.newId("key1"), "step1", mutableSetOf(step1, step2))
+
+        val expressionProcessorMock = initExpressionProcessorMock()
+
+        whenever(formFlowService.findLatestDefinitionByKey("inkomens_loket")).thenReturn(definition)
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post("/api/form-flow/demo/definition/{instanceId}/instance",
+                        "inkomens_loket")
+                    .param("openFirstStep", "true")
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+            ).andExpect(status().isOk)
+
+        verify(expressionProcessorMock, atLeastOnce()).process<Any>(expression)
     }
 
     @Test
@@ -119,12 +147,15 @@ internal class FormFlowResourceTest {
 
     @Test
     fun `should complete step for form flow instance with submission data`() {
+        val expression = "\${1+1}"
         val step1 = FormFlowStep(FormFlowStepId("step1"), mutableListOf(FormFlowNextStep(step = "step2")))
-        val step2 = FormFlowStep(FormFlowStepId("step2"))
+        val step2 = FormFlowStep(FormFlowStepId("step2"), onOpen = mutableListOf(expression))
         val definition = FormFlowDefinition(
             id = FormFlowDefinitionId.newId("key1"), "step1", mutableSetOf(step1, step2))
 
         val instance = definition.createInstance(mutableMapOf())
+
+        val expressionProcessorMock = initExpressionProcessorMock()
 
         whenever(formFlowService.getInstanceById(instance.id)).thenReturn(instance)
         mockMvc
@@ -133,6 +164,7 @@ internal class FormFlowResourceTest {
                     .post("/api/form-flow/demo/instance/{instanceId}/step/{stepId}/complete",
                         instance.id.id.toString(), instance.currentFormFlowStepInstanceId!!.id.toString()
                     )
+                    .param("openNext", "true")
                     .content("{\"data\": \"data\"}")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -141,6 +173,18 @@ internal class FormFlowResourceTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.formFlowInstanceId").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.currentStepId").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.currentStepKey").isNotEmpty)
+
+        verify(expressionProcessorMock, atLeastOnce()).process<Any>(expression)
+    }
+
+    fun initExpressionProcessorMock(): ExpressionProcessor {
+        val expressionProcessor:ExpressionProcessor = mock()
+        val expressionProcessorFactory:ExpressionProcessorFactory = mock()
+        ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory)
+
+        whenever(expressionProcessorFactory.create(any())).thenReturn(expressionProcessor)
+
+        return expressionProcessor
     }
 
 }

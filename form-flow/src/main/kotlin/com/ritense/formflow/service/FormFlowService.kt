@@ -32,10 +32,6 @@ class FormFlowService(
         return formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc(formFlowKey)
     }
 
-    fun getDefinitionById(formFlowDefinitionId: FormFlowDefinitionId): FormFlowDefinition {
-        return formFlowDefinitionRepository.getById(formFlowDefinitionId)
-    }
-
     fun save(formFlowDefinition: FormFlowDefinition) {
         formFlowDefinitionRepository.findById(formFlowDefinition.id).ifPresentOrElse({
             throw UnsupportedOperationException("Failed to save From Flow. Form Flow already exists: ${formFlowDefinition.id}")

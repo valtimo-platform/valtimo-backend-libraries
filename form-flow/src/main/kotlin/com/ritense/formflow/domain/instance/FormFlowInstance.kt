@@ -59,6 +59,14 @@ class FormFlowInstance(
         navigateToNextStep()
     }
 
+    /**
+     * This method completes the current step, and navigates to the next (if present).
+     * The next step will not be opened by this method.
+     *
+     * @param currentFormFlowStepInstanceId The intended step to complete
+     * @param submissionData This data will be set as the submissionData of the step
+     * @return The next step (optional)
+     */
     fun complete(
         currentFormFlowStepInstanceId: FormFlowStepInstanceId,
         submissionData: String
