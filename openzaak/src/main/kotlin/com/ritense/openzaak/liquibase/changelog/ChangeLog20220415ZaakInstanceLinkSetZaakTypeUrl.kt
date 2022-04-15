@@ -21,19 +21,17 @@ class ChangeLog20220415ZaakInstanceLinkSetZaakTypeUrl : CustomTaskChange {
 
         val zaakToken = getOpenZaakToken(connection)
         val zaakWebClient = getOpenZaakWebClient(zaakToken)
-        var statement = connection.prepareStatement("SELECT zaak_type_url, zaak_instance_url FROM zaak_instance_link")
+        var statement = connection.prepareStatement("SELECT zaak_instance_url FROM zaak_instance_link WHERE zaak_type_url IS NULL")
         val result = statement.executeQuery()
 
         while (result.next()) {
-            val zaakTypeUrl = result.getString(1)
-            if (zaakTypeUrl == null) {
-                val zaakInstanceUrl = result.getString(2)
+            val zaakInstanceUrl = result.getString(1)
+            val zaakTypeUrl = getZaakTypeUrl(zaakWebClient, zaakInstanceUrl)
                 statement =
                     connection.prepareStatement("UPDATE zaak_instance_link SET zaak_type_url = ? WHERE zaak_instance_url = ?")
-                statement.setString(1, getZaakTypeUrl(zaakWebClient, zaakInstanceUrl))
+                statement.setString(1, zaakTypeUrl)
                 statement.setString(2, zaakInstanceUrl)
                 statement.execute()
-            }
         }
     }
 
