@@ -27,6 +27,7 @@ import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.formflow.service.FormFlowService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ResourceLoader
@@ -41,13 +42,16 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EntityScan(basePackages = ["com.ritense.formflow.domain"])
 class FormFlowAutoConfiguration {
 
+    // TODO: Is this really the right way? If someone else now adds a different ExpressionProcessorFactory, this will
+    //  not automatically be picked up. Not only that, how do we differentiate between multiple
+    //  ExpressionProcessorFactories? Maybe make use of configuration?
     @Bean
     @ConditionalOnMissingBean(ExpressionProcessorFactory::class)
-    fun expressionProcessorFactory(): ExpressionProcessorFactory {
-        val spelExpressionProcessorFactory = SpelExpressionProcessorFactory()
+    fun expressionProcessorFactory(applicationContext: ApplicationContext): ExpressionProcessorFactory {
+        val expressionProcessorFactory = SpelExpressionProcessorFactory()
 
-        ExpressionProcessorFactoryHolder.setInstance(spelExpressionProcessorFactory)
-        return spelExpressionProcessorFactory
+        ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory, applicationContext)
+        return expressionProcessorFactory
     }
 
     @Bean

@@ -3,7 +3,7 @@
     "steps": [
         {
             "key": "woonplaats",
-            "onOpen": ["${'Hello '+'World!'}", "${4*3}"],
+            "onOpen": ["${'Hello '+'World!'}", "${4*3}", "${formFlowBeanTestHelper.returnTrue()}"],
             "nextSteps": [
                 {
                     "condition": "${submissionData.woonplaats.inUtrecht == true}",

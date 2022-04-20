@@ -33,6 +33,7 @@ import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.contract.utils.TestUtil
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationContext
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -180,7 +181,8 @@ internal class FormFlowResourceTest {
     fun initExpressionProcessorMock(): ExpressionProcessor {
         val expressionProcessor:ExpressionProcessor = mock()
         val expressionProcessorFactory:ExpressionProcessorFactory = mock()
-        ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory)
+        val applicationContext: ApplicationContext = mock()
+        ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory, applicationContext)
 
         whenever(expressionProcessorFactory.create(any())).thenReturn(expressionProcessor)
 
