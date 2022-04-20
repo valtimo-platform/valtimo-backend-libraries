@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.any
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.mock
+import org.springframework.context.ApplicationContext
 
 internal class FormFlowServiceTest {
 
@@ -56,7 +57,7 @@ internal class FormFlowServiceTest {
         val expressionProcessorFactory = mock(ExpressionProcessorFactory::class.java)
         expressionProcessor = spy(SpelExpressionProcessor())
         whenever(expressionProcessorFactory.create(any())).thenReturn(expressionProcessor)
-        ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory)
+        ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory, mock(ApplicationContext::class.java))
     }
 
     @Test

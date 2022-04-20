@@ -83,6 +83,7 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
         )
         formFlowInstanceRepository.saveAndFlush(formFlowInstance)
         while (formFlowInstance.currentFormFlowStepInstanceId != null) {
+            formFlowInstance.getCurrentStep().open()
             formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, "{\"data\": \"data\"}")
             formFlowInstanceRepository.saveAndFlush(formFlowInstance)
         }
