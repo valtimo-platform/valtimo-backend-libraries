@@ -19,7 +19,7 @@ dependencies {
     implementation(project(":connector"))
     implementation(project(":objects-api"))
     implementation(project(":besluit"))
-    implementation(project(":haalcentraal"))
+    implementation(project(":haalcentraal:haalcentraal-brp"))
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

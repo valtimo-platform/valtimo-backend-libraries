@@ -23,7 +23,8 @@ import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 class FormFlowStep(
     val key: String,
     val nextSteps: MutableList<FormFlowNextStep>? = ArrayList(),
-    val onOpen: MutableList<String>? = ArrayList()
+    val onOpen: MutableList<String>? = ArrayList(),
+    val onComplete: MutableList<String>? = ArrayList()
 ) {
 
     @JsonProperty("nextStep")
@@ -35,6 +36,7 @@ class FormFlowStep(
         if (key != other.id.key) return false
         if (nextSteps!!.size != other.nextSteps!!.size) return false
         if (onOpen != other.onOpen) return false
+        if (onComplete != other.onComplete) return false
         for (otherNextStep in other.nextSteps!!) {
             var hasMatch = false
             for (nextStep in nextSteps) {
@@ -53,6 +55,6 @@ class FormFlowStep(
         val nextSteps = this.nextSteps?.map {
             it.toDefinition()
         }?.toMutableList()
-        return FormFlowStepEntity(FormFlowStepId.create(key), nextSteps, onOpen ?: ArrayList())
+        return FormFlowStepEntity(FormFlowStepId.create(key), nextSteps, onOpen ?: ArrayList(), onComplete ?: ArrayList())
     }
 }
