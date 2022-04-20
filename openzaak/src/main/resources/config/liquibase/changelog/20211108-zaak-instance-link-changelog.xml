@@ -62,6 +62,7 @@
 
     <changeSet id="4" author="Ritense">
         <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
             <not>
                 <sqlCheck expectedResult="0">
                     SELECT COUNT(1)
@@ -74,6 +75,9 @@
     </changeSet>
 
     <changeSet id="5" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <addNotNullConstraint tableName="zaak_instance_link" columnDataType="VARCHAR(512)" columnName="zaak_type_url"/>
     </changeSet>
 
@@ -95,7 +99,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="zaak_type_url" type="VARCHAR(512)">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
