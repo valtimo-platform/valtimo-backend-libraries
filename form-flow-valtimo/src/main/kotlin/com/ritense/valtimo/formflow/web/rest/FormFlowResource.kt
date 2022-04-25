@@ -23,6 +23,7 @@ import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.web.rest.result.CompleteStepResult
 import com.ritense.valtimo.formflow.web.rest.result.CreateInstanceResult
+import org.json.JSONObject
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -76,7 +77,7 @@ class FormFlowResource(
 
         val formFlowStepInstance = instance.complete(
             FormFlowStepInstanceId.existingId(UUID.fromString(stepId)),
-            (submissionData?:JsonNodeFactory.instance.objectNode()).toString()
+            JSONObject((submissionData?:JsonNodeFactory.instance.objectNode()).toString())
         )
 
         if(openNext) {

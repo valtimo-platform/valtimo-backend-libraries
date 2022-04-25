@@ -72,11 +72,8 @@ data class FormFlowStepInstance(
         return mapOf(
             "step" to mapOf(
                 "id" to id,
-                "key" to stepKey
-            ),
-            "flowInstance" to mapOf(
-                "id" to instance.id,
-                "definition_id" to instance.formFlowDefinition.id
+                "key" to stepKey,
+                "submissionData" to instance.getSubmissionDataContext()
             )
         )
     }

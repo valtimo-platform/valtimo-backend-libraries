@@ -30,7 +30,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext
 class SpelExpressionProcessor(
     private val parserContext: ParserContext = TemplateParserContext("\${", "}"),
     private val evaluationContext: EvaluationContext = StandardEvaluationContext(),
-    private val formFlowBeans: Map<String, Any> = mapOf()
+    private val contextMap: Map<String, Any> = mapOf()
 ) : ExpressionProcessor {
 
     override fun <T> process(expression: String, resultType: Class<T>?): T? {
@@ -38,7 +38,7 @@ class SpelExpressionProcessor(
 
         return if (spelExpression != null) {
             try {
-                spelExpression.getValue(evaluationContext, formFlowBeans, resultType)
+                spelExpression.getValue(evaluationContext, contextMap, resultType)
             } catch (e: RuntimeException) {
                 throw ExpressionExecutionException(expression, e)
             }
