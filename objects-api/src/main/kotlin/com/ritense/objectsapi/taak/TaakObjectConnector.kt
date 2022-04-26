@@ -90,21 +90,6 @@ class TaakObjectConnector(
         getObjectsApiConnector().modifyObject(request)
     }
 
-    fun modifyTaakObjectStatusVerwerkt(taakObject: GenericObject<TaakObjectDto>) {
-        val data = Mapper.INSTANCE.get().convertValue(taakObject.record.data, jacksonTypeRef<MutableMap<String, Any>>())
-        data["status"] = TaakObjectStatus.verwerkt.toString()
-        val request = ModifyObjectRequest(
-            taakObject.uuid,
-            URI(taakObject.type),
-            Record(
-                taakObject.record.typeVersion.toString(),
-                taakObject.record.startAt,
-                data,
-            )
-        )
-        getObjectsApiConnector().modifyObject(request)
-    }
-
     private fun createObjectRecord(taakObject: TaakObjectDto) {
         val objectsApiConnector = getObjectsApiConnector()
         val objectType = objectsApiConnector.getProperties().objectType
