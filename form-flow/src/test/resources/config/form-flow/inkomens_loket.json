@@ -7,6 +7,9 @@
                 "${4*3}",
                 "${formFlowBeanTestHelper.returnTrue()}",
                 "${formFlowBeanTestHelper.parseContext(step.submissionData)}"],
+            "onComplete": [
+                "${formFlowBeanTestHelper.parseAdditionalProperties(additionalProperties)}"
+            ],
             "nextSteps": [
                 {
                     "condition": "${step.submissionData.woonplaats.inUtrecht == true}",

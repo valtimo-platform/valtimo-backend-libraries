@@ -18,7 +18,6 @@ package com.ritense.formflow.domain.instance
 
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
-import java.io.Serializable
 import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
@@ -68,13 +67,14 @@ data class FormFlowStepInstance(
         }
     }
 
-    private fun createVarMap(): Map<String, Map<String, Serializable>> {
+    private fun createVarMap(): Map<String, Any> {
         return mapOf(
             "step" to mapOf(
                 "id" to id,
                 "key" to stepKey,
                 "submissionData" to instance.getSubmissionDataContext()
-            )
+            ),
+            "additionalProperties" to instance.getAdditionalProperties()
         )
     }
 

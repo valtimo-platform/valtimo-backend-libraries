@@ -30,4 +30,9 @@ class FormFlowBeanTestHelper {
     fun parseContext(submissionData: String): Boolean {
         return true
     }
+
+    // Used in expressions, do not remove
+    fun parseAdditionalProperties(additionalProperties: Map<String, Any>): Boolean {
+        return true
+    }
 }
