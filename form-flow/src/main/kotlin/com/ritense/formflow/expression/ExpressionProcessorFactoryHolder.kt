@@ -18,6 +18,7 @@ package com.ritense.formflow.expression
 
 import mu.KLogger
 import mu.KotlinLogging
+import org.springframework.context.ApplicationContext
 
 class ExpressionProcessorFactoryHolder {
 
@@ -25,7 +26,11 @@ class ExpressionProcessorFactoryHolder {
         private val logger: KLogger = KotlinLogging.logger {}
         private var expressionProcessorFactory: ExpressionProcessorFactory? = null
 
-        fun setInstance(expressionProcessorFactory: ExpressionProcessorFactory) {
+        fun setInstance(expressionProcessorFactory: ExpressionProcessorFactory, applicationContext: ApplicationContext) {
+            expressionProcessorFactory.setFlowProcessBeans(
+                applicationContext.getBeansWithAnnotation(FormFlowBean::class.java)
+            )
+
             if(this.expressionProcessorFactory != null) {
                 logger.warn { "ExpressionProcessorFactory instance was already set, this should not happen in runtime!" }
             }

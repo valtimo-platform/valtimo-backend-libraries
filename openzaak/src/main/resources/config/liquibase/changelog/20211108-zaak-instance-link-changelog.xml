@@ -50,4 +50,22 @@
     <changeSet id="3" author="Rick Veenstra">
         <dropColumn tableName="zaak_type_link" columnName="zaak_instance_links"/>
     </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(1)
+                    FROM zaak_instance_link
+                    WHERE zaak_type_url IS NULL
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <customChange class="com.ritense.openzaak.liquibase.changelog.ChangeLog20220415ZaakInstanceLinkSetZaakTypeUrl"/>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <addNotNullConstraint tableName="zaak_instance_link" columnDataType="VARCHAR(512)" columnName="zaak_type_url"/>
+    </changeSet>
+
 </databaseChangeLog>
