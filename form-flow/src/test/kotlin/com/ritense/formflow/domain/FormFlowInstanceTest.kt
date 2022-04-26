@@ -25,17 +25,21 @@ import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
+import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
+import com.ritense.formflow.expression.FormFlowBean
+import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.context.ApplicationContext
 
 internal class FormFlowInstanceTest {
-
     @Test
     fun `complete should return new step` () {
         val instance = FormFlowInstance(
@@ -129,10 +133,13 @@ internal class FormFlowInstanceTest {
     @Test
     fun `getSubmissionDataContext should not be empty if one step with submission data has been completed` () {
         val definition: FormFlowDefinition = mock()
+        val step1 = FormFlowStep(
+            FormFlowStepId.create("test"),
+            mutableListOf(FormFlowNextStep("123", "test2"))
+        )
+
         val steps: Set<FormFlowStep> = mutableSetOf(
-            FormFlowStep(
-                FormFlowStepId.create("test"),
-                mutableListOf(FormFlowNextStep("123", "test2"))),
+            step1,
             FormFlowStep(
                 FormFlowStepId.create("test2")
             )
@@ -140,6 +147,7 @@ internal class FormFlowInstanceTest {
 
         whenever(definition.startStep).thenReturn("test")
         whenever(definition.steps).thenReturn(steps)
+        whenever(definition.getStepByKey("test")).thenReturn(step1)
 
         val instance = FormFlowInstance(
             formFlowDefinition = definition
@@ -155,15 +163,19 @@ internal class FormFlowInstanceTest {
     @Test
     fun `getSubmissionDataContext should overwrite submissionData from a previous steps` () {
         val definition: FormFlowDefinition = mock()
+        val step1 = FormFlowStep(
+            FormFlowStepId.create("test"),
+            mutableListOf(FormFlowNextStep("123", "test2"))
+        )
+
+        val step2 = FormFlowStep(
+            FormFlowStepId.create("test2"),
+            mutableListOf(FormFlowNextStep("123", "test3"))
+        )
+
         val steps: Set<FormFlowStep> = mutableSetOf(
-            FormFlowStep(
-                FormFlowStepId.create("test"),
-                mutableListOf(FormFlowNextStep("123", "test2"))
-            ),
-            FormFlowStep(
-                FormFlowStepId.create("test2"),
-                mutableListOf(FormFlowNextStep("123", "test3"))
-            ),
+            step1,
+            step2,
             FormFlowStep(
                 FormFlowStepId.create("test3")
             )
@@ -171,6 +183,8 @@ internal class FormFlowInstanceTest {
 
         whenever(definition.startStep).thenReturn("test")
         whenever(definition.steps).thenReturn(steps)
+        whenever(definition.getStepByKey("test")).thenReturn(step1)
+        whenever(definition.getStepByKey("test2")).thenReturn(step2)
 
         val instance = FormFlowInstance(
             formFlowDefinition = definition
@@ -187,15 +201,19 @@ internal class FormFlowInstanceTest {
     @Test
     fun `getSubmissionDataContext should append submissionData from a previous steps` () {
         val definition: FormFlowDefinition = mock()
+        val step1 = FormFlowStep(
+            FormFlowStepId.create("test"),
+            mutableListOf(FormFlowNextStep("123", "test2"))
+        )
+
+        val step2 = FormFlowStep(
+            FormFlowStepId.create("test2"),
+            mutableListOf(FormFlowNextStep("123", "test3"))
+        )
+
         val steps: Set<FormFlowStep> = mutableSetOf(
-            FormFlowStep(
-                FormFlowStepId.create("test"),
-                mutableListOf(FormFlowNextStep("123", "test2"))
-            ),
-            FormFlowStep(
-                FormFlowStepId.create("test2"),
-                mutableListOf(FormFlowNextStep("123", "test3"))
-            ),
+            step1,
+            step2,
             FormFlowStep(
                 FormFlowStepId.create("test3")
             )
@@ -203,6 +221,8 @@ internal class FormFlowInstanceTest {
 
         whenever(definition.startStep).thenReturn("test")
         whenever(definition.steps).thenReturn(steps)
+        whenever(definition.getStepByKey("test")).thenReturn(step1)
+        whenever(definition.getStepByKey("test2")).thenReturn(step2)
 
         val instance = FormFlowInstance(
             formFlowDefinition = definition
@@ -219,15 +239,19 @@ internal class FormFlowInstanceTest {
     @Test
     fun `getSubmissionDataContext should append nested submissionData from a previous steps` () {
         val definition: FormFlowDefinition = mock()
+        val step1 = FormFlowStep(
+            FormFlowStepId.create("test"),
+            mutableListOf(FormFlowNextStep("123", "test2"))
+        )
+
+        val step2 = FormFlowStep(
+            FormFlowStepId.create("test2"),
+            mutableListOf(FormFlowNextStep("123", "test3"))
+        )
+
         val steps: Set<FormFlowStep> = mutableSetOf(
-            FormFlowStep(
-                FormFlowStepId.create("test"),
-                mutableListOf(FormFlowNextStep("123", "test2"))
-            ),
-            FormFlowStep(
-                FormFlowStepId.create("test2"),
-                mutableListOf(FormFlowNextStep("123", "test3"))
-            ),
+            step1,
+            step2,
             FormFlowStep(
                 FormFlowStepId.create("test3")
             )
@@ -235,6 +259,8 @@ internal class FormFlowInstanceTest {
 
         whenever(definition.startStep).thenReturn("test")
         whenever(definition.steps).thenReturn(steps)
+        whenever(definition.getStepByKey("test")).thenReturn(step1)
+        whenever(definition.getStepByKey("test2")).thenReturn(step2)
 
         val instance = FormFlowInstance(
             formFlowDefinition = definition
