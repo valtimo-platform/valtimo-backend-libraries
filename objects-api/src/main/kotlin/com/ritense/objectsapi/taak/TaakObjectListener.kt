@@ -67,7 +67,7 @@ class TaakObjectListener(
                 val taakObjectId = event.notification.getObjectId()
                 val taakObjectRecord = connector.getTaakObjectRecord(taakObjectId)
                 val taakObject = taakObjectRecord.record.data
-                if (taakObject.status != TaakObjectStatus.ingediend && taakObject.status != TaakObjectStatus.gesloten) {
+                if (taakObject.status != TaakObjectStatus.ingediend) {
                     return
                 }
                 saveDataAndCompleteTask(taakObject)
