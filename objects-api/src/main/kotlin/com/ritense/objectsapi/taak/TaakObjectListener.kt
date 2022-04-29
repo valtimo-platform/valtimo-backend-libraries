@@ -72,7 +72,7 @@ class TaakObjectListener(
                 }
                 saveDataAndCompleteTask(taakObject)
 
-                connector.modifyTaakObjectStatus(taakObjectRecord)
+                connector.updateTaakObjectStatus(taakObjectRecord)
             }
         }
     }

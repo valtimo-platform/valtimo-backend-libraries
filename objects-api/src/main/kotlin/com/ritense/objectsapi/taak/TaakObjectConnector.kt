@@ -71,7 +71,7 @@ class TaakObjectConnector(
         getObjectsApiConnector().deleteObject(taakObjectId)
     }
 
-    fun modifyTaakObjectStatus(taakObject: GenericObject<TaakObjectDto>) {
+    fun updateTaakObjectStatus(taakObject: GenericObject<TaakObjectDto>) {
         val data = Mapper.INSTANCE.get().convertValue(taakObject.record.data, jacksonTypeRef<MutableMap<String, Any>>())
         data["status"] = taakObject.record.data.status
         if (data["status"] == TaakObjectStatus.ingediend.toString()) {
