@@ -28,10 +28,13 @@ class SpelExpressionProcessorFactory(
         val context = StandardEvaluationContext()
         context.addPropertyAccessor(MapAccessor())
 
+        val contextMap: MutableMap<String, Any> = formFlowBeans.toMutableMap()
+
         variables?.let {
-            context.setVariables(variables)
+            contextMap.putAll(variables)
         }
-        return SpelExpressionProcessor(evaluationContext = context, formFlowBeans = formFlowBeans)
+
+        return SpelExpressionProcessor(evaluationContext = context, contextMap = contextMap)
     }
 
     override fun setFlowProcessBeans(formFlowBeans: Map<String, Any>) {
