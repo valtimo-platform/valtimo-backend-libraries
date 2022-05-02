@@ -106,7 +106,7 @@ internal class TaakObjectListenerTest {
         listener.notificationReceived(event)
 
         verify(camundaTaskService).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
-        verify(connector).updateTaakObjectStatus(any())
+        verify(connector).modifyTaakObjectStatusVerwerkt(any())
     }
 
     @Test
