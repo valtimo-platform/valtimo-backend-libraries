@@ -30,6 +30,8 @@ class ValtimoFormFlowHttpSecurityConfigurer: HttpSecurityConfigurer {
                 .hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(HttpMethod.POST, "/api/form-flow/demo/instance/{instanceId}/step/{stepId}/complete")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/process-link/form-flow-definition")
+                .hasAuthority(AuthoritiesConstants.ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

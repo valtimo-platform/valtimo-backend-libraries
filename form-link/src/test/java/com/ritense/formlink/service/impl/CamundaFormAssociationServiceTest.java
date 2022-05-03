@@ -160,6 +160,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
             FormAssociationType.USER_TASK,
             formId,
             null,
+            null,
             null
         );
 
@@ -185,6 +186,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
                 "id2",
                 FormAssociationType.START_EVENT,
                 UUID.fromString("6ba7b814-9dad-11d1-80b4-00c04fd430c8"),
+                null,
                 null,
                 null
             )

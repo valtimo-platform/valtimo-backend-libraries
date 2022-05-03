@@ -38,17 +38,22 @@ public class FormLinkRequest {
     @JsonProperty
     private UUID formId;
 
+    @JsonProperty
+    private String formFlowId;
+
     @JsonCreator
     public FormLinkRequest(
         @JsonProperty(value = "id", required = true) String id,
         @JsonProperty(value = "type", required = true) FormAssociationType type,
         @JsonProperty(value = "formId") UUID formId,
+        @JsonProperty(value = "formFlowId") String formFlowId,
         @JsonProperty(value = "customUrl") String customUrl,
         @JsonProperty(value = "angularStateUrl") String angularStateUrl
     ) {
         this.id = id;
         this.type = type;
         this.formId = formId;
+        this.formFlowId = formFlowId;
         this.customUrl = customUrl;
         this.angularStateUrl = angularStateUrl;
     }
@@ -63,6 +68,10 @@ public class FormLinkRequest {
 
     public UUID getFormId() {
         return formId;
+    }
+
+    public String getFormFlowId() {
+        return formFlowId;
     }
 
     public String getCustomUrl() {
