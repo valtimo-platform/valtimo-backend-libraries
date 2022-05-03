@@ -128,7 +128,7 @@ class FormFlowInstance(
         for (key in JSONObject.getNames(source)) {
             val value = source.get(key)
             if (target.has(key) && value is JSONObject) {
-                mergeSubmissionData(value as JSONObject, target.getJSONObject(key))
+                mergeSubmissionData(value, target.getJSONObject(key))
             } else {
                 // Assumption: Anything that isn't a JSONObject can be overwritten
                 target.put(key, value)

@@ -16,6 +16,10 @@
 
 package com.ritense.formflow.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
@@ -24,6 +28,7 @@ import com.ritense.formflow.repository.FormFlowInstanceRepository
 import com.ritense.formflow.repository.FormFlowStepInstanceRepository
 import com.ritense.formflow.repository.FormFlowStepRepository
 import com.ritense.formflow.service.FormFlowDeploymentService
+import com.ritense.formflow.service.FormFlowObjectMapper
 import com.ritense.formflow.service.FormFlowService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -34,13 +39,28 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
-@EnableJpaRepositories(basePackageClasses = [
-    FormFlowDefinitionRepository::class,
-    FormFlowStepRepository::class,
-    FormFlowInstanceRepository::class,
-    FormFlowStepInstanceRepository::class])
+@EnableJpaRepositories(
+    basePackageClasses = [
+        FormFlowDefinitionRepository::class,
+        FormFlowStepRepository::class,
+        FormFlowInstanceRepository::class,
+        FormFlowStepInstanceRepository::class]
+)
 @EntityScan(basePackages = ["com.ritense.formflow.domain"])
 class FormFlowAutoConfiguration {
+
+    @Bean
+    fun formStepPropertiesType(): NamedType {
+        return NamedType(FormStepTypeProperties::class.java, "form")
+    }
+
+    @Bean
+    fun formFlowObjectMapper(
+        objectMapper: ObjectMapper?,
+        stepPropertiesTypes: Collection<NamedType>?
+    ): FormFlowObjectMapper {
+        return FormFlowObjectMapper(objectMapper?: jacksonObjectMapper(), stepPropertiesTypes)
+    }
 
     // TODO: Is this really the right way? If someone else now adds a different ExpressionProcessorFactory, this will
     //  not automatically be picked up. Not only that, how do we differentiate between multiple
@@ -69,8 +89,14 @@ class FormFlowAutoConfiguration {
     fun formFlowDeploymentService(
         resourceLoader: ResourceLoader,
         formFlowService: FormFlowService,
-        expressionProcessorFactory: ExpressionProcessorFactory
+        expressionProcessorFactory: ExpressionProcessorFactory,
+        formFlowObjectMapper: FormFlowObjectMapper
     ): FormFlowDeploymentService {
-        return FormFlowDeploymentService(resourceLoader, formFlowService, expressionProcessorFactory)
+        return FormFlowDeploymentService(
+            resourceLoader,
+            formFlowService,
+            expressionProcessorFactory,
+            formFlowObjectMapper
+        )
     }
 }
