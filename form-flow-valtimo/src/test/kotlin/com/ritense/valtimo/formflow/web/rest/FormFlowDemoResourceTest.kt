@@ -43,16 +43,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
-internal class FormFlowResourceTest {
+internal class FormFlowDemoResourceTest {
     lateinit var mockMvc: MockMvc
-    lateinit var formFlowResource: FormFlowResource
+    lateinit var formFlowDemoResource: FormFlowDemoResource
     lateinit var formFlowService: FormFlowService
 
     @BeforeEach
     fun init() {
         formFlowService = mock()
-        formFlowResource = FormFlowResource(formFlowService)
-        mockMvc = MockMvcBuilders.standaloneSetup(formFlowResource).build()
+        formFlowDemoResource = FormFlowDemoResource(formFlowService)
+        mockMvc = MockMvcBuilders.standaloneSetup(formFlowDemoResource).build()
     }
 
     @Test

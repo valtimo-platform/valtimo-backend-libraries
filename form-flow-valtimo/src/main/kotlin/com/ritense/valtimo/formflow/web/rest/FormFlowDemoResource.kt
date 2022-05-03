@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam
 
 @RestController
 @RequestMapping(value = ["/api/form-flow/demo"])
-class FormFlowResource(
+class FormFlowDemoResource(
     val formFlowService: FormFlowService
 ) {
 
