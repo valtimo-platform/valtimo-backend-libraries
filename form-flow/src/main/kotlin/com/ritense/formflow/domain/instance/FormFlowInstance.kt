@@ -18,6 +18,7 @@ package com.ritense.formflow.domain.instance
 
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import org.hibernate.annotations.Type
+import org.json.JSONObject
 import java.util.Objects
 import javax.persistence.AttributeOverride
 import javax.persistence.CascadeType
@@ -69,14 +70,13 @@ class FormFlowInstance(
      */
     fun complete(
         currentFormFlowStepInstanceId: FormFlowStepInstanceId,
-        submissionData: String
+        submissionData: JSONObject
     ): FormFlowStepInstance? {
         assert(this.currentFormFlowStepInstanceId == currentFormFlowStepInstanceId)
 
-        val formFlowStepInstance = history
-            .first { formFlowStepInstance -> formFlowStepInstance.id == currentFormFlowStepInstanceId }
+        val formFlowStepInstance = getCurrentStep()
 
-        formFlowStepInstance.complete(submissionData)
+        formFlowStepInstance.complete(submissionData.toString())
 
         return navigateToNextStep()
     }
@@ -93,6 +93,47 @@ class FormFlowInstance(
 
     fun getAdditionalProperties() : Map<String, Any> {
         return additionalProperties
+    }
+
+    fun getSubmissionDataContext(): String {
+        val formFlowStepInstancesSubmissionData = getSubmissionData()
+
+        if (formFlowStepInstancesSubmissionData.isEmpty()) {
+            return JSONObject().toString()
+        }
+
+        val mergedSubmissionData = formFlowStepInstancesSubmissionData.first()
+
+        if (formFlowStepInstancesSubmissionData.size == 1) {
+            return mergedSubmissionData.toString()
+        }
+
+        formFlowStepInstancesSubmissionData.subList(1, formFlowStepInstancesSubmissionData.size).forEach {
+            mergeSubmissionData(it, mergedSubmissionData)
+        }
+
+        return mergedSubmissionData.toString()
+    }
+
+    private fun getSubmissionData() : List<JSONObject> {
+        val currentStepOrder = getCurrentStep().order
+        return history.filter {
+            it.order <= currentStepOrder && it.submissionData != null
+        }.map {
+            JSONObject(it.submissionData)
+        }
+    }
+
+    private fun mergeSubmissionData(source: JSONObject, target: JSONObject) {
+        for (key in JSONObject.getNames(source)) {
+            val value = source.get(key)
+            if (target.has(key) && value is JSONObject) {
+                mergeSubmissionData(value as JSONObject, target.getJSONObject(key))
+            } else {
+                // Assumption: Anything that isn't a JSONObject can be overwritten
+                target.put(key, value)
+            }
+        }
     }
 
     private fun navigateToNextStep() : FormFlowStepInstance? {
