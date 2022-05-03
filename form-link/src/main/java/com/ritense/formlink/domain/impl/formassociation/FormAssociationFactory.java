@@ -18,6 +18,7 @@ package com.ritense.formlink.domain.impl.formassociation;
 
 import com.ritense.formlink.domain.FormLink;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementAngularStateUrlLink;
+import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink;
 import java.util.UUID;
@@ -29,13 +30,14 @@ public class FormAssociationFactory {
         FormAssociationType type,
         String formLinkElementId,
         UUID formId,
+        String formFlowId,
         String customUrl,
         String angularStateUrl
     ) {
         if (type == null) {
             throw new RuntimeException("Cannot determine form association");
         }
-        final FormLink formLink = getFormLink(formLinkElementId, formId, customUrl, angularStateUrl);
+        final FormLink formLink = getFormLink(formLinkElementId, formId, formFlowId, customUrl, angularStateUrl);
 
         if (type.equals(FormAssociationType.START_EVENT)) {
             return new StartEventFormAssociation(formAssociationId, formLink);
@@ -48,11 +50,14 @@ public class FormAssociationFactory {
     private static FormLink getFormLink(
         String formLinkElementId,
         UUID formId,
+        String formFlowId,
         String customUrl,
         String angularStateUrl
     ) {
         if (formId != null) {
             return new BpmnElementFormIdLink(formLinkElementId, formId);
+        } else if (formFlowId != null) {
+            return new BpmnElementFormFlowIdLink(formLinkElementId, formFlowId);
         } else if (customUrl != null) {
             return new BpmnElementUrlLink(formLinkElementId, customUrl);
         } else if (angularStateUrl != null) {

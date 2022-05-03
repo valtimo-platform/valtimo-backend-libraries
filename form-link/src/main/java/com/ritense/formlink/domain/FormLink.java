@@ -30,6 +30,11 @@ public interface FormLink {
     UUID getFormId();
 
     @JsonProperty
+    default String getFormFlowId() {
+        return null;
+    }
+
+    @JsonProperty
     String getUrl();
 
     default boolean includeFormDefinition() {

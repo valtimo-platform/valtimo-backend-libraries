@@ -18,7 +18,8 @@ package com.ritense.valtimo.formflow.autoconfigure
 
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.ValtimoFormFlowHttpSecurityConfigurer
-import com.ritense.valtimo.formflow.web.rest.FormFlowResource
+import com.ritense.valtimo.formflow.web.rest.FormFlowDemoResource
+import com.ritense.valtimo.formflow.web.rest.ProcessLinkFormFlowDefinitionResource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -26,10 +27,17 @@ import org.springframework.core.annotation.Order
 
 @Configuration
 class FormFlowValtimoAutoConfiguration {
+
     @Bean
-    @ConditionalOnMissingBean(FormFlowResource::class)
-    fun formFlowResource(formFlowService: FormFlowService): FormFlowResource {
-        return FormFlowResource(formFlowService)
+    @ConditionalOnMissingBean(ProcessLinkFormFlowDefinitionResource::class)
+    fun processLinkFormFlowDefinitionResource(formFlowService: FormFlowService): ProcessLinkFormFlowDefinitionResource {
+        return ProcessLinkFormFlowDefinitionResource(formFlowService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowDemoResource::class)
+    fun formFlowDemoResource(formFlowService: FormFlowService): FormFlowDemoResource {
+        return FormFlowDemoResource(formFlowService)
     }
 
     @Bean
