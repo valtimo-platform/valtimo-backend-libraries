@@ -55,10 +55,9 @@ dependencies {
 
     implementation project(':contract')
     implementation project(':core')
+    implementation project(':form')
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
-
-    testImplementation project(':form-flow')
 
     jar {
         enabled = true

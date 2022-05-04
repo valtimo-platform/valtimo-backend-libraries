@@ -21,6 +21,7 @@ import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.form.service.FormLoaderService
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowNextStep
@@ -47,11 +48,13 @@ internal class FormFlowDemoResourceTest {
     lateinit var mockMvc: MockMvc
     lateinit var formFlowDemoResource: FormFlowDemoResource
     lateinit var formFlowService: FormFlowService
+    lateinit var formLoaderService: FormLoaderService
 
     @BeforeEach
     fun init() {
         formFlowService = mock()
-        formFlowDemoResource = FormFlowDemoResource(formFlowService)
+        formLoaderService = mock()
+        formFlowDemoResource = FormFlowDemoResource(formFlowService, formLoaderService)
         mockMvc = MockMvcBuilders.standaloneSetup(formFlowDemoResource).build()
     }
 
