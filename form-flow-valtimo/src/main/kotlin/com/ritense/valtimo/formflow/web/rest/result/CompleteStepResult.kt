@@ -26,5 +26,7 @@ class CompleteStepResult(
     @JsonProperty
     val currentStepId: FormFlowStepInstanceId?,
     @JsonProperty
-    val currentStepKey: String?
+    val currentStepKey: String?,
+    @JsonProperty
+    val form: String?
 )

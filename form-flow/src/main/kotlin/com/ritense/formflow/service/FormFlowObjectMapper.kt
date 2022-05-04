@@ -17,18 +17,27 @@
 package com.ritense.formflow.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.ritense.formflow.domain.definition.configuration.step.StepTypeProperties
 
-object Mapper {
+class FormFlowObjectMapper(
+    objectMapper:ObjectMapper = jacksonObjectMapper(),
+    stepPropertiesTypes: Collection<NamedType>? = null
+) {
 
-    private val mapper = ObjectMapper()
+    private val mapper = objectMapper.copy()
+        .registerKotlinModule()
+        .apply {
+            stepPropertiesTypes
+                ?.filter { StepTypeProperties::class.java.isAssignableFrom(it.type) }
+                ?.forEach {
+                    registerSubtypes(it)
+                }
+        }
 
     fun get(): ObjectMapper {
         return mapper
     }
-
-    init {
-        mapper.registerModule(KotlinModule())
-    }
-
 }

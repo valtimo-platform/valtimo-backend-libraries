@@ -24,7 +24,8 @@ class FormFlowStep(
     val key: String,
     val nextSteps: MutableList<FormFlowNextStep>? = ArrayList(),
     val onOpen: MutableList<String>? = ArrayList(),
-    val onComplete: MutableList<String>? = ArrayList()
+    val onComplete: MutableList<String>? = ArrayList(),
+    val type: FormFlowStepType
 ) {
 
     @JsonProperty("nextStep")
@@ -55,6 +56,12 @@ class FormFlowStep(
         val nextSteps = this.nextSteps?.map {
             it.toDefinition()
         }?.toMutableList()
-        return FormFlowStepEntity(FormFlowStepId.create(key), nextSteps, onOpen ?: ArrayList(), onComplete ?: ArrayList())
+        return FormFlowStepEntity(
+            FormFlowStepId.create(key),
+            nextSteps,
+            onOpen ?: ArrayList(),
+            onComplete ?: ArrayList(),
+            type
+        )
     }
 }
