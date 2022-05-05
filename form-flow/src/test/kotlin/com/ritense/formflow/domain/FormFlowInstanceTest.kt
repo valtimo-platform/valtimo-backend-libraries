@@ -23,35 +23,35 @@ import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowNextStep
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
+import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
+import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
-import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
-import com.ritense.formflow.expression.FormFlowBean
-import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.context.ApplicationContext
 
 internal class FormFlowInstanceTest {
     @Test
-    fun `complete should return new step` () {
+    fun `complete should return new step`() {
         val instance = FormFlowInstance(
             formFlowDefinition = FormFlowDefinition(
-                FormFlowDefinitionId("test", 1L),
-                "test",
-                mutableSetOf(
+                id = FormFlowDefinitionId("test", 1L),
+                startStep = "test",
+                steps = mutableSetOf(
                     FormFlowStep(
-                        FormFlowStepId.create("test"),
-                        mutableListOf(FormFlowNextStep("123", "test2"))),
+                        id = FormFlowStepId.create("test"),
+                        nextSteps = mutableListOf(FormFlowNextStep("123", "test2")),
+                        type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+                    ),
                     FormFlowStep(
-                        FormFlowStepId.create("test2")
+                        id = FormFlowStepId.create("test2"),
+                        type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
                     )
                 )
             )
@@ -66,12 +66,17 @@ internal class FormFlowInstanceTest {
     }
 
     @Test
-    fun `complete should return null when there are no next steps` () {
+    fun `complete should return null when there are no next steps`() {
         val instance = FormFlowInstance(
             formFlowDefinition = FormFlowDefinition(
-                FormFlowDefinitionId("test",1L),
-                "test",
-                mutableSetOf(FormFlowStep(FormFlowStepId.create("test")))
+                id = FormFlowDefinitionId("test", 1L),
+                startStep = "test",
+                steps = mutableSetOf(
+                    FormFlowStep(
+                        id = FormFlowStepId.create("test"),
+                        type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+                    )
+                )
             )
         )
 
@@ -83,14 +88,19 @@ internal class FormFlowInstanceTest {
     }
 
     @Test
-    fun `complete should throw exception when step in not current active step` () {
+    fun `complete should throw exception when step in not current active step`() {
         val definition: FormFlowDefinition = mock()
         val steps: Set<FormFlowStep> = mutableSetOf(
             FormFlowStep(
-                FormFlowStepId.create("test"),
-                mutableListOf(FormFlowNextStep("123", "test2"))),
+                id = FormFlowStepId.create("test"),
+                nextSteps = mutableListOf(
+                    FormFlowNextStep("123", "test2")
+                ),
+                type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+            ),
             FormFlowStep(
-                FormFlowStepId.create("test2")
+                id = FormFlowStepId.create("test2"),
+                type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
             )
         )
 
@@ -107,14 +117,17 @@ internal class FormFlowInstanceTest {
     }
 
     @Test
-    fun `getSubmissionDataContext should be empty if no steps have been completed` () {
+    fun `getSubmissionDataContext should be empty if no steps have been completed`() {
         val definition: FormFlowDefinition = mock()
         val steps: Set<FormFlowStep> = mutableSetOf(
             FormFlowStep(
-                FormFlowStepId.create("test"),
-                mutableListOf(FormFlowNextStep("123", "test2"))),
+                id = FormFlowStepId.create("test"),
+                nextSteps = mutableListOf(FormFlowNextStep("123", "test2")),
+                type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+            ),
             FormFlowStep(
-                FormFlowStepId.create("test2")
+                id = FormFlowStepId.create("test2"),
+                type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
             )
         )
 
@@ -131,17 +144,19 @@ internal class FormFlowInstanceTest {
     }
 
     @Test
-    fun `getSubmissionDataContext should not be empty if one step with submission data has been completed` () {
+    fun `getSubmissionDataContext should not be empty if one step with submission data has been completed`() {
         val definition: FormFlowDefinition = mock()
         val step1 = FormFlowStep(
-            FormFlowStepId.create("test"),
-            mutableListOf(FormFlowNextStep("123", "test2"))
+            id = FormFlowStepId.create("test"),
+            nextSteps = mutableListOf(FormFlowNextStep("123", "test2")),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
 
         val steps: Set<FormFlowStep> = mutableSetOf(
             step1,
             FormFlowStep(
-                FormFlowStepId.create("test2")
+                id = FormFlowStepId.create("test2"),
+                type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
             )
         )
 
@@ -161,23 +176,26 @@ internal class FormFlowInstanceTest {
     }
 
     @Test
-    fun `getSubmissionDataContext should overwrite submissionData from a previous steps` () {
+    fun `getSubmissionDataContext should overwrite submissionData from a previous steps`() {
         val definition: FormFlowDefinition = mock()
         val step1 = FormFlowStep(
-            FormFlowStepId.create("test"),
-            mutableListOf(FormFlowNextStep("123", "test2"))
+            id = FormFlowStepId.create("test"),
+            nextSteps = mutableListOf(FormFlowNextStep("123", "test2")),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
 
         val step2 = FormFlowStep(
-            FormFlowStepId.create("test2"),
-            mutableListOf(FormFlowNextStep("123", "test3"))
+            id = FormFlowStepId.create("test2"),
+            nextSteps = mutableListOf(FormFlowNextStep("123", "test3")),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
 
         val steps: Set<FormFlowStep> = mutableSetOf(
             step1,
             step2,
             FormFlowStep(
-                FormFlowStepId.create("test3")
+                id = FormFlowStepId.create("test3"),
+                type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
             )
         )
 
@@ -199,23 +217,26 @@ internal class FormFlowInstanceTest {
     }
 
     @Test
-    fun `getSubmissionDataContext should append submissionData from a previous steps` () {
+    fun `getSubmissionDataContext should append submissionData from a previous steps`() {
         val definition: FormFlowDefinition = mock()
         val step1 = FormFlowStep(
-            FormFlowStepId.create("test"),
-            mutableListOf(FormFlowNextStep("123", "test2"))
+            id = FormFlowStepId.create("test"),
+            nextSteps = mutableListOf(FormFlowNextStep("123", "test2")),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
 
         val step2 = FormFlowStep(
-            FormFlowStepId.create("test2"),
-            mutableListOf(FormFlowNextStep("123", "test3"))
+            id = FormFlowStepId.create("test2"),
+            nextSteps = mutableListOf(FormFlowNextStep("123", "test3")),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
 
         val steps: Set<FormFlowStep> = mutableSetOf(
             step1,
             step2,
             FormFlowStep(
-                FormFlowStepId.create("test3")
+                id = FormFlowStepId.create("test3"),
+                type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
             )
         )
 
@@ -237,23 +258,26 @@ internal class FormFlowInstanceTest {
     }
 
     @Test
-    fun `getSubmissionDataContext should append nested submissionData from a previous steps` () {
+    fun `getSubmissionDataContext should append nested submissionData from a previous steps`() {
         val definition: FormFlowDefinition = mock()
         val step1 = FormFlowStep(
-            FormFlowStepId.create("test"),
-            mutableListOf(FormFlowNextStep("123", "test2"))
+            id = FormFlowStepId.create("test"),
+            nextSteps = mutableListOf(FormFlowNextStep("123", "test2")),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
 
         val step2 = FormFlowStep(
-            FormFlowStepId.create("test2"),
-            mutableListOf(FormFlowNextStep("123", "test3"))
+            id = FormFlowStepId.create("test2"),
+            nextSteps = mutableListOf(FormFlowNextStep("123", "test3")),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
 
         val steps: Set<FormFlowStep> = mutableSetOf(
             step1,
             step2,
             FormFlowStep(
-                FormFlowStepId.create("test3")
+                id = FormFlowStepId.create("test3"),
+                type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
             )
         )
 
@@ -266,10 +290,14 @@ internal class FormFlowInstanceTest {
             formFlowDefinition = definition
         )
 
-        instance.complete(instance.currentFormFlowStepInstanceId!!,
-            JSONObject("{\"data\":{\"data\":\"data\",\"data2\":\"data\"}}"))
-        instance.complete(instance.currentFormFlowStepInstanceId!!,
-            JSONObject("{\"data\":{\"data\":\"data2\"}}"))
+        instance.complete(
+            instance.currentFormFlowStepInstanceId!!,
+            JSONObject("{\"data\":{\"data\":\"data\",\"data2\":\"data\"}}")
+        )
+        instance.complete(
+            instance.currentFormFlowStepInstanceId!!,
+            JSONObject("{\"data\":{\"data\":\"data2\"}}")
+        )
 
         val submissionDataContext = instance.getSubmissionDataContext()
 

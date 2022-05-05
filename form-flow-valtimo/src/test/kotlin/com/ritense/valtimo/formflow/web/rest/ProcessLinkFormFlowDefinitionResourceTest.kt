@@ -22,6 +22,8 @@ import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
+import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
+import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.service.FormFlowService
 import org.hamcrest.Matchers.containsInAnyOrder
 import org.hamcrest.Matchers.hasSize
@@ -48,7 +50,9 @@ internal class ProcessLinkFormFlowDefinitionResourceTest {
 
     @Test
     fun `getFormLinkOptions returns form flow definition with latest`() {
-        val step = FormFlowStep(FormFlowStepId("key2"))
+        val step = FormFlowStep(FormFlowStepId("key2"),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+        )
         val definition = FormFlowDefinition(
             id = FormFlowDefinitionId.newId("key"), "step1", mutableSetOf(step))
         whenever(service.getFormFlowDefinitions()).thenReturn(listOf(definition))
@@ -67,7 +71,8 @@ internal class ProcessLinkFormFlowDefinitionResourceTest {
 
     @Test
     fun `getFormLinkOptions returns multiple versions of form flow definition with only one latest`() {
-        val step = FormFlowStep(FormFlowStepId("key2"))
+        val step = FormFlowStep(FormFlowStepId("key2"),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition")))
         val formFlowDefinitionId = FormFlowDefinitionId.newId("key")
         val definitionVersion1 = FormFlowDefinition(
             id = formFlowDefinitionId, "step1", mutableSetOf(step))
@@ -91,7 +96,8 @@ internal class ProcessLinkFormFlowDefinitionResourceTest {
 
     @Test
     fun `getFormLinkOptions returns form flow definitions with one latest per unique key`() {
-        val step = FormFlowStep(FormFlowStepId("key2"))
+        val step = FormFlowStep(FormFlowStepId("key2"),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition")))
         val definitionVersion1 = FormFlowDefinition(
             id = FormFlowDefinitionId.newId("key"), "step1", mutableSetOf(step))
 
