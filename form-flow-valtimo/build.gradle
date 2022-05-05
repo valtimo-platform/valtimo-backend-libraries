@@ -57,6 +57,8 @@ dependencies {
     implementation project(':core')
     implementation project(':form')
 
+    testImplementation project(':resource')
+
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
     jar {
