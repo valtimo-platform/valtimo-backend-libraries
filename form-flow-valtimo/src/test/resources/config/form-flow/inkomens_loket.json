@@ -42,7 +42,11 @@
 
         {
             "key": "gezinssituatie",
-            "nextStep": "thuiswonende-kinderen",
+            "nextSteps": [
+                {
+                    "step": "thuiswonende-kinderen"
+                }
+            ],
             "type": {
                 "name": "form",
                 "properties": {
@@ -53,7 +57,11 @@
 
         {
             "key": "thuiswonende-kinderen",
-            "nextStep": "inkomen",
+            "nextSteps": [
+                {
+                    "step": "inkomen"
+                }
+            ],
             "type": {
                 "name": "form",
                 "properties": {
@@ -82,7 +90,11 @@
 
         {
             "key": "vermogen",
-            "nextStep": "end",
+            "nextSteps": [
+                {
+                    "step": "end"
+                }
+            ],
             "type": {
                 "name": "form",
                 "properties": {
