@@ -1,0 +1,11 @@
+1e721f5 - Updated version to 9.10.0.RELEASE
+6cdc305 - Updated version to 9.10.0.104.RC-SNAPSHOT
+4872ee6 - 34780 - Added whitelisting for beans to use in Form Flow expressions (#171)
+79c04f1 - Merge branch 'main' into development
+ec56213 - fix: NullPointerException for zaak_type_url (#170)
+5b09d90 - #33714 move BRP to new module: haalcentraal-brp (#167)
+e4ac5d2 - added-onComplete-to-configuration (#169)
+a1150e5 - added nextStep.open() to demo endpoint (#168)
+3580a32 - Feature/34623 step on complete (#165)
+4472390 - fix integration test (#166)
+6c77e4b - #34328 Evalueren expressies in onOpen property (#164)
