@@ -75,10 +75,6 @@
                                 "step"
                             ]
                         }
-                    },
-                    "nextStep:": {
-                        "type": "string",
-                        "description": "The key of the next step in the flow. When multiple steps should be available you should use the property 'nextSteps'"
                     }
                 },
                 "required": [

@@ -38,13 +38,13 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            listOf(
                 mockStep
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherStep = FormFlowStepEntity(
             FormFlowStepId("step-key"),
-            mutableListOf(
+            listOf(
                 otherMock
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
@@ -67,14 +67,14 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            listOf(
                 mockStep1,
                 mockStep2
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherStep = FormFlowStepEntity(
             FormFlowStepId("step-key"),
-            mutableListOf(
+            listOf(
                 otherMock1,
                 otherMock2
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
@@ -177,6 +177,48 @@ internal class FormFlowStepTest {
             mutableListOf(
                 mock()
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+        )
+
+        assertFalse(thisStep.contentEquals(otherStep))
+    }
+
+    @Test
+    fun `contentEquals should return true when type names are the same`() {
+        val thisStep = FormFlowStep(
+            key = "step-key",
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+        )
+        val otherStep = FormFlowStepEntity(
+            id = FormFlowStepId("step-key"),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+        )
+
+        assertTrue(thisStep.contentEquals(otherStep))
+    }
+
+    @Test
+    fun `contentEquals should return false when type names are not the same`() {
+        val thisStep = FormFlowStep(
+            key = "step-key",
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+        )
+        val otherStep = FormFlowStepEntity(
+            id = FormFlowStepId("step-key"),
+            type = FormFlowStepType("form-other", FormStepTypeProperties("my-form-definition"))
+        )
+
+        assertFalse(thisStep.contentEquals(otherStep))
+    }
+
+    @Test
+    fun `contentEquals should return false when type properties are not the same`() {
+        val thisStep = FormFlowStep(
+            key = "step-key",
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+        )
+        val otherStep = FormFlowStepEntity(
+            id = FormFlowStepId("step-key"),
+            type = FormFlowStepType("formio", FormStepTypeProperties("my-other-form-definition"))
         )
 
         assertFalse(thisStep.contentEquals(otherStep))
