@@ -14,9 +14,10 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.formflow
+package com.ritense.valtimo.formflow.security
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod
@@ -26,13 +27,16 @@ class ValtimoFormFlowHttpSecurityConfigurer: HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/api/form-flow/{formFlowInstanceId}").hasAuthority(USER)
+                .antMatchers(HttpMethod.GET, "/api/process-link/form-flow-definition").hasAuthority(AuthoritiesConstants.ADMIN)
+
+                // Temp matchers
                 .antMatchers(HttpMethod.POST, "/api/form-flow/demo/definition/{definitionKey}/instance")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(HttpMethod.POST, "/api/form-flow/demo/instance/{instanceId}/step/{stepId}/complete")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers(HttpMethod.GET, "/api/process-link/form-flow-definition")
-                .hasAuthority(AuthoritiesConstants.ADMIN)
-        } catch (e: Exception) {
+
+} catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
     }
