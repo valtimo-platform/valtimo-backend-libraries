@@ -5,8 +5,11 @@ import java.util.UUID
 
 class GetFormFlowStateResult(
     @JsonProperty(value = "id")
-    val id: UUID,
+    val id: UUID? = null,
 
     @JsonProperty
-    val step: FormFlowStepResult
+    val step: FormFlowStepResult? = null,
+
+    @JsonProperty
+    val errorMessage: String? = null
 )

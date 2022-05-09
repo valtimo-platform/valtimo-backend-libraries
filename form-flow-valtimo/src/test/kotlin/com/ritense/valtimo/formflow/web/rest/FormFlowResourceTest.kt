@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import java.util.UUID
 
 class FormFlowResourceTest {
     lateinit var mockMvc: MockMvc
@@ -37,7 +38,7 @@ class FormFlowResourceTest {
         formFlowInstanceId = FormFlowInstanceId.newId()
         formFlowInstance = mock()
         whenever(formFlowInstance.id).thenReturn(formFlowInstanceId)
-        whenever(formFlowService.getInstanceById(formFlowInstance.id)).thenReturn(formFlowInstance)
+        whenever(formFlowService.getByInstanceIdIfExists(formFlowInstance.id)).thenReturn(formFlowInstance)
         formFlowResource = FormFlowResource(formFlowService)
 
         mockMvc = MockMvcBuilders.standaloneSetup(formFlowResource).build()
@@ -79,7 +80,6 @@ class FormFlowResourceTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
             )
             .andExpect(status().isOk)
-            .andDo(print())
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$.id").value(formFlowInstanceId.id.toString()))
             .andExpect(jsonPath("$.step").isNotEmpty)
@@ -87,5 +87,20 @@ class FormFlowResourceTest {
             .andExpect(jsonPath("$.step.type").value("form"))
             .andExpect(jsonPath("$.step.type-properties").isNotEmpty)
             .andExpect(jsonPath("$.step.type-properties.definition").value("first-form-definition"))
+    }
+
+    @Test
+    fun `should fail gracefully when sending incorrect instance id`() {
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(
+                        "/api/form-flow/{instanceId}",
+                        UUID.randomUUID().toString()
+                    )
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andExpect(status().is4xxClientError)
+            .andExpect(jsonPath("$.errorMessage").value("No form flow instance can be found for the given instance id"))
     }
 }

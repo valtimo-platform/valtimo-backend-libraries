@@ -23,10 +23,12 @@ class FormFlowResource(
     @Transactional
     fun getFormFlowState(
         @PathVariable(name = "formFlowInstanceId") instanceId: String,
-    ): ResponseEntity<GetFormFlowStateResult> {
-        val instance = formFlowService.getInstanceById(
+    ): ResponseEntity<GetFormFlowStateResult>? {
+        val instance = formFlowService.getByInstanceIdIfExists(
             FormFlowInstanceId.existingId(UUID.fromString(instanceId))
-        )
+        ) ?: return ResponseEntity
+                .badRequest()
+                .body(GetFormFlowStateResult(null, null, "No form flow instance can be found for the given instance id"))
 
         val stepInstance = instance.getCurrentStep()
 
@@ -37,6 +39,7 @@ class FormFlowResource(
                     stepInstance.id.id,
                     stepInstance.definition.type.name,
                     stepInstance.definition.type.properties
+                    // TODO Include the prefilled form when this functionality is available
                 )
             )
         )

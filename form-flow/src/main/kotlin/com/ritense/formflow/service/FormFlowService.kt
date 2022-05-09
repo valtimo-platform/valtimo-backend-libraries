@@ -17,7 +17,6 @@
 package com.ritense.formflow.service
 
 import com.ritense.formflow.domain.definition.FormFlowDefinition
-import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
@@ -45,6 +44,10 @@ class FormFlowService(
     }
 
     fun getInstanceById(formFlowInstanceId: FormFlowInstanceId): FormFlowInstance {
+        return formFlowInstanceRepository.getById(formFlowInstanceId)
+    }
+
+    fun getByInstanceIdIfExists(formFlowInstanceId: FormFlowInstanceId): FormFlowInstance? {
         return formFlowInstanceRepository.getById(formFlowInstanceId)
     }
 
