@@ -26,4 +26,5 @@ public interface FormLoaderService {
 
     Optional<JsonNode> getFormDefinitionByNamePreFilled(final String formDefinitionName, final Document.Id documentId);
 
+    Optional<JsonNode> getFormDefinitionByNamePreFilled(String formDefinitionName, JsonNode content);
 }

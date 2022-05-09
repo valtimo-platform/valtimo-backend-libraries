@@ -16,13 +16,30 @@
 
 package com.ritense.formflow
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.formflow.domain.instance.FormFlowStepInstance
+import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 
 @SpringBootApplication
 class TestApplication {
 
     fun main(args: Array<String>) {
         runApplication<TestApplication>(*args)
+    }
+
+    @TestConfiguration
+    class TestConfig {
+
+        @Bean
+        fun formFlowStepTypeFormHandler(): FormFlowStepTypeHandler {
+            return object : FormFlowStepTypeHandler {
+                override fun getType() = "form"
+                override fun getMetadata(stepInstance: FormFlowStepInstance) = ObjectMapper().createObjectNode()
+            }
+        }
     }
 }

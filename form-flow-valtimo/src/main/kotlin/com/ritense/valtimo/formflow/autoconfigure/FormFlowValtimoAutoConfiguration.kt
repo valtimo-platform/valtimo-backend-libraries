@@ -17,8 +17,10 @@
 package com.ritense.valtimo.formflow.autoconfigure
 
 import com.ritense.form.service.FormLoaderService
+import com.ritense.formflow.service.FormFlowObjectMapper
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.ValtimoFormFlowHttpSecurityConfigurer
+import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.valtimo.formflow.web.rest.FormFlowDemoResource
 import com.ritense.valtimo.formflow.web.rest.ProcessLinkFormFlowDefinitionResource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -37,8 +39,10 @@ class FormFlowValtimoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(FormFlowDemoResource::class)
-    fun formFlowDemoResource(formFlowService: FormFlowService,
-        formLoaderService: FormLoaderService): FormFlowDemoResource {
+    fun formFlowDemoResource(
+        formFlowService: FormFlowService,
+        formLoaderService: FormLoaderService
+    ): FormFlowDemoResource {
         return FormFlowDemoResource(formFlowService, formLoaderService)
     }
 
@@ -47,5 +51,13 @@ class FormFlowValtimoAutoConfiguration {
     @ConditionalOnMissingBean(ValtimoFormFlowHttpSecurityConfigurer::class)
     fun valtimoFormFlowHttpSecurityConfigurer(): ValtimoFormFlowHttpSecurityConfigurer {
         return ValtimoFormFlowHttpSecurityConfigurer()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowStepTypeFormHandler::class)
+    fun formFlowStepTypeFormHandler(
+        formLoaderService: FormLoaderService, objectMapper: FormFlowObjectMapper
+    ): FormFlowStepTypeFormHandler {
+        return FormFlowStepTypeFormHandler(formLoaderService, objectMapper)
     }
 }

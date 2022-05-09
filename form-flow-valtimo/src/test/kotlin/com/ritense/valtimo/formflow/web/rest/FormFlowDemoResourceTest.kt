@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow.web.rest
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.mock
@@ -107,6 +108,7 @@ internal class FormFlowDemoResourceTest {
         val expressionProcessorMock = initExpressionProcessorMock()
 
         whenever(formFlowService.findLatestDefinitionByKey("inkomens_loket")).thenReturn(definition)
+        whenever(formFlowService.getMetadata(any())).thenReturn(jacksonObjectMapper().createObjectNode())
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -210,6 +212,7 @@ internal class FormFlowDemoResourceTest {
         val expressionProcessorMock = initExpressionProcessorMock()
 
         whenever(formFlowService.getInstanceById(instance.id)).thenReturn(instance)
+        whenever(formFlowService.getMetadata(any())).thenReturn(jacksonObjectMapper().createObjectNode())
         mockMvc
             .perform(
                 MockMvcRequestBuilders

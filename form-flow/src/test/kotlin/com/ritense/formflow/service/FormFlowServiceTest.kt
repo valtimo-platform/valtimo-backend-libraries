@@ -21,6 +21,7 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.formflow.TestApplication
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
@@ -32,6 +33,7 @@ import com.ritense.formflow.expression.ExpressionProcessor
 import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessor
+import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import org.junit.jupiter.api.BeforeEach
@@ -46,13 +48,17 @@ internal class FormFlowServiceTest {
     lateinit var formFlowService: FormFlowService
     lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
     lateinit var expressionProcessor: ExpressionProcessor
+    lateinit var formFlowStepTypeHandlers: List<FormFlowStepTypeHandler>
 
     @BeforeEach
     fun beforeAll() {
         val formFlowDefinitionRepository = mock(FormFlowDefinitionRepository::class.java)
         formFlowInstanceRepository = mock(FormFlowInstanceRepository::class.java)
+        formFlowStepTypeHandlers = listOf(TestApplication.TestConfig().formFlowStepTypeFormHandler())
         formFlowService = FormFlowService(
-            formFlowDefinitionRepository, formFlowInstanceRepository
+            formFlowDefinitionRepository,
+            formFlowInstanceRepository,
+            formFlowStepTypeHandlers
         )
 
         val expressionProcessorFactory = mock(ExpressionProcessorFactory::class.java)
