@@ -32,6 +32,10 @@ class FormFlowService(
         return formFlowDefinitionRepository.findAll()
     }
 
+    fun findDefinition(formFlowId: FormFlowDefinitionId): FormFlowDefinition {
+        return formFlowDefinitionRepository.getById(formFlowId)
+    }
+
     fun findLatestDefinitionByKey(formFlowKey: String): FormFlowDefinition? {
         return formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc(formFlowKey)
     }
