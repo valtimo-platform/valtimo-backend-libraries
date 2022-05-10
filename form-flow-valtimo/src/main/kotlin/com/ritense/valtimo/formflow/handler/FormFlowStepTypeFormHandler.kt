@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.formflow.handler
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.service.DocumentService
 import com.ritense.form.domain.FormDefinition
