@@ -90,9 +90,9 @@ internal class FormFlowServiceTest {
     ): FormFlowInstance {
         val step = FormFlowStep(
             FormFlowStepId("start-step"),
-            ArrayList(),
-            onOpen?.toMutableList(),
-            onComplete?.toMutableList(),
+            listOf(),
+            onOpen?: listOf(),
+            onComplete?:listOf(),
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val definition = FormFlowDefinition(
