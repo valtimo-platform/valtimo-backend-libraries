@@ -30,8 +30,10 @@ import com.ritense.formlink.service.impl.CamundaFormAssociationSubmissionService
 import com.ritense.formlink.service.impl.FormIoJsonPatchSubmissionTransformerService;
 import com.ritense.formlink.web.rest.FormAssociationManagementResource;
 import com.ritense.formlink.web.rest.FormAssociationResource;
+import com.ritense.formlink.web.rest.ProcessLinkResource;
 import com.ritense.formlink.web.rest.impl.CamundaFormAssociationManagementResource;
 import com.ritense.formlink.web.rest.impl.CamundaFormAssociationResource;
+import com.ritense.formlink.web.rest.impl.MockProcessLinkResource;
 import com.ritense.formlink.web.rest.impl.interceptor.PublicAccessRateLimitInterceptor;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
@@ -121,6 +123,15 @@ public class FormLinkAutoConfiguration {
     public CamundaFormAssociationManagementResource formAssociationManagementResource(FormAssociationService formAssociationService) {
         return new CamundaFormAssociationManagementResource(formAssociationService);
     }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessLinkResource.class)
+    public ProcessLinkResource mockProcessLinkResource(
+        TaskService taskService
+    ) {
+        return new MockProcessLinkResource(taskService);
+    }
+
 
     @Bean
     @ConditionalOnMissingBean(PublicAccessRateLimitInterceptor.class)
