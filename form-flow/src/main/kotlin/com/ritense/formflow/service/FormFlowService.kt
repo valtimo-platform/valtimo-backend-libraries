@@ -50,6 +50,10 @@ class FormFlowService(
         return formFlowInstanceRepository.getById(formFlowInstanceId)
     }
 
+    fun getByInstanceIdIfExists(formFlowInstanceId: FormFlowInstanceId): FormFlowInstance? {
+        return formFlowInstanceRepository.getById(formFlowInstanceId)
+    }
+
     fun save(formFlowInstance: FormFlowInstance) {
         formFlowInstanceRepository.save(formFlowInstance)
     }
