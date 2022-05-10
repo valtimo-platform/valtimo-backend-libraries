@@ -5,10 +5,7 @@ import com.ritense.formflow.domain.definition.configuration.step.StepTypePropert
 import java.util.UUID
 
 class FormFlowStepResult(
-    @JsonProperty(value = "id")
     val id: UUID,
-    @JsonProperty
     val type: String,
-    @JsonProperty(value = "type-properties")
-    val typeProperties: StepTypeProperties
+    val typeProperties: Any
 )

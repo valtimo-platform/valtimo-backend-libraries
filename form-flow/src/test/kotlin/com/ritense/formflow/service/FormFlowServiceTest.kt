@@ -16,12 +16,12 @@
 
 package com.ritense.formflow.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockitokotlin2.isNull
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.formflow.BaseTest
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
@@ -29,7 +29,6 @@ import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowInstance
-import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.expression.ExpressionProcessor
 import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
@@ -44,7 +43,7 @@ import org.mockito.Mockito.anyString
 import org.mockito.Mockito.mock
 import org.springframework.context.ApplicationContext
 
-internal class FormFlowServiceTest {
+internal class FormFlowServiceTest : BaseTest() {
 
     lateinit var formFlowService: FormFlowService
     lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
@@ -112,13 +111,5 @@ internal class FormFlowServiceTest {
         whenever(formFlowInstanceRepository.getById(formFlowInstance.id)).thenReturn(formFlowInstance)
 
         return formFlowInstance
-    }
-
-    private fun formFlowStepTypeFormHandler(): FormFlowStepTypeHandler {
-        return object : FormFlowStepTypeHandler {
-            override fun getType() = "form"
-            override fun getMetadata(stepInstance: FormFlowStepInstance, additionalParameters: Map<String, Any>) =
-                ObjectMapper().createObjectNode()
-        }
     }
 }

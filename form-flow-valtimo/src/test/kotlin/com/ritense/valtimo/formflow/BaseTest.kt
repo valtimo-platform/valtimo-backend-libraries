@@ -14,28 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow
+package com.ritense.valtimo.formflow
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
-import com.ritense.formflow.handler.TypeProperties
+import com.ritense.valtimo.formflow.handler.FormTypeProperties
 
 abstract class BaseTest {
-    fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName)!!.readText(Charsets.UTF_8)
 
     fun formFlowStepTypeFormHandler(): FormFlowStepTypeHandler {
         return object : FormFlowStepTypeHandler {
             override fun getType() = "form"
-            override fun getTypeProperties(
-                stepInstance: FormFlowStepInstance,
-                additionalParameters: Map<String, Any>
-            ): TypeProperties {
-                return object : TypeProperties() {
-                    fun getDefinition(): JsonNode = ObjectMapper().createObjectNode().put("firstName", "John")
-                }
-            }
+            override fun getTypeProperties(stepInstance: FormFlowStepInstance, additionalParameters: Map<String, Any>) =
+                FormTypeProperties(ObjectMapper().createObjectNode().put("firstName", "John"))
         }
     }
 }

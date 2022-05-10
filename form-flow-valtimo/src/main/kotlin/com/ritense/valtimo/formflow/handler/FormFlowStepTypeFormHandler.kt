@@ -37,11 +37,14 @@ class FormFlowStepTypeFormHandler(
 
     override fun getType() = "form"
 
-    override fun getMetadata(stepInstance: FormFlowStepInstance, additionalParameters: Map<String, Any>): JsonNode {
+    override fun getTypeProperties(
+        stepInstance: FormFlowStepInstance,
+        additionalParameters: Map<String, Any>
+    ): FormTypeProperties {
         val formDefinition = getFormDefinition(stepInstance)
         prefillWithAdditionalData(formDefinition, additionalParameters)
         prefillWithSubmissionData(formDefinition, stepInstance)
-        return formDefinition.formDefinition
+        return FormTypeProperties(formDefinition.formDefinition)
     }
 
     private fun getFormDefinition(stepInstance: FormFlowStepInstance): FormIoFormDefinition {

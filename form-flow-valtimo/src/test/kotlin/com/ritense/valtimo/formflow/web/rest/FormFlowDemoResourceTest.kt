@@ -37,6 +37,7 @@ import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.contract.utils.TestUtil
+import com.ritense.valtimo.formflow.BaseTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationContext
@@ -47,7 +48,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
-internal class FormFlowDemoResourceTest {
+internal class FormFlowDemoResourceTest : BaseTest() {
     lateinit var mockMvc: MockMvc
     lateinit var formFlowDemoResource: FormFlowDemoResource
     lateinit var formFlowService: FormFlowService
@@ -244,14 +245,6 @@ internal class FormFlowDemoResourceTest {
         whenever(expressionProcessorFactory.create(any())).thenReturn(expressionProcessor)
 
         return expressionProcessor
-    }
-
-    fun formFlowStepTypeFormHandler(): FormFlowStepTypeHandler {
-        return object : FormFlowStepTypeHandler {
-            override fun getType() = "form"
-            override fun getMetadata(stepInstance: FormFlowStepInstance, additionalParameters: Map<String, Any>) =
-                ObjectMapper().createObjectNode()
-        }
     }
 
 }

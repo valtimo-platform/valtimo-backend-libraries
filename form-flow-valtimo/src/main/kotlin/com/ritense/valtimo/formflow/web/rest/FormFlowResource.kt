@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.valtimo.formflow.handler.FormTypeProperties
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlow
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowStep
-import com.ritense.valtimo.formflow.web.rest.dto.FormTypeProperties
 import com.ritense.valtimo.formflow.web.rest.result.FormFlowStepResult
 import com.ritense.valtimo.formflow.web.rest.result.GetFormFlowStateResult
 import org.springframework.http.MediaType
@@ -46,8 +46,8 @@ class FormFlowResource(
                 FormFlowStepResult(
                     stepInstance.id.id,
                     stepInstance.definition.type.name,
-                    stepInstance.definition.type.properties
-                    // TODO Include the prefilled form when this functionality is available
+                    formFlowService.getFormFlowStepTypeHandler(stepInstance.definition.type)
+                        .getTypeProperties(stepInstance)
                 )
             )
         )

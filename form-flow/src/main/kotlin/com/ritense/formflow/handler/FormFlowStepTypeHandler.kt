@@ -23,6 +23,9 @@ interface FormFlowStepTypeHandler {
 
     fun getType(): String
 
-    fun getMetadata(stepInstance: FormFlowStepInstance, additionalParameters: Map<String, Any> = emptyMap()): JsonNode
+    fun getTypeProperties(
+        stepInstance: FormFlowStepInstance,
+        additionalParameters: Map<String, Any> = emptyMap()
+    ): TypeProperties
 
 }

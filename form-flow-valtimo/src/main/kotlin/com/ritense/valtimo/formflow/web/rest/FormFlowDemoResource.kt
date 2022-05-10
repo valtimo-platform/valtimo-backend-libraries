@@ -19,7 +19,6 @@ package com.ritense.valtimo.formflow.web.rest
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.ritense.form.service.FormLoaderService
-import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
@@ -31,10 +30,10 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 import javax.transaction.Transactional
-import org.springframework.web.bind.annotation.RequestParam
 
 @RestController
 @RequestMapping(value = ["/api/form-flow/demo"])
@@ -56,7 +55,7 @@ class FormFlowDemoResource(
         if(openFirstStep) {
             createdInstance.getCurrentStep().open()
             val stepHandler = formFlowService.getFormFlowStepTypeHandler(createdInstance.getCurrentStep().definition.type)
-            form = stepHandler.getMetadata(createdInstance.getCurrentStep()).toString()
+            form = stepHandler.getTypeProperties(createdInstance.getCurrentStep()).toString()
         }
         formFlowService.save(createdInstance)
 
@@ -93,7 +92,7 @@ class FormFlowDemoResource(
             formFlowStepInstance?.open()
             if (formFlowStepInstance!= null) {
                 val stepHandler = formFlowService.getFormFlowStepTypeHandler(formFlowStepInstance.definition.type)
-                form = stepHandler.getMetadata(formFlowStepInstance).toString()
+                form = stepHandler.getTypeProperties(formFlowStepInstance).toString()
             }
         }
 

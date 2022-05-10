@@ -1,5 +1,6 @@
 package com.ritense.valtimo.formflow.web.rest
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.form.service.FormDefinitionService
@@ -14,6 +15,7 @@ import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.valtimo.formflow.BaseTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -24,7 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.util.UUID
 
-class FormFlowResourceTest {
+class FormFlowResourceTest : BaseTest() {
     lateinit var mockMvc: MockMvc
     lateinit var formFlowResource: FormFlowResource
     lateinit var formFlowService: FormFlowService
@@ -36,6 +38,7 @@ class FormFlowResourceTest {
     fun setUp() {
         formFlowService = mock()
         formDefinitionService = mock()
+        whenever(formFlowService.getFormFlowStepTypeHandler(any())).thenReturn(formFlowStepTypeFormHandler())
 
         formFlowInstanceId = FormFlowInstanceId.newId()
         formFlowInstance = mock()
@@ -87,8 +90,7 @@ class FormFlowResourceTest {
             .andExpect(jsonPath("$.step").isNotEmpty)
             .andExpect(jsonPath("$.step.id").value(step1InstanceId.id.toString()))
             .andExpect(jsonPath("$.step.type").value("form"))
-            .andExpect(jsonPath("$.step.type-properties").isNotEmpty)
-            .andExpect(jsonPath("$.step.type-properties.definition").value("first-form-definition"))
+            .andExpect(jsonPath("$.step.typeProperties.definition.firstName").value("John"))
     }
 
     @Test
