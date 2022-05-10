@@ -27,7 +27,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "form_flow_definition")
-class FormFlowDefinition(
+data class FormFlowDefinition(
 
     @EmbeddedId
     val id: FormFlowDefinitionId,

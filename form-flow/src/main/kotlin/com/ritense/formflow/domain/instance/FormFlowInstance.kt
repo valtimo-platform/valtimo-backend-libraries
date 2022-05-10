@@ -176,7 +176,8 @@ class FormFlowInstance(
         if (id != other.id) return false
         if (formFlowDefinition.id != other.formFlowDefinition.id) return false
         if (currentFormFlowStepInstanceId != other.currentFormFlowStepInstanceId) return false
-        //wrapping in arraylist to prevent issues with hibernate PersistentBag equals implementation
+        // Wrapping in ArrayList to prevent issues with Hibernate PersistentBag equals implementation
+        // See https://hibernate.atlassian.net/browse/HHH-5409 for more details
         if (ArrayList(history) != ArrayList(other.history)) return false
 
         return true

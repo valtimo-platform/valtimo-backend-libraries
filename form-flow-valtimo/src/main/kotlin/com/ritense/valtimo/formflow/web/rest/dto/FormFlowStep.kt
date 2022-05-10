@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain.definition.configuration
+package com.ritense.valtimo.formflow.web.rest.dto
 
-import com.ritense.formflow.domain.definition.FormFlowNextStep as FormFlowNextStepEntity
+import java.util.UUID
 
-data class FormFlowNextStep(
-    val condition: String? = null,
-    val step: String
-) {
-
-    fun contentEquals(other: FormFlowNextStepEntity): Boolean {
-        if (condition != other.condition) return false
-        if (step != other.step) return false
-
-        return true
-    }
-
-    fun toDefinition() : FormFlowNextStepEntity {
-        return FormFlowNextStepEntity(condition, step)
-    }
-}
+class FormFlowStep(
+    val id: UUID,
+    val type: String,
+    val typeProperties: Any
+)

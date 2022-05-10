@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain.definition.configuration
+package com.ritense.formlink.domain.impl.formassociation;
 
-import com.ritense.formflow.domain.definition.FormFlowNextStep as FormFlowNextStepEntity
+public class FormTaskOpenResultProperties {
+   private final String formLinkId;
 
-data class FormFlowNextStep(
-    val condition: String? = null,
-    val step: String
-) {
-
-    fun contentEquals(other: FormFlowNextStepEntity): Boolean {
-        if (condition != other.condition) return false
-        if (step != other.step) return false
-
-        return true
+    public FormTaskOpenResultProperties(String formLinkId) {
+        this.formLinkId = formLinkId;
     }
 
-    fun toDefinition() : FormFlowNextStepEntity {
-        return FormFlowNextStepEntity(condition, step)
+    public String getFormLinkId() {
+        return formLinkId;
     }
 }
