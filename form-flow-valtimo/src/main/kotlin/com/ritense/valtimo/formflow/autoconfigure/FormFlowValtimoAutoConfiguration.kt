@@ -17,6 +17,7 @@
 package com.ritense.valtimo.formflow.autoconfigure
 
 import com.ritense.document.service.DocumentService
+import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.service.FormLoaderService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formflow.service.FormFlowObjectMapper
@@ -43,8 +44,11 @@ class FormFlowValtimoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(FormFlowResource::class)
-    fun formFlowResource(formFlowService: FormFlowService): FormFlowResource {
-        return FormFlowResource(formFlowService)
+    fun formFlowResource(
+        formFlowService: FormFlowService,
+        formDefinitionService: FormDefinitionService
+    ): FormFlowResource {
+        return FormFlowResource(formFlowService, formDefinitionService)
     }
 
     @Bean
