@@ -2,6 +2,7 @@ package com.ritense.valtimo.formflow.web.rest
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.form.service.FormDefinitionService
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -28,18 +28,20 @@ class FormFlowResourceTest {
     lateinit var mockMvc: MockMvc
     lateinit var formFlowResource: FormFlowResource
     lateinit var formFlowService: FormFlowService
+    lateinit var formDefinitionService: FormDefinitionService
     lateinit var formFlowInstance: FormFlowInstance
     lateinit var formFlowInstanceId: FormFlowInstanceId
 
     @BeforeEach
     fun setUp() {
         formFlowService = mock()
+        formDefinitionService = mock()
 
         formFlowInstanceId = FormFlowInstanceId.newId()
         formFlowInstance = mock()
         whenever(formFlowInstance.id).thenReturn(formFlowInstanceId)
         whenever(formFlowService.getByInstanceIdIfExists(formFlowInstance.id)).thenReturn(formFlowInstance)
-        formFlowResource = FormFlowResource(formFlowService)
+        formFlowResource = FormFlowResource(formFlowService, formDefinitionService)
 
         mockMvc = MockMvcBuilders.standaloneSetup(formFlowResource).build()
     }
