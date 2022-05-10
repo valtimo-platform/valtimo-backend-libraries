@@ -16,11 +16,10 @@
 
 package com.ritense.formflow.service
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.formflow.domain.definition.FormFlowDefinition
+import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
-import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
@@ -55,10 +54,8 @@ class FormFlowService(
         formFlowInstanceRepository.save(formFlowInstance)
     }
 
-    fun getMetadata(stepInstance: FormFlowStepInstance): JsonNode {
-        val stepDefinitionType = stepInstance.definition.type
-        val stepHandler = formFlowStepTypeHandlers.singleOrNull { it.getType() == stepDefinitionType.name }
-            ?: throw IllegalStateException("No formFlowStepTypeHandler found for type '${stepDefinitionType.name}'")
-        return stepHandler.getMetadata(stepInstance)
+    fun getFormFlowStepTypeHandler(stepType: FormFlowStepType): FormFlowStepTypeHandler {
+        return formFlowStepTypeHandlers.singleOrNull { it.getType() == stepType.name }
+            ?: throw IllegalStateException("No formFlowStepTypeHandler found for type '${stepType.name}'")
     }
 }

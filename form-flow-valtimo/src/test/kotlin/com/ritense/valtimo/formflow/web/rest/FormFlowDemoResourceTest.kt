@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.formflow.web.rest
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.mock
@@ -30,9 +30,11 @@ import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
+import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.expression.ExpressionProcessor
 import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
+import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.contract.utils.TestUtil
 import org.junit.jupiter.api.BeforeEach
@@ -108,7 +110,7 @@ internal class FormFlowDemoResourceTest {
         val expressionProcessorMock = initExpressionProcessorMock()
 
         whenever(formFlowService.findLatestDefinitionByKey("inkomens_loket")).thenReturn(definition)
-        whenever(formFlowService.getMetadata(any())).thenReturn(jacksonObjectMapper().createObjectNode())
+        whenever(formFlowService.getFormFlowStepTypeHandler(any())).thenReturn(formFlowStepTypeFormHandler())
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -212,7 +214,7 @@ internal class FormFlowDemoResourceTest {
         val expressionProcessorMock = initExpressionProcessorMock()
 
         whenever(formFlowService.getInstanceById(instance.id)).thenReturn(instance)
-        whenever(formFlowService.getMetadata(any())).thenReturn(jacksonObjectMapper().createObjectNode())
+        whenever(formFlowService.getFormFlowStepTypeHandler(any())).thenReturn(formFlowStepTypeFormHandler())
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -242,6 +244,14 @@ internal class FormFlowDemoResourceTest {
         whenever(expressionProcessorFactory.create(any())).thenReturn(expressionProcessor)
 
         return expressionProcessor
+    }
+
+    fun formFlowStepTypeFormHandler(): FormFlowStepTypeHandler {
+        return object : FormFlowStepTypeHandler {
+            override fun getType() = "form"
+            override fun getMetadata(stepInstance: FormFlowStepInstance, additionalParameters: Map<String, Any>) =
+                ObjectMapper().createObjectNode()
+        }
     }
 
 }

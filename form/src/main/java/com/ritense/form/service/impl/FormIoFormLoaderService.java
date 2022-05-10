@@ -56,13 +56,4 @@ public class FormIoFormLoaderService implements FormLoaderService {
             );
     }
 
-    @Override
-    public Optional<JsonNode> getFormDefinitionByNamePreFilled(final String formDefinitionName, final JsonNode content) {
-        assertArgumentNotNull(content, "content is required");
-        return formDefinitionRepository.findByName(formDefinitionName).map(formIoFormDefinition -> {
-            formIoFormDefinition.preFill(content);
-            return formIoFormDefinition.asJson();
-        });
-    }
-
 }

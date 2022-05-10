@@ -16,9 +16,12 @@
 
 package com.ritense.valtimo.formflow.autoconfigure
 
+import com.ritense.document.service.DocumentService
 import com.ritense.form.service.FormLoaderService
+import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formflow.service.FormFlowObjectMapper
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.formlink.service.impl.CamundaFormAssociationService
 import com.ritense.valtimo.formflow.ValtimoFormFlowHttpSecurityConfigurer
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.valtimo.formflow.web.rest.FormFlowDemoResource
@@ -56,8 +59,16 @@ class FormFlowValtimoAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(FormFlowStepTypeFormHandler::class)
     fun formFlowStepTypeFormHandler(
-        formLoaderService: FormLoaderService, objectMapper: FormFlowObjectMapper
+        formIoFormDefinitionService: FormIoFormDefinitionService,
+        camundaFormAssociationService: CamundaFormAssociationService,
+        documentService: DocumentService,
+        objectMapper: FormFlowObjectMapper
     ): FormFlowStepTypeFormHandler {
-        return FormFlowStepTypeFormHandler(formLoaderService, objectMapper)
+        return FormFlowStepTypeFormHandler(
+            formIoFormDefinitionService,
+            camundaFormAssociationService,
+            documentService,
+            objectMapper
+        )
     }
 }

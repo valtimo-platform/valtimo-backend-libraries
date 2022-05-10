@@ -80,7 +80,6 @@ class FormFlowAutoConfiguration {
     fun formFlowService(
         formFlowDefinitionRepository: FormFlowDefinitionRepository,
         formFlowInstanceRepository: FormFlowInstanceRepository,
-        expressionProcessorFactory: ExpressionProcessorFactory,
         formFlowStepTypeHandlers: List<FormFlowStepTypeHandler>
     ): FormFlowService {
         return FormFlowService(formFlowDefinitionRepository, formFlowInstanceRepository, formFlowStepTypeHandlers)
