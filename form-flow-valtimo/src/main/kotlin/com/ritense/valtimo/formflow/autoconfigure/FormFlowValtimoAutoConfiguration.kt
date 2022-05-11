@@ -18,7 +18,10 @@ package com.ritense.valtimo.formflow.autoconfigure
 
 import com.ritense.form.service.FormLoaderService
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.formlink.domain.ProcessLinkTaskProvider
 import com.ritense.formlink.service.FormAssociationService
+import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
+import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.ValtimoFormFlowHttpSecurityConfigurer
 import com.ritense.valtimo.formflow.handler.FormFlowCreateTaskEventHandler
 import com.ritense.valtimo.formflow.web.rest.FormFlowDemoResource
@@ -37,6 +40,11 @@ class FormFlowValtimoAutoConfiguration {
         formAssociationService: FormAssociationService
     ): FormFlowCreateTaskEventHandler {
         return FormFlowCreateTaskEventHandler(formFlowService, formAssociationService)
+    }
+
+    @Bean
+    fun formFlowProcessLinkTaskProvider(): ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
+        return FormFlowProcessLinkTaskProvider()
     }
 
     @Bean
