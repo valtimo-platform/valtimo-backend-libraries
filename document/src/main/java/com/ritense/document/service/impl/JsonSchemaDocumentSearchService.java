@@ -33,6 +33,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.criteria.internal.OrderImpl;
@@ -65,7 +66,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         final CriteriaQuery<JsonSchemaDocument> query = cb.createQuery(JsonSchemaDocument.class);
         final Root<JsonSchemaDocument> selectRoot = query.from(JsonSchemaDocument.class);
 
-        query.select(selectRoot).distinct(true);
+        query.select(selectRoot);
         query.where(createPredicates(searchRequest, cb, query, selectRoot));
         query.orderBy(getOrderBy(cb, selectRoot, pageable.getSort()));
 
@@ -76,7 +77,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
         final CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<JsonSchemaDocument> countRoot = countQuery.from(JsonSchemaDocument.class);
-        countQuery.select(cb.countDistinct(countRoot));
+        countQuery.select(cb.count(countRoot));
         countQuery.where(createPredicates(searchRequest, cb, countQuery, countRoot));
 
         return new PageImpl<>(typedQuery.getResultList(), pageable, entityManager.createQuery(countQuery).getSingleResult());
@@ -149,13 +150,14 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                                       Root<JsonSchemaDocument> documentRoot,
                                       List<Predicate> predicates) {
         List<String> roles = SecurityUtils.getCurrentUserRoles();
-        final Root<JsonSchemaDocumentDefinitionRole> documentDefinitionRoot = query.from(JsonSchemaDocumentDefinitionRole.class);
+
+        Subquery<String> sub = query.subquery(String.class);
+        Root<JsonSchemaDocumentDefinitionRole> subRoot = sub.from(JsonSchemaDocumentDefinitionRole.class);
+        sub.select(subRoot.get("id").get("documentDefinitionName"));
+        sub.where(subRoot.get("id").get("role").in(roles));
+
         predicates.add(
-            cb.and(
-                cb.equal(documentRoot.get("documentDefinitionId").get("name"),
-                    documentDefinitionRoot.get("id").get("documentDefinitionName")),
-                documentDefinitionRoot.get("id").get("role").in(roles)
-            )
+            documentRoot.get("documentDefinitionId").get("name").in(sub)
         );
     }
 
