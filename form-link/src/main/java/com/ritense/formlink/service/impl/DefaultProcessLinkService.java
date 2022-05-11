@@ -53,7 +53,7 @@ public class DefaultProcessLinkService implements ProcessLinkService {
             .singleResult();
 
         Optional<? extends FormAssociation> formAssociationOptional = formAssociationService.getFormAssociationByFormLinkId(
-            task.getProcessDefinitionId(),
+            task.getProcessDefinitionId().substring(0, task.getProcessDefinitionId().indexOf(':')),
             task.getTaskDefinitionKey()
         );
 
