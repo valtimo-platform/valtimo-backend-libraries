@@ -66,4 +66,41 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6" author="Ritense">
+        <addColumn tableName="form_flow_step">
+            <column name="type" type="JSON"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="7" author="Ritense">
+        <addNotNullConstraint
+            tableName="form_flow_step"
+            columnName="next_steps"
+            columnDataType="JSON"
+            defaultNullValue="[]"/>
+    </changeSet>
+
+    <changeSet id="8" author="Ritense">
+        <addNotNullConstraint
+            tableName="form_flow_step"
+            columnName="on_open"
+            columnDataType="JSON"
+            defaultNullValue="[]"/>
+    </changeSet>
+
+    <changeSet id="9" author="Ritense">
+        <addNotNullConstraint
+            tableName="form_flow_step"
+            columnName="on_complete"
+            columnDataType="JSON"
+            defaultNullValue="[]"/>
+    </changeSet>
+
+    <changeSet id="10" author="Ritense">
+        <addNotNullConstraint
+            tableName="form_flow_step"
+            columnName="type"
+            columnDataType="JSON"/>
+    </changeSet>
+
 </databaseChangeLog>

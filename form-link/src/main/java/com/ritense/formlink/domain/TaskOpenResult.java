@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.service
+package com.ritense.formlink.domain;
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+public class TaskOpenResult<T> {
+    private final String type;
+    private final T properties;
 
-object Mapper {
-
-    private val mapper = ObjectMapper()
-
-    fun get(): ObjectMapper {
-        return mapper
+    public TaskOpenResult(String type, T properties) {
+        this.type = type;
+        this.properties = properties;
     }
 
-    init {
-        mapper.registerModule(KotlinModule())
+    public String getType() {
+        return type;
     }
 
+    public T getProperties() {
+        return properties;
+    }
 }

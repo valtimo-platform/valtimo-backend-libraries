@@ -18,4 +18,5 @@ package com.ritense.formflow.expression
 
 interface ExpressionProcessorFactory {
     fun create(variables: Map<String,Any>? = null): ExpressionProcessor
+    fun setFlowProcessBeans(formFlowBeans: Map<String, Any>)
 }

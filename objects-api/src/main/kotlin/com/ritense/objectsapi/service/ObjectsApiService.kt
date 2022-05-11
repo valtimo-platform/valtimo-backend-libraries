@@ -3,6 +3,7 @@ package com.ritense.objectsapi.service
 import com.ritense.objectsapi.domain.GenericObject
 import com.ritense.objectsapi.domain.Object
 import com.ritense.objectsapi.domain.ObjectTypes
+import com.ritense.objectsapi.domain.ResultWrapper
 import com.ritense.objectsapi.domain.request.CreateObjectRequest
 import com.ritense.objectsapi.domain.request.ModifyObjectRequest
 import com.ritense.objectsapi.domain.request.ObjectSearchParameter
@@ -64,6 +65,8 @@ open class ObjectsApiService(
     /**
      * Retrieve a list of OBJECTs and their actual RECORD.
      * The actual record is defined as if the query parameter <code>type=aType</code> was given.
+     * Do not use this method for querying the Objects-api from a Valtimo implementation.
+     * Use getObjectsWrapped() instead.
      *
      * @param type the <code>type name as String</code> to filter
      */
@@ -77,6 +80,25 @@ open class ObjectsApiService(
             .queryParams(searchParams.associate { "data_attrs" to it.toQueryParameter() }.toMutableMap())
             .queryParam("type", type)
             .executeForCollection(Object::class.java)
+    }
+
+    /**
+     * Retrieve a Wrapper with a list of OBJECTs and their actual RECORD.
+     * The actual record is defined as if the query parameter <code>type=aType</code> was given.
+     * Use this method for querying the Objects-api from a Valtimo implementation
+     *
+     * @param type the <code>type name as String</code> to filter
+     */
+    fun getObjectsWrapped(type: URI?, searchParams: List<ObjectSearchParameter> = emptyList()): ResultWrapper<Object> {
+        return RequestBuilder
+            .builder()
+            .baseUrl(objectsApiProperties.objectsApi.url)
+            .token(objectsApiProperties.objectsApi.token)
+            .path("${ObjectsApiConnector.rootUrlApiVersion}/objects")
+            .get()
+            .queryParams(searchParams.associate { "data_attrs" to it.toQueryParameter() }.toMutableMap())
+            .queryParam("type", type)
+            .executeWrapped(Object::class.java)
     }
 
     /**
