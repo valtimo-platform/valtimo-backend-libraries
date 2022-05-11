@@ -20,12 +20,9 @@ import com.ritense.form.service.FormLoaderService
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.service.FormAssociationService
 import com.ritense.valtimo.formflow.ValtimoFormFlowHttpSecurityConfigurer
-import com.ritense.valtimo.formflow.interceptor.FormFlowCreateTaskCommandInterceptor
-import com.ritense.valtimo.formflow.interceptor.FormFlowProcessPlugin
+import com.ritense.valtimo.formflow.handler.FormFlowCreateTaskEventHandler
 import com.ritense.valtimo.formflow.web.rest.FormFlowDemoResource
 import com.ritense.valtimo.formflow.web.rest.ProcessLinkFormFlowDefinitionResource
-import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -35,11 +32,11 @@ import org.springframework.core.annotation.Order
 class FormFlowValtimoAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(FormFlowProcessPlugin::class)
-    fun formFlowProcessPlugin(
-        formFlowCreateTaskCommandInterceptor: FormFlowCreateTaskCommandInterceptor
-    ): FormFlowProcessPlugin {
-        return FormFlowProcessPlugin(formFlowCreateTaskCommandInterceptor)
+    @ConditionalOnMissingBean(FormFlowCreateTaskEventHandler::class)
+    fun formFlowCreateTaskCommandHandler(formFlowService: FormFlowService,
+        formAssociationService: FormAssociationService
+    ): FormFlowCreateTaskEventHandler {
+        return FormFlowCreateTaskEventHandler(formFlowService, formAssociationService)
     }
 
     @Bean

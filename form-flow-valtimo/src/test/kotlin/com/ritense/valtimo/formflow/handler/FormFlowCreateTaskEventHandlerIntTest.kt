@@ -1,4 +1,4 @@
-package com.ritense.valtimo.formflow.interceptor
+package com.ritense.valtimo.formflow.handler
 
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentDefinitionService
@@ -8,13 +8,17 @@ import com.ritense.formlink.domain.request.CreateFormAssociationRequest
 import com.ritense.formlink.domain.request.FormLinkRequest
 import com.ritense.formlink.service.FormAssociationService
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
+import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.formflow.BaseIntegrationTest
+import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-internal class FormFlowCreateTaskCommandInterceptorIntTest: BaseIntegrationTest() {
+internal class FormFlowCreateTaskEventHandlerIntTest: BaseIntegrationTest() {
     @Autowired
     lateinit var documentDefinitionService: DocumentDefinitionService
 
@@ -27,6 +31,12 @@ internal class FormFlowCreateTaskCommandInterceptorIntTest: BaseIntegrationTest(
     @Autowired
     lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
 
+    @Autowired
+    lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
+
+    @Autowired
+    lateinit var taskService: TaskService
+
     @Test
     fun `create form flow instance`() {
         documentDefinitionService.deploy("" +
@@ -34,6 +44,14 @@ internal class FormFlowCreateTaskCommandInterceptorIntTest: BaseIntegrationTest(
             "    \"\$id\": \"testing.schema\",\n" +
             "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
             "}\n")
+
+        processDocumentAssociationService.createProcessDocumentDefinition(
+            ProcessDocumentDefinitionRequest(
+                "one-task-process",
+                "testing",
+                true
+            )
+        )
 
         formAssociationService.createFormAssociation(
             CreateFormAssociationRequest("one-task-process",
@@ -50,7 +68,8 @@ internal class FormFlowCreateTaskCommandInterceptorIntTest: BaseIntegrationTest(
 
         processDocumentService.newDocumentAndStartProcess(
             NewDocumentAndStartProcessRequest("one-task-process",
-                NewDocumentRequest("testing", null)
+                NewDocumentRequest("testing",
+                    Mapper.INSTANCE.get().readTree("{}"))
             )
         )
 
