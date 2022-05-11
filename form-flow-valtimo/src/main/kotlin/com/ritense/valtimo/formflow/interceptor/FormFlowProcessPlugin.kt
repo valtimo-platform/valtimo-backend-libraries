@@ -8,11 +8,11 @@ class FormFlowProcessPlugin(
 ) : AbstractProcessEnginePlugin() {
 
     override fun preInit(processEngineConfiguration: ProcessEngineConfigurationImpl) {
-        var customPreCommandInterceptorsTxRequired = processEngineConfiguration.customPreCommandInterceptorsTxRequired
-        if (customPreCommandInterceptorsTxRequired == null) {
-            customPreCommandInterceptorsTxRequired = mutableListOf()
+        var customPostCommandInterceptorsTxRequired = processEngineConfiguration.customPostCommandInterceptorsTxRequired
+        if (customPostCommandInterceptorsTxRequired == null) {
+            customPostCommandInterceptorsTxRequired = mutableListOf()
         }
-        customPreCommandInterceptorsTxRequired.add(0, formFlowCreateTaskCommandInterceptor)
-        processEngineConfiguration.customPreCommandInterceptorsTxRequired = customPreCommandInterceptorsTxRequired
+        customPostCommandInterceptorsTxRequired.add(0, formFlowCreateTaskCommandInterceptor)
+        processEngineConfiguration.customPostCommandInterceptorsTxRequired = customPostCommandInterceptorsTxRequired
     }
 }

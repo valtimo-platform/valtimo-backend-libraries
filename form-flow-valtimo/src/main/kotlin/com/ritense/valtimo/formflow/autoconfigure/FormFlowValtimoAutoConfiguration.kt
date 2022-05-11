@@ -43,20 +43,6 @@ class FormFlowValtimoAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(FormFlowCreateTaskCommandInterceptor::class)
-    fun formFlowCreateTaskCommandInterceptor(
-        taskService: TaskService,
-        runtimeService: RuntimeService,
-        formFlowService: FormFlowService,
-        formAssociationService: FormAssociationService
-    ): FormFlowCreateTaskCommandInterceptor {
-        return FormFlowCreateTaskCommandInterceptor(taskService,
-            runtimeService,
-            formFlowService,
-            formAssociationService)
-    }
-
-    @Bean
     @ConditionalOnMissingBean(ProcessLinkFormFlowDefinitionResource::class)
     fun processLinkFormFlowDefinitionResource(formFlowService: FormFlowService): ProcessLinkFormFlowDefinitionResource {
         return ProcessLinkFormFlowDefinitionResource(formFlowService)

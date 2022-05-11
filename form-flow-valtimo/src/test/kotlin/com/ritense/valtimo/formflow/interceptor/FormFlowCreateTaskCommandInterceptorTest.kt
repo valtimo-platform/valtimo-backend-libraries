@@ -37,9 +37,9 @@ class FormFlowCreateTaskCommandInterceptorTest {
         runtimeService = mock()
         formFlowService = mock()
         formAssociationService = mock()
-        formFlowCreateTaskCommandInterceptor = FormFlowCreateTaskCommandInterceptor(
-            taskService, runtimeService, formFlowService, formAssociationService
-        )
+        formFlowCreateTaskCommandInterceptor = FormFlowCreateTaskCommandInterceptor()
+        formFlowCreateTaskCommandInterceptor
+            .setDependencies(taskService, runtimeService, formFlowService, formAssociationService)
         val commandExecutor: CommandExecutor = mock()
         formFlowCreateTaskCommandInterceptor.next = commandExecutor
     }

@@ -12,14 +12,18 @@ import org.camunda.bpm.engine.impl.cmd.CreateTaskCmd
 import org.camunda.bpm.engine.impl.interceptor.Command
 import org.camunda.bpm.engine.impl.interceptor.CommandInterceptor
 import org.camunda.bpm.engine.task.Task
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
+import org.springframework.stereotype.Component
 import java.lang.reflect.Field
 
-class FormFlowCreateTaskCommandInterceptor(
-    val taskService: TaskService,
-    val runtimeService: RuntimeService,
-    val formFlowService: FormFlowService,
-    val formAssociationService: FormAssociationService
-) : CommandInterceptor() {
+@Component
+class FormFlowCreateTaskCommandInterceptor: CommandInterceptor() {
+    lateinit var taskService: TaskService
+    lateinit var runtimeService: RuntimeService
+    lateinit var formFlowService: FormFlowService
+    lateinit var formAssociationService: FormAssociationService
+
     override fun <T : Any?> execute(command: Command<T>?): T {
         if (command is CreateTaskCmd) {
             val task = getTask(command as CreateTaskCmd)
@@ -35,6 +39,18 @@ class FormFlowCreateTaskCommandInterceptor(
         }
 
         return proceed(command)
+    }
+
+    @Autowired
+    fun setDependencies(@Lazy taskService: TaskService,
+        @Lazy runtimeService: RuntimeService,
+        formFlowService: FormFlowService,
+        @Lazy formAssociationService: FormAssociationService
+    ) {
+        this.taskService = taskService
+        this.runtimeService = runtimeService
+        this.formFlowService = formFlowService
+        this.formAssociationService = formAssociationService
     }
 
     private fun getTask(command: CreateTaskCmd): Task {

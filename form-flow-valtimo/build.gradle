@@ -60,6 +60,8 @@ dependencies {
     implementation project(':form-link')
 
     testImplementation project(':resource')
+    testImplementation project(':document')
+    testImplementation project(':process-document')
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
