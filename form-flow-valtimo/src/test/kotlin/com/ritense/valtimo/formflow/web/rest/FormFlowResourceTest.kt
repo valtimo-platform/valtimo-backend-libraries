@@ -14,17 +14,20 @@ import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.valtimo.formflow.BaseTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.util.UUID
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 
-class FormFlowResourceTest {
+class FormFlowResourceTest : BaseTest() {
     lateinit var mockMvc: MockMvc
     lateinit var formFlowResource: FormFlowResource
     lateinit var formFlowService: FormFlowService
@@ -87,8 +90,8 @@ class FormFlowResourceTest {
             .andExpect(jsonPath("$.step").isNotEmpty)
             .andExpect(jsonPath("$.step.id").value(step1InstanceId.id.toString()))
             .andExpect(jsonPath("$.step.type").value("form"))
-            .andExpect(jsonPath("$.step.type-properties").isNotEmpty)
-            .andExpect(jsonPath("$.step.type-properties.definition").value("first-form-definition"))
+            .andExpect(jsonPath("$.step.typeProperties").isNotEmpty)
+            .andExpect(jsonPath("$.step.typeProperties.definition.firstName").value("John"))
     }
 
     @Test
@@ -104,5 +107,20 @@ class FormFlowResourceTest {
             )
             .andExpect(status().is4xxClientError)
             .andExpect(jsonPath("$.errorMessage").value("No form flow instance can be found for the given instance id"))
+    }
+
+    @Test
+    fun `should complete step`() {
+        val definition = getFormFlowDefinition("key", readFileAsString("/config/form-flow/inkomens_loket.json"))
+        val instance = definition.createInstance(mutableMapOf())
+        whenever(formFlowService.getByInstanceIdIfExists(instance.id)).thenReturn(instance)
+
+        mockMvc.perform(post("/api/form-flow/{flowId}/step/{stepId}", instance.id.id, instance.getCurrentStep().id.id))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(instance.id.id.toString()))
+            .andExpect(jsonPath("$.step.id").value(instance.getCurrentStep().id.id.toString()))
+            .andExpect(jsonPath("$.step.type").value("form"))
+            .andExpect(jsonPath("$.step.typeProperties.definition.firstName").value("John"))
     }
 }
