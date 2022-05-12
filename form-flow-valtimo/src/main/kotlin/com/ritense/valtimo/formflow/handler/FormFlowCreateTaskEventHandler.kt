@@ -76,7 +76,7 @@ class FormFlowCreateTaskEventHandler(
         val additionalProperties: MutableMap<String, Any> = mutableMapOf(
             "processInstanceId" to task.processInstanceId,
             "processInstanceBusinessKey" to task.execution.processBusinessKey,
-            "taskId" to task.id
+            "taskInstanceId" to task.id
         )
 
         try {

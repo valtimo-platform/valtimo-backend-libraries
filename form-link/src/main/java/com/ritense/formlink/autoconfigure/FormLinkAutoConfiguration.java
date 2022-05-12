@@ -37,7 +37,6 @@ import com.ritense.formlink.web.rest.FormAssociationResource;
 import com.ritense.formlink.web.rest.ProcessLinkResource;
 import com.ritense.formlink.web.rest.impl.CamundaFormAssociationManagementResource;
 import com.ritense.formlink.web.rest.impl.CamundaFormAssociationResource;
-import com.ritense.formlink.web.rest.impl.MockProcessLinkResource;
 import com.ritense.formlink.web.rest.impl.DefaultProcessLinkResource;
 import com.ritense.formlink.web.rest.impl.interceptor.PublicAccessRateLimitInterceptor;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;

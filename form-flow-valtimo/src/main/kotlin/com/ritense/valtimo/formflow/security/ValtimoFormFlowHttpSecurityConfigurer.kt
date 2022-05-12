@@ -27,19 +27,21 @@ class ValtimoFormFlowHttpSecurityConfigurer: HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/form-flow/{formFlowInstanceId}").hasAuthority(USER)
+                .antMatchers(HttpMethod.GET, "/api/form-flow/{formFlowInstanceId}")
+                .hasAuthority(USER)
                 .antMatchers(HttpMethod.POST, "/api/form-flow/{formFlowId}/step/{stepInstanceId}").hasAuthority(USER)
-                .antMatchers(HttpMethod.GET, "/api/process-link/form-flow-definition").hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/process-link/form-flow-definition")
+                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/form-flow/{formFlowId}")
+                .hasAuthority(AuthoritiesConstants.USER)
+                .antMatchers(HttpMethod.POST, "/api/form-flow/{formFlowId}/step/{stepInstanceId}")
+                .hasAuthority(AuthoritiesConstants.USER)
 
                 // Temp matchers
                 .antMatchers(HttpMethod.POST, "/api/form-flow/demo/definition/{definitionKey}/instance")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(HttpMethod.POST, "/api/form-flow/demo/instance/{instanceId}/step/{stepId}/complete")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers(HttpMethod.GET, "/api/form-flow/{formFlowId}")
-                .hasAuthority(AuthoritiesConstants.USER)
-                .antMatchers(HttpMethod.POST, "/api/form-flow/{formFlowId}/step/{stepInstanceId}")
-                .hasAuthority(AuthoritiesConstants.USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

@@ -60,9 +60,8 @@ class FormFlowStepTypeFormHandler(
         additionalProperties: Map<String, Any>
     ) {
 
-        // TODO: Make sure the FormFlowInstance.additionalProperties contain the 'documentId' and the 'taskInstanceId'
         val documentId = additionalProperties["documentId"] as String?
-        val taskInstanceId = additionalProperties["taskInstanceId"] as String?
+        val taskInstanceId = additionalProperties["taskId"] as String?
 
         if (documentId == null) {
             return

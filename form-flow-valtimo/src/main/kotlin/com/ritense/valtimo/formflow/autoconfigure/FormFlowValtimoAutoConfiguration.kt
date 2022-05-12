@@ -17,7 +17,6 @@
 package com.ritense.valtimo.formflow.autoconfigure
 
 import com.ritense.document.service.DocumentService
-import com.ritense.document.service.DocumentService
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.service.FormLoaderService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
@@ -27,7 +26,6 @@ import com.ritense.formlink.domain.ProcessLinkTaskProvider
 import com.ritense.formlink.service.FormAssociationService
 import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
-import com.ritense.valtimo.formflow.ValtimoFormFlowHttpSecurityConfigurer
 import com.ritense.valtimo.formflow.handler.FormFlowCreateTaskEventHandler
 import com.ritense.formlink.service.impl.CamundaFormAssociationService
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
