@@ -1,8 +1,21 @@
+/*
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.valtimo.formflow.web.rest
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
@@ -10,6 +23,7 @@ import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.web.rest.result.CompleteStepResult
 import com.ritense.valtimo.formflow.web.rest.result.FormFlowStepResult
+import com.ritense.valtimo.formflow.web.rest.result.FormTypeProperties
 import com.ritense.valtimo.formflow.web.rest.result.GetFormFlowStateResult
 import org.json.JSONObject
 import org.springframework.http.MediaType
@@ -38,8 +52,8 @@ class FormFlowResource(
         val instance = formFlowService.getByInstanceIdIfExists(
             FormFlowInstanceId.existingId(UUID.fromString(instanceId))
         ) ?: return ResponseEntity
-                .badRequest()
-                .body(GetFormFlowStateResult(null, null, "No form flow instance can be found for the given instance id"))
+            .badRequest()
+            .body(GetFormFlowStateResult(null, null, "No form flow instance can be found for the given instance id"))
 
         val stepInstance = instance.getCurrentStep()
 
@@ -51,7 +65,7 @@ class FormFlowResource(
     fun completeStep(
         @PathVariable(name = "formFlowId") formFlowId: String,
         @PathVariable(name = "stepInstanceId") stepInstanceId: String,
-        @RequestBody submissionData: JsonNode?
+        @RequestBody submissionData: JSONObject?
     ): ResponseEntity<CompleteStepResult> {
         val instance = formFlowService.getByInstanceIdIfExists(
             FormFlowInstanceId.existingId(UUID.fromString(formFlowId))
@@ -59,7 +73,7 @@ class FormFlowResource(
 
         val stepInstance = instance.complete(
             FormFlowStepInstanceId.existingId(UUID.fromString(stepInstanceId)),
-            JSONObject((submissionData ?: JsonNodeFactory.instance.objectNode()).toString())
+            submissionData ?: JSONObject()
         )!!
 
         return ResponseEntity.ok(CompleteStepResult(instance.id.id, getStepResult(stepInstance)))
@@ -69,9 +83,13 @@ class FormFlowResource(
         return FormFlowStepResult(
             stepInstance.id.id,
             stepInstance.definition.type.name,
-            jacksonObjectMapper().createObjectNode()
-                .set("definition", jacksonObjectMapper().createObjectNode().put("firstName", "John"))
-            // TODO Include the prefilled form when this functionality is available
+            FormTypeProperties(
+                formDefinitionService
+                    .getFormDefinitionByName("user-task-lening-aanvragen")
+                    .get()
+                    .formDefinition
+                // TODO Include the prefilled form when this functionality is available
+            )
         )
     }
 }

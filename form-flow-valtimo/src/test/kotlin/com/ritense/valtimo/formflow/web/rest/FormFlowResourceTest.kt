@@ -2,6 +2,7 @@ package com.ritense.valtimo.formflow.web.rest
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.util.UUID
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
+import java.util.Optional
 
 class FormFlowResourceTest : BaseTest() {
     lateinit var mockMvc: MockMvc
@@ -39,6 +41,17 @@ class FormFlowResourceTest : BaseTest() {
     fun setUp() {
         formFlowService = mock()
         formDefinitionService = mock()
+        whenever(formDefinitionService.getFormDefinitionByName("user-task-lening-aanvragen"))
+            .thenReturn(
+                Optional.of(
+                    FormIoFormDefinition(
+                        UUID.randomUUID(),
+                        "user-task-lening-aanvragen",
+                        readFileAsString("/config/form/user-task-lening-aanvragen.json"),
+                        false
+                    )
+                )
+            )
 
         formFlowInstanceId = FormFlowInstanceId.newId()
         formFlowInstance = mock()
@@ -91,7 +104,8 @@ class FormFlowResourceTest : BaseTest() {
             .andExpect(jsonPath("$.step.id").value(step1InstanceId.id.toString()))
             .andExpect(jsonPath("$.step.type").value("form"))
             .andExpect(jsonPath("$.step.typeProperties").isNotEmpty)
-            .andExpect(jsonPath("$.step.typeProperties.definition.firstName").value("John"))
+            .andExpect(jsonPath("$.step.typeProperties.definition.display").value("form"))
+            .andExpect(jsonPath("$.step.typeProperties.definition.components").isNotEmpty)
     }
 
     @Test
@@ -121,6 +135,7 @@ class FormFlowResourceTest : BaseTest() {
             .andExpect(jsonPath("$.id").value(instance.id.id.toString()))
             .andExpect(jsonPath("$.step.id").value(instance.getCurrentStep().id.id.toString()))
             .andExpect(jsonPath("$.step.type").value("form"))
-            .andExpect(jsonPath("$.step.typeProperties.definition.firstName").value("John"))
+            .andExpect(jsonPath("$.step.typeProperties.definition.display").value("form"))
+            .andExpect(jsonPath("$.step.typeProperties.definition.components").isNotEmpty)
     }
 }
