@@ -38,16 +38,14 @@ class DefaultFormFlowAdditionalPropertiesSearchRepository(
         key: String,
         value: Any
     ): Predicate {
-        return criteriaBuilder.isNotNull(
+        return criteriaBuilder.equal(
             criteriaBuilder.function<FormFlowInstance>(
-                "JSON_SEARCH",
+                "JSON_EXTRACT",
                 FormFlowInstance::class.java,
                 root.get<Any>("additionalProperties"),
-                criteriaBuilder.literal("all"),
-                criteriaBuilder.literal(value),
-                criteriaBuilder.nullLiteral(String::class.java),
                 criteriaBuilder.literal("$."+ key)
-            )
+            ),
+            value
         )
     }
 
