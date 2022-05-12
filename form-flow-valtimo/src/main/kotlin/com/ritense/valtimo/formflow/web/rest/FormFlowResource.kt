@@ -45,22 +45,6 @@ class FormFlowResource(
     private val formFlowService: FormFlowService,
     private val formDefinitionService: FormDefinitionService
 ) {
-    @GetMapping("/{formFlowId}")
-    fun createInstance(
-        @PathVariable(name = "formFlowId") formFlowId: String
-    ): ResponseEntity<FormFlow> {
-        return ResponseEntity.ok(getStepDto())
-    }
-
-    @PostMapping("/{formFlowId}/step/{stepInstanceId}")
-    fun completeStep(
-        @PathVariable(name = "formFlowId") formFlowId: String,
-        @PathVariable(name = "stepInstanceId") stepInstanceId: String,
-        @RequestBody submissionData: JsonNode?
-    ): ResponseEntity<FormFlow> {
-        return ResponseEntity.ok(getStepDto())
-    }
-
     @GetMapping("/{formFlowInstanceId}", produces = [MediaType.APPLICATION_JSON_VALUE])
     @Transactional
     fun getFormFlowState(
@@ -109,21 +93,6 @@ class FormFlowResource(
                     stepInstance.id.id,
                     stepInstance.definition.type.name,
                     formFlowService.getTypeProperties(stepInstance)
-                )
-            )
-        )
-    }
-    private fun getStepDto(): FormFlow {
-        return FormFlow(
-            UUID.randomUUID(),
-            FormFlowStep(
-                UUID.randomUUID(),
-                "form",
-                FormTypeProperties(
-                    formDefinitionService
-                        .getFormDefinitionByName("user-task-lening-aanvragen")
-                        .get()
-                        .formDefinition
                 )
             )
         )
