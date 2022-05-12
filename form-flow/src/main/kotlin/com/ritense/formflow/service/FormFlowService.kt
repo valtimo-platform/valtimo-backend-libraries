@@ -65,11 +65,7 @@ class FormFlowService(
             ?: throw IllegalStateException("No formFlowStepTypeHandler found for type '${stepType.name}'")
     }
 
-    fun getTypeProperties(
-        stepInstance: FormFlowStepInstance,
-        additionalParameters: Map<String, Any> = emptyMap()
-    ): TypeProperties {
-        return getFormFlowStepTypeHandler(stepInstance.definition.type)
-            .getTypeProperties(stepInstance, additionalParameters)
+    fun getTypeProperties(stepInstance: FormFlowStepInstance): TypeProperties {
+        return getFormFlowStepTypeHandler(stepInstance.definition.type).getTypeProperties(stepInstance)
     }
 }

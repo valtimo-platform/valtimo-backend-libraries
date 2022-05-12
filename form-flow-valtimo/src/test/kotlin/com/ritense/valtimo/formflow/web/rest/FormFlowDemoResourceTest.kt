@@ -110,7 +110,7 @@ internal class FormFlowDemoResourceTest : BaseTest() {
         val expressionProcessorMock = initExpressionProcessorMock()
 
         whenever(formFlowService.findLatestDefinitionByKey("inkomens_loket")).thenReturn(definition)
-        whenever(formFlowService.getTypeProperties(any(), any())).thenReturn(
+        whenever(formFlowService.getTypeProperties(any())).thenReturn(
             FormTypeProperties(
                 jacksonObjectMapper().readTree(
                     readFileAsString("/config/form/user-task-lening-aanvragen.json")
@@ -220,7 +220,7 @@ internal class FormFlowDemoResourceTest : BaseTest() {
         val expressionProcessorMock = initExpressionProcessorMock()
 
         whenever(formFlowService.getInstanceById(instance.id)).thenReturn(instance)
-        whenever(formFlowService.getTypeProperties(any(), any())).thenReturn(
+        whenever(formFlowService.getTypeProperties(any())).thenReturn(
             FormTypeProperties(
                 jacksonObjectMapper().readTree(
                     readFileAsString("/config/form/user-task-lening-aanvragen.json")

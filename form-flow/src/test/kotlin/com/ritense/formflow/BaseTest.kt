@@ -28,10 +28,7 @@ abstract class BaseTest {
     fun formFlowStepTypeFormHandler(): FormFlowStepTypeHandler {
         return object : FormFlowStepTypeHandler {
             override fun getType() = "form"
-            override fun getTypeProperties(
-                stepInstance: FormFlowStepInstance,
-                additionalParameters: Map<String, Any>
-            ): TypeProperties {
+            override fun getTypeProperties(stepInstance: FormFlowStepInstance): TypeProperties {
                 return object : TypeProperties() {
                     fun getDefinition(): JsonNode = ObjectMapper().createObjectNode().put("firstName", "John")
                 }

@@ -36,12 +36,9 @@ class FormFlowStepTypeFormHandler(
 
     override fun getType() = "form"
 
-    override fun getTypeProperties(
-        stepInstance: FormFlowStepInstance,
-        additionalParameters: Map<String, Any>
-    ): FormTypeProperties {
+    override fun getTypeProperties(stepInstance: FormFlowStepInstance): FormTypeProperties {
         val formDefinition = getFormDefinition(stepInstance)
-        prefillWithAdditionalData(formDefinition, additionalParameters)
+        prefillWithAdditionalData(formDefinition, stepInstance.instance.getAdditionalProperties())
         prefillWithSubmissionData(formDefinition, stepInstance)
         return FormTypeProperties(formDefinition.formDefinition)
     }
@@ -60,10 +57,12 @@ class FormFlowStepTypeFormHandler(
 
     private fun prefillWithAdditionalData(
         formDefinition: FormIoFormDefinition,
-        additionalParameters: Map<String, Any>
+        additionalProperties: Map<String, Any>
     ) {
-        val documentId = additionalParameters["documentId"] as String?
-        val taskInstanceId = additionalParameters["taskInstanceId"] as String?
+
+        // TODO: Make sure the FormFlowInstance.additionalProperties contain the 'documentId' and the 'taskInstanceId'
+        val documentId = additionalProperties["documentId"] as String?
+        val taskInstanceId = additionalProperties["taskInstanceId"] as String?
 
         if (documentId == null) {
             return

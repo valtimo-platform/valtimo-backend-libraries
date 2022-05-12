@@ -40,7 +40,7 @@ class FormFlowResourceTest : BaseTest() {
     fun setUp() {
         formFlowService = mock()
         formDefinitionService = mock()
-        whenever(formFlowService.getTypeProperties(any(), any())).thenReturn(
+        whenever(formFlowService.getTypeProperties(any())).thenReturn(
             FormTypeProperties(
                 jacksonObjectMapper().readTree(
                     readFileAsString("/config/form/user-task-lening-aanvragen.json")

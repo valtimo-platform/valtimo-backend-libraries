@@ -23,9 +23,6 @@ interface FormFlowStepTypeHandler {
 
     fun getType(): String
 
-    fun getTypeProperties(
-        stepInstance: FormFlowStepInstance,
-        additionalParameters: Map<String, Any> = emptyMap()
-    ): TypeProperties
+    fun getTypeProperties(stepInstance: FormFlowStepInstance): TypeProperties
 
 }
