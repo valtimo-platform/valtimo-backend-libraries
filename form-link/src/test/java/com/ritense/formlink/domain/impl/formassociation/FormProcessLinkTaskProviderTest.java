@@ -21,8 +21,10 @@ import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import java.util.UUID;
+import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class FormProcessLinkTaskProviderTest {
     FormProcessLinkTaskProvider provider = new FormProcessLinkTaskProvider();
@@ -49,7 +51,7 @@ class FormProcessLinkTaskProviderTest {
     void getTaskResultShouldReturnTaskKey() {
         FormLink formLink = new BpmnElementFormIdLink("task-id", UUID.randomUUID());
 
-        TaskOpenResult<FormTaskOpenResultProperties> taskResult = provider.getTaskResult(task, formLink);
+        TaskOpenResult<FormTaskOpenResultProperties> taskResult = provider.getTaskResult(mock(Task.class), formLink);
 
         assertEquals("form", taskResult.getType());
         assertEquals("task-id", taskResult.getProperties().getFormLinkId());
