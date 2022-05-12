@@ -1,5 +1,7 @@
 package com.ritense.valtimo.formflow.web.rest
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.form.domain.FormIoFormDefinition
@@ -16,6 +18,7 @@ import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.BaseTest
+import com.ritense.valtimo.formflow.handler.FormTypeProperties
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -41,17 +44,13 @@ class FormFlowResourceTest : BaseTest() {
     fun setUp() {
         formFlowService = mock()
         formDefinitionService = mock()
-        whenever(formDefinitionService.getFormDefinitionByName("user-task-lening-aanvragen"))
-            .thenReturn(
-                Optional.of(
-                    FormIoFormDefinition(
-                        UUID.randomUUID(),
-                        "user-task-lening-aanvragen",
-                        readFileAsString("/config/form/user-task-lening-aanvragen.json"),
-                        false
-                    )
+        whenever(formFlowService.getTypeProperties(any())).thenReturn(
+            FormTypeProperties(
+                jacksonObjectMapper().readTree(
+                    readFileAsString("/config/form/user-task-lening-aanvragen.json")
                 )
             )
+        )
 
         formFlowInstanceId = FormFlowInstanceId.newId()
         formFlowInstance = mock()

@@ -18,12 +18,10 @@ package com.ritense.valtimo.formflow.web.rest
 
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
-import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.web.rest.result.CompleteStepResult
 import com.ritense.valtimo.formflow.web.rest.result.FormFlowStepResult
-import com.ritense.valtimo.formflow.web.rest.result.FormTypeProperties
 import com.ritense.valtimo.formflow.web.rest.result.GetFormFlowStateResult
 import org.json.JSONObject
 import org.springframework.http.MediaType
@@ -57,7 +55,16 @@ class FormFlowResource(
 
         val stepInstance = instance.getCurrentStep()
 
-        return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, getStepResult(stepInstance)))
+        return ResponseEntity.ok(
+            GetFormFlowStateResult(
+                instance.id.id,
+                FormFlowStepResult(
+                    stepInstance.id.id,
+                    stepInstance.definition.type.name,
+                    formFlowService.getTypeProperties(stepInstance)
+                )
+            )
+        )
     }
 
     @PostMapping("/{formFlowId}/step/{stepInstanceId}", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -76,19 +83,14 @@ class FormFlowResource(
             submissionData ?: JSONObject()
         )!!
 
-        return ResponseEntity.ok(CompleteStepResult(instance.id.id, getStepResult(stepInstance)))
-    }
-
-    private fun getStepResult(stepInstance: FormFlowStepInstance): FormFlowStepResult {
-        return FormFlowStepResult(
-            stepInstance.id.id,
-            stepInstance.definition.type.name,
-            FormTypeProperties(
-                formDefinitionService
-                    .getFormDefinitionByName("user-task-lening-aanvragen")
-                    .get()
-                    .formDefinition
-                // TODO Include the prefilled form when this functionality is available
+        return ResponseEntity.ok(
+            CompleteStepResult(
+                instance.id.id,
+                FormFlowStepResult(
+                    stepInstance.id.id,
+                    stepInstance.definition.type.name,
+                    formFlowService.getTypeProperties(stepInstance)
+                )
             )
         )
     }

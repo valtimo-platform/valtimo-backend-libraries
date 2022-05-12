@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow.web.rest
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.mock
@@ -34,6 +35,8 @@ import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.contract.utils.TestUtil
+import com.ritense.valtimo.formflow.BaseTest
+import com.ritense.valtimo.formflow.handler.FormTypeProperties
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationContext
@@ -44,7 +47,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
-internal class FormFlowDemoResourceTest {
+internal class FormFlowDemoResourceTest : BaseTest() {
     lateinit var mockMvc: MockMvc
     lateinit var formFlowDemoResource: FormFlowDemoResource
     lateinit var formFlowService: FormFlowService
@@ -107,6 +110,13 @@ internal class FormFlowDemoResourceTest {
         val expressionProcessorMock = initExpressionProcessorMock()
 
         whenever(formFlowService.findLatestDefinitionByKey("inkomens_loket")).thenReturn(definition)
+        whenever(formFlowService.getTypeProperties(any())).thenReturn(
+            FormTypeProperties(
+                jacksonObjectMapper().readTree(
+                    readFileAsString("/config/form/user-task-lening-aanvragen.json")
+                )
+            )
+        )
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -210,6 +220,13 @@ internal class FormFlowDemoResourceTest {
         val expressionProcessorMock = initExpressionProcessorMock()
 
         whenever(formFlowService.getInstanceById(instance.id)).thenReturn(instance)
+        whenever(formFlowService.getTypeProperties(any())).thenReturn(
+            FormTypeProperties(
+                jacksonObjectMapper().readTree(
+                    readFileAsString("/config/form/user-task-lening-aanvragen.json")
+                )
+            )
+        )
         mockMvc
             .perform(
                 MockMvcRequestBuilders

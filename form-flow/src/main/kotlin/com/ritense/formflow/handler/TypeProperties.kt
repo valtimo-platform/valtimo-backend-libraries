@@ -14,12 +14,6 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.formflow.web.rest.result
+package com.ritense.formflow.handler
 
-import java.util.UUID
-
-class GetFormFlowStateResult(
-    val id: UUID? = null,
-    val step: FormFlowStepResult? = null,
-    val errorMessage: String? = null
-)
+open class TypeProperties

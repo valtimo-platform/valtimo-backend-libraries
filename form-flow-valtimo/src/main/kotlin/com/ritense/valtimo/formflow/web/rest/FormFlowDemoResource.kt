@@ -19,7 +19,6 @@ package com.ritense.valtimo.formflow.web.rest
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.ritense.form.service.FormLoaderService
-import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
@@ -32,10 +31,10 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 import javax.transaction.Transactional
-import org.springframework.web.bind.annotation.RequestParam
 
 @RestController
 @RequestMapping(value = ["/api/form-flow/demo"])
@@ -56,14 +55,7 @@ class FormFlowDemoResource(
 
         if(openFirstStep) {
             createdInstance.getCurrentStep().open()
-
-            val stepDefinitionType = createdInstance.getCurrentStep().definition.type
-            if (stepDefinitionType.name == "form") {
-                form = formLoaderService
-                    .getFormDefinitionByName(
-                        (stepDefinitionType.properties as FormStepTypeProperties)
-                            .definition)?.toString()
-            }
+            form = formFlowService.getTypeProperties(createdInstance.getCurrentStep()).toString()
         }
         formFlowService.save(createdInstance)
 
@@ -99,13 +91,7 @@ class FormFlowDemoResource(
         if(openNext) {
             formFlowStepInstance?.open()
             if (formFlowStepInstance!= null) {
-                val stepDefinitionType = formFlowStepInstance.definition.type
-                if (stepDefinitionType.name == "form") {
-                    form = formLoaderService
-                        .getFormDefinitionByName(
-                            (stepDefinitionType.properties as FormStepTypeProperties)
-                                .definition)?.toString()
-                }
+                form = formFlowService.getTypeProperties(formFlowStepInstance).toString()
             }
         }
 
