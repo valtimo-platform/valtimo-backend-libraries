@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/api /process-link", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/process-link", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface ProcessLinkResource {
     @GetMapping(value = "/task/{taskId}")
     ResponseEntity<TaskOpenResult> getTask(@PathVariable UUID taskId);
