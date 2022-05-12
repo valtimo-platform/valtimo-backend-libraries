@@ -63,7 +63,7 @@ public class DefaultProcessLinkService implements ProcessLinkService {
         FormLink formLink = formAssociation.getFormLink();
         return processLinkTaskProviders.stream()
             .filter(processLinkTaskProvider -> processLinkTaskProvider.supports(formLink))
-            .map(processLinkTaskProvider -> processLinkTaskProvider.getTaskResult(formLink))
+            .map(processLinkTaskProvider -> processLinkTaskProvider.getTaskResult(task, formLink))
             .findFirst()
             .orElseThrow(() -> new NoSuchElementException("Could not find ProcessLinkTaskProvider for FormLink related to task " + taskId));
     }

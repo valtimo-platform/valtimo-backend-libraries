@@ -16,20 +16,12 @@
 
 package com.ritense.formlink.service.impl;
 
-import com.ritense.document.service.impl.JsonSchemaDocumentService;
-import com.ritense.form.service.impl.FormIoFormDefinitionService;
-import com.ritense.formlink.domain.FormAssociation;
 import com.ritense.formlink.domain.FormLink;
 import com.ritense.formlink.domain.ProcessLinkTaskProvider;
 import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.ProcessLinkService;
-import com.ritense.formlink.web.rest.impl.DefaultProcessLinkResource;
-import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
-import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
-import com.ritense.valtimo.service.CamundaTaskService;
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -39,7 +31,7 @@ import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.context.ApplicationEventPublisher;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -87,12 +79,12 @@ class DefaultProcessLinkServiceTest {
             "test",
             "test"
         );
-        when(processLinkTaskProvider.getTaskResult(formLink)).thenReturn(mockResult);
+        when(processLinkTaskProvider.getTaskResult(task, formLink)).thenReturn(mockResult);
 
         TaskOpenResult taskOpenResult = service.openTask(taskId);
 
         assertEquals(taskOpenResult, mockResult);
-        verify(processLinkTaskProvider).getTaskResult(formLink);
+        verify(processLinkTaskProvider).getTaskResult(task, formLink);
     }
 
     @Test

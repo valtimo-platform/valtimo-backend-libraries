@@ -16,5 +16,7 @@
 
 package com.ritense.valtimo.formflow
 
-class FormFlowTaskOpenResultProperties(val formFlowLinkId: String) {
+import java.util.UUID
+
+class FormFlowTaskOpenResultProperties(val formFlowInstanceId: UUID) {
 }

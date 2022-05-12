@@ -21,7 +21,7 @@ internal class FormFlowProcessLinkTaskProviderTest {
     fun `getTaskResult contains formFlowId `() {
         val formLink: BpmnElementFormFlowIdLink = mock()
         whenever(formLink.formFlowId).thenReturn("123")
-        val taskResult = FormFlowProcessLinkTaskProvider().getTaskResult(formLink)
+        val taskResult = FormFlowProcessLinkTaskProvider().getTaskResult(task, formLink)
         assertEquals("form-flow", taskResult.type)
         assertEquals("123", taskResult.properties.formFlowLinkId)
     }

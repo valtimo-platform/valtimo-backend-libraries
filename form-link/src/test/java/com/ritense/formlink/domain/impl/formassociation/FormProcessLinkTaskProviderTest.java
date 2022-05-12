@@ -49,7 +49,7 @@ class FormProcessLinkTaskProviderTest {
     void getTaskResultShouldReturnTaskKey() {
         FormLink formLink = new BpmnElementFormIdLink("task-id", UUID.randomUUID());
 
-        TaskOpenResult<FormTaskOpenResultProperties> taskResult = provider.getTaskResult(formLink);
+        TaskOpenResult<FormTaskOpenResultProperties> taskResult = provider.getTaskResult(task, formLink);
 
         assertEquals("form", taskResult.getType());
         assertEquals("task-id", taskResult.getProperties().getFormLinkId());

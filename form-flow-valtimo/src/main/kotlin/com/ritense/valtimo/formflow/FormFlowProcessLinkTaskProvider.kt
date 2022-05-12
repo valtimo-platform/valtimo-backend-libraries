@@ -16,19 +16,25 @@
 
 package com.ritense.valtimo.formflow
 
+import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.domain.FormLink
 import com.ritense.formlink.domain.ProcessLinkTaskProvider
 import com.ritense.formlink.domain.TaskOpenResult
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
+import org.camunda.bpm.engine.task.Task
 
-class FormFlowProcessLinkTaskProvider: ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
+class FormFlowProcessLinkTaskProvider(
+    val formFlowService: FormFlowService
+): ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
     private val FORM_FLOW_TASK_TYPE_KEY = "form-flow"
 
     override fun supports(formLink: FormLink?): Boolean {
         return formLink is BpmnElementFormFlowIdLink
     }
 
-    override fun getTaskResult(formLink: FormLink): TaskOpenResult<FormFlowTaskOpenResultProperties> {
-        return TaskOpenResult(FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(formLink.formFlowId))
+    override fun getTaskResult(task: Task, formLink: FormLink): TaskOpenResult<FormFlowTaskOpenResultProperties> {
+        val instances = formFlowService.findInstances(mapOf("taskId" to task.id))
+        assert(instances.size == 1)
+        return TaskOpenResult(FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(instances[0].id.id))
     }
 }
