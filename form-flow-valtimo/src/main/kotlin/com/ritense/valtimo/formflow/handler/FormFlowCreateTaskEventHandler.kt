@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.formflow.handler
 
+import com.ritense.document.exception.DocumentNotFoundException
+import com.ritense.document.service.DocumentService
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.service.FormFlowService
@@ -28,7 +30,8 @@ import org.springframework.context.event.EventListener
 
 class FormFlowCreateTaskEventHandler(
     val formFlowService: FormFlowService,
-    val formAssociationService: FormAssociationService
+    val formAssociationService: FormAssociationService,
+    val documentService: DocumentService
 ) {
 
     @EventListener(condition = "#task.eventName=='create'")
@@ -70,11 +73,22 @@ class FormFlowCreateTaskEventHandler(
     }
 
     private fun getAdditionalProperties(task: DelegateTask): MutableMap<String, Any> {
-
-        return mutableMapOf("processInstanceId" to task.processInstanceId,
+        val additionalProperties: MutableMap<String, Any> = mutableMapOf(
+            "processInstanceId" to task.processInstanceId,
             "processInstanceBusinessKey" to task.execution.processBusinessKey,
             "taskId" to task.id
         )
+
+        try {
+            val document = documentService.get(task.execution.processBusinessKey)
+            if (document != null) {
+                additionalProperties.put("documentId", task.execution.processBusinessKey)
+            }
+        } catch (e: DocumentNotFoundException) {
+            // we do nothing here, intentional
+        }
+
+        return additionalProperties
 
     }
 }
