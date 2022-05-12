@@ -24,6 +24,7 @@ import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.web.rest.result.CompleteStepResult
 import com.ritense.valtimo.formflow.web.rest.result.CreateInstanceResult
+import com.ritense.valtimo.formflow.web.rest.result.FormFlowStepResult
 import org.json.JSONObject
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
@@ -96,7 +97,14 @@ class FormFlowDemoResource(
 
         formFlowService.save(instance)
         return ResponseEntity.ok(
-            CompleteStepResult(instance.id, formFlowStepInstance?.id, formFlowStepInstance?.stepKey, form)
+            CompleteStepResult(
+                instance.id.id,
+                FormFlowStepResult(
+                    formFlowStepInstance!!.id.id,
+                    formFlowStepInstance.definition.type.name,
+                    form
+                )
+            )
         )
     }
 }

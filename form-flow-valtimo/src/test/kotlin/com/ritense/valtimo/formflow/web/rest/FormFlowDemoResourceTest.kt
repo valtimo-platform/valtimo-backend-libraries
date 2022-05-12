@@ -193,9 +193,9 @@ internal class FormFlowDemoResourceTest : BaseTest() {
                     .accept(MediaType.APPLICATION_JSON_VALUE)
             ).andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.formFlowInstanceId").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.currentStepId").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.currentStepKey").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.step").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.step.type").value("form"))
     }
 
     @Test
@@ -240,9 +240,9 @@ internal class FormFlowDemoResourceTest : BaseTest() {
                     .accept(MediaType.APPLICATION_JSON_VALUE)
             ).andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.formFlowInstanceId").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.currentStepId").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.currentStepKey").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.step").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.step.type").value("form"))
 
         verify(expressionProcessorMock, atLeastOnce()).process<Any>(expression)
     }

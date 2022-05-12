@@ -16,7 +16,20 @@
 
 package com.ritense.valtimo.formflow
 
+import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.formflow.domain.definition.FormFlowDefinition
+import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
+import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition as FormFlowDefinitionConfig
+
 abstract class BaseTest {
     fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName)!!.readText(Charsets.UTF_8)
 
+    fun getFormFlowDefinition(formFlowKey: String, formFlowJson: String): FormFlowDefinition {
+        val mapper = jacksonObjectMapper()
+        mapper.registerSubtypes(NamedType(FormStepTypeProperties::class.java, "form"))
+        val config = mapper.readValue(formFlowJson, FormFlowDefinitionConfig::class.java)
+        return config.toDefinition(FormFlowDefinitionId.newId(formFlowKey))
+    }
 }

@@ -36,11 +36,8 @@ class FormFlowDeploymentService(
     private val resourceLoader: ResourceLoader,
     private val formFlowService: FormFlowService,
     private val expressionProcessorFactory: ExpressionProcessorFactory,
-    private val formFlowObjectmapper: FormFlowObjectMapper
+    private val formFlowObjectMapper: FormFlowObjectMapper
 ) {
-
-    private val FORM_FLOW_SCHEMA_PATH = "classpath:config/form-flow/schema/formflow.schema.json"
-    private val FORM_FLOW_DEFINITIONS_PATH = "classpath:config/form-flow/*.json"
 
     @EventListener(ApplicationReadyEvent::class)
     fun deployAll() {
@@ -67,7 +64,7 @@ class FormFlowDeploymentService(
     fun deploy(formFlowKey: String, formFlowJson: String) {
         validate(formFlowJson)
 
-        val formFlowDefinitionConfig = formFlowObjectmapper.get().readValue(formFlowJson, FormFlowDefinition::class.java)
+        val formFlowDefinitionConfig = formFlowObjectMapper.get().readValue(formFlowJson, FormFlowDefinition::class.java)
 
         validate(formFlowDefinitionConfig)
 
@@ -102,9 +99,8 @@ class FormFlowDeploymentService(
     private fun validate(formFlowDefinitionConfig: FormFlowDefinition) {
         val expressionProcessor = expressionProcessorFactory.create()
         formFlowDefinitionConfig.steps.forEach { step ->
-            step.onOpen?.forEach { expression ->
-                expressionProcessor.validate(expression)
-            }
+            step.onOpen.forEach { expression -> expressionProcessor.validate(expression) }
+            step.onComplete.forEach { expression -> expressionProcessor.validate(expression) }
         }
     }
 
@@ -117,6 +113,8 @@ class FormFlowDeploymentService(
     }
 
     companion object {
+        private const val FORM_FLOW_SCHEMA_PATH = "classpath:config/form-flow/schema/formflow.schema.json"
+        private const val FORM_FLOW_DEFINITIONS_PATH = "classpath:config/form-flow/*.json"
         val logger = KotlinLogging.logger {}
     }
 }
