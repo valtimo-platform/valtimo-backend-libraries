@@ -42,23 +42,20 @@ import org.mockito.Mockito.any
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.mock
 import org.springframework.context.ApplicationContext
-
 internal class FormFlowServiceTest : BaseTest() {
 
     lateinit var formFlowService: FormFlowService
     lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
     lateinit var expressionProcessor: ExpressionProcessor
-    lateinit var formFlowStepTypeHandlers: List<FormFlowStepTypeHandler>
 
     @BeforeEach
     fun beforeAll() {
         val formFlowDefinitionRepository = mock(FormFlowDefinitionRepository::class.java)
         formFlowInstanceRepository = mock(FormFlowInstanceRepository::class.java)
-        formFlowStepTypeHandlers = listOf(formFlowStepTypeFormHandler())
         formFlowService = FormFlowService(
             formFlowDefinitionRepository,
             formFlowInstanceRepository,
-            formFlowStepTypeHandlers
+            emptyList()
         )
 
         val expressionProcessorFactory = mock(ExpressionProcessorFactory::class.java)
