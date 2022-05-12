@@ -21,6 +21,7 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.formflow.BaseTest
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
@@ -33,6 +34,7 @@ import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessor
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
+import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import org.junit.jupiter.api.BeforeEach
@@ -42,7 +44,7 @@ import org.mockito.Mockito.anyString
 import org.mockito.Mockito.mock
 import org.springframework.context.ApplicationContext
 
-internal class FormFlowServiceTest {
+internal class FormFlowServiceTest : BaseTest() {
 
     lateinit var formFlowService: FormFlowService
     lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
@@ -55,7 +57,10 @@ internal class FormFlowServiceTest {
         formFlowInstanceRepository = mock(FormFlowInstanceRepository::class.java)
         formFlowAdditionalPropertiesSearchRepository = mock(FormFlowAdditionalPropertiesSearchRepository::class.java)
         formFlowService = FormFlowService(
-            formFlowDefinitionRepository, formFlowInstanceRepository, formFlowAdditionalPropertiesSearchRepository
+            formFlowDefinitionRepository,
+            formFlowInstanceRepository,
+            formFlowAdditionalPropertiesSearchRepository,
+            emptyList()
         )
 
         val expressionProcessorFactory = mock(ExpressionProcessorFactory::class.java)
@@ -93,9 +98,9 @@ internal class FormFlowServiceTest {
     ): FormFlowInstance {
         val step = FormFlowStep(
             FormFlowStepId("start-step"),
-            ArrayList(),
-            onOpen?.toMutableList(),
-            onComplete?.toMutableList(),
+            listOf(),
+            onOpen?: listOf(),
+            onComplete?:listOf(),
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val definition = FormFlowDefinition(

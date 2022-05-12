@@ -18,7 +18,8 @@ package com.ritense.valtimo.formflow.web.rest.result
 
 import java.util.UUID
 
-class CompleteStepResult(
-    val id: UUID,
-    val step: FormFlowStepResult
+class GetFormFlowStateResult(
+    val id: UUID? = null,
+    val step: FormFlowStepResult? = null,
+    val errorMessage: String? = null
 )

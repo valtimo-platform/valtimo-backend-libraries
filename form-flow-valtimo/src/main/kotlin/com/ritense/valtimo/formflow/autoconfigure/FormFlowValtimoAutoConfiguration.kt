@@ -17,7 +17,11 @@
 package com.ritense.valtimo.formflow.autoconfigure
 
 import com.ritense.document.service.DocumentService
+import com.ritense.document.service.DocumentService
+import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.service.FormLoaderService
+import com.ritense.form.service.impl.FormIoFormDefinitionService
+import com.ritense.formflow.service.FormFlowObjectMapper
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.domain.ProcessLinkTaskProvider
 import com.ritense.formlink.service.FormAssociationService
@@ -25,7 +29,11 @@ import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.ValtimoFormFlowHttpSecurityConfigurer
 import com.ritense.valtimo.formflow.handler.FormFlowCreateTaskEventHandler
+import com.ritense.formlink.service.impl.CamundaFormAssociationService
+import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
+import com.ritense.valtimo.formflow.security.ValtimoFormFlowHttpSecurityConfigurer
 import com.ritense.valtimo.formflow.web.rest.FormFlowDemoResource
+import com.ritense.valtimo.formflow.web.rest.FormFlowResource
 import com.ritense.valtimo.formflow.web.rest.ProcessLinkFormFlowDefinitionResource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -58,9 +66,20 @@ class FormFlowValtimoAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(FormFlowResource::class)
+    fun formFlowResource(
+        formFlowService: FormFlowService,
+        formDefinitionService: FormDefinitionService
+    ): FormFlowResource {
+        return FormFlowResource(formFlowService, formDefinitionService)
+    }
+
+    @Bean
     @ConditionalOnMissingBean(FormFlowDemoResource::class)
-    fun formFlowDemoResource(formFlowService: FormFlowService,
-        formLoaderService: FormLoaderService): FormFlowDemoResource {
+    fun formFlowDemoResource(
+        formFlowService: FormFlowService,
+        formLoaderService: FormLoaderService
+    ): FormFlowDemoResource {
         return FormFlowDemoResource(formFlowService, formLoaderService)
     }
 
@@ -69,5 +88,21 @@ class FormFlowValtimoAutoConfiguration {
     @ConditionalOnMissingBean(ValtimoFormFlowHttpSecurityConfigurer::class)
     fun valtimoFormFlowHttpSecurityConfigurer(): ValtimoFormFlowHttpSecurityConfigurer {
         return ValtimoFormFlowHttpSecurityConfigurer()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowStepTypeFormHandler::class)
+    fun formFlowStepTypeFormHandler(
+        formIoFormDefinitionService: FormIoFormDefinitionService,
+        camundaFormAssociationService: CamundaFormAssociationService,
+        documentService: DocumentService,
+        objectMapper: FormFlowObjectMapper
+    ): FormFlowStepTypeFormHandler {
+        return FormFlowStepTypeFormHandler(
+            formIoFormDefinitionService,
+            camundaFormAssociationService,
+            documentService,
+            objectMapper
+        )
     }
 }

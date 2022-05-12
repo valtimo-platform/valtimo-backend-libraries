@@ -23,6 +23,7 @@ import com.ritense.formflow.domain.definition.configuration.step.FormStepTypePro
 import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
+import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formflow.repository.DefaultFormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
@@ -82,12 +83,14 @@ class FormFlowAutoConfiguration {
     fun formFlowService(
         formFlowDefinitionRepository: FormFlowDefinitionRepository,
         formFlowInstanceRepository: FormFlowInstanceRepository,
-        formFlowAdditionalPropertiesSearchRepository: FormFlowAdditionalPropertiesSearchRepository
+        formFlowAdditionalPropertiesSearchRepository: FormFlowAdditionalPropertiesSearchRepository,
+        formFlowStepTypeHandlers: List<FormFlowStepTypeHandler>
     ): FormFlowService {
         return FormFlowService(
             formFlowDefinitionRepository,
             formFlowInstanceRepository,
-            formFlowAdditionalPropertiesSearchRepository
+            formFlowAdditionalPropertiesSearchRepository,
+            formFlowStepTypeHandlers
         )
     }
 
