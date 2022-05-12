@@ -54,8 +54,7 @@ class FormFlowDemoResource(
 
         if(openFirstStep) {
             createdInstance.getCurrentStep().open()
-            val stepHandler = formFlowService.getFormFlowStepTypeHandler(createdInstance.getCurrentStep().definition.type)
-            form = stepHandler.getTypeProperties(createdInstance.getCurrentStep()).toString()
+            form = formFlowService.getTypeProperties(createdInstance.getCurrentStep()).toString()
         }
         formFlowService.save(createdInstance)
 
@@ -91,8 +90,7 @@ class FormFlowDemoResource(
         if(openNext) {
             formFlowStepInstance?.open()
             if (formFlowStepInstance!= null) {
-                val stepHandler = formFlowService.getFormFlowStepTypeHandler(formFlowStepInstance.definition.type)
-                form = stepHandler.getTypeProperties(formFlowStepInstance).toString()
+                form = formFlowService.getTypeProperties(formFlowStepInstance).toString()
             }
         }
 

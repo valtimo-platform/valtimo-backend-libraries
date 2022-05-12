@@ -21,5 +21,5 @@ import java.util.UUID
 class FormFlowStepResult(
     val id: UUID,
     val type: String,
-    val typeProperties: Any
+    val typeProperties: Any?
 )
