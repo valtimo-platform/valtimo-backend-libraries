@@ -1,9 +1,14 @@
 package com.ritense.valtimo.formflow
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.formflow.domain.instance.FormFlowInstance
+import com.ritense.formflow.domain.instance.FormFlowInstanceId
+import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.domain.FormLink
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
+import org.camunda.bpm.engine.task.Task
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -14,15 +19,23 @@ internal class FormFlowProcessLinkTaskProviderTest {
     fun `supports only bpmnElementFormFlowIdLink`() {
         val formLink1: BpmnElementFormFlowIdLink = mock()
         val formLink2: FormLink = mock()
-        assertTrue(FormFlowProcessLinkTaskProvider().supports(formLink1))
-        assertFalse(FormFlowProcessLinkTaskProvider().supports(formLink2))
+        assertTrue(FormFlowProcessLinkTaskProvider(mock()).supports(formLink1))
+        assertFalse(FormFlowProcessLinkTaskProvider(mock()).supports(formLink2))
     }
     @Test
     fun `getTaskResult contains formFlowId `() {
         val formLink: BpmnElementFormFlowIdLink = mock()
+        val task: Task = mock()
+        val formFlowService: FormFlowService = mock()
+        val formFlowInstance: FormFlowInstance = mock()
+        val formFlowInstanceId = FormFlowInstanceId.newId()
+
         whenever(formLink.formFlowId).thenReturn("123")
-        val taskResult = FormFlowProcessLinkTaskProvider().getTaskResult(task, formLink)
+        whenever(formFlowService.findInstances(any())).thenReturn(listOf(formFlowInstance))
+        whenever(formFlowInstance.id).thenReturn(formFlowInstanceId)
+
+        val taskResult = FormFlowProcessLinkTaskProvider(formFlowService).getTaskResult(task, formLink)
         assertEquals("form-flow", taskResult.type)
-        assertEquals("123", taskResult.properties.formFlowLinkId)
+        assertEquals(formFlowInstanceId.id, taskResult.properties.formFlowInstanceId)
     }
 }

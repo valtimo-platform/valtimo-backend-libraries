@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.document.service.DocumentService
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.service.FormFlowService
@@ -34,12 +35,15 @@ class FormFlowCreateTaskEventhandlerTest {
     lateinit var formFlowService: FormFlowService
     lateinit var formAssociationService: FormAssociationService
     lateinit var formFlowCreateTaskEventHandler: FormFlowCreateTaskEventHandler
+    lateinit var documentService: DocumentService
 
     @BeforeEach
     fun init() {
         formFlowService = mock()
         formAssociationService = mock()
-        formFlowCreateTaskEventHandler = FormFlowCreateTaskEventHandler(formFlowService, formAssociationService)
+        documentService = mock()
+        formFlowCreateTaskEventHandler = FormFlowCreateTaskEventHandler(
+            formFlowService, formAssociationService, documentService)
     }
 
     @Test

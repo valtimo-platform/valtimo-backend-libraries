@@ -1,13 +1,11 @@
 package com.ritense.formflow.repository
 
 import com.ritense.formflow.domain.instance.FormFlowInstance
-import org.springframework.stereotype.Repository
 import javax.persistence.EntityManager
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
-@Repository
 class DefaultFormFlowAdditionalPropertiesSearchRepository(
     private val entityManager: EntityManager
 ): FormFlowAdditionalPropertiesSearchRepository {

@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow.autoconfigure
 
+import com.ritense.document.service.DocumentService
 import com.ritense.form.service.FormLoaderService
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.domain.ProcessLinkTaskProvider
@@ -37,14 +38,17 @@ class FormFlowValtimoAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(FormFlowCreateTaskEventHandler::class)
     fun formFlowCreateTaskCommandHandler(formFlowService: FormFlowService,
-        formAssociationService: FormAssociationService
+        formAssociationService: FormAssociationService,
+        documentService: DocumentService
     ): FormFlowCreateTaskEventHandler {
-        return FormFlowCreateTaskEventHandler(formFlowService, formAssociationService)
+        return FormFlowCreateTaskEventHandler(formFlowService, formAssociationService, documentService)
     }
 
     @Bean
-    fun formFlowProcessLinkTaskProvider(): ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
-        return FormFlowProcessLinkTaskProvider()
+    fun formFlowProcessLinkTaskProvider(
+        formFlowService: FormFlowService
+    ): ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
+        return FormFlowProcessLinkTaskProvider(formFlowService)
     }
 
     @Bean

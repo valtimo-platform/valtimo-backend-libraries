@@ -32,6 +32,7 @@ import com.ritense.formflow.expression.ExpressionProcessor
 import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessor
+import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import org.junit.jupiter.api.BeforeEach
@@ -45,14 +46,16 @@ internal class FormFlowServiceTest {
 
     lateinit var formFlowService: FormFlowService
     lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
+    lateinit var formFlowAdditionalPropertiesSearchRepository: FormFlowAdditionalPropertiesSearchRepository
     lateinit var expressionProcessor: ExpressionProcessor
 
     @BeforeEach
     fun beforeAll() {
         val formFlowDefinitionRepository = mock(FormFlowDefinitionRepository::class.java)
         formFlowInstanceRepository = mock(FormFlowInstanceRepository::class.java)
+        formFlowAdditionalPropertiesSearchRepository = mock(FormFlowAdditionalPropertiesSearchRepository::class.java)
         formFlowService = FormFlowService(
-            formFlowDefinitionRepository, formFlowInstanceRepository
+            formFlowDefinitionRepository, formFlowInstanceRepository, formFlowAdditionalPropertiesSearchRepository
         )
 
         val expressionProcessorFactory = mock(ExpressionProcessorFactory::class.java)
