@@ -24,9 +24,12 @@ class DefaultFormFlowAdditionalPropertiesSearchRepository(
         criteriaBuilder: CriteriaBuilder,
         root: Root<FormFlowInstance>
     ): List<Predicate> {
-        return additionalProperties.entries.stream().map{
-            findJsonPathValue(criteriaBuilder, root, it.key, it.value.toString())
-        }.toList()
+        val predicates: MutableList<Predicate> = mutableListOf()
+        additionalProperties.entries.forEach{
+            predicates.add(findJsonPathValue(criteriaBuilder, root, it.key, it.value.toString()))
+        }
+
+        return predicates
     }
 
     private fun findJsonPathValue(
