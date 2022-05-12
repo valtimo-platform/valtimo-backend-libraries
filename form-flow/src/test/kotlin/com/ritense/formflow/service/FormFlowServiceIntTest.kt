@@ -1,7 +1,7 @@
-package com.ritense.formflow
+package com.ritense.formflow.service
 
+import com.ritense.formflow.BaseIntegrationTest
 import com.ritense.formflow.repository.FormFlowInstanceRepository
-import com.ritense.formflow.service.FormFlowService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -34,8 +34,6 @@ internal class FormFlowServiceIntTest: BaseIntegrationTest() {
         formFlowService.save(definition.createInstance(mutableMapOf("taskId" to "1234")))
         assertEquals(1, formFlowService.findInstances(mutableMapOf("taskId" to "123")).size)
     }
-
-
 
     @Test
     fun `finds 0 formFlowInstances for 1 additionalProperty`() {
@@ -84,5 +82,13 @@ internal class FormFlowServiceIntTest: BaseIntegrationTest() {
                 )
             ).size
         )
+    }
+
+    @Test
+    fun `finds 1 formFlowInstance for 1 non-string additionalProperty`() {
+        val definition = formFlowService.findLatestDefinitionByKey("inkomens_loket")!!
+        formFlowService.save(definition.createInstance(mutableMapOf("taskId" to 123)))
+        formFlowService.save(definition.createInstance(mutableMapOf("taskId" to 1234)))
+        assertEquals(1, formFlowService.findInstances(mutableMapOf("taskId" to 123)).size)
     }
 }

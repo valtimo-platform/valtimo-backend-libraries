@@ -26,27 +26,27 @@ class DefaultFormFlowAdditionalPropertiesSearchRepository(
     ): List<Predicate> {
         val predicates: MutableList<Predicate> = mutableListOf()
         additionalProperties.entries.forEach{
-            predicates.add(findJsonPathValue(criteriaBuilder, root, it.key, it.value.toString()))
+            predicates.add(findJsonPathValue(criteriaBuilder, root, it.key, it.value))
         }
 
         return predicates
     }
 
     private fun findJsonPathValue(
-        cb: CriteriaBuilder,
+        criteriaBuilder: CriteriaBuilder,
         root: Root<FormFlowInstance>,
         key: String,
-        value: String
+        value: Any
     ): Predicate {
-        return cb.isNotNull(
-            cb.function<FormFlowInstance>(
+        return criteriaBuilder.isNotNull(
+            criteriaBuilder.function<FormFlowInstance>(
                 "JSON_SEARCH",
                 FormFlowInstance::class.java,
                 root.get<Any>("additionalProperties"),
-                cb.literal("all"),
-                cb.literal(value),
-                cb.nullLiteral(String::class.java),
-                cb.literal("$."+ key)
+                criteriaBuilder.literal("all"),
+                criteriaBuilder.literal(value),
+                criteriaBuilder.nullLiteral(String::class.java),
+                criteriaBuilder.literal("$."+ key)
             )
         )
     }
