@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.formflow.web.rest.dto
+package com.ritense.valtimo.formflow.web.rest.result
 
-import java.util.UUID
+import com.fasterxml.jackson.databind.JsonNode
 
-class FormFlow(
-    val id: UUID,
-    val currentStep: FormFlowStep
+class FormTypeProperties (
+    val definition: JsonNode
 )
