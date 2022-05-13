@@ -20,5 +20,5 @@ import java.util.UUID
 
 class CompleteStepResult(
     val id: UUID,
-    val step: FormFlowStepResult
+    val step: FormFlowStepResult?
 )

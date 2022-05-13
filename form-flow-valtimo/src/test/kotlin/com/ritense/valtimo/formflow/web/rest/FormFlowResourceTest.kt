@@ -17,6 +17,7 @@ import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.BaseTest
 import com.ritense.valtimo.formflow.handler.FormTypeProperties
+import org.json.JSONObject
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -128,6 +129,24 @@ class FormFlowResourceTest : BaseTest() {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(instance.id.id.toString()))
             .andExpect(jsonPath("$.step.id").value(instance.getCurrentStep().id.id.toString()))
+            .andExpect(jsonPath("$.step.type").value("form"))
+            .andExpect(jsonPath("$.step.typeProperties.definition.display").value("form"))
+            .andExpect(jsonPath("$.step.typeProperties.definition.components").isNotEmpty)
+    }
+
+    @Test
+    fun `should navigate to previous step`() {
+        val definition = getFormFlowDefinition("key", readFileAsString("/config/form-flow/inkomens_loket.json"))
+        val instance = definition.createInstance(mutableMapOf())
+        val previousStepId = instance.getCurrentStep().id
+        instance.complete(previousStepId, JSONObject())
+        whenever(formFlowService.getByInstanceIdIfExists(instance.id)).thenReturn(instance)
+
+        mockMvc.perform(post("/api/form-flow/{flowId}/back", instance.id.id))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(instance.id.id.toString()))
+            .andExpect(jsonPath("$.step.id").value(previousStepId.id.toString()))
             .andExpect(jsonPath("$.step.type").value("form"))
             .andExpect(jsonPath("$.step.typeProperties.definition.display").value("form"))
             .andExpect(jsonPath("$.step.typeProperties.definition.components").isNotEmpty)
