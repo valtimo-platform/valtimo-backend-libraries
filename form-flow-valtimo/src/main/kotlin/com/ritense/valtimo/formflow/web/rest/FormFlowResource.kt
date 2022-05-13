@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow.web.rest
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
@@ -32,21 +33,20 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 import javax.transaction.Transactional
 
 @RestController
-@RequestMapping(value = ["/api/form-flow"])
+@RequestMapping(value = ["/api/form-flow"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class FormFlowResource(
     private val formFlowService: FormFlowService
 ) {
-    @GetMapping("/{formFlowInstanceId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("/{formFlowInstanceId}")
     @Transactional
     fun getFormFlowState(
         @PathVariable(name = "formFlowInstanceId") instanceId: String,
     ): ResponseEntity<GetFormFlowStateResult>? {
         val instance = formFlowService.getByInstanceIdIfExists(
-            FormFlowInstanceId.existingId(UUID.fromString(instanceId))
+            FormFlowInstanceId.existingId(instanceId)
         ) ?: return ResponseEntity
             .badRequest()
             .body(GetFormFlowStateResult(null, null, "No form flow instance can be found for the given instance id"))
@@ -57,34 +57,35 @@ class FormFlowResource(
         return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, getStepResult(stepInstance)))
     }
 
-    @PostMapping("/{formFlowId}/step/{stepInstanceId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("/{formFlowId}/step/{stepInstanceId}")
     @Transactional
     fun completeStep(
         @PathVariable(name = "formFlowId") formFlowId: String,
         @PathVariable(name = "stepInstanceId") stepInstanceId: String,
-        @RequestBody submissionData: JSONObject?
+        @RequestBody submissionData: JsonNode?
     ): ResponseEntity<CompleteStepResult> {
-        val instance = formFlowService.getByInstanceIdIfExists(
-            FormFlowInstanceId.existingId(UUID.fromString(formFlowId))
-        )!!
+        val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
 
+        val submissionDataJsonObject = if (submissionData == null) {
+            JSONObject()
+        } else {
+            JSONObject(submissionData.toString())
+        }
         val stepInstance = instance.complete(
-            FormFlowStepInstanceId.existingId(UUID.fromString(stepInstanceId)),
-            submissionData ?: JSONObject()
+            FormFlowStepInstanceId.existingId(stepInstanceId),
+            submissionDataJsonObject
         )
         formFlowService.save(instance)
 
         return ResponseEntity.ok(CompleteStepResult(instance.id.id, getStepResult(stepInstance)))
     }
 
-    @PostMapping("/{formFlowId}/back", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("/{formFlowId}/back")
     @Transactional
     fun backStep(
         @PathVariable(name = "formFlowId") formFlowId: String
     ): ResponseEntity<GetFormFlowStateResult> {
-        val instance = formFlowService.getByInstanceIdIfExists(
-            FormFlowInstanceId.existingId(UUID.fromString(formFlowId))
-        )!!
+        val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
 
         val stepInstance = instance.back()
         formFlowService.save(instance)
