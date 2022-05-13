@@ -53,6 +53,7 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
 
 
     private val PROCESS_DEFINITION_KEY = "document-generation"
+    private val DOCUMENT_GENERATION_ARRAY = "document-generation-array"
     private val DOCUMENT_DEFINITION_KEY = "profile"
 
     @Test
