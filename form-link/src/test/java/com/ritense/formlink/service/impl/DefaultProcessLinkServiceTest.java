@@ -61,7 +61,7 @@ class DefaultProcessLinkServiceTest {
             .active()
             .singleResult())
             .thenReturn(task);
-        when(task.getProcessDefinitionId()).thenReturn("test");
+        when(task.getProcessDefinitionId()).thenReturn("test:1");
         when(task.getTaskDefinitionKey()).thenReturn("test");
 
         doReturn(Optional.of(formAssociation))
