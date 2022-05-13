@@ -24,6 +24,8 @@ import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
+import com.ritense.formflow.repository.DefaultFormFlowAdditionalPropertiesSearchRepository
+import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import com.ritense.formflow.repository.FormFlowStepInstanceRepository
@@ -38,6 +40,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import javax.persistence.EntityManager
 
 @Configuration
 @EnableJpaRepositories(
@@ -80,9 +83,23 @@ class FormFlowAutoConfiguration {
     fun formFlowService(
         formFlowDefinitionRepository: FormFlowDefinitionRepository,
         formFlowInstanceRepository: FormFlowInstanceRepository,
+        formFlowAdditionalPropertiesSearchRepository: FormFlowAdditionalPropertiesSearchRepository,
         formFlowStepTypeHandlers: List<FormFlowStepTypeHandler>
     ): FormFlowService {
-        return FormFlowService(formFlowDefinitionRepository, formFlowInstanceRepository, formFlowStepTypeHandlers)
+        return FormFlowService(
+            formFlowDefinitionRepository,
+            formFlowInstanceRepository,
+            formFlowAdditionalPropertiesSearchRepository,
+            formFlowStepTypeHandlers
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowAdditionalPropertiesSearchRepository::class)
+    fun formFlowAdditionalPropertiesSearchRepository(
+        entityManager: EntityManager
+    ): FormFlowAdditionalPropertiesSearchRepository {
+        return DefaultFormFlowAdditionalPropertiesSearchRepository(entityManager)
     }
 
     @Bean

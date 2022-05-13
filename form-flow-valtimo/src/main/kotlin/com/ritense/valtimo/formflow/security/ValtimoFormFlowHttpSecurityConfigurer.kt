@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.formflow.security
 
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
@@ -27,16 +27,20 @@ class ValtimoFormFlowHttpSecurityConfigurer: HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/form-flow/{formFlowInstanceId}").hasAuthority(USER)
-                .antMatchers(HttpMethod.POST, "/api/form-flow/{formFlowId}/step/{stepInstanceId}").hasAuthority(USER)
-                .antMatchers(HttpMethod.POST, "/api/form-flow/{formFlowId}/back").hasAuthority(USER)
-                .antMatchers(HttpMethod.GET, "/api/process-link/form-flow-definition").hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/form-flow/{formFlowInstanceId}")
+                .hasAuthority(USER)
+                .antMatchers(HttpMethod.POST, "/api/form-flow/{formFlowId}/step/{stepInstanceId}")
+                .hasAuthority(USER)
+                .antMatchers(HttpMethod.POST, "/api/form-flow/{formFlowId}/back")
+                .hasAuthority(USER)
+                .antMatchers(HttpMethod.GET, "/api/process-link/form-flow-definition")
+                .hasAuthority(ADMIN)
 
                 // Temp matchers
                 .antMatchers(HttpMethod.POST, "/api/form-flow/demo/definition/{definitionKey}/instance")
-                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .hasAuthority(ADMIN)
                 .antMatchers(HttpMethod.POST, "/api/form-flow/demo/instance/{instanceId}/step/{stepId}/complete")
-                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

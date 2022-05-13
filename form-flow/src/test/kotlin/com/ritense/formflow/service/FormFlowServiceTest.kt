@@ -33,6 +33,7 @@ import com.ritense.formflow.expression.ExpressionProcessor
 import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessor
+import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
@@ -42,19 +43,23 @@ import org.mockito.Mockito.any
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.mock
 import org.springframework.context.ApplicationContext
+
 internal class FormFlowServiceTest : BaseTest() {
 
     lateinit var formFlowService: FormFlowService
     lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
+    lateinit var formFlowAdditionalPropertiesSearchRepository: FormFlowAdditionalPropertiesSearchRepository
     lateinit var expressionProcessor: ExpressionProcessor
 
     @BeforeEach
     fun beforeAll() {
         val formFlowDefinitionRepository = mock(FormFlowDefinitionRepository::class.java)
         formFlowInstanceRepository = mock(FormFlowInstanceRepository::class.java)
+        formFlowAdditionalPropertiesSearchRepository = mock(FormFlowAdditionalPropertiesSearchRepository::class.java)
         formFlowService = FormFlowService(
             formFlowDefinitionRepository,
             formFlowInstanceRepository,
+            formFlowAdditionalPropertiesSearchRepository,
             emptyList()
         )
 
