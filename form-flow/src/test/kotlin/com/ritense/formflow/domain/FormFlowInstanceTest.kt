@@ -28,6 +28,9 @@ import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
+import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
+import com.ritense.formflow.expression.FormFlowBeanTestHelper
+import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.json.JSONObject
@@ -36,6 +39,8 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito
+import org.springframework.context.ApplicationContext
 
 internal class FormFlowInstanceTest : BaseTest() {
     @Test
@@ -306,7 +311,36 @@ internal class FormFlowInstanceTest : BaseTest() {
     }
 
     @Test
-    fun `complete - complete - back - back - complete, will throw away history`() {
+    fun `complete - complete - back - back, will not throw away history`() {
+        val expressionProcessorFactory = SpelExpressionProcessorFactory()
+        ExpressionProcessorFactoryHolder.setInstance(
+            expressionProcessorFactory,
+            Mockito.mock(ApplicationContext::class.java)
+        )
+        expressionProcessorFactory.setFlowProcessBeans(mapOf("formFlowBeanTestHelper" to FormFlowBeanTestHelper()))
+        val definition = getFormFlowDefinition("key", readFileAsString("/config/form-flow/inkomens_loket.json"))
+        val instance = definition.createInstance(mutableMapOf())
+
+        instance.complete(instance.currentFormFlowStepInstanceId!!, JSONObject("{\"step1\":\"A\"}"))
+        instance.complete(instance.currentFormFlowStepInstanceId!!, JSONObject("{\"step2\":\"B\"}"))
+        instance.back()
+        instance.back()
+
+        assertEquals("{\"step1\":\"A\"}", instance.getSubmissionDataContext())
+        assertEquals(3, instance.getHistory().size)
+        assertEquals("{\"step1\":\"A\"}", instance.getHistory()[0].submissionData)
+        assertEquals("{\"step2\":\"B\"}", instance.getHistory()[1].submissionData)
+        assertEquals(null, instance.getHistory()[2].submissionData)
+    }
+
+    @Test
+    fun `complete - complete - back - back - complete, will not throw away history`() {
+        val expressionProcessorFactory = SpelExpressionProcessorFactory()
+        ExpressionProcessorFactoryHolder.setInstance(
+            expressionProcessorFactory,
+            Mockito.mock(ApplicationContext::class.java)
+        )
+        expressionProcessorFactory.setFlowProcessBeans(mapOf("formFlowBeanTestHelper" to FormFlowBeanTestHelper()))
         val definition = getFormFlowDefinition("key", readFileAsString("/config/form-flow/inkomens_loket.json"))
         val instance = definition.createInstance(mutableMapOf())
 
@@ -316,8 +350,10 @@ internal class FormFlowInstanceTest : BaseTest() {
         instance.back()
         instance.complete(instance.currentFormFlowStepInstanceId!!, JSONObject("{\"step1\":\"C\"}"))
 
-        assertEquals(2, instance.getHistory().size)
+        assertEquals("{\"step2\":\"B\",\"step1\":\"C\"}", instance.getSubmissionDataContext())
+        assertEquals(3, instance.getHistory().size)
         assertEquals("{\"step1\":\"C\"}", instance.getHistory()[0].submissionData)
-        assertEquals(null, instance.getHistory()[1].submissionData)
+        assertEquals("{\"step2\":\"B\"}", instance.getHistory()[1].submissionData)
+        assertEquals(null, instance.getHistory()[2].submissionData)
     }
 }

@@ -81,12 +81,21 @@ class FormFlowInstance(
         return navigateToNextStep()
     }
 
-    fun back(): FormFlowStepInstance {
+
+    /**
+     * This method navigates to the previous step (if present).
+     *
+     * @return The previous step (optional)
+     */
+    fun back(): FormFlowStepInstance? {
         val previousStepOrder = getCurrentStep().order - 1
-        assert(previousStepOrder >= 0)
-        val previousStep = history.single { it.order == previousStepOrder }
-        currentFormFlowStepInstanceId = previousStep.id
-        return previousStep
+        return if (previousStepOrder >= 0) {
+            val previousStep = history.single { it.order == previousStepOrder }
+            currentFormFlowStepInstanceId = previousStep.id
+            previousStep
+        } else {
+            null
+        }
     }
 
     fun getCurrentStep(): FormFlowStepInstance {
@@ -150,8 +159,8 @@ class FormFlowInstance(
             this.currentFormFlowStepInstanceId = null
             return null
         }
-        history.removeAll { it.order >= nextStep.order }
-        history.add(nextStep)
+        history.removeIf { it.stepKey == nextStep.stepKey && it.order == nextStep.order }
+        history.add(nextStep.order, nextStep)
         currentFormFlowStepInstanceId = nextStep.id
         return nextStep
     }
@@ -161,7 +170,7 @@ class FormFlowInstance(
             return null
         }
         var stepKey = formFlowDefinition.startStep
-        var stepOder = 0
+        var stepOrder = 0
         if (currentFormFlowStepInstanceId != null) {
             val currentStepInstance = getCurrentStep()
             val currentStep = formFlowDefinition.getStepByKey(currentStepInstance.stepKey)
@@ -171,9 +180,10 @@ class FormFlowInstance(
             }
 
             stepKey = currentStep.nextSteps.first().step
-            stepOder = currentStepInstance.order + 1
+            stepOrder = currentStepInstance.order + 1
         }
-        return FormFlowStepInstance(instance = this, stepKey = stepKey, order = stepOder)
+        return history.singleOrNull { it.stepKey == stepKey && it.order == stepOrder }
+            ?: FormFlowStepInstance(instance = this, stepKey = stepKey, order = stepOrder)
     }
 
     override fun equals(other: Any?): Boolean {
