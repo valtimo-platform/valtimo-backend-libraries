@@ -17,6 +17,7 @@
 package com.ritense.valtimo.formflow.web.rest
 
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
+import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.web.rest.result.CompleteStepResult
@@ -51,17 +52,9 @@ class FormFlowResource(
             .body(GetFormFlowStateResult(null, null, "No form flow instance can be found for the given instance id"))
 
         val stepInstance = instance.getCurrentStep()
+        formFlowService.save(instance)
 
-        return ResponseEntity.ok(
-            GetFormFlowStateResult(
-                instance.id.id,
-                FormFlowStepResult(
-                    stepInstance.id.id,
-                    stepInstance.definition.type.name,
-                    formFlowService.getTypeProperties(stepInstance)
-                )
-            )
-        )
+        return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, getStepResult(stepInstance)))
     }
 
     @PostMapping("/{formFlowId}/step/{stepInstanceId}", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -78,17 +71,36 @@ class FormFlowResource(
         val stepInstance = instance.complete(
             FormFlowStepInstanceId.existingId(UUID.fromString(stepInstanceId)),
             submissionData ?: JSONObject()
+        )
+        formFlowService.save(instance)
+
+        return ResponseEntity.ok(CompleteStepResult(instance.id.id, getStepResult(stepInstance)))
+    }
+
+    @PostMapping("/{formFlowId}/back", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Transactional
+    fun backStep(
+        @PathVariable(name = "formFlowId") formFlowId: String
+    ): ResponseEntity<GetFormFlowStateResult> {
+        val instance = formFlowService.getByInstanceIdIfExists(
+            FormFlowInstanceId.existingId(UUID.fromString(formFlowId))
         )!!
 
-        return ResponseEntity.ok(
-            CompleteStepResult(
-                instance.id.id,
-                FormFlowStepResult(
-                    stepInstance.id.id,
-                    stepInstance.definition.type.name,
-                    formFlowService.getTypeProperties(stepInstance)
-                )
+        val stepInstance = instance.back()
+        formFlowService.save(instance)
+
+        return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, getStepResult(stepInstance)))
+    }
+
+    private fun getStepResult(stepInstance: FormFlowStepInstance?): FormFlowStepResult? {
+        return if (stepInstance != null) {
+            FormFlowStepResult(
+                stepInstance.id.id,
+                stepInstance.definition.type.name,
+                formFlowService.getTypeProperties(stepInstance)
             )
-        )
+        } else {
+            null
+        }
     }
 }
