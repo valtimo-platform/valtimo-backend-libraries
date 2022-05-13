@@ -90,4 +90,54 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
         verify(resourceService).store(any(), any(), any<MultipartFile>())
     }
 
+    @Test
+    fun `should generate document with array`() {
+        // given
+        val emptyResource = object : Resource {
+            override fun id() = UUID.randomUUID()
+            override fun name() = "name.txt"
+            override fun extension() = "txt"
+            override fun sizeInBytes() = 123L
+            override fun createdOn() = LocalDateTime.now()
+        }
+        whenever(resourceService.store(any(), any(), any<MultipartFile>())).thenReturn(emptyResource)
+        processDocumentAssociationService.createProcessDocumentDefinition(
+            ProcessDocumentDefinitionRequest(DOCUMENT_GENERATION_ARRAY, DOCUMENT_DEFINITION_KEY, true, true)
+        )
+        val jsonContent = Mapper.INSTANCE.get().readTree("""
+            {
+                "lastname": "Klaveren", 
+                "names":[
+                    {
+                        "name": "Peter"
+                    },
+                    {
+                        "name": "Henk"
+                    }
+                ]
+            }
+        """.trimIndent())
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, jsonContent)
+        val request = NewDocumentAndStartProcessRequest(DOCUMENT_GENERATION_ARRAY, newDocumentRequest)
+
+        // when
+        processDocumentService.newDocumentAndStartProcess(request)
+
+        val expectedNamesResult = listOf(
+            mapOf("name" to "Peter"),
+            mapOf("name" to "Henk")
+        )
+
+        // then
+        verify(smartDocumentGenerator).generateAndStoreDocument(
+            any(),
+            eq("my-template-group"),
+            eq("my-template-id"),
+            eq(mapOf("achternaam" to "Klaveren", "names" to expectedNamesResult)),
+            eq(DocumentFormatOption.PDF)
+        )
+
+        verify(resourceService).store(any(), any(), any<MultipartFile>())
+    }
+
 }
