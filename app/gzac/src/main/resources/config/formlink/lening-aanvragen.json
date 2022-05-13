@@ -5,7 +5,7 @@
         "formAssociationType": "start-event"
     },
     {
-        "formName": "start-form-lening-aanvragen",
+        "formFlowName": "test-form-flow:latest",
         "formLinkElementId": "akkoord-op-lening-task",
         "formAssociationType": "user-task"
     }
