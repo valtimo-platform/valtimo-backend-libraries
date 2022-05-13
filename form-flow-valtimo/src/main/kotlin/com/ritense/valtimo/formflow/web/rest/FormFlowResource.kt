@@ -16,14 +16,9 @@
 
 package com.ritense.valtimo.formflow.web.rest
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.ritense.form.service.FormDefinitionService
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
-import com.ritense.valtimo.formflow.web.rest.dto.FormFlow
-import com.ritense.valtimo.formflow.web.rest.dto.FormFlowStep
-import com.ritense.valtimo.formflow.web.rest.dto.FormTypeProperties
 import com.ritense.valtimo.formflow.web.rest.result.CompleteStepResult
 import com.ritense.valtimo.formflow.web.rest.result.FormFlowStepResult
 import com.ritense.valtimo.formflow.web.rest.result.GetFormFlowStateResult
@@ -42,8 +37,7 @@ import javax.transaction.Transactional
 @RestController
 @RequestMapping(value = ["/api/form-flow"])
 class FormFlowResource(
-    private val formFlowService: FormFlowService,
-    private val formDefinitionService: FormDefinitionService
+    private val formFlowService: FormFlowService
 ) {
     @GetMapping("/{formFlowInstanceId}", produces = [MediaType.APPLICATION_JSON_VALUE])
     @Transactional

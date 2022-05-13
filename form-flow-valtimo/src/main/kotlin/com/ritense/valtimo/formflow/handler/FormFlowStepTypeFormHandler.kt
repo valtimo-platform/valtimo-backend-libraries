@@ -61,7 +61,7 @@ class FormFlowStepTypeFormHandler(
     ) {
 
         val documentId = additionalProperties["documentId"] as String?
-        val taskInstanceId = additionalProperties["taskId"] as String?
+        val taskInstanceId = additionalProperties["taskInstanceId"] as String?
 
         if (documentId == null) {
             return
