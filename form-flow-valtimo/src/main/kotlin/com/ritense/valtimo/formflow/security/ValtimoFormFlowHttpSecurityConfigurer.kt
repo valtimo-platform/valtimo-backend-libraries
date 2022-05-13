@@ -29,6 +29,7 @@ class ValtimoFormFlowHttpSecurityConfigurer: HttpSecurityConfigurer {
             http.authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/api/form-flow/{formFlowInstanceId}").hasAuthority(USER)
                 .antMatchers(HttpMethod.POST, "/api/form-flow/{formFlowId}/step/{stepInstanceId}").hasAuthority(USER)
+                .antMatchers(HttpMethod.POST, "/api/form-flow/{formFlowId}/back").hasAuthority(USER)
                 .antMatchers(HttpMethod.GET, "/api/process-link/form-flow-definition").hasAuthority(AuthoritiesConstants.ADMIN)
 
                 // Temp matchers

@@ -81,6 +81,14 @@ class FormFlowInstance(
         return navigateToNextStep()
     }
 
+    fun back(): FormFlowStepInstance {
+        val previousStepOrder = getCurrentStep().order - 1
+        assert(previousStepOrder >= 0)
+        val previousStep = history.single { it.order == previousStepOrder }
+        currentFormFlowStepInstanceId = previousStep.id
+        return previousStep
+    }
+
     fun getCurrentStep(): FormFlowStepInstance {
         return history.first {
             it.id == currentFormFlowStepInstanceId
@@ -142,6 +150,7 @@ class FormFlowInstance(
             this.currentFormFlowStepInstanceId = null
             return null
         }
+        history.removeAll { it.order >= nextStep.order }
         history.add(nextStep)
         currentFormFlowStepInstanceId = nextStep.id
         return nextStep
@@ -152,19 +161,19 @@ class FormFlowInstance(
             return null
         }
         var stepKey = formFlowDefinition.startStep
+        var stepOder = 0
         if (currentFormFlowStepInstanceId != null) {
             val currentStepInstance = getCurrentStep()
-            val currentStep = formFlowDefinition.steps.first {
-                it.id.key == currentStepInstance.stepKey
-            }
+            val currentStep = formFlowDefinition.getStepByKey(currentStepInstance.stepKey)
 
-            if (currentStep.nextSteps == null || currentStep.nextSteps.isEmpty()) {
+            if (currentStep.nextSteps.isEmpty()) {
                 return null
             }
 
             stepKey = currentStep.nextSteps.first().step
+            stepOder = currentStepInstance.order + 1
         }
-        return FormFlowStepInstance(instance = this, stepKey = stepKey, order = history.size)
+        return FormFlowStepInstance(instance = this, stepKey = stepKey, order = stepOder)
     }
 
     override fun equals(other: Any?): Boolean {

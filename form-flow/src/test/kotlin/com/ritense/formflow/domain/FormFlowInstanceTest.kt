@@ -18,6 +18,7 @@ package com.ritense.formflow.domain
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.formflow.BaseTest
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowNextStep
@@ -36,7 +37,7 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-internal class FormFlowInstanceTest {
+internal class FormFlowInstanceTest : BaseTest() {
     @Test
     fun `complete should return new step`() {
         val instance = FormFlowInstance(
@@ -302,5 +303,21 @@ internal class FormFlowInstanceTest {
         val submissionDataContext = instance.getSubmissionDataContext()
 
         assertEquals("{\"data\":{\"data\":\"data2\",\"data2\":\"data\"}}", submissionDataContext)
+    }
+
+    @Test
+    fun `complete - complete - back - back - complete, will throw away history`() {
+        val definition = getFormFlowDefinition("key", readFileAsString("/config/form-flow/inkomens_loket.json"))
+        val instance = definition.createInstance(mutableMapOf())
+
+        instance.complete(instance.currentFormFlowStepInstanceId!!, JSONObject("{\"step1\":\"A\"}"))
+        instance.complete(instance.currentFormFlowStepInstanceId!!, JSONObject("{\"step2\":\"B\"}"))
+        instance.back()
+        instance.back()
+        instance.complete(instance.currentFormFlowStepInstanceId!!, JSONObject("{\"step1\":\"C\"}"))
+
+        assertEquals(2, instance.getHistory().size)
+        assertEquals("{\"step1\":\"C\"}", instance.getHistory()[0].submissionData)
+        assertEquals(null, instance.getHistory()[1].submissionData)
     }
 }

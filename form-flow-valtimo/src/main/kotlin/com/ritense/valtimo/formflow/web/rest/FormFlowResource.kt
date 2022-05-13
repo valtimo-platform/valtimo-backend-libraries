@@ -94,4 +94,27 @@ class FormFlowResource(
             )
         )
     }
+
+    @PostMapping("/{formFlowId}/back", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Transactional
+    fun backStep(
+        @PathVariable(name = "formFlowId") formFlowId: String
+    ): ResponseEntity<CompleteStepResult> {
+        val instance = formFlowService.getByInstanceIdIfExists(
+            FormFlowInstanceId.existingId(UUID.fromString(formFlowId))
+        )!!
+
+        val stepInstance = instance.back()
+
+        return ResponseEntity.ok(
+            CompleteStepResult(
+                instance.id.id,
+                FormFlowStepResult(
+                    stepInstance.id.id,
+                    stepInstance.definition.type.name,
+                    formFlowService.getTypeProperties(stepInstance)
+                )
+            )
+        )
+    }
 }
