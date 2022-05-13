@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.formflow.web.rest
 
-import com.ritense.form.service.FormDefinitionService
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
@@ -38,10 +37,8 @@ import javax.transaction.Transactional
 @RestController
 @RequestMapping(value = ["/api/form-flow"])
 class FormFlowResource(
-    private val formFlowService: FormFlowService,
-    private val formDefinitionService: FormDefinitionService
+    private val formFlowService: FormFlowService
 ) {
-
     @GetMapping("/{formFlowInstanceId}", produces = [MediaType.APPLICATION_JSON_VALUE])
     @Transactional
     fun getFormFlowState(

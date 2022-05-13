@@ -22,6 +22,11 @@ import com.ritense.form.service.FormLoaderService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formflow.service.FormFlowObjectMapper
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.formlink.domain.ProcessLinkTaskProvider
+import com.ritense.formlink.service.FormAssociationService
+import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
+import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
+import com.ritense.valtimo.formflow.handler.FormFlowCreateTaskEventHandler
 import com.ritense.formlink.service.impl.CamundaFormAssociationService
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.valtimo.formflow.security.ValtimoFormFlowHttpSecurityConfigurer
@@ -37,6 +42,22 @@ import org.springframework.core.annotation.Order
 class FormFlowValtimoAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(FormFlowCreateTaskEventHandler::class)
+    fun formFlowCreateTaskCommandHandler(formFlowService: FormFlowService,
+        formAssociationService: FormAssociationService,
+        documentService: DocumentService
+    ): FormFlowCreateTaskEventHandler {
+        return FormFlowCreateTaskEventHandler(formFlowService, formAssociationService, documentService)
+    }
+
+    @Bean
+    fun formFlowProcessLinkTaskProvider(
+        formFlowService: FormFlowService
+    ): ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
+        return FormFlowProcessLinkTaskProvider(formFlowService)
+    }
+
+    @Bean
     @ConditionalOnMissingBean(ProcessLinkFormFlowDefinitionResource::class)
     fun processLinkFormFlowDefinitionResource(formFlowService: FormFlowService): ProcessLinkFormFlowDefinitionResource {
         return ProcessLinkFormFlowDefinitionResource(formFlowService)
@@ -45,10 +66,9 @@ class FormFlowValtimoAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(FormFlowResource::class)
     fun formFlowResource(
-        formFlowService: FormFlowService,
-        formDefinitionService: FormDefinitionService
+        formFlowService: FormFlowService
     ): FormFlowResource {
-        return FormFlowResource(formFlowService, formDefinitionService)
+        return FormFlowResource(formFlowService)
     }
 
     @Bean
