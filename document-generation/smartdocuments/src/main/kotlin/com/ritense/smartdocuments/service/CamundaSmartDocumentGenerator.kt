@@ -22,6 +22,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.smartdocuments.domain.DocumentFormatOption
+import com.ritense.valtimo.contract.json.Mapper
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 
@@ -76,12 +77,14 @@ class CamundaSmartDocumentGenerator(
         return execution.variables[value].toString()
     }
 
-    private fun getPlaceholderValueFromDocument(value: String, document: Document): Any {
-        val nodeOpt = document.content().getValueBy(JsonPointer.valueOf(value))
-        return if (nodeOpt.isPresent) {
-            nodeOpt.get().asText()
-        } else {
+    private fun getPlaceholderValueFromDocument(path: String, document: Document): Any {
+        val node = document.content().getValueBy(JsonPointer.valueOf(path)).orElse(null)
+        return if (node == null || node.isMissingNode || node.isNull) {
             ""
+        } else if (node.isValueNode || node.isArray || node.isObject) {
+            Mapper.INSTANCE.get().treeToValue(node, Object::class.java)
+        } else {
+            node.asText()
         }
     }
 
