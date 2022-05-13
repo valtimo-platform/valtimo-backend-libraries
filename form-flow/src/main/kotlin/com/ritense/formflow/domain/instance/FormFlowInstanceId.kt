@@ -50,5 +50,9 @@ class FormFlowInstanceId(
         fun existingId(id: UUID): FormFlowInstanceId {
             return FormFlowInstanceId(id)
         }
+
+        fun existingId(id: String): FormFlowInstanceId {
+            return existingId(UUID.fromString(id))
+        }
     }
 }

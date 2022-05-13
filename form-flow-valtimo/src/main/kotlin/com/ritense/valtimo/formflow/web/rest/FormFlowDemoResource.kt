@@ -81,9 +81,15 @@ class FormFlowDemoResource(
             FormFlowInstanceId.existingId(UUID.fromString(instanceId))
         )
 
+        val submissionDataJsonObject = if (submissionData == null) {
+            JSONObject()
+        } else {
+            JSONObject(submissionData.toString())
+        }
+
         val formFlowStepInstance = instance.complete(
             FormFlowStepInstanceId.existingId(UUID.fromString(stepId)),
-            JSONObject((submissionData?:JsonNodeFactory.instance.objectNode()).toString())
+            submissionDataJsonObject
         )
 
         var form: String? = null
