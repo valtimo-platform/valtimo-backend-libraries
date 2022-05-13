@@ -4,8 +4,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import com.ritense.form.domain.FormIoFormDefinition
-import com.ritense.form.service.FormDefinitionService
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
@@ -25,25 +23,22 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.util.UUID
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
-import java.util.Optional
 
 class FormFlowResourceTest : BaseTest() {
     lateinit var mockMvc: MockMvc
     lateinit var formFlowResource: FormFlowResource
     lateinit var formFlowService: FormFlowService
-    lateinit var formDefinitionService: FormDefinitionService
     lateinit var formFlowInstance: FormFlowInstance
     lateinit var formFlowInstanceId: FormFlowInstanceId
 
     @BeforeEach
     fun setUp() {
         formFlowService = mock()
-        formDefinitionService = mock()
         whenever(formFlowService.getTypeProperties(any())).thenReturn(
             FormTypeProperties(
                 jacksonObjectMapper().readTree(
@@ -56,7 +51,7 @@ class FormFlowResourceTest : BaseTest() {
         formFlowInstance = mock()
         whenever(formFlowInstance.id).thenReturn(formFlowInstanceId)
         whenever(formFlowService.getByInstanceIdIfExists(formFlowInstance.id)).thenReturn(formFlowInstance)
-        formFlowResource = FormFlowResource(formFlowService, formDefinitionService)
+        formFlowResource = FormFlowResource(formFlowService)
 
         mockMvc = MockMvcBuilders.standaloneSetup(formFlowResource).build()
     }
