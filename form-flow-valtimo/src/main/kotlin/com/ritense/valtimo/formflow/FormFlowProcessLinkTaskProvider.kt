@@ -33,7 +33,7 @@ class FormFlowProcessLinkTaskProvider(
     }
 
     override fun getTaskResult(task: Task, formLink: FormLink): TaskOpenResult<FormFlowTaskOpenResultProperties> {
-        val instances = formFlowService.findInstances(mapOf("taskId" to task.id))
+        val instances = formFlowService.findInstances(mapOf("taskInstanceId" to task.id))
         assert(instances.size == 1)
         return TaskOpenResult(FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(instances[0].id.id))
     }
