@@ -1,0 +1,12 @@
+[
+    {
+        "formName": "form-portal-voornaam",
+        "formLinkElementId": "view-portal-case",
+        "formAssociationType": "user-task"
+    },
+    {
+        "formName": "form-portal-voornaam",
+        "formLinkElementId": "verify-name",
+        "formAssociationType": "user-task"
+    }
+]
