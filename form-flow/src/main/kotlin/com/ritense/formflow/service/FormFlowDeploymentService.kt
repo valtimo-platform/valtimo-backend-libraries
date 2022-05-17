@@ -18,7 +18,7 @@ package com.ritense.formflow.service
 
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
-import com.ritense.formflow.expression.ExpressionProcessorFactory
+import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import mu.KotlinLogging
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONObject
@@ -35,7 +35,6 @@ import java.nio.charset.StandardCharsets
 class FormFlowDeploymentService(
     private val resourceLoader: ResourceLoader,
     private val formFlowService: FormFlowService,
-    private val expressionProcessorFactory: ExpressionProcessorFactory,
     private val formFlowObjectMapper: FormFlowObjectMapper
 ) {
 
@@ -97,7 +96,7 @@ class FormFlowDeploymentService(
     }
 
     private fun validate(formFlowDefinitionConfig: FormFlowDefinition) {
-        val expressionProcessor = expressionProcessorFactory.create()
+        val expressionProcessor = ExpressionProcessorFactoryHolder.getinstance()!!.create()
         formFlowDefinitionConfig.steps.forEach { step ->
             step.onOpen.forEach { expression -> expressionProcessor.validate(expression) }
             step.onComplete.forEach { expression -> expressionProcessor.validate(expression) }
