@@ -20,9 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
-import com.ritense.formflow.expression.ExpressionProcessorFactory
-import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
-import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
+import com.ritense.formflow.handler.ApplicationReadyEventHandler
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formflow.repository.DefaultFormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
@@ -66,16 +64,12 @@ class FormFlowAutoConfiguration {
         return FormFlowObjectMapper(objectMapper?: jacksonObjectMapper(), stepPropertiesTypes)
     }
 
-    // TODO: Is this really the right way? If someone else now adds a different ExpressionProcessorFactory, this will
-    //  not automatically be picked up. Not only that, how do we differentiate between multiple
-    //  ExpressionProcessorFactories? Maybe make use of configuration?
     @Bean
-    @ConditionalOnMissingBean(ExpressionProcessorFactory::class)
-    fun expressionProcessorFactory(applicationContext: ApplicationContext): ExpressionProcessorFactory {
-        val expressionProcessorFactory = SpelExpressionProcessorFactory()
-
-        ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory, applicationContext)
-        return expressionProcessorFactory
+    @ConditionalOnMissingBean(ApplicationReadyEventHandler::class)
+    fun applicationReadyEventHandler(
+        applicationContext: ApplicationContext
+    ): ApplicationReadyEventHandler {
+        return ApplicationReadyEventHandler(applicationContext)
     }
 
     @Bean
@@ -107,13 +101,11 @@ class FormFlowAutoConfiguration {
     fun formFlowDeploymentService(
         resourceLoader: ResourceLoader,
         formFlowService: FormFlowService,
-        expressionProcessorFactory: ExpressionProcessorFactory,
         formFlowObjectMapper: FormFlowObjectMapper
     ): FormFlowDeploymentService {
         return FormFlowDeploymentService(
             resourceLoader,
             formFlowService,
-            expressionProcessorFactory,
             formFlowObjectMapper
         )
     }
