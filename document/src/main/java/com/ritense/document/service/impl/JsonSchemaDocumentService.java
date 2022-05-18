@@ -108,6 +108,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             newDocumentRequest.getResources()
                     .stream()
                     .map(JsonSchemaRelatedFile::from)
+                    .map(relatedFile -> relatedFile.withCreatedBy(SecurityUtils.getCurrentUserLogin()))
                     .forEach(jsonSchemaDocument::addRelatedFile);
             documentRepository.saveAndFlush(jsonSchemaDocument);
         });
