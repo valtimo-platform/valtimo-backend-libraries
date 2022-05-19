@@ -78,7 +78,7 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
                     );
 
                     if (existingDefinitionOpt.isPresent()) {
-                        if (item.equalsProcessDocumentDefinition(existingDefinitionOpt.get())) {
+                        if (!item.equalsProcessDocumentDefinition(existingDefinitionOpt.get())) {
                             processDocumentAssociationService.deleteProcessDocumentDefinition(request);
                             processDocumentAssociationService.createProcessDocumentDefinition(request);
                         }
@@ -87,7 +87,7 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
                     }
 
                     if (Boolean.TRUE.equals(item.getProcessIsVisibleInMenu())) {
-                        contextService.findAll(Pageable.unpaged()).stream().forEach(context -> {
+                        contextService.findAll(Pageable.unpaged()).forEach(context -> {
                             context.addProcess(new ContextProcess(item.getProcessDefinitionKey(), true));
                             contextService.save(context);
                         });
