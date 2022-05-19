@@ -6,4 +6,5 @@ a1c9710 - added form-type properties to step (#176)
 6dc7915 - Added support for choosing form flow definition when linking for process (#175)
 ddf7182 - Feature/update taak object status (#173)
 198a3ac - 34781 - Added submissionData to the context (#172)
-33bb734 - Added missing bean config to ensure autoconfigure registers all resource classes. (#174)
+33bb734 - Added missing bean config to ensure autoconfigure registers all resource classes. (#174)7087373 - Merge branch 'rc/9.11.0.105.RC'
+f75adf0 - Updated version to 9.11.0.RELEASE
