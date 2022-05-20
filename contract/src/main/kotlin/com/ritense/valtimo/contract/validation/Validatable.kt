@@ -24,16 +24,25 @@ import javax.validation.Validator
 
 interface Validatable {
 
-    val validator: Validator
-        @JsonIgnore get() = Validation.buildDefaultValidatorFactory().validator
-
     @JsonIgnore
     fun validate() {
         val logger = KotlinLogging.logger {}
         logger.debug { "validating $this" }
-        val errors = validator.validate(this)
+        val errors = getValidator().validate(this)
         if (errors.isNotEmpty()) {
             throw ConstraintViolationException(errors)
+        }
+    }
+
+    companion object {
+        private var validator: Validator? = null
+
+        fun getValidator(): Validator {
+            return validator ?: Validation.buildDefaultValidatorFactory().validator
+        }
+
+        fun setValidator(validator: Validator) {
+            Validatable.validator = validator
         }
     }
 
