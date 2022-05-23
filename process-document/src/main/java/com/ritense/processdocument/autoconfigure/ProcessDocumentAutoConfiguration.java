@@ -31,12 +31,15 @@ import com.ritense.processdocument.domain.listener.StartEventListener;
 import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
+import com.ritense.processdocument.service.ProcessDocumentDeploymentService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
+import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentDeploymentService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.processdocument.web.rest.ProcessDocumentResource;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
+import com.ritense.valtimo.service.ContextService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,6 +47,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
@@ -147,6 +151,20 @@ public class ProcessDocumentAutoConfiguration {
         ProcessDocumentAssociationService processDocumentAssociationService
     ) {
         return new ProcessDocumentResource(processDocumentService, processDocumentAssociationService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDocumentDeploymentService.class)
+    public ProcessDocumentDeploymentService processDocumentDeploymentService(
+            ResourceLoader resourceLoader,
+            ProcessDocumentAssociationService processDocumentAssociationService,
+            ContextService contextService
+    ) {
+        return new CamundaProcessJsonSchemaDocumentDeploymentService(
+                resourceLoader,
+                processDocumentAssociationService,
+                contextService
+        );
     }
 
 }
