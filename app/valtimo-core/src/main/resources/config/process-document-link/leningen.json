@@ -1,0 +1,12 @@
+[
+    {
+        "processDefinitionKey": "lening-aanvragen",
+        "canInitializeDocument": true,
+        "processIsVisibleInMenu": true
+    },
+    {
+        "processDefinitionKey": "mail-process",
+        "canInitializeDocument": true,
+        "processIsVisibleInMenu": true
+    }
+]

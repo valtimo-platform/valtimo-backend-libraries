@@ -22,6 +22,7 @@ import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocument
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.service.CamundaTaskService;
+import com.ritense.valtimo.service.ContextService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +49,9 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @Inject
     protected CamundaTaskService camundaTaskService;
+
+    @Inject
+    protected ContextService contextService;
 
     @MockBean
     protected AuditServiceImpl auditService;

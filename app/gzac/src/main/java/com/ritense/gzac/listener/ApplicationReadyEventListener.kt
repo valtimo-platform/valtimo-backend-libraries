@@ -38,7 +38,6 @@ import java.util.UUID
 class ApplicationReadyEventListener(
     private val connectorService: ConnectorService,
     private val objectSyncService: ObjectSyncService,
-    private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val zaakTypeLinkService: ZaakTypeLinkService,
     private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
     private val documentDefinitionService: DocumentDefinitionService,
@@ -51,7 +50,6 @@ class ApplicationReadyEventListener(
 
     @EventListener(DocumentDefinitionDeployedEvent::class)
     fun handleDocumentDefinitionDeployed(event: DocumentDefinitionDeployedEvent) {
-        linkProcess(event)
         connectZaakType(event)
         setDocumentDefinitionRole(event)
     }
@@ -261,18 +259,6 @@ class ApplicationReadyEventListener(
                 Rsin("051845623")
             )
         )
-    }
-
-    fun linkProcess(event: DocumentDefinitionDeployedEvent) {
-        if (event.documentDefinition().id().name().equals("leningen")) {
-            val linkRequest = ProcessDocumentDefinitionRequest(
-                "lening-aanvragen",
-                "leningen",
-                true,
-                false
-            )
-            processDocumentAssociationService.createProcessDocumentDefinition(linkRequest)
-        }
     }
 
     fun connectZaakType(event: DocumentDefinitionDeployedEvent) {
