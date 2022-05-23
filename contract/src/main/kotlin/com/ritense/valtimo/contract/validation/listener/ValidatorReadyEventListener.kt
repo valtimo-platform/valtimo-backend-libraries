@@ -18,16 +18,13 @@ package com.ritense.valtimo.contract.validation.listener
 
 import com.ritense.valtimo.contract.validation.Validatable
 import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.ApplicationContext
 import org.springframework.context.event.EventListener
-import javax.validation.Validator
+import javax.validation.Validation
 
-class ValidatorReadyEventListener(
-    private val applicationContext: ApplicationContext
-) {
+class ValidatorReadyEventListener {
 
     @EventListener(ApplicationReadyEvent::class)
     fun onApplicationReady() {
-        Validatable.setValidator(applicationContext.getBean(Validator::class.java))
+        Validatable.setValidator(Validation.buildDefaultValidatorFactory().validator)
     }
 }

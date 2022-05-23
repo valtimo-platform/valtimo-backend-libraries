@@ -18,25 +18,16 @@ package com.ritense.valtimo.contract.validation.autoconfigure
 
 import com.ritense.valtimo.contract.validation.listener.ValidatorReadyEventListener
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import javax.validation.Validation
-import javax.validation.Validator
 
 @Configuration
 class ValidatorAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(Validator::class)
-    fun validator(): Validator {
-        return Validation.buildDefaultValidatorFactory().validator
-    }
-
-    @Bean
     @ConditionalOnMissingBean(ValidatorReadyEventListener::class)
-    fun validatorReadyEventHandler(applicationContext: ApplicationContext): ValidatorReadyEventListener {
-        return ValidatorReadyEventListener(applicationContext)
+    fun validatorReadyEventHandler(): ValidatorReadyEventListener {
+        return ValidatorReadyEventListener()
     }
 
 }
