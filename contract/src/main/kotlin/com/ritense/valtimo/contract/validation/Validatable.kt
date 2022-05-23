@@ -38,7 +38,8 @@ interface Validatable {
         private var validator: Validator? = null
 
         fun getValidator(): Validator {
-            return validator ?: Validation.buildDefaultValidatorFactory().validator
+            validator = validator ?: Validation.buildDefaultValidatorFactory().validator
+            return validator!!
         }
 
         fun setValidator(validator: Validator) {
