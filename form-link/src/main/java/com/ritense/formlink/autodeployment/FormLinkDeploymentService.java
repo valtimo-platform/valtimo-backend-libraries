@@ -24,6 +24,7 @@ import com.ritense.formlink.domain.request.FormLinkRequest;
 import com.ritense.formlink.service.FormAssociationService;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -56,13 +57,17 @@ public class FormLinkDeploymentService {
                 final var processDefinitionKeyName = FilenameUtils.removeExtension(resource.getFilename());
 
                 formLinkConfigItems.forEach(formLinkConfigItem -> {
-                    final var formDefinition = formDefinitionService.getFormDefinitionByName(
-                        formLinkConfigItem.getFormName()
-                    ).orElseThrow();
+                    UUID formId = null;
+                    if (formLinkConfigItem.getFormName() != null) {
+                        final var formDefinition = formDefinitionService.getFormDefinitionByName(
+                            formLinkConfigItem.getFormName()
+                        ).orElseThrow();
+                        formId = formDefinition.getId();
+                    }
                     final var formLinkRequest = new FormLinkRequest(
                         formLinkConfigItem.getFormLinkElementId(),
                         formLinkConfigItem.getFormAssociationType(),
-                        formDefinition.getId(),
+                        formId,
                         formLinkConfigItem.getFormFlowName(),
                         null,
                         null
