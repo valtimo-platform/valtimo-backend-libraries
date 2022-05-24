@@ -20,10 +20,13 @@ import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.FilesResponse
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.http.codec.ClientCodecConfigurer
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
+import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+
 
 class SmartDocumentsClient(
     private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
@@ -56,10 +59,20 @@ class SmartDocumentsClient(
             smartDocumentsConnectorProperties.password!!
         )
 
+        // Setting the max file size to 10MB
+        // TODO This should be configurable
+        val exchangeStrategies = ExchangeStrategies
+            .builder()
+            .codecs { configurer: ClientCodecConfigurer ->
+                configurer.defaultCodecs().maxInMemorySize(1024 * 1024 * 10)
+            }
+            .build()
+
         return smartDocumentsWebClientBuilder
             .clone()
             .baseUrl(smartDocumentsConnectorProperties.url!!)
             .filter(basicAuthentication)
+            .exchangeStrategies(exchangeStrategies)
             .build()
     }
 
