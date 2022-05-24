@@ -30,7 +30,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 class SmartDocumentsClient(
     private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
-    private val smartDocumentsWebClientBuilder: WebClient.Builder
+    private val smartDocumentsWebClientBuilder: WebClient.Builder,
+    private val maxFileSizeMb: Int
 ) {
 
     fun generateDocument(
@@ -59,12 +60,11 @@ class SmartDocumentsClient(
             smartDocumentsConnectorProperties.password!!
         )
 
-        // Setting the max file size to 10MB
-        // TODO This should be configurable
+        // Setting the max file size for the smart documents response
         val exchangeStrategies = ExchangeStrategies
             .builder()
             .codecs { configurer: ClientCodecConfigurer ->
-                configurer.defaultCodecs().maxInMemorySize(1024 * 1024 * 10)
+                configurer.defaultCodecs().maxInMemorySize(1024 * 1024 * maxFileSizeMb)
             }
             .build()
 
