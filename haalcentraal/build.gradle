@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.service
-
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-
-object Mapper {
-
-    private val mapper = ObjectMapper()
-
-    fun get(): ObjectMapper {
-        return mapper
-    }
-
-    init {
-        mapper.registerModule(KotlinModule())
-    }
-
+tasks.withType(PublishToMavenRepository) {
+    enabled = false
+}
+tasks.withType(PublishToMavenLocal) {
+    enabled = false
 }

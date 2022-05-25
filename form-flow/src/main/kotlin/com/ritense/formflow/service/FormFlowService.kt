@@ -28,6 +28,10 @@ class FormFlowService(
     private val formFlowInstanceRepository: FormFlowInstanceRepository
 ) {
 
+    fun getFormFlowDefinitions(): List<FormFlowDefinition> {
+        return formFlowDefinitionRepository.findAll()
+    }
+
     fun findLatestDefinitionByKey(formFlowKey: String): FormFlowDefinition? {
         return formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc(formFlowKey)
     }

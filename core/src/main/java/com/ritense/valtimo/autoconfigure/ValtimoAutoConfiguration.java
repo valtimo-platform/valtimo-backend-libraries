@@ -42,12 +42,14 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
 import com.ritense.valtimo.web.rest.AccountResource;
+import com.ritense.valtimo.web.rest.PingResource;
 import com.ritense.valtimo.web.rest.ProcessInstanceResource;
 import com.ritense.valtimo.web.rest.ProcessResource;
 import com.ritense.valtimo.web.rest.PublicProcessResource;
 import com.ritense.valtimo.web.rest.ReportingResource;
 import com.ritense.valtimo.web.rest.TaskResource;
 import com.ritense.valtimo.web.rest.UserResource;
+import com.ritense.valtimo.web.rest.VersionResource;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.camunda.bpm.engine.FormService;
@@ -64,6 +66,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
@@ -308,6 +311,18 @@ public class ValtimoAutoConfiguration {
     @ConditionalOnMissingBean(UserResource.class)
     public UserResource userResource(UserManagementService userManagementService) {
         return new UserResource(userManagementService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(VersionResource.class)
+    public VersionResource versionResource() {
+        return new VersionResource();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PingResource.class)
+    public PingResource pingResource() {
+        return new PingResource();
     }
 
     @Bean

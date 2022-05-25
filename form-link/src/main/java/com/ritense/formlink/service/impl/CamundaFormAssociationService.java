@@ -226,6 +226,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
             type,
             formDefinition.getId(),
             null,
+            null,
             null
         );
         return createFormAssociation(new CreateFormAssociationRequest(processDefinitionKey, formLinkRequest));
@@ -252,6 +253,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
             request.getFormLinkRequest().getType(),
             request.getFormLinkRequest().getId(),
             request.getFormLinkRequest().getFormId(),
+            request.getFormLinkRequest().getFormFlowId(),
             request.getFormLinkRequest().getCustomUrl(),
             request.getFormLinkRequest().getAngularStateUrl()
         );
@@ -289,6 +291,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
             request.getFormLinkRequest().getType(),
             request.getFormLinkRequest().getId(),
             request.getFormLinkRequest().getFormId(),
+            request.getFormLinkRequest().getFormFlowId(),
             request.getFormLinkRequest().getCustomUrl(),
             request.getFormLinkRequest().getAngularStateUrl()
         );

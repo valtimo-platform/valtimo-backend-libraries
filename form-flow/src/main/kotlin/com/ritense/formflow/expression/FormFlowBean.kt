@@ -14,19 +14,9 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.formflow.web.rest.result
+package com.ritense.formflow.expression
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.ritense.formflow.domain.instance.FormFlowInstanceId
-import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 
-class CreateInstanceResult(
-    @JsonProperty
-    val formFlowInstanceId: FormFlowInstanceId,
-    @JsonProperty
-    val currentStepId: FormFlowStepInstanceId?,
-    @JsonProperty
-    val currentStepKey: String?,
-    @JsonProperty
-    val form: String?
-)
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.CLASS)
+annotation class FormFlowBean

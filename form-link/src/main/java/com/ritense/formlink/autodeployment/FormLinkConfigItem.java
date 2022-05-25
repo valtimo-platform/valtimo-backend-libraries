@@ -21,6 +21,7 @@ import java.util.Objects;
 
 public class FormLinkConfigItem {
     private String formName;
+    private String formFlowName;
     private String formLinkElementId;
     private FormAssociationType formAssociationType;
 
@@ -29,6 +30,10 @@ public class FormLinkConfigItem {
 
     public String getFormName() {
         return this.formName;
+    }
+
+    public String getFormFlowName() {
+        return this.formFlowName;
     }
 
     public String getFormLinkElementId() {
@@ -41,6 +46,10 @@ public class FormLinkConfigItem {
 
     public void setFormName(String formName) {
         this.formName = formName;
+    }
+
+    public void setFormFlowName(String formFlowName) {
+        this.formFlowName = formFlowName;
     }
 
     public void setFormLinkElementId(String formLinkElementId) {

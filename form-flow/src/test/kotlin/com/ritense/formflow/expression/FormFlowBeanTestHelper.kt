@@ -14,19 +14,25 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.formflow.web.rest.result
+package com.ritense.formflow.expression
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.ritense.formflow.domain.instance.FormFlowInstanceId
-import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
+import org.springframework.stereotype.Component
 
-class CreateInstanceResult(
-    @JsonProperty
-    val formFlowInstanceId: FormFlowInstanceId,
-    @JsonProperty
-    val currentStepId: FormFlowStepInstanceId?,
-    @JsonProperty
-    val currentStepKey: String?,
-    @JsonProperty
-    val form: String?
-)
+@FormFlowBean
+@Component
+class FormFlowBeanTestHelper {
+    // Used in expressions, do not remove
+    fun returnTrue(): Boolean {
+        return true
+    }
+
+    // Used in expressions, do not remove
+    fun parseContext(submissionData: String): Boolean {
+        return true
+    }
+
+    // Used in expressions, do not remove
+    fun parseAdditionalProperties(additionalProperties: Map<String, Any>): Boolean {
+        return true
+    }
+}

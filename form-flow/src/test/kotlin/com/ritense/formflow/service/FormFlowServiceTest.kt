@@ -25,6 +25,8 @@ import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
+import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
+import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.expression.ExpressionProcessor
 import com.ritense.formflow.expression.ExpressionProcessorFactory
@@ -37,6 +39,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.any
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.mock
+import org.springframework.context.ApplicationContext
 
 internal class FormFlowServiceTest {
 
@@ -49,22 +52,20 @@ internal class FormFlowServiceTest {
         val formFlowDefinitionRepository = mock(FormFlowDefinitionRepository::class.java)
         formFlowInstanceRepository = mock(FormFlowInstanceRepository::class.java)
         formFlowService = FormFlowService(
-            formFlowDefinitionRepository,
-            formFlowInstanceRepository
+            formFlowDefinitionRepository, formFlowInstanceRepository
         )
 
         val expressionProcessorFactory = mock(ExpressionProcessorFactory::class.java)
         expressionProcessor = spy(SpelExpressionProcessor())
         whenever(expressionProcessorFactory.create(any())).thenReturn(expressionProcessor)
-        ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory)
+        ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory, mock(ApplicationContext::class.java))
     }
 
     @Test
     fun `should handle multiple onOpen expressions when opening a form flow instance`() {
         val instance = createAndOpenFormFlowInstance(
             onOpen = listOf(
-                "\${'Hello '+'World!'}",
-                "\${3 / 1}"
+                "\${'Hello '+'World!'}", "\${3 / 1}"
             )
         )
 
@@ -76,8 +77,7 @@ internal class FormFlowServiceTest {
     fun `should handle multiple onComplete expressions when completing a form flow instance`() {
         val instance = createAndOpenFormFlowInstance(
             onComplete = listOf(
-                "\${'Hello '+'World!'}",
-                "\${3 / 1}"
+                "\${'Hello '+'World!'}", "\${3 / 1}"
             )
         )
 
@@ -85,12 +85,15 @@ internal class FormFlowServiceTest {
         verify(expressionProcessor, times(2)).process<Any>(anyString(), isNull())
     }
 
-    private fun createAndOpenFormFlowInstance(onOpen: List<String>? = null, onComplete: List<String>? = null): FormFlowInstance {
+    private fun createAndOpenFormFlowInstance(
+        onOpen: List<String>? = null, onComplete: List<String>? = null
+    ): FormFlowInstance {
         val step = FormFlowStep(
             FormFlowStepId("start-step"),
             ArrayList(),
             onOpen?.toMutableList(),
-            onComplete?.toMutableList()
+            onComplete?.toMutableList(),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val definition = FormFlowDefinition(
             FormFlowDefinitionId("test", 1L), "start-step", setOf(step)

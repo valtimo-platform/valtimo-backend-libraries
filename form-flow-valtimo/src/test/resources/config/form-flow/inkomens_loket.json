@@ -12,7 +12,13 @@
                     "condition": null,
                     "step": "end"
                 }
-            ]
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         },
 
         {
@@ -25,17 +31,35 @@
                 {
                     "step": "end"
                 }
-            ]
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         },
 
         {
             "key": "gezinssituatie",
-            "nextStep": "thuiswonende-kinderen"
+            "nextStep": "thuiswonende-kinderen",
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         },
 
         {
             "key": "thuiswonende-kinderen",
-            "nextStep": "inkomen"
+            "nextStep": "inkomen",
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         },
         {
             "key": "inkomen",
@@ -47,15 +71,33 @@
                 {
                     "step": "end"
                 }
-            ]
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         },
 
         {
             "key": "vermogen",
-            "nextStep": "end"
+            "nextStep": "end",
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         },
         {
-            "key": "end"
+            "key": "end",
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         }
     ]
 }

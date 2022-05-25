@@ -18,11 +18,14 @@ package com.ritense.valtimo.formflow.web.rest
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.ritense.form.service.FormLoaderService
+import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.web.rest.result.CompleteStepResult
 import com.ritense.valtimo.formflow.web.rest.result.CreateInstanceResult
+import org.json.JSONObject
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -35,8 +38,9 @@ import org.springframework.web.bind.annotation.RequestParam
 
 @RestController
 @RequestMapping(value = ["/api/form-flow/demo"])
-class FormFlowResource(
-    val formFlowService: FormFlowService
+class FormFlowDemoResource(
+    val formFlowService: FormFlowService,
+    val formLoaderService: FormLoaderService
 ) {
 
     @PostMapping("/definition/{definitionKey}/instance")
@@ -47,9 +51,18 @@ class FormFlowResource(
     ): ResponseEntity<CreateInstanceResult> {
         val latestDefinition = formFlowService.findLatestDefinitionByKey(definitionKey)
         val createdInstance = latestDefinition!!.createInstance(additionalParameters?: mutableMapOf())
+        var form: String? = null
 
         if(openFirstStep) {
             createdInstance.getCurrentStep().open()
+
+            val stepDefinitionType = createdInstance.getCurrentStep().definition.type
+            if (stepDefinitionType.name == "form") {
+                form = formLoaderService
+                    .getFormDefinitionByName(
+                        (stepDefinitionType.properties as FormStepTypeProperties)
+                            .definition)?.toString()
+            }
         }
         formFlowService.save(createdInstance)
 
@@ -57,7 +70,8 @@ class FormFlowResource(
             CreateInstanceResult(
                 createdInstance.id,
                 createdInstance.currentFormFlowStepInstanceId,
-                createdInstance.getCurrentStep().stepKey)
+                createdInstance.getCurrentStep().stepKey,
+                form)
         )
     }
 
@@ -76,15 +90,27 @@ class FormFlowResource(
 
         val formFlowStepInstance = instance.complete(
             FormFlowStepInstanceId.existingId(UUID.fromString(stepId)),
-            (submissionData?:JsonNodeFactory.instance.objectNode()).toString()
+            JSONObject((submissionData?:JsonNodeFactory.instance.objectNode()).toString())
         )
+
+        var form: String? = null
 
         if(openNext) {
             formFlowStepInstance?.open()
+            if (formFlowStepInstance!= null) {
+                val stepDefinitionType = formFlowStepInstance.definition.type
+                if (stepDefinitionType.name == "form") {
+                    form = formLoaderService
+                        .getFormDefinitionByName(
+                            (stepDefinitionType.properties as FormStepTypeProperties)
+                                .definition)?.toString()
+                }
+            }
         }
 
         formFlowService.save(instance)
         return ResponseEntity.ok(
-            CompleteStepResult(instance.id, formFlowStepInstance?.id, formFlowStepInstance?.stepKey))
+            CompleteStepResult(instance.id, formFlowStepInstance?.id, formFlowStepInstance?.stepKey, form)
+        )
     }
 }

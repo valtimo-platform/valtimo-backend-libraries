@@ -44,6 +44,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
+    implementation "org.json:json:20201115"
+
     implementation "io.github.microutils:kotlin-logging:2.0.4"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
@@ -53,10 +55,11 @@ dependencies {
 
     implementation project(':contract')
     implementation project(':core')
+    implementation project(':form')
+
+    testImplementation project(':resource')
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
-
-    testImplementation project(':form-flow')
 
     jar {
         enabled = true

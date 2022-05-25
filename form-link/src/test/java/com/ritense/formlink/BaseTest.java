@@ -105,6 +105,7 @@ public abstract class BaseTest {
                 FormAssociationType.USER_TASK,
                 formId,
                 null,
+                null,
                 null
             )
         );
@@ -117,6 +118,7 @@ public abstract class BaseTest {
                 "startEventId",
                 FormAssociationType.START_EVENT,
                 formId,
+                null,
                 null,
                 null
             )
@@ -131,6 +133,7 @@ public abstract class BaseTest {
                 "userTaskId",
                 FormAssociationType.USER_TASK,
                 formId,
+                null,
                 null,
                 null
             )
