@@ -158,12 +158,14 @@ public class ProcessDocumentAutoConfiguration {
     public ProcessDocumentDeploymentService processDocumentDeploymentService(
             ResourceLoader resourceLoader,
             ProcessDocumentAssociationService processDocumentAssociationService,
-            ContextService contextService
+            ContextService contextService,
+            DocumentDefinitionService documentDefinitionService
     ) {
         return new CamundaProcessJsonSchemaDocumentDeploymentService(
                 resourceLoader,
                 processDocumentAssociationService,
-                contextService
+                contextService,
+                documentDefinitionService
         );
     }
 
