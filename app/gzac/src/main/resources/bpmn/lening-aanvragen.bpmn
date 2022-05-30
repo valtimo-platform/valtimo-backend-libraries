@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_12j1sji" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.12.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_12j1sji" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.12.0">
   <bpmn:process id="lening-aanvragen" name="Lening aanvragen" isExecutable="true">
     <bpmn:startEvent id="start-event" camunda:formKey="formio:new-load-request">
       <bpmn:extensionElements>
@@ -20,7 +20,7 @@
       <bpmn:outgoing>Flow_1j5xjoe</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="SequenceFlow_0zvtwht" sourceRef="generate-pdf" targetRef="end-event" />
-    <bpmn:serviceTask id="generate-pdf" name="Genereer PDF" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:expression="${processDocumentGenerator.generate(execution, &#34;application/pdf&#34;, &#34;Valtimo demo - Lening aanvraag.docx&#34;)}">
+    <bpmn:serviceTask id="generate-pdf" name="Genereer PDF" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:expression="${processDocumentGenerator.generate(execution, &quot;application/pdf&quot;, &quot;Valtimo demo - Lening aanvraag.docx&quot;)}">
       <bpmn:incoming>Flow_1uqnsqd</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0zvtwht</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -30,17 +30,17 @@
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_1j5xjoe" sourceRef="akkoord-op-lening-task" targetRef="burger-controleer-lening-task" />
     <bpmn:sequenceFlow id="Flow_1uqnsqd" sourceRef="create-product-straatverlichting-task" targetRef="generate-pdf" />
-    <bpmn:serviceTask id="create-product-straatverlichting-task" name="Create product: straatverlichting" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:expression="${connectorFluentBuilder.builder().withConnector(&#39;ObjectsApi-ConnectorInstance&#39;).put(execution.processBusinessKey, &#39;height&#39;, &#39;/height&#39;).executeCreateObjectRequest()}">
+    <bpmn:serviceTask id="create-product-straatverlichting-task" name="Create product: straatverlichting" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:expression="${connectorFluentBuilder.builder().withConnector('ObjectsApi-ConnectorInstance').put(execution.processBusinessKey, 'height', '/height').executeCreateObjectRequest()}">
       <bpmn:incoming>Flow_1t6wrhx</bpmn:incoming>
       <bpmn:outgoing>Flow_1uqnsqd</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_1t6wrhx" sourceRef="burger-controleer-lening-task" targetRef="create-product-straatverlichting-task" />
     <bpmn:userTask id="burger-controleer-lening-task" name="Burger controleer lening" camunda:asyncBefore="true" camunda:asyncAfter="true">
       <bpmn:extensionElements>
-        <camunda:executionListener expression="${connectorService.loadByName(&#34;TaakConnector&#34;).createTask(task, &#34;test-form&#34;)}" event="start" />
         <camunda:properties>
           <camunda:property name="taak:voornaam" value="doc:/voornaam" />
         </camunda:properties>
+        <camunda:taskListener expression="${connectorService.loadByName(&quot;TaakConnector&quot;).createTask(task, &quot;test-form&quot;)}" event="create" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1j5xjoe</bpmn:incoming>
       <bpmn:outgoing>Flow_1t6wrhx</bpmn:outgoing>
