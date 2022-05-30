@@ -52,12 +52,16 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:6.17.0"
 
     implementation project(':contract')
     implementation project(':core')
     implementation project(':form')
+    implementation project(':form-link')
+    implementation project(':document')
 
     testImplementation project(':resource')
+    testImplementation project(':process-document')
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 

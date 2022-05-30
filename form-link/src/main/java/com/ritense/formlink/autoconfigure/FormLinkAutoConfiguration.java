@@ -21,17 +21,23 @@ import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.formlink.autodeployment.FormLinkDeploymentService;
 import com.ritense.formlink.autodeployment.FormsAutoDeploymentFinishedEventListener;
+import com.ritense.formlink.domain.ProcessLinkTaskProvider;
+import com.ritense.formlink.domain.impl.formassociation.FormProcessLinkTaskProvider;
 import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.FormAssociationSubmissionService;
+import com.ritense.formlink.service.ProcessLinkService;
 import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.formlink.service.impl.CamundaFormAssociationService;
 import com.ritense.formlink.service.impl.CamundaFormAssociationSubmissionService;
+import com.ritense.formlink.service.impl.DefaultProcessLinkService;
 import com.ritense.formlink.service.impl.FormIoJsonPatchSubmissionTransformerService;
 import com.ritense.formlink.web.rest.FormAssociationManagementResource;
 import com.ritense.formlink.web.rest.FormAssociationResource;
+import com.ritense.formlink.web.rest.ProcessLinkResource;
 import com.ritense.formlink.web.rest.impl.CamundaFormAssociationManagementResource;
 import com.ritense.formlink.web.rest.impl.CamundaFormAssociationResource;
+import com.ritense.formlink.web.rest.impl.DefaultProcessLinkResource;
 import com.ritense.formlink.web.rest.impl.interceptor.PublicAccessRateLimitInterceptor;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
@@ -123,6 +129,15 @@ public class FormLinkAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ProcessLinkResource.class)
+    public ProcessLinkResource defaultProcessLinkResource(
+        ProcessLinkService processLinkService
+    ) {
+        return new DefaultProcessLinkResource(processLinkService);
+    }
+
+
+    @Bean
     @ConditionalOnMissingBean(PublicAccessRateLimitInterceptor.class)
     public PublicAccessRateLimitInterceptor publicAccessRateLimitInterceptor() {
         return new PublicAccessRateLimitInterceptor();
@@ -144,6 +159,21 @@ public class FormLinkAutoConfiguration {
         FormLinkDeploymentService formLinkDeploymentService
     ) {
         return new FormsAutoDeploymentFinishedEventListener(formLinkDeploymentService);
+    }
+
+    @Bean
+    public ProcessLinkTaskProvider formProcessLinkTaskProvider() {
+        return new FormProcessLinkTaskProvider();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessLinkService.class)
+    public ProcessLinkService processLinkService(
+        TaskService taskService,
+        FormAssociationService formAssociationService,
+        List<ProcessLinkTaskProvider> processLinkTaskProvide
+    ) {
+        return new DefaultProcessLinkService(taskService, formAssociationService, processLinkTaskProvide);
     }
 
 }

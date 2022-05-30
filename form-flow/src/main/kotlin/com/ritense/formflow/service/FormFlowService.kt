@@ -18,18 +18,29 @@ package com.ritense.formflow.service
 
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
+import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
+import com.ritense.formflow.domain.instance.FormFlowStepInstance
+import com.ritense.formflow.handler.FormFlowStepTypeHandler
+import com.ritense.formflow.handler.TypeProperties
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 
 class FormFlowService(
     private val formFlowDefinitionRepository: FormFlowDefinitionRepository,
-    private val formFlowInstanceRepository: FormFlowInstanceRepository
+    private val formFlowInstanceRepository: FormFlowInstanceRepository,
+    private val formFlowAdditionalPropertiesSearchRepository: FormFlowAdditionalPropertiesSearchRepository,
+    private val formFlowStepTypeHandlers: List<FormFlowStepTypeHandler>
 ) {
 
     fun getFormFlowDefinitions(): List<FormFlowDefinition> {
         return formFlowDefinitionRepository.findAll()
+    }
+
+    fun findDefinition(formFlowId: FormFlowDefinitionId): FormFlowDefinition {
+        return formFlowDefinitionRepository.getById(formFlowId)
     }
 
     fun findLatestDefinitionByKey(formFlowKey: String): FormFlowDefinition? {
@@ -48,7 +59,24 @@ class FormFlowService(
         return formFlowInstanceRepository.getById(formFlowInstanceId)
     }
 
+    fun getByInstanceIdIfExists(formFlowInstanceId: FormFlowInstanceId): FormFlowInstance? {
+        return formFlowInstanceRepository.getById(formFlowInstanceId)
+    }
+
     fun save(formFlowInstance: FormFlowInstance) {
         formFlowInstanceRepository.save(formFlowInstance)
+    }
+
+    fun findInstances(additionalProperties: Map<String, Any>): List<FormFlowInstance> {
+        return formFlowAdditionalPropertiesSearchRepository.findInstances(additionalProperties)
+    }
+
+    fun getFormFlowStepTypeHandler(stepType: FormFlowStepType): FormFlowStepTypeHandler {
+        return formFlowStepTypeHandlers.singleOrNull { it.getType() == stepType.name }
+            ?: throw IllegalStateException("No formFlowStepTypeHandler found for type '${stepType.name}'")
+    }
+
+    fun getTypeProperties(stepInstance: FormFlowStepInstance): TypeProperties {
+        return getFormFlowStepTypeHandler(stepInstance.definition.type).getTypeProperties(stepInstance)
     }
 }

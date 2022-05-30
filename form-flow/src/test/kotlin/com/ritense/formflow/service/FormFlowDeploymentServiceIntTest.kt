@@ -80,7 +80,11 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
                         {
                             "key": "woonplaats",
                             "onOpen": ["${'$'}{'Hello +'world!'}"],
-                            "nextStep": "leeftijd",
+                            "nextSteps": [
+                                {
+                                    "step": "leeftijd"
+                                }
+                            ],
                             "type": {
                                 "name": "form",
                                 "properties": {
@@ -105,7 +109,11 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
                     "steps": [
                         {
                             "key": "woonplaats",
-                            "nextStep": "leeftijd",
+                            "nextSteps": [
+                                {
+                                    "step": "leeftijd"
+                                }
+                            ],
                             "type": {
                                 "name": "unknown",
                                 "properties": {}

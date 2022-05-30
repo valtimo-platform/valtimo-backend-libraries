@@ -18,7 +18,7 @@ package com.ritense.formflow.domain.definition.configuration
 
 import com.ritense.formflow.domain.definition.FormFlowNextStep as FormFlowNextStepEntity
 
-class FormFlowNextStep(
+data class FormFlowNextStep(
     val condition: String? = null,
     val step: String
 ) {

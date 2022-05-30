@@ -117,6 +117,90 @@ internal class DocumentValueResolverTest {
     }
 
     @Test
+    fun `should resolve object-value from document properties`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"profile":{"firstName":"John"}}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope
+        ).apply(
+            "/profile"
+        )
+
+        assertThat(resolvedValue).isEqualTo(mapOf("firstName" to "John"))
+    }
+
+    @Test
+    fun `should resolve array-value from document properties`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"cities":[{"name":"Amsterdam"},{"name":"Utrecht"}]}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope
+        ).apply(
+            "/cities"
+        )
+
+        assertThat(resolvedValue).isEqualTo(listOf(mapOf("name" to "Amsterdam"), mapOf("name" to "Utrecht")))
+    }
+
+    @Test
+    fun `should resolve empty-object-value from document properties`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{}}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope
+        ).apply(
+            "/root"
+        )
+
+        assertThat(resolvedValue).isEqualTo(emptyMap<String, Any>())
+    }
+
+    @Test
+    fun `should resolve empty-array-value from document properties`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":[]}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope
+        ).apply(
+            "/root"
+        )
+
+        assertThat(resolvedValue).isEqualTo(emptyList<Any>())
+    }
+
+    @Test
+    fun `should resolve null-value from document properties`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":null}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope
+        ).apply(
+            "/root"
+        )
+
+        assertThat(resolvedValue).isEqualTo(null)
+    }
+
+    @Test
+    fun `should resolve missing-value from document properties`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope
+        ).apply(
+            "/root"
+        )
+
+        assertThat(resolvedValue).isEqualTo(null)
+    }
+
+    @Test
     fun `should add text value`() {
         whenever(document.content()).thenReturn(JsonDocumentContent("{}"))
 

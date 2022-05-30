@@ -1,0 +1,65 @@
+{
+    "startStep": "step1",
+    "steps": [
+        {
+            "key": "step1",
+            "onOpen": [],
+            "onComplete": [],
+            "nextSteps": [
+                {
+                    "condition": null,
+                    "step": "step2"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "user-task-lening-aanvragen"
+                }
+            }
+        },
+        {
+            "key": "step2",
+            "onOpen": [],
+            "onComplete": [],
+            "nextSteps": [
+                {
+                    "condition": null,
+                    "step": "step3"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "user-task-validate-request"
+                }
+            }
+        },
+        {
+            "key": "step3",
+            "onOpen": [],
+            "onComplete": [],
+            "nextSteps": [
+                {
+                    "condition": null,
+                    "step": "end"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "user-task-vraag-aanvullende-informatie"
+                }
+            }
+        },
+        {
+            "key": "end",
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "start-form-bezwaar"
+                }
+            }
+        }
+    ]
+}

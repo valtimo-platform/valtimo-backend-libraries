@@ -49,11 +49,13 @@ class DocumentValueResolverFactory(
         val document = processDocumentService.getDocument(processInstanceId, variableScope)
 
         return Function { requestedValue ->
-            val value = document.content().getValueBy(JsonPointer.valueOf(requestedValue)).orElse(null)
-            if (value?.isValueNode == true) {
-                Mapper.INSTANCE.get().treeToValue(value, Object::class.java)
-            } else {
+            val node = document.content().getValueBy(JsonPointer.valueOf(requestedValue)).orElse(null)
+            if (node == null || node.isMissingNode || node.isNull) {
                 null
+            } else if (node.isValueNode || node.isArray || node.isObject) {
+                Mapper.INSTANCE.get().treeToValue(node, Object::class.java)
+            } else {
+                node.asText()
             }
         }
     }

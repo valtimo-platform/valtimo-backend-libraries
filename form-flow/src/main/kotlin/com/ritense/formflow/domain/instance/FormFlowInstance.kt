@@ -81,6 +81,23 @@ class FormFlowInstance(
         return navigateToNextStep()
     }
 
+
+    /**
+     * This method navigates to the previous step (if present).
+     *
+     * @return The previous step (optional)
+     */
+    fun back(): FormFlowStepInstance? {
+        val previousStepOrder = getCurrentStep().order - 1
+        return if (previousStepOrder >= 0) {
+            val previousStep = history.single { it.order == previousStepOrder }
+            currentFormFlowStepInstanceId = previousStep.id
+            previousStep
+        } else {
+            null
+        }
+    }
+
     fun getCurrentStep(): FormFlowStepInstance {
         return history.first {
             it.id == currentFormFlowStepInstanceId
@@ -142,7 +159,8 @@ class FormFlowInstance(
             this.currentFormFlowStepInstanceId = null
             return null
         }
-        history.add(nextStep)
+        history.removeIf { it.stepKey == nextStep.stepKey && it.order == nextStep.order }
+        history.add(nextStep.order, nextStep)
         currentFormFlowStepInstanceId = nextStep.id
         return nextStep
     }
@@ -152,19 +170,20 @@ class FormFlowInstance(
             return null
         }
         var stepKey = formFlowDefinition.startStep
+        var stepOrder = 0
         if (currentFormFlowStepInstanceId != null) {
             val currentStepInstance = getCurrentStep()
-            val currentStep = formFlowDefinition.steps.first {
-                it.id.key == currentStepInstance.stepKey
-            }
+            val currentStep = formFlowDefinition.getStepByKey(currentStepInstance.stepKey)
 
-            if (currentStep.nextSteps == null || currentStep.nextSteps.isEmpty()) {
+            if (currentStep.nextSteps.isEmpty()) {
                 return null
             }
 
             stepKey = currentStep.nextSteps.first().step
+            stepOrder = currentStepInstance.order + 1
         }
-        return FormFlowStepInstance(instance = this, stepKey = stepKey, order = history.size)
+        return history.singleOrNull { it.stepKey == stepKey && it.order == stepOrder }
+            ?: FormFlowStepInstance(instance = this, stepKey = stepKey, order = stepOrder)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -176,7 +195,8 @@ class FormFlowInstance(
         if (id != other.id) return false
         if (formFlowDefinition.id != other.formFlowDefinition.id) return false
         if (currentFormFlowStepInstanceId != other.currentFormFlowStepInstanceId) return false
-        //wrapping in arraylist to prevent issues with hibernate PersistentBag equals implementation
+        // Wrapping in ArrayList to prevent issues with Hibernate PersistentBag equals implementation
+        // See https://hibernate.atlassian.net/browse/HHH-5409 for more details
         if (ArrayList(history) != ArrayList(other.history)) return false
 
         return true
