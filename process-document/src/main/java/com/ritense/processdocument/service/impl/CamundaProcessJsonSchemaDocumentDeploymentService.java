@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent;
 import com.ritense.document.domain.impl.Mapper;
+import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.domain.config.ProcessDocumentLinkConfigItem;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
@@ -27,10 +28,10 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentDeploymentService;
 import com.ritense.valtimo.domain.contexts.ContextProcess;
 import com.ritense.valtimo.service.ContextService;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -47,60 +48,87 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
     private final ResourceLoader resourceLoader;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final ContextService contextService;
+    private final DocumentDefinitionService documentDefinitionService;
 
 
-    public CamundaProcessJsonSchemaDocumentDeploymentService(ResourceLoader resourceLoader, ProcessDocumentAssociationService processDocumentAssociationService, ContextService contextService) {
+    public CamundaProcessJsonSchemaDocumentDeploymentService(ResourceLoader resourceLoader, ProcessDocumentAssociationService processDocumentAssociationService, ContextService contextService, DocumentDefinitionService documentDefinitionService) {
         this.resourceLoader = resourceLoader;
         this.processDocumentAssociationService = processDocumentAssociationService;
         this.contextService = contextService;
+        this.documentDefinitionService = documentDefinitionService;
     }
 
     @EventListener(DocumentDefinitionDeployedEvent.class)
-    public void deployAllProcessDocumentLinks(DocumentDefinitionDeployedEvent documentDefinitionDeployedEvent) {
+    public void deployNewProcessDocumentLinks(DocumentDefinitionDeployedEvent documentDefinitionDeployedEvent) {
         final var documentDefinitionName = documentDefinitionDeployedEvent.documentDefinition().id().name();
         final var path = getProcessDocumentLinkResourcePath(documentDefinitionName);
         try {
             final Resource resource = loadResource(path);
             if (resource.exists()) {
-                logger.info("Deploying process-document-links from {}", path);
                 final var processDocumentLinkConfigItems = getJson(IOUtils.toString(resource.getInputStream(), UTF_8));
 
-                processDocumentLinkConfigItems.forEach(item -> {
-                    final var request = new ProcessDocumentDefinitionRequest(
-                            item.getProcessDefinitionKey(),
-                            documentDefinitionName,
-                            item.getCanInitializeDocument(),
-                            item.getStartableByUser()
-                    );
-
-                    final var existingDefinitionOpt = processDocumentAssociationService.findProcessDocumentDefinition(
-                            new CamundaProcessDefinitionKey(item.getProcessDefinitionKey())
-                    );
-
-                    if (existingDefinitionOpt.isPresent()) {
-                        if (!item.equalsProcessDocumentDefinition(existingDefinitionOpt.get())) {
-                            processDocumentAssociationService.deleteProcessDocumentDefinition(request);
-                            processDocumentAssociationService.createProcessDocumentDefinition(request);
-                        }
-                    } else {
-                        processDocumentAssociationService.createProcessDocumentDefinition(request);
-                    }
-
-                    if (Boolean.TRUE.equals(item.getProcessIsVisibleInMenu())) {
-                        contextService.findAll(Pageable.unpaged()).forEach(context -> {
-                            context.addProcess(new ContextProcess(item.getProcessDefinitionKey(), true));
-                            contextService.save(context);
-                        });
-                    }
-                });
+                processDocumentLinkConfigItems.forEach(item -> createProcessDocumentLink(documentDefinitionName, item));
             }
         } catch (IOException e) {
             logger.error("Error while deploying process-document-links", e);
         }
     }
 
+    @EventListener(ApplicationReadyEvent.class)
+    public void deployChangedProcessDocumentLinks() throws IOException {
+        final var resources = loadResources(getProcessDocumentLinkResourcesPath());
+        for (var resource : resources) {
+            try {
+                final var documentDefinitionName = resource.getFilename().split("\\.")[0];
+                final var processDocumentLinkConfigItems = getJson(IOUtils.toString(resource.getInputStream(), UTF_8));
+
+                if (documentDefinitionService.findLatestByName(documentDefinitionName).isPresent()) {
+                    processDocumentLinkConfigItems.forEach(item -> createProcessDocumentLink(documentDefinitionName, item));
+                }
+            } catch (IOException e) {
+                logger.error("Error while deploying process-document-link", e);
+            }
+        }
+    }
+
+    private void createProcessDocumentLink(String documentDefinitionName, ProcessDocumentLinkConfigItem item) {
+        final var request = new ProcessDocumentDefinitionRequest(
+                item.getProcessDefinitionKey(),
+                documentDefinitionName,
+                item.getCanInitializeDocument(),
+                item.getStartableByUser()
+        );
+
+        final var existingAssociationOpt = processDocumentAssociationService.findProcessDocumentDefinition(
+                new CamundaProcessDefinitionKey(item.getProcessDefinitionKey())
+        );
+
+        if (existingAssociationOpt.isPresent()) {
+            if (!item.equalsProcessDocumentDefinition(existingAssociationOpt.get())) {
+                logger.info("Updating process-document-links from {}.json", documentDefinitionName);
+                processDocumentAssociationService.deleteProcessDocumentDefinition(request);
+                processDocumentAssociationService.createProcessDocumentDefinition(request);
+            }
+        } else {
+            logger.info("Deploying process-document-links from {}.json", documentDefinitionName);
+            processDocumentAssociationService.createProcessDocumentDefinition(request);
+        }
+
+        contextService.findAll(Pageable.unpaged()).forEach(context -> {
+            context.getProcesses().removeIf(contextProcess -> contextProcess.getProcessDefinitionKey().equals(item.getProcessDefinitionKey()));
+            if (Boolean.TRUE.equals(item.getProcessIsVisibleInMenu())) {
+                context.addProcess(new ContextProcess(item.getProcessDefinitionKey(), true));
+            }
+            contextService.save(context);
+        });
+    }
+
     private String getProcessDocumentLinkResourcePath(String documentDefinitionName) {
         return "classpath:config/process-document-link/" + documentDefinitionName + ".json";
+    }
+
+    private String getProcessDocumentLinkResourcesPath() {
+        return "classpath*:config/process-document-link/*.json";
     }
 
     private List<ProcessDocumentLinkConfigItem> getJson(String rawJson) throws JsonProcessingException {
@@ -111,6 +139,10 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
 
     private Resource loadResource(String locationPattern) throws IOException {
         return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResource(locationPattern);
+    }
+
+    private Resource[] loadResources(String locationPattern) throws IOException {
+        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(locationPattern);
     }
 
 }
