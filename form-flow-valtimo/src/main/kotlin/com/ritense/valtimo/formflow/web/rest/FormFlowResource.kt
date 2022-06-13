@@ -54,7 +54,7 @@ class FormFlowResource(
         val stepInstance = instance.getCurrentStep()
         formFlowService.save(instance)
 
-        return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, getStepResult(stepInstance)))
+        return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
     }
 
     @PostMapping("/{formFlowId}/step/{stepInstanceId}")
@@ -77,7 +77,7 @@ class FormFlowResource(
         )
         formFlowService.save(instance)
 
-        return ResponseEntity.ok(CompleteStepResult(instance.id.id, getStepResult(stepInstance)))
+        return ResponseEntity.ok(CompleteStepResult(instance.id.id, openStep(stepInstance)))
     }
 
     @PostMapping("/{formFlowId}/back")
@@ -90,11 +90,12 @@ class FormFlowResource(
         val stepInstance = instance.back()
         formFlowService.save(instance)
 
-        return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, getStepResult(stepInstance)))
+        return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
     }
 
-    private fun getStepResult(stepInstance: FormFlowStepInstance?): FormFlowStepResult? {
+    private fun openStep(stepInstance: FormFlowStepInstance?): FormFlowStepResult? {
         return if (stepInstance != null) {
+            stepInstance.open()
             FormFlowStepResult(
                 stepInstance.id.id,
                 stepInstance.definition.type.name,
