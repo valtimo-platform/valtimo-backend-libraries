@@ -18,7 +18,6 @@ package com.ritense.objectsapi.taak
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ValueNode
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile
 import com.ritense.document.service.DocumentService
@@ -109,7 +108,7 @@ class TaakObjectListener(
         }
         val documentenUris = mutableListOf<URI>()
         for (documentPathNode in documentPathsNode) {
-            val documentUrlNode = taakObjectData.at(JsonPointer.valueOf(documentPathNode.textValue())) as ValueNode
+            val documentUrlNode = taakObjectData.at(JsonPointer.valueOf(documentPathNode.textValue()))
             if (!documentUrlNode.isMissingNode && !documentUrlNode.isNull) {
                 try {
                     if (documentUrlNode.isTextual) {

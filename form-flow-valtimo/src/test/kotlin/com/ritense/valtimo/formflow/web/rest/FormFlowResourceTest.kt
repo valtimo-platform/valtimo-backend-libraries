@@ -3,9 +3,8 @@ package com.ritense.valtimo.formflow.web.rest
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import com.ritense.formflow.domain.definition.FormFlowDefinition
-import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
@@ -17,7 +16,6 @@ import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.BaseTest
 import com.ritense.valtimo.formflow.handler.FormTypeProperties
-import org.json.JSONObject
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -36,6 +34,8 @@ class FormFlowResourceTest : BaseTest() {
     lateinit var formFlowService: FormFlowService
     lateinit var formFlowInstance: FormFlowInstance
     lateinit var formFlowInstanceId: FormFlowInstanceId
+    lateinit var stepInstance: FormFlowStepInstance
+    lateinit var stepInstanceId: FormFlowStepInstanceId
 
     @BeforeEach
     fun setUp() {
@@ -48,40 +48,29 @@ class FormFlowResourceTest : BaseTest() {
             )
         )
 
+        val step1 = FormFlowStep(
+            FormFlowStepId("step1"),
+            type = FormFlowStepType("form", FormStepTypeProperties("first-form-definition"))
+        )
+
         formFlowInstanceId = FormFlowInstanceId.newId()
         formFlowInstance = mock()
         whenever(formFlowInstance.id).thenReturn(formFlowInstanceId)
         whenever(formFlowService.getByInstanceIdIfExists(formFlowInstance.id)).thenReturn(formFlowInstance)
         formFlowResource = FormFlowResource(formFlowService)
 
+        stepInstanceId = FormFlowStepInstanceId.newId()
+        stepInstance = mock()
+
+        whenever(formFlowInstance.getCurrentStep()).thenReturn(stepInstance)
+        whenever(stepInstance.id).thenReturn(stepInstanceId)
+        whenever(stepInstance.definition).thenReturn(step1)
+
         mockMvc = MockMvcBuilders.standaloneSetup(formFlowResource).build()
     }
 
     @Test
     fun `should return form flow state`() {
-        val step1 = FormFlowStep(
-            FormFlowStepId("key2"),
-            type = FormFlowStepType("form", FormStepTypeProperties("first-form-definition"))
-        )
-        val step2 = FormFlowStep(
-            FormFlowStepId("key3"),
-            type = FormFlowStepType("form", FormStepTypeProperties("second-form-definition"))
-        )
-        val definition = FormFlowDefinition(
-            id = FormFlowDefinitionId.newId("key1"), "step1", mutableSetOf(step1, step2)
-        )
-        whenever(formFlowInstance.formFlowDefinition).thenReturn(definition)
-
-        val step1InstanceId = FormFlowStepInstanceId.newId()
-        val step1Instance = FormFlowStepInstance(
-            step1InstanceId,
-            formFlowInstance,
-            step1.id.key,
-            1,
-            null
-        )
-
-        whenever(formFlowInstance.getCurrentStep()).thenReturn(step1Instance)
 
         mockMvc
             .perform(
@@ -96,11 +85,13 @@ class FormFlowResourceTest : BaseTest() {
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$.id").value(formFlowInstanceId.id.toString()))
             .andExpect(jsonPath("$.step").isNotEmpty)
-            .andExpect(jsonPath("$.step.id").value(step1InstanceId.id.toString()))
+            .andExpect(jsonPath("$.step.id").value(stepInstanceId.id.toString()))
             .andExpect(jsonPath("$.step.type").value("form"))
             .andExpect(jsonPath("$.step.typeProperties").isNotEmpty)
             .andExpect(jsonPath("$.step.typeProperties.definition.display").value("form"))
             .andExpect(jsonPath("$.step.typeProperties.definition.components").isNotEmpty)
+
+        verify(stepInstance).open()
     }
 
     @Test
@@ -120,35 +111,35 @@ class FormFlowResourceTest : BaseTest() {
 
     @Test
     fun `should complete step`() {
-        val definition = getFormFlowDefinition("key", readFileAsString("/config/form-flow/inkomens_loket.json"))
-        val instance = definition.createInstance(mutableMapOf())
-        whenever(formFlowService.getByInstanceIdIfExists(instance.id)).thenReturn(instance)
+        whenever(formFlowInstance.complete(any(), any())).thenReturn(stepInstance)
 
-        mockMvc.perform(post("/api/form-flow/{flowId}/step/{stepId}", instance.id.id, instance.getCurrentStep().id.id))
+        mockMvc.perform(post("/api/form-flow/{flowId}/step/{stepId}", formFlowInstance.id.id, formFlowInstance.getCurrentStep().id.id))
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.id").value(instance.id.id.toString()))
-            .andExpect(jsonPath("$.step.id").value(instance.getCurrentStep().id.id.toString()))
+            .andExpect(jsonPath("$.id").value(formFlowInstance.id.id.toString()))
+            .andExpect(jsonPath("$.step.id").value(stepInstanceId.id.toString()))
             .andExpect(jsonPath("$.step.type").value("form"))
             .andExpect(jsonPath("$.step.typeProperties.definition.display").value("form"))
             .andExpect(jsonPath("$.step.typeProperties.definition.components").isNotEmpty)
+
+        verify(stepInstance).open()
+        verify(formFlowInstance).complete(any(), any())
     }
 
     @Test
     fun `should navigate to previous step`() {
-        val definition = getFormFlowDefinition("key", readFileAsString("/config/form-flow/inkomens_loket.json"))
-        val instance = definition.createInstance(mutableMapOf())
-        val previousStepId = instance.getCurrentStep().id
-        instance.complete(previousStepId, JSONObject())
-        whenever(formFlowService.getByInstanceIdIfExists(instance.id)).thenReturn(instance)
+        whenever(formFlowInstance.back()).thenReturn(stepInstance)
 
-        mockMvc.perform(post("/api/form-flow/{flowId}/back", instance.id.id))
+        mockMvc.perform(post("/api/form-flow/{flowId}/back", formFlowInstance.id.id))
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.id").value(instance.id.id.toString()))
-            .andExpect(jsonPath("$.step.id").value(previousStepId.id.toString()))
+            .andExpect(jsonPath("$.id").value(formFlowInstance.id.id.toString()))
+            .andExpect(jsonPath("$.step.id").value(stepInstanceId.id.toString()))
             .andExpect(jsonPath("$.step.type").value("form"))
             .andExpect(jsonPath("$.step.typeProperties.definition.display").value("form"))
             .andExpect(jsonPath("$.step.typeProperties.definition.components").isNotEmpty)
+
+        verify(formFlowInstance).back()
+        verify(stepInstance).open()
     }
 }
