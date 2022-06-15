@@ -39,12 +39,23 @@ public class ProcessDocumentLinkConfigItem {
         return canInitializeDocument;
     }
 
+    public boolean canInitializeDocument() {
+        return Boolean.TRUE.equals(canInitializeDocument);
+    }
+
     public void setCanInitializeDocument(Boolean canInitializeDocument) {
         this.canInitializeDocument = canInitializeDocument;
     }
 
     public Boolean getStartableByUser() {
         return startableByUser;
+    }
+
+    /**
+     * The default is true
+     */
+    public boolean isStartableByUser() {
+        return startableByUser == null || Boolean.TRUE.equals(startableByUser);
     }
 
     public void setStartableByUser(Boolean startableByUser) {
@@ -61,8 +72,8 @@ public class ProcessDocumentLinkConfigItem {
 
     public boolean equalsProcessDocumentDefinition(ProcessDocumentDefinition processDocumentDefinition) {
         return processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString().equals(getProcessDefinitionKey())
-                && processDocumentDefinition.startableByUser() == getStartableByUser()
-                && processDocumentDefinition.canInitializeDocument() == getCanInitializeDocument();
+                && processDocumentDefinition.startableByUser() == isStartableByUser()
+                && processDocumentDefinition.canInitializeDocument() == canInitializeDocument();
     }
 
     @Override
