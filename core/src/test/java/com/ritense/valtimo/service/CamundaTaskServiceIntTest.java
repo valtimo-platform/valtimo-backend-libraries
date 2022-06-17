@@ -19,14 +19,21 @@ package com.ritense.valtimo.service;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
+import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.inject.Inject;
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +42,9 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Inject
     private CamundaTaskService camundaTaskService;
+
+    @Inject
+    private TaskService taskService;
 
     @Inject
     private CamundaProcessService camundaProcessService;
@@ -106,6 +116,54 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = USER)
+    void shouldSortTasksByName() throws IllegalAccessException {
+        startProcessAndModifyTask(task1 -> task1.setName("B"));
+        startProcessAndModifyTask(task2 -> task2.setName("A"));
+
+        var pagedTasks = camundaTaskService.findTasksFiltered(
+            CamundaTaskService.TaskFilter.ALL,
+            PageRequest.of(0, 2, Sort.Direction.ASC, "name")
+        );
+
+        var tasks = pagedTasks.toList();
+        assertThat(tasks.get(0).getName()).isEqualTo("A");
+        assertThat(tasks.get(1).getName()).isEqualTo("B");
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = USER)
+    void shouldSortTasksByDueDate() throws IllegalAccessException {
+        startProcessAndModifyTask(task1 -> task1.setDueDate(Date.valueOf("2022-06-17")));
+        startProcessAndModifyTask(task2 -> task2.setDueDate(Date.valueOf("2022-06-18")));
+
+        var pagedTasks = camundaTaskService.findTasksFiltered(
+            CamundaTaskService.TaskFilter.ALL,
+            PageRequest.of(0, 2, Sort.Direction.DESC, "due")
+        );
+
+        var tasks = pagedTasks.toList();
+        assertThat(tasks.get(0).getDue().toInstant()).hasToString("2022-06-18T00:00:00Z");
+        assertThat(tasks.get(1).getDue().toInstant()).hasToString("2022-06-17T00:00:00Z");
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = USER)
+    void shouldSortTasksByAssignee() throws IllegalAccessException {
+        startProcessAndModifyTask(task1 -> task1.setAssignee("userA@ritense.com"));
+        startProcessAndModifyTask(task2 -> task2.setAssignee("userB@ritense.com"));
+
+        var pagedTasks = camundaTaskService.findTasksFiltered(
+            CamundaTaskService.TaskFilter.ALL,
+            PageRequest.of(0, 2, Sort.Direction.DESC, "assignee")
+        );
+
+        var tasks = pagedTasks.toList();
+        assertThat(tasks.get(0).getAssignee()).isEqualTo("userB@ritense.com");
+        assertThat(tasks.get(1).getAssignee()).isEqualTo("userA@ritense.com");
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = USER)
     void shouldFindCandidateUsers() throws IllegalAccessException {
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
@@ -117,5 +175,20 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
         List<ManageableUser> candidateUsers = camundaTaskService.getCandidateUsers(task);
 
         assertThat(candidateUsers).isEmpty();
+    }
+
+    private void startProcessAndModifyTask(Consumer<Task> taskHandler) {
+        final var processInstance = camundaProcessService.startProcess(
+            processDefinitionKey,
+            businessKey,
+            Map.of()
+        );
+
+        final var task = taskService.createTaskQuery()
+            .processInstanceId(processInstance.getProcessInstanceDto().getId())
+            .singleResult();
+
+        taskHandler.accept(task);
+        taskService.saveTask(task);
     }
 }
