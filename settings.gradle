@@ -53,6 +53,7 @@ include(
         "klant",
         "test-utils-common",
         "besluit",
-        "haalcentraal"
+        "haalcentraal",
+        "plugin"
 )
 
