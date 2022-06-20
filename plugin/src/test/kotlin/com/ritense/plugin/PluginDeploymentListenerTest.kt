@@ -18,6 +18,7 @@ package com.ritense.plugin
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -27,6 +28,7 @@ import com.ritense.plugin.repository.PluginDefinitionRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.test.assertFailsWith
 
 internal class PluginDeploymentListenerTest {
 
@@ -67,6 +69,29 @@ internal class PluginDeploymentListenerTest {
         assertEquals("title", capturedPluginDefinition.title)
         assertEquals("description", capturedPluginDefinition.description)
         assertEquals("com.ritense.plugin.TestPlugin", capturedPluginDefinition.fullyQualifiedClassName)
+    }
+
+    @Test
+    fun `should throw PluginDefinitionNotDeployedException on any exception`() {
+        val pluginsToDeploy = mapOf<Class<*>, Plugin>(
+            TestPlugin::class.java to Plugin(
+                "key",
+                "title",
+                "description"
+            )
+        )
+
+        whenever(pluginDefinitionResolver.findPluginClasses()).thenReturn(pluginsToDeploy)
+        whenever(pluginDefinitionRepository.save(any())).doThrow(RuntimeException("Some exception"))
+
+        val exception = assertFailsWith<PluginDefinitionNotDeployedException> {
+            pluginDeploymentListener.deployPluginDefinitions()
+        }
+
+        assertEquals("key", exception.pluginKey)
+        assertEquals("com.ritense.plugin.TestPlugin", exception.fullyQualifiedClassName)
+        assertEquals("Unable to deploy plugin with key 'key' and class name 'com.ritense.plugin.TestPlugin'",
+            exception.message)
     }
 
 }
