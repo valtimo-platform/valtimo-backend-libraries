@@ -9,4 +9,4 @@ _____/\\\\\\\\\\\\___/\\\\\\\\\\\\\\\______/\\\\\\\\\____________/\\\\\\\\\_
         __\////////////_____\///////////////___\///________\///_________\/////////__
 ${AnsiColor.BRIGHT_BLUE}:: Ritense ::
 :: Running Spring Boot ${spring-boot.version} ::
-:: http://ritense.com ::${AnsiColor.DEFAULT} ::
+:: https://ritense.com ::${AnsiColor.DEFAULT} ::
