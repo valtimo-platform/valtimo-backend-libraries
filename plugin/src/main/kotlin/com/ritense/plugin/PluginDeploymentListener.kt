@@ -32,12 +32,16 @@ class PluginDeploymentListener(
     fun deployPluginDefinitions() {
         logger.info { "Deploying plugins" }
         val classes = findPluginClasses()
-        val action: (Map.Entry<Class<*>, Plugin>) -> Unit = { (clazz, pluginAnnotation) ->
-            deployPluginDefinition(
-                PluginDefinition(pluginAnnotation.key, pluginAnnotation.title, pluginAnnotation.description, clazz.name)
-            )
+
+        classes.forEach { (clazz, pluginAnnotation) ->
+            try {
+                deployPluginDefinition(
+                    PluginDefinition(pluginAnnotation.key, pluginAnnotation.title, pluginAnnotation.description, clazz.name)
+                )
+            } catch (e: Exception) {
+                throw PluginDefinitionNotDeployedException(pluginAnnotation.key, clazz.name, e)
+            }
         }
-        classes.forEach(action)
     }
 
     private fun findPluginClasses() : Map<Class<*>, Plugin> {
