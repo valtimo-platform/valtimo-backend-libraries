@@ -19,6 +19,7 @@ package com.ritense.plugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 
@@ -29,6 +30,7 @@ class PluginDeploymentListener(
 
     @EventListener(ApplicationStartedEvent::class)
     fun deployPluginDefinitions() {
+        logger.info { "Deploying plugins" }
         val classes = findPluginClasses()
         val action: (Map.Entry<Class<*>, Plugin>) -> Unit = { (clazz, pluginAnnotation) ->
             deployPluginDefinition(
@@ -43,6 +45,11 @@ class PluginDeploymentListener(
     }
 
     private fun deployPluginDefinition(pluginDefinition: PluginDefinition): PluginDefinition {
+        logger.info { "Deploying plugin $pluginDefinition.key" }
         return pluginDefinitionRepository.save(pluginDefinition)
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }
