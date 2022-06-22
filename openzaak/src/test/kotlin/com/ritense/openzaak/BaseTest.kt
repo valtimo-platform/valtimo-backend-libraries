@@ -81,9 +81,9 @@ abstract class BaseTest {
 
     fun openzaakConfig(): OpenZaakConfig {
         return OpenZaakConfig(
-            "https://openzaak.ritense.com/",
+            "https://example.org",
             "valtimo_openzaak_test",
-            "ySCrWMK7nCPdoSkjydb58racw2tOzuDqgge3SFhgR3Fe",
+            "some-secret",
             Rsin("002564440")
         )
     }
