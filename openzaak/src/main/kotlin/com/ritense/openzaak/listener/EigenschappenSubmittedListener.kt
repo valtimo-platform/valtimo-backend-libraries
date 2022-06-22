@@ -44,7 +44,7 @@ class EigenschappenSubmittedListener(
                 it.forEach { (key, value) ->
                     eigenschappen.forEach { e ->
                         if (e.naam == key) {
-                            mappedEigenschappen[e.url!!] = value
+                            mappedEigenschappen[e.url!!] = value.toString()
                         }
                     }
                 }
