@@ -24,7 +24,6 @@ class PluginDefinitionResolver {
         val pluginClasses = ClassGraph()
             .enableClassInfo()
             .enableAnnotationInfo()
-            .enableMethodInfo()
             .scan()
             .getClassesWithAnnotation(Plugin::class.java)
 
