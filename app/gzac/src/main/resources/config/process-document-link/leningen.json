@@ -2,6 +2,7 @@
     {
         "processDefinitionKey": "lening-aanvragen",
         "canInitializeDocument": true,
-        "startableByUser": false
+        "startableByUser": false,
+        "processIsVisibleInMenu": true
     }
 ]
