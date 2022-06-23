@@ -21,8 +21,7 @@ import com.ritense.plugin.PluginDeploymentListener
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.PluginResource
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import com.ritense.plugin.web.rest.PluginDefinitionResource
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -51,7 +50,6 @@ class PluginAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(PluginHttpSecurityConfigurer::class)
     fun pluginHttpSecurityConfigurer(): PluginHttpSecurityConfigurer {
         return PluginHttpSecurityConfigurer()
     }
@@ -64,9 +62,9 @@ class PluginAutoConfiguration {
     }
 
     @Bean
-    fun pluginResource(
+    fun pluginDefinitionResource(
         pluginService: PluginService
-    ): PluginResource {
-        return PluginResource(pluginService)
+    ): PluginDefinitionResource {
+        return PluginDefinitionResource(pluginService)
     }
 }

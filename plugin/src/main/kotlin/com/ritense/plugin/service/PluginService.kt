@@ -7,7 +7,7 @@ class PluginService(
     private var pluginDefinitionRepository: PluginDefinitionRepository
 ) {
 
-    fun getPluginDefinitions(): MutableList<PluginDefinition> {
+    fun getPluginDefinitions(): List<PluginDefinition> {
         return pluginDefinitionRepository.findAll()
     }
 }

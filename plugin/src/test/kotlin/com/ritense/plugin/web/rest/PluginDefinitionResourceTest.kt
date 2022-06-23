@@ -1,5 +1,6 @@
 package com.ritense.plugin.web.rest
 
+import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
@@ -16,19 +17,19 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.nio.charset.StandardCharsets
 
-internal class PluginResourceTest {
+internal class PluginDefinitionResourceTest {
 
     lateinit var mockMvc: MockMvc
     lateinit var pluginService: PluginService
-    lateinit var pluginResource: PluginResource
+    lateinit var pluginDefinitionResource: PluginDefinitionResource
 
     @BeforeEach
     fun init() {
-        pluginService = Mockito.mock(PluginService::class.java)
-        pluginResource = PluginResource(pluginService)
+        pluginService = mock()
+        pluginDefinitionResource = PluginDefinitionResource(pluginService)
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(pluginResource)
+            .standaloneSetup(pluginDefinitionResource)
             .build()
     }
 
@@ -36,7 +37,7 @@ internal class PluginResourceTest {
     fun `should get plugin definitions without providing activityType`() {
         val plugin = PluginDefinition("key", "title", "description", "className")
         val plugin2 = PluginDefinition("key2", "title2", "description2", "className2")
-        whenever(pluginService.getPluginDefinitions()).thenReturn(mutableListOf(plugin, plugin2))
+        whenever(pluginService.getPluginDefinitions()).thenReturn(listOf(plugin, plugin2))
 
         mockMvc.perform(get("/api/plugin/definition")
             .characterEncoding(StandardCharsets.UTF_8.name())
@@ -56,10 +57,5 @@ internal class PluginResourceTest {
             .andExpect(jsonPath("$.[1].description").value("description2"))
             .andExpect(jsonPath("$.[0].fullyQualifiedClassName").value("className"))
             .andExpect(jsonPath("$.[1].fullyQualifiedClassName").value("className2"))
-    }
-
-    // Todo Not yet implemented
-    @Test
-    fun `should get plugin definitions with activityType`() {
     }
 }
