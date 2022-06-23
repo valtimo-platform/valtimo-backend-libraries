@@ -83,7 +83,7 @@ abstract class BaseTest {
         return OpenZaakConfig(
             "https://example.org",
             "valtimo_openzaak_test",
-            "some-secret",
+            "some-secret-that-is-padded-to-32",
             Rsin("002564440")
         )
     }
