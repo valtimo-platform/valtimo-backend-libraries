@@ -23,6 +23,7 @@ import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.PluginDefinitionResource
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -69,6 +70,7 @@ class PluginAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(PluginDefinitionResource::class)
     fun pluginDefinitionResource(
         pluginService: PluginService
     ): PluginDefinitionResource {
