@@ -42,3 +42,4 @@ services:
 #   url: jdbc:mysql://localhost:3319/haalcentraal-brp-test
 #   url: jdbc:mysql://localhost:3320/form-flow-valtimo-test
 #   url: jdbc:mysql://localhost:3321/form-flow-test
+#   url: jdbc:mysql://localhost:3322/plugin-test

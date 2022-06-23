@@ -159,7 +159,7 @@ class FormFlowInstance(
             this.currentFormFlowStepInstanceId = null
             return null
         }
-        history.removeIf { it.stepKey == nextStep.stepKey && it.order == nextStep.order }
+        history.removeIf { (it.stepKey == nextStep.stepKey && it.order == nextStep.order)}
         history.add(nextStep.order, nextStep)
         currentFormFlowStepInstanceId = nextStep.id
         return nextStep
