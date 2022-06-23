@@ -22,9 +22,7 @@ import com.ritense.connector.service.ConnectorFluentBuilder
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.domain.sync.listener.DocumentEventListener
-import com.ritense.objectsapi.listener.ObjectsApiFormDataListener
 import com.ritense.objectsapi.repository.ObjectSyncConfigRepository
-import com.ritense.objectsapi.resolver.ObjectsApiFormDataResolver
 import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.service.ObjectsApiProperties
@@ -87,19 +85,6 @@ class ObjectsApiAutoConfiguration {
             connectorFluentBuilder,
             documentService
         )
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(ObjectsApiFormDataListener::class)
-    fun objectsApiFormDataListener(): ObjectsApiFormDataListener {
-        return ObjectsApiFormDataListener()
-    }
-
-    //Resolver
-    @Bean
-    @ConditionalOnMissingBean(ObjectsApiFormDataResolver::class)
-    fun objectsApiFormDataResolver(): ObjectsApiFormDataResolver {
-        return ObjectsApiFormDataResolver()
     }
 
     //Resource
