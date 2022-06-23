@@ -19,6 +19,9 @@ package com.ritense.plugin.configuration
 import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
+import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.web.rest.PluginDefinitionResource
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -46,4 +49,22 @@ class PluginAutoConfiguration {
         return PluginDefinitionResolver()
     }
 
+    @Bean
+    fun pluginHttpSecurityConfigurer(): PluginHttpSecurityConfigurer {
+        return PluginHttpSecurityConfigurer()
+    }
+
+    @Bean
+    fun pluginService(
+        pluginDefinitionRepository: PluginDefinitionRepository
+    ): PluginService {
+        return PluginService(pluginDefinitionRepository)
+    }
+
+    @Bean
+    fun pluginDefinitionResource(
+        pluginService: PluginService
+    ): PluginDefinitionResource {
+        return PluginDefinitionResource(pluginService)
+    }
 }
