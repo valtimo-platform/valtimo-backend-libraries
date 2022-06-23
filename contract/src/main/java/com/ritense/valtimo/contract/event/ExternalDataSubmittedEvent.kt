@@ -20,7 +20,7 @@ import com.ritense.valtimo.contract.form.ExternalFormFieldType
 import java.util.UUID
 
 data class ExternalDataSubmittedEvent(
-    val data: Map<ExternalFormFieldType, Map<String, String>>,
+    val data: Map<ExternalFormFieldType, Map<String, Any>>,
     val documentDefinition: String,
     val documentId: UUID
 )

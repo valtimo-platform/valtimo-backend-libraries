@@ -70,7 +70,7 @@ data class FormIoSubmission(
     private var documentFieldReferences: MutableList<DocumentFieldReference> = mutableListOf()
     private var preJsonPatch: JsonPatch? = null
     private val request: Request
-    private lateinit var externalFormData: Map<ExternalFormFieldType, Map<String, String>>
+    private lateinit var externalFormData: Map<ExternalFormFieldType, Map<String, Any>>
 
     init {
         initDocumentDefinitionFieldReferences()  //Load all mappable document definition form fields
@@ -151,7 +151,7 @@ data class FormIoSubmission(
     private fun buildExternalFormData() {
         externalFormData = formDefinition.buildExternalFormFieldsMap().map { entry ->
             entry.key to entry.value.map {
-                it.name to FormField.getValue(formData, it.jsonPointer).asText()
+                it.name to FormField.getValue(formData, it.jsonPointer)
             }.toMap()
         }.toMap()
     }
