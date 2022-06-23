@@ -24,6 +24,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.domain.PluginDefinition
+import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -34,15 +35,18 @@ internal class PluginDeploymentListenerTest {
 
     lateinit var pluginDefinitionResolver: PluginDefinitionResolver
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
+    lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
     lateinit var pluginDeploymentListener: PluginDeploymentListener
 
     @BeforeEach
     fun beforeAll() {
         pluginDefinitionResolver = mock()
         pluginDefinitionRepository = mock()
+        pluginActionDefinitionRepository = mock()
         pluginDeploymentListener = PluginDeploymentListener(
             pluginDefinitionResolver,
-            pluginDefinitionRepository
+            pluginDefinitionRepository,
+            pluginActionDefinitionRepository
         )
     }
 
@@ -50,7 +54,7 @@ internal class PluginDeploymentListenerTest {
     fun `should deploy plugin`() {
         val pluginDefinitionCaptor = argumentCaptor<PluginDefinition>()
         val pluginsToDeploy = mapOf<Class<*>, Plugin>(
-            TestPlugin::class.java to Plugin(
+            UnitTestPlugin::class.java to Plugin(
                 "key",
                 "title",
                 "description"
@@ -68,7 +72,8 @@ internal class PluginDeploymentListenerTest {
         assertEquals("key", capturedPluginDefinition.key)
         assertEquals("title", capturedPluginDefinition.title)
         assertEquals("description", capturedPluginDefinition.description)
-        assertEquals("com.ritense.plugin.TestPlugin", capturedPluginDefinition.fullyQualifiedClassName)
+        assertEquals("com.ritense.plugin.PluginDeploymentListenerTest\$UnitTestPlugin",
+            capturedPluginDefinition.fullyQualifiedClassName)
     }
 
     @Test
@@ -94,4 +99,5 @@ internal class PluginDeploymentListenerTest {
             exception.message)
     }
 
+    private class UnitTestPlugin()
 }
