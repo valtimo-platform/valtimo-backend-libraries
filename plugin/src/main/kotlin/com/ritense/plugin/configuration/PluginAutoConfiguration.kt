@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
@@ -57,7 +58,9 @@ class PluginAutoConfiguration {
         return PluginDefinitionResolver()
     }
 
+    @Order(420)
     @Bean
+    @ConditionalOnMissingBean(PluginHttpSecurityConfigurer::class)
     fun pluginHttpSecurityConfigurer(): PluginHttpSecurityConfigurer {
         return PluginHttpSecurityConfigurer()
     }
