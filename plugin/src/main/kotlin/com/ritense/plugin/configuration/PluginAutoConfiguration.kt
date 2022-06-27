@@ -67,9 +67,10 @@ class PluginAutoConfiguration {
 
     @Bean
     fun pluginService(
-        pluginDefinitionRepository: PluginDefinitionRepository
+        pluginDefinitionRepository: PluginDefinitionRepository,
+        pluginActionDefinitionRepository: PluginActionDefinitionRepository
     ): PluginService {
-        return PluginService(pluginDefinitionRepository)
+        return PluginService(pluginDefinitionRepository, pluginActionDefinitionRepository)
     }
 
     @Bean

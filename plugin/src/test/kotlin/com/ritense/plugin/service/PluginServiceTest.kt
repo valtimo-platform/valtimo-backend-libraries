@@ -16,21 +16,30 @@
 
 package com.ritense.plugin.service
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.plugin.domain.ActivityType
+import com.ritense.plugin.domain.PluginActionDefinition
+import com.ritense.plugin.domain.PluginActionDefinitionId
+import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 internal class PluginServiceTest {
 
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
+    lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
     lateinit var pluginService: PluginService
 
     @BeforeEach
     fun init() {
         pluginDefinitionRepository = mock()
-        pluginService = PluginService(pluginDefinitionRepository)
+        pluginActionDefinitionRepository = mock()
+        pluginService = PluginService(pluginDefinitionRepository, pluginActionDefinitionRepository)
     }
 
     @Test
@@ -39,4 +48,58 @@ internal class PluginServiceTest {
         verify(pluginDefinitionRepository).findAll()
     }
 
+    @Test
+    fun `should get plugin action definitions from repository by key`(){
+        whenever(pluginActionDefinitionRepository.findByIdPluginDefinitionKey("test")).thenReturn(
+            listOf(
+                PluginActionDefinition(
+                    PluginActionDefinitionId(
+                        "some-key",
+                        mock()
+                    ),
+                    "title",
+                    "description",
+                    "method",
+                    listOf(ActivityType.USER_TASK)
+                )
+            )
+        )
+
+        val actions = pluginService.getPluginDefinitionActions("test", null)
+
+        verify(pluginActionDefinitionRepository).findByIdPluginDefinitionKey("test")
+
+        assertEquals(1, actions.size)
+        assertEquals("some-key", actions[0].key)
+        assertEquals("title", actions[0].title)
+        assertEquals("description", actions[0].description)
+    }
+
+    @Test
+    fun `should get plugin action definitions from repository by key and activityType`(){
+        whenever(pluginActionDefinitionRepository.findByIdPluginDefinitionKey("test")).thenReturn(
+            listOf(
+                PluginActionDefinition(
+                    PluginActionDefinitionId(
+                        "some-key",
+                        mock()
+                    ),
+                    "title",
+                    "description",
+                    "method",
+                    listOf(ActivityType.USER_TASK)
+                )
+            )
+        )
+
+        val actions = pluginService.getPluginDefinitionActions("test", ActivityType.USER_TASK)
+
+        verify(pluginActionDefinitionRepository).findByIdPluginDefinitionKeyAndActivityTypes("test",
+            ActivityType.USER_TASK)
+
+        assertEquals(1, actions.size)
+        assertEquals("some-key", actions[0].key)
+        assertEquals("title", actions[0].title)
+        assertEquals("description", actions[0].description)
+    }
 }
