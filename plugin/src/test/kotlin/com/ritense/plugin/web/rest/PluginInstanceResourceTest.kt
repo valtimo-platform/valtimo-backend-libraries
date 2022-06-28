@@ -82,9 +82,9 @@ internal class PluginInstanceResourceTest {
             .andExpect(
                 jsonPath("$.[1].pluginDefinition.description").value("description2"))
             .andExpect(
-                jsonPath("$.[0].pluginDefinition.fullyQualifiedClassName").value("className"))
+                jsonPath("$.[0].pluginDefinition.fullyQualifiedClassName").doesNotExist())
             .andExpect(
-                jsonPath("$.[1].pluginDefinition.fullyQualifiedClassName").value("className2"))
+                jsonPath("$.[1].pluginDefinition.fullyQualifiedClassName").doesNotExist())
     }
 
     @Test
@@ -123,6 +123,6 @@ internal class PluginInstanceResourceTest {
             .andExpect(
                 jsonPath("$.pluginDefinition.description").value("description"))
             .andExpect(
-                jsonPath("$.pluginDefinition.fullyQualifiedClassName").value("className"))
+                jsonPath("$.pluginDefinition.fullyQualifiedClassName").doesNotExist())
     }
 }
