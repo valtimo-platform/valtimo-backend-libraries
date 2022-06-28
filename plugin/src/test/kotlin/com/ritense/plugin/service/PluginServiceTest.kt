@@ -24,6 +24,10 @@ import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
+import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.plugin.domain.PluginConfiguration
+import com.ritense.plugin.domain.PluginDefinition
+import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,20 +36,43 @@ import kotlin.test.assertEquals
 internal class PluginServiceTest {
 
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
+    lateinit var pluginConfigurationRepository: PluginConfigurationRepository
     lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
     lateinit var pluginService: PluginService
 
     @BeforeEach
     fun init() {
         pluginDefinitionRepository = mock()
+        pluginConfigurationRepository = mock()
         pluginActionDefinitionRepository = mock()
-        pluginService = PluginService(pluginDefinitionRepository, pluginActionDefinitionRepository)
+        pluginService = PluginService(pluginDefinitionRepository, pluginConfigurationRepository, pluginActionDefinitionRepository)
     }
 
     @Test
     fun `should get plugin definitions from repository`(){
         pluginService.getPluginDefinitions()
         verify(pluginDefinitionRepository).findAll()
+    }
+
+    @Test
+    fun `should get plugin configurations from repository`(){
+        pluginService.getPluginConfigurations()
+        verify(pluginConfigurationRepository).findAll()
+    }
+
+    @Test
+    fun `should save plugin configuration`(){
+        val pluginDefinition = PluginDefinition("key", "title", "description", "className")
+        val pluginConfiguration = PluginConfiguration("key", "title", "description", pluginDefinition)
+
+        whenever(pluginDefinitionRepository.getById("key")).thenReturn(pluginDefinition)
+        whenever(pluginConfigurationRepository.save(any())).thenReturn(pluginConfiguration)
+
+        pluginService
+            .createPluginConfiguration(
+                "key", "title", "{\"name\": \"whatever\" }", "key"
+            )
+        verify(pluginConfigurationRepository).save(any())
     }
 
     @Test

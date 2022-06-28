@@ -14,25 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.domain
+package com.ritense.plugin.repository
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import com.ritense.plugin.domain.PluginConfiguration
+import org.springframework.data.jpa.repository.JpaRepository
 
-@Entity
-@Table(name = "plugin_definition")
-class PluginDefinition (
-    @Id
-    @Column(name = "plugin_definition_key")
-    val key: String,
-    @Column(name = "title")
-    val title: String,
-    @Column(name = "description")
-    val description: String,
-    @JsonIgnore
-    @Column(name = "class_name")
-    val fullyQualifiedClassName: String
-)
+interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, String>

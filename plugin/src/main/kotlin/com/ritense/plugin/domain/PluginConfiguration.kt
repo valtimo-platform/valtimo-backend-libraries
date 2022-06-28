@@ -16,23 +16,27 @@
 
 package com.ritense.plugin.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnore
+import org.hibernate.annotations.Type
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.Table
 
 @Entity
-@Table(name = "plugin_definition")
-class PluginDefinition (
+@Table(name = "plugin_configuration")
+class PluginConfiguration (
     @Id
-    @Column(name = "plugin_definition_key")
+    @Column(name = "plugin_configuration_key")
     val key: String,
     @Column(name = "title")
     val title: String,
-    @Column(name = "description")
-    val description: String,
-    @JsonIgnore
-    @Column(name = "class_name")
-    val fullyQualifiedClassName: String
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "properties", columnDefinition = "JSON")
+    val properties: String? = null,
+    @JoinColumn(name = "plugin_definition_key", updatable = false, nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    val pluginDefinition: PluginDefinition,
 )
