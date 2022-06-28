@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.plugin.domain
 
-import com.ritense.plugin.annotation.Plugin
-import io.github.classgraph.ClassGraph
-
-class PluginDefinitionResolver {
-    internal fun findPluginClasses() : Map<Class<*>, Plugin> {
-        val pluginClasses = ClassGraph()
-            .enableClassInfo()
-            .enableAnnotationInfo()
-            .scan()
-            .getClassesWithAnnotation(Plugin::class.java)
-
-        return pluginClasses.associate {
-            it.loadClass() to it.getAnnotationInfo(Plugin::class.java).loadClassAndInstantiate() as Plugin
-        }
-    }
+enum class ActivityType {
+    USER_TASK,
+    SERVICE_TASK
 }

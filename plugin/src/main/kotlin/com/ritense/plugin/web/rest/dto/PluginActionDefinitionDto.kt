@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.plugin.web.rest.dto
 
-import com.ritense.plugin.annotation.Plugin
-import io.github.classgraph.ClassGraph
-
-class PluginDefinitionResolver {
-    internal fun findPluginClasses() : Map<Class<*>, Plugin> {
-        val pluginClasses = ClassGraph()
-            .enableClassInfo()
-            .enableAnnotationInfo()
-            .scan()
-            .getClassesWithAnnotation(Plugin::class.java)
-
-        return pluginClasses.associate {
-            it.loadClass() to it.getAnnotationInfo(Plugin::class.java).loadClassAndInstantiate() as Plugin
-        }
-    }
-}
+class PluginActionDefinitionDto(
+    val key: String,
+    val title: String,
+    val description: String
+)

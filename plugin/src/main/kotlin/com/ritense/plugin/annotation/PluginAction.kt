@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.plugin.annotation
 
-import com.ritense.plugin.annotation.Plugin
-import io.github.classgraph.ClassGraph
+import com.ritense.plugin.domain.ActivityType
 
-class PluginDefinitionResolver {
-    internal fun findPluginClasses() : Map<Class<*>, Plugin> {
-        val pluginClasses = ClassGraph()
-            .enableClassInfo()
-            .enableAnnotationInfo()
-            .scan()
-            .getClassesWithAnnotation(Plugin::class.java)
-
-        return pluginClasses.associate {
-            it.loadClass() to it.getAnnotationInfo(Plugin::class.java).loadClassAndInstantiate() as Plugin
-        }
-    }
-}
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class PluginAction(
+    val key: String,
+    val title: String,
+    val description: String,
+    val activityTypes: Array<ActivityType>
+)
