@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.formflow.web.rest.dto
+package com.ritense.valtimo.contract.validation.listener
 
-import java.util.UUID
+import com.ritense.valtimo.contract.validation.Validatable
+import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.context.event.EventListener
+import javax.validation.Validation
 
-class FormFlowStep(
-    val id: UUID,
-    val type: String,
-    val typeProperties: Any
-)
+class ValidatorReadyEventListener {
+
+    @EventListener(ApplicationReadyEvent::class)
+    fun onApplicationReady() {
+        Validatable.setValidator(Validation.buildDefaultValidatorFactory().validator)
+    }
+}

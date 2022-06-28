@@ -1,0 +1,12 @@
+[
+    {
+        "formName": "start-form-verlofaanvraag",
+        "formLinkElementId": "start-event-verlofaanvraag",
+        "formAssociationType": "start-event"
+    },
+    {
+        "formName": "user-task-akkoord-administratie",
+        "formLinkElementId": "akkoord-verlof",
+        "formAssociationType": "user-task"
+    }
+]

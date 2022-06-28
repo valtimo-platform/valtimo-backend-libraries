@@ -42,21 +42,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Tag("integration")
 @Transactional
-public class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseIntegrationTest {
+class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseIntegrationTest {
 
     private static final String DOCUMENT_DEFINITION_NAME = "house";
     private static final String PROCESS_DEFINITION_KEY = "loan-process-demo";
-
-    @BeforeEach
-    public void setUp() {
-        final var processDocumentRequest = new ProcessDocumentDefinitionRequest(
-            PROCESS_DEFINITION_KEY,
-            DOCUMENT_DEFINITION_NAME,
-            true,
-            true
-        );
-        camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(processDocumentRequest);
-    }
 
     @Test
     public void findProcessDocumentDefinition() {

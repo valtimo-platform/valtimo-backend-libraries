@@ -18,7 +18,6 @@ package com.ritense.objectsapi.taak
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ValueNode
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile
 import com.ritense.document.service.DocumentService
@@ -109,13 +108,16 @@ class TaakObjectListener(
         }
         val documentenUris = mutableListOf<URI>()
         for (documentPathNode in documentPathsNode) {
-            val documentUrlNode = taakObjectData.at(JsonPointer.valueOf(documentPathNode.textValue())) as ValueNode
+            val documentUrlNode = taakObjectData.at(JsonPointer.valueOf(documentPathNode.textValue()))
             if (!documentUrlNode.isMissingNode && !documentUrlNode.isNull) {
-                if (!documentUrlNode.isTextual) {
-                    throw RuntimeException("Invalid URL in '/verzonden_data/documenten'. ${documentUrlNode.toPrettyString()}")
-                }
                 try {
-                    documentenUris.add(URI(documentUrlNode.textValue()))
+                    if (documentUrlNode.isTextual) {
+                        documentenUris.add(URI(documentUrlNode.textValue()))
+                    } else if (documentUrlNode.isArray) {
+                        documentUrlNode.forEach { documentenUris.add(URI(it.textValue())) }
+                    } else {
+                        throw RuntimeException("Invalid URL in '/verzonden_data/documenten'. ${documentUrlNode.toPrettyString()}")
+                    }
                 } catch (e: MalformedURLException) {
                     throw RuntimeException("Malformed URL in: '/verzonden_data/documenten'", e)
                 }

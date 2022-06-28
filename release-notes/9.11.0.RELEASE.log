@@ -1,0 +1,21 @@
+0fb1eb5 - Need to build the release again. removing release notes
+460d4ff - Added release notes file
+291ec02 - Merge branch 'rc/9.11.0.105.RC'
+e3d01a2 - Updated version to 9.11.0.RELEASE
+5959b3f - Haal Centraal should not be published
+ba6c08f - Added release notes file
+f3345c6 - Merge branch 'rc/9.11.0.105.RC'
+55dfb74 - Updated version to 9.11.0.RELEASE
+fd12ccb - Added release notes file
+7087373 - Merge branch 'rc/9.11.0.105.RC'
+f75adf0 - Updated version to 9.11.0.RELEASE
+0698d21 - Added release notes file
+41ce076 - Updated version to 9.11.0.RELEASE
+ce2e3b9 - Merge branch 'main' into rc/9.11.0.105.RC
+1b66a60 - Updated version to 9.11.0.105.RC-SNAPSHOT
+73d2d75 - Feature/34952 form type properties (#177)
+a1c9710 - added form-type properties to step (#176)
+6dc7915 - Added support for choosing form flow definition when linking for process (#175)
+ddf7182 - Feature/update taak object status (#173)
+198a3ac - 34781 - Added submissionData to the context (#172)
+33bb734 - Added missing bean config to ensure autoconfigure registers all resource classes. (#174)

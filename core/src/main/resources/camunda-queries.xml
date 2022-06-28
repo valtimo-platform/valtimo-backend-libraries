@@ -202,13 +202,13 @@
         <include refid="com.ritense.valtimo.camunda.common.bindOrderBy">
             <property name="tablealias" value="RES"/>
         </include>
-        SELECT      ${distinct} <include refid="taskColumnSelection"/>
+        SELECT      <include refid="taskColumnSelection"/>
         FROM        (
             ${limitBefore}
-            SELECT      RES.*
-            ,           EXECUTION.BUSINESS_KEY_
-            ,           ACT_RE_PROCDEF.KEY_ AS PROCESS_DEFINITION_KEY_
-            FROM        ${prefix}ACT_RU_TASK RES
+            SELECT ${distinct} RES.*
+            ,                  EXECUTION.BUSINESS_KEY_
+            ,                  ACT_RE_PROCDEF.KEY_ AS PROCESS_DEFINITION_KEY_
+            FROM               ${prefix}ACT_RU_TASK RES
             <include refid="findTaskWithVariablesCriteriaSqlJoins"/>
             <include refid="findTaskWithVariablesCriteriaSqlWhere"/>
             ${limitBetween}

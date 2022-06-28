@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.formflow.web.rest.dto
+package com.ritense.formlink.domain;
 
-import java.util.UUID
 
-class FormFlow(
-    val id: UUID,
-    val currentStep: FormFlowStep
-)
+import org.camunda.bpm.engine.task.Task;
+
+public interface ProcessLinkTaskProvider<T> {
+    boolean supports(FormLink formLink);
+    TaskOpenResult<T> getTaskResult(Task task, FormLink formLink);
+}

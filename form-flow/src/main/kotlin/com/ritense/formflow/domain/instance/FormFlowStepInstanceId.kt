@@ -49,5 +49,9 @@ class FormFlowStepInstanceId(
         fun existingId(id: UUID): FormFlowStepInstanceId {
             return FormFlowStepInstanceId(id)
         }
+
+        fun existingId(id: String): FormFlowStepInstanceId {
+            return existingId(UUID.fromString(id))
+        }
     }
 }

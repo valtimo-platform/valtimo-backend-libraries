@@ -17,31 +17,20 @@
 package com.ritense.formlink.web.rest.impl;
 
 import com.ritense.formlink.domain.TaskOpenResult;
-import com.ritense.formlink.domain.impl.formassociation.FormTaskOpenResultProperties;
+import com.ritense.formlink.service.ProcessLinkService;
 import com.ritense.formlink.web.rest.ProcessLinkResource;
 import java.util.UUID;
-import org.camunda.bpm.engine.TaskService;
 import org.springframework.http.ResponseEntity;
 
-public class MockProcessLinkResource implements ProcessLinkResource {
-    private final TaskService taskService;
+public class DefaultProcessLinkResource implements ProcessLinkResource {
+    private final ProcessLinkService processLinkService;
 
-    public MockProcessLinkResource(TaskService taskService) {
-        this.taskService = taskService;
+    public DefaultProcessLinkResource(ProcessLinkService processLinkService) {
+        this.processLinkService = processLinkService;
     }
 
     @Override
     public ResponseEntity<TaskOpenResult> getTask(UUID taskId) {
-        return ResponseEntity.ok(
-            new TaskOpenResult(
-                "form",
-                new FormTaskOpenResultProperties(
-                    taskService.createTaskQuery()
-                        .taskId(taskId.toString())
-                        .singleResult()
-                        .getTaskDefinitionKey()
-                )
-            )
-        );
+        return ResponseEntity.ok(processLinkService.openTask(taskId));
     }
 }

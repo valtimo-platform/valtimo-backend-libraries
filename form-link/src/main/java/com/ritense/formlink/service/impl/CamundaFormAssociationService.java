@@ -381,7 +381,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         }
     }
 
-    private void prefillProcessVariables(FormIoFormDefinition formDefinition, Document document) {
+    public void prefillProcessVariables(FormIoFormDefinition formDefinition, Document document) {
         final List<String> processVarsNames = formDefinition.extractProcessVarNames();
         final Map<String, Object> processInstanceVariables = new HashMap<>();
         processDocumentAssociationService.findProcessDocumentInstances(document.id())
@@ -396,7 +396,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         }
     }
 
-    private void prefillDataResolverFields(FormIoFormDefinition formDefinition, JsonSchemaDocument document, JsonNode extendedDocumentContent) {
+    public void prefillDataResolverFields(FormIoFormDefinition formDefinition, Document document, JsonNode extendedDocumentContent) {
         //FormFieldDataResolver pre-filling
         formDefinition.buildExternalFormFieldsMap()
             .forEach((externalFormFieldType, externalContentItems) -> formFieldDataResolvers
@@ -419,7 +419,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         formDefinition.preFill(extendedDocumentContent);
     }
 
-    private void prefillTaskVariables(FormIoFormDefinition formDefinition, String taskInstanceId, JsonNode extendedDocumentContent) {
+    public void prefillTaskVariables(FormIoFormDefinition formDefinition, String taskInstanceId, JsonNode extendedDocumentContent) {
         final Map<String, Object> taskVariables = taskService.getVariables(taskInstanceId);
         final ObjectNode placeholders = Mapper.INSTANCE.objectMapper().valueToTree(taskVariables);
         submissionTransformerService.prePreFillTransform(formDefinition, placeholders, extendedDocumentContent);

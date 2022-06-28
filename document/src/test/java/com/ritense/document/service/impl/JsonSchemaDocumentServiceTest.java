@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
@@ -42,6 +43,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 class JsonSchemaDocumentServiceTest extends BaseTest {
 
@@ -94,6 +97,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
 
     @Test
     void shouldCreateDocumentWithResources() {
+        SecurityContextHolder.getContext()
+                .setAuthentication(new TestingAuthenticationToken("user@ritense.com", USER));
         final var content = new JsonDocumentContent("{\"addresses\" : [{\"streetName\" : \"Funenpark\"}]}");
 
         LocalDateTime createdOn = LocalDateTime.now();
@@ -122,13 +127,14 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         assertEquals(content.asJson(), document.content().asJson());
         assertEquals(definition.id(), document.definitionId());
         assertEquals(123L, document.sequence());
-        assertEquals("system", document.createdBy());
+        assertEquals("user@ritense.com", document.createdBy());
         assertNotNull(document.createdOn());
         assertEquals(document.relatedFiles().size(), 1);
         document.relatedFiles().forEach(relatedFile -> {
             assertEquals(resourceId, relatedFile.getFileId());
             assertEquals("name.txt", relatedFile.getFileName());
             assertEquals(createdOn, relatedFile.getCreatedOn());
+            assertEquals("user@ritense.com", relatedFile.getCreatedBy());
             assertEquals(123L, relatedFile.getSizeInBytes());
         });
 
