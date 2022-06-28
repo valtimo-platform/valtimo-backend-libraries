@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.repository
+package com.ritense.plugin.web.rest.dto
 
-import com.ritense.plugin.domain.ActivityType
-import com.ritense.plugin.domain.PluginActionDefinition
-import com.ritense.plugin.domain.PluginActionDefinitionId
-import org.springframework.data.jpa.repository.JpaRepository
-
-interface PluginActionDefinitionRepository: JpaRepository<PluginActionDefinition, PluginActionDefinitionId> {
-    fun findByIdPluginDefinitionKey(pluginDefinitionKey: String): List<PluginActionDefinition>
-    fun findByIdPluginDefinitionKeyAndActivityTypes(pluginDefinitionKey: String, activityType: ActivityType?): List<PluginActionDefinition>
-}
+class PluginActionDefinitionDto(
+    val key: String,
+    val title: String,
+    val description: String
+)

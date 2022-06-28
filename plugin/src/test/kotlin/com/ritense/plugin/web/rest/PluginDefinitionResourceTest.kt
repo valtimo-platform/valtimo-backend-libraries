@@ -2,8 +2,12 @@ package com.ritense.plugin.web.rest
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.plugin.domain.ActivityType
+import com.ritense.plugin.domain.PluginActionDefinition
+import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.web.rest.dto.PluginActionDefinitionDto
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -57,5 +61,39 @@ internal class PluginDefinitionResourceTest {
             .andExpect(jsonPath("$.[1].description").value("description2"))
             .andExpect(jsonPath("$.[0].fullyQualifiedClassName").value("className"))
             .andExpect(jsonPath("$.[1].fullyQualifiedClassName").value("className2"))
+    }
+
+    @Test
+    fun `should get plugin action definitions`() {
+        val actions = listOf(
+            PluginActionDefinitionDto(
+                "some-key",
+                "title",
+                "description"
+            ),
+            PluginActionDefinitionDto(
+                "some-other-key",
+                "other-title",
+                "other-description"
+            )
+        )
+        whenever(pluginService.getPluginDefinitionActions("test", null)).thenReturn(actions)
+
+        mockMvc.perform(get("/api/plugin/definition/test/action")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$").isArray)
+            .andExpect(jsonPath("$.*", hasSize<Int>(2)))
+            .andExpect(jsonPath("$.[0].key").value("some-key"))
+            .andExpect(jsonPath("$.[1].key").value("some-other-key"))
+            .andExpect(jsonPath("$.[0].title").value("title"))
+            .andExpect(jsonPath("$.[1].title").value("other-title"))
+            .andExpect(jsonPath("$.[0].description").value("description"))
+            .andExpect(jsonPath("$.[1].description").value("other-description"))
     }
 }
