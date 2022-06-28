@@ -98,7 +98,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
                     .getFormAssociations()
                     .stream()
                     .filter(camundaFormAssociation -> camundaFormAssociation.getId().equals(id))
-                    .collect(single())
+                    .collect(singleElementCollector())
             );
     }
 
@@ -110,7 +110,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
                     .getFormAssociations()
                     .stream()
                     .filter(camundaFormAssociation -> camundaFormAssociation.getFormLink().getId().equals(formLinkId))
-                    .collect(single())
+                    .collect(singleElementCollector())
             );
     }
 
@@ -140,7 +140,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
                     .getFormAssociations()
                     .stream()
                     .filter(filter)
-                    .collect(single())
+                    .collect(singleElementCollector())
             );
     }
 
@@ -407,7 +407,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
             .forEach((externalFormFieldType, externalContentItems) -> formFieldDataResolvers
                 .stream()
                 .filter(formFieldDataResolver -> formFieldDataResolver.supports(externalFormFieldType))
-                .collect(single())
+                .collect(singleElementCollector())
                 .ifPresent(
                     formFieldDataResolver -> {
                         String[] varNames = externalContentItems.stream()
@@ -459,14 +459,14 @@ public class CamundaFormAssociationService implements FormAssociationService {
         return metaDataNode;
     }
 
-    private static <T> Collector<T, ?, Optional<T>> single() {
+    private static <T> Collector<T, ?, Optional<T>> singleElementCollector() {
         return Collectors.collectingAndThen(
             Collectors.toList(),
             list -> {
                 if (list.size() == 1) {
                     return Optional.of(list.get(0));
                 }
-                throw new IllegalStateException("Expected single result found: " + list.size());
+                throw new IllegalStateException("Expected single result but found: " + list.size());
             }
         );
     }
