@@ -459,7 +459,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         return metaDataNode;
     }
 
-    public static <T> Collector<T, ?, Optional<T>> single() {
+    private static <T> Collector<T, ?, Optional<T>> single() {
         return Collectors.collectingAndThen(
             Collectors.toList(),
             list -> {
