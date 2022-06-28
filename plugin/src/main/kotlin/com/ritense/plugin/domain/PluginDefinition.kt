@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.event
+package com.ritense.plugin.domain
 
-import com.ritense.valtimo.contract.form.ExternalFormFieldType
-import java.util.UUID
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.Table
 
-data class ExternalDataSubmittedEvent(
-    val data: Map<ExternalFormFieldType, Map<String, Any>>,
-    val documentDefinition: String,
-    val documentId: UUID
+@Entity
+@Table(name = "plugin_definition")
+class PluginDefinition (
+    @Id
+    @Column(name = "plugin_definition_key")
+    val key: String,
+    @Column(name = "title")
+    val title: String,
+    @Column(name = "description")
+    val description: String,
+    @Column(name = "class_name")
+    val fullyQualifiedClassName: String
 )

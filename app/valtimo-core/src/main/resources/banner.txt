@@ -7,4 +7,4 @@
 ${AnsiColor.BRIGHT_BLUE}:: Ritense ::
 :: Running Spring Boot ${spring-boot.version} ::
 :: Camunda BPM: ${camunda.bpm.formatted-version} ::
-:: http://ritense.com ::${AnsiColor.DEFAULT} ::
+:: https://ritense.com ::${AnsiColor.DEFAULT} ::

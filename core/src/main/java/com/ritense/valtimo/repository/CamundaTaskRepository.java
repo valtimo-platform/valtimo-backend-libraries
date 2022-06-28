@@ -25,9 +25,14 @@ import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static org.camunda.bpm.engine.impl.Direction.ASCENDING;
+import static org.camunda.bpm.engine.impl.Direction.DESCENDING;
 
 public class CamundaTaskRepository {
 
@@ -43,9 +48,13 @@ public class CamundaTaskRepository {
             pageable.getPageNumber() * pageable.getPageSize(),
             pageable.getPageSize()
         );
-        query.setOrderingProperties(
-            Collections.singletonList(new QueryOrderingProperty(TaskQueryProperty.CREATE_TIME, Direction.DESCENDING))
-        );
+        if (pageable.getSort().isSorted()) {
+            query.setOrderingProperties(getQueryOrderingProperties(pageable.getSort()));
+        } else {
+            query.setOrderingProperties(
+                Collections.singletonList(new QueryOrderingProperty(TaskQueryProperty.CREATE_TIME, Direction.DESCENDING))
+            );
+        }
         List<TaskExtended> taskWithVariables = session.selectList(
             "com.ritense.valtimo.mapper.findTasks",
             query
@@ -57,4 +66,27 @@ public class CamundaTaskRepository {
         return new PageImpl<>(taskWithVariables, pageable, taskCount);
     }
 
+    private List<QueryOrderingProperty> getQueryOrderingProperties(Sort sort) {
+        return sort.map(this::getQueryOrderingProperty).toList();
+    }
+
+    private QueryOrderingProperty getQueryOrderingProperty(Sort.Order order) {
+        final var direction = order.getDirection() == Sort.Direction.ASC ? ASCENDING : DESCENDING;
+        switch (order.getProperty()) {
+            case ("name"):
+                return new QueryOrderingProperty(TaskQueryProperty.NAME, direction);
+            case ("priority"):
+                return new QueryOrderingProperty(TaskQueryProperty.PRIORITY, direction);
+            case ("assignee"):
+                return new QueryOrderingProperty(TaskQueryProperty.ASSIGNEE, direction);
+            case ("created"):
+                return new QueryOrderingProperty(TaskQueryProperty.CREATE_TIME, direction);
+            case ("due"):
+                return new QueryOrderingProperty(TaskQueryProperty.DUE_DATE, direction);
+            case ("followUpDate"):
+                return new QueryOrderingProperty(TaskQueryProperty.FOLLOW_UP_DATE, direction);
+            default:
+                throw new IllegalArgumentException("Unknown ordering property with name: '" + order.getProperty() + "'");
+        }
+    }
 }
