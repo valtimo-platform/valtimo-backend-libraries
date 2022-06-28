@@ -28,9 +28,12 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService;
 import com.ritense.formlink.BaseTest;
 import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociation;
+import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociationId;
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
+import com.ritense.formlink.domain.impl.formassociation.FormAssociations;
 import com.ritense.formlink.domain.impl.formassociation.StartEventFormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation;
+import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import com.ritense.formlink.domain.request.FormLinkRequest;
 import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
@@ -39,6 +42,7 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.TaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,7 +50,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -104,6 +110,34 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         final var formAssociation = camundaFormAssociationService
             .getFormAssociationById(PROCESS_DEFINITION_KEY, formAssociationId);
         assertThat(formAssociation).isPresent();
+    }
+
+    @Test
+    public void shouldThrowExceptionGettingFormAssociationByFormLinkIdWhenMultipleExists() {
+        final var formAssociations = new FormAssociations();
+        formAssociations.add(
+            new UserTaskFormAssociation(
+                UUID.randomUUID(),
+                new BpmnElementFormIdLink("user-task-id", formId)
+            )
+        );
+        formAssociations.add(
+            new UserTaskFormAssociation(
+                UUID.randomUUID(),
+                new BpmnElementFormIdLink("user-task-id", formId)
+            )
+        );
+        var camundaProcessFormAssociation = new CamundaProcessFormAssociation(
+            CamundaProcessFormAssociationId.newId(UUID.randomUUID()),
+            PROCESS_DEFINITION_KEY,
+            formAssociations
+        );
+
+        when(processFormAssociationRepository.findByProcessDefinitionKey(eq(PROCESS_DEFINITION_KEY)))
+            .thenReturn(Optional.of(camundaProcessFormAssociation));
+
+        assertThrows(IllegalStateException.class, () -> camundaFormAssociationService
+            .getFormAssociationByFormLinkId(PROCESS_DEFINITION_KEY, "user-task-id"));
     }
 
     @Test
