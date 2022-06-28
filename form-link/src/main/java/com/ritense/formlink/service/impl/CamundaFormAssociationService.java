@@ -107,7 +107,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         return processFormAssociationRepository.findByProcessDefinitionKey(processDefinitionKey)
             .flatMap(camundaProcessFormAssociation ->
                 camundaProcessFormAssociation
-                    .getFormAssociations()// can get 100000000000 then BOOM!
+                    .getFormAssociations()
                     .stream()
                     .filter(camundaFormAssociation -> camundaFormAssociation.getFormLink().getId().equals(formLinkId))
                     .collect(single())
