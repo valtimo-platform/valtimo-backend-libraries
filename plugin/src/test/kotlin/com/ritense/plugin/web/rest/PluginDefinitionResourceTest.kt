@@ -59,8 +59,8 @@ internal class PluginDefinitionResourceTest {
             .andExpect(jsonPath("$.[1].title").value("title2"))
             .andExpect(jsonPath("$.[0].description").value("description"))
             .andExpect(jsonPath("$.[1].description").value("description2"))
-            .andExpect(jsonPath("$.[0].fullyQualifiedClassName").value("className"))
-            .andExpect(jsonPath("$.[1].fullyQualifiedClassName").value("className2"))
+            .andExpect(jsonPath("$.[0].fullyQualifiedClassName").doesNotExist())
+            .andExpect(jsonPath("$.[1].fullyQualifiedClassName").doesNotExist())
     }
 
     @Test
