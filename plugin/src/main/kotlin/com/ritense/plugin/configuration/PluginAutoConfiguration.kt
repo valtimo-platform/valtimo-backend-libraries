@@ -18,6 +18,7 @@ package com.ritense.plugin.configuration
 
 import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
+import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
@@ -34,6 +35,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EnableJpaRepositories(
     basePackageClasses = [
         PluginDefinitionRepository::class,
+        PluginConfigurationRepository::class,
         PluginActionDefinitionRepository::class
     ]
 )
@@ -68,9 +70,13 @@ class PluginAutoConfiguration {
     @Bean
     fun pluginService(
         pluginDefinitionRepository: PluginDefinitionRepository,
+        pluginConfigurationRepository: PluginConfigurationRepository,
         pluginActionDefinitionRepository: PluginActionDefinitionRepository
     ): PluginService {
-        return PluginService(pluginDefinitionRepository, pluginActionDefinitionRepository)
+        return PluginService(pluginDefinitionRepository,
+            pluginConfigurationRepository,
+            pluginActionDefinitionRepository
+        )
     }
 
     @Bean
