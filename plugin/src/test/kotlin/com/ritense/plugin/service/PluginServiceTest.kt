@@ -77,7 +77,7 @@ internal class PluginServiceTest {
 
     @Test
     fun `should get plugin action definitions from repository by key and activityType`(){
-        whenever(pluginActionDefinitionRepository.findByIdPluginDefinitionKey("test")).thenReturn(
+        whenever(pluginActionDefinitionRepository.findByIdPluginDefinitionKeyAndActivityTypes("test", ActivityType.USER_TASK)).thenReturn(
             listOf(
                 PluginActionDefinition(
                     PluginActionDefinitionId(
