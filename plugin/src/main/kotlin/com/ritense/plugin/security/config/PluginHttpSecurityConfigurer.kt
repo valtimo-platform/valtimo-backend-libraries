@@ -12,6 +12,7 @@ class PluginHttpSecurityConfigurer: HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/plugin/definition").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/plugin/definition/{pluginDefinitionKey}/action").hasAuthority(ADMIN)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
