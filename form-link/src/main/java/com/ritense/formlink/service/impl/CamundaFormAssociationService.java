@@ -463,7 +463,9 @@ public class CamundaFormAssociationService implements FormAssociationService {
         return Collectors.collectingAndThen(
             Collectors.toList(),
             list -> {
-                if (list.size() == 1) {
+                if (list.isEmpty()) {
+                    return Optional.empty();
+                } else if (list.size() == 1) {
                     return Optional.of(list.get(0));
                 }
                 throw new IllegalStateException("Expected single result but found: " + list.size());
