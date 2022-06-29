@@ -35,6 +35,7 @@ include(
         "form-flow",
         "form-flow-valtimo",
         "form-link",
+        "gradle:license-report",
         "haalcentraal",
         "haalcentraal:haalcentraal-brp",
         "keycloak-iam",
@@ -58,4 +59,3 @@ include(
         "view-configurator",
         "web"
 )
-
