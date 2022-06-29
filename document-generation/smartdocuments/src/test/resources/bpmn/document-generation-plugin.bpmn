@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0wkbaj7" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0">
+  <bpmn:process id="document-generation-plugin" name="Document genration" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>SequenceFlow_0rqqr55</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0rqqr55" sourceRef="StartEvent_1" targetRef="GenerateDocument" />
+    <bpmn:endEvent id="EndEvent_0v6qdzq">
+      <bpmn:incoming>SequenceFlow_17rgisa</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_17rgisa" sourceRef="GenerateDocument" targetRef="EndEvent_0v6qdzq" />
+    <bpmn:serviceTask id="GenerateDocument" name="Generate Document" camunda:expression="${smartDocumentsPluginFactory.createByKey(&#34;smart-documents-plugin-configuration&#34;).generate(execution, &#34;{\&#34;templateGroup\&#34;:\&#34;test-template-group\&#34;,\&#34;templateName\&#34;:\&#34;test-template-name\&#34;,\&#34;format\&#34;:\&#34;PDF\&#34;,\&#34;templatePlaceholders\&#34;:{\&#34;achternaam\&#34;:\&#34;doc:/lastname\&#34;,\&#34;leeftijd\&#34;:\&#34;pv:age\&#34;}}&#34;)}">
+      <bpmn:extensionElements />
+      <bpmn:incoming>SequenceFlow_0rqqr55</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_17rgisa</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="document-generation-plugin">
+      <bpmndi:BPMNEdge id="SequenceFlow_17rgisa_di" bpmnElement="SequenceFlow_17rgisa">
+        <di:waypoint x="341" y="159" />
+        <di:waypoint x="391" y="159" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0rqqr55_di" bpmnElement="SequenceFlow_0rqqr55">
+        <di:waypoint x="191" y="159" />
+        <di:waypoint x="241" y="159" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="155" y="141" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0v6qdzq_di" bpmnElement="EndEvent_0v6qdzq">
+        <dc:Bounds x="391" y="141" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0alraup_di" bpmnElement="GenerateDocument">
+        <dc:Bounds x="241" y="119" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

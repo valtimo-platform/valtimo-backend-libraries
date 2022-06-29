@@ -47,6 +47,7 @@ import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import static com.ritense.form.domain.FormIoFormDefinition.PROCESS_VAR_PREFIX;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
@@ -94,7 +98,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
                     .getFormAssociations()
                     .stream()
                     .filter(camundaFormAssociation -> camundaFormAssociation.getId().equals(id))
-                    .findFirst()
+                    .collect(singleElementCollector())
             );
     }
 
@@ -106,7 +110,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
                     .getFormAssociations()
                     .stream()
                     .filter(camundaFormAssociation -> camundaFormAssociation.getFormLink().getId().equals(formLinkId))
-                    .findFirst()
+                    .collect(singleElementCollector())
             );
     }
 
@@ -136,7 +140,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
                     .getFormAssociations()
                     .stream()
                     .filter(filter)
-                    .findFirst()
+                    .collect(singleElementCollector())
             );
     }
 
@@ -166,7 +170,8 @@ public class CamundaFormAssociationService implements FormAssociationService {
             processDefinitionKey,
             formLinkId,
             Optional.ofNullable(documentId),
-            Optional.ofNullable(taskInstanceId));
+            Optional.ofNullable(taskInstanceId)
+        );
     }
 
     @Override
@@ -402,7 +407,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
             .forEach((externalFormFieldType, externalContentItems) -> formFieldDataResolvers
                 .stream()
                 .filter(formFieldDataResolver -> formFieldDataResolver.supports(externalFormFieldType))
-                .findFirst()
+                .collect(singleElementCollector())
                 .ifPresent(
                     formFieldDataResolver -> {
                         String[] varNames = externalContentItems.stream()
@@ -453,4 +458,17 @@ public class CamundaFormAssociationService implements FormAssociationService {
         metaDataNode.put("sequence", document.sequence());
         return metaDataNode;
     }
+
+    private static <T> Collector<T, ?, Optional<T>> singleElementCollector() {
+        return Collectors.collectingAndThen(
+            Collectors.toList(),
+            list -> {
+                if (list.size() == 1) {
+                    return Optional.of(list.get(0));
+                }
+                throw new IllegalStateException("Expected single result but found: " + list.size());
+            }
+        );
+    }
+
 }

@@ -13,26 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ritense.plugin.factory
 
-package com.ritense.plugin.domain
+import com.ritense.plugin.domain.PluginConfiguration
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
-
-@Entity
-@Table(name = "plugin_definition")
-class PluginDefinition (
-    @Id
-    @Column(name = "plugin_definition_key")
-    val key: String,
-    @Column(name = "title")
-    val title: String,
-    @Column(name = "description")
-    val description: String,
-    @JsonIgnore
-    @Column(name = "class_name")
-    val fullyQualifiedClassName: String
-)
+interface PluginFactory<T> {
+    fun create(pluginConfiguration: PluginConfiguration): T
+}

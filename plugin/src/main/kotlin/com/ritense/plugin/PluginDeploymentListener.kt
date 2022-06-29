@@ -71,16 +71,14 @@ class PluginDeploymentListener(
     }
 
     private fun deployPluginDefinition(pluginDefinition: PluginDefinition): PluginDefinition {
-        logger.info { "Deploying plugin $pluginDefinition.key" }
+        logger.info { "Deploying plugin ${pluginDefinition.key}" }
         return pluginDefinitionRepository.save(pluginDefinition)
     }
 
     private fun findPluginActions(pluginClass: Class<*>) : Map<Method, PluginAction> {
         return pluginClass.methods.filter { method ->
             method.isAnnotationPresent(PluginAction::class.java)
-        }.associate { method ->
-            method to method.getAnnotation(PluginAction::class.java)
-        }
+        }.associateWith { method -> method.getAnnotation(PluginAction::class.java) }
     }
 
     private fun deployActionDefinition(pluginActionDefinition: PluginActionDefinition): PluginActionDefinition {

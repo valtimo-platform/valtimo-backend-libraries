@@ -13,26 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ritense.smartdocuments.plugin
 
-package com.ritense.plugin.domain
+import com.ritense.smartdocuments.domain.DocumentFormatOption
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
-
-@Entity
-@Table(name = "plugin_definition")
-class PluginDefinition (
-    @Id
-    @Column(name = "plugin_definition_key")
-    val key: String,
-    @Column(name = "title")
-    val title: String,
-    @Column(name = "description")
-    val description: String,
-    @JsonIgnore
-    @Column(name = "class_name")
-    val fullyQualifiedClassName: String
+data class SmartDocumentsPluginGenerateDocumentProperties(
+    val templateGroup: String,
+    val templateName: String,
+    val format: DocumentFormatOption,
+    val templatePlaceholders: Map<String, String>,
 )
