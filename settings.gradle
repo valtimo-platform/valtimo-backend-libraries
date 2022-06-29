@@ -54,6 +54,6 @@ include(
         "test-utils-common",
         "besluit",
         "haalcentraal",
-        "plugin"
+        "plugin",
+        ":gradle:license-report"
 )
-

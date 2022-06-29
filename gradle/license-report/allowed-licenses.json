@@ -1,0 +1,25 @@
+{
+    "allowedLicenses": [
+        {
+            "moduleLicense": "Apache License, Version 2.0",
+            "moduleName": "org.jetbrains.kotlin:kotlin-stdlib",
+            "moduleVersion": "1.2.60"
+        },
+        {
+            "moduleLicense": "Apache License, Version 2.0",
+            "moduleName": "org.jetbrains.kotlin*",
+            "moduleVersion": ".*"
+        },
+        {
+            "moduleLicense": "MIT License",
+            "moduleName": ".*"
+        },
+        {
+            "moduleLicense": "MIT License"
+        },
+        {
+            "moduleLicense": "MIT License",
+            "moduleName": ""
+        }
+    ]
+}
