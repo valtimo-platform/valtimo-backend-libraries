@@ -465,8 +465,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
             list -> {
                 if (list.isEmpty()) {
                     return Optional.empty();
-                }
-                if (list.size() == 1) {
+                } else if (list.size() == 1) {
                     return Optional.of(list.get(0));
                 }
                 throw new IllegalStateException("Expected single result but found: " + list.size());
