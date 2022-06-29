@@ -16,6 +16,8 @@
 
 package com.ritense.plugin.domain
 
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.valtimo.contract.json.Mapper
 import org.hibernate.annotations.Type
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -27,7 +29,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "plugin_configuration")
-class PluginConfiguration (
+class PluginConfiguration(
     @Id
     @Column(name = "plugin_configuration_key")
     val key: String,
@@ -39,4 +41,12 @@ class PluginConfiguration (
     @JoinColumn(name = "plugin_definition_key", updatable = false, nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     val pluginDefinition: PluginDefinition,
-)
+) {
+    inline fun <reified T> getProperties(): T {
+        return if (properties == null) {
+            throw IllegalStateException("No properties found for plugin configuration $key")
+        } else {
+            Mapper.INSTANCE.get().readValue(properties)
+        }
+    }
+}

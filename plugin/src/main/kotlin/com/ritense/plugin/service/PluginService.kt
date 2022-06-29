@@ -22,6 +22,10 @@ class PluginService(
         return pluginConfigurationRepository.findAll()
     }
 
+    fun getPluginConfiguration(key: String): PluginConfiguration {
+        return pluginConfigurationRepository.getById(key)
+    }
+
     fun createPluginConfiguration(
         key: String,
         title: String,

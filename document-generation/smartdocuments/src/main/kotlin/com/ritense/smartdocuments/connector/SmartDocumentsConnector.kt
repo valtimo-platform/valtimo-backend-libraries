@@ -48,6 +48,7 @@ class SmartDocumentsConnector(
         templateData: Map<String, Any>,
         format: DocumentFormatOption
     ): GeneratedDocument {
+        smartDocumentsClient.setProperties(smartDocumentsConnectorProperties)
         val filesResponse = smartDocumentsClient.generateDocument(
             SmartDocumentsRequest(
                 templateData,
