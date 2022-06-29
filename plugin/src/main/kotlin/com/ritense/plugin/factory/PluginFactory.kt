@@ -15,6 +15,8 @@
  */
 package com.ritense.plugin.factory
 
+import com.ritense.plugin.domain.PluginConfiguration
+
 interface PluginFactory<T> {
-    fun create(pluginConfigurationKey: String): T
+    fun create(pluginConfiguration: PluginConfiguration): T
 }

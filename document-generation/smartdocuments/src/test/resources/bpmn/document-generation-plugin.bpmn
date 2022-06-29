@@ -9,7 +9,7 @@
       <bpmn:incoming>SequenceFlow_17rgisa</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_17rgisa" sourceRef="GenerateDocument" targetRef="EndEvent_0v6qdzq" />
-    <bpmn:serviceTask id="GenerateDocument" name="Generate Document" camunda:expression="${smartDocumentsPluginFactory.create(&#34;smart-documents-plugin-configuration&#34;).generate(execution, &#34;{\&#34;templateGroup\&#34;:\&#34;test-template-group\&#34;,\&#34;templateName\&#34;:\&#34;test-template-name\&#34;,\&#34;format\&#34;:\&#34;PDF\&#34;,\&#34;templatePlaceholders\&#34;:{\&#34;achternaam\&#34;:\&#34;doc:/lastname\&#34;,\&#34;leeftijd\&#34;:\&#34;pv:age\&#34;}}&#34;)}">
+    <bpmn:serviceTask id="GenerateDocument" name="Generate Document" camunda:expression="${smartDocumentsPluginFactory.createByKey(&#34;smart-documents-plugin-configuration&#34;).generate(execution, &#34;{\&#34;templateGroup\&#34;:\&#34;test-template-group\&#34;,\&#34;templateName\&#34;:\&#34;test-template-name\&#34;,\&#34;format\&#34;:\&#34;PDF\&#34;,\&#34;templatePlaceholders\&#34;:{\&#34;achternaam\&#34;:\&#34;doc:/lastname\&#34;,\&#34;leeftijd\&#34;:\&#34;pv:age\&#34;}}&#34;)}">
       <bpmn:extensionElements />
       <bpmn:incoming>SequenceFlow_0rqqr55</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_17rgisa</bpmn:outgoing>

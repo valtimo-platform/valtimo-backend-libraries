@@ -16,12 +16,12 @@
 package com.ritense.smartdocuments.plugin
 
 import com.ritense.document.service.DocumentService
+import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.factory.PluginFactory
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.ResourceService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
-import com.ritense.valtimo.contract.json.Mapper
 import org.springframework.context.ApplicationEventPublisher
 
 class SmartDocumentsPluginFactory(
@@ -33,15 +33,18 @@ class SmartDocumentsPluginFactory(
     private val smartDocumentsClient: SmartDocumentsClient,
 ) : PluginFactory<SmartDocumentsPlugin> {
 
-    override fun create(pluginConfigurationKey: String): SmartDocumentsPlugin {
-        val configuration = pluginService.getPluginConfiguration(pluginConfigurationKey)
+    fun createByKey(pluginConfigurationKey: String): SmartDocumentsPlugin {
+        return create(pluginService.getPluginConfiguration(pluginConfigurationKey))
+    }
+
+    override fun create(pluginConfiguration: PluginConfiguration): SmartDocumentsPlugin {
         return SmartDocumentsPlugin(
             documentService,
             resourceService,
             processDocumentService,
             applicationEventPublisher,
             smartDocumentsClient,
-            Mapper.INSTANCE.get().readValue(configuration.properties, SmartDocumentsPluginProperties::class.java)
+            pluginConfiguration.getProperties()
         )
     }
 }

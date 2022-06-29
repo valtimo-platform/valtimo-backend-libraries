@@ -45,7 +45,7 @@ class SmartDocumentsDemoResource(
         @RequestParam format: String,
         @RequestParam templatePlaceholders: Map<String, String>,
     ): ResponseEntity<Void> {
-        val smartDocumentsPlugin = smartDocumentsPluginFactory.create(pluginConfigurationKey)
+        val smartDocumentsPlugin = smartDocumentsPluginFactory.createByKey(pluginConfigurationKey)
         val variables = runtimeService.getVariables(processInstanceId)
         val delegateExecutionSmall = DelegateExecutionSmall(processInstanceId, variables)
         val properties = Mapper.INSTANCE.get().writeValueAsString(

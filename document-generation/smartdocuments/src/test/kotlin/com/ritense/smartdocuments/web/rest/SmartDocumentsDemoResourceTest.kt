@@ -15,6 +15,7 @@
  */
 package com.ritense.smartdocuments.web.rest
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
@@ -42,6 +43,7 @@ internal class SmartDocumentsDemoResourceTest {
         runtimeService = mock()
         smartDocumentsPlugin = mock()
         smartDocumentsDemoResource = SmartDocumentsDemoResource(smartDocumentsPluginFactory, runtimeService)
+        whenever(smartDocumentsPluginFactory.create(any())).thenReturn(smartDocumentsPlugin)
 
         mockMvc = MockMvcBuilders
             .standaloneSetup(smartDocumentsDemoResource)
@@ -50,8 +52,6 @@ internal class SmartDocumentsDemoResourceTest {
 
     @Test
     fun `should retrieve plugin to generate document`() {
-        whenever(smartDocumentsPluginFactory.create("smart-documents-plugin-configuration"))
-            .thenReturn(smartDocumentsPlugin)
         whenever(runtimeService.getVariables("ad12510e-ee17-11ec-b4fd-fad19e608849"))
             .thenReturn(mapOf("age" to 18))
 

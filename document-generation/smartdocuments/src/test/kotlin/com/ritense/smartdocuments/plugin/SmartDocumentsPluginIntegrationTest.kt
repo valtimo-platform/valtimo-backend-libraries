@@ -66,7 +66,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
             "{\"url\":\"${server.url("/")}\",\"username\":\"test-username\",\"password\":\"test-password\"}",
             "smartdocuments"
         )
-        smartDocumentsPlugin = smartDocumentsPluginFactory.create(configuration.key)
+        smartDocumentsPlugin = smartDocumentsPluginFactory.create(configuration)
     }
 
     @Test
