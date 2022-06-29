@@ -24,3 +24,10 @@ rootProject.configure(rootProject, {
         filters = [new LicenseBundleNormalizer(bundlePath: "$projectDir/gradle/license-report/license-normalizer-bundle.json")]
     }
 })
+
+tasks.withType(PublishToMavenRepository) {
+    enabled = false
+}
+tasks.withType(PublishToMavenLocal) {
+    enabled = false
+}
