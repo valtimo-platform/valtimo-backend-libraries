@@ -15,7 +15,6 @@
  */
 package com.ritense.smartdocuments.web.rest
 
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
@@ -43,7 +42,8 @@ internal class SmartDocumentsDemoResourceTest {
         runtimeService = mock()
         smartDocumentsPlugin = mock()
         smartDocumentsDemoResource = SmartDocumentsDemoResource(smartDocumentsPluginFactory, runtimeService)
-        whenever(smartDocumentsPluginFactory.create(any())).thenReturn(smartDocumentsPlugin)
+        whenever(smartDocumentsPluginFactory.createByKey("smart-documents-plugin-configuration"))
+            .thenReturn(smartDocumentsPlugin)
 
         mockMvc = MockMvcBuilders
             .standaloneSetup(smartDocumentsDemoResource)
