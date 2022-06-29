@@ -463,6 +463,9 @@ public class CamundaFormAssociationService implements FormAssociationService {
         return Collectors.collectingAndThen(
             Collectors.toList(),
             list -> {
+                if (list.isEmpty()) {
+                    return Optional.empty();
+                }
                 if (list.size() == 1) {
                     return Optional.of(list.get(0));
                 }
