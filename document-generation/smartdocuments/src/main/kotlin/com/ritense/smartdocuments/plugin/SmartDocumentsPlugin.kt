@@ -40,7 +40,7 @@ import com.ritense.valtimo.contract.resource.Resource
 import com.ritense.valtimo.contract.utils.RequestHelper
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import org.apache.commons.io.FilenameUtils
-import org.camunda.bpm.engine.delegate.DelegateTask
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDateTime
@@ -67,11 +67,11 @@ class SmartDocumentsPlugin(
         description = "Generates a document of a given type based on a template with data from a case.",
         activityTypes = [ActivityType.SERVICE_TASK]
     )
-    fun generate(task: DelegateTask, pluginProcessLinkProperties: String) {
+    fun generate(execution: DelegateExecution, pluginProcessLinkProperties: String) {
         val properties = Mapper.INSTANCE.get()
             .readValue(pluginProcessLinkProperties, SmartDocumentsPluginGenerateDocumentProperties::class.java)
-        val document = processDocumentService.getDocument(task.execution)
-        val templateData = getTemplateData(properties.templatePlaceholders, task, document)
+        val document = processDocumentService.getDocument(execution)
+        val templateData = getTemplateData(properties.templatePlaceholders, execution, document)
         generateAndStoreDocument(
             document,
             properties.templateGroup,
