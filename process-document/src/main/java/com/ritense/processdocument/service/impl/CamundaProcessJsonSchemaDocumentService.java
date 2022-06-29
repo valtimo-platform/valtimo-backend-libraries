@@ -56,6 +56,7 @@ import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.delegate.BaseDelegateExecution;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.camunda.bpm.engine.delegate.VariableScope;
 import org.camunda.bpm.engine.task.Task;
@@ -305,6 +306,10 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         } catch (RuntimeException ex) {
             return new StartProcessForDocumentResultFailed(parseAndLogException(ex));
         }
+    }
+
+    public Document getDocument(DelegateExecution execution) {
+        return getDocument(ProcessInstanceId.fromExecution(execution, CamundaProcessInstanceId.class), execution);
     }
 
     public JsonSchemaDocumentId getDocumentId(ProcessInstanceId processInstanceId, VariableScope variableScope) {

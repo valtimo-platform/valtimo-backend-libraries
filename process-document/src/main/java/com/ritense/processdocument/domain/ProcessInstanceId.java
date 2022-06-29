@@ -18,7 +18,6 @@ package com.ritense.processdocument.domain;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import java.lang.reflect.InvocationTargetException;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
@@ -30,10 +29,9 @@ public interface ProcessInstanceId {
     static <T extends ProcessInstanceId> T fromExecution(DelegateExecution execution, Class<T> targetClass) {
         assertArgumentNotNull(execution, "execution is required");
         assertArgumentNotNull(targetClass, "targetClass is required");
-        final ExecutionEntity executionEntity = (ExecutionEntity) execution;
         T target;
         try {
-            final String id = executionEntity.getProcessInstanceId();
+            final String id = execution.getProcessInstanceId();
             target = targetClass.getConstructor(String.class).newInstance(id);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new IllegalArgumentException("Cannot create instance of ProcessInstanceId class" + targetClass.toString());
