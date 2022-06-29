@@ -17,10 +17,6 @@
 import com.github.jk1.license.render.*
 import com.github.jk1.license.filter.*
 
-//plugins {
-//    id "com.github.jk1.dependency-license-report"
-//}
-
 rootProject.configure(rootProject, {
     licenseReport {
         renderers = [new InventoryHtmlReportRenderer('index.html', null, new File(projectDir,"gradle/license-report/unknown-license-details.txt"))]
