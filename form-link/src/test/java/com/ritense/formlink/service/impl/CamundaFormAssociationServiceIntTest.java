@@ -30,7 +30,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")
-//@Transactional
+@Transactional
 public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
 
     @Inject
@@ -136,11 +136,11 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
         );
 
         final var formDefinition = formAssociationService
-            .getFormDefinitionByFormLinkId(PROCESS_DEFINITION_KEY, request.getFormLinkRequest().getId()).orElseThrow();
+            .getFormDefinitionByFormLinkId(PROCESS_DEFINITION_KEY, request.getFormLinkRequest().getId())
+            .orElseThrow();
 
         assertThat(formDefinition).isNotNull();
         assertThat(formDefinition.get("formAssociation")).isNotNull();
-
     }
 
 }
