@@ -26,16 +26,12 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.form.service.impl.FormIoFormDefinitionService;
 import com.ritense.formlink.BaseTest;
-import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociation;
-import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociationId;
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
-import com.ritense.formlink.domain.impl.formassociation.FormAssociations;
 import com.ritense.formlink.domain.impl.formassociation.StartEventFormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation;
-import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import com.ritense.formlink.domain.request.FormLinkRequest;
-import com.ritense.formlink.repository.ProcessFormAssociationRepository;
+import com.ritense.formlink.repository.impl.JdbcProcessFormAssociationRepository;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
@@ -52,7 +48,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -66,7 +61,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
     private JsonSchemaDocumentService documentService;
     private ProcessDocumentAssociationService processDocumentAssociationService;
     private CamundaProcessService camundaProcessService;
-    private ProcessFormAssociationRepository processFormAssociationRepository;
+    private JdbcProcessFormAssociationRepository processFormAssociationRepository;
     private TaskService taskService;
     private FormIoJsonPatchSubmissionTransformerService submissionTransformerService;
     private CamundaProcessFormAssociation processFormAssociation;
@@ -76,7 +71,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
 
     @BeforeEach
     public void setUp() {
-        processFormAssociationRepository = mock(ProcessFormAssociationRepository.class);
+        processFormAssociationRepository = mock(JdbcProcessFormAssociationRepository.class);
         formDefinitionService = mock(FormIoFormDefinitionService.class);
         documentService = mock(JsonSchemaDocumentService.class);
         processDocumentAssociationService = mock(ProcessDocumentAssociationService.class);
@@ -99,13 +94,18 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         processFormAssociationId = UUID.randomUUID();
         formId = UUID.randomUUID();
         processFormAssociation = processFormAssociation(processFormAssociationId, formId);
-        when(processFormAssociationRepository.findByProcessDefinitionKey(eq(PROCESS_DEFINITION_KEY)))
-            .thenReturn(Optional.of(processFormAssociation));
+        when(processFormAssociationRepository.findByCamundaFormAssociationId(any()))
+            .thenReturn(processFormAssociation.getFormAssociations().stream().findFirst().orElseThrow());
     }
 
     @Test
     public void shouldGetFormAssociationById() {
-        final var formAssociationId = processFormAssociation.getFormAssociations().stream().findFirst().orElseThrow().getId();
+        final var formAssociationId = processFormAssociation
+            .getFormAssociations()
+            .stream()
+            .findFirst()
+            .orElseThrow()
+            .getId();
 
         final var formAssociation = camundaFormAssociationService
             .getFormAssociationById(PROCESS_DEFINITION_KEY, formAssociationId);
@@ -113,36 +113,14 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
     }
 
     @Test
-    public void shouldThrowExceptionGettingFormAssociationByFormLinkIdWhenMultipleExists() {
-        final var formAssociations = new FormAssociations();
-        formAssociations.add(
-            new UserTaskFormAssociation(
-                UUID.randomUUID(),
-                new BpmnElementFormIdLink("user-task-id", formId)
-            )
-        );
-        formAssociations.add(
-            new UserTaskFormAssociation(
-                UUID.randomUUID(),
-                new BpmnElementFormIdLink("user-task-id", formId)
-            )
-        );
-        var camundaProcessFormAssociation = new CamundaProcessFormAssociation(
-            CamundaProcessFormAssociationId.newId(UUID.randomUUID()),
-            PROCESS_DEFINITION_KEY,
-            formAssociations
-        );
-
-        when(processFormAssociationRepository.findByProcessDefinitionKey(eq(PROCESS_DEFINITION_KEY)))
-            .thenReturn(Optional.of(camundaProcessFormAssociation));
-
-        assertThrows(IllegalStateException.class, () -> camundaFormAssociationService
-            .getFormAssociationByFormLinkId(PROCESS_DEFINITION_KEY, "user-task-id"));
-    }
-
-    @Test
     public void shouldGetFormAssociationByFormLinkId() {
         final String formLinkId = processFormAssociation.getFormAssociations().stream().findFirst().orElseThrow().getFormLink().getId();
+
+        when(
+            processFormAssociationRepository.findByFormLinkId(
+                eq(formLinkId)
+            )
+        ).thenReturn(processFormAssociation.getFormAssociations().stream().findFirst().orElseThrow());
 
         final var formAssociation = camundaFormAssociationService
             .getFormAssociationByFormLinkId(PROCESS_DEFINITION_KEY, formLinkId);
@@ -153,12 +131,11 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
     @Test
     public void shouldCreateFormAssociation() {
         when(formDefinitionService.formDefinitionExistsById(any())).thenReturn(true);
-        when(processFormAssociationRepository.saveAndFlush(any())).thenReturn(processFormAssociation);
 
         final var formId = UUID.randomUUID();
         final var createFormAssociationRequest = createUserTaskFormAssociationRequest(formId);
 
-        final CamundaFormAssociation formAssociation = camundaFormAssociationService.createFormAssociation(createFormAssociationRequest);
+        final var formAssociation = camundaFormAssociationService.createFormAssociation(createFormAssociationRequest);
 
         assertThat(formAssociation).isNotNull();
         assertThat(formAssociation.getFormLink().getFormId()).isEqualTo(createFormAssociationRequest.getFormLinkRequest().getFormId());
@@ -168,7 +145,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
     @Test
     public void shouldModifyFormAssociation() {
         when(formDefinitionService.formDefinitionExistsById(any())).thenReturn(true);
-        when(processFormAssociationRepository.saveAndFlush(any())).thenReturn(processFormAssociation);
+        //when(processFormAssociationRepository.saveAndFlush(any())).thenReturn(processFormAssociation);
 
         final var formId = UUID.randomUUID();
         final var formAssociationId = processFormAssociation
@@ -185,7 +162,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
     @Test
     public void shouldUpsertFormAssociation() {
         when(formDefinitionService.formDefinitionExistsById(any())).thenReturn(true);
-        when(processFormAssociationRepository.saveAndFlush(any())).thenReturn(processFormAssociation);
+        //when(processFormAssociationRepository.saveAndFlush(any())).thenReturn(processFormAssociation);
 
         final var processDefinitionKey = "aName";
         final var formId = UUID.randomUUID();
@@ -233,11 +210,11 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
 
     @Test
     public void shouldGetPreFilledFormDefinitionByFormLinkId() throws IOException {
-        //given
+        // given
         when(formDefinitionService.formDefinitionExistsById(any())).thenReturn(true);
         var formDefinition = formDefinitionOf("user-task-with-external-form-field");
         when(formDefinitionService.getFormDefinitionById(any())).thenReturn(Optional.of(formDefinition));
-        when(processFormAssociationRepository.saveAndFlush(any())).thenReturn(processFormAssociation);
+        when(processFormAssociationRepository.get(any())).thenReturn(processFormAssociation);
 
         var documentContent = documentContent();
         final var jsonDocumentContent = JsonDocumentContent.build(documentContent);
@@ -247,12 +224,20 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         when(formFieldDataResolver.supports(any())).thenReturn(true);
         when(formFieldDataResolver.get(any(), any(), any())).thenReturn(Map.of("voornaam", "Jan (OpenZaak)"));
 
-        final var formLinkId = processFormAssociation
+        final var formLink = processFormAssociation
             .getFormAssociations().stream().findFirst().orElseThrow().getFormLink();
+        final String formLinkId = formLink.getId();
 
         //when
+        when(
+            processFormAssociationRepository.findByFormLinkId(
+                eq(formLinkId)
+            )
+        ).thenReturn(processFormAssociation.getFormAssociations().stream().findFirst().orElseThrow());
+
+
         final var form = camundaFormAssociationService.getPreFilledFormDefinitionByFormLinkId(
-            JsonSchemaDocumentId.existingId(UUID.randomUUID()), PROCESS_DEFINITION_KEY, formLinkId.getId()
+            JsonSchemaDocumentId.existingId(UUID.randomUUID()), PROCESS_DEFINITION_KEY, formLink.getId()
         );
 
         //then

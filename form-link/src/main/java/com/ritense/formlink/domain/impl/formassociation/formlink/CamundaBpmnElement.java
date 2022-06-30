@@ -18,8 +18,10 @@ package com.ritense.formlink.domain.impl.formassociation.formlink;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.Objects;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 
@@ -31,7 +33,7 @@ public abstract class CamundaBpmnElement implements Serializable {
     @JsonCreator
     public CamundaBpmnElement(String elementId) {
         assertArgumentNotEmpty(elementId, "elementId cannot be empty");
-        assertArgumentLength(elementId, 64, "elementId max length is 64");
+        assertArgumentLength(elementId, 512, "elementId max length is 512");
         this.elementId = elementId;
     }
 
@@ -49,4 +51,5 @@ public abstract class CamundaBpmnElement implements Serializable {
     public int hashCode() {
         return Objects.hash(elementId);
     }
+
 }
