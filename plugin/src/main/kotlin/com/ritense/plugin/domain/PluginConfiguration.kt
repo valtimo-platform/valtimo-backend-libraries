@@ -46,7 +46,7 @@ class PluginConfiguration(
 ) {
     inline fun <reified T> getProperties(): T {
         return if (properties == null) {
-            throw IllegalStateException("No properties found for plugin configuration ${id.id}")
+            throw IllegalStateException("No properties found for plugin configuration $title (${id.id})")
         } else {
             Mapper.INSTANCE.get().treeToValue(properties, T::class.java)
         }
