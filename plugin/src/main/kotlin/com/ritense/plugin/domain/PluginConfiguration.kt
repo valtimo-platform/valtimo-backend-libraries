@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.domain
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.valtimo.contract.json.Mapper
 import org.hibernate.annotations.Type
@@ -38,7 +39,7 @@ class PluginConfiguration(
     val title: String,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "properties", columnDefinition = "JSON")
-    val properties: String? = null,
+    val properties: JsonNode? = null,
     @JoinColumn(name = "plugin_definition_key", updatable = false, nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     val pluginDefinition: PluginDefinition,
@@ -47,7 +48,7 @@ class PluginConfiguration(
         return if (properties == null) {
             throw IllegalStateException("No properties found for plugin configuration ${id.id}")
         } else {
-            Mapper.INSTANCE.get().readValue(properties)
+            Mapper.INSTANCE.get().treeToValue(properties, T::class.java)
         }
     }
 }

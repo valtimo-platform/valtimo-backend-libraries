@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -64,14 +65,19 @@ internal class PluginServiceTest {
     @Test
     fun `should save plugin configuration`(){
         val pluginDefinition = PluginDefinition("key", "title", "description", "className")
-        val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", "description", pluginDefinition)
+        val pluginConfiguration = PluginConfiguration(
+            PluginConfigurationId.newId(),
+            "title",
+            ObjectMapper().valueToTree("{\"name\": \"whatever\" }"),
+            pluginDefinition
+        )
 
         whenever(pluginDefinitionRepository.getById("key")).thenReturn(pluginDefinition)
         whenever(pluginConfigurationRepository.save(any())).thenReturn(pluginConfiguration)
 
         pluginService
             .createPluginConfiguration(
-                "title", "{\"name\": \"whatever\" }", "key"
+                "title", ObjectMapper().valueToTree("{\"name\": \"whatever\" }"), "key"
             )
         verify(pluginConfigurationRepository).save(any())
     }

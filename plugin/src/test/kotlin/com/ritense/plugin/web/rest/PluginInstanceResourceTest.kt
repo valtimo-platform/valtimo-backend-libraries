@@ -1,5 +1,7 @@
 package com.ritense.plugin.web.rest
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -40,10 +42,12 @@ internal class PluginInstanceResourceTest {
 
     @Test
     fun `should get plugin configurations`() {
+        val properties1: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
+        val properties2: JsonNode = ObjectMapper().readTree("{\"other\": \"something\" }")
         val plugin = PluginDefinition("key", "title", "description", "className")
         val plugin2 = PluginDefinition("key2", "title2", "description2", "className2")
-        val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", "description", plugin)
-        val pluginConfiguration2 = PluginConfiguration(PluginConfigurationId.newId(), "title2", "description2", plugin2)
+        val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties1, plugin)
+        val pluginConfiguration2 = PluginConfiguration(PluginConfigurationId.newId(), "title2", properties2, plugin2)
         whenever(pluginService.getPluginConfigurations()).thenReturn(listOf(pluginConfiguration, pluginConfiguration2))
 
         mockMvc.perform(get("/api/plugin/configuration")
@@ -72,9 +76,9 @@ internal class PluginInstanceResourceTest {
             .andExpect(
                 jsonPath("$.[1].title").value("title2"))
             .andExpect(
-                jsonPath("$.[0].properties").value("description"))
+                jsonPath("$.[0].properties.name").value("whatever"))
             .andExpect(
-                jsonPath("$.[1].properties").value("description2"))
+                jsonPath("$.[1].properties.other").value("something"))
             .andExpect(
                 jsonPath("$.[0].pluginDefinition.key").value("key"))
             .andExpect(
@@ -95,13 +99,14 @@ internal class PluginInstanceResourceTest {
 
     @Test
     fun `should save plugin configuration`() {
+        val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
         val plugin = PluginDefinition("key", "title", "description", "className")
-        val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", "properties", plugin)
+        val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties, plugin)
         whenever(pluginService.createPluginConfiguration(any(), any(), any())).thenReturn(pluginConfiguration)
 
         val pluginConfiguratieDto = com.ritense.plugin.web.rest.dto.PluginConfiguration(
             "title",
-            "properties",
+            properties,
             "key"
         )
 
@@ -122,7 +127,7 @@ internal class PluginInstanceResourceTest {
             .andExpect(
                 jsonPath("$.title").value("title"))
             .andExpect(
-                jsonPath("$.properties").value("properties"))
+                jsonPath("$.properties.name").value("whatever"))
             .andExpect(
                 jsonPath("$.pluginDefinition.key").value("key"))
             .andExpect(
@@ -134,7 +139,7 @@ internal class PluginInstanceResourceTest {
 
         verify(pluginService).createPluginConfiguration(
             "title",
-            "properties",
+            properties,
             "key")
     }
 }
