@@ -2,6 +2,7 @@ package com.ritense.plugin.web.rest
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -99,7 +100,6 @@ internal class PluginInstanceResourceTest {
         whenever(pluginService.createPluginConfiguration(any(), any(), any())).thenReturn(pluginConfiguration)
 
         val pluginConfiguratieDto = com.ritense.plugin.web.rest.dto.PluginConfiguration(
-            "key",
             "title",
             "properties",
             "key"
@@ -131,5 +131,10 @@ internal class PluginInstanceResourceTest {
                 jsonPath("$.pluginDefinition.description").value("description"))
             .andExpect(
                 jsonPath("$.pluginDefinition.fullyQualifiedClassName").doesNotExist())
+
+        verify(pluginService).createPluginConfiguration(
+            "title",
+            "properties",
+            "key")
     }
 }
