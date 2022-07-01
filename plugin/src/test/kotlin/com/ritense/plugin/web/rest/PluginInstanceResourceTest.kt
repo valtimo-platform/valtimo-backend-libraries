@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.domain.PluginConfiguration
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.json.Mapper
@@ -40,8 +41,8 @@ internal class PluginInstanceResourceTest {
     fun `should get plugin configurations`() {
         val plugin = PluginDefinition("key", "title", "description", "className")
         val plugin2 = PluginDefinition("key2", "title2", "description2", "className2")
-        val pluginConfiguration = PluginConfiguration("key", "title", "description", plugin)
-        val pluginConfiguration2 = PluginConfiguration("key2", "title2", "description2", plugin2)
+        val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", "description", plugin)
+        val pluginConfiguration2 = PluginConfiguration(PluginConfigurationId.newId(), "title2", "description2", plugin2)
         whenever(pluginService.getPluginConfigurations()).thenReturn(listOf(pluginConfiguration, pluginConfiguration2))
 
         mockMvc.perform(get("/api/plugin/configuration")
@@ -58,9 +59,13 @@ internal class PluginInstanceResourceTest {
             .andExpect(
                 jsonPath("$.*", hasSize<Int>(2)))
             .andExpect(
-                jsonPath("$.[0].key").value("key"))
+                jsonPath("$.[0].id").exists())
             .andExpect(
-                jsonPath("$.[1].key").value("key2"))
+                jsonPath("$.[1].id").exists())
+            .andExpect(
+                jsonPath("$.[0].key").doesNotExist())
+            .andExpect(
+                jsonPath("$.[1].key").doesNotExist())
             .andExpect(
                 jsonPath("$.[0].title").value("title"))
             .andExpect(
@@ -90,8 +95,8 @@ internal class PluginInstanceResourceTest {
     @Test
     fun `should save plugin configuration`() {
         val plugin = PluginDefinition("key", "title", "description", "className")
-        val pluginConfiguration = PluginConfiguration("key", "title", "properties", plugin)
-        whenever(pluginService.createPluginConfiguration(any(), any(), any(), any())).thenReturn(pluginConfiguration)
+        val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", "properties", plugin)
+        whenever(pluginService.createPluginConfiguration(any(), any(), any())).thenReturn(pluginConfiguration)
 
         val pluginConfiguratieDto = com.ritense.plugin.web.rest.dto.PluginConfiguration(
             "key",
@@ -111,7 +116,9 @@ internal class PluginInstanceResourceTest {
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(
-                jsonPath("$.key").value("key"))
+                jsonPath("$.id").exists())
+            .andExpect(
+                jsonPath("$.key").doesNotExist())
             .andExpect(
                 jsonPath("$.title").value("title"))
             .andExpect(

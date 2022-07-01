@@ -26,6 +26,7 @@ import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.domain.PluginConfiguration
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
@@ -63,14 +64,14 @@ internal class PluginServiceTest {
     @Test
     fun `should save plugin configuration`(){
         val pluginDefinition = PluginDefinition("key", "title", "description", "className")
-        val pluginConfiguration = PluginConfiguration("key", "title", "description", pluginDefinition)
+        val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", "description", pluginDefinition)
 
         whenever(pluginDefinitionRepository.getById("key")).thenReturn(pluginDefinition)
         whenever(pluginConfigurationRepository.save(any())).thenReturn(pluginConfiguration)
 
         pluginService
             .createPluginConfiguration(
-                "key", "title", "{\"name\": \"whatever\" }", "key"
+                "title", "{\"name\": \"whatever\" }", "key"
             )
         verify(pluginConfigurationRepository).save(any())
     }

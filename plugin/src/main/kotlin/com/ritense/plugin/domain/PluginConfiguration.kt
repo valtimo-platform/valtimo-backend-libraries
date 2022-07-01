@@ -20,6 +20,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.valtimo.contract.json.Mapper
 import org.hibernate.annotations.Type
 import javax.persistence.Column
+import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.Id
@@ -31,8 +32,8 @@ import javax.persistence.Table
 @Table(name = "plugin_configuration")
 class PluginConfiguration(
     @Id
-    @Column(name = "plugin_configuration_key")
-    val key: String,
+    @Embedded
+    val id: PluginConfigurationId,
     @Column(name = "title")
     val title: String,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
@@ -44,7 +45,7 @@ class PluginConfiguration(
 ) {
     inline fun <reified T> getProperties(): T {
         return if (properties == null) {
-            throw IllegalStateException("No properties found for plugin configuration $key")
+            throw IllegalStateException("No properties found for plugin configuration ${id.id}")
         } else {
             Mapper.INSTANCE.get().readValue(properties)
         }

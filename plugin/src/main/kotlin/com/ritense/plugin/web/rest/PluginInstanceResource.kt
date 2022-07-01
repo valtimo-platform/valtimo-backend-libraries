@@ -27,7 +27,6 @@ class PluginInstanceResource(
     ): ResponseEntity<PluginConfiguration> {
         return ResponseEntity.ok(
             pluginService.createPluginConfiguration(
-                pluginConfiguration.key,
                 pluginConfiguration.title,
                 pluginConfiguration.properties,
                 pluginConfiguration.pluginDefinitionKey
