@@ -29,7 +29,7 @@ class PluginInstanceResource(
             pluginService.createPluginConfiguration(
                 pluginConfiguration.title,
                 pluginConfiguration.properties,
-                pluginConfiguration.pluginDefinitionKey
+                pluginConfiguration.definitionKey
             )
         )
     }
