@@ -113,34 +113,6 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
     }
 
     @Test
-    public void shouldThrowExceptionGettingFormAssociationByFormLinkIdWhenMultipleExists() {
-        final var formAssociations = new FormAssociations();
-        formAssociations.add(
-            new UserTaskFormAssociation(
-                UUID.randomUUID(),
-                new BpmnElementFormIdLink("user-task-id", formId)
-            )
-        );
-        formAssociations.add(
-            new UserTaskFormAssociation(
-                UUID.randomUUID(),
-                new BpmnElementFormIdLink("user-task-id", formId)
-            )
-        );
-        var camundaProcessFormAssociation = new CamundaProcessFormAssociation(
-            CamundaProcessFormAssociationId.newId(UUID.randomUUID()),
-            PROCESS_DEFINITION_KEY,
-            formAssociations
-        );
-
-        when(processFormAssociationRepository.findByProcessDefinitionKey(eq(PROCESS_DEFINITION_KEY)))
-            .thenReturn(Optional.of(camundaProcessFormAssociation));
-
-        assertThrows(IllegalStateException.class, () -> camundaFormAssociationService
-            .getFormAssociationByFormLinkId(PROCESS_DEFINITION_KEY, "user-task-id"));
-    }
-
-    @Test
     public void shouldGetFormAssociationByFormLinkId() {
         final String formLinkId = processFormAssociation.getFormAssociations().stream().findFirst().orElseThrow().getFormLink().getId();
 
@@ -297,6 +269,21 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
             .get("defaultValue").textValue()).isEqualTo("Jan");
         assertThat(findArrayEntry(form.get().get("components"), "key", "oz.voornaam")
             .get("defaultValue").textValue()).isEqualTo("test-value");
+    }
+
+    @Test
+    void shouldGetEmptyFormAssociationByFormLinkIdWhenZeroExist() {
+        final var formAssociations = new FormAssociations();
+        var camundaProcessFormAssociation = new CamundaProcessFormAssociation(
+            CamundaProcessFormAssociationId.newId(UUID.randomUUID()),
+            PROCESS_DEFINITION_KEY,
+            formAssociations
+        );
+        when(processFormAssociationRepository.findByProcessDefinitionKey(PROCESS_DEFINITION_KEY))
+            .thenReturn(Optional.of(camundaProcessFormAssociation));
+
+        var value = camundaFormAssociationService.getFormAssociationByFormLinkId(PROCESS_DEFINITION_KEY, "user-task-id");
+        assertThat(value).isNotPresent();
     }
 
     private ObjectNode documentContent() {

@@ -8,6 +8,7 @@ dependencies {
     implementation(project(":audit"))
     implementation(project(":document"))
     implementation(project(":process-document"))
+    implementation(project(":plugin"))
     implementation(project(":form"))
     implementation(project(":form-flow-valtimo"))
     implementation(project(":form-link"))

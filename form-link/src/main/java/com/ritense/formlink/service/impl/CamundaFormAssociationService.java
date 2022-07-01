@@ -46,6 +46,8 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.TaskService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -63,6 +65,8 @@ import static com.ritense.form.domain.FormIoFormDefinition.PROCESS_VAR_PREFIX;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class CamundaFormAssociationService implements FormAssociationService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CamundaFormAssociationService.class);
 
     private final FormDefinitionService formDefinitionService;
     private final ProcessFormAssociationRepository processFormAssociationRepository;
@@ -463,10 +467,14 @@ public class CamundaFormAssociationService implements FormAssociationService {
         return Collectors.collectingAndThen(
             Collectors.toList(),
             list -> {
-                if (list.size() == 1) {
+                if (list.isEmpty()) {
+                    return Optional.empty();
+                } else if (list.size() == 1) {
+                    return Optional.of(list.get(0));
+                } else {
+                    logger.error("Expected single result but found: {}.", list.size());
                     return Optional.of(list.get(0));
                 }
-                throw new IllegalStateException("Expected single result but found: " + list.size());
             }
         );
     }
