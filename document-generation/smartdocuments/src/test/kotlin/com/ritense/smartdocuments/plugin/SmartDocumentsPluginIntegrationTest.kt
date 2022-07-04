@@ -38,7 +38,7 @@ import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
+import org.junit.jupiter.api.Disabled
 
 @AutoConfigureWebTestClient(timeout = "36000")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -72,7 +72,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
     }
 
     @Test
-    @Ignore // ignoring until process links has been implemented for plugins
+    @Disabled // disabled until process links has been implemented for plugins
     fun `should generate document`() {
         // given
         val emptyResource = object : Resource {
