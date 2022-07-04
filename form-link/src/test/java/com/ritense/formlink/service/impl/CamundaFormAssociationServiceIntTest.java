@@ -121,7 +121,6 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
 
         assertThat(formDefinition).isNotNull();
         assertThat(formDefinition.get("formAssociation")).isNotNull();
-
     }
 
     @Test

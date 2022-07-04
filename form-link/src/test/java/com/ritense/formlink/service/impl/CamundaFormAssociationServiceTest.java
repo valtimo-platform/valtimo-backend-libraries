@@ -118,6 +118,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
 
         when(
             processFormAssociationRepository.findByFormLinkId(
+                eq(PROCESS_DEFINITION_KEY),
                 eq(formLinkId)
             )
         ).thenReturn(processFormAssociation.getFormAssociations().stream().findFirst().orElseThrow());
@@ -214,7 +215,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         when(formDefinitionService.formDefinitionExistsById(any())).thenReturn(true);
         var formDefinition = formDefinitionOf("user-task-with-external-form-field");
         when(formDefinitionService.getFormDefinitionById(any())).thenReturn(Optional.of(formDefinition));
-        when(processFormAssociationRepository.get(any())).thenReturn(processFormAssociation);
+       // when(processFormAssociationRepository.get(any())).thenReturn(processFormAssociation);
 
         var documentContent = documentContent();
         final var jsonDocumentContent = JsonDocumentContent.build(documentContent);
@@ -231,6 +232,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         //when
         when(
             processFormAssociationRepository.findByFormLinkId(
+                eq(PROCESS_DEFINITION_KEY),
                 eq(formLinkId)
             )
         ).thenReturn(processFormAssociation.getFormAssociations().stream().findFirst().orElseThrow());

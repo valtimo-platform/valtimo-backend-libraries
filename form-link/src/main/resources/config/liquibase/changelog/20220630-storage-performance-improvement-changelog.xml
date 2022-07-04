@@ -24,10 +24,16 @@
             <column name="id" type="BINARY(16)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="process_form_association_v2_PK"/>
             </column>
-            <column name="process_definition_key" type="VARCHAR(64)"/>
-            <column name="form_association_id" type="BINARY(16)"/>
+            <column name="process_definition_key" type="VARCHAR(64)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="process_form_association_v2_PK"/>
+            </column>
+            <column name="form_association_id" type="BINARY(16)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="process_form_association_v2_PK"/>
+            </column>
             <column name="form_association_type" type="VARCHAR(64)"/>
-            <column name="form_association_form_link_element_id" type="VARCHAR(512)"/>
+            <column name="form_association_form_link_element_id" type="VARCHAR(512)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="process_form_association_v2_PK"/>
+            </column>
             <column name="form_association_form_link_form_id" type="BINARY(16)"/>
             <column name="form_association_form_link_flow_id" type="VARCHAR(512)"/>
             <column name="form_association_form_link_custom_url" type="VARCHAR(512)"/>

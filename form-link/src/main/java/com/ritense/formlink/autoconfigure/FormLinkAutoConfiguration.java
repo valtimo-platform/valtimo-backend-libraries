@@ -51,7 +51,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.List;
 
@@ -178,9 +178,9 @@ public class FormLinkAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ProcessFormAssociationRepository.class)
     public JdbcProcessFormAssociationRepository processFormAssociationRepository(
-        final JdbcTemplate jdbcTemplate
+        final NamedParameterJdbcTemplate namedParameterJdbcTemplate
     ) {
-        return new JdbcProcessFormAssociationRepository(jdbcTemplate);
+        return new JdbcProcessFormAssociationRepository(namedParameterJdbcTemplate);
     }
 
 }

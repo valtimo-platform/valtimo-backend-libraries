@@ -17,13 +17,9 @@
 package com.ritense.formlink.repository
 
 import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation
-import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociation
-import java.util.Optional
 import java.util.UUID
 
 interface ProcessFormAssociationRepository {
-
-    fun get(processDefinitionKey: String): CamundaProcessFormAssociation?
 
     fun findByCamundaFormAssociationId(camundaFormAssociationId: UUID): CamundaFormAssociation?
 
@@ -33,19 +29,12 @@ interface ProcessFormAssociationRepository {
 
     fun findAssociationsByProcessDefinitionKey(processDefinitionKey: String): Set<CamundaFormAssociation>
 
-    fun findByProcessDefinitionKeyAndCamundaFormAssociationId(
-        processDefinitionKey: String,
-        camundaFormAssociationId: UUID
-    ): Optional<CamundaFormAssociation>
-
-    fun findByFormLinkId(formLinkId: String): CamundaFormAssociation?
+    fun findByFormLinkId(processDefinitionKey: String, formLinkId: String): CamundaFormAssociation?
 
     fun findStartEventAssociation(processDefinitionKey: String): CamundaFormAssociation?
 
     fun removeByProcessDefinitionKeyAndFormAssociationId(processDefinitionKey: String, formAssociationId: UUID)
 
-    fun deleteAll() {
-        // TODO
-    }
+    fun deleteAll()
 
 }

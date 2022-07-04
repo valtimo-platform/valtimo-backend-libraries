@@ -18,19 +18,16 @@ package com.ritense.formlink.repository.impl
 
 import com.ritense.formlink.domain.FormAssociation
 import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation
-import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociation
-import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociationId
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationFactory
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType
-import com.ritense.formlink.domain.impl.formassociation.FormAssociations
 import com.ritense.formlink.domain.impl.formassociation.StartEventFormAssociation
+import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementAngularStateUrlLink
+import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink
 import com.ritense.formlink.repository.ProcessFormAssociationRepository
 import mu.KotlinLogging
 import org.hibernate.type.descriptor.java.UUIDTypeDescriptor
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import java.sql.ResultSet
-import java.util.Optional
 import java.util.UUID
 
 /* TABLE process_form_association_v2
@@ -45,87 +42,149 @@ import java.util.UUID
 *   form_association_form_link_angular_state_url : VARCHAR(512)
 * */
 class JdbcProcessFormAssociationRepository(
-    private val jdbcTemplate: JdbcTemplate
+    private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 ) : ProcessFormAssociationRepository {
 
-    override fun get(processDefinitionKey: String): CamundaProcessFormAssociation? {
-        val formAssociations = FormAssociations()
-        var id: UUID? = null
-        val sql = "SELECT * FROM $TABLE_NAME WHERE $PROCESS_DEFINITION_KEY_COLUMN = '$processDefinitionKey'"
-        jdbcTemplate.query(sql) { rs: ResultSet, _: Int ->
-            if (id == null) {
-                id = UUIDTypeDescriptor.ToBytesTransformer().parse(rs.getBytes(ID_COLUMN))
-            }
-            formAssociations.add(
-                camundaFormAssociation(rs)
-            )
-        }
-        return CamundaProcessFormAssociation(
-            CamundaProcessFormAssociationId.existingId(id),
-            processDefinitionKey,
-            formAssociations
-        )
-    }
-
     override fun add(formAssociationId: UUID, processDefinitionKey: String, camundaFormAssociation: CamundaFormAssociation) {
-        SimpleJdbcInsert(jdbcTemplate)
-            .withTableName(TABLE_NAME)
-            .apply {
-                execute(
-                    mapOf(
-                        ID_COLUMN to formAssociationId.asBytes(),
-                        PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey,
-                        FORM_ASSOCIATION_ID to camundaFormAssociation.id.asBytes(),
-                        FORM_ASSOCIATION_TYPE to camundaFormAssociation.asType(),
-                        FORM_LINK_ELEMENT_ID to camundaFormAssociation.formLink.id,
-                        FORM_LINK_FORM_ID to camundaFormAssociation.formLink.formId.asBytes(),
-                        FORM_LINK_FLOW_ID to camundaFormAssociation.formLink.formFlowId,
-                        FORM_LINK_CUSTOM_URL to camundaFormAssociation.formLink.url,
-                        FORM_LINK_ANGULAR_STATE_URL to camundaFormAssociation.formLink.url
-                    )
-                )
-            }
+        val sql = """
+            INSERT  INTO $TABLE_NAME (
+                $ID_COLUMN,
+                $PROCESS_DEFINITION_KEY_COLUMN,
+                $FORM_ASSOCIATION_ID,
+                $FORM_ASSOCIATION_TYPE,
+                $FORM_LINK_ELEMENT_ID,
+                $FORM_LINK_FORM_ID,
+                $FORM_LINK_FLOW_ID,
+                $FORM_LINK_CUSTOM_URL,
+                $FORM_LINK_ANGULAR_STATE_URL
+            )
+            VALUES (
+                :$ID_COLUMN,
+                :$PROCESS_DEFINITION_KEY_COLUMN,
+                :$FORM_ASSOCIATION_ID,
+                :$FORM_ASSOCIATION_TYPE,
+                :$FORM_LINK_ELEMENT_ID,
+                :$FORM_LINK_FORM_ID,
+                :$FORM_LINK_FLOW_ID,
+                :$FORM_LINK_CUSTOM_URL,
+                :$FORM_LINK_ANGULAR_STATE_URL
+            )
+        """
+        val result = namedParameterJdbcTemplate.update(
+            sql,
+            mapOf(
+                ID_COLUMN to formAssociationId.asBytes(),
+                PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey,
+                FORM_ASSOCIATION_ID to camundaFormAssociation.id.asBytes(),
+                FORM_ASSOCIATION_TYPE to camundaFormAssociation.asType(),
+                FORM_LINK_ELEMENT_ID to camundaFormAssociation.formLink.id,
+                FORM_LINK_FORM_ID to camundaFormAssociation.formLink.formId.asBytes(),
+                FORM_LINK_FLOW_ID to camundaFormAssociation.formLink.formFlowId,
+                FORM_LINK_CUSTOM_URL to camundaFormAssociation.formLink.url,
+                FORM_LINK_ANGULAR_STATE_URL to camundaFormAssociation.formLink.url
+            )
+        )
+        require(result == 1)
     }
 
     override fun update(processDefinitionKey: String, camundaFormAssociation: CamundaFormAssociation) {
-        TODO("Not yet implemented")
+        val sql = """
+            UPDATE  $TABLE_NAME
+            SET     $FORM_ASSOCIATION_TYPE = :$FORM_ASSOCIATION_TYPE
+            ,       $FORM_LINK_ELEMENT_ID = :$FORM_LINK_ELEMENT_ID
+            ,       $FORM_LINK_FORM_ID = :$FORM_LINK_FORM_ID
+            ,       $FORM_LINK_FLOW_ID = :$FORM_LINK_FLOW_ID
+            ,       $FORM_LINK_CUSTOM_URL = :$FORM_LINK_CUSTOM_URL
+            ,       $FORM_LINK_ANGULAR_STATE_URL = :$FORM_LINK_ANGULAR_STATE_URL
+            WHERE   $PROCESS_DEFINITION_KEY_COLUMN = :$PROCESS_DEFINITION_KEY_COLUMN
+            AND     $FORM_ASSOCIATION_ID = :$FORM_ASSOCIATION_ID
+        """
+
+        val result = namedParameterJdbcTemplate.update(
+            sql,
+            mapOf(
+                PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey,
+                FORM_ASSOCIATION_ID to camundaFormAssociation.id.asBytes(),
+                FORM_ASSOCIATION_TYPE to camundaFormAssociation.asType(),
+                FORM_LINK_ELEMENT_ID to camundaFormAssociation.formLink.id,
+                FORM_LINK_FORM_ID to camundaFormAssociation.formLink.formId.asBytes(),
+                FORM_LINK_FLOW_ID to camundaFormAssociation.formLink.formFlowId,
+                FORM_LINK_CUSTOM_URL to if (camundaFormAssociation.formLink is BpmnElementUrlLink) camundaFormAssociation.formLink.url else null,
+                FORM_LINK_ANGULAR_STATE_URL to if (camundaFormAssociation.formLink is BpmnElementAngularStateUrlLink) camundaFormAssociation.formLink.url else null
+            )
+        )
+        require(result == 1)
     }
 
     override fun findAssociationsByProcessDefinitionKey(processDefinitionKey: String): Set<CamundaFormAssociation> {
         val sql = "SELECT * FROM $TABLE_NAME WHERE $PROCESS_DEFINITION_KEY_COLUMN = $processDefinitionKey"
         val associations = mutableSetOf<CamundaFormAssociation>()
-        jdbcTemplate.query(sql) { rs: ResultSet, _: Int -> associations.add(camundaFormAssociation(rs)) }
+        namedParameterJdbcTemplate.query(sql) { rs: ResultSet, _: Int -> associations.add(camundaFormAssociation(rs)) }
         return associations
     }
 
-    override fun findByProcessDefinitionKeyAndCamundaFormAssociationId(processDefinitionKey: String, camundaFormAssociationId: UUID): Optional<CamundaFormAssociation> {
-        TODO("Not yet implemented")
-    }
-
-    override fun findByFormLinkId(formLinkId: String): CamundaFormAssociation? {
-        val sql = "SELECT * FROM $TABLE_NAME WHERE $FORM_LINK_ELEMENT_ID = ?"
-        return jdbcTemplate.queryForObject(sql, { rs, _ -> camundaFormAssociation(rs) }, formLinkId)
+    override fun findByFormLinkId(processDefinitionKey: String, formLinkId: String): CamundaFormAssociation? {
+        val sql = """
+            SELECT  *
+            FROM    $TABLE_NAME
+            WHERE   $PROCESS_DEFINITION_KEY_COLUMN = :$PROCESS_DEFINITION_KEY_COLUMN
+            AND     $FORM_LINK_ELEMENT_ID = :$FORM_LINK_ELEMENT_ID
+        """
+        return namedParameterJdbcTemplate.queryForObject(
+            sql,
+            mapOf(
+                PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey,
+                FORM_LINK_ELEMENT_ID to formLinkId
+            )
+        )
+        { rs, _ -> camundaFormAssociation(rs) }
     }
 
     override fun findStartEventAssociation(processDefinitionKey: String): CamundaFormAssociation? {
         val sql = """
             SELECT  *
             FROM    $TABLE_NAME
-            WHERE   $PROCESS_DEFINITION_KEY_COLUMN = ?
+            WHERE   $PROCESS_DEFINITION_KEY_COLUMN = :$PROCESS_DEFINITION_KEY_COLUMN
             AND     $FORM_ASSOCIATION_TYPE = 'start-event'
         """.trimIndent()
-        return jdbcTemplate.queryForObject(sql, { rs, _ -> camundaFormAssociation(rs) }, processDefinitionKey)
+        return namedParameterJdbcTemplate.queryForObject(
+            sql,
+            mapOf(PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey)
+        )
+        { rs, _ -> camundaFormAssociation(rs) }
     }
 
     override fun removeByProcessDefinitionKeyAndFormAssociationId(processDefinitionKey: String, formAssociationId: UUID) {
-        val sql = "DELETE FROM $TABLE_NAME WHERE $PROCESS_DEFINITION_KEY_COLUMN = ? AND $FORM_ASSOCIATION_ID = ?"
-        val result = jdbcTemplate.update(sql, arrayOf(processDefinitionKey, formAssociationId.asBytes()))
+        val sql = """
+            DELETE FROM $TABLE_NAME
+            WHERE   $PROCESS_DEFINITION_KEY_COLUMN = :$PROCESS_DEFINITION_KEY_COLUMN
+            AND     $FORM_ASSOCIATION_ID = :$PROCESS_DEFINITION_KEY_COLUMN""".trimIndent()
+        val result = namedParameterJdbcTemplate.update(
+            sql,
+            mapOf(
+                PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey,
+                FORM_ASSOCIATION_ID to formAssociationId.asBytes()
+            )
+        )
         require(result == 1)
     }
 
+    override fun deleteAll() {
+        val sql = "DELETE FROM $TABLE_NAME"
+        with(namedParameterJdbcTemplate.jdbcOperations) {
+            execute(sql)
+        }
+    }
+
     override fun findByCamundaFormAssociationId(camundaFormAssociationId: UUID): CamundaFormAssociation? {
-        val sql = "SELECT * FROM $TABLE_NAME WHERE $FORM_ASSOCIATION_ID = ?"
-        return jdbcTemplate.queryForObject(sql, { rs, _ -> camundaFormAssociation(rs) }, camundaFormAssociationId.asBytes())
+        val sql = "SELECT * FROM $TABLE_NAME WHERE $FORM_ASSOCIATION_ID = :$FORM_ASSOCIATION_ID"
+        return namedParameterJdbcTemplate.queryForObject(
+            sql,
+            mapOf(
+                FORM_ASSOCIATION_ID to camundaFormAssociationId.asBytes()
+            )
+        )
+        { rs, _ -> camundaFormAssociation(rs) }
     }
 
     private fun camundaFormAssociation(rs: ResultSet) = FormAssociationFactory.getFormAssociation(

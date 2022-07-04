@@ -107,7 +107,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         String processDefinitionKey,
         String formLinkId
     ) {
-        return Optional.ofNullable(processFormAssociationRepository.findByFormLinkId(formLinkId));
+        return Optional.ofNullable(processFormAssociationRepository.findByFormLinkId(processDefinitionKey, formLinkId));
     }
 
     @Override
@@ -282,8 +282,6 @@ public class CamundaFormAssociationService implements FormAssociationService {
     @Override
     @Transactional
     public CamundaFormAssociation upsertFormAssociation(String processDefinitionKey, FormLinkRequest formLinkRequest) {
-        // TODO refactor?
-
         final var formAssociation = getFormAssociationByFormLinkId(
             processDefinitionKey, formLinkRequest.getId()
         );
