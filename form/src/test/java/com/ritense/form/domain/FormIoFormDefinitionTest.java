@@ -52,6 +52,17 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
+    public void shouldEscapeHtmlAtPreFill() throws IOException {
+        final var formDefinition = formDefinitionOf("process-variables-form-example");
+
+        var content = content(Map.of("pv", Map.of("firstName", "</b>")));
+
+        final var formDefinitionPreFilled = formDefinition.preFill(content);
+
+        assertThat(formDefinitionPreFilled.getFormDefinition().get("components").get(0).get("defaultValue").asText()).isEqualTo("&lt;/b&gt;");
+    }
+
+    @Test
     public void shouldNotExtractProcessVars() throws IOException {
         final var formDefinition = formDefinitionOf("process-variables-form-example");
 
