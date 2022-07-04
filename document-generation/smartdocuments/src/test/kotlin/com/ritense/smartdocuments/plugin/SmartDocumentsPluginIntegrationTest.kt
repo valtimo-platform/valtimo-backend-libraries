@@ -61,9 +61,10 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
     internal fun beforeEach() {
         startMockServer()
         val configuration = pluginService.createPluginConfiguration(
-            "smart-documents-plugin-configuration",
             "Smart documents plugin configuration",
-            "{\"url\":\"${server.url("/")}\",\"username\":\"test-username\",\"password\":\"test-password\"}",
+            Mapper.INSTANCE.get().readTree(
+                "{\"url\":\"${server.url("/")}\",\"username\":\"test-username\",\"password\":\"test-password\"}"
+            ),
             "smartdocuments"
         )
         smartDocumentsPlugin = smartDocumentsPluginFactory.create(configuration)

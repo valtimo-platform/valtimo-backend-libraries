@@ -40,4 +40,24 @@
                                  referencedColumnNames="plugin_definition_key"/>
     </changeSet>
 
+    <changeSet id="3" author="Ritense">
+        <delete tableName="plugin_configuration"/>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <dropPrimaryKey tableName="plugin_configuration"/>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <dropColumn tableName="plugin_configuration" columnName="plugin_configuration_key"/>
+    </changeSet>
+
+    <changeSet id="6" author="Ritense">
+        <addColumn tableName="plugin_configuration">
+            <column name="plugin_configuration_id" type="${uuidType}" beforeColumn="title">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
