@@ -30,12 +30,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import java.sql.ResultSet
 import java.util.UUID
 
-// TODO fix duplicate make test
 class JdbcProcessFormAssociationRepository(
     private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 ) : ProcessFormAssociationRepository {
 
-    override fun add(formAssociationId: UUID, processDefinitionKey: String, camundaFormAssociation: CamundaFormAssociation) {
+    override fun add(processDefinitionKey: String, camundaFormAssociation: CamundaFormAssociation) {
         val sql = """
             INSERT  INTO $TABLE_NAME (
                 $ID_COLUMN,
@@ -63,7 +62,7 @@ class JdbcProcessFormAssociationRepository(
         val result = namedParameterJdbcTemplate.update(
             sql,
             mapOf(
-                ID_COLUMN to formAssociationId.asBytes(),
+                ID_COLUMN to UUID.nameUUIDFromBytes(processDefinitionKey.toByteArray()).asBytes(),
                 PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey,
                 FORM_ASSOCIATION_ID to camundaFormAssociation.id.asBytes(),
                 FORM_ASSOCIATION_TYPE to camundaFormAssociation.asType(),

@@ -23,7 +23,7 @@ interface ProcessFormAssociationRepository {
 
     fun findByCamundaFormAssociationId(camundaFormAssociationId: UUID): CamundaFormAssociation?
 
-    fun add(formAssociationId: UUID, processDefinitionKey: String, camundaFormAssociation: CamundaFormAssociation)
+    fun add(processDefinitionKey: String, camundaFormAssociation: CamundaFormAssociation)
 
     fun update(processDefinitionKey: String, camundaFormAssociation: CamundaFormAssociation)
 

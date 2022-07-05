@@ -239,9 +239,8 @@ public class CamundaFormAssociationService implements FormAssociationService {
     @Override
     @Transactional
     public CamundaFormAssociation createFormAssociation(CreateFormAssociationRequest request) {
-        var formAssociationId = UUID.randomUUID();
         final var formAssociation = FormAssociationFactory.getFormAssociation(
-            formAssociationId,
+            UUID.nameUUIDFromBytes(request.getFormLinkRequest().getId().getBytes()),
             request.getFormLinkRequest().getType(),
             request.getFormLinkRequest().getId(),
             request.getFormLinkRequest().getFormId(),
@@ -254,7 +253,10 @@ public class CamundaFormAssociationService implements FormAssociationService {
                 throw new RuntimeException("Form definition not found with id " + request.getFormLinkRequest().getFormId());
             }
         }
-        processFormAssociationRepository.add(UUID.randomUUID(), request.getProcessDefinitionKey(), formAssociation);
+        processFormAssociationRepository.add(
+            request.getProcessDefinitionKey(),
+            formAssociation
+        );
         return formAssociation;
     }
 

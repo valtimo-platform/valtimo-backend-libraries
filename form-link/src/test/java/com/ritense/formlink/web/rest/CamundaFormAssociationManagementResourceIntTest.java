@@ -83,7 +83,6 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
     @WithMockUser(username = "john@ritense.com", authorities = ADMIN)
     public void shouldReturn200WithFormAssociations() throws Exception {
         processFormAssociationRepository.add(
-            UUID.randomUUID(),
             PROCESS_DEFINITION_KEY,
             processFormAssociation(UUID.randomUUID(), UUID.randomUUID()).getFormAssociations().stream().findFirst().orElseThrow()
         );
@@ -167,7 +166,6 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
             .orElseThrow();
 
         processFormAssociationRepository.add(
-            camundaProcessFormAssociation.getId().getId(),
             camundaProcessFormAssociation.getProcessDefinitionKey(),
             formAssociation
         );

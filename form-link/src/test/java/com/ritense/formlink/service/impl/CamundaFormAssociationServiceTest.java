@@ -163,7 +163,6 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
     @Test
     public void shouldUpsertFormAssociation() {
         when(formDefinitionService.formDefinitionExistsById(any())).thenReturn(true);
-        //when(processFormAssociationRepository.saveAndFlush(any())).thenReturn(processFormAssociation);
 
         final var processDefinitionKey = "aName";
         final var formId = UUID.randomUUID();
@@ -189,8 +188,8 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         // Now do the update flow
 
         //Mock the return so the update flow will run
-        when(camundaFormAssociationService.getFormAssociationByFormLinkId(any(), any()))
-            .thenReturn(Optional.of(new UserTaskFormAssociation(formAssociationCreated.getId(), formAssociationCreated.getFormLink())));
+        when(processFormAssociationRepository.findByFormLinkId(any(), any()))
+            .thenReturn(processFormAssociation.getFormAssociations().stream().findFirst().orElseThrow());
 
         final var formAssociationUpdated = camundaFormAssociationService.upsertFormAssociation(
             processDefinitionKey,
@@ -215,7 +214,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         when(formDefinitionService.formDefinitionExistsById(any())).thenReturn(true);
         var formDefinition = formDefinitionOf("user-task-with-external-form-field");
         when(formDefinitionService.getFormDefinitionById(any())).thenReturn(Optional.of(formDefinition));
-       // when(processFormAssociationRepository.get(any())).thenReturn(processFormAssociation);
+        // when(processFormAssociationRepository.get(any())).thenReturn(processFormAssociation);
 
         var documentContent = documentContent();
         final var jsonDocumentContent = JsonDocumentContent.build(documentContent);

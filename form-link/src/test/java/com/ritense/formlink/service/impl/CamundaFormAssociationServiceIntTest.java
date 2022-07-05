@@ -22,6 +22,7 @@ import com.ritense.formlink.BaseIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.inject.Inject;
@@ -29,6 +30,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Tag("integration")
 @Transactional
@@ -66,6 +68,14 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
         assertThat(formAssociation).isNotNull();
         assertThat(formAssociation.getFormLink().getFormId()).isEqualTo(createFormAssociationRequest.getFormLinkRequest().getFormId());
         assertThat(formAssociation.getFormLink().getId()).isEqualTo(createFormAssociationRequest.getFormLinkRequest().getId());
+    }
+
+    @Test
+    public void shouldNotDuplicateFormAssociation() {
+        final var createFormAssociationRequest = createUserTaskFormAssociationRequest(formDefinition.getId());
+
+        formAssociationService.createFormAssociation(createFormAssociationRequest);
+        assertThrows(DuplicateKeyException.class, () -> formAssociationService.createFormAssociation(createFormAssociationRequest));
     }
 
     @Test
