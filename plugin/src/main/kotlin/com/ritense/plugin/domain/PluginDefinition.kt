@@ -17,9 +17,12 @@
 package com.ritense.plugin.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.Id
+import javax.persistence.OneToMany
 import javax.persistence.Table
 
 @Entity
@@ -34,5 +37,7 @@ class PluginDefinition (
     val description: String,
     @JsonIgnore
     @Column(name = "class_name")
-    val fullyQualifiedClassName: String
+    val fullyQualifiedClassName: String,
+    @OneToMany(mappedBy = "id.pluginDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    val pluginProperties: Set<PluginProperty> = setOf(),
 )

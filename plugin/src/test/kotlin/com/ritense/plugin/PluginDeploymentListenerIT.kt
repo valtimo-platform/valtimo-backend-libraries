@@ -31,9 +31,11 @@ import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.not
 import org.hamcrest.core.IsIterableContaining.hasItems
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import javax.transaction.Transactional
+import kotlin.test.assertFalse
 
 internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
 
@@ -55,6 +57,10 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
         assertEquals("This is a test plugin used to verify plugin framework functionality",
             deployedPlugins[0].description)
         assertEquals("com.ritense.plugin.TestPlugin", deployedPlugins[0].fullyQualifiedClassName)
+        assertEquals(3, deployedPlugins[0].pluginProperties.size)
+        assertTrue(deployedPlugins[0].pluginProperties.toList()[0].required)
+        assertFalse(deployedPlugins[0].pluginProperties.toList()[1].required)
+        assertTrue(deployedPlugins[0].pluginProperties.toList()[3].required)
 
         assertTestActionPresent(deployedActions)
         assertOtherTestActionPresent(deployedActions)

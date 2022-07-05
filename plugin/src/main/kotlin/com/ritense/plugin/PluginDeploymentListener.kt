@@ -18,14 +18,18 @@ package com.ritense.plugin
 
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.domain.PluginDefinition
+import com.ritense.plugin.domain.PluginProperty
+import com.ritense.plugin.domain.PluginPropertyId
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
+import java.lang.reflect.Field
 import java.lang.reflect.Method
 
 class PluginDeploymentListener(
@@ -41,28 +45,68 @@ class PluginDeploymentListener(
 
         classes.forEach { (clazz, pluginAnnotation) ->
             try {
-                val pluginDefinition = deployPluginDefinition(
-                    PluginDefinition(pluginAnnotation.key, pluginAnnotation.title, pluginAnnotation.description, clazz.name)
-                )
+                val deployedPluginDefinition = createPluginDefinition(clazz, pluginAnnotation)
 
-                val actions = findPluginActions(clazz)
-                actions.forEach { (method, actionAnnotation) ->
-                    deployActionDefinition(
-                        PluginActionDefinition(
-                            PluginActionDefinitionId(
-                                actionAnnotation.key,
-                                pluginDefinition
-                            ),
-                            actionAnnotation.title,
-                            actionAnnotation.description,
-                            method.name,
-                            actionAnnotation.activityTypes.toList()
-                        )
-                    )
-                }
+                createActionDefinition(deployedPluginDefinition, clazz)
+
             } catch (e: Exception) {
                 throw PluginDefinitionNotDeployedException(pluginAnnotation.key, clazz.name, e)
             }
+        }
+    }
+
+    private fun createPluginDefinition(clazz: Class<*>, pluginAnnotation: Plugin): PluginDefinition {
+        val pluginProperties: MutableSet<PluginProperty> = mutableSetOf()
+        val pluginDefinition = PluginDefinition(
+            pluginAnnotation.key,
+            pluginAnnotation.title,
+            pluginAnnotation.description,
+            clazz.name,
+            pluginProperties
+        )
+
+        createProperties(pluginDefinition, pluginProperties, clazz)
+
+        return deployPluginDefinition(pluginDefinition)
+    }
+
+    private fun createProperties(
+        pluginDefinition: PluginDefinition,
+        pluginProperties: MutableSet<PluginProperty>,
+        clazz: Class<*>
+    ) {
+        val properties = findPluginProperties(clazz)
+        properties.forEach { (field, propertyAnnotation) ->
+            pluginProperties.add(
+                PluginProperty(
+                    PluginPropertyId(
+                        propertyAnnotation.key,
+                        pluginDefinition
+                    ),
+                    propertyAnnotation.title,
+                    propertyAnnotation.required,
+                    field.name,
+                    field.type.typeName
+                )
+            )
+        }
+    }
+
+    private fun createActionDefinition(deployedPluginDefinition: PluginDefinition, clazz: Class<*>) {
+        val actions = findPluginActions(clazz)
+        actions.forEach { (method, actionAnnotation) ->
+            deployActionDefinition(
+                PluginActionDefinition(
+                    PluginActionDefinitionId(
+                        actionAnnotation.key,
+                        deployedPluginDefinition
+                    ),
+                    actionAnnotation.title,
+                    actionAnnotation.description,
+                    method.name,
+                    actionAnnotation.activityTypes.toList()
+                )
+            )
         }
     }
 
@@ -72,7 +116,14 @@ class PluginDeploymentListener(
 
     private fun deployPluginDefinition(pluginDefinition: PluginDefinition): PluginDefinition {
         logger.info { "Deploying plugin ${pluginDefinition.key}" }
+        logger.debug { "$pluginDefinition" }
         return pluginDefinitionRepository.save(pluginDefinition)
+    }
+
+    private fun findPluginProperties(pluginClass: Class<*>) : Map<Field, PluginPropertyAnnotation> {
+        return pluginClass.declaredFields.filter { field ->
+            field.isAnnotationPresent(PluginPropertyAnnotation::class.java)
+        }.associateWith { field -> field.getAnnotation(PluginPropertyAnnotation::class.java) }
     }
 
     private fun findPluginActions(pluginClass: Class<*>) : Map<Method, PluginAction> {

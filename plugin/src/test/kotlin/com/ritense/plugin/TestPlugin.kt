@@ -18,6 +18,7 @@ package com.ritense.plugin
 
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
 import com.ritense.plugin.domain.ActivityType.USER_TASK
 
@@ -26,7 +27,12 @@ import com.ritense.plugin.domain.ActivityType.USER_TASK
     title = "Test plugin",
     description = "This is a test plugin used to verify plugin framework functionality"
 )
-class TestPlugin : TestPluginParent() {
+class TestPlugin(
+    val bean1: Any
+) : TestPluginParent() {
+    @PluginProperty(key = "property1") var property1: String? = null
+    @PluginProperty(key = "property2", required = false) var property2: Boolean? = null
+    @PluginProperty(key = "property3") var property3: Number? = null
 
     @PluginAction(
         key = "test-action",
