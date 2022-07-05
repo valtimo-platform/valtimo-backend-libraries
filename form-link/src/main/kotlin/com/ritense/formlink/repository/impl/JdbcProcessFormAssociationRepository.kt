@@ -181,7 +181,7 @@ class JdbcProcessFormAssociationRepository(
 
     companion object {
         val logger = KotlinLogging.logger {}
-        const val TABLE_NAME = "process_form_association_v2"
+        private const val TABLE_NAME = "process_form_association_v2"
         private const val ID_COLUMN = "id"
         private const val PROCESS_DEFINITION_KEY_COLUMN = "process_definition_key"
         private const val FORM_ASSOCIATION_ID = "form_association_id"
