@@ -22,6 +22,7 @@ import com.ritense.formlink.BaseIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -41,8 +42,13 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
 
     private FormDefinition formDefinition;
 
+    @Inject
+    private JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     public void beforeEach() throws IOException {
+        jdbcTemplate.execute("DELETE FROM process_form_association_v2");
+        jdbcTemplate.execute("DELETE FROM form_io_form_definition");
         formDefinition = formDefinitionService.createFormDefinition(createFormDefinitionRequest());
     }
 

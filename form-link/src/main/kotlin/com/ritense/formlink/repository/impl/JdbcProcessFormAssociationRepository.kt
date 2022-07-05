@@ -30,17 +30,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import java.sql.ResultSet
 import java.util.UUID
 
-/* TABLE process_form_association_v2
-*   id: BINARY(16)
-*   process_definition_key: VARCHAR(64)
-*   form_association_id : BINARY(16)
-*   form_association_type : VARCHAR(64)
-*   form_association_form_link_element_id : VARCHAR(512)
-*   form_association_form_link_form_id : BINARY(16)
-*   form_association_form_link_flow_id : VARCHAR(512)
-*   form_association_form_link_custom_url : VARCHAR(512)
-*   form_association_form_link_angular_state_url : VARCHAR(512)
-* */
+// TODO fix duplicate make test
 class JdbcProcessFormAssociationRepository(
     private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 ) : ProcessFormAssociationRepository {
@@ -69,7 +59,7 @@ class JdbcProcessFormAssociationRepository(
                 :$FORM_LINK_CUSTOM_URL,
                 :$FORM_LINK_ANGULAR_STATE_URL
             )
-        """
+        """.trimIndent()
         val result = namedParameterJdbcTemplate.update(
             sql,
             mapOf(
@@ -98,8 +88,7 @@ class JdbcProcessFormAssociationRepository(
             ,       $FORM_LINK_ANGULAR_STATE_URL = :$FORM_LINK_ANGULAR_STATE_URL
             WHERE   $PROCESS_DEFINITION_KEY_COLUMN = :$PROCESS_DEFINITION_KEY_COLUMN
             AND     $FORM_ASSOCIATION_ID = :$FORM_ASSOCIATION_ID
-        """
-
+        """.trimIndent()
         val result = namedParameterJdbcTemplate.update(
             sql,
             mapOf(
@@ -117,9 +106,9 @@ class JdbcProcessFormAssociationRepository(
     }
 
     override fun findAssociationsByProcessDefinitionKey(processDefinitionKey: String): Set<CamundaFormAssociation> {
-        val sql = "SELECT * FROM $TABLE_NAME WHERE $PROCESS_DEFINITION_KEY_COLUMN = $processDefinitionKey"
+        val sql = "SELECT * FROM $TABLE_NAME WHERE $PROCESS_DEFINITION_KEY_COLUMN = :$PROCESS_DEFINITION_KEY_COLUMN"
         val associations = mutableSetOf<CamundaFormAssociation>()
-        namedParameterJdbcTemplate.query(sql) { rs: ResultSet, _: Int -> associations.add(camundaFormAssociation(rs)) }
+        namedParameterJdbcTemplate.query(sql, mapOf(PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey)) { rs: ResultSet, _: Int -> associations.add(camundaFormAssociation(rs)) }
         return associations
     }
 
@@ -129,7 +118,7 @@ class JdbcProcessFormAssociationRepository(
             FROM    $TABLE_NAME
             WHERE   $PROCESS_DEFINITION_KEY_COLUMN = :$PROCESS_DEFINITION_KEY_COLUMN
             AND     $FORM_LINK_ELEMENT_ID = :$FORM_LINK_ELEMENT_ID
-        """
+        """.trimIndent()
         return namedParameterJdbcTemplate.queryForObject(
             sql,
             mapOf(
@@ -158,7 +147,8 @@ class JdbcProcessFormAssociationRepository(
         val sql = """
             DELETE FROM $TABLE_NAME
             WHERE   $PROCESS_DEFINITION_KEY_COLUMN = :$PROCESS_DEFINITION_KEY_COLUMN
-            AND     $FORM_ASSOCIATION_ID = :$PROCESS_DEFINITION_KEY_COLUMN""".trimIndent()
+            AND     $FORM_ASSOCIATION_ID = :$FORM_ASSOCIATION_ID
+        """.trimIndent()
         val result = namedParameterJdbcTemplate.update(
             sql,
             mapOf(
@@ -167,13 +157,6 @@ class JdbcProcessFormAssociationRepository(
             )
         )
         require(result == 1)
-    }
-
-    override fun deleteAll() {
-        val sql = "DELETE FROM $TABLE_NAME"
-        with(namedParameterJdbcTemplate.jdbcOperations) {
-            execute(sql)
-        }
     }
 
     override fun findByCamundaFormAssociationId(camundaFormAssociationId: UUID): CamundaFormAssociation? {
@@ -199,7 +182,7 @@ class JdbcProcessFormAssociationRepository(
 
     companion object {
         val logger = KotlinLogging.logger {}
-        private const val TABLE_NAME = "process_form_association_v2"
+        const val TABLE_NAME = "process_form_association_v2"
         private const val ID_COLUMN = "id"
         private const val PROCESS_DEFINITION_KEY_COLUMN = "process_definition_key"
         private const val FORM_ASSOCIATION_ID = "form_association_id"

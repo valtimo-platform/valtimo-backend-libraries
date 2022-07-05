@@ -301,7 +301,10 @@ public class CamundaFormAssociationService implements FormAssociationService {
     @Override
     @Transactional
     public void deleteFormAssociation(String processDefinitionKey, UUID formAssociationId) {
-        processFormAssociationRepository.removeByProcessDefinitionKeyAndFormAssociationId(processDefinitionKey, formAssociationId);
+        processFormAssociationRepository.removeByProcessDefinitionKeyAndFormAssociationId(
+            processDefinitionKey,
+            formAssociationId
+        );
     }
 
     private Optional<ObjectNode> getFormDefinitionByAssociation(

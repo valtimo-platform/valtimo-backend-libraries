@@ -35,6 +35,4 @@ interface ProcessFormAssociationRepository {
 
     fun removeByProcessDefinitionKeyAndFormAssociationId(processDefinitionKey: String, formAssociationId: UUID)
 
-    fun deleteAll()
-
 }
