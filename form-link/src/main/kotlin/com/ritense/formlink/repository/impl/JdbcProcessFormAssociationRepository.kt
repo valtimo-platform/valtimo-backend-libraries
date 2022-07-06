@@ -69,8 +69,8 @@ class JdbcProcessFormAssociationRepository(
                 FORM_LINK_ELEMENT_ID to camundaFormAssociation.formLink.id,
                 FORM_LINK_FORM_ID to camundaFormAssociation.formLink.formId.asBytes(),
                 FORM_LINK_FLOW_ID to camundaFormAssociation.formLink.formFlowId,
-                FORM_LINK_CUSTOM_URL to camundaFormAssociation.formLink.url,
-                FORM_LINK_ANGULAR_STATE_URL to camundaFormAssociation.formLink.url
+                FORM_LINK_CUSTOM_URL to if (camundaFormAssociation.formLink is BpmnElementUrlLink) camundaFormAssociation.formLink.url else null,
+                FORM_LINK_ANGULAR_STATE_URL to if (camundaFormAssociation.formLink is BpmnElementAngularStateUrlLink) camundaFormAssociation.formLink.url else null
             )
         )
         require(result == 1)
