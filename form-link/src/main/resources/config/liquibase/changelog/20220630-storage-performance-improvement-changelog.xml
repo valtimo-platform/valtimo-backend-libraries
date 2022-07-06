@@ -77,7 +77,7 @@
                 SELECT COUNT(1) FROM process_form_association
             </sqlCheck>
         </preConditions>-->
-        <customChange class="com.ritense.formlink.migration.MigrationWizardV2Table"/>
+        <customChange class="com.ritense.formlink.migration.MigrationV2Table"/>
     </changeSet>
 
     <changeSet author="Tom" id="3-3">

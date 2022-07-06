@@ -20,7 +20,7 @@ import java.util.UUID
 /**
  * This class is used in a liquibase changelog see 20220630-storage-performance-improvement-changelog.xml
  */
-internal class MigrationWizardV2Table : CustomTaskChange {
+internal class MigrationV2Table : CustomTaskChange {
 
     override fun execute(database: Database) {
         logger.info("Starting ${this::class.simpleName}")
