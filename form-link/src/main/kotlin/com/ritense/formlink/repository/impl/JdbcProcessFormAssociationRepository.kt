@@ -129,6 +129,8 @@ class JdbcProcessFormAssociationRepository(
                 )
             )
             { rs, _ -> camundaFormAssociation(rs) }
+        }.onFailure {
+            logger.error { it }
         }
         return result.getOrDefault(null)
     }
@@ -146,6 +148,8 @@ class JdbcProcessFormAssociationRepository(
                 mapOf(PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey)
             )
             { rs, _ -> camundaFormAssociation(rs) }
+        }.onFailure {
+            logger.error { it }
         }
         return result.getOrDefault(null)
     }
@@ -176,7 +180,8 @@ class JdbcProcessFormAssociationRepository(
                 )
             )
             { rs, _ -> camundaFormAssociation(rs) }
-
+        }.onFailure {
+            logger.error { it }
         }
         return result.getOrDefault(null)
     }
