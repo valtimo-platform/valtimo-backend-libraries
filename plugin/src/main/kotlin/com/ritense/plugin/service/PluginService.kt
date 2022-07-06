@@ -75,4 +75,13 @@ class PluginService(
             )
         }
     }
+
+    // TODO: Replace this with action invocation method
+    fun createPluginInstance(configurationKey: String): Any {
+        val configuration = getPluginConfiguration(configurationKey)
+        val pluginFactory = pluginFactories.filter {
+            it.canCreate(configuration)
+        }.firstOrNull()
+        return pluginFactory!!.create(configuration)!!
+    }
 }

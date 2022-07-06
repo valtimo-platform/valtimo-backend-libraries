@@ -15,8 +15,9 @@
  */
 package com.ritense.smartdocuments.web.rest
 
+import com.ritense.plugin.service.PluginService
 import com.ritense.smartdocuments.domain.DocumentFormatOption
-import com.ritense.smartdocuments.plugin.SmartDocumentsPluginFactory
+import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
 import com.ritense.smartdocuments.plugin.SmartDocumentsPluginGenerateDocumentProperties
 import com.ritense.valtimo.contract.json.Mapper
 import org.camunda.bpm.engine.RuntimeService
@@ -32,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(value = ["/api/smart-documents/demo"])
 class SmartDocumentsDemoResource(
-    private val smartDocumentsPluginFactory: SmartDocumentsPluginFactory,
+    private val pluginService: PluginService,
     private val runtimeService: RuntimeService,
 ) {
 
@@ -45,7 +46,7 @@ class SmartDocumentsDemoResource(
         @RequestParam format: String,
         @RequestParam templatePlaceholders: Map<String, String>,
     ): ResponseEntity<Void> {
-        val smartDocumentsPlugin = smartDocumentsPluginFactory.createByKey(pluginConfigurationKey)
+        val smartDocumentsPlugin = pluginService.createPluginInstance(pluginConfigurationKey) as SmartDocumentsPlugin
         val variables = runtimeService.getVariables(processInstanceId)
         val delegateExecutionSmall = DelegateExecutionSmall(processInstanceId, variables)
         val properties = Mapper.INSTANCE.get().writeValueAsString(
