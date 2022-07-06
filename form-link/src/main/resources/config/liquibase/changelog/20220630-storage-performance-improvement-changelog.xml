@@ -62,10 +62,11 @@
                 process_form_association_id,
                 process_definition_key,
                 form_associations
-            ) VALUES (
+            )
+            VALUES (
                 UNHEX(REPLACE('77dea2ad-3c8c-40c6-a278-7cf1a1ac9384', '-', '')),
                 "process-definition-key",
-                "[{\r\n\t\"id\": \"089de393-c2bf-4654-a523-894be1871390\",\r\n\t\"formLink\": {\r\n\t\t\"id\": \"700fcce6-f13e-46ac-8098-8bdbad0f109d\",\r\n\t\t\"formId\": \"09906bb8-67a2-43fe-8554-8f7cd388381f\",\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink\",\r\n\t\t\"formFlowId\": null\r\n\t},\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\"\r\n}, {\r\n\t\"id\": \"55b72484-ece2-4ed9-b2ef-d5dd3d59439e\",\r\n\t\"formLink\": {\r\n\t\t\"id\": \"c22ade82-5b64-4a1d-8dc5-60277a37a89a\",\r\n\t\t\"formId\": \"9e0244b1-3260-4c90-81d8-d89931b065e2\",\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink\",\r\n\t\t\"formFlowId\": null\r\n\t},\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\"\r\n}]"
+                "[{\r\n\t\"id\": \"089de393-c2bf-4654-a523-894be1871390\",\r\n\t\"formLink\": {\r\n\t\t\"id\": \"700fcce6-f13e-46ac-8098-8bdbad0f109d\",\r\n\t\t\"formId\": \"09906bb8-67a2-43fe-8554-8f7cd388381f\",\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink\"\r\n\t},\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.StartEventFormAssociation\"\r\n}, {\r\n\t\"id\": \"55b72484-ece2-4ed9-b2ef-d5dd3d59439e\",\r\n\t\"formLink\": {\r\n\t\t\"id\": \"c22ade82-5b64-4a1d-8dc5-60277a37a89a\",\r\n\t\t\"formId\": \"9e0244b1-3260-4c90-81d8-d89931b065e2\",\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink\"\r\n\t},\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\"\r\n}, {\r\n\t\"id\": \"55b72484-ece2-4ed9-b2ef-d5dd3d59439e\",\r\n\t\"formLink\": {\r\n\t\t\"id\": \"c22ade82-5b64-4a1d-8dc5-60277a37a89a\",\r\n\t\t\"url\": \"anUrl\",\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementAngularStateUrlLink\"\r\n\t},\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\"\r\n}, {\r\n\t\"id\": \"55b72484-ece2-4ed9-b2ef-d5dd3d59439e\",\r\n\t\"formLink\": {\r\n\t\t\"id\": \"c22ade82-5b64-4a1d-8dc5-60277a37a89a\",\r\n\t\t\"url\": \"anUrl\",\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink\"\r\n\t},\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\"\r\n}, {\r\n\t\"id\": \"55b72484-ece2-4ed9-b2ef-d5dd3d59439e\",\r\n\t\"formLink\": {\r\n\t\t\"id\": \"c22ade82-5b64-4a1d-8dc5-60277a37a89a\",\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink\",\r\n\t\t\"formFlowId\": \"anFormFlowId\"\r\n\t},\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\"\r\n}]"
             )
         </sql>
     </changeSet>
@@ -83,12 +84,7 @@
         <sql>
             DELETE
             FROM    process_form_association
-            WHERE   "77dea2ad-3c8c-40c6-a278-7cf1a1ac9384" =
-                    LOWER(CONCAT(LEFT(HEX(process_form_association_id), 8), '-',
-                    MID(HEX(process_form_association_id), 9, 4), '-',
-                    MID(HEX(process_form_association_id), 13, 4), '-',
-                    MID(HEX(process_form_association_id), 17, 4), '-',
-                    RIGHT(HEX(process_form_association_id), 12)))
+            WHERE   process_definition_key = "process-definition-key"
         </sql>
     </changeSet>
 

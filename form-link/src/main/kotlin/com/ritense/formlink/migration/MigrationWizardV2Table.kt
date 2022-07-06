@@ -29,7 +29,7 @@ internal class MigrationWizardV2Table : CustomTaskChange {
         val result = statement.executeQuery()
         while (result.next()) {
             val processDefinitionKey = result.getString("process_definition_key")
-            val formAssociationsJson = result.getBytes("form_associations")
+            val formAssociationsJson = result.getString("form_associations")
             val formAssociations: List<FormAssociation> = Mapper.INSTANCE.get().readValue(formAssociationsJson)
             logger.info("Processing formAssociations json:\n${formAssociations}")
             formAssociations.forEach {
