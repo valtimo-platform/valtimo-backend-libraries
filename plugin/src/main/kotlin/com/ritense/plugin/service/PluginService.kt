@@ -5,6 +5,8 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
+import com.ritense.plugin.domain.PluginProcessLink
+import com.ritense.plugin.domain.ProcessLink
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
@@ -13,7 +15,8 @@ import com.ritense.plugin.web.rest.dto.PluginActionDefinitionDto
 class PluginService(
     private var pluginDefinitionRepository: PluginDefinitionRepository,
     private var pluginConfigurationRepository: PluginConfigurationRepository,
-    private var pluginActionDefinitionRepository: PluginActionDefinitionRepository
+    private var pluginActionDefinitionRepository: PluginActionDefinitionRepository,
+    private var pluginProcessLinkRepository: PluginActionDefinitionRepository,
 ) {
 
     fun getPluginDefinitions(): List<PluginDefinition> {
@@ -56,5 +59,20 @@ class PluginService(
                 it.description
             )
         }
+    }
+
+    fun getProcessLinks(
+        processDefinitionId: String,
+        activityId: String
+    ): List<ProcessLink> {
+        TODO("Not yet implemented")
+    }
+
+    fun createProcessLink(processLink: PluginProcessLink) {
+        TODO("Not yet implemented")
+    }
+
+    fun updateProcessLink(processLink: PluginProcessLink) {
+        TODO("Not yet implemented")
     }
 }
