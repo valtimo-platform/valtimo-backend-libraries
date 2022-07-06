@@ -1,7 +1,9 @@
 package com.ritense.plugin.service
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.ActivityType
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
@@ -27,14 +29,15 @@ class PluginService(
     }
 
     fun createPluginConfiguration(
-        key: String,
         title: String,
-        properties: String,
+        properties: JsonNode,
         pluginDefinitionKey: String
     ): PluginConfiguration {
         val pluginDefinition = pluginDefinitionRepository.getById(pluginDefinitionKey)
 
-        return pluginConfigurationRepository.save(PluginConfiguration(key, title, properties, pluginDefinition))
+        return pluginConfigurationRepository.save(
+            PluginConfiguration(PluginConfigurationId.newId(), title, properties, pluginDefinition)
+        )
     }
 
     fun getPluginDefinitionActions(
