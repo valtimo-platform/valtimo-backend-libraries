@@ -168,4 +168,23 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
         assertThat(formDefinition.get("formAssociation")).isNotNull();
     }
 
+    @Test
+    public void shouldGetPresentOptionalWhenFormAssociationByFormLinkId() {
+        final var createFormAssociationRequest = createUserTaskFormAssociationRequest(formDefinition.getId());
+        final var savedFormAssociation = formAssociationService.createFormAssociation(createFormAssociationRequest);
+
+        final var formAssociation = formAssociationService
+            .getFormAssociationByFormLinkId(PROCESS_DEFINITION_KEY, savedFormAssociation.getFormLink().getId());
+
+        assertThat(formAssociation).isPresent();
+    }
+
+    @Test
+    public void shouldGetEmptyOptionalWhenFormAssociationByFormLinkId() {
+        final var formAssociation = formAssociationService
+            .getFormAssociationByFormLinkId(PROCESS_DEFINITION_KEY, "uknownId");
+
+        assertThat(formAssociation).isEmpty();
+    }
+
 }
