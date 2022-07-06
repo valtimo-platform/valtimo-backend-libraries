@@ -1,10 +1,12 @@
 package com.ritense.plugin.domain
 
+import com.fasterxml.jackson.databind.JsonNode
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
+import org.hibernate.annotations.Type
 
 @Entity
 @Table(name = "plugin_process_link")
@@ -16,9 +18,10 @@ data class PluginProcessLink(
     override val processDefinitionId: String,
     @Column(name = "activity_id", updatable = false)
     override val activityId: String,
-    @Column(name = "action_properties")
-    val actionProperties: String,
-    @Column(name = "plugin_configuration_key")
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "action_properties", columnDefinition = "JSON")
+    val actionProperties: JsonNode,
+    @Column(name = "plugin_configuration_id")
     val pluginConfigurationKey: String,
     @Column(name = "plugin_action_definition_key")
     val pluginActionDefinitionKey: String

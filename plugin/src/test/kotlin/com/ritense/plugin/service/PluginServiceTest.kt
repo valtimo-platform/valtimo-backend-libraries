@@ -24,22 +24,23 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
-import com.ritense.plugin.repository.PluginActionDefinitionRepository
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
+import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.plugin.repository.PluginProcessLinkRepository
+import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
 internal class PluginServiceTest {
 
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
     lateinit var pluginConfigurationRepository: PluginConfigurationRepository
     lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
+    lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
     lateinit var pluginService: PluginService
 
     @BeforeEach
@@ -47,7 +48,13 @@ internal class PluginServiceTest {
         pluginDefinitionRepository = mock()
         pluginConfigurationRepository = mock()
         pluginActionDefinitionRepository = mock()
-        pluginService = PluginService(pluginDefinitionRepository, pluginConfigurationRepository, pluginActionDefinitionRepository)
+        pluginProcessLinkRepository = mock()
+        pluginService = PluginService(
+            pluginDefinitionRepository,
+            pluginConfigurationRepository,
+            pluginActionDefinitionRepository,
+            pluginProcessLinkRepository
+        )
     }
 
     @Test
