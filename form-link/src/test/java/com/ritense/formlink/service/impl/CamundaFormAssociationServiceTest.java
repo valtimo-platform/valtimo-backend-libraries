@@ -285,21 +285,6 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
             .get("defaultValue").textValue()).isEqualTo("test-value");
     }
 
-    @Test
-    void shouldGetEmptyFormAssociationByFormLinkIdWhenZeroExist() {
-        final var formAssociations = new FormAssociations();
-        var camundaProcessFormAssociation = new CamundaProcessFormAssociation(
-            CamundaProcessFormAssociationId.newId(UUID.randomUUID()),
-            PROCESS_DEFINITION_KEY,
-            formAssociations
-        );
-        when(processFormAssociationRepository.findByProcessDefinitionKey(PROCESS_DEFINITION_KEY))
-            .thenReturn(Optional.of(camundaProcessFormAssociation));
-
-        var value = camundaFormAssociationService.getFormAssociationByFormLinkId(PROCESS_DEFINITION_KEY, "user-task-id");
-        assertThat(value).isNotPresent();
-    }
-
     private ObjectNode documentContent() {
         ObjectNode content = JsonNodeFactory.instance.objectNode();
         content.put("voornaam", "Jan");

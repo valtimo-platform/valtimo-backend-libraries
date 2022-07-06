@@ -5,6 +5,7 @@ import com.ritense.formlink.domain.FormAssociation
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType
 import com.ritense.formlink.domain.impl.formassociation.StartEventFormAssociation
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementAngularStateUrlLink
+import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink
 import com.ritense.valtimo.contract.json.Mapper
 import liquibase.change.custom.CustomTaskChange
@@ -73,10 +74,46 @@ internal class MigrationV2Table : CustomTaskChange {
         statement.setObject(3, formAssociation.id.asBytes(), Types.BINARY)
         statement.setString(4, formAssociation.asType())
         statement.setString(5, formAssociation.formLink.id)
-        statement.setObject(6, formAssociation.formLink.formId.asBytes(), Types.BINARY)
-        statement.setString(7, formAssociation.formLink.formFlowId)
-        statement.setString(8, if (formAssociation.formLink is BpmnElementUrlLink) formAssociation.formLink.url else null)
-        statement.setString(9, if (formAssociation.formLink is BpmnElementAngularStateUrlLink) formAssociation.formLink.url else null)
+
+        if (formAssociation.formLink is BpmnElementFormFlowIdLink) {
+            if (formAssociation.formLink.formId != null) {
+                statement.setObject(6, formAssociation.formLink.formId.asBytes(), Types.BINARY)
+            } else {
+                statement.setNull(6, Types.NULL)
+            }
+        } else {
+            statement.setNull(6, Types.NULL)
+        }
+
+        if (formAssociation.formLink is BpmnElementFormFlowIdLink) {
+            if (formAssociation.formLink.formFlowId != null) {
+                statement.setString(7, formAssociation.formLink.formFlowId)
+            } else {
+                statement.setNull(7, Types.NULL)
+            }
+        } else {
+            statement.setNull(7, Types.NULL)
+        }
+
+        if (formAssociation.formLink is BpmnElementUrlLink) {
+            if (formAssociation.formLink.url != null) {
+                statement.setString(8, formAssociation.formLink.url)
+            } else {
+                statement.setNull(8, Types.NULL)
+            }
+        } else {
+            statement.setNull(8, Types.NULL)
+        }
+
+        if (formAssociation.formLink is BpmnElementAngularStateUrlLink) {
+            if (formAssociation.formLink.url != null) {
+                statement.setString(9, formAssociation.formLink.url)
+            } else {
+                statement.setNull(9, Types.NULL)
+            }
+        } else {
+            statement.setNull(9, Types.NULL)
+        }
         statement.executeUpdate()
     }
 
