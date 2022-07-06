@@ -40,4 +40,16 @@ class PluginDefinition (
     val fullyQualifiedClassName: String,
     @OneToMany(mappedBy = "id.pluginDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val pluginProperties: Set<PluginProperty> = setOf(),
-)
+) {
+    fun findPluginProperty(propertyKey: String): PluginProperty? {
+        val filteredProperties = pluginProperties.filter {
+            it.id.key == propertyKey
+        }
+
+        return if (filteredProperties.size == 1) {
+            filteredProperties[0]
+        } else {
+            null
+        }
+    }
+}

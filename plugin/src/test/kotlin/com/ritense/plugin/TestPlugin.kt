@@ -28,7 +28,7 @@ import com.ritense.plugin.domain.ActivityType.USER_TASK
     description = "This is a test plugin used to verify plugin framework functionality"
 )
 class TestPlugin(
-    val bean1: Any
+    val someObject: String
 ) : TestPluginParent() {
     @PluginProperty(key = "property1") var property1: String? = null
     @PluginProperty(key = "property2", required = false) var property2: Boolean? = null

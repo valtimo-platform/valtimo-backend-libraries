@@ -21,6 +21,7 @@ import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
 import com.ritense.plugin.domain.ActivityType.USER_TASK
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginDefinition
+import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import org.hamcrest.MatcherAssert.assertThat
@@ -31,11 +32,9 @@ import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.not
 import org.hamcrest.core.IsIterableContaining.hasItems
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import javax.transaction.Transactional
-import kotlin.test.assertFalse
 
 internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
 
@@ -57,16 +56,49 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
         assertEquals("This is a test plugin used to verify plugin framework functionality",
             deployedPlugins[0].description)
         assertEquals("com.ritense.plugin.TestPlugin", deployedPlugins[0].fullyQualifiedClassName)
-        assertEquals(3, deployedPlugins[0].pluginProperties.size)
-        assertTrue(deployedPlugins[0].pluginProperties.toList()[0].required)
-        assertFalse(deployedPlugins[0].pluginProperties.toList()[1].required)
-        assertTrue(deployedPlugins[0].pluginProperties.toList()[3].required)
 
+        assertPluginPropertiesPresent(deployedPlugins[0].pluginProperties.toList(), deployedPlugins[0].key)
         assertTestActionPresent(deployedActions)
         assertOtherTestActionPresent(deployedActions)
         assertInheritedActionPresent(deployedActions)
         assertOverridingActionPresent(deployedActions)
         assertOverriddenActionNotPresent(deployedActions)
+    }
+
+    private fun assertPluginPropertiesPresent(
+        pluginProperties: List<PluginProperty>,
+        definitionKey: String
+    ) {
+        assertEquals(3, pluginProperties.size)
+        assertThat(
+            pluginProperties,
+            hasItems(
+                allOf(
+                    hasProperty("id",
+                        allOf(
+                            hasProperty("key", `is`("property1")),
+                            hasProperty<PluginDefinition>("pluginDefinition",
+                                hasProperty<String>("key", `is`(definitionKey))
+                            )
+                        ),
+                    ),
+                    hasProperty("required", `is`(true)),
+                    hasProperty("fieldName", `is`("property1")),
+                    hasProperty("fieldType", `is`(String::class.java.name))
+                ),
+                allOf(
+                    hasProperty("id",
+                        allOf(
+                            hasProperty("key", `is`("property2")),
+                            hasProperty<PluginDefinition>("pluginDefinition",
+                                hasProperty<String>("key", `is`(definitionKey))
+                            )
+                        ),
+                    ),
+                    hasProperty("required", `is`(false))
+                )
+            )
+        )
     }
 
     private fun assertTestActionPresent(deployedActions: List<PluginActionDefinition>) {

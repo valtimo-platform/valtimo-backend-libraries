@@ -18,6 +18,7 @@ package com.ritense.plugin.configuration
 
 import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
+import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
@@ -73,11 +74,13 @@ class PluginAutoConfiguration {
     fun pluginService(
         pluginDefinitionRepository: PluginDefinitionRepository,
         pluginConfigurationRepository: PluginConfigurationRepository,
-        pluginActionDefinitionRepository: PluginActionDefinitionRepository
+        pluginActionDefinitionRepository: PluginActionDefinitionRepository,
+        pluginFactories: List<PluginFactory<*>>,
     ): PluginService {
         return PluginService(pluginDefinitionRepository,
             pluginConfigurationRepository,
-            pluginActionDefinitionRepository
+            pluginActionDefinitionRepository,
+            pluginFactories
         )
     }
 
