@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <!--
-  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2022 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -54,6 +54,42 @@
         <createIndex indexName="form_association_form_link_form_id_index" tableName="process_form_association_v2">
             <column name="form_association_form_link_form_id"/>
         </createIndex>
+    </changeSet>
+
+    <changeSet author="Tom" id="3-1">
+        <sql>
+            INSERT INTO process_form_association (
+                process_form_association_id,
+                process_definition_key,
+                form_associations
+            ) VALUES (
+                UNHEX(REPLACE('77dea2ad-3c8c-40c6-a278-7cf1a1ac9384', '-', '')),
+                "process-definition-key",
+                "[{\r\n\t\"id\": \"089de393-c2bf-4654-a523-894be1871390\",\r\n\t\"formLink\": {\r\n\t\t\"id\": \"700fcce6-f13e-46ac-8098-8bdbad0f109d\",\r\n\t\t\"formId\": \"09906bb8-67a2-43fe-8554-8f7cd388381f\",\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink\",\r\n\t\t\"formFlowId\": null\r\n\t},\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\"\r\n}, {\r\n\t\"id\": \"55b72484-ece2-4ed9-b2ef-d5dd3d59439e\",\r\n\t\"formLink\": {\r\n\t\t\"id\": \"c22ade82-5b64-4a1d-8dc5-60277a37a89a\",\r\n\t\t\"formId\": \"9e0244b1-3260-4c90-81d8-d89931b065e2\",\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink\",\r\n\t\t\"formFlowId\": null\r\n\t},\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\"\r\n}]"
+            )
+        </sql>
+    </changeSet>
+
+    <changeSet author="Tom" id="3-2">
+        <!--<preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(1) FROM process_form_association
+            </sqlCheck>
+        </preConditions>-->
+        <customChange class="com.ritense.formlink.migration.MigrationWizardV2Table"/>
+    </changeSet>
+
+    <changeSet author="Tom" id="3-3">
+        <sql>
+            DELETE
+            FROM    process_form_association
+            WHERE   "77dea2ad-3c8c-40c6-a278-7cf1a1ac9384" =
+                    LOWER(CONCAT(LEFT(HEX(process_form_association_id), 8), '-',
+                    MID(HEX(process_form_association_id), 9, 4), '-',
+                    MID(HEX(process_form_association_id), 13, 4), '-',
+                    MID(HEX(process_form_association_id), 17, 4), '-',
+                    RIGHT(HEX(process_form_association_id), 12)))
+        </sql>
     </changeSet>
 
 </databaseChangeLog>
