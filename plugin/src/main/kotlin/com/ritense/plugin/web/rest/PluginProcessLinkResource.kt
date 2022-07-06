@@ -1,9 +1,8 @@
 package com.ritense.plugin.web.rest
 
-import com.ritense.plugin.domain.ActivityType
-import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.ProcessLink
 import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.web.rest.dto.PluginProcessLinkDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -33,7 +32,7 @@ class PluginProcessLinkResource(
 
     @PostMapping(value = ["/plugin"])
     fun createProcessLink(
-        @RequestBody processLink: PluginProcessLink
+        @RequestBody processLink: PluginProcessLinkDto
     ): ResponseEntity<Unit> {
         pluginService.createProcessLink(processLink)
 
@@ -42,7 +41,7 @@ class PluginProcessLinkResource(
 
     @PostMapping(value = ["/plugin"])
     fun updateProcessLink(
-        @RequestBody processLink: PluginProcessLink
+        @RequestBody processLink: PluginProcessLinkDto
     ): ResponseEntity<Unit> {
         pluginService.updateProcessLink(processLink)
 

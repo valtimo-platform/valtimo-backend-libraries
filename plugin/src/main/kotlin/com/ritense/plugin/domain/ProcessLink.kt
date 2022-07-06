@@ -1,12 +1,12 @@
 package com.ritense.plugin.domain
 
-import java.util.UUID
+import com.ritense.valtimo.contract.domain.AbstractId
 
 /**
  * TODO: Move this interface to the core?
  */
 interface ProcessLink {
-    val id: UUID
+    val id: AbstractId<out Any>
     val processDefinitionId: String
     val activityId: String
 }

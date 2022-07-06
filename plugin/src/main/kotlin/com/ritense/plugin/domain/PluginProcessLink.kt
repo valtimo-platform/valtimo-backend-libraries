@@ -1,19 +1,17 @@
 package com.ritense.plugin.domain
 
-import com.fasterxml.jackson.annotation.JsonValue
-import java.util.UUID
 import javax.persistence.Column
+import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
 @Table(name = "plugin_process_link")
-class PluginProcessLink(
+data class PluginProcessLink(
     @Id
-    @JsonValue
-    @Column(name = "id")
-    override val id: UUID,
+    @Embedded
+    override val id: PluginProcessLinkId,
     @Column(name = "process_definition_id", updatable = false)
     override val processDefinitionId: String,
     @Column(name = "activity_id", updatable = false)
