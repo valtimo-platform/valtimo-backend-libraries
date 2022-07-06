@@ -22,6 +22,8 @@ import com.ritense.formlink.domain.impl.formassociation.FormAssociationFactory
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType
 import com.ritense.formlink.domain.impl.formassociation.StartEventFormAssociation
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementAngularStateUrlLink
+import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
+import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink
 import com.ritense.formlink.repository.ProcessFormAssociationRepository
 import mu.KotlinLogging
@@ -67,8 +69,8 @@ class JdbcProcessFormAssociationRepository(
                 FORM_ASSOCIATION_ID to camundaFormAssociation.id.asBytes(),
                 FORM_ASSOCIATION_TYPE to camundaFormAssociation.asType(),
                 FORM_LINK_ELEMENT_ID to camundaFormAssociation.formLink.id,
-                FORM_LINK_FORM_ID to camundaFormAssociation.formLink.formId.asBytes(),
-                FORM_LINK_FLOW_ID to camundaFormAssociation.formLink.formFlowId,
+                FORM_LINK_FORM_ID to if (camundaFormAssociation.formLink is BpmnElementFormIdLink) camundaFormAssociation.formLink.formId.asBytes() else null,
+                FORM_LINK_FLOW_ID to if (camundaFormAssociation.formLink is BpmnElementFormFlowIdLink) camundaFormAssociation.formLink.formFlowId else null,
                 FORM_LINK_CUSTOM_URL to if (camundaFormAssociation.formLink is BpmnElementUrlLink) camundaFormAssociation.formLink.url else null,
                 FORM_LINK_ANGULAR_STATE_URL to if (camundaFormAssociation.formLink is BpmnElementAngularStateUrlLink) camundaFormAssociation.formLink.url else null
             )
@@ -95,8 +97,8 @@ class JdbcProcessFormAssociationRepository(
                 FORM_ASSOCIATION_ID to camundaFormAssociation.id.asBytes(),
                 FORM_ASSOCIATION_TYPE to camundaFormAssociation.asType(),
                 FORM_LINK_ELEMENT_ID to camundaFormAssociation.formLink.id,
-                FORM_LINK_FORM_ID to camundaFormAssociation.formLink.formId.asBytes(),
-                FORM_LINK_FLOW_ID to camundaFormAssociation.formLink.formFlowId,
+                FORM_LINK_FORM_ID to if (camundaFormAssociation.formLink is BpmnElementFormIdLink) camundaFormAssociation.formLink.formId.asBytes() else null,
+                FORM_LINK_FLOW_ID to if (camundaFormAssociation.formLink is BpmnElementFormFlowIdLink) camundaFormAssociation.formLink.formFlowId else null,
                 FORM_LINK_CUSTOM_URL to if (camundaFormAssociation.formLink is BpmnElementUrlLink) camundaFormAssociation.formLink.url else null,
                 FORM_LINK_ANGULAR_STATE_URL to if (camundaFormAssociation.formLink is BpmnElementAngularStateUrlLink) camundaFormAssociation.formLink.url else null
             )
@@ -173,7 +175,7 @@ class JdbcProcessFormAssociationRepository(
         UUIDTypeDescriptor.ToBytesTransformer().parse(rs.getBytes(FORM_ASSOCIATION_ID)),
         FormAssociationType.fromString(rs.getString(FORM_ASSOCIATION_TYPE)),
         rs.getString(FORM_LINK_ELEMENT_ID),
-        UUIDTypeDescriptor.ToBytesTransformer().parse(rs.getBytes(FORM_LINK_FORM_ID)),
+        if (rs.getBytes(FORM_LINK_FORM_ID) != null) UUIDTypeDescriptor.ToBytesTransformer().parse(rs.getBytes(FORM_LINK_FORM_ID)) else null,
         rs.getString(FORM_LINK_FLOW_ID),
         rs.getString(FORM_LINK_CUSTOM_URL),
         rs.getString(FORM_LINK_ANGULAR_STATE_URL)
