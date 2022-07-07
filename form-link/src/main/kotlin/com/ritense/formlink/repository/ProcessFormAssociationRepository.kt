@@ -27,7 +27,7 @@ interface ProcessFormAssociationRepository {
 
     fun update(processDefinitionKey: String, camundaFormAssociation: CamundaFormAssociation)
 
-    fun findAssociationsByProcessDefinitionKey(processDefinitionKey: String): Set<CamundaFormAssociation>
+    fun findAssociationsByProcessDefinitionKey(processDefinitionKey: String): Set<CamundaFormAssociation>?
 
     fun findByFormLinkId(processDefinitionKey: String, formLinkId: String): CamundaFormAssociation?
 

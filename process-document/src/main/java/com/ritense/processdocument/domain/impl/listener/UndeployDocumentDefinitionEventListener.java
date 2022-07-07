@@ -20,13 +20,13 @@ import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent;
 import com.ritense.valtimo.service.CamundaProcessService;
-import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
+
 import java.util.Optional;
 
 public class UndeployDocumentDefinitionEventListener {
@@ -36,7 +36,10 @@ public class UndeployDocumentDefinitionEventListener {
     private final CamundaProcessService camundaProcessService;
     private static final String REASON = "Triggerd undeployment of document definition";
 
-    public UndeployDocumentDefinitionEventListener(ProcessDocumentAssociationService processDocumentAssociationService, CamundaProcessService camundaProcessService) {
+    public UndeployDocumentDefinitionEventListener(
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        CamundaProcessService camundaProcessService
+    ) {
         this.processDocumentAssociationService = processDocumentAssociationService;
         this.camundaProcessService = camundaProcessService;
     }
@@ -45,21 +48,16 @@ public class UndeployDocumentDefinitionEventListener {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleEvent(UndeployDocumentDefinitionEvent event) {
         logger.debug("process document definition to be removed due to undeployment document definition with name: {}", event.getDocumentDefinitionName());
-
         String documentDefinitionName = event.getDocumentDefinitionName();
         Optional<? extends ProcessDocumentDefinition> processDocumentDefinitionOptional = processDocumentAssociationService.findByDocumentDefinitionName(documentDefinitionName);
-
         if (processDocumentDefinitionOptional.isPresent()) {
-
-            val processDocumentDefinition = processDocumentDefinitionOptional.get();
-
+            var processDocumentDefinition = processDocumentDefinitionOptional.get();
             camundaProcessService.deleteAllProcesses(
                 processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(), REASON
             );
-
             processDocumentAssociationService.deleteProcessDocumentInstances(processDocumentDefinition.processName());
-
             processDocumentAssociationService.deleteProcessDocumentDefinition(documentDefinitionName);
         }
     }
+
 }
