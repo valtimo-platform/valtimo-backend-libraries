@@ -30,9 +30,11 @@ import mu.KotlinLogging
 import org.hibernate.type.descriptor.java.UUIDTypeDescriptor
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
+import org.springframework.transaction.annotation.Transactional
 import java.sql.ResultSet
 import java.util.UUID
 
+@Transactional
 class JdbcProcessFormAssociationRepository(
     private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 ) : ProcessFormAssociationRepository {
@@ -107,10 +109,16 @@ class JdbcProcessFormAssociationRepository(
         require(result == 1)
     }
 
-    override fun findAssociationsByProcessDefinitionKey(processDefinitionKey: String): Set<CamundaFormAssociation> {
+    override fun findAssociationsByProcessDefinitionKey(processDefinitionKey: String): Set<CamundaFormAssociation>? {
         val sql = "SELECT * FROM $TABLE_NAME WHERE $PROCESS_DEFINITION_KEY_COLUMN = :$PROCESS_DEFINITION_KEY_COLUMN"
         val associations = mutableSetOf<CamundaFormAssociation>()
-        namedParameterJdbcTemplate.query(sql, mapOf(PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey)) { rs: ResultSet, _: Int -> associations.add(camundaFormAssociation(rs)) }
+        namedParameterJdbcTemplate.query(
+            sql,
+            mapOf(PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey)
+        ) { rs: ResultSet, _: Int -> associations.add(camundaFormAssociation(rs)) }
+        if (associations.isEmpty()) {
+            return null
+        }
         return associations
     }
 
@@ -154,19 +162,23 @@ class JdbcProcessFormAssociationRepository(
     }
 
     override fun removeByProcessDefinitionKeyAndFormAssociationId(processDefinitionKey: String, formAssociationId: UUID) {
-        val sql = """
-            DELETE FROM $TABLE_NAME
-            WHERE   $PROCESS_DEFINITION_KEY_COLUMN = :$PROCESS_DEFINITION_KEY_COLUMN
-            AND     $FORM_ASSOCIATION_ID = :$FORM_ASSOCIATION_ID
-        """.trimIndent()
-        val result = namedParameterJdbcTemplate.update(
-            sql,
-            mapOf(
-                PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey,
-                FORM_ASSOCIATION_ID to formAssociationId.asBytes()
+        try {
+            val sql = """
+                DELETE FROM $TABLE_NAME
+                WHERE   $PROCESS_DEFINITION_KEY_COLUMN = :$PROCESS_DEFINITION_KEY_COLUMN
+                AND     $FORM_ASSOCIATION_ID = :$FORM_ASSOCIATION_ID
+            """.trimIndent()
+            val result = namedParameterJdbcTemplate.update(
+                sql,
+                mapOf(
+                    PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey,
+                    FORM_ASSOCIATION_ID to formAssociationId.asBytes()
+                )
             )
-        )
-        require(result == 1)
+            require(result == 1)
+        } catch (ex: Exception) {
+            logger.error { ex }
+        }
     }
 
     override fun findByCamundaFormAssociationId(camundaFormAssociationId: UUID): CamundaFormAssociation? {

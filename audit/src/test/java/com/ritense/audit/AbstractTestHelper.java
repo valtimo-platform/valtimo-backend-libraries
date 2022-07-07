@@ -17,11 +17,14 @@
 package com.ritense.audit;
 
 import com.ritense.audit.domain.AuditRecord;
+import com.ritense.audit.domain.AuditRecordBuilder;
+import com.ritense.audit.domain.AuditRecordId;
 import com.ritense.audit.domain.MetaData;
 import com.ritense.audit.domain.MetaDataBuilder;
 import com.ritense.audit.domain.event.TestEvent;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -57,8 +60,8 @@ public abstract class AbstractTestHelper {
     }
 
     public AuditRecord auditRecord(AuditEvent event, MetaData metaData) {
-        return AuditRecord.builder()
-            .id(event.getId())
+        return new AuditRecordBuilder()
+            .id(AuditRecordId.newId(event.getId()))
             .metaData(metaData)
             .auditEvent(event)
             .build();

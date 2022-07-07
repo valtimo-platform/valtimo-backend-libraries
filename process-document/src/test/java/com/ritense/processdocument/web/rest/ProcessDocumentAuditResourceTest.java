@@ -18,6 +18,8 @@ package com.ritense.processdocument.web.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.audit.domain.AuditRecord;
+import com.ritense.audit.domain.AuditRecordBuilder;
+import com.ritense.audit.domain.AuditRecordId;
 import com.ritense.audit.domain.MetaData;
 import com.ritense.audit.domain.MetaDataBuilder;
 import com.ritense.processdocument.BaseTest;
@@ -38,10 +40,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -81,10 +85,10 @@ public class ProcessDocumentAuditResourceTest extends BaseTest {
             .thenReturn(new PageImpl<>(List.of(auditRecord)));
 
         mockMvc.perform(
-            get("/api/process-document/instance/document/{documentId}/audit", UUID.randomUUID().toString())
-                .characterEncoding(StandardCharsets.UTF_8.name())
-                .accept(APPLICATION_JSON_VALUE)
-                .contentType(APPLICATION_JSON_VALUE))
+                get("/api/process-document/instance/document/{documentId}/audit", UUID.randomUUID().toString())
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .accept(APPLICATION_JSON_VALUE)
+                    .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_VALUE))
@@ -95,8 +99,8 @@ public class ProcessDocumentAuditResourceTest extends BaseTest {
     }
 
     private AuditRecord auditRecord(AuditEvent event, MetaData metaData) {
-        return AuditRecord.builder()
-            .id(event.getId())
+        return new AuditRecordBuilder()
+            .id(AuditRecordId.newId(event.getId()))
             .metaData(metaData)
             .auditEvent(event)
             .build();

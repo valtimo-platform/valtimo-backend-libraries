@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.UUID;
@@ -49,7 +50,14 @@ public class CamundaFormAssociationManagementResource implements FormAssociation
     @Override
     @GetMapping(params = {"processDefinitionKey"})
     public ResponseEntity<Collection<? extends FormAssociation>> getAll(@RequestParam String processDefinitionKey) {
-        return ResponseEntity.ok(formAssociationService.getAllFormAssociations(processDefinitionKey));
+        final var formAssociations = formAssociationService.getAllFormAssociations(
+            processDefinitionKey
+        );
+        if (formAssociations != null) {
+            return ResponseEntity.ok(formAssociations);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Override
