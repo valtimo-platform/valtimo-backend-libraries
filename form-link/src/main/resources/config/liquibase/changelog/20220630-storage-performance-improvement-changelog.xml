@@ -1,0 +1,94 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2022 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet author="Tom" id="1">
+        <createTable tableName="process_form_association_v2">
+            <column name="id" type="BINARY(16)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="process_form_association_v2_PK"/>
+            </column>
+            <column name="process_definition_key" type="VARCHAR(64)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="process_form_association_v2_PK"/>
+            </column>
+            <column name="form_association_id" type="BINARY(16)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="process_form_association_v2_PK"/>
+            </column>
+            <column name="form_association_type" type="VARCHAR(64)"/>
+            <column name="form_association_form_link_element_id" type="VARCHAR(512)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="process_form_association_v2_PK"/>
+            </column>
+            <column name="form_association_form_link_form_id" type="BINARY(16)"/>
+            <column name="form_association_form_link_flow_id" type="VARCHAR(512)"/>
+            <column name="form_association_form_link_custom_url" type="VARCHAR(512)"/>
+            <column name="form_association_form_link_angular_state_url" type="VARCHAR(512)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Tom" id="2">
+        <createIndex indexName="process_definition_key_index" tableName="process_form_association_v2">
+            <column name="process_definition_key"/>
+        </createIndex>
+        <createIndex indexName="form_association_id_index" tableName="process_form_association_v2">
+            <column name="form_association_id"/>
+        </createIndex>
+        <createIndex indexName="form_association_type_index" tableName="process_form_association_v2">
+            <column name="form_association_type"/>
+        </createIndex>
+        <createIndex indexName="form_association_form_link_form_id_index" tableName="process_form_association_v2">
+            <column name="form_association_form_link_form_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="Tom" id="3-1">
+        <sql>
+            INSERT INTO process_form_association (
+                process_form_association_id,
+                process_definition_key,
+                form_associations
+            )
+            VALUES (
+                UNHEX(REPLACE('77dea2ad-3c8c-40c6-a278-7cf1a1ac9384', '-', '')),
+                "process-definition-key",
+                "[{\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\",\r\n\t\"id\": \"0f0ca0ed-9056-4730-9f91-645e9ed32736\",\r\n\t\"formLink\": {\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink\",\r\n\t\t\"id\": \"id\",\r\n\t\t\"formId\": \"8defe3ba-4549-4a8a-88d4-6454c53806ee\"\r\n\t}\r\n}, {\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\",\r\n\t\"id\": \"ce871f45-88a4-450b-88ac-7dd73c2b5a80\",\r\n\t\"formLink\": {\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink\",\r\n\t\t\"id\": \"id\",\r\n\t\t\"formFlowId\": \"formFlowId\"\r\n\t}\r\n}, {\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\",\r\n\t\"id\": \"1d2e2fd8-72ac-4b4b-a1aa-8bed6582c540\",\r\n\t\"formLink\": {\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementAngularStateUrlLink\",\r\n\t\t\"id\": \"id\",\r\n\t\t\"url\": \"url\"\r\n\t}\r\n}, {\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\",\r\n\t\"id\": \"c24a9f70-aa9a-44f1-96b9-405e275ab51b\",\r\n\t\"formLink\": {\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink\",\r\n\t\t\"id\": \"id\",\r\n\t\t\"url\": \"url\"\r\n\t}\r\n}]"
+            )
+        </sql>
+    </changeSet>
+
+    <changeSet author="Tom" id="3-2">
+        <customChange class="com.ritense.formlink.migration.MigrationV2Table"/>
+    </changeSet>
+
+    <changeSet author="Tom" id="3-3">
+        <sql>
+            DELETE
+            FROM    process_form_association
+            WHERE   process_definition_key = "process-definition-key"
+        </sql>
+    </changeSet>
+
+    <changeSet author="Tom" id="3-4">
+        <sql>
+            DELETE
+            FROM    process_form_association_v2
+            WHERE   process_definition_key = "process-definition-key"
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -8,7 +8,8 @@ spring:
         hikari:
             auto-commit: false
     liquibase:
-        enabled: false
+        enabled: true
+        change-log: classpath:/config/liquibase/formlink-master.xml
     jpa:
         database-platform: org.hibernate.dialect.MySQL57Dialect
         database: mysql
