@@ -62,7 +62,7 @@ class SmartDocumentsPlugin(
 ) {
 
     @PluginProperty(key = "smartDocumentsPluginProperties")
-    private val smartDocumentsPluginProperties: SmartDocumentsPluginProperties? = null
+    private lateinit var smartDocumentsPluginProperties: SmartDocumentsPluginProperties
 
     @PluginAction(
         key = "generate-document",
