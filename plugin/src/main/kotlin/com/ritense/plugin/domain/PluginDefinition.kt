@@ -29,7 +29,7 @@ import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 
 @Entity
 @Table(name = "plugin_definition")
-class PluginDefinition (
+data class PluginDefinition (
     @Id
     @Column(name = "plugin_definition_key")
     val key: String,
