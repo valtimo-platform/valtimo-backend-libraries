@@ -55,7 +55,7 @@ internal class PluginFactoryTest {
     }
 
     @Test
-    fun `should not be able to create plugin instance`() {
+    fun `should not be able to create plugin instance for different plugin definition`() {
         val pluginDefinition = PluginDefinition("key", "title", "description", "className")
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
