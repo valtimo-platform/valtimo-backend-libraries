@@ -19,13 +19,20 @@ package com.ritense.formlink.service.impl;
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.service.impl.FormIoFormDefinitionService;
 import com.ritense.formlink.BaseIntegrationTest;
+import com.ritense.formlink.domain.impl.formassociation.StartEventFormAssociation;
+import com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.io.IOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Tag("integration")
 @Transactional
@@ -39,8 +46,13 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
 
     private FormDefinition formDefinition;
 
+    @Inject
+    private JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     public void beforeEach() throws IOException {
+        jdbcTemplate.execute("DELETE FROM process_form_association_v2");
+        jdbcTemplate.execute("DELETE FROM form_io_form_definition");
         formDefinition = formDefinitionService.createFormDefinition(createFormDefinitionRequest());
     }
 
@@ -48,7 +60,12 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
     public void shouldCreateFormAssociation() {
         final var createFormAssociationRequest = createUserTaskFormAssociationRequest(formDefinition.getId());
 
-        final var formAssociation = formAssociationService.createFormAssociation(createFormAssociationRequest);
+        final var formAssociationSaved = formAssociationService.createFormAssociation(createFormAssociationRequest);
+
+        final var formAssociation = formAssociationService.getFormAssociationById(
+            createFormAssociationRequest.getProcessDefinitionKey(),
+            formAssociationSaved.getId()
+        ).orElseThrow();
 
         assertThat(formAssociation).isNotNull();
         assertThat(formAssociation.getFormLink().getFormId()).isEqualTo(createFormAssociationRequest.getFormLinkRequest().getFormId());
@@ -56,17 +73,11 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldGetFormAssociation() {
+    public void shouldNotDuplicateFormAssociation() {
         final var createFormAssociationRequest = createUserTaskFormAssociationRequest(formDefinition.getId());
 
-        final var savedFormAssociation = formAssociationService.createFormAssociation(createFormAssociationRequest);
-
-        final var formAssociation = formAssociationService
-            .getFormAssociationById(PROCESS_DEFINITION_KEY, savedFormAssociation.getId()).orElseThrow();
-
-        assertThat(formAssociation).isNotNull();
-        assertThat(formAssociation.getFormLink().getFormId()).isEqualTo(createFormAssociationRequest.getFormLinkRequest().getFormId());
-        assertThat(formAssociation.getFormLink().getId()).isEqualTo(createFormAssociationRequest.getFormLinkRequest().getId());
+        formAssociationService.createFormAssociation(createFormAssociationRequest);
+        assertThrows(DuplicateKeyException.class, () -> formAssociationService.createFormAssociation(createFormAssociationRequest));
     }
 
     @Test
@@ -79,8 +90,30 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
             .getFormAssociationById(PROCESS_DEFINITION_KEY, savedFormAssociation.getId()).orElseThrow();
 
         assertThat(formAssociation).isNotNull();
-        assertThat(formAssociation.getFormLink().getFormId()).isEqualTo(createFormAssociationRequest.getFormLinkRequest().getFormId());
-        assertThat(formAssociation.getFormLink().getId()).isEqualTo(createFormAssociationRequest.getFormLinkRequest().getId());
+        assertThat(formAssociation).isInstanceOfAny(UserTaskFormAssociation.class);
+
+        final var userTaskFormAssociation = (UserTaskFormAssociation) formAssociation;
+        assertThat(userTaskFormAssociation.getId()).isEqualTo(savedFormAssociation.getId());
+        assertThat(userTaskFormAssociation.getFormLink().getFormId()).isEqualTo(createFormAssociationRequest.getFormLinkRequest().getFormId());
+        assertThat(userTaskFormAssociation.getFormLink().getId()).isEqualTo(createFormAssociationRequest.getFormLinkRequest().getId());
+    }
+
+    @Test
+    public void shouldGetStartEventFormAssociation() {
+        final var request = createFormAssociationRequestWithStartEvent(formDefinition.getId());
+
+        final var savedFormAssociation = formAssociationService.createFormAssociation(request);
+
+        final var formAssociation = formAssociationService
+            .getFormAssociationById(PROCESS_DEFINITION_KEY, savedFormAssociation.getId()).orElseThrow();
+
+        assertThat(formAssociation).isNotNull();
+        assertThat(formAssociation).isInstanceOfAny(StartEventFormAssociation.class);
+
+        final var startEventFormAssociation = (StartEventFormAssociation) formAssociation;
+        assertThat(startEventFormAssociation.getId()).isEqualTo(savedFormAssociation.getId());
+        assertThat(startEventFormAssociation.getFormLink().getFormId()).isEqualTo(request.getFormLinkRequest().getFormId());
+        assertThat(startEventFormAssociation.getFormLink().getId()).isEqualTo(request.getFormLinkRequest().getId());
     }
 
     @Test
@@ -104,17 +137,16 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldGetStartEventFormAssociation() {
+    public void shouldGetStartEventFormDefinition() {
         final var request = createFormAssociationRequestWithStartEvent(formDefinition.getId());
 
-        final var savedFormAssociation = formAssociationService.createFormAssociation(request);
+        formAssociationService.createFormAssociation(request);
 
         final var formDefinition = formAssociationService
             .getStartEventFormDefinition(PROCESS_DEFINITION_KEY).orElseThrow();
 
         assertThat(formDefinition).isNotNull();
         assertThat(formDefinition.get("formAssociation")).isNotNull();
-
     }
 
     @Test
@@ -129,11 +161,30 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
         );
 
         final var formDefinition = formAssociationService
-            .getFormDefinitionByFormLinkId(PROCESS_DEFINITION_KEY, request.getFormLinkRequest().getId()).orElseThrow();
+            .getFormDefinitionByFormLinkId(PROCESS_DEFINITION_KEY, request.getFormLinkRequest().getId())
+            .orElseThrow();
 
         assertThat(formDefinition).isNotNull();
         assertThat(formDefinition.get("formAssociation")).isNotNull();
+    }
 
+    @Test
+    public void shouldGetPresentOptionalWhenFormAssociationByFormLinkId() {
+        final var createFormAssociationRequest = createUserTaskFormAssociationRequest(formDefinition.getId());
+        final var savedFormAssociation = formAssociationService.createFormAssociation(createFormAssociationRequest);
+
+        final var formAssociation = formAssociationService
+            .getFormAssociationByFormLinkId(PROCESS_DEFINITION_KEY, savedFormAssociation.getFormLink().getId());
+
+        assertThat(formAssociation).isPresent();
+    }
+
+    @Test
+    public void shouldGetEmptyOptionalWhenFormAssociationByFormLinkId() {
+        final var formAssociation = formAssociationService
+            .getFormAssociationByFormLinkId(PROCESS_DEFINITION_KEY, "uknownId");
+
+        assertThat(formAssociation).isEmpty();
     }
 
 }

@@ -26,15 +26,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Collections;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -60,8 +63,13 @@ public class CamundaFormAssociationResourceIntTest extends BaseIntegrationTest {
     private CamundaFormAssociation userTaskFormAssociation;
     private CamundaFormAssociation startEventformAssociation;
 
+    @Inject
+    private JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     public void setUp() throws IOException {
+        jdbcTemplate.execute("DELETE FROM process_form_association_v2");
+        jdbcTemplate.execute("DELETE FROM form_io_form_definition");
         formDefinition = formDefinitionService.createFormDefinition(createFormDefinitionRequest());
         userTaskFormAssociation = formAssociationService.createFormAssociation(createUserTaskFormAssociationRequest(formDefinition.getId()));
         startEventformAssociation = formAssociationService.createFormAssociation(createFormAssociationRequestWithStartEvent(formDefinition.getId()));
