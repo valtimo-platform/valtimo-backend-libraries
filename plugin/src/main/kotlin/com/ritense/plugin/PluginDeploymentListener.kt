@@ -22,8 +22,6 @@ import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.domain.PluginDefinition
-import com.ritense.plugin.domain.PluginProperty
-import com.ritense.plugin.domain.PluginPropertyId
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import mu.KotlinLogging
@@ -56,39 +54,26 @@ class PluginDeploymentListener(
     }
 
     private fun createPluginDefinition(clazz: Class<*>, pluginAnnotation: Plugin): PluginDefinition {
-        val pluginProperties: MutableSet<PluginProperty> = mutableSetOf()
         val pluginDefinition = PluginDefinition(
             pluginAnnotation.key,
             pluginAnnotation.title,
             pluginAnnotation.description,
             clazz.name,
-            pluginProperties
+            mutableSetOf()
         )
 
-        createProperties(pluginDefinition, pluginProperties, clazz)
+        createProperties(pluginDefinition, clazz)
 
         return deployPluginDefinition(pluginDefinition)
     }
 
     private fun createProperties(
         pluginDefinition: PluginDefinition,
-        pluginProperties: MutableSet<PluginProperty>,
         clazz: Class<*>
     ) {
         val properties = findPluginProperties(clazz)
         properties.forEach { (field, propertyAnnotation) ->
-            pluginProperties.add(
-                PluginProperty(
-                    PluginPropertyId(
-                        propertyAnnotation.key,
-                        pluginDefinition
-                    ),
-                    propertyAnnotation.title,
-                    propertyAnnotation.required,
-                    field.name,
-                    field.type.typeName
-                )
-            )
+            pluginDefinition.addProperty(field, propertyAnnotation)
         }
     }
 
