@@ -187,4 +187,24 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
         assertThat(formAssociation).isEmpty();
     }
 
+    @Test
+    public void shouldGetAllFormAssociations() {
+        final var userTaskFormAssociationRequest = createUserTaskFormAssociationRequest(formDefinition.getId());
+        formAssociationService.createFormAssociation(
+            userTaskFormAssociationRequest
+        );
+
+        final var formAssociations = formAssociationService
+            .getAllFormAssociations(PROCESS_DEFINITION_KEY);
+
+        assertThat(formAssociations).hasSize(1);
+    }
+
+    @Test
+    public void shouldGetZeroFormAssociations() {
+        final var formAssociations = formAssociationService
+            .getAllFormAssociations(PROCESS_DEFINITION_KEY);
+        assertThat(formAssociations).isNull();
+    }
+
 }
