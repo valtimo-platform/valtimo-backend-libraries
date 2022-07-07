@@ -28,6 +28,7 @@ import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlL
 import com.ritense.formlink.repository.ProcessFormAssociationRepository
 import mu.KotlinLogging
 import org.hibernate.type.descriptor.java.UUIDTypeDescriptor
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import java.sql.ResultSet
 import java.util.UUID
@@ -114,7 +115,7 @@ class JdbcProcessFormAssociationRepository(
     }
 
     override fun findByFormLinkId(processDefinitionKey: String, formLinkId: String): CamundaFormAssociation? {
-        val result = runCatching {
+        return try {
             val sql = """
             SELECT  *
             FROM    $TABLE_NAME
@@ -129,14 +130,13 @@ class JdbcProcessFormAssociationRepository(
                 )
             )
             { rs, _ -> camundaFormAssociation(rs) }
-        }.onFailure {
-            logger.error { it }
+        } catch (ex: EmptyResultDataAccessException) {
+            null
         }
-        return result.getOrDefault(null)
     }
 
     override fun findStartEventAssociation(processDefinitionKey: String): CamundaFormAssociation? {
-        val result = runCatching {
+        return try {
             val sql = """
             SELECT  *
             FROM    $TABLE_NAME
@@ -148,10 +148,9 @@ class JdbcProcessFormAssociationRepository(
                 mapOf(PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey)
             )
             { rs, _ -> camundaFormAssociation(rs) }
-        }.onFailure {
-            logger.error { it }
+        } catch (ex: EmptyResultDataAccessException) {
+            null
         }
-        return result.getOrDefault(null)
     }
 
     override fun removeByProcessDefinitionKeyAndFormAssociationId(processDefinitionKey: String, formAssociationId: UUID) {
@@ -171,23 +170,22 @@ class JdbcProcessFormAssociationRepository(
     }
 
     override fun findByCamundaFormAssociationId(camundaFormAssociationId: UUID): CamundaFormAssociation? {
-        val result = runCatching {
+        return try {
             val sql = "SELECT * FROM $TABLE_NAME WHERE $FORM_ASSOCIATION_ID = :$FORM_ASSOCIATION_ID"
-            return namedParameterJdbcTemplate.queryForObject(
+            namedParameterJdbcTemplate.queryForObject(
                 sql,
                 mapOf(
                     FORM_ASSOCIATION_ID to camundaFormAssociationId.asBytes()
                 )
             )
             { rs, _ -> camundaFormAssociation(rs) }
-        }.onFailure {
-            logger.error { it }
+        } catch (ex: EmptyResultDataAccessException) {
+            null
         }
-        return result.getOrDefault(null)
     }
 
     private fun camundaFormAssociation(rs: ResultSet) = FormAssociationFactory.getFormAssociation(
-        UUIDTypeDescriptor.ToBytesTransformer().parse(rs.getBytes(FORM_ASSOCIATION_ID)),
+        if (rs.getBytes(FORM_ASSOCIATION_ID) != null) UUIDTypeDescriptor.ToBytesTransformer().parse(rs.getBytes(FORM_ASSOCIATION_ID)) else null,
         FormAssociationType.fromString(rs.getString(FORM_ASSOCIATION_TYPE)),
         rs.getString(FORM_LINK_ELEMENT_ID),
         if (rs.getBytes(FORM_LINK_FORM_ID) != null) UUIDTypeDescriptor.ToBytesTransformer().parse(rs.getBytes(FORM_LINK_FORM_ID)) else null,
