@@ -16,6 +16,9 @@
 
 package com.ritense.plugin.annotation
 
+/**
+ * Indicates a field is a plugin property, which is used to inject configuration properties when an action is executed
+ */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class PluginProperty(

@@ -23,13 +23,25 @@ import com.ritense.plugin.domain.PluginProperty
 import org.apache.commons.lang3.reflect.FieldUtils
 
 /**
- *
+ *  This factory is meant to be extended for a specific type of plugin. It can create a plugin of type T given a
+ *  configuration. The class extending this factory has to be registered as a bean of type PluginFactory<T>.
  */
 abstract class PluginFactory<T> {
     private var fullyQualifiedClassName: String = ""
 
+    /**
+     * Create the base plugin instance, without any additional plugin properties.
+     *
+     * @return plugin instance of type T
+     */
     protected abstract fun create(): T
 
+    /**
+     * Creates a plugin of type T with configured properties of the provided PluginConfiguration
+     * @param configuration
+     *
+     * @return plugin instance of type T
+     */
     fun create(configuration: PluginConfiguration): T {
         val instance = create()
 
