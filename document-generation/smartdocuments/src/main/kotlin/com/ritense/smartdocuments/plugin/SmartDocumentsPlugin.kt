@@ -24,6 +24,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.documentgeneration.domain.GeneratedDocument
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.ResourceService
@@ -58,8 +59,10 @@ class SmartDocumentsPlugin(
     private val processDocumentService: ProcessDocumentService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val smartDocumentsClient: SmartDocumentsClient,
-    private val smartDocumentsPluginProperties: SmartDocumentsPluginProperties,
 ) {
+
+    @PluginProperty(key = "smartDocumentsPluginProperties")
+    private lateinit var smartDocumentsPluginProperties: SmartDocumentsPluginProperties
 
     @PluginAction(
         key = "generate-document",

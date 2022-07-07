@@ -19,6 +19,7 @@ package com.ritense.smartdocuments.autoconfigure
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
+import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -26,6 +27,7 @@ import com.ritense.resource.service.ResourceService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.smartdocuments.connector.SmartDocumentsConnector
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
+import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
 import com.ritense.smartdocuments.plugin.SmartDocumentsPluginFactory
 import com.ritense.smartdocuments.security.config.SmartDocumentsHttpSecurityConfigurer
 import com.ritense.smartdocuments.service.CamundaSmartDocumentGenerator
@@ -132,7 +134,7 @@ class SmartDocumentsAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         applicationEventPublisher: ApplicationEventPublisher,
         smartDocumentsClient: SmartDocumentsClient,
-    ): SmartDocumentsPluginFactory {
+    ): PluginFactory<SmartDocumentsPlugin> {
         return SmartDocumentsPluginFactory(
             pluginService,
             documentService,
@@ -153,9 +155,9 @@ class SmartDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(SmartDocumentsDemoResource::class)
     fun smartDocumentsDemoResource(
-        smartDocumentsPluginFactory: SmartDocumentsPluginFactory,
+        pluginService: PluginService,
         runtimeService: RuntimeService,
     ): SmartDocumentsDemoResource {
-        return SmartDocumentsDemoResource(smartDocumentsPluginFactory, runtimeService)
+        return SmartDocumentsDemoResource(pluginService, runtimeService)
     }
 }

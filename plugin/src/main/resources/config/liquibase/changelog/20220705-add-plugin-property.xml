@@ -1,0 +1,44 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2022 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="1" author="Ritense">
+        <createTable tableName="plugin_property">
+            <column name="plugin_property_key" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="plugin_definition_key" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="varchar(256)"/>
+            <column name="required" type="BOOLEAN"/>
+            <column name="field_name" type="varchar(256)"/>
+            <column name="field_type" type="varchar(1024)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="Ritense">
+        <addForeignKeyConstraint baseTableName="plugin_property"
+                                 baseColumnNames="plugin_definition_key"
+                                 constraintName="fk_plugin_property_plugin_definition_key"
+                                 referencedTableName="plugin_definition"
+                                 referencedColumnNames="plugin_definition_key"/>
+    </changeSet>
+</databaseChangeLog>

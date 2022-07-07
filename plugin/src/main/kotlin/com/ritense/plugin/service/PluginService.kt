@@ -1,6 +1,23 @@
+/*
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -13,7 +30,8 @@ import com.ritense.plugin.web.rest.dto.PluginActionDefinitionDto
 class PluginService(
     private var pluginDefinitionRepository: PluginDefinitionRepository,
     private var pluginConfigurationRepository: PluginConfigurationRepository,
-    private var pluginActionDefinitionRepository: PluginActionDefinitionRepository
+    private var pluginActionDefinitionRepository: PluginActionDefinitionRepository,
+    private var pluginFactories: List<PluginFactory<*>>
 ) {
 
     fun getPluginDefinitions(): List<PluginDefinition> {
@@ -56,5 +74,14 @@ class PluginService(
                 it.description
             )
         }
+    }
+
+    // TODO: Replace this with action invocation method
+    fun createPluginInstance(configurationKey: String): Any {
+        val configuration = getPluginConfiguration(configurationKey)
+        val pluginFactory = pluginFactories.filter {
+            it.canCreate(configuration)
+        }.firstOrNull()
+        return pluginFactory!!.create(configuration)!!
     }
 }

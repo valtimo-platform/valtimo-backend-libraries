@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.plugin.annotation
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.context.annotation.Bean
-
-@SpringBootApplication
-class TestApplication {
-
-    fun main(args: Array<String>) {
-        runApplication<TestApplication>(*args)
-    }
-
-    @TestConfiguration
-    class TestConfig {
-        @Bean
-        fun testPlugin(): PluginFactory<TestPlugin> {
-            return TestPluginFactory("someString")
-        }
-    }
-}
+/**
+ * Indicates a field is a plugin property, which is used to inject configuration properties when an action is executed
+ */
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class PluginProperty(
+    val key: String,
+    val title: String = "",
+    val required: Boolean = true,
+)
