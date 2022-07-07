@@ -151,9 +151,9 @@ class SmartDocumentsPlugin(
         )
         smartDocumentsClient.setProperties(
             SmartDocumentsConnectorProperties(
-                smartDocumentsPluginProperties!!.url,
-                smartDocumentsPluginProperties!!.username,
-                smartDocumentsPluginProperties!!.password
+                smartDocumentsPluginProperties.url,
+                smartDocumentsPluginProperties.username,
+                smartDocumentsPluginProperties.password
             )
         )
         val filesResponse = smartDocumentsClient.generateDocument(request)
