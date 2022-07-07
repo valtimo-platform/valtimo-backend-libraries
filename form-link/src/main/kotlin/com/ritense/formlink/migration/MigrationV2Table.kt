@@ -6,6 +6,7 @@ import com.ritense.formlink.domain.impl.formassociation.FormAssociationType
 import com.ritense.formlink.domain.impl.formassociation.StartEventFormAssociation
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementAngularStateUrlLink
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
+import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink
 import com.ritense.valtimo.contract.json.Mapper
 import liquibase.change.custom.CustomTaskChange
@@ -75,7 +76,7 @@ internal class MigrationV2Table : CustomTaskChange {
         statement.setString(4, formAssociation.asType())
         statement.setString(5, formAssociation.formLink.id)
 
-        if (formAssociation.formLink is BpmnElementFormFlowIdLink) {
+        if (formAssociation.formLink is BpmnElementFormIdLink) {
             if (formAssociation.formLink.formId != null) {
                 statement.setObject(6, formAssociation.formLink.formId.asBytes(), Types.BINARY)
             } else {
