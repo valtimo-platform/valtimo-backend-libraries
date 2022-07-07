@@ -30,9 +30,11 @@ import mu.KotlinLogging
 import org.hibernate.type.descriptor.java.UUIDTypeDescriptor
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
+import org.springframework.transaction.annotation.Transactional
 import java.sql.ResultSet
 import java.util.UUID
 
+@Transactional
 class JdbcProcessFormAssociationRepository(
     private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 ) : ProcessFormAssociationRepository {
