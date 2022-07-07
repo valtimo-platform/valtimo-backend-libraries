@@ -50,7 +50,6 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
     private final ContextService contextService;
     private final DocumentDefinitionService documentDefinitionService;
 
-
     public CamundaProcessJsonSchemaDocumentDeploymentService(ResourceLoader resourceLoader, ProcessDocumentAssociationService processDocumentAssociationService, ContextService contextService, DocumentDefinitionService documentDefinitionService) {
         this.resourceLoader = resourceLoader;
         this.processDocumentAssociationService = processDocumentAssociationService;
