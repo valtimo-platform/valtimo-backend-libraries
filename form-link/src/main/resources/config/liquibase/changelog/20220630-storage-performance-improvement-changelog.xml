@@ -83,4 +83,12 @@
         </sql>
     </changeSet>
 
+    <changeSet author="Tom" id="3-4">
+        <sql>
+            DELETE
+            FROM    process_form_association_v2
+            WHERE   process_definition_key = "process-definition-key"
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
