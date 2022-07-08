@@ -138,4 +138,7 @@ public class AuditRecord implements Persistable<AuditRecordId> {
         return this.documentId;
     }
 
+    public static AuditRecordBuilder builder() {
+        return new AuditRecordBuilder();
+    }
 }

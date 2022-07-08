@@ -25,10 +25,16 @@ public class AuditRecordBuilder {
 
     private AuditRecordId id;
     private MetaData metaData;
+    private LocalDateTime createdOn = LocalDateTime.now();
     private AuditEvent auditEvent;
     private UUID documentId;
 
     public AuditRecordBuilder() {
+    }
+
+    public AuditRecordBuilder id(UUID id) {
+        this.id = AuditRecordId.newId(id);
+        return this;
     }
 
     public AuditRecordBuilder id(AuditRecordId id) {
@@ -38,6 +44,11 @@ public class AuditRecordBuilder {
 
     public AuditRecordBuilder metaData(MetaData metaData) {
         this.metaData = metaData;
+        return this;
+    }
+
+    public AuditRecordBuilder createdOn(LocalDateTime createdOn) {
+        this.createdOn = createdOn;
         return this;
     }
 
@@ -55,7 +66,7 @@ public class AuditRecordBuilder {
         return new AuditRecord(
             id,
             metaData,
-            LocalDateTime.now(),
+            createdOn,
             auditEvent,
             documentId
         );
