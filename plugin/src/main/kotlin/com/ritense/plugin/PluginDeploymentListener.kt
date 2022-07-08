@@ -38,6 +38,9 @@ class PluginDeploymentListener(
 
     @EventListener(ApplicationStartedEvent::class)
     fun deployPluginDefinitions() {
+        pluginActionDefinitionRepository.deleteAll()
+        pluginDefinitionRepository.deleteAll()
+
         logger.info { "Deploying plugins" }
         val classes = findPluginClasses()
 
