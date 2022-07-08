@@ -128,7 +128,6 @@ class SmartDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(SmartDocumentsPluginFactory::class)
     fun smartDocumentsPluginFactory(
-        pluginService: PluginService,
         documentService: DocumentService,
         resourceService: ResourceService,
         processDocumentService: ProcessDocumentService,
@@ -136,7 +135,6 @@ class SmartDocumentsAutoConfiguration {
         smartDocumentsClient: SmartDocumentsClient,
     ): PluginFactory<SmartDocumentsPlugin> {
         return SmartDocumentsPluginFactory(
-            pluginService,
             documentService,
             resourceService,
             processDocumentService,
