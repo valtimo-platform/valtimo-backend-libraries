@@ -21,6 +21,7 @@ import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
 import com.ritense.plugin.domain.ActivityType.USER_TASK
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginDefinition
+import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import org.hamcrest.MatcherAssert.assertThat
@@ -56,11 +57,48 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
             deployedPlugins[0].description)
         assertEquals("com.ritense.plugin.TestPlugin", deployedPlugins[0].fullyQualifiedClassName)
 
+        assertPluginPropertiesPresent(deployedPlugins[0].pluginProperties.toList(), deployedPlugins[0].key)
         assertTestActionPresent(deployedActions)
         assertOtherTestActionPresent(deployedActions)
         assertInheritedActionPresent(deployedActions)
         assertOverridingActionPresent(deployedActions)
         assertOverriddenActionNotPresent(deployedActions)
+    }
+
+    private fun assertPluginPropertiesPresent(
+        pluginProperties: List<PluginProperty>,
+        definitionKey: String
+    ) {
+        assertEquals(3, pluginProperties.size)
+        assertThat(
+            pluginProperties,
+            hasItems(
+                allOf(
+                    hasProperty("id",
+                        allOf(
+                            hasProperty("key", `is`("property1")),
+                            hasProperty<PluginDefinition>("pluginDefinition",
+                                hasProperty<String>("key", `is`(definitionKey))
+                            )
+                        ),
+                    ),
+                    hasProperty("required", `is`(true)),
+                    hasProperty("fieldName", `is`("property1")),
+                    hasProperty("fieldType", `is`(String::class.java.name))
+                ),
+                allOf(
+                    hasProperty("id",
+                        allOf(
+                            hasProperty("key", `is`("property2")),
+                            hasProperty<PluginDefinition>("pluginDefinition",
+                                hasProperty<String>("key", `is`(definitionKey))
+                            )
+                        ),
+                    ),
+                    hasProperty("required", `is`(false))
+                )
+            )
+        )
     }
 
     private fun assertTestActionPresent(deployedActions: List<PluginActionDefinition>) {

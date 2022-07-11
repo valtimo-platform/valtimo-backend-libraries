@@ -24,6 +24,9 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
+import com.ritense.plugin.repository.PluginActionDefinitionRepository
+import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -41,6 +44,7 @@ internal class PluginServiceTest {
     lateinit var pluginConfigurationRepository: PluginConfigurationRepository
     lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
     lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
+    lateinit var pluginFactory: PluginFactory<Any>
     lateinit var pluginService: PluginService
 
     @BeforeEach
@@ -49,11 +53,13 @@ internal class PluginServiceTest {
         pluginConfigurationRepository = mock()
         pluginActionDefinitionRepository = mock()
         pluginProcessLinkRepository = mock()
+        pluginFactory = mock()
         pluginService = PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
             pluginProcessLinkRepository
+            listOf(pluginFactory)
         )
     }
 

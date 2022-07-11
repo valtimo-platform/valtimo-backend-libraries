@@ -18,10 +18,12 @@ package com.ritense.plugin.configuration
 
 import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
+import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.PluginDefinitionResource
@@ -38,7 +40,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         PluginDefinitionRepository::class,
         PluginConfigurationRepository::class,
         PluginActionDefinitionRepository::class,
-        PluginProcessLinkRepository::class
+        PluginProcessLinkRepository::class,
+        PluginPropertyRepository::class
     ]
 )
 @EntityScan(basePackages = ["com.ritense.plugin.domain"])
@@ -74,12 +77,14 @@ class PluginAutoConfiguration {
         pluginDefinitionRepository: PluginDefinitionRepository,
         pluginConfigurationRepository: PluginConfigurationRepository,
         pluginActionDefinitionRepository: PluginActionDefinitionRepository,
-        pluginProcessLinkRepository: PluginProcessLinkRepository
+        pluginProcessLinkRepository: PluginProcessLinkRepository,
+        pluginFactories: List<PluginFactory<*>>
     ): PluginService {
         return PluginService(pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
-            pluginProcessLinkRepository
+            pluginProcessLinkRepository,
+            pluginFactories
         )
     }
 

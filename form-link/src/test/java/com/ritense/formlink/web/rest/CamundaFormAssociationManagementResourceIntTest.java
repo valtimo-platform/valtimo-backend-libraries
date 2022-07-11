@@ -27,14 +27,17 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -62,10 +65,13 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
     private FormDefinition formDefinition;
     private MockMvc mockMvc;
 
+    @Inject
+    private JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     public void setUp() {
-        processFormAssociationRepository.deleteAll();
-        formDefinitionRepository.deleteAll();
+        jdbcTemplate.execute("DELETE FROM process_form_association_v2");
+        jdbcTemplate.execute("DELETE FROM form_io_form_definition");
         mockMvc = MockMvcBuilders
             .standaloneSetup(resource)
             .alwaysDo(print())
@@ -76,11 +82,14 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = ADMIN)
     public void shouldReturn200WithFormAssociations() throws Exception {
-        processFormAssociationRepository.save(processFormAssociation(UUID.randomUUID(), UUID.randomUUID()));
+        processFormAssociationRepository.add(
+            PROCESS_DEFINITION_KEY,
+            processFormAssociation(UUID.randomUUID(), UUID.randomUUID()).getFormAssociations().stream().findFirst().orElseThrow()
+        );
 
         mockMvc.perform(
-            get("/api/form-association-management").param("processDefinitionKey", PROCESS_DEFINITION_KEY)
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                get("/api/form-association-management").param("processDefinitionKey", PROCESS_DEFINITION_KEY)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andExpect(jsonPath("*").isArray())
             .andExpect(jsonPath("*", hasSize(1)));
@@ -95,10 +104,10 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
         final var request = createUserTaskFormAssociationRequest(formDefinition.getId());
 
         mockMvc.perform(
-            post("/api/form-association-management")
-                .characterEncoding(StandardCharsets.UTF_8.name())
-                .content(TestUtil.convertObjectToJsonBytes(request))
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                post("/api/form-association-management")
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .content(TestUtil.convertObjectToJsonBytes(request))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk());
 
         final var formAssociation = formAssociationService
@@ -115,10 +124,10 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
 
         final var request = createUserTaskFormAssociationRequest(formDefinition.getId());
         final MvcResult result = mockMvc.perform(
-            post("/api/form-association-management")
-                .characterEncoding(StandardCharsets.UTF_8.name())
-                .content(TestUtil.convertObjectToJsonBytes(request))
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                post("/api/form-association-management")
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .content(TestUtil.convertObjectToJsonBytes(request))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andReturn();
 
@@ -126,10 +135,10 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
         final var id = UUID.fromString(documentContext.read("$['id']").toString());
         final var modifyFormLinkRequest = modifyFormAssociationRequest(id, secondFormDefinition.getId(), true);
         mockMvc.perform(
-            put("/api/form-association-management")
-                .characterEncoding(StandardCharsets.UTF_8.name())
-                .content(TestUtil.convertObjectToJsonBytes(modifyFormLinkRequest))
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                put("/api/form-association-management")
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .content(TestUtil.convertObjectToJsonBytes(modifyFormLinkRequest))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
 
@@ -142,16 +151,33 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = ADMIN)
     public void shouldReturn204WithFormAssociationDeleted() throws Exception {
-        final var camundaProcessFormAssociation = processFormAssociationRepository.save(
-            processFormAssociation(UUID.randomUUID(), UUID.randomUUID())
+        var processFormAssociationId = UUID.randomUUID();
+        var formId = UUID.randomUUID();
+
+        final var camundaProcessFormAssociation = processFormAssociation(
+            processFormAssociationId,
+            formId
+        );
+
+        final var formAssociation = camundaProcessFormAssociation
+            .getFormAssociations()
+            .stream()
+            .findFirst()
+            .orElseThrow();
+
+        processFormAssociationRepository.add(
+            camundaProcessFormAssociation.getProcessDefinitionKey(),
+            formAssociation
         );
 
         mockMvc.perform(
-            delete("/api/form-association-management/{processDefinitionKey}/{formAssociationId}",
-                camundaProcessFormAssociation.getProcessDefinitionKey(),
-                camundaProcessFormAssociation.getFormAssociations().iterator().next().getId())
-                .characterEncoding(StandardCharsets.UTF_8.name())
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                delete(
+                    "/api/form-association-management/{processDefinitionKey}/{formAssociationId}",
+                    PROCESS_DEFINITION_KEY,
+                    formAssociation.getId()
+                )
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isNoContent());
     }
 

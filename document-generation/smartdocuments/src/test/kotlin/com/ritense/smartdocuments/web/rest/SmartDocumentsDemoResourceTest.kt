@@ -17,6 +17,7 @@ package com.ritense.smartdocuments.web.rest
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.plugin.service.PluginService
 import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
 import com.ritense.smartdocuments.plugin.SmartDocumentsPluginFactory
 import org.camunda.bpm.engine.RuntimeService
@@ -31,18 +32,18 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 internal class SmartDocumentsDemoResourceTest {
 
     lateinit var mockMvc: MockMvc
-    lateinit var smartDocumentsPluginFactory: SmartDocumentsPluginFactory
+    lateinit var pluginService: PluginService
     lateinit var runtimeService: RuntimeService
     lateinit var smartDocumentsPlugin: SmartDocumentsPlugin
     lateinit var smartDocumentsDemoResource: SmartDocumentsDemoResource
 
     @BeforeEach
     fun init() {
-        smartDocumentsPluginFactory = mock()
+        pluginService = mock()
         runtimeService = mock()
         smartDocumentsPlugin = mock()
-        smartDocumentsDemoResource = SmartDocumentsDemoResource(smartDocumentsPluginFactory, runtimeService)
-        whenever(smartDocumentsPluginFactory.createByKey("smart-documents-plugin-configuration"))
+        smartDocumentsDemoResource = SmartDocumentsDemoResource(pluginService, runtimeService)
+        whenever(pluginService.createPluginInstance("smart-documents-plugin-configuration"))
             .thenReturn(smartDocumentsPlugin)
 
         mockMvc = MockMvcBuilders

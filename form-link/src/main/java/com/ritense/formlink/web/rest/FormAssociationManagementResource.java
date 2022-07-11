@@ -34,6 +34,6 @@ public interface FormAssociationManagementResource {
 
     ResponseEntity<? extends FormAssociation> modifyFormAssociation(ModifyFormAssociationRequest request);
 
-    ResponseEntity<Void> deleteFormAssociation(String processDefinitionKey, String formId);
+    ResponseEntity<Void> deleteFormAssociation(String processDefinitionKey, String formAssociationId);
 
 }
