@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.plugin.exception
 
-class PluginDefinitionNotDeployedException(
-    val pluginKey: String,
-    val fullyQualifiedClassName: String,
-    cause: Throwable?
-) : Exception("Unable to deploy plugin with key \'$pluginKey\' and class name \'$fullyQualifiedClassName\'", cause)
+class PluginPropertyRequiredException(
+    propertyName: String,
+    pluginName: String,
+) : Exception("Plugin property with name \'$propertyName\' is required for plugin '$pluginName'")
