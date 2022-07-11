@@ -18,14 +18,18 @@ package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.plugin.PluginFactory
-import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.ActivityType
+import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
-import com.ritense.plugin.repository.PluginConfigurationRepository
+import com.ritense.plugin.exception.PluginPropertyParseException
+import com.ritense.plugin.exception.PluginPropertyRequiredException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
+import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.web.rest.dto.PluginActionDefinitionDto
+import com.ritense.valtimo.contract.json.Mapper
+import mu.KotlinLogging
 import java.util.UUID
 
 class PluginService(
@@ -53,6 +57,7 @@ class PluginService(
         pluginDefinitionKey: String
     ): PluginConfiguration {
         val pluginDefinition = pluginDefinitionRepository.getById(pluginDefinitionKey)
+        validateProperties(properties, pluginDefinition)
 
         return pluginConfigurationRepository.save(
             PluginConfiguration(PluginConfigurationId.newId(), title, properties, pluginDefinition)
@@ -84,5 +89,37 @@ class PluginService(
             it.canCreate(configuration)
         }.firstOrNull()
         return pluginFactory!!.create(configuration)!!
+    }
+
+    private fun validateProperties(properties: JsonNode, pluginDefinition: PluginDefinition) {
+        assert(properties.isObject)
+
+        val errors = mutableListOf<Throwable>()
+        pluginDefinition.pluginProperties.forEach { pluginProperty ->
+            val propertyNode = properties[pluginProperty.fieldName]
+
+            if (propertyNode == null || propertyNode.isMissingNode || propertyNode.isNull) {
+                if (pluginProperty.required) {
+                    errors.add(PluginPropertyRequiredException(pluginProperty.fieldName, pluginDefinition.title))
+                }
+            } else {
+                try {
+                    val propertyClass = Class.forName(pluginProperty.fieldType)
+                    val property = Mapper.INSTANCE.get().treeToValue(propertyNode, propertyClass)
+                    assert(property != null)
+                } catch (e: Exception) {
+                    errors.add(PluginPropertyParseException(pluginProperty.fieldName, pluginDefinition.title, e))
+                }
+            }
+        }
+
+        if (errors.isNotEmpty()) {
+            errors.forEach { logger.error { it } }
+            throw errors.first()
+        }
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }
