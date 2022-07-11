@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @RequestMapping(value = ["/api/smart-documents/demo"])
@@ -40,13 +41,13 @@ class SmartDocumentsDemoResource(
     @PostMapping(value = ["/generate"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun generateDocument(
         @RequestParam processInstanceId: String,
-        @RequestParam pluginConfigurationKey: String,
+        @RequestParam pluginConfigurationId: UUID,
         @RequestParam templateGroup: String,
         @RequestParam templateName: String,
         @RequestParam format: String,
         @RequestParam templatePlaceholders: Map<String, String>,
     ): ResponseEntity<Void> {
-        val smartDocumentsPlugin = pluginService.createPluginInstance(pluginConfigurationKey) as SmartDocumentsPlugin
+        val smartDocumentsPlugin = pluginService.createPluginInstance(pluginConfigurationId) as SmartDocumentsPlugin
         val variables = runtimeService.getVariables(processInstanceId)
         val delegateExecutionSmall = DelegateExecutionSmall(processInstanceId, variables)
         val properties = Mapper.INSTANCE.get().writeValueAsString(
