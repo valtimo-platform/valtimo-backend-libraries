@@ -36,7 +36,7 @@ internal class MigrationV2Table : CustomTaskChange {
             logger.info("Processing formAssociations json:\n${formAssociations}")
             formAssociations.forEach { formAssociation ->
                 if (formAssociationExists(connection, processDefinitionKey, formAssociation)) {
-                    logger.warn("Form association already exists between: $processDefinitionKey and ${formAssociation.formLink.id}")
+                    logger.warn("Form association already exists between: $processDefinitionKey and ${formAssociation.formLink.id}. Will skip migration for this record.")
                 } else {
                     insertIntoV2Table(connection, processDefinitionKey, formAssociation)
                 }
