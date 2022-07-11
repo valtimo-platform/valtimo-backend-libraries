@@ -21,6 +21,7 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
+import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
 class PluginHttpSecurityConfigurer: HttpSecurityConfigurer {
@@ -32,6 +33,9 @@ class PluginHttpSecurityConfigurer: HttpSecurityConfigurer {
                 .antMatchers(GET, "/api/plugin/configuration").hasAuthority(ADMIN)
                 .antMatchers(POST, "/api/plugin/configuration").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/plugin/definition/{pluginDefinitionKey}/action").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/process-link").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/process-link").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/process-link").hasAuthority(ADMIN)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

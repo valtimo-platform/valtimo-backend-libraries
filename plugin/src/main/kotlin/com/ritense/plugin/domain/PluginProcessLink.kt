@@ -20,9 +20,9 @@ data class PluginProcessLink(
     val activityId: String,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "action_properties", columnDefinition = "JSON")
-    val actionProperties: JsonNode,
-    @Column(name = "plugin_configuration_id")
-    val pluginConfigurationKey: String,
+    val actionProperties: JsonNode? = null,
+    @Embedded
+    val pluginConfigurationId: PluginConfigurationId,
     @Column(name = "plugin_action_definition_key")
     val pluginActionDefinitionKey: String
 )

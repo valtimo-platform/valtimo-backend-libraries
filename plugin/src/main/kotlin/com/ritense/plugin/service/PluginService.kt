@@ -32,6 +32,7 @@ import com.ritense.plugin.web.rest.dto.PluginActionDefinitionDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkCreateDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkResultDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkUpdateDto
+import javax.validation.ValidationException
 
 class PluginService(
     private var pluginDefinitionRepository: PluginDefinitionRepository,
@@ -93,20 +94,24 @@ class PluginService(
                     id = it.id.id,
                     processDefinitionId = it.processDefinitionId,
                     activityId = it.activityId,
-                    pluginConfigurationKey = it.pluginConfigurationKey,
-                    pluginActionDefinitionKey = it.pluginConfigurationKey,
+                    pluginConfigurationId = it.pluginConfigurationId.id,
+                    pluginActionDefinitionKey = it.pluginActionDefinitionKey,
                     actionProperties = it.actionProperties
                 )
             }
     }
 
     fun createProcessLink(processLink: PluginProcessLinkCreateDto) {
+        if (getProcessLinks(processLink.processDefinitionId, processLink.activityId).isNotEmpty()) {
+            throw ValidationException("A process-link for this process-definition and activity already exists!")
+        }
+
         val newProcessLink = PluginProcessLink(
             id = PluginProcessLinkId.newId(),
             processDefinitionId = processLink.processDefinitionId,
             activityId = processLink.activityId,
             actionProperties = processLink.actionProperties,
-            pluginConfigurationKey = processLink.pluginConfigurationKey,
+            pluginConfigurationId = PluginConfigurationId.existingId(processLink.pluginConfigurationId),
             pluginActionDefinitionKey = processLink.pluginActionDefinitionKey
         )
         pluginProcessLinkRepository.save(newProcessLink)
@@ -117,7 +122,7 @@ class PluginService(
             PluginProcessLinkId.existingId(processLink.id)
         ).copy(
                 actionProperties = processLink.actionProperties,
-                pluginConfigurationKey = processLink.pluginConfigurationKey,
+                pluginConfigurationId = PluginConfigurationId.existingId(processLink.pluginConfigurationId),
                 pluginActionDefinitionKey = processLink.pluginActionDefinitionKey
             )
         pluginProcessLinkRepository.save(link)

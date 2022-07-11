@@ -7,7 +7,7 @@ data class PluginProcessLinkResultDto (
     val id: UUID,
     val processDefinitionId: String,
     val activityId: String,
-    val pluginConfigurationKey: String,
+    val pluginConfigurationId: UUID,
     val pluginActionDefinitionKey: String,
-    val actionProperties: JsonNode
+    val actionProperties: JsonNode? = null
 )

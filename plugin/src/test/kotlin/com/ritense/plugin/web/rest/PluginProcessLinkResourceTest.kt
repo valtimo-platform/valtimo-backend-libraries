@@ -50,13 +50,16 @@ internal class PluginProcessLinkResourceTest {
         val processDefinitionId = "pid"
         val activityId = "aid"
 
+        val pluginConfigurationId1 = UUID.randomUUID()
+        val pluginConfigurationId2 = UUID.randomUUID()
+
         val processLinks = listOf(
             PluginProcessLinkResultDto(
                 id = id1,
                 processDefinitionId = processDefinitionId,
                 activityId = activityId,
                 actionProperties = properties,
-                pluginConfigurationKey = "pluginConfigurationKey1",
+                pluginConfigurationId = pluginConfigurationId1,
                 pluginActionDefinitionKey = "pluginActionDefinitionKey1"
             ),
             PluginProcessLinkResultDto(
@@ -64,7 +67,7 @@ internal class PluginProcessLinkResourceTest {
                 processDefinitionId = processDefinitionId,
                 activityId = activityId,
                 actionProperties = properties,
-                pluginConfigurationKey = "pluginConfigurationKey2",
+                pluginConfigurationId = pluginConfigurationId2,
                 pluginActionDefinitionKey = "pluginActionDefinitionKey2"
             )
         )
@@ -82,13 +85,13 @@ internal class PluginProcessLinkResourceTest {
             .andExpect(jsonPath("$.[0].processDefinitionId").value(processDefinitionId))
             .andExpect(jsonPath("$.[0].activityId").value(activityId))
             .andExpect(jsonPath("$.[0].actionProperties.name").value("whatever"))
-            .andExpect(jsonPath("$.[0].pluginConfigurationKey").value("pluginConfigurationKey1"))
+            .andExpect(jsonPath("$.[0].pluginConfigurationId").value(pluginConfigurationId1.toString()))
             .andExpect(jsonPath("$.[0].pluginActionDefinitionKey").value("pluginActionDefinitionKey1"))
             .andExpect(jsonPath("$.[1].id").value(id2.toString()))
             .andExpect(jsonPath("$.[1].processDefinitionId").value(processDefinitionId))
             .andExpect(jsonPath("$.[1].activityId").value(activityId))
             .andExpect(jsonPath("$.[1].actionProperties.name").value("whatever"))
-            .andExpect(jsonPath("$.[1].pluginConfigurationKey").value("pluginConfigurationKey2"))
+            .andExpect(jsonPath("$.[1].pluginConfigurationId").value(pluginConfigurationId2.toString()))
             .andExpect(jsonPath("$.[1].pluginActionDefinitionKey").value("pluginActionDefinitionKey2"))
 
 
@@ -101,7 +104,7 @@ internal class PluginProcessLinkResourceTest {
 
         val pluginProcessLinkDto = PluginProcessLinkCreateDto(
             processDefinitionId = UUID.randomUUID().toString(),
-            pluginConfigurationKey = "some-plugin-configuration",
+            pluginConfigurationId = UUID.randomUUID(),
             activityId = "someActivity",
             pluginActionDefinitionKey = "some-plugin-action",
             actionProperties = properties
@@ -126,7 +129,7 @@ internal class PluginProcessLinkResourceTest {
 
         val pluginProcessLinkDto = PluginProcessLinkUpdateDto(
             id = UUID.randomUUID(),
-            pluginConfigurationKey = "some-plugin-configuration",
+            pluginConfigurationId = UUID.randomUUID(),
             pluginActionDefinitionKey = "some-plugin-action",
             actionProperties = properties
         )

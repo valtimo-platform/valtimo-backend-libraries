@@ -5,7 +5,7 @@ import java.util.UUID
 
 data class PluginProcessLinkUpdateDto(
     val id: UUID,
-    val pluginConfigurationKey: String,
+    val pluginConfigurationId: UUID,
     val pluginActionDefinitionKey: String,
-    val actionProperties: JsonNode
+    val actionProperties: JsonNode? = null
 )
