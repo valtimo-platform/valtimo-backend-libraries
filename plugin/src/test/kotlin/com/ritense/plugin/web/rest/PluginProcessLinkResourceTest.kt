@@ -7,7 +7,9 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkCreateDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkResultDto
+import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkUpdateDto
 import com.ritense.valtimo.contract.json.Mapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -97,7 +99,7 @@ internal class PluginProcessLinkResourceTest {
     fun `should add plugin process link`() {
         val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
 
-        val pluginProcessLinkDto = PluginProcessLinkResultDto(
+        val pluginProcessLinkDto = PluginProcessLinkCreateDto(
             processDefinitionId = UUID.randomUUID().toString(),
             pluginConfigurationKey = "some-plugin-configuration",
             activityId = "someActivity",
@@ -122,11 +124,9 @@ internal class PluginProcessLinkResourceTest {
     fun `should update plugin process link`() {
         val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
 
-        val pluginProcessLinkDto = PluginProcessLinkResultDto(
+        val pluginProcessLinkDto = PluginProcessLinkUpdateDto(
             id = UUID.randomUUID(),
-            processDefinitionId = UUID.randomUUID().toString(),
             pluginConfigurationKey = "some-plugin-configuration",
-            activityId = "someActivity",
             pluginActionDefinitionKey = "some-plugin-action",
             actionProperties = properties
         )

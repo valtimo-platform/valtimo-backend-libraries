@@ -17,10 +17,13 @@
 package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
+import com.ritense.plugin.domain.PluginProcessLink
+import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
