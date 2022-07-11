@@ -13,11 +13,11 @@ import org.hibernate.annotations.Type
 data class PluginProcessLink(
     @Id
     @Embedded
-    override val id: PluginProcessLinkId,
+    val id: PluginProcessLinkId,
     @Column(name = "process_definition_id", updatable = false)
-    override val processDefinitionId: String,
+    val processDefinitionId: String,
     @Column(name = "activity_id", updatable = false)
-    override val activityId: String,
+    val activityId: String,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "action_properties", columnDefinition = "JSON")
     val actionProperties: JsonNode,
@@ -25,4 +25,4 @@ data class PluginProcessLink(
     val pluginConfigurationKey: String,
     @Column(name = "plugin_action_definition_key")
     val pluginActionDefinitionKey: String
-) : ProcessLink
+)

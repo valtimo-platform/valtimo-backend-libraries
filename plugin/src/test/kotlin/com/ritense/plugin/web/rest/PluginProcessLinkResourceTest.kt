@@ -6,10 +6,8 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import com.ritense.plugin.domain.PluginProcessLink
-import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.dto.PluginProcessLinkDto
+import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkResultDto
 import com.ritense.valtimo.contract.json.Mapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -51,21 +49,21 @@ internal class PluginProcessLinkResourceTest {
         val activityId = "aid"
 
         val processLinks = listOf(
-            PluginProcessLink(
-                PluginProcessLinkId(id1),
-                processDefinitionId,
-                activityId,
-                properties,
-                "pluginConfigurationKey1",
-                "pluginActionDefinitionKey1"
+            PluginProcessLinkResultDto(
+                id = id1,
+                processDefinitionId = processDefinitionId,
+                activityId = activityId,
+                actionProperties = properties,
+                pluginConfigurationKey = "pluginConfigurationKey1",
+                pluginActionDefinitionKey = "pluginActionDefinitionKey1"
             ),
-            PluginProcessLink(
-                PluginProcessLinkId(id2),
-                processDefinitionId,
-                activityId,
-                properties,
-                "pluginConfigurationKey2",
-                "pluginActionDefinitionKey2"
+            PluginProcessLinkResultDto(
+                id = id2,
+                processDefinitionId = processDefinitionId,
+                activityId = activityId,
+                actionProperties = properties,
+                pluginConfigurationKey = "pluginConfigurationKey2",
+                pluginActionDefinitionKey = "pluginActionDefinitionKey2"
             )
         )
 
@@ -99,7 +97,7 @@ internal class PluginProcessLinkResourceTest {
     fun `should add plugin process link`() {
         val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
 
-        val pluginProcessLinkDto = PluginProcessLinkDto(
+        val pluginProcessLinkDto = PluginProcessLinkResultDto(
             processDefinitionId = UUID.randomUUID().toString(),
             pluginConfigurationKey = "some-plugin-configuration",
             activityId = "someActivity",
@@ -108,7 +106,7 @@ internal class PluginProcessLinkResourceTest {
         )
 
         mockMvc.perform(
-            post("/api/process-link/plugin")
+            post("/api/process-link")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(Mapper.INSTANCE.get().writeValueAsString(pluginProcessLinkDto))
@@ -124,7 +122,7 @@ internal class PluginProcessLinkResourceTest {
     fun `should update plugin process link`() {
         val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
 
-        val pluginProcessLinkDto = PluginProcessLinkDto(
+        val pluginProcessLinkDto = PluginProcessLinkResultDto(
             id = UUID.randomUUID(),
             processDefinitionId = UUID.randomUUID().toString(),
             pluginConfigurationKey = "some-plugin-configuration",
@@ -134,7 +132,7 @@ internal class PluginProcessLinkResourceTest {
         )
 
         mockMvc.perform(
-            put("/api/process-link/plugin")
+            put("/api/process-link")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(Mapper.INSTANCE.get().writeValueAsString(pluginProcessLinkDto))

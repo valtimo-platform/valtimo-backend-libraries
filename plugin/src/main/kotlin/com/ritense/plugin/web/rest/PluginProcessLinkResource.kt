@@ -1,8 +1,9 @@
 package com.ritense.plugin.web.rest
 
-import com.ritense.plugin.domain.ProcessLink
 import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.dto.PluginProcessLinkDto
+import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkCreateDto
+import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkResultDto
+import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkUpdateDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -24,24 +25,24 @@ class PluginProcessLinkResource(
     fun getProcessLinks(
         @RequestParam("processDefinitionId") processDefinitionId: String,
         @RequestParam("activityId") activityId: String
-    ): ResponseEntity<List<ProcessLink>> {
-        val links: List<ProcessLink> = pluginService.getProcessLinks(processDefinitionId, activityId)
+    ): ResponseEntity<List<PluginProcessLinkResultDto>> {
+        val list: List<PluginProcessLinkResultDto> = pluginService.getProcessLinks(processDefinitionId, activityId)
 
-        return ResponseEntity.ok(links)
+        return ResponseEntity.ok(list)
     }
 
-    @PostMapping(value = ["/plugin"])
+    @PostMapping
     fun createProcessLink(
-        @RequestBody processLink: PluginProcessLinkDto
+        @RequestBody processLink: PluginProcessLinkCreateDto
     ): ResponseEntity<Unit> {
         pluginService.createProcessLink(processLink)
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
-    @PutMapping(value = ["/plugin"])
+    @PutMapping
     fun updateProcessLink(
-        @RequestBody processLink: PluginProcessLinkDto
+        @RequestBody processLink: PluginProcessLinkUpdateDto
     ): ResponseEntity<Unit> {
         pluginService.updateProcessLink(processLink)
 

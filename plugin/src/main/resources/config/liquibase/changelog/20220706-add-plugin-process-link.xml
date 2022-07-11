@@ -24,6 +24,7 @@
             <column name="plugin_process_link_id" type="${uuidType}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="process_definition_id" type="varchar(64)"/>
             <column name="activity_id" type="varchar(64)"/>
             <column name="action_properties" type="${jsonType}"/>
             <column name="plugin_configuration_id" type="${uuidType}">
@@ -51,4 +52,10 @@
                                  referencedColumnNames="plugin_action_definition_key"/>
     </changeSet>
 
+    <changeSet id="4" author="Ritense">
+        <addUniqueConstraint tableName="plugin_process_link"
+                             columnNames="process_definition_id, activity_id"
+                             constraintName="uc_plugin_process_link_definition_activity"
+        />
+    </changeSet>
 </databaseChangeLog>

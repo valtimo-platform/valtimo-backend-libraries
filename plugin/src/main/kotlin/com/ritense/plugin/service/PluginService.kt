@@ -7,13 +7,14 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
-import com.ritense.plugin.domain.ProcessLink
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.web.rest.dto.PluginActionDefinitionDto
-import com.ritense.plugin.web.rest.dto.PluginProcessLinkDto
+import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkCreateDto
+import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkResultDto
+import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkUpdateDto
 
 class PluginService(
     private var pluginDefinitionRepository: PluginDefinitionRepository,
@@ -67,14 +68,21 @@ class PluginService(
     fun getProcessLinks(
         processDefinitionId: String,
         activityId: String
-    ): List<ProcessLink> {
+    ): List<PluginProcessLinkResultDto> {
         return pluginProcessLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinitionId, activityId)
+            .map {
+                PluginProcessLinkResultDto(
+                    id = it.id.id,
+                    processDefinitionId = it.processDefinitionId,
+                    activityId = it.activityId,
+                    pluginConfigurationKey = it.pluginConfigurationKey,
+                    pluginActionDefinitionKey = it.pluginConfigurationKey,
+                    actionProperties = it.actionProperties
+                )
+            }
     }
 
-    fun createProcessLink(processLink: PluginProcessLinkDto) {
-        requireNotNull(processLink.processDefinitionId) //TODO: throw some ValidationExceptions?
-        requireNotNull(processLink.activityId)
-
+    fun createProcessLink(processLink: PluginProcessLinkCreateDto) {
         val newProcessLink = PluginProcessLink(
             id = PluginProcessLinkId.newId(),
             processDefinitionId = processLink.processDefinitionId,
@@ -86,9 +94,7 @@ class PluginService(
         pluginProcessLinkRepository.save(newProcessLink)
     }
 
-    fun updateProcessLink(processLink: PluginProcessLinkDto) {
-        requireNotNull(processLink.id)  //TODO: throw some ValidationException?
-
+    fun updateProcessLink(processLink: PluginProcessLinkUpdateDto) {
         val link = pluginProcessLinkRepository.getById(
             PluginProcessLinkId.existingId(processLink.id)
         ).copy(
