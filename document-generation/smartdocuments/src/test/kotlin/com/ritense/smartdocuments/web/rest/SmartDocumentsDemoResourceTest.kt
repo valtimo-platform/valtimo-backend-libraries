@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import java.util.UUID
 
 internal class SmartDocumentsDemoResourceTest {
 
@@ -43,7 +44,7 @@ internal class SmartDocumentsDemoResourceTest {
         runtimeService = mock()
         smartDocumentsPlugin = mock()
         smartDocumentsDemoResource = SmartDocumentsDemoResource(pluginService, runtimeService)
-        whenever(pluginService.createPluginInstance("smart-documents-plugin-configuration"))
+        whenever(pluginService.createPluginInstance(UUID.fromString("5152abe3-59d7-430b-98b6-05ff1209d7c5")))
             .thenReturn(smartDocumentsPlugin)
 
         mockMvc = MockMvcBuilders
@@ -59,7 +60,7 @@ internal class SmartDocumentsDemoResourceTest {
         mockMvc.perform(
             post("/api/smart-documents/demo/generate")
                 .param("processInstanceId", "ad12510e-ee17-11ec-b4fd-fad19e608849")
-                .param("pluginConfigurationKey", "smart-documents-plugin-configuration")
+                .param("pluginConfigurationId", "5152abe3-59d7-430b-98b6-05ff1209d7c5")
                 .param("templateGroup", "test-template-group")
                 .param("templateName", "test-template-name")
                 .param("format", "PDF")

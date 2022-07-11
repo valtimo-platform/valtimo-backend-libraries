@@ -24,6 +24,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.domain.PluginDefinition
+import com.ritense.plugin.exception.PluginDefinitionNotDeployedException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import org.junit.jupiter.api.Assertions.assertEquals

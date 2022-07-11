@@ -28,11 +28,16 @@ import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
+import com.ritense.plugin.domain.PluginProperty
+import com.ritense.plugin.domain.PluginPropertyId
+import com.ritense.plugin.exception.PluginPropertyParseException
+import com.ritense.plugin.exception.PluginPropertyRequiredException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -75,22 +80,60 @@ internal class PluginServiceTest {
 
     @Test
     fun `should save plugin configuration`(){
-        val pluginDefinition = PluginDefinition("key", "title", "description", "className")
-        val pluginConfiguration = PluginConfiguration(
-            PluginConfigurationId.newId(),
-            "title",
-            ObjectMapper().valueToTree("{\"name\": \"whatever\" }"),
-            pluginDefinition
-        )
-
-        whenever(pluginDefinitionRepository.getById("key")).thenReturn(pluginDefinition)
-        whenever(pluginConfigurationRepository.save(any())).thenReturn(pluginConfiguration)
+        val pluginDefinition = newPluginDefinition()
+        addPluginProperty(pluginDefinition)
+        newPluginConfiguration(pluginDefinition)
 
         pluginService
             .createPluginConfiguration(
-                "title", ObjectMapper().valueToTree("{\"name\": \"whatever\" }"), "key"
+                "title", ObjectMapper().readTree("{\"name\": \"whatever\" }"), "key"
             )
         verify(pluginConfigurationRepository).save(any())
+    }
+
+    @Test
+    fun `should throw exception when required plugin property field is missing`() {
+        val pluginDefinition = newPluginDefinition()
+        addPluginProperty(pluginDefinition)
+        newPluginConfiguration(pluginDefinition)
+
+        val exception = assertThrows(PluginPropertyRequiredException::class.java) {
+            pluginService
+                .createPluginConfiguration(
+                    "title", ObjectMapper().readTree("{}"), "key"
+                )
+        }
+        assertEquals("Plugin property with name 'name' is required for plugin 'Test Plugin'", exception.message)
+    }
+
+    @Test
+    fun `should throw exception when required plugin property field is null`() {
+        val pluginDefinition = newPluginDefinition()
+        addPluginProperty(pluginDefinition)
+        newPluginConfiguration(pluginDefinition)
+
+        val exception = assertThrows(PluginPropertyRequiredException::class.java) {
+            pluginService
+                .createPluginConfiguration(
+                    "title", ObjectMapper().readTree("{\"name\": null}"), "key"
+                )
+        }
+        assertEquals("Plugin property with name 'name' is required for plugin 'Test Plugin'", exception.message)
+    }
+
+    @Test
+    fun `should throw exception when plugin property field has incorrect type`() {
+        val pluginDefinition = newPluginDefinition()
+        addPluginProperty(pluginDefinition)
+        newPluginConfiguration(pluginDefinition)
+
+        val exception = assertThrows(PluginPropertyParseException::class.java) {
+            pluginService
+                .createPluginConfiguration(
+                    "title", ObjectMapper().readTree("{\"name\": [\"incorrect-type\"]}"), "key"
+                )
+        }
+        assertEquals("Plugin property with name 'name' failed to parse for plugin 'Test Plugin'", exception.message)
     }
 
     @Test
@@ -146,5 +189,40 @@ internal class PluginServiceTest {
         assertEquals("some-key", actions[0].key)
         assertEquals("title", actions[0].title)
         assertEquals("description", actions[0].description)
+    }
+
+    private fun newPluginDefinition(): PluginDefinition {
+        val pluginDefinition = PluginDefinition(
+            "TestPlugin",
+            "Test Plugin",
+            "description",
+            "className",
+            mutableSetOf()
+        )
+        whenever(pluginDefinitionRepository.getById("key")).thenReturn(pluginDefinition)
+        return pluginDefinition
+    }
+
+    private fun addPluginProperty(pluginDefinition: PluginDefinition) {
+        (pluginDefinition.pluginProperties as MutableSet).add(
+            PluginProperty(
+                PluginPropertyId("property1", pluginDefinition),
+                "property1",
+                true,
+                "name",
+                String::class.java.name
+            )
+        )
+    }
+
+    private fun newPluginConfiguration(pluginDefinition: PluginDefinition): PluginConfiguration {
+        val pluginConfiguration = PluginConfiguration(
+            PluginConfigurationId.newId(),
+            "title",
+            ObjectMapper().readTree("{\"name\": \"whatever\" }"),
+            pluginDefinition
+        )
+        whenever(pluginConfigurationRepository.save(any())).thenReturn(pluginConfiguration)
+        return pluginConfiguration
     }
 }

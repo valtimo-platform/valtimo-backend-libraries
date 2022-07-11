@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.repository
+package com.ritense.plugin.exception
 
-import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
-import org.springframework.data.jpa.repository.JpaRepository
-
-interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, PluginConfigurationId>
+class PluginPropertyRequiredException(
+    propertyName: String,
+    pluginName: String,
+) : Exception("Plugin property with name '$propertyName' is required for plugin '$pluginName'")

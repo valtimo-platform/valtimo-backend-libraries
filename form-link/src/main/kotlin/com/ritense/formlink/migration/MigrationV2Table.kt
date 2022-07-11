@@ -34,11 +34,34 @@ internal class MigrationV2Table : CustomTaskChange {
             val formAssociationsJson = result.getString("form_associations")
             val formAssociations: List<FormAssociation> = Mapper.INSTANCE.get().readValue(formAssociationsJson)
             logger.info("Processing formAssociations json:\n${formAssociations}")
-            formAssociations.forEach {
-                insertIntoV2Table(connection, processDefinitionKey, it)
+            formAssociations.forEach { formAssociation ->
+                if (formAssociationExists(connection, processDefinitionKey, formAssociation)) {
+                    logger.warn("Form association already exists between: $processDefinitionKey and ${formAssociation.formLink.id}. Will skip migration for this record.")
+                } else {
+                    insertIntoV2Table(connection, processDefinitionKey, formAssociation)
+                }
             }
         }
         logger.info("Finished ${this::class.simpleName}")
+    }
+
+    private fun formAssociationExists(
+        connection: JdbcConnection,
+        processDefinitionKey: String,
+        formAssociation: FormAssociation
+    ): Boolean {
+        val statement = connection.prepareStatement(
+            """
+            SELECT COUNT(1) 
+            FROM process_form_association_v2
+            WHERE process_definition_key = ? AND form_association_form_link_element_id = ?
+         """
+        )
+        statement.setString(1, processDefinitionKey)
+        statement.setString(2, formAssociation.formLink.id)
+        val result = statement.executeQuery()
+        result.next()
+        return result.getInt(1) >= 1
     }
 
     private fun insertIntoV2Table(
