@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.ritense.valtimo.contract.domain.AbstractId
 import javax.persistence.Column
 import javax.persistence.Embeddable
@@ -28,6 +29,7 @@ import javax.persistence.ManyToOne
 class PluginPropertyId(
     @Column(name = "plugin_property_key")
     val key: String,
+    @JsonIgnore
     @ManyToOne(targetEntity = PluginDefinition::class, fetch = FetchType.LAZY)
     @JoinColumns(
         JoinColumn(name = "plugin_definition_key", referencedColumnName = "plugin_definition_key"),

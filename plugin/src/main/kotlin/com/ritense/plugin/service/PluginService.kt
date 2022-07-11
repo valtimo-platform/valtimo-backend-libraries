@@ -26,6 +26,7 @@ import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.web.rest.dto.PluginActionDefinitionDto
+import java.util.UUID
 
 class PluginService(
     private var pluginDefinitionRepository: PluginDefinitionRepository,
@@ -42,8 +43,8 @@ class PluginService(
         return pluginConfigurationRepository.findAll()
     }
 
-    fun getPluginConfiguration(key: String): PluginConfiguration {
-        return pluginConfigurationRepository.getById(key)
+    fun getPluginConfiguration(id: UUID): PluginConfiguration {
+        return pluginConfigurationRepository.getById(PluginConfigurationId.existingId(id))
     }
 
     fun createPluginConfiguration(
@@ -77,8 +78,8 @@ class PluginService(
     }
 
     // TODO: Replace this with action invocation method
-    fun createPluginInstance(configurationKey: String): Any {
-        val configuration = getPluginConfiguration(configurationKey)
+    fun createPluginInstance(id: UUID): Any {
+        val configuration = getPluginConfiguration(id)
         val pluginFactory = pluginFactories.filter {
             it.canCreate(configuration)
         }.firstOrNull()
