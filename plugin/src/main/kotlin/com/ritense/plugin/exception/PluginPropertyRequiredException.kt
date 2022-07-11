@@ -19,4 +19,4 @@ package com.ritense.plugin.exception
 class PluginPropertyRequiredException(
     propertyName: String,
     pluginName: String,
-) : Exception("Plugin property with name \'$propertyName\' is required for plugin '$pluginName'")
+) : Exception("Plugin property with name '$propertyName' is required for plugin '$pluginName'")

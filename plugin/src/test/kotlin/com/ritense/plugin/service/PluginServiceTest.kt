@@ -25,7 +25,6 @@ import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId

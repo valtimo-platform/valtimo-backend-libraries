@@ -29,6 +29,7 @@ import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.web.rest.dto.PluginActionDefinitionDto
 import com.ritense.valtimo.contract.json.Mapper
+import mu.KotlinLogging
 
 class PluginService(
     private var pluginDefinitionRepository: PluginDefinitionRepository,
@@ -92,12 +93,13 @@ class PluginService(
     private fun validateProperties(properties: JsonNode, pluginDefinition: PluginDefinition) {
         assert(properties.isObject)
 
+        val errors = mutableListOf<Throwable>()
         pluginDefinition.pluginProperties.forEach { pluginProperty ->
             val propertyNode = properties[pluginProperty.fieldName]
 
             if (propertyNode == null || propertyNode.isMissingNode || propertyNode.isNull) {
                 if (pluginProperty.required) {
-                    throw PluginPropertyRequiredException(pluginProperty.fieldName, pluginDefinition.title)
+                    errors.add(PluginPropertyRequiredException(pluginProperty.fieldName, pluginDefinition.title))
                 }
             } else {
                 try {
@@ -105,9 +107,18 @@ class PluginService(
                     val property = Mapper.INSTANCE.get().treeToValue(propertyNode, propertyClass)
                     assert(property != null)
                 } catch (e: Exception) {
-                    throw PluginPropertyParseException(pluginProperty.fieldName, pluginDefinition.title, e)
+                    errors.add(PluginPropertyParseException(pluginProperty.fieldName, pluginDefinition.title, e))
                 }
             }
         }
+
+        if (errors.isNotEmpty()) {
+            errors.forEach { logger.error { it } }
+            throw errors.first()
+        }
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }
