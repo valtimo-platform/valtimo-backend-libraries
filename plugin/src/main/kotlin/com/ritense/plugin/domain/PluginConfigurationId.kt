@@ -23,7 +23,7 @@ import javax.persistence.Column
 import javax.persistence.Embeddable
 
 @Embeddable
-class PluginConfigurationId(
+data class PluginConfigurationId(
     @Column(name = "plugin_configuration_id")
     @JsonValue
     val id: UUID

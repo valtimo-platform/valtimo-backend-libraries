@@ -64,6 +64,25 @@ class PluginService(
         )
     }
 
+    fun updatePluginConfiguration(
+        pluginConfigurationId: PluginConfigurationId,
+        title: String,
+        properties: JsonNode,
+    ): PluginConfiguration {
+        val pluginDefinition = pluginConfigurationRepository.getById(pluginConfigurationId)
+
+        pluginDefinition.title = title
+        pluginDefinition.properties = properties
+
+        return pluginConfigurationRepository.save(pluginDefinition)
+    }
+
+    fun deletePluginConfiguration(
+        pluginConfigurationId: PluginConfigurationId
+    ) {
+        pluginConfigurationRepository.deleteById(pluginConfigurationId)
+    }
+
     fun getPluginDefinitionActions(
         pluginDefinitionKey: String,
         activityType: ActivityType?

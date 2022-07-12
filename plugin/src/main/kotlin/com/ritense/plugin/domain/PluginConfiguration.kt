@@ -36,10 +36,10 @@ class PluginConfiguration(
     @Embedded
     val id: PluginConfigurationId,
     @Column(name = "title")
-    val title: String,
+    var title: String,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "properties", columnDefinition = "JSON")
-    val properties: JsonNode? = null,
+    var properties: JsonNode? = null,
     @JoinColumn(name = "plugin_definition_key", updatable = false, nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     val pluginDefinition: PluginDefinition,
