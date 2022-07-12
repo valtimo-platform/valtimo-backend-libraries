@@ -36,6 +36,7 @@ import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.valtimo.contract.json.Mapper
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -63,7 +64,7 @@ internal class PluginServiceTest {
             pluginActionDefinitionRepository,
             pluginProcessLinkRepository,
             listOf(pluginFactory),
-            ObjectMapper()
+            Mapper.INSTANCE.get()
         )
     }
 
@@ -190,6 +191,10 @@ internal class PluginServiceTest {
         assertEquals("some-key", actions[0].key)
         assertEquals("title", actions[0].title)
         assertEquals("description", actions[0].description)
+    }
+
+    fun `should invoke action on plugin`() {
+
     }
 
     private fun newPluginDefinition(): PluginDefinition {

@@ -15,9 +15,12 @@
  */
 package com.ritense.smartdocuments.web.rest
 
+import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.plugin.domain.PluginProcessLink
+import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.service.PluginService
 import com.ritense.smartdocuments.domain.DocumentFormatOption
-import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
+import com.ritense.valtimo.contract.json.Mapper
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.variable.value.TypedValue
@@ -45,19 +48,37 @@ class SmartDocumentsDemoResource(
         @RequestParam format: String,
         @RequestParam templatePlaceholders: Map<String, String>,
     ): ResponseEntity<Void> {
-        val smartDocumentsPlugin = pluginService.createPluginInstance(pluginConfigurationId) as SmartDocumentsPlugin
         val variables = runtimeService.getVariables(processInstanceId)
         val delegateExecutionSmall = DelegateExecutionSmall(processInstanceId, variables)
-        smartDocumentsPlugin.generate(
-            delegateExecutionSmall,
-            templateGroup,
-            templateName,
-            DocumentFormatOption.valueOf(format),
-            templatePlaceholders
+        val objectMapper = Mapper.INSTANCE.get()
+        val properties = objectMapper.readTree(objectMapper.writeValueAsString(
+            SmartDocumentsPluginGenerateDocumentProperties(
+                templateGroup,
+                templateName,
+                DocumentFormatOption.valueOf(format),
+                templatePlaceholders
+            )
+        ))
+        val processLink = PluginProcessLink(
+            id = PluginProcessLinkId.newId(),
+            processDefinitionId = "generateProcess",
+            activityId = "generate",
+            actionProperties = properties,
+            pluginConfigurationId = PluginConfigurationId.existingId(pluginConfigurationId),
+            pluginActionDefinitionKey = "generate-document"
         )
+        pluginService.invoke(delegateExecutionSmall, processLink)
+
         return ResponseEntity.noContent().build()
     }
 }
+
+data class SmartDocumentsPluginGenerateDocumentProperties(
+    val templateGroup: String,
+    val templateName: String,
+    val format: DocumentFormatOption,
+    val templatePlaceholders: Map<String, String>
+)
 
 data class DelegateExecutionSmall(
     private val processInstanceId: String,

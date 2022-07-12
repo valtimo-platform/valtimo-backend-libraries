@@ -39,7 +39,6 @@ import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkResultDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkUpdateDto
 import com.ritense.valtimo.contract.json.Mapper
 import java.lang.reflect.Method
-import java.util.UUID
 import javax.validation.ValidationException
 import mu.KotlinLogging
 
@@ -168,14 +167,6 @@ class PluginService(
             return null
         }
         return objectMapper.treeToValue(value, type)
-    }
-
-    /**
-     * TODO: remove once the demo endpoint is removed
-     */
-    fun createPluginInstance(id: UUID): Any {
-        val configuration = pluginConfigurationRepository.getById(PluginConfigurationId.existingId(id))
-        return createPluginInstance(configuration)
     }
 
     private fun createPluginInstance(configuration: PluginConfiguration): Any {

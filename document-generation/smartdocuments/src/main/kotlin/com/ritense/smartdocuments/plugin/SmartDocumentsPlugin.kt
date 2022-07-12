@@ -77,13 +77,11 @@ class SmartDocumentsPlugin(
         description = "Generates a document of a given type based on a template with data from a case.",
         activityTypes = [ActivityType.SERVICE_TASK]
     )
-    fun generate(
-        execution: DelegateExecution,
-        @PluginActionProperty templateGroup: String,
-        @PluginActionProperty templateName: String,
-        @PluginActionProperty format: DocumentFormatOption,
-        @PluginActionProperty templatePlaceholders:  Map<String, String>,
-    ) {
+    fun generate(execution: DelegateExecution,
+                 @PluginActionProperty templateGroup: String,
+                 @PluginActionProperty templateName: String,
+                 @PluginActionProperty format: DocumentFormatOption,
+                 @PluginActionProperty templatePlaceholders: Map<String, String>) {
         val document = processDocumentService.getDocument(execution)
         val templateData = getTemplateData(templatePlaceholders, execution, document)
         generateAndStoreDocument(
