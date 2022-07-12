@@ -16,12 +16,15 @@
 
 package com.ritense.plugin.configuration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
+import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.PluginService
@@ -38,8 +41,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     basePackageClasses = [
         PluginDefinitionRepository::class,
         PluginConfigurationRepository::class,
-        PluginPropertyRepository::class,
-        PluginActionDefinitionRepository::class
+        PluginActionDefinitionRepository::class,
+        PluginProcessLinkRepository::class,
+        PluginPropertyRepository::class
     ]
 )
 @EntityScan(basePackages = ["com.ritense.plugin.domain"])
@@ -49,12 +53,14 @@ class PluginAutoConfiguration {
     fun pluginDeploymentListener(
         pluginDefinitionResolver: PluginDefinitionResolver,
         pluginDefinitionRepository: PluginDefinitionRepository,
-        pluginActionDefinitionRepository: PluginActionDefinitionRepository
+        pluginActionDefinitionRepository: PluginActionDefinitionRepository,
+        pluginActionPropertyDefinitionRepository: PluginActionPropertyDefinitionRepository
     ): PluginDeploymentListener {
         return PluginDeploymentListener(
             pluginDefinitionResolver,
             pluginDefinitionRepository,
-            pluginActionDefinitionRepository
+            pluginActionDefinitionRepository,
+            pluginActionPropertyDefinitionRepository
         )
     }
 
@@ -75,12 +81,16 @@ class PluginAutoConfiguration {
         pluginDefinitionRepository: PluginDefinitionRepository,
         pluginConfigurationRepository: PluginConfigurationRepository,
         pluginActionDefinitionRepository: PluginActionDefinitionRepository,
+        pluginProcessLinkRepository: PluginProcessLinkRepository,
         pluginFactories: List<PluginFactory<*>>,
+        objectMapper: ObjectMapper
     ): PluginService {
         return PluginService(pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
-            pluginFactories
+            pluginProcessLinkRepository,
+            pluginFactories,
+            objectMapper
         )
     }
 

@@ -21,11 +21,10 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
-import com.ritense.plugin.repository.PluginActionDefinitionRepository
-import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -33,18 +32,22 @@ import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.domain.PluginPropertyId
 import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
+import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.valtimo.contract.json.Mapper
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 internal class PluginServiceTest {
 
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
     lateinit var pluginConfigurationRepository: PluginConfigurationRepository
     lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
+    lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
     lateinit var pluginFactory: PluginFactory<Any>
     lateinit var pluginService: PluginService
 
@@ -53,12 +56,15 @@ internal class PluginServiceTest {
         pluginDefinitionRepository = mock()
         pluginConfigurationRepository = mock()
         pluginActionDefinitionRepository = mock()
+        pluginProcessLinkRepository = mock()
         pluginFactory = mock()
         pluginService = PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
-            listOf(pluginFactory)
+            pluginProcessLinkRepository,
+            listOf(pluginFactory),
+            Mapper.INSTANCE.get()
         )
     }
 
