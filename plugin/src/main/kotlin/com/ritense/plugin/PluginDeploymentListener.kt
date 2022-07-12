@@ -46,11 +46,6 @@ class PluginDeploymentListener(
     @EventListener(ApplicationStartedEvent::class)
     fun deployPluginDefinitions() {
         logger.info { "Deploying plugins" }
-
-        pluginActionDefinitionRepository.deleteAll()
-        pluginActionPropertyDefinitionRepository.deleteAll()
-        pluginDefinitionRepository.deleteAll()
-
         val classes = findPluginClasses()
 
         classes.forEach { (clazz, pluginAnnotation) ->

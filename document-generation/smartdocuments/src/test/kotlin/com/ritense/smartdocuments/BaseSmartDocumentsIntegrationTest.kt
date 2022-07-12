@@ -22,7 +22,9 @@ import com.ritense.connector.domain.ConnectorInstanceId
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
 import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorService
-import com.ritense.plugin.PluginDeploymentListener
+import com.ritense.plugin.repository.PluginActionDefinitionRepository
+import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.valtimo.contract.json.Mapper
 import okhttp3.mockwebserver.Dispatcher
@@ -53,7 +55,13 @@ class BaseSmartDocumentsIntegrationTest : BaseIntegrationTest() {
     lateinit var connectorDeploymentService: ConnectorDeploymentService
 
     @Autowired
-    lateinit var pluginDeploymentListener: PluginDeploymentListener
+    lateinit var pluginDefinitionRepository: PluginDefinitionRepository
+
+    @Autowired
+    lateinit var pluginPropertyRepository: PluginPropertyRepository
+
+    @Autowired
+    lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
 
     lateinit var server: MockWebServer
     lateinit var executedRequests: MutableList<RecordedRequest>
@@ -62,12 +70,14 @@ class BaseSmartDocumentsIntegrationTest : BaseIntegrationTest() {
     internal fun setUp() {
         startMockServer()
         setupConnector()
-        pluginDeploymentListener.deployPluginDefinitions()
     }
 
     @AfterEach
     internal fun tearDown() {
         server.shutdown()
+        pluginPropertyRepository.deleteAll()
+        pluginActionDefinitionRepository.deleteAll()
+        pluginDefinitionRepository.deleteAll()
     }
 
     fun startMockServer() {
