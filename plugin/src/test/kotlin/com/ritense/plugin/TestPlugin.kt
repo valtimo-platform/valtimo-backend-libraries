@@ -21,7 +21,6 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
-import com.ritense.plugin.domain.ActivityType.USER_TASK
 
 @Plugin(
     key = "test-plugin",
@@ -39,7 +38,7 @@ class TestPlugin(
         key = "test-action",
         title = "Test action",
         description = "This is an action used to verify plugin framework functionality",
-        activityTypes = [USER_TASK]
+        activityTypes = [SERVICE_TASK]
     )
     fun testAction(){
         //do nothing
@@ -50,7 +49,7 @@ class TestPlugin(
         key = "other-test-action",
         title = "Test action 2",
         description = "This is an action used to test method overloading",
-        activityTypes = [USER_TASK, SERVICE_TASK]
+        activityTypes = [SERVICE_TASK]
     )
     fun testAction(@PluginActionProperty someString: String){
         //do nothing
@@ -61,7 +60,7 @@ class TestPlugin(
         key = "child-override-test-action",
         title = "Override test action",
         description = "This is an action used to test method inheritance",
-        activityTypes = [SERVICE_TASK]
+        activityTypes = []
     )
     override fun overrideAction(){
         //do nothing

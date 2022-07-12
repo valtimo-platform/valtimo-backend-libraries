@@ -18,8 +18,6 @@ package com.ritense.smartdocuments.web.rest
 import com.ritense.plugin.service.PluginService
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
-import com.ritense.smartdocuments.plugin.SmartDocumentsPluginGenerateDocumentProperties
-import com.ritense.valtimo.contract.json.Mapper
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.variable.value.TypedValue
@@ -50,15 +48,13 @@ class SmartDocumentsDemoResource(
         val smartDocumentsPlugin = pluginService.createPluginInstance(pluginConfigurationId) as SmartDocumentsPlugin
         val variables = runtimeService.getVariables(processInstanceId)
         val delegateExecutionSmall = DelegateExecutionSmall(processInstanceId, variables)
-        val properties = Mapper.INSTANCE.get().writeValueAsString(
-            SmartDocumentsPluginGenerateDocumentProperties(
-                templateGroup,
-                templateName,
-                DocumentFormatOption.valueOf(format),
-                templatePlaceholders
-            )
+        smartDocumentsPlugin.generate(
+            delegateExecutionSmall,
+            templateGroup,
+            templateName,
+            DocumentFormatOption.valueOf(format),
+            templatePlaceholders
         )
-        smartDocumentsPlugin.generate(delegateExecutionSmall, properties)
         return ResponseEntity.noContent().build()
     }
 }

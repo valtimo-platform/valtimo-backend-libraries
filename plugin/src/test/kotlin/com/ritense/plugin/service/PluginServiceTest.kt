@@ -149,7 +149,7 @@ internal class PluginServiceTest {
                     "title",
                     "description",
                     "method",
-                    listOf(ActivityType.USER_TASK)
+                    listOf(ActivityType.SERVICE_TASK)
                 )
             )
         )
@@ -166,7 +166,7 @@ internal class PluginServiceTest {
 
     @Test
     fun `should get plugin action definitions from repository by key and activityType`(){
-        whenever(pluginActionDefinitionRepository.findByIdPluginDefinitionKeyAndActivityTypes("test", ActivityType.USER_TASK)).thenReturn(
+        whenever(pluginActionDefinitionRepository.findByIdPluginDefinitionKeyAndActivityTypes("test", ActivityType.SERVICE_TASK)).thenReturn(
             listOf(
                 PluginActionDefinition(
                     PluginActionDefinitionId(
@@ -176,15 +176,15 @@ internal class PluginServiceTest {
                     "title",
                     "description",
                     "method",
-                    listOf(ActivityType.USER_TASK)
+                    listOf(ActivityType.SERVICE_TASK)
                 )
             )
         )
 
-        val actions = pluginService.getPluginDefinitionActions("test", ActivityType.USER_TASK)
+        val actions = pluginService.getPluginDefinitionActions("test", ActivityType.SERVICE_TASK)
 
         verify(pluginActionDefinitionRepository).findByIdPluginDefinitionKeyAndActivityTypes("test",
-            ActivityType.USER_TASK)
+            ActivityType.SERVICE_TASK)
 
         assertEquals(1, actions.size)
         assertEquals("some-key", actions[0].key)

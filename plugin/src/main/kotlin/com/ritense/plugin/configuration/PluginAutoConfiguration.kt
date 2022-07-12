@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
 import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.camunda.PluginServiceTaskListener
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
@@ -100,5 +101,17 @@ class PluginAutoConfiguration {
         pluginService: PluginService
     ): PluginDefinitionResource {
         return PluginDefinitionResource(pluginService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginServiceTaskListener::class)
+    fun pluginServiceTaskListener(
+        pluginProcessLinkRepository: PluginProcessLinkRepository,
+        pluginService: PluginService,
+    ): PluginServiceTaskListener {
+        return PluginServiceTaskListener(
+            pluginProcessLinkRepository,
+            pluginService,
+        )
     }
 }

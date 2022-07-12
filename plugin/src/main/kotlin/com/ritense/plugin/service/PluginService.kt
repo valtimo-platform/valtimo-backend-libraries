@@ -151,7 +151,7 @@ class PluginService(
                 if (actionProperties == null) {
                     null
                 } else {
-                    getTypedProperty(method.name, param.type, actionProperties)
+                    getTypedProperty(param.name, param.type, actionProperties)
                 }
             } else if (param.type.isInstance(executionContext)) {
                 executionContext
