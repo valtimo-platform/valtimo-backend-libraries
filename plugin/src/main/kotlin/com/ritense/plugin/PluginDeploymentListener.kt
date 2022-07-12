@@ -100,7 +100,7 @@ class PluginDeploymentListener(
                     )
                 )
                 findPluginActionParameters(method)
-                    .forEach { (parameter, propertyAnnotation) ->
+                    .forEach { (parameter, _) ->
                         deployActionParameterDefinition(
                             PluginActionPropertyDefinition(
                                 PluginActionPropertyDefinitionId(
@@ -136,8 +136,8 @@ class PluginDeploymentListener(
     }
 
     private fun findPluginActionParameters(method:Method): Map<Parameter, PluginActionProperty> {
-        return method.parameters.filter {
-            method.isAnnotationPresent(PluginActionProperty::class.java)
+        return method.parameters.filter { parameter ->
+            parameter.isAnnotationPresent(PluginActionProperty::class.java)
         }.associateWith { parameter -> parameter.getAnnotation(PluginActionProperty::class.java) }
     }
 

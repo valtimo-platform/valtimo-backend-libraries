@@ -23,6 +23,7 @@ import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
+import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.allOf
@@ -44,6 +45,9 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
     @Autowired
     lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
 
+    @Autowired
+    lateinit var pluginActionPropertyDefinitionRepository: PluginActionPropertyDefinitionRepository
+
     @Test
     @Transactional
     fun `should deploy test plugin`() {
@@ -63,6 +67,9 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
         assertInheritedActionPresent(deployedActions)
         assertOverridingActionPresent(deployedActions)
         assertOverriddenActionNotPresent(deployedActions)
+
+        val deployedActionProperties = pluginActionPropertyDefinitionRepository.findAll()
+        assertThat(deployedActionProperties.size, `is`(1))
     }
 
     private fun assertPluginPropertiesPresent(
