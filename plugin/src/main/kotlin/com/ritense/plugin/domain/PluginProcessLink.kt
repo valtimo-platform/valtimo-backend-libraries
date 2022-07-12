@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package com.ritense.plugin.domain
 
 import com.fasterxml.jackson.databind.JsonNode
