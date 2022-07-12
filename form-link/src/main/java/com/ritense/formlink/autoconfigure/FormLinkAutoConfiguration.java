@@ -24,6 +24,7 @@ import com.ritense.formlink.autodeployment.FormsAutoDeploymentFinishedEventListe
 import com.ritense.formlink.domain.ProcessLinkTaskProvider;
 import com.ritense.formlink.domain.impl.formassociation.FormProcessLinkTaskProvider;
 import com.ritense.formlink.repository.ProcessFormAssociationRepository;
+import com.ritense.formlink.repository.impl.JdbcProcessFormAssociationRepository;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.FormAssociationSubmissionService;
 import com.ritense.formlink.service.ProcessLinkService;
@@ -46,17 +47,15 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+
 import java.util.List;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "com.ritense.formlink.repository")
-@EntityScan("com.ritense.formlink.domain")
 public class FormLinkAutoConfiguration {
 
     @Bean
@@ -174,6 +173,14 @@ public class FormLinkAutoConfiguration {
         List<ProcessLinkTaskProvider> processLinkTaskProvide
     ) {
         return new DefaultProcessLinkService(taskService, formAssociationService, processLinkTaskProvide);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessFormAssociationRepository.class)
+    public JdbcProcessFormAssociationRepository processFormAssociationRepository(
+        final NamedParameterJdbcTemplate namedParameterJdbcTemplate
+    ) {
+        return new JdbcProcessFormAssociationRepository(namedParameterJdbcTemplate);
     }
 
 }

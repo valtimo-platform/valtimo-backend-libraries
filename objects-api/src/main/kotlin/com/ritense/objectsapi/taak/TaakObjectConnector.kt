@@ -127,7 +127,8 @@ class TaakObjectConnector(
             verwerkerTaakId = UUID.fromString(task.id),
             formulierId = formulierId,
             data = getTaskProperties(task),
-            status = TaakObjectStatus.open
+            status = TaakObjectStatus.open,
+            title = task.name,
         )
         return taakObject
     }

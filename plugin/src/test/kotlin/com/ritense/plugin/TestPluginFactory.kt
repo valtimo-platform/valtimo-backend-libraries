@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.plugin.factory
 
-import com.ritense.plugin.domain.PluginConfiguration
+package com.ritense.plugin
 
-interface PluginFactory<T> {
-    fun create(pluginConfiguration: PluginConfiguration): T
+class TestPluginFactory(
+    private val someObject: String
+) : PluginFactory<TestPlugin>() {
+    override fun create(): TestPlugin {
+        return TestPlugin(someObject)
+    }
 }

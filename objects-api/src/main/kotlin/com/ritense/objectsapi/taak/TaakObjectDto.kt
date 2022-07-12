@@ -26,7 +26,8 @@ data class TaakObjectDto(
     @JsonProperty("formulier_id") val formulierId: String,
     val data: Map<String, Any>? = null,
     @JsonProperty("verzonden_data") val verzondenData: Map<String, Any>? = null,
-    val status: TaakObjectStatus = TaakObjectStatus.open
+    val status: TaakObjectStatus = TaakObjectStatus.open,
+    val title: String? = null
 ) {
     init {
         require(kvk != null || bsn != null) { "BSN and/or KvK number is required!" }

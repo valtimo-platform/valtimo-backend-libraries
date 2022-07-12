@@ -15,8 +15,9 @@
  */
 package com.ritense.smartdocuments.web.rest
 
+import com.ritense.plugin.service.PluginService
 import com.ritense.smartdocuments.domain.DocumentFormatOption
-import com.ritense.smartdocuments.plugin.SmartDocumentsPluginFactory
+import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
 import com.ritense.smartdocuments.plugin.SmartDocumentsPluginGenerateDocumentProperties
 import com.ritense.valtimo.contract.json.Mapper
 import org.camunda.bpm.engine.RuntimeService
@@ -28,24 +29,25 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @RequestMapping(value = ["/api/smart-documents/demo"])
 class SmartDocumentsDemoResource(
-    private val smartDocumentsPluginFactory: SmartDocumentsPluginFactory,
+    private val pluginService: PluginService,
     private val runtimeService: RuntimeService,
 ) {
 
     @PostMapping(value = ["/generate"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun generateDocument(
         @RequestParam processInstanceId: String,
-        @RequestParam pluginConfigurationKey: String,
+        @RequestParam pluginConfigurationId: UUID,
         @RequestParam templateGroup: String,
         @RequestParam templateName: String,
         @RequestParam format: String,
         @RequestParam templatePlaceholders: Map<String, String>,
     ): ResponseEntity<Void> {
-        val smartDocumentsPlugin = smartDocumentsPluginFactory.createByKey(pluginConfigurationKey)
+        val smartDocumentsPlugin = pluginService.createPluginInstance(pluginConfigurationId) as SmartDocumentsPlugin
         val variables = runtimeService.getVariables(processInstanceId)
         val delegateExecutionSmall = DelegateExecutionSmall(processInstanceId, variables)
         val properties = Mapper.INSTANCE.get().writeValueAsString(

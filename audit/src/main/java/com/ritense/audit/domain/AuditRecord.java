@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.view.AuditView;
-import lombok.Builder;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Persistable;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -40,7 +40,6 @@ import java.util.UUID;
     @Index(name = "occurred_on_index", columnList = "occurred_on"),
     @Index(name = "user_index", columnList = "user")
 })
-@Builder
 public class AuditRecord implements Persistable<AuditRecordId> {
 
     @EmbeddedId
@@ -53,7 +52,6 @@ public class AuditRecord implements Persistable<AuditRecordId> {
 
     @JsonView(AuditView.Public.class)
     @Column(name = "created_on", updatable = false)
-    @Builder.Default
     private LocalDateTime createdOn = LocalDateTime.now();
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
@@ -65,7 +63,10 @@ public class AuditRecord implements Persistable<AuditRecordId> {
     private UUID documentId;
 
     public AuditRecord(
-        AuditRecordId auditRecordId, MetaData metaData, LocalDateTime createdOn, AuditEvent auditEvent,
+        AuditRecordId auditRecordId,
+        MetaData metaData,
+        LocalDateTime createdOn,
+        AuditEvent auditEvent,
         UUID documentId
     ) {
         this.auditRecordId = auditRecordId;
@@ -137,10 +138,7 @@ public class AuditRecord implements Persistable<AuditRecordId> {
         return this.documentId;
     }
 
-    public static class AuditRecordBuilder {
-        public AuditRecordBuilder id(UUID id) {
-            this.auditRecordId = AuditRecordId.newId(id);
-            return this;
-        }
+    public static AuditRecordBuilder builder() {
+        return new AuditRecordBuilder();
     }
 }

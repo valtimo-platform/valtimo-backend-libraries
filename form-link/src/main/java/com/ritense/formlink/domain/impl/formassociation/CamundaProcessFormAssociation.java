@@ -16,36 +16,20 @@
 
 package com.ritense.formlink.domain.impl.formassociation;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.formlink.domain.ProcessFormAssociation;
-import org.hibernate.annotations.Type;
-import org.springframework.data.domain.Persistable;
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
-@Entity
-@Table(name = "process_form_association",
-    indexes = {
-        @Index(name = "process_definition_key_index", columnList = "process_definition_key")
-    }
-)
-public class CamundaProcessFormAssociation implements ProcessFormAssociation, Persistable<CamundaProcessFormAssociationId> {
+public class CamundaProcessFormAssociation implements ProcessFormAssociation {
 
-    @EmbeddedId
     private CamundaProcessFormAssociationId id;
 
-    @Column(name = "process_definition_key", columnDefinition = "VARCHAR(64)")
     private String processDefinitionKey;
 
-    @Column(name = "form_associations", columnDefinition = "json")
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     private FormAssociations formAssociations;
 
     public CamundaProcessFormAssociation(CamundaProcessFormAssociationId id, String processDefinitionKey, FormAssociations formAssociations) {
@@ -55,9 +39,6 @@ public class CamundaProcessFormAssociation implements ProcessFormAssociation, Pe
         this.id = id;
         this.processDefinitionKey = processDefinitionKey;
         this.formAssociations = formAssociations;
-    }
-
-    private CamundaProcessFormAssociation() {
     }
 
     public void addFormAssociation(CamundaFormAssociation camundaFormAssociation) {
@@ -91,12 +72,6 @@ public class CamundaProcessFormAssociation implements ProcessFormAssociation, Pe
     @Override
     public FormAssociations getFormAssociations() {
         return formAssociations;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isNew() {
-        return id.isNew();
     }
 
     @Override

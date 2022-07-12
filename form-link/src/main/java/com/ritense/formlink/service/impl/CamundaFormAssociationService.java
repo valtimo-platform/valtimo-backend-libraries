@@ -27,13 +27,9 @@ import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.formlink.domain.FormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation;
-import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociation;
-import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociationId;
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationFactory;
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
-import com.ritense.formlink.domain.impl.formassociation.FormAssociations;
 import com.ritense.formlink.domain.impl.formassociation.Mapper;
-import com.ritense.formlink.domain.impl.formassociation.StartEventFormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import com.ritense.formlink.domain.request.CreateFormAssociationRequest;
@@ -46,8 +42,6 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.TaskService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -57,7 +51,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -65,9 +58,6 @@ import static com.ritense.form.domain.FormIoFormDefinition.PROCESS_VAR_PREFIX;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class CamundaFormAssociationService implements FormAssociationService {
-
-    private static final Logger logger = LoggerFactory.getLogger(CamundaFormAssociationService.class);
-
     private final FormDefinitionService formDefinitionService;
     private final ProcessFormAssociationRepository processFormAssociationRepository;
     private final DocumentService documentService;
@@ -77,7 +67,16 @@ public class CamundaFormAssociationService implements FormAssociationService {
     private final SubmissionTransformerService submissionTransformerService;
     private final List<FormFieldDataResolver> formFieldDataResolvers;
 
-    public CamundaFormAssociationService(FormDefinitionService formDefinitionService, ProcessFormAssociationRepository processFormAssociationRepository, DocumentService documentService, ProcessDocumentAssociationService processDocumentAssociationService, CamundaProcessService camundaProcessService, TaskService taskService, SubmissionTransformerService submissionTransformerService, List<FormFieldDataResolver> formFieldDataResolvers) {
+    public CamundaFormAssociationService(
+        FormDefinitionService formDefinitionService,
+        ProcessFormAssociationRepository processFormAssociationRepository,
+        DocumentService documentService,
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        CamundaProcessService camundaProcessService,
+        TaskService taskService,
+        SubmissionTransformerService submissionTransformerService,
+        List<FormFieldDataResolver> formFieldDataResolvers
+    ) {
         this.formDefinitionService = formDefinitionService;
         this.processFormAssociationRepository = processFormAssociationRepository;
         this.documentService = documentService;
@@ -90,62 +89,46 @@ public class CamundaFormAssociationService implements FormAssociationService {
 
     @Override
     public Set<CamundaFormAssociation> getAllFormAssociations(String processDefinitionKey) {
-        return processFormAssociationRepository.findByProcessDefinitionKey(processDefinitionKey)
-            .map(CamundaProcessFormAssociation::getFormAssociations).orElseThrow();
+        return processFormAssociationRepository.findAssociationsByProcessDefinitionKey(processDefinitionKey);
     }
 
     @Override
-    public Optional<CamundaFormAssociation> getFormAssociationById(String processDefinitionKey, UUID id) {
-        return processFormAssociationRepository.findByProcessDefinitionKey(processDefinitionKey)
-            .flatMap(camundaProcessFormAssociation ->
-                camundaProcessFormAssociation
-                    .getFormAssociations()
-                    .stream()
-                    .filter(camundaFormAssociation -> camundaFormAssociation.getId().equals(id))
-                    .collect(singleElementCollector())
-            );
+    public Optional<CamundaFormAssociation> getFormAssociationById(
+        String processDefinitionKey,
+        UUID camundaFormAssociationId
+    ) {
+        return Optional.ofNullable(
+            processFormAssociationRepository.findByCamundaFormAssociationId(camundaFormAssociationId)
+        );
     }
 
     @Override
-    public Optional<CamundaFormAssociation> getFormAssociationByFormLinkId(String processDefinitionKey, String formLinkId) {
-        return processFormAssociationRepository.findByProcessDefinitionKey(processDefinitionKey)
-            .flatMap(camundaProcessFormAssociation ->
-                camundaProcessFormAssociation
-                    .getFormAssociations()
-                    .stream()
-                    .filter(camundaFormAssociation -> camundaFormAssociation.getFormLink().getId().equals(formLinkId))
-                    .collect(singleElementCollector())
-            );
+    public Optional<CamundaFormAssociation> getFormAssociationByFormLinkId(
+        String processDefinitionKey,
+        String formLinkId
+    ) {
+        return Optional.ofNullable(processFormAssociationRepository.findByFormLinkId(processDefinitionKey, formLinkId));
     }
 
     @Override
-    public Optional<JsonNode> getFormDefinitionByFormLinkId(String processDefinitionKey, String formLinkId) {
-        return getFormAssociationByFormLinkId(processDefinitionKey, formLinkId)
-            .flatMap(camundaFormAssociation -> Optional.of(buildFormDefinition(camundaFormAssociation)));
+    public Optional<JsonNode> getFormDefinitionByFormLinkId(
+        String processDefinitionKey,
+        String formLinkId
+    ) {
+        return getFormAssociationByFormLinkId(
+            processDefinitionKey,
+            formLinkId
+        ).flatMap(
+            camundaFormAssociation -> Optional.of(buildFormDefinition(camundaFormAssociation))
+        );
     }
 
     public Optional<CamundaFormAssociation> getStartEventFormDefinitionByProcessDefinitionKey(String processDefinitionKey) {
-        Predicate<? super CamundaFormAssociation> filter = camundaFormAssociation ->
-            camundaFormAssociation instanceof StartEventFormAssociation;
-        return getStartEventFormDefinitionByProcessDefinitionKeyAndFilter(processDefinitionKey, filter);
+        return Optional.ofNullable(processFormAssociationRepository.findStartEventAssociation(processDefinitionKey));
     }
 
     public Optional<JsonNode> getStartEventFormDefinition(String processDefinitionKey) {
         return getStartEventFormDefinitionByProcessDefinitionKey(processDefinitionKey).map(this::buildFormDefinition);
-    }
-
-    private Optional<CamundaFormAssociation> getStartEventFormDefinitionByProcessDefinitionKeyAndFilter(
-        String processDefinitionKey,
-        Predicate<? super CamundaFormAssociation> filter
-    ) {
-        return processFormAssociationRepository.findByProcessDefinitionKey(processDefinitionKey)
-            .flatMap(camundaProcessFormAssociation ->
-                camundaProcessFormAssociation
-                    .getFormAssociations()
-                    .stream()
-                    .filter(filter)
-                    .collect(singleElementCollector())
-            );
     }
 
     @Override
@@ -187,21 +170,21 @@ public class CamundaFormAssociationService implements FormAssociationService {
     ) {
         assertArgumentNotNull(processDefinitionKey, "processDefinitionKey is required");
         assertArgumentNotNull(formLinkId, "formLinkId is required");
-
         return getFormAssociationByFormLinkId(
             processDefinitionKey,
             formLinkId
-        ).flatMap(getPrefilledFormDefinitionFromFormAssociation(documentId, taskInstanceId));
+        ).flatMap(
+            getPrefilledFormDefinitionFromFormAssociation(documentId, taskInstanceId)
+        );
     }
 
-    //Note: candidate for refactor. Using submission object approach
+    // Note: candidate for refactor. Using submission object approach
     private Function<CamundaFormAssociation, Optional<? extends JsonNode>> getPrefilledFormDefinitionFromFormAssociation(
         Optional<Document.Id> documentId,
         Optional<String> taskInstanceId
     ) {
         return camundaFormAssociation -> {
             final var formLink = camundaFormAssociation.getFormLink();
-
             if (formLink.includeFormDefinition()) {
                 return getFormDefinitionByAssociation(camundaFormAssociation, documentId, taskInstanceId);
             } else {
@@ -256,9 +239,8 @@ public class CamundaFormAssociationService implements FormAssociationService {
     @Override
     @Transactional
     public CamundaFormAssociation createFormAssociation(CreateFormAssociationRequest request) {
-        final UUID formAssociationId = UUID.randomUUID();
-        final CamundaFormAssociation formAssociation = FormAssociationFactory.getFormAssociation(
-            formAssociationId,
+        final var formAssociation = FormAssociationFactory.getFormAssociation(
+            UUID.nameUUIDFromBytes(request.getFormLinkRequest().getId().getBytes()),
             request.getFormLinkRequest().getType(),
             request.getFormLinkRequest().getId(),
             request.getFormLinkRequest().getFormId(),
@@ -271,31 +253,17 @@ public class CamundaFormAssociationService implements FormAssociationService {
                 throw new RuntimeException("Form definition not found with id " + request.getFormLinkRequest().getFormId());
             }
         }
-        processFormAssociationRepository.findByProcessDefinitionKey(request.getProcessDefinitionKey())
-            .ifPresentOrElse(processFormAssociation -> {
-                    processFormAssociation.addFormAssociation(formAssociation);
-                    processFormAssociationRepository.saveAndFlush(processFormAssociation);
-                },
-                () -> {
-                    final var camundaProcessFormAssociationId = CamundaProcessFormAssociationId.newId(UUID.randomUUID());
-                    final var formAssociations = new FormAssociations();
-                    formAssociations.add(formAssociation);
-
-                    final var camundaProcessFormAssociation = new CamundaProcessFormAssociation(
-                        camundaProcessFormAssociationId,
-                        request.getProcessDefinitionKey(),
-                        formAssociations
-                    );
-                    processFormAssociationRepository.save(camundaProcessFormAssociation);
-                }
-            );
+        processFormAssociationRepository.add(
+            request.getProcessDefinitionKey(),
+            formAssociation
+        );
         return formAssociation;
     }
 
     @Override
     @Transactional
     public CamundaFormAssociation modifyFormAssociation(ModifyFormAssociationRequest request) {
-        final CamundaFormAssociation formAssociation = FormAssociationFactory.getFormAssociation(
+        final var formAssociation = FormAssociationFactory.getFormAssociation(
             request.getFormAssociationId(),
             request.getFormLinkRequest().getType(),
             request.getFormLinkRequest().getId(),
@@ -309,10 +277,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
                 throw new RuntimeException("Form definition not found with id " + request.getFormLinkRequest().getFormId());
             }
         }
-        final var camundaProcessFormAssociation = processFormAssociationRepository
-            .findByProcessDefinitionKey(request.getProcessDefinitionKey()).orElseThrow();
-        camundaProcessFormAssociation.updateFormAssociation(formAssociation);
-        processFormAssociationRepository.save(camundaProcessFormAssociation);
+        processFormAssociationRepository.update(request.getProcessDefinitionKey(), formAssociation);
         return formAssociation;
     }
 
@@ -338,8 +303,10 @@ public class CamundaFormAssociationService implements FormAssociationService {
     @Override
     @Transactional
     public void deleteFormAssociation(String processDefinitionKey, UUID formAssociationId) {
-        processFormAssociationRepository.findByProcessDefinitionKey(processDefinitionKey)
-            .ifPresent(processFormAssociation -> processFormAssociation.removeFormAssociation(formAssociationId));
+        processFormAssociationRepository.removeByProcessDefinitionKeyAndFormAssociationId(
+            processDefinitionKey,
+            formAssociationId
+        );
     }
 
     private Optional<ObjectNode> getFormDefinitionByAssociation(
@@ -467,14 +434,10 @@ public class CamundaFormAssociationService implements FormAssociationService {
         return Collectors.collectingAndThen(
             Collectors.toList(),
             list -> {
-                if (list.isEmpty()) {
-                    return Optional.empty();
-                } else if (list.size() == 1) {
-                    return Optional.of(list.get(0));
-                } else {
-                    logger.error("Expected single result but found: {}.", list.size());
+                if (list.size() == 1) {
                     return Optional.of(list.get(0));
                 }
+                throw new IllegalStateException("Expected single result but found: " + list.size());
             }
         );
     }
