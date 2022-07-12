@@ -17,10 +17,11 @@
 package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.domain.ActivityType
-import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -36,18 +37,19 @@ import com.ritense.plugin.web.rest.dto.PluginActionDefinitionDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkCreateDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkResultDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkUpdateDto
-import javax.validation.ValidationException
 import com.ritense.valtimo.contract.json.Mapper
 import java.lang.reflect.Method
 import java.util.UUID
+import javax.validation.ValidationException
 import mu.KotlinLogging
 
 class PluginService(
-    private var pluginDefinitionRepository: PluginDefinitionRepository,
-    private var pluginConfigurationRepository: PluginConfigurationRepository,
-    private var pluginActionDefinitionRepository: PluginActionDefinitionRepository,
-    private var pluginProcessLinkRepository: PluginProcessLinkRepository,
-    private var pluginFactories: List<PluginFactory<*>>
+    private val pluginDefinitionRepository: PluginDefinitionRepository,
+    private val pluginConfigurationRepository: PluginConfigurationRepository,
+    private val pluginActionDefinitionRepository: PluginActionDefinitionRepository,
+    private val pluginProcessLinkRepository: PluginProcessLinkRepository,
+    private val pluginFactories: List<PluginFactory<*>>,
+    private val objectMapper: ObjectMapper
 ) {
 
     fun getPluginDefinitions(): List<PluginDefinition> {
@@ -138,14 +140,34 @@ class PluginService(
         val instance = createPluginInstance(configuration)
 
         val method = getActionMethod(instance, processLink)
-        val methodArguments = resolveMethodArguments(executionContext, processLink.actionProperties)
+        val methodArguments = resolveMethodArguments(method, executionContext, processLink.actionProperties)
         method.invoke(instance, *methodArguments)
     }
 
-    private fun resolveMethodArguments(executionContext: Any, actionProperties: JsonNode?): Array<Any> {
-        // TODO: Implement some argument resolver using the given executionContext?
+    private fun resolveMethodArguments(method: Method, executionContext: Any, actionProperties: JsonNode?): Array<Any?> {
 
-        TODO("Not implemented")
+        return method.parameters.map { param ->
+            if (param.isAnnotationPresent(PluginActionProperty::class.java)) {
+                if (actionProperties == null) {
+                    null
+                } else {
+                    getTypedProperty(method.name, param.type, actionProperties)
+                }
+            } else if (param.type.isInstance(executionContext)) {
+                executionContext
+            } else {
+                // TODO: Implement some argument resolver using the given executionContext?
+                throw RuntimeException("Could not resolve parameter ${param.name}")
+            }
+        }.toTypedArray()
+    }
+
+    private fun getTypedProperty(name: String, type: Class<*>?, actionProperties: JsonNode): Any? {
+        val value = actionProperties.get(name)
+        if (value.isNull) {
+            return null
+        }
+        return objectMapper.treeToValue(value, type)
     }
 
     /**

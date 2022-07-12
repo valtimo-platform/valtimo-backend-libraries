@@ -62,7 +62,8 @@ internal class PluginServiceTest {
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
             pluginProcessLinkRepository,
-            listOf(pluginFactory)
+            listOf(pluginFactory),
+            ObjectMapper()
         )
     }
 

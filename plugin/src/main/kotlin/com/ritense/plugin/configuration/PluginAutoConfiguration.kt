@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.configuration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
 import com.ritense.plugin.PluginFactory
@@ -81,13 +82,15 @@ class PluginAutoConfiguration {
         pluginConfigurationRepository: PluginConfigurationRepository,
         pluginActionDefinitionRepository: PluginActionDefinitionRepository,
         pluginProcessLinkRepository: PluginProcessLinkRepository,
-        pluginFactories: List<PluginFactory<*>>
+        pluginFactories: List<PluginFactory<*>>,
+        objectMapper: ObjectMapper
     ): PluginService {
         return PluginService(pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
             pluginProcessLinkRepository,
-            pluginFactories
+            pluginFactories,
+            objectMapper
         )
     }
 
