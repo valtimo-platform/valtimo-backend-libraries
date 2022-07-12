@@ -17,28 +17,73 @@
 package com.ritense.plugin.service
 
 import com.ritense.plugin.BaseIntegrationTest
-import org.hamcrest.Matchers.hasSize
+import com.ritense.plugin.domain.PluginConfiguration
+import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.plugin.domain.PluginProcessLink
+import com.ritense.plugin.domain.PluginProcessLinkId
+import com.ritense.plugin.repository.PluginConfigurationRepository
+import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.valtimo.contract.json.Mapper
+import java.lang.reflect.InvocationTargetException
+import java.util.UUID
+import kotlin.test.assertFailsWith
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.web.context.WebApplicationContext
-import java.nio.charset.StandardCharsets
+import org.springframework.transaction.annotation.Transactional
 
 
 internal class PluginServiceIT: BaseIntegrationTest() {
+    @Autowired
+    lateinit var pluginService: PluginService
 
-//    @BeforeEach
-//    fun init() {
-//        mockMvc = MockMvcBuilders
-//            .webAppContextSetup(this.webApplicationContext)
-//            .build()
-//    }
+    @Autowired
+    lateinit var pluginDefinitionRepository: PluginDefinitionRepository
+
+    @Autowired
+    lateinit var pluginConfigurationRepository: PluginConfigurationRepository
+
+    lateinit var pluginConfiguration: PluginConfiguration
+    @BeforeEach
+    fun init() {
+        val pluginDefinition = pluginDefinitionRepository.getById("test-plugin");
+        pluginConfiguration = pluginConfigurationRepository.save(PluginConfiguration(
+            PluginConfigurationId.newId(),
+            "title",
+            null,
+            pluginDefinition
+        ))
+    }
+
+    @Test
+    @Transactional
+    fun `should invoke an action on the plugin`() {
+        val processLink = PluginProcessLink(
+            PluginProcessLinkId.newId(),
+            processDefinitionId = UUID.randomUUID().toString(),
+            activityId = "test",
+            pluginConfigurationId = pluginConfiguration.id,
+            pluginActionDefinitionKey = "other-test-action",
+            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "test123"}""")
+        )
+        pluginService.invoke(String(), processLink)
+    }
+
+    @Test
+    @Transactional
+    fun `should fail when invoking an action with missing required parameter`() {
+        val processLink = PluginProcessLink(
+            PluginProcessLinkId.newId(),
+            processDefinitionId = UUID.randomUUID().toString(),
+            activityId = "test",
+            pluginConfigurationId = pluginConfiguration.id,
+            pluginActionDefinitionKey = "other-test-action"
+        )
+
+        assertFailsWith<InvocationTargetException>(
+            block = {
+                pluginService.invoke(String(), processLink)
+            }
+        )
+    }
 }

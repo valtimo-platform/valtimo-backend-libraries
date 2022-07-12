@@ -193,10 +193,6 @@ internal class PluginServiceTest {
         assertEquals("description", actions[0].description)
     }
 
-    fun `should invoke action on plugin`() {
-
-    }
-
     private fun newPluginDefinition(): PluginDefinition {
         val pluginDefinition = PluginDefinition(
             "TestPlugin",
