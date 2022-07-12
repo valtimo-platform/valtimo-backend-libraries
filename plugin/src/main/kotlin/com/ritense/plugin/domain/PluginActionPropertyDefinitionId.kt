@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest.dto.processlink
+package com.ritense.plugin.domain
 
-import com.fasterxml.jackson.databind.JsonNode
-import java.util.UUID
+import com.ritense.valtimo.contract.domain.AbstractId
+import javax.persistence.Column
+import javax.persistence.Embeddable
+import javax.persistence.Embedded
+import javax.persistence.FetchType
+import javax.persistence.JoinColumn
+import javax.persistence.JoinColumns
+import javax.persistence.ManyToOne
 
-data class PluginProcessLinkResultDto (
-    val id: UUID,
-    val processDefinitionId: String,
-    val activityId: String,
-    val pluginConfigurationId: UUID,
-    val pluginActionDefinitionKey: String,
-    val actionProperties: JsonNode? = null
-)
+@Embeddable
+data class PluginActionPropertyDefinitionId(
+
+    @Embedded
+    val pluginActionDefinitionId: PluginActionDefinitionId,
+
+    @Column(name = "plugin_action_property_definition_key")
+    val key: String,
+
+) : AbstractId<PluginActionPropertyDefinitionId>()

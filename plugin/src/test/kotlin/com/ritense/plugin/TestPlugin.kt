@@ -18,6 +18,7 @@ package com.ritense.plugin
 
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
 import com.ritense.plugin.domain.ActivityType.USER_TASK
@@ -51,7 +52,7 @@ class TestPlugin(
         description = "This is an action used to test method overloading",
         activityTypes = [USER_TASK, SERVICE_TASK]
     )
-    fun testAction(someString: String){
+    fun testAction(@PluginActionProperty someString: String){
         //do nothing
         shouldAlsoNotBeDeployed()
     }

@@ -18,7 +18,9 @@ package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.domain.ActivityType
+import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -36,8 +38,9 @@ import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkResultDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkUpdateDto
 import javax.validation.ValidationException
 import com.ritense.valtimo.contract.json.Mapper
-import mu.KotlinLogging
+import java.lang.reflect.Method
 import java.util.UUID
+import mu.KotlinLogging
 
 class PluginService(
     private var pluginDefinitionRepository: PluginDefinitionRepository,
@@ -53,10 +56,6 @@ class PluginService(
 
     fun getPluginConfigurations(): List<PluginConfiguration> {
         return pluginConfigurationRepository.findAll()
-    }
-
-    fun getPluginConfiguration(id: UUID): PluginConfiguration {
-        return pluginConfigurationRepository.getById(PluginConfigurationId.existingId(id))
     }
 
     fun createPluginConfiguration(
@@ -134,13 +133,46 @@ class PluginService(
         pluginProcessLinkRepository.save(link)
     }
 
-    // TODO: Replace this with action invocation method
+    fun invoke(executionContext:Any, processLink: PluginProcessLink) {
+        val configuration = pluginConfigurationRepository.getById(processLink.pluginConfigurationId)
+        val instance = createPluginInstance(configuration)
+
+        val method = getActionMethod(instance, processLink)
+        val methodArguments = resolveMethodArguments(executionContext, processLink.actionProperties)
+        method.invoke(instance, *methodArguments)
+    }
+
+    private fun resolveMethodArguments(executionContext: Any, actionProperties: JsonNode?): Array<Any> {
+        // TODO: Implement some argument resolver using the given executionContext?
+
+        TODO("Not implemented")
+    }
+
+    /**
+     * TODO: remove once the demo endpoint is removed
+     */
     fun createPluginInstance(id: UUID): Any {
-        val configuration = getPluginConfiguration(id)
-        val pluginFactory = pluginFactories.filter {
+        val configuration = pluginConfigurationRepository.getById(PluginConfigurationId.existingId(id))
+        return createPluginInstance(configuration)
+    }
+
+    private fun createPluginInstance(configuration: PluginConfiguration): Any {
+        return  pluginFactories.first {
             it.canCreate(configuration)
-        }.firstOrNull()
-        return pluginFactory!!.create(configuration)!!
+        }.create(configuration)!!
+    }
+
+    private fun getActionMethod(
+        instance: Any,
+        processLink: PluginProcessLink
+    ): Method {
+        val method = instance.javaClass.methods.filter { method ->
+            method.isAnnotationPresent(PluginAction::class.java)
+        }.associateWith { method -> method.getAnnotation(PluginAction::class.java) }
+            .filter { (_, annotation) -> annotation.key == processLink.pluginActionDefinitionKey }
+            .map { entry -> entry.key }
+            .first()
+        return method
     }
 
     private fun validateProperties(properties: JsonNode, pluginDefinition: PluginDefinition) {

@@ -21,6 +21,7 @@ import com.ritense.plugin.PluginDeploymentListener
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
+import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.repository.PluginPropertyRepository
@@ -51,12 +52,14 @@ class PluginAutoConfiguration {
     fun pluginDeploymentListener(
         pluginDefinitionResolver: PluginDefinitionResolver,
         pluginDefinitionRepository: PluginDefinitionRepository,
-        pluginActionDefinitionRepository: PluginActionDefinitionRepository
+        pluginActionDefinitionRepository: PluginActionDefinitionRepository,
+        pluginActionPropertyDefinitionRepository: PluginActionPropertyDefinitionRepository
     ): PluginDeploymentListener {
         return PluginDeploymentListener(
             pluginDefinitionResolver,
             pluginDefinitionRepository,
-            pluginActionDefinitionRepository
+            pluginActionDefinitionRepository,
+            pluginActionPropertyDefinitionRepository
         )
     }
 
