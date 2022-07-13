@@ -18,7 +18,6 @@ package com.ritense.plugin
 
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
-import com.ritense.plugin.domain.ActivityType.USER_TASK
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
@@ -116,7 +115,7 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
             "Test action",
             "This is an action used to verify plugin framework functionality",
             "testAction",
-            arrayOf(USER_TASK)
+            arrayOf(SERVICE_TASK)
         )
     }
 
@@ -128,7 +127,7 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
             "Test action 2",
             "This is an action used to test method overloading",
             "testAction",
-            arrayOf(USER_TASK, SERVICE_TASK)
+            arrayOf(SERVICE_TASK)
         )
     }
 
@@ -140,7 +139,7 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
             "Parent test action",
             "This is an action used to test method inheritance",
             "testAction",
-            arrayOf(USER_TASK, SERVICE_TASK)
+            arrayOf(SERVICE_TASK)
         )
     }
 

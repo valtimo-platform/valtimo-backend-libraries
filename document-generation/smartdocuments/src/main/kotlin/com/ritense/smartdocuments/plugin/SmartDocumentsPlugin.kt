@@ -62,8 +62,14 @@ class SmartDocumentsPlugin(
     private val smartDocumentsClient: SmartDocumentsClient,
 ) {
 
-    @PluginProperty(key = "smartDocumentsPluginProperties")
-    private lateinit var smartDocumentsPluginProperties: SmartDocumentsPluginProperties
+    @PluginProperty(key = "url")
+    private lateinit var url: String
+
+    @PluginProperty(key = "username")
+    private lateinit var username: String
+
+    @PluginProperty(key = "password")
+    private lateinit var password: String
 
     @PluginAction(
         key = "generate-document",
@@ -152,13 +158,7 @@ class SmartDocumentsPlugin(
                 )
             )
         )
-        smartDocumentsClient.setProperties(
-            SmartDocumentsConnectorProperties(
-                smartDocumentsPluginProperties.url,
-                smartDocumentsPluginProperties.username,
-                smartDocumentsPluginProperties.password
-            )
-        )
+        smartDocumentsClient.setProperties(SmartDocumentsConnectorProperties(url, username, password))
         val filesResponse = smartDocumentsClient.generateDocument(request)
         val fileResponse = filesResponse.file.first { it.outputFormat.equals(format.toString(), ignoreCase = true) }
         return GeneratedSmartDocument(
