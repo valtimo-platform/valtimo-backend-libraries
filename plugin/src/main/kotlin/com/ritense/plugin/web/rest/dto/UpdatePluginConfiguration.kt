@@ -18,8 +18,7 @@ package com.ritense.plugin.web.rest.dto
 
 import com.fasterxml.jackson.databind.JsonNode
 
-class PluginConfiguration(
+class UpdatePluginConfiguration(
     val title: String,
-    val properties: JsonNode,
-    val definitionKey: String
+    val properties: JsonNode
 )
