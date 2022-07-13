@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.plugin
+package com.ritense.valtimo.processlink
 
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
@@ -25,7 +25,7 @@ import org.camunda.bpm.extension.reactor.spring.listener.ReactorExecutionListene
 import org.springframework.transaction.annotation.Transactional
 
 @CamundaSelector(type = "serviceTask", event = ExecutionListener.EVENTNAME_START)
-open class PluginServiceTaskListener(
+open class ProcessLinkTaskListener(
     private val pluginProcessLinkRepository: PluginProcessLinkRepository,
     private val pluginService: PluginService,
 ) : ReactorExecutionListener() {

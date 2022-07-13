@@ -18,21 +18,21 @@ package com.ritense.valtimo.autoconfigure;
 
 import com.ritense.plugin.repository.PluginProcessLinkRepository;
 import com.ritense.plugin.service.PluginService;
-import com.ritense.valtimo.plugin.PluginServiceTaskListener;
+import com.ritense.valtimo.processlink.ProcessLinkTaskListener;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class ValtimoPluginAutoConfiguration {
+public class ProcessLinkAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(PluginServiceTaskListener.class)
-    public PluginServiceTaskListener pluginServiceTaskListener(
+    @ConditionalOnMissingBean(ProcessLinkTaskListener.class)
+    public ProcessLinkTaskListener pluginServiceTaskListener(
         PluginProcessLinkRepository pluginProcessLinkRepository,
         PluginService pluginService
     ) {
-        return new PluginServiceTaskListener(
+        return new ProcessLinkTaskListener(
             pluginProcessLinkRepository,
             pluginService
         );
