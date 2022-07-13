@@ -16,10 +16,10 @@
 
 package com.ritense.plugin
 
+import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
-import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.domain.PluginActionPropertyDefinition
@@ -31,7 +31,7 @@ import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationStartedEvent
-import org.springframework.context.event.EventListener
+import org.springframework.transaction.event.TransactionalEventListener
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
@@ -43,7 +43,7 @@ class PluginDeploymentListener(
     private val pluginActionPropertyDefinitionRepository: PluginActionPropertyDefinitionRepository
 ) {
 
-    @EventListener(ApplicationStartedEvent::class)
+    @TransactionalEventListener(ApplicationStartedEvent::class)
     fun deployPluginDefinitions() {
         logger.info { "Deploying plugins" }
         val classes = findPluginClasses()
