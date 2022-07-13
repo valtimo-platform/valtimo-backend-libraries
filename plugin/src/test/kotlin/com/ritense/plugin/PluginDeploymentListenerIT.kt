@@ -18,11 +18,11 @@ package com.ritense.plugin
 
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
-import com.ritense.plugin.domain.ActivityType.USER_TASK
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
+import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.allOf
@@ -44,6 +44,9 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
     @Autowired
     lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
 
+    @Autowired
+    lateinit var pluginActionPropertyDefinitionRepository: PluginActionPropertyDefinitionRepository
+
     @Test
     @Transactional
     fun `should deploy test plugin`() {
@@ -63,6 +66,9 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
         assertInheritedActionPresent(deployedActions)
         assertOverridingActionPresent(deployedActions)
         assertOverriddenActionNotPresent(deployedActions)
+
+        val deployedActionProperties = pluginActionPropertyDefinitionRepository.findAll()
+        assertThat(deployedActionProperties.size, `is`(1))
     }
 
     private fun assertPluginPropertiesPresent(
@@ -109,7 +115,7 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
             "Test action",
             "This is an action used to verify plugin framework functionality",
             "testAction",
-            arrayOf(USER_TASK)
+            arrayOf(SERVICE_TASK)
         )
     }
 
@@ -121,7 +127,7 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
             "Test action 2",
             "This is an action used to test method overloading",
             "testAction",
-            arrayOf(USER_TASK, SERVICE_TASK)
+            arrayOf(SERVICE_TASK)
         )
     }
 
@@ -133,7 +139,7 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
             "Parent test action",
             "This is an action used to test method inheritance",
             "testAction",
-            arrayOf(USER_TASK, SERVICE_TASK)
+            arrayOf(SERVICE_TASK)
         )
     }
 

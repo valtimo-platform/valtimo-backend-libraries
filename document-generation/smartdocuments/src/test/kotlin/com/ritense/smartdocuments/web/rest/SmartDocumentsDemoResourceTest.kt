@@ -35,17 +35,13 @@ internal class SmartDocumentsDemoResourceTest {
     lateinit var mockMvc: MockMvc
     lateinit var pluginService: PluginService
     lateinit var runtimeService: RuntimeService
-    lateinit var smartDocumentsPlugin: SmartDocumentsPlugin
     lateinit var smartDocumentsDemoResource: SmartDocumentsDemoResource
 
     @BeforeEach
     fun init() {
         pluginService = mock()
         runtimeService = mock()
-        smartDocumentsPlugin = mock()
         smartDocumentsDemoResource = SmartDocumentsDemoResource(pluginService, runtimeService)
-        whenever(pluginService.createPluginInstance(UUID.fromString("5152abe3-59d7-430b-98b6-05ff1209d7c5")))
-            .thenReturn(smartDocumentsPlugin)
 
         mockMvc = MockMvcBuilders
             .standaloneSetup(smartDocumentsDemoResource)

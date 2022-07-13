@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.smartdocuments.plugin
 
-import com.ritense.smartdocuments.domain.DocumentFormatOption
+package com.ritense.plugin.domain
 
-data class SmartDocumentsPluginGenerateDocumentProperties(
-    val templateGroup: String,
-    val templateName: String,
-    val format: DocumentFormatOption,
-    val templatePlaceholders: Map<String, String>,
+import javax.persistence.Embedded
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.Table
+
+@Entity
+@Table(name = "plugin_action_property_definition")
+data class PluginActionPropertyDefinition(
+    @Id
+    @Embedded
+    val id: PluginActionPropertyDefinitionId,
+
 )

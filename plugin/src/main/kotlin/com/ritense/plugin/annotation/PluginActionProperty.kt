@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.smartdocuments.plugin
 
-data class SmartDocumentsPluginProperties(
-    val url: String,
-    val username: String,
-    val password: String,
-)
+package com.ritense.plugin.annotation
+
+@Target(AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class PluginActionProperty

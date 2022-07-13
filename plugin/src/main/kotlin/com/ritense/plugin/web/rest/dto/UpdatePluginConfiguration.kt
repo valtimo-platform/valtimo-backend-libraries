@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.domain
+package com.ritense.plugin.web.rest.dto
 
-enum class ActivityType {
-    SERVICE_TASK
-}
+import com.fasterxml.jackson.databind.JsonNode
+
+class UpdatePluginConfiguration(
+    val title: String,
+    val properties: JsonNode
+)

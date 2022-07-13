@@ -24,6 +24,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.documentgeneration.domain.GeneratedDocument
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -61,8 +62,14 @@ class SmartDocumentsPlugin(
     private val smartDocumentsClient: SmartDocumentsClient,
 ) {
 
-    @PluginProperty(key = "smartDocumentsPluginProperties")
-    private lateinit var smartDocumentsPluginProperties: SmartDocumentsPluginProperties
+    @PluginProperty(key = "url")
+    private lateinit var url: String
+
+    @PluginProperty(key = "username")
+    private lateinit var username: String
+
+    @PluginProperty(key = "password")
+    private lateinit var password: String
 
     @PluginAction(
         key = "generate-document",
@@ -70,17 +77,19 @@ class SmartDocumentsPlugin(
         description = "Generates a document of a given type based on a template with data from a case.",
         activityTypes = [ActivityType.SERVICE_TASK]
     )
-    fun generate(execution: DelegateExecution, pluginProcessLinkProperties: String) {
-        val properties = Mapper.INSTANCE.get()
-            .readValue(pluginProcessLinkProperties, SmartDocumentsPluginGenerateDocumentProperties::class.java)
+    fun generate(execution: DelegateExecution,
+                 @PluginActionProperty templateGroup: String,
+                 @PluginActionProperty templateName: String,
+                 @PluginActionProperty format: DocumentFormatOption,
+                 @PluginActionProperty templatePlaceholders: Map<String, String>) {
         val document = processDocumentService.getDocument(execution)
-        val templateData = getTemplateData(properties.templatePlaceholders, execution, document)
+        val templateData = getTemplateData(templatePlaceholders, execution, document)
         generateAndStoreDocument(
             document,
-            properties.templateGroup,
-            properties.templateName,
+            templateGroup,
+            templateName,
             templateData,
-            properties.format
+            format
         )
     }
 
@@ -149,13 +158,7 @@ class SmartDocumentsPlugin(
                 )
             )
         )
-        smartDocumentsClient.setProperties(
-            SmartDocumentsConnectorProperties(
-                smartDocumentsPluginProperties.url,
-                smartDocumentsPluginProperties.username,
-                smartDocumentsPluginProperties.password
-            )
-        )
+        smartDocumentsClient.setProperties(SmartDocumentsConnectorProperties(url, username, password))
         val filesResponse = smartDocumentsClient.generateDocument(request)
         val fileResponse = filesResponse.file.first { it.outputFormat.equals(format.toString(), ignoreCase = true) }
         return GeneratedSmartDocument(

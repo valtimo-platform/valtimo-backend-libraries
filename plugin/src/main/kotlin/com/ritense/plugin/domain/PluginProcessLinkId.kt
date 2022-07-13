@@ -23,20 +23,20 @@ import javax.persistence.Column
 import javax.persistence.Embeddable
 
 @Embeddable
-data class PluginConfigurationId(
-    @Column(name = "plugin_configuration_id")
+class PluginProcessLinkId(
+    @Column(name = "plugin_process_link_id")
     @JsonValue
     val id: UUID
-): AbstractId<PluginConfigurationId>(){
+): AbstractId<PluginProcessLinkId>(){
 
     companion object {
 
-        fun existingId(id: UUID): PluginConfigurationId {
-            return PluginConfigurationId(id)
+        fun existingId(id: UUID): PluginProcessLinkId {
+            return PluginProcessLinkId(id)
         }
 
-        fun newId(): PluginConfigurationId {
-            return PluginConfigurationId(UUID.randomUUID()).newIdentity()
+        fun newId(): PluginProcessLinkId {
+            return PluginProcessLinkId(UUID.randomUUID()).newIdentity()
         }
     }
 }

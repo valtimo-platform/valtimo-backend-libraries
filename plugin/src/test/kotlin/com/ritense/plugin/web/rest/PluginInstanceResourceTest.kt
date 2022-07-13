@@ -26,19 +26,24 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.web.rest.dto.CreatePluginConfiguration
+import com.ritense.plugin.web.rest.dto.UpdatePluginConfiguration
 import com.ritense.valtimo.contract.json.Mapper
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.nio.charset.StandardCharsets
+import java.util.UUID
 
 internal class PluginInstanceResourceTest {
 
@@ -120,7 +125,7 @@ internal class PluginInstanceResourceTest {
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties, plugin)
         whenever(pluginService.createPluginConfiguration(any(), any(), any())).thenReturn(pluginConfiguration)
 
-        val pluginConfiguratieDto = com.ritense.plugin.web.rest.dto.PluginConfiguration(
+        val pluginConfiguratieDto = CreatePluginConfiguration(
             "title",
             properties,
             "key"
@@ -157,5 +162,67 @@ internal class PluginInstanceResourceTest {
             "title",
             properties,
             "key")
+    }
+
+    @Test
+    fun `should update plugin configuration`() {
+        val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
+        val plugin = PluginDefinition("key", "title", "description", "className")
+        val pluginConfigurationId = UUID.randomUUID()
+        val pluginConfiguration = PluginConfiguration(PluginConfigurationId.existingId(pluginConfigurationId), "title", properties, plugin)
+        whenever(pluginService.updatePluginConfiguration(any(), any(), any())).thenReturn(pluginConfiguration)
+
+        val pluginConfiguratieDto = UpdatePluginConfiguration(
+            "title",
+            properties
+        )
+
+        mockMvc.perform(
+            put("/api/plugin/configuration/$pluginConfigurationId")
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Mapper.INSTANCE.get().writeValueAsString(pluginConfiguratieDto))
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(
+                jsonPath("$.id").value(pluginConfigurationId.toString()))
+            .andExpect(
+                jsonPath("$.title").value("title"))
+            .andExpect(
+                jsonPath("$.properties.name").value("whatever"))
+            .andExpect(
+                jsonPath("$.pluginDefinition.key").value("key"))
+            .andExpect(
+                jsonPath("$..pluginDefinition.title").value("title"))
+            .andExpect(
+                jsonPath("$.pluginDefinition.description").value("description"))
+            .andExpect(
+                jsonPath("$.pluginDefinition.fullyQualifiedClassName").doesNotExist())
+
+        verify(pluginService).updatePluginConfiguration(
+            PluginConfigurationId.existingId(pluginConfigurationId),
+            "title",
+            properties)
+    }
+
+    @Test
+    fun `should delete plugin configuration`() {
+        val pluginConfigurationId = UUID.randomUUID()
+
+        mockMvc.perform(
+            delete("/api/plugin/configuration/$pluginConfigurationId")
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isNoContent)
+
+        verify(pluginService).deletePluginConfiguration(
+            PluginConfigurationId.existingId(pluginConfigurationId)
+        )
     }
 }

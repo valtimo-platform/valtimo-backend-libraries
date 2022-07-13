@@ -18,14 +18,14 @@ package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
-import com.ritense.plugin.repository.PluginActionDefinitionRepository
-import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -33,18 +33,22 @@ import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.domain.PluginPropertyId
 import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
+import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.valtimo.contract.json.Mapper
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 
 internal class PluginServiceTest {
 
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
     lateinit var pluginConfigurationRepository: PluginConfigurationRepository
     lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
+    lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
     lateinit var pluginFactory: PluginFactory<Any>
     lateinit var pluginService: PluginService
 
@@ -53,12 +57,15 @@ internal class PluginServiceTest {
         pluginDefinitionRepository = mock()
         pluginConfigurationRepository = mock()
         pluginActionDefinitionRepository = mock()
+        pluginProcessLinkRepository = mock()
         pluginFactory = mock()
         pluginService = PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
-            listOf(pluginFactory)
+            pluginProcessLinkRepository,
+            listOf(pluginFactory),
+            Mapper.INSTANCE.get()
         )
     }
 
@@ -133,6 +140,36 @@ internal class PluginServiceTest {
     }
 
     @Test
+    fun `should update plugin configuration`(){
+        val pluginDefinition = newPluginDefinition()
+        addPluginProperty(pluginDefinition)
+        val pluginConfiguration = newPluginConfiguration(pluginDefinition)
+
+        val pluginConfigurationCaptor = argumentCaptor<PluginConfiguration>()
+        val newProperties = ObjectMapper().readTree("{\"name\": \"whatever\" }")
+
+        whenever(pluginConfigurationRepository.getById(pluginConfiguration.id)).thenReturn(pluginConfiguration)
+
+        pluginService
+            .updatePluginConfiguration(
+                pluginConfiguration.id, "title", newProperties
+            )
+        verify(pluginConfigurationRepository).save(pluginConfigurationCaptor.capture())
+
+        val capturedPluginConfiguration = pluginConfigurationCaptor.firstValue
+        assertEquals("title", capturedPluginConfiguration.title)
+        assertEquals(newProperties, capturedPluginConfiguration.properties)
+    }
+
+    @Test
+    fun `should delete plugin configuration`(){
+        val pluginConfigurationId = PluginConfigurationId.newId()
+
+        pluginService.deletePluginConfiguration(pluginConfigurationId)
+        verify(pluginConfigurationRepository).deleteById(pluginConfigurationId)
+    }
+
+    @Test
     fun `should get plugin action definitions from repository by key`(){
         whenever(pluginActionDefinitionRepository.findByIdPluginDefinitionKey("test")).thenReturn(
             listOf(
@@ -144,7 +181,7 @@ internal class PluginServiceTest {
                     "title",
                     "description",
                     "method",
-                    listOf(ActivityType.USER_TASK)
+                    listOf(ActivityType.SERVICE_TASK)
                 )
             )
         )
@@ -161,7 +198,7 @@ internal class PluginServiceTest {
 
     @Test
     fun `should get plugin action definitions from repository by key and activityType`(){
-        whenever(pluginActionDefinitionRepository.findByIdPluginDefinitionKeyAndActivityTypes("test", ActivityType.USER_TASK)).thenReturn(
+        whenever(pluginActionDefinitionRepository.findByIdPluginDefinitionKeyAndActivityTypes("test", ActivityType.SERVICE_TASK)).thenReturn(
             listOf(
                 PluginActionDefinition(
                     PluginActionDefinitionId(
@@ -171,15 +208,15 @@ internal class PluginServiceTest {
                     "title",
                     "description",
                     "method",
-                    listOf(ActivityType.USER_TASK)
+                    listOf(ActivityType.SERVICE_TASK)
                 )
             )
         )
 
-        val actions = pluginService.getPluginDefinitionActions("test", ActivityType.USER_TASK)
+        val actions = pluginService.getPluginDefinitionActions("test", ActivityType.SERVICE_TASK)
 
         verify(pluginActionDefinitionRepository).findByIdPluginDefinitionKeyAndActivityTypes("test",
-            ActivityType.USER_TASK)
+            ActivityType.SERVICE_TASK)
 
         assertEquals(1, actions.size)
         assertEquals("some-key", actions[0].key)
@@ -221,4 +258,5 @@ internal class PluginServiceTest {
         whenever(pluginConfigurationRepository.save(any())).thenReturn(pluginConfiguration)
         return pluginConfiguration
     }
+
 }

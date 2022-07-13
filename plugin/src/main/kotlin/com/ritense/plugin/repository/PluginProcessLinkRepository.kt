@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.domain
+package com.ritense.plugin.repository
 
-enum class ActivityType {
-    SERVICE_TASK
+import com.ritense.plugin.domain.PluginProcessLink
+import com.ritense.plugin.domain.PluginProcessLinkId
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface PluginProcessLinkRepository: JpaRepository<PluginProcessLink, PluginProcessLinkId> {
+    fun findByProcessDefinitionIdAndActivityId(processDefinitionId: String, activityId: String): List<PluginProcessLink>
 }

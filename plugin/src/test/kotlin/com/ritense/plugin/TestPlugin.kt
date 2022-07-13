@@ -18,9 +18,9 @@ package com.ritense.plugin
 
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
-import com.ritense.plugin.domain.ActivityType.USER_TASK
 
 @Plugin(
     key = "test-plugin",
@@ -30,17 +30,20 @@ import com.ritense.plugin.domain.ActivityType.USER_TASK
 class TestPlugin(
     val someObject: String
 ) : TestPluginParent() {
-    @PluginProperty(key = "property1") lateinit var property1: String
-    @PluginProperty(key = "property2", required = false) var property2: Boolean? = null
-    @PluginProperty(key = "property3") lateinit var property3: Number
+    @PluginProperty(key = "property1")
+    lateinit var property1: String
+    @PluginProperty(key = "property2", required = false)
+    var property2: Boolean? = null
+    @PluginProperty(key = "property3")
+    lateinit var property3: Number
 
     @PluginAction(
         key = "test-action",
         title = "Test action",
         description = "This is an action used to verify plugin framework functionality",
-        activityTypes = [USER_TASK]
+        activityTypes = [SERVICE_TASK]
     )
-    fun testAction(){
+    fun testAction() {
         //do nothing
         shouldNotBeDeployed()
     }
@@ -49,9 +52,9 @@ class TestPlugin(
         key = "other-test-action",
         title = "Test action 2",
         description = "This is an action used to test method overloading",
-        activityTypes = [USER_TASK, SERVICE_TASK]
+        activityTypes = [SERVICE_TASK]
     )
-    fun testAction(someString: String){
+    fun testAction(@PluginActionProperty someString: String) {
         //do nothing
         shouldAlsoNotBeDeployed()
     }
@@ -60,17 +63,17 @@ class TestPlugin(
         key = "child-override-test-action",
         title = "Override test action",
         description = "This is an action used to test method inheritance",
-        activityTypes = [SERVICE_TASK]
+        activityTypes = []
     )
-    override fun overrideAction(){
+    override fun overrideAction() {
         //do nothing
     }
 
-    private fun shouldNotBeDeployed(){
+    private fun shouldNotBeDeployed() {
         //meant to test correct deployment of only methods annotated correctly
     }
 
-    fun shouldAlsoNotBeDeployed(){
+    fun shouldAlsoNotBeDeployed() {
         //meant to test correct deployment of only methods annotated correctly
     }
 }

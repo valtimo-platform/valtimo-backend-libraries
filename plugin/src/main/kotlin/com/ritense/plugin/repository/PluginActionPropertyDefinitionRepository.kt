@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.domain
+package com.ritense.plugin.repository
 
-enum class ActivityType {
-    SERVICE_TASK
+import com.ritense.plugin.domain.PluginActionPropertyDefinition
+import com.ritense.plugin.domain.PluginActionPropertyDefinitionId
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface PluginActionPropertyDefinitionRepository: JpaRepository<PluginActionPropertyDefinition, PluginActionPropertyDefinitionId> {
 }

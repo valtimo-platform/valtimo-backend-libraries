@@ -16,27 +16,22 @@
 
 package com.ritense.plugin.domain
 
-import com.fasterxml.jackson.annotation.JsonValue
 import com.ritense.valtimo.contract.domain.AbstractId
-import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Embeddable
+import javax.persistence.Embedded
+import javax.persistence.FetchType
+import javax.persistence.JoinColumn
+import javax.persistence.JoinColumns
+import javax.persistence.ManyToOne
 
 @Embeddable
-data class PluginConfigurationId(
-    @Column(name = "plugin_configuration_id")
-    @JsonValue
-    val id: UUID
-): AbstractId<PluginConfigurationId>(){
+data class PluginActionPropertyDefinitionId(
 
-    companion object {
+    @Embedded
+    val pluginActionDefinitionId: PluginActionDefinitionId,
 
-        fun existingId(id: UUID): PluginConfigurationId {
-            return PluginConfigurationId(id)
-        }
+    @Column(name = "plugin_action_property_definition_key")
+    val key: String,
 
-        fun newId(): PluginConfigurationId {
-            return PluginConfigurationId(UUID.randomUUID()).newIdentity()
-        }
-    }
-}
+) : AbstractId<PluginActionPropertyDefinitionId>()

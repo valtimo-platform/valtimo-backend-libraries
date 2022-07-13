@@ -41,13 +41,23 @@
         </createTable>
     </changeSet>
 
-    <changeSet author="Tom" id="2">
+    <changeSet author="Tom" id="2" dbms="mysql,h2">
         <createIndex indexName="process_definition_key_index" tableName="process_form_association_v2">
             <column name="process_definition_key"/>
         </createIndex>
         <createIndex indexName="form_association_id_index" tableName="process_form_association_v2">
             <column name="form_association_id"/>
         </createIndex>
+        <createIndex indexName="form_association_type_index" tableName="process_form_association_v2">
+            <column name="form_association_type"/>
+        </createIndex>
+        <createIndex indexName="form_association_form_link_form_id_index" tableName="process_form_association_v2">
+            <column name="form_association_form_link_form_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="Ritense" id="2-2" dbms="postgresql">
+        <!-- postgres automatically creates indexes for each primary key -->
         <createIndex indexName="form_association_type_index" tableName="process_form_association_v2">
             <column name="form_association_type"/>
         </createIndex>
