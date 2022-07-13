@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.camunda
+package com.ritense.valtimo.plugin
 
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
