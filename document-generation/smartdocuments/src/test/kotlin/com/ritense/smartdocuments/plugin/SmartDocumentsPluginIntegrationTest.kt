@@ -19,6 +19,9 @@ package com.ritense.smartdocuments.plugin
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.plugin.domain.PluginProcessLink
+import com.ritense.plugin.domain.PluginProcessLinkId
+import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
@@ -38,8 +41,10 @@ import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
+import org.camunda.bpm.engine.RepositoryService
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 @AutoConfigureWebTestClient(timeout = "36000")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() {
@@ -56,6 +61,12 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
     @Autowired
     lateinit var smartDocumentsPluginFactory: SmartDocumentsPluginFactory
 
+    @Autowired
+    lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
+
+    @Autowired
+    lateinit var repositoryService: RepositoryService
+
     lateinit var smartDocumentsPlugin: SmartDocumentsPlugin
 
     @BeforeEach
@@ -68,11 +79,28 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
             ),
             "smartdocuments"
         )
+        val generateDocumentActionProperties =
+            "{\"templateGroup\":\"test-template-group\",\"templateName\":\"test-template-name\",\"format\":\"PDF\",\"templatePlaceholders\":{\"achternaam\":\"doc:/lastname\",\"leeftijd\":\"pv:age\"}}"
+
         smartDocumentsPlugin = smartDocumentsPluginFactory.create(configuration)
+        val processDefinitionId = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("document-generation-plugin")
+            .latestVersion()
+            .singleResult()
+
+        pluginProcessLinkRepository.save(
+            PluginProcessLink(
+                PluginProcessLinkId(UUID.randomUUID()),
+                processDefinitionId.id,
+                "GenerateDocument",
+                Mapper.INSTANCE.get().readTree(generateDocumentActionProperties),
+                configuration.id,
+                "generate-document"
+            )
+        )
     }
 
     @Test
-    @Disabled // disabled until process links has been implemented for plugins
     fun `should generate document`() {
         // given
         val emptyResource = object : Resource {

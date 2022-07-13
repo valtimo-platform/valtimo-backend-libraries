@@ -20,8 +20,6 @@ import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.service.PluginService
 import com.ritense.smartdocuments.domain.DocumentFormatOption
-import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
-import com.ritense.smartdocuments.plugin.SmartDocumentsPluginGenerateDocumentProperties
 import com.ritense.valtimo.contract.json.Mapper
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -74,6 +72,13 @@ class SmartDocumentsDemoResource(
         return ResponseEntity.noContent().build()
     }
 }
+
+data class SmartDocumentsPluginGenerateDocumentProperties(
+    val templateGroup: String,
+    val templateName: String,
+    val format: DocumentFormatOption,
+    val templatePlaceholders: Map<String, String>
+)
 
 data class DelegateExecutionSmall(
     private val processInstanceId: String,
