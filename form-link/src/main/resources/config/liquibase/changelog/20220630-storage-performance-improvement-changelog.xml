@@ -66,7 +66,7 @@
         </createIndex>
     </changeSet>
 
-    <changeSet author="Tom" id="3-1">
+    <changeSet author="Tom" id="3-1" dbms="mysql,h2">
         <sql>
             INSERT INTO process_form_association (
                 process_form_association_id,
@@ -81,23 +81,40 @@
         </sql>
     </changeSet>
 
+    <changeSet author="Ritense" id="3-1-2" dbms="postgresql">
+        <sql>
+            INSERT INTO process_form_association (
+                process_form_association_id,
+                process_definition_key,
+                form_associations
+            )
+            VALUES (
+                DECODE(REPLACE('77dea2ad-3c8c-40c6-a278-7cf1a1ac9384', '-', ''), 'hex'),
+                'process-definition-key',
+                '[{\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\",\r\n\t\"id\": \"0f0ca0ed-9056-4730-9f91-645e9ed32736\",\r\n\t\"formLink\": {\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink\",\r\n\t\t\"id\": \"id\",\r\n\t\t\"formId\": \"8defe3ba-4549-4a8a-88d4-6454c53806ee\"\r\n\t}\r\n}, {\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\",\r\n\t\"id\": \"ce871f45-88a4-450b-88ac-7dd73c2b5a80\",\r\n\t\"formLink\": {\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink\",\r\n\t\t\"id\": \"id\",\r\n\t\t\"formFlowId\": \"formFlowId\"\r\n\t}\r\n}, {\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\",\r\n\t\"id\": \"1d2e2fd8-72ac-4b4b-a1aa-8bed6582c540\",\r\n\t\"formLink\": {\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementAngularStateUrlLink\",\r\n\t\t\"id\": \"id\",\r\n\t\t\"url\": \"url\"\r\n\t}\r\n}, {\r\n\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\",\r\n\t\"id\": \"c24a9f70-aa9a-44f1-96b9-405e275ab51b\",\r\n\t\"formLink\": {\r\n\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink\",\r\n\t\t\"id\": \"id\",\r\n\t\t\"url\": \"url\"\r\n\t}\r\n}]'
+            )
+        </sql>
+    </changeSet>
+
     <changeSet author="Tom" id="3-2">
         <customChange class="com.ritense.formlink.migration.MigrationV2Table"/>
     </changeSet>
 
     <changeSet author="Tom" id="3-3">
+        <validCheckSum>8:aec9b22ad9408bfccd25e609ba803901</validCheckSum>
         <sql>
             DELETE
             FROM    process_form_association
-            WHERE   process_definition_key = "process-definition-key"
+            WHERE   process_definition_key = 'process-definition-key'
         </sql>
     </changeSet>
 
     <changeSet author="Tom" id="3-4">
+        <validCheckSum>8:2037a125fe8e7601ae8647d2255e79bf</validCheckSum>
         <sql>
             DELETE
             FROM    process_form_association_v2
-            WHERE   process_definition_key = "process-definition-key"
+            WHERE   process_definition_key = 'process-definition-key'
         </sql>
     </changeSet>
 
