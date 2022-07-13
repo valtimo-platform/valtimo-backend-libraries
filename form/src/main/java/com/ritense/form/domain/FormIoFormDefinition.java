@@ -21,9 +21,13 @@ import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.ritense.form.domain.event.FormRegisteredEvent;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,10 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 @Entity
 @Table(name = "form_io_form_definition")
@@ -104,7 +104,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         registerEvent(new FormRegisteredEvent(id, name));
     }
 
-    private FormIoFormDefinition() {
+    protected FormIoFormDefinition() {
     }
 
     public void setReadOnly(Boolean value) {
@@ -408,9 +408,14 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     private Object extractNodeValue(JsonNode node) {
-        if (node.isValueNode()) {
+        var nodeType = node.getNodeType();
+        if (nodeType == JsonNodeType.STRING) {
             return node.textValue();
-        } else if (node.isArray()) {
+        } else if (nodeType == JsonNodeType.NUMBER) {
+            return node.numberValue();
+        } else if (nodeType == JsonNodeType.BOOLEAN) {
+            return node.booleanValue();
+        } else if (nodeType == JsonNodeType.ARRAY) {
             List<String> values = new ArrayList<>();
             node.forEach(childNode -> values.add(childNode.textValue()));
             return values;
