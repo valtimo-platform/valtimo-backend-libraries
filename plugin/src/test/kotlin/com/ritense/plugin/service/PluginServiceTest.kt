@@ -36,6 +36,8 @@ import com.ritense.plugin.exception.PluginPropertyRequiredException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.valtimo.contract.json.Mapper
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,6 +48,7 @@ internal class PluginServiceTest {
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
     lateinit var pluginConfigurationRepository: PluginConfigurationRepository
     lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
+    lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
     lateinit var pluginFactory: PluginFactory<Any>
     lateinit var pluginService: PluginService
 
@@ -54,12 +57,15 @@ internal class PluginServiceTest {
         pluginDefinitionRepository = mock()
         pluginConfigurationRepository = mock()
         pluginActionDefinitionRepository = mock()
+        pluginProcessLinkRepository = mock()
         pluginFactory = mock()
         pluginService = PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
-            listOf(pluginFactory)
+            pluginProcessLinkRepository,
+            listOf(pluginFactory),
+            Mapper.INSTANCE.get()
         )
     }
 
