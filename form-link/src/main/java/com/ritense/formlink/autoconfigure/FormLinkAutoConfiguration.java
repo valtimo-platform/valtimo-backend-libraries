@@ -44,6 +44,8 @@ import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
+import java.util.List;
+import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -52,7 +54,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import java.util.List;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.formlink.repository")
@@ -169,11 +170,20 @@ public class FormLinkAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ProcessLinkService.class)
     public ProcessLinkService processLinkService(
+        RepositoryService repositoryService,
         TaskService taskService,
         FormAssociationService formAssociationService,
         List<ProcessLinkTaskProvider> processLinkTaskProvide
     ) {
-        return new DefaultProcessLinkService(taskService, formAssociationService, processLinkTaskProvide);
+        return new DefaultProcessLinkService(repositoryService, taskService, formAssociationService, processLinkTaskProvide);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessFormAssociationRepository.class)
+    public JdbcProcessFormAssociationRepository processFormAssociationRepository(
+        final NamedParameterJdbcTemplate namedParameterJdbcTemplate
+    ) {
+        return new JdbcProcessFormAssociationRepository(namedParameterJdbcTemplate);
     }
 
 }
