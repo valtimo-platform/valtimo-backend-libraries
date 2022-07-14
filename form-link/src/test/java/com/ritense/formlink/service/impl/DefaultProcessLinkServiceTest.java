@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
+import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,10 +44,12 @@ import static org.mockito.Mockito.when;
 class DefaultProcessLinkServiceTest {
 
     private final TaskService taskService = mock(TaskService.class, Mockito.RETURNS_DEEP_STUBS);
+    private final RepositoryService repositoryService = mock(RepositoryService.class);
     private final FormAssociationService formAssociationService = mock(FormAssociationService.class);
     private final ProcessLinkTaskProvider processLinkTaskProvider = mock(ProcessLinkTaskProvider.class);
     private final List<ProcessLinkTaskProvider> processLinkTaskProviders = List.of(processLinkTaskProvider);
     private final ProcessLinkService service = new DefaultProcessLinkService(
+        repositoryService,
         taskService,
         formAssociationService,
         processLinkTaskProviders
@@ -70,6 +74,10 @@ class DefaultProcessLinkServiceTest {
         when(formAssociation.getFormLink()).thenReturn(formLink);
 
         when(processLinkTaskProvider.supports(formLink)).thenReturn(true);
+
+        final var processDefinition = mock(ProcessDefinition.class);
+        when(processDefinition.getKey()).thenReturn("test");
+        when(repositoryService.getProcessDefinition("test:1")).thenReturn(processDefinition);
     }
 
     @Test

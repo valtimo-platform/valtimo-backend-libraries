@@ -26,19 +26,23 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
+import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 
 public class DefaultProcessLinkService implements ProcessLinkService {
+    private final RepositoryService repositoryService;
     private final TaskService taskService;
     private final FormAssociationService formAssociationService;
     private final List<ProcessLinkTaskProvider> processLinkTaskProviders;
 
     public DefaultProcessLinkService(
+        RepositoryService repositoryService,
         TaskService taskService,
         FormAssociationService formAssociationService,
         List<ProcessLinkTaskProvider> processLinkTaskProviders
     ) {
+        this.repositoryService = repositoryService;
         this.taskService = taskService;
         this.formAssociationService = formAssociationService;
         this.processLinkTaskProviders = processLinkTaskProviders;
@@ -52,8 +56,10 @@ public class DefaultProcessLinkService implements ProcessLinkService {
             .active()
             .singleResult();
 
+        final var processDefinition = repositoryService.getProcessDefinition(task.getProcessDefinitionId());
+
         Optional<? extends FormAssociation> formAssociationOptional = formAssociationService.getFormAssociationByFormLinkId(
-            task.getProcessDefinitionId().substring(0, task.getProcessDefinitionId().indexOf(':')),
+            processDefinition.getKey(),
             task.getTaskDefinitionKey()
         );
 
