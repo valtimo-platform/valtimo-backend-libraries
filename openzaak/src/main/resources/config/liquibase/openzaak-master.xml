@@ -20,6 +20,12 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
+    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
+    <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
+
+    <property name="jsonType" value="JSON" dbms="mysql"/>
+    <property name="jsonType" value="JSONB" dbms="postgresql"/>
+
     <include file="changelog/20200906-open-zaak-config-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20201006-zaaktype-link-domain-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20211802-informatieobjecttype-link-changelog.xml" relativeToChangelogFile="true"/>

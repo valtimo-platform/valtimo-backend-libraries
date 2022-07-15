@@ -56,7 +56,7 @@ data class ZaakTypeLink(
     @Column(name = "zaak_type_url", columnDefinition = "VARCHAR(512)", nullable = false)
     var zaakTypeUrl: URI,
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "service_task_handlers", columnDefinition = "json")
     var serviceTaskHandlers: ServiceTaskHandlers,
 

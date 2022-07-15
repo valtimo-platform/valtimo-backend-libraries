@@ -19,6 +19,9 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
     <changeSet author="juliadelozanne (generated)" id="1599414709479-1">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createTable tableName="open_zaak_config">
             <column name="open_zaak_config_id" type="BINARY(16)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="open_zaak_configPK"/>
@@ -35,6 +38,9 @@
         </createTable>
     </changeSet>
     <changeSet author="juliadelozanne (generated)" id="1599414709479-2">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <addColumn tableName="open_zaak_config">
             <column name="rsin" type="CHAR(9)">
                 <constraints nullable="false"/>
@@ -45,15 +51,25 @@
         </addColumn>
     </changeSet>
     <changeSet author="juliadelozanne (generated)" id="1599414709479-3">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <dropColumn
             tableName="open_zaak_config"
             columnName="organisation">
         </dropColumn>
     </changeSet>
     <changeSet author="Rick Veenstra" id="1599414709479-4">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <customChange class="com.ritense.openzaak.liquibase.changelog.ChangeLog20211217OpenZaakDataToConnector"/>
     </changeSet>
     <changeSet author="Rick Veenstra" id="1599414709479-5">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <dropTable tableName="open_zaak_config"/>
     </changeSet>
+
 </databaseChangeLog>

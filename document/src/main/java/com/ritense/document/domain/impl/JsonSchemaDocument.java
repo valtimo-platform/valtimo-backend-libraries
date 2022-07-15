@@ -98,11 +98,11 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Column(name = "sequence", columnDefinition = "BIGINT")
     private Long sequence;
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "document_relations", columnDefinition = "json")
     private Set<JsonSchemaDocumentRelation> documentRelations = new HashSet<>();
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "related_files", columnDefinition = "json")
     private Set<JsonSchemaRelatedFile> relatedFiles = new HashSet<>();
 

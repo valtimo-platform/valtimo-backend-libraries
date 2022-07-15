@@ -23,7 +23,7 @@ import com.ritense.audit.domain.MetaData;
 import com.ritense.audit.domain.MetaDataBuilder;
 import com.ritense.audit.exception.AuditRecordAlreadyProcessedException;
 import com.ritense.audit.exception.AuditRuntimeException;
-import com.ritense.audit.repository.impl.AuditRecordImplRepository;
+import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.audit.service.AuditEventProcessor;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import org.slf4j.Logger;
@@ -38,9 +38,9 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 public class AuditEventProcessorImpl implements AuditEventProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(AuditEventProcessorImpl.class);
-    private final AuditRecordImplRepository auditRecordRepository;
+    private final AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository;
 
-    public AuditEventProcessorImpl(AuditRecordImplRepository auditRecordRepository) {
+    public AuditEventProcessorImpl(AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository) {
         this.auditRecordRepository = auditRecordRepository;
     }
 

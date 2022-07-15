@@ -54,12 +54,12 @@ public class AuditRecord implements Persistable<AuditRecordId> {
     @Column(name = "created_on", updatable = false)
     private LocalDateTime createdOn = LocalDateTime.now();
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "audit_event", columnDefinition = "json", updatable = false)
     @JsonView(AuditView.Public.class)
     private AuditEvent auditEvent;
 
-    @Column(name = "document_id", columnDefinition = "BINARY(16)", updatable = false)
+    @Column(name = "document_id", updatable = false)
     private UUID documentId;
 
     public AuditRecord(
