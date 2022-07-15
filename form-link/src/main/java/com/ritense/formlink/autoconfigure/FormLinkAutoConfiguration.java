@@ -178,12 +178,4 @@ public class FormLinkAutoConfiguration {
         return new DefaultProcessLinkService(repositoryService, taskService, formAssociationService, processLinkTaskProvide);
     }
 
-    @Bean
-    @ConditionalOnMissingBean(ProcessFormAssociationRepository.class)
-    public JdbcProcessFormAssociationRepository processFormAssociationRepository(
-        final NamedParameterJdbcTemplate namedParameterJdbcTemplate
-    ) {
-        return new JdbcProcessFormAssociationRepository(namedParameterJdbcTemplate);
-    }
-
 }
