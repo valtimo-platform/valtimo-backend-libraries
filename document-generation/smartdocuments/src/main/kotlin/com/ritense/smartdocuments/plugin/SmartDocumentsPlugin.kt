@@ -62,13 +62,13 @@ class SmartDocumentsPlugin(
     private val smartDocumentsClient: SmartDocumentsClient,
 ) {
 
-    @PluginProperty(key = "url")
+    @PluginProperty(key = "url", required = true)
     private lateinit var url: String
 
-    @PluginProperty(key = "username")
+    @PluginProperty(key = "username", required = true)
     private lateinit var username: String
 
-    @PluginProperty(key = "password")
+    @PluginProperty(key = "password", required = true)
     private lateinit var password: String
 
     @PluginAction(
