@@ -1,0 +1,83 @@
+/*
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+projectVersion = 1.0
+
+dockerCompose {
+    projectName = "value-resolver"
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
+    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+}
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.camunda.bpm:camunda-engine:${camundaVersion}"
+//    implementation project(':core')
+//    implementation project(':contract')
+//    implementation project(':connector')
+//    implementation project(':document')
+//    implementation project(':process-document')
+//    implementation project(':resource')
+//    implementation project(':openzaak')
+//    implementation project(':klant')
+//    implementation project(':resource:openzaak-resource')
+//
+//    api "org.springframework.security:spring-security-core"
+//    api "org.springframework.boot:spring-boot"
+//    api "org.springframework.data:spring-data-commons"
+//    api "javax.inject:javax.inject:1"
+//
+//    implementation "org.springframework.boot:spring-boot-starter-web"
+//    implementation "org.springframework.boot:spring-boot-starter-actuator"
+//    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+//    implementation "org.springframework.boot:spring-boot-starter-security"
+//    implementation "org.springframework.boot:spring-boot-starter-validation"
+//
+//    implementation "com.fasterxml.jackson.module:jackson-module-afterburner"
+//    implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
+//    implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
+//    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+//
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
+
+    implementation 'io.github.microutils:kotlin-logging:2.1.23'
+
+//
+    implementation "org.springframework.boot:spring-boot-autoconfigure"
+//    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
+//    annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
+//
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+//    testImplementation "com.squareup.okhttp3:mockwebserver:4.9.1"
+//    testImplementation "com.squareup.okhttp3:okhttp:4.9.1"
+//    testImplementation project(':test-utils-common')
+    testImplementation 'org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.16.0'
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+
+    jar {
+        enabled = true
+        manifest {
+            attributes("Implementation-Title": "Ritense Value-resolver Spring Boot Starter")
+            attributes("Implementation-Version": projectVersion)
+        }
+    }
+}
+
+apply from: "gradle/publishing.gradle"

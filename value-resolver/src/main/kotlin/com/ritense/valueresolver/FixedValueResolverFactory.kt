@@ -14,41 +14,43 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi.taak.resolve
+package com.ritense.valueresolver
 
-import com.ritense.processdocument.domain.ProcessInstanceId
-import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.function.Function
+import org.camunda.bpm.engine.delegate.VariableScope
 
 /**
- * This resolver can resolve requestedValues against the variables of a process or task.
+ * This resolver returns the requestedValue as the value.
+ * It will do a best-effort of guessing the type of the given requestedValue before returning it.
  *
- * The value of the requestedValue should be in the format pv:someProperty
+ * For instance, "true" will become the boolean <code>true</code>
+ *
+ * These requestedValues do not have a prefix
  */
-class ProcessVariableValueResolverFactory(
-    private val runtimeService: RuntimeService
-) : ValueResolverFactory {
+class FixedValueResolverFactory : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
-        return "pv"
+        return ""
     }
 
     override fun createResolver(
-        processInstanceId: ProcessInstanceId,
+        processInstanceId: String,
         variableScope: VariableScope
     ): Function<String, Any?> {
-
-        return Function { requestedValue ->
-            variableScope.variables[requestedValue]
+        return Function { requestedValue->
+            requestedValue.toBooleanStrictOrNull()
+                ?: requestedValue.toLongOrNull()
+                ?: requestedValue.toDoubleOrNull()
+                ?: requestedValue
         }
     }
 
     override fun handleValues(
-        processInstanceId: ProcessInstanceId,
+        processInstanceId: String,
         variableScope: VariableScope,
         values: Map<String, Any>
     ) {
-        runtimeService.setVariables(processInstanceId.toString(), values)
+        val firstValue = values.iterator().next()
+        throw RuntimeException("Can't handle value that doesn't have a prefix. {${firstValue.key} to ${firstValue.value}}")
     }
 }

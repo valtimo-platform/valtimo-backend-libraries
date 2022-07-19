@@ -31,9 +31,9 @@ import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.taak.TaakObjectConnector.Companion.TAAK_CONNECTOR_NAME
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.openzaak.provider.KvkProvider
-import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valueresolver.ValueResolverService
 import java.net.URI
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -142,7 +142,7 @@ class TaakObjectConnector(
             .filter { it.camundaName.startsWith(prefix = "taak:", ignoreCase = true) }
 
         val resolvedValues = valueResolverService.resolveValues(
-            processInstanceId = CamundaProcessInstanceId(task.processInstanceId),
+            processInstanceId = task.processInstanceId,
             variableScope = task,
             taakProperties.map { it.camundaValue }
         )

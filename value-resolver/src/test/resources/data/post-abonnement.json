@@ -1,0 +1,11 @@
+{
+    "url": "http://localhost:8000/api/v1/abonnement/fd876e8c-f081-4093-9157-7b21645043dd",
+    "callbackUrl": "http://example.com",
+    "auth": "string",
+    "kanalen": [
+        {
+            "filters": {},
+            "naam": "objecten"
+        }
+    ]
+}

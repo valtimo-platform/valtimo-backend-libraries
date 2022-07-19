@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi.taak.resolve
+package com.ritense.valueresolver
 
-import com.ritense.processdocument.domain.ProcessInstanceId
 import org.camunda.bpm.engine.delegate.VariableScope
 
 class ValueResolverService(
@@ -44,7 +43,7 @@ class ValueResolverService(
      * @return A map where the key is the requestedValue, and the value the resolved value.
      */
     fun resolveValues(
-        processInstanceId: ProcessInstanceId,
+        processInstanceId: String,
         variableScope: VariableScope,
         requestedValues: List<String>
     ): Map<String, Any> {
@@ -71,7 +70,7 @@ class ValueResolverService(
      * @param values mapOf(doc:add:/firstname to John)
      */
     fun handleValues(
-        processInstanceId: ProcessInstanceId,
+        processInstanceId: String,
         variableScope: VariableScope,
         values: Map<String, Any>
     ) {

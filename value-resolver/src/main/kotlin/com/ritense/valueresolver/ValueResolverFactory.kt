@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi.taak.resolve
+package com.ritense.valueresolver
 
-import com.ritense.processdocument.domain.ProcessInstanceId
 import java.util.function.Function
 import org.camunda.bpm.engine.delegate.VariableScope
 
@@ -47,7 +46,7 @@ interface ValueResolverFactory {
      *
      * @return a resolver that handles one requestedValue at a time within the same context.
      */
-    fun createResolver(processInstanceId: ProcessInstanceId, variableScope: VariableScope)
+    fun createResolver(processInstanceId: String, variableScope: VariableScope)
         : Function<String, Any?>
 
     /**
@@ -55,5 +54,5 @@ interface ValueResolverFactory {
      * @param variableScope An implementation of VariableScope.
      * @param values The values to handle. i.e. mapOf(doc:add:/firstname to John)
      */
-    fun handleValues(processInstanceId: ProcessInstanceId, variableScope: VariableScope, values: Map<String, Any>)
+    fun handleValues(processInstanceId: String, variableScope: VariableScope, values: Map<String, Any>)
 }
