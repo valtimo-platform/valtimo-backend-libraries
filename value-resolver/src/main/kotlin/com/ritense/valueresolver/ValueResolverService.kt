@@ -23,7 +23,10 @@ class ValueResolverService(
 ) {
     private val resolverFactoryMap: Map<String, ValueResolverFactory> = valueResolverFactories.groupBy { it.supportedPrefix() }
         .filter { (key, value) ->
-            if(value.size == 1) true else throw RuntimeException("Found more than 1 resolver for prefix '$key': ${value.joinToString { resolver -> resolver.javaClass.simpleName }}")
+            if(value.size != 1) {
+                throw RuntimeException("Expected 1 resolver for prefix '$key'. Found: ${value.joinToString { resolver -> resolver.javaClass.simpleName }}")
+            }
+            true
         }.map { (key, value) ->
             key to value.first()
         }.toMap()

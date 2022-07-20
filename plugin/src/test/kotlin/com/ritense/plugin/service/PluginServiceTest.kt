@@ -38,6 +38,7 @@ import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valueresolver.ValueResolverService
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -50,6 +51,7 @@ internal class PluginServiceTest {
     lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
     lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
     lateinit var pluginFactory: PluginFactory<Any>
+    lateinit var valueResolverService: ValueResolverService
     lateinit var pluginService: PluginService
 
     @BeforeEach
@@ -59,13 +61,16 @@ internal class PluginServiceTest {
         pluginActionDefinitionRepository = mock()
         pluginProcessLinkRepository = mock()
         pluginFactory = mock()
+        valueResolverService = mock()
         pluginService = PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
             pluginProcessLinkRepository,
             listOf(pluginFactory),
-            Mapper.INSTANCE.get()
+            Mapper.INSTANCE.get(),
+            valueResolverService
+
         )
     }
 

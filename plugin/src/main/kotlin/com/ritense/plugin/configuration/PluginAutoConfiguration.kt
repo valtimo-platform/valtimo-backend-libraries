@@ -29,6 +29,7 @@ import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.PluginDefinitionResource
+import com.ritense.valueresolver.ValueResolverService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
@@ -83,14 +84,16 @@ class PluginAutoConfiguration {
         pluginActionDefinitionRepository: PluginActionDefinitionRepository,
         pluginProcessLinkRepository: PluginProcessLinkRepository,
         pluginFactories: List<PluginFactory<*>>,
-        objectMapper: ObjectMapper
+        objectMapper: ObjectMapper,
+        valueResolverService: ValueResolverService
     ): PluginService {
         return PluginService(pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
             pluginProcessLinkRepository,
             pluginFactories,
-            objectMapper
+            objectMapper,
+            valueResolverService
         )
     }
 

@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.service
 
+import com.nhaarman.mockitokotlin2.mock
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -66,7 +67,7 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             pluginActionDefinitionKey = "other-test-action",
             actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "test123"}""")
         )
-        pluginService.invoke(String(), processLink)
+        pluginService.invoke(mock(), processLink)
     }
 
     @Test
@@ -82,7 +83,7 @@ internal class PluginServiceIT: BaseIntegrationTest() {
 
         assertFailsWith<InvocationTargetException>(
             block = {
-                pluginService.invoke(String(), processLink)
+                pluginService.invoke(mock(), processLink)
             }
         )
     }

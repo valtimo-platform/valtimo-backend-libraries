@@ -43,7 +43,7 @@ internal class ValueResolverFactoryServiceTest {
             )
         }
 
-        assertThat(exception.message).startsWith("Found more than 1 resolver for prefix 'pv'")
+        assertThat(exception.message).startsWith("Expected 1 resolver for prefix 'pv'")
     }
 
     @Test
