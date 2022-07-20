@@ -18,7 +18,6 @@ package com.ritense.processdocument.domain.impl.delegate;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.domain.delegate.DocumentVariableDelegate;
@@ -29,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collector;
 
 public class DocumentVariableDelegateImpl implements DocumentVariableDelegate {
 
