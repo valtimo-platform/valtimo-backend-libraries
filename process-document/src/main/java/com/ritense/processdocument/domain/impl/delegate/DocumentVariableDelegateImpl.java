@@ -24,6 +24,9 @@ import com.ritense.processdocument.domain.delegate.DocumentVariableDelegate;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class DocumentVariableDelegateImpl implements DocumentVariableDelegate {
@@ -53,6 +56,10 @@ public class DocumentVariableDelegateImpl implements DocumentVariableDelegate {
                 return jsonNode.asDouble();
             case BOOLEAN:
                 return jsonNode.asBoolean();
+            case ARRAY:
+                List<Object> collection = new ArrayList<>();
+                jsonNode.elements().forEachRemaining(collection::add);
+            return collection;
             default:
                 throw new IllegalStateException("JsonNode of type \"" + jsonNode.getNodeType() + "\" cannot be converted to a value");
         }
