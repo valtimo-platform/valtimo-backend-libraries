@@ -28,6 +28,9 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,6 +90,15 @@ public class DocumentVariableDelegateImplTest extends BaseTest {
     }
 
     @Test
+    public void findCollectionByJsonPointer() {
+        Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
+        when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
+
+        List<?> value = (List<?>) documentVariableDelegate.findValueByJsonPointer("/cars", delegateExecutionFake);
+        assertEquals(value.size(), 2);
+    }
+
+    @Test
     public void incorrectPathShouldNotFindValue() {
         Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
         when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
@@ -99,9 +111,14 @@ public class DocumentVariableDelegateImplTest extends BaseTest {
     private Optional<JsonSchemaDocument> documentOptional() {
         return JsonSchemaDocument.create(
             definition,
-            new JsonDocumentContent("{\"applicant\": {\"street\": \"" + NAAM_VAN_DE_STRAAT + "\"," +
-                "\"number\": " + HOUSE_NUMBER + "," +
-                "\"prettyHouse\": " + NO + "} }"
+            new JsonDocumentContent("{\"applicant\": " +
+                "{\"street\": \"" + NAAM_VAN_DE_STRAAT + "\"," +
+                    "\"number\": " + HOUSE_NUMBER + "," +
+                    "\"prettyHouse\": " + NO + "}," +
+                "\"cars\":[ \n" +
+                    "{ \"mark\":\"volvo\", \"year\": 1991 }," +
+                    "{ \"mark\":\"audi\", \"year\": 2016 }" +
+                    "]}"
             ),
             "USERNAME",
             documentSequenceGeneratorService,
