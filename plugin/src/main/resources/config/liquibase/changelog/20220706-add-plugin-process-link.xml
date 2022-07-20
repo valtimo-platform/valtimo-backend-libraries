@@ -45,6 +45,9 @@
     </changeSet>
 
     <changeSet id="3" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <addForeignKeyConstraint baseTableName="plugin_process_link"
                                  baseColumnNames="plugin_action_definition_key"
                                  constraintName="fk_process_link_action_definition_key"
