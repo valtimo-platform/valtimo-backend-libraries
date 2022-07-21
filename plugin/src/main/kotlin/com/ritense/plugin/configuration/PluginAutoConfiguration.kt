@@ -54,12 +54,14 @@ class PluginAutoConfiguration {
     fun pluginDeploymentListener(
         pluginDefinitionResolver: PluginDefinitionResolver,
         pluginDefinitionRepository: PluginDefinitionRepository,
+        pluginPropertyRepository: PluginPropertyRepository,
         pluginActionDefinitionRepository: PluginActionDefinitionRepository,
         pluginActionPropertyDefinitionRepository: PluginActionPropertyDefinitionRepository
     ): PluginDeploymentListener {
         return PluginDeploymentListener(
             pluginDefinitionResolver,
             pluginDefinitionRepository,
+            pluginPropertyRepository,
             pluginActionDefinitionRepository,
             pluginActionPropertyDefinitionRepository
         )
