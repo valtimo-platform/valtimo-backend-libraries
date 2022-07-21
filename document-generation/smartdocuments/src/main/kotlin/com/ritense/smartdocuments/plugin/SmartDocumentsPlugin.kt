@@ -18,36 +18,32 @@ package com.ritense.smartdocuments.plugin
 import com.fasterxml.jackson.core.JsonPointer
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.Document.Id
-import com.ritense.document.domain.DocumentDefinition
-import com.ritense.document.domain.impl.JsonSchemaRelatedFile
-import com.ritense.document.service.DocumentService
-import com.ritense.documentgeneration.domain.GeneratedDocument
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.resource.service.ResourceService
-import com.ritense.resource.service.request.ByteArrayMultipartFile
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
-import com.ritense.smartdocuments.domain.GeneratedSmartDocument
+import com.ritense.smartdocuments.domain.GeneratedSmartDocumentStream
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.json.Mapper
-import com.ritense.valtimo.contract.resource.Resource
 import com.ritense.valtimo.contract.utils.RequestHelper
-import com.ritense.valtimo.contract.utils.SecurityUtils
 import org.apache.commons.io.FilenameUtils
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.springframework.context.ApplicationEventPublisher
+import java.nio.file.Files
+import java.nio.file.Path
 import java.time.LocalDateTime
 import java.util.Base64
 import java.util.UUID
+import kotlin.io.path.outputStream
+import kotlin.io.path.pathString
 
 @Plugin(
     key = "smartdocuments",
@@ -55,8 +51,6 @@ import java.util.UUID
     description = "Generate documents with smart templates."
 )
 class SmartDocumentsPlugin(
-    private val documentService: DocumentService,
-    private val resourceService: ResourceService,
     private val processDocumentService: ProcessDocumentService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val smartDocumentsClient: SmartDocumentsClient,
@@ -77,54 +71,30 @@ class SmartDocumentsPlugin(
         description = "Generates a document of a given type based on a template with data from a case.",
         activityTypes = [ActivityType.SERVICE_TASK]
     )
-    fun generate(execution: DelegateExecution,
-                 @PluginActionProperty templateGroup: String,
-                 @PluginActionProperty templateName: String,
-                 @PluginActionProperty format: DocumentFormatOption,
-                 @PluginActionProperty templatePlaceholders: Map<String, String>) {
+    fun generate(
+        execution: DelegateExecution,
+        @PluginActionProperty templateGroup: String,
+        @PluginActionProperty templateName: String,
+        @PluginActionProperty format: DocumentFormatOption,
+        @PluginActionProperty templatePlaceholders: Map<String, String>,
+        @PluginActionProperty resultingDocumentLocation: String,
+    ) {
         val document = processDocumentService.getDocument(execution)
         val templateData = getTemplateData(templatePlaceholders, execution, document)
-        generateAndStoreDocument(
-            document,
-            templateGroup,
-            templateName,
-            templateData,
-            format
-        )
-    }
-
-    private fun generateAndStoreDocument(
-        document: Document,
-        templateGroup: String,
-        templateName: String,
-        templateData: Map<String, Any>,
-        format: DocumentFormatOption
-    ) {
         val generatedDocument = generateDocument(templateGroup, templateName, templateData, format)
         publishDossierDocumentGeneratedEvent(document.id(), templateName)
-        val resource = storeGeneratedDocument(document.definitionId(), generatedDocument, format)
-        addRelatedFileToCase(document.id(), resource)
+        val tempFilePath = saveGeneratedDocument(generatedDocument)
+        execution.setVariable(resultingDocumentLocation, tempFilePath.pathString)
     }
 
-    private fun storeGeneratedDocument(
-        documentDefinitionId: DocumentDefinition.Id,
-        generatedDocument: GeneratedDocument,
-        format: DocumentFormatOption
-    ): Resource {
-        return resourceService.store(
-            documentDefinitionId.name(),
-            generatedDocument.name,
-            ByteArrayMultipartFile(
-                generatedDocument.asByteArray,
-                generatedDocument.name,
-                format.mediaType
-            )
-        )
-    }
-
-    private fun addRelatedFileToCase(documentId: Id, resource: Resource) {
-        val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin())
-        documentService.assignRelatedFile(documentId, relatedFile)
+    private fun saveGeneratedDocument(
+        generatedDocument: GeneratedSmartDocumentStream,
+    ): Path {
+        val tempFile = Files.createTempFile("tempSmartDocument", ".${generatedDocument.extension}")
+        tempFile.outputStream().use { tempFileOut ->
+            generatedDocument.data.use { documentData -> tempFileOut.write(documentData.readBytes()) }
+        }
+        return tempFile.toAbsolutePath()
     }
 
     private fun publishDossierDocumentGeneratedEvent(
@@ -148,7 +118,7 @@ class SmartDocumentsPlugin(
         templateName: String,
         templateData: Map<String, Any>,
         format: DocumentFormatOption
-    ): GeneratedDocument {
+    ): GeneratedSmartDocumentStream {
         val request = SmartDocumentsRequest(
             templateData,
             SmartDocumentsRequest.SmartDocument(
@@ -159,13 +129,12 @@ class SmartDocumentsPlugin(
             )
         )
         smartDocumentsClient.setProperties(SmartDocumentsConnectorProperties(url, username, password))
-        val filesResponse = smartDocumentsClient.generateDocument(request)
-        val fileResponse = filesResponse.file.first { it.outputFormat.equals(format.toString(), ignoreCase = true) }
-        return GeneratedSmartDocument(
-            fileResponse.filename,
-            FilenameUtils.getExtension(fileResponse.filename),
+        val fileStreamResponse = smartDocumentsClient.generateDocumentStream(request, format)
+        return GeneratedSmartDocumentStream(
+            fileStreamResponse.filename,
+            FilenameUtils.getExtension(fileStreamResponse.filename),
             format.mediaType.toString(),
-            Base64.getDecoder().decode(fileResponse.document.data),
+            Base64.getDecoder().wrap(fileStreamResponse.documentData),
         )
     }
 

@@ -182,7 +182,7 @@ class PluginService(
 
     private fun getTypedProperty(name: String, type: Class<*>?, actionProperties: JsonNode): Any? {
         val value = actionProperties.get(name)
-        if (value.isNull) {
+        if (value == null || value.isNull) {
             return null
         }
         return objectMapper.treeToValue(value, type)
