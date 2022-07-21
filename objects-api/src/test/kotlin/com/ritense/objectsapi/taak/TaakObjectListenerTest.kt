@@ -84,6 +84,7 @@ internal class TaakObjectListenerTest {
                         kvk = "kvk",
                         verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
                         formulierId = "some-form",
+                        formulierUrl = "some-url",
                         status = TaakObjectStatus.ingediend
                     )
                 )
@@ -225,6 +226,7 @@ internal class TaakObjectListenerTest {
                         kvk = "kvk",
                         verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
                         formulierId = "some-form",
+                        formulierUrl = "some-url",
                         status = TaakObjectStatus.ingediend
                     )
                 )

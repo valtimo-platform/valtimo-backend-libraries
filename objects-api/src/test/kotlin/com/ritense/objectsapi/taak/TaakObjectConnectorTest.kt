@@ -104,6 +104,38 @@ internal class TaakObjectConnectorTest {
     }
 
     @Test
+    fun `should create task object with formulier_url property`() {
+        val objectsApiConnector = mock<ObjectsApiConnector>()
+        whenever(bsnProvider.getBurgerServiceNummer(any())).thenReturn("my-bsn")
+        whenever(connectorService.loadByName(any())).thenReturn(objectsApiConnector)
+        whenever(objectsApiConnector.getProperties()).thenReturn(ObjectsApiProperties())
+        doReturn(mock<com.ritense.objectsapi.domain.Object>()).whenever(objectsApiConnector).createObject(any())
+        val task = mockDelegateTask("my-task-name", "taak:my-var", "pv:my-process-var")
+
+        whenever(
+            valueResolverService.resolveValues(
+                eq(CamundaProcessInstanceId(task.processInstanceId)),
+                eq(task),
+                eq(listOf("pv:my-process-var"))
+            )
+        ).thenReturn(mapOf("pv:my-process-var" to "somevalue"))
+
+        taakObjectConnector.createTaskWithFormUrl(task, "http://localhost:8000/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777")
+
+        val captor = argumentCaptor<CreateObjectRequest>()
+        verify(objectsApiConnector).createObject(captor.capture())
+        val capturedObjectRequest = captor.firstValue
+        Assertions.assertThat(capturedObjectRequest.record.data).containsAllEntriesOf(
+            mapOf(
+                "bsn" to "my-bsn",
+                "data" to mapOf("my-var" to "somevalue"),
+                "formulier_url" to "http://localhost:8000/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777",
+                "title" to "my-task-name"
+            )
+        )
+    }
+
+    @Test
     fun `should not use task-properties that are not marked with 'taak'`() {
         val objectsApiConnector = mock<ObjectsApiConnector>()
         whenever(bsnProvider.getBurgerServiceNummer(any())).thenReturn("my-bsn")
