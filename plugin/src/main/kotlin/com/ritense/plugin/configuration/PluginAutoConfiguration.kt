@@ -43,7 +43,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         PluginConfigurationRepository::class,
         PluginActionDefinitionRepository::class,
         PluginProcessLinkRepository::class,
-        PluginPropertyRepository::class
+        PluginPropertyRepository::class,
+        PluginActionPropertyDefinitionRepository::class,
     ]
 )
 @EntityScan(basePackages = ["com.ritense.plugin.domain"])
