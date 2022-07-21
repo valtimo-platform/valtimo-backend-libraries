@@ -28,6 +28,7 @@ import com.ritense.plugin.exception.PluginDefinitionNotDeployedException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.plugin.repository.PluginPropertyRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -37,6 +38,7 @@ internal class PluginDeploymentListenerTest {
 
     lateinit var pluginDefinitionResolver: PluginDefinitionResolver
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
+    lateinit var pluginPropertyRepository: PluginPropertyRepository
     lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
     lateinit var pluginActionPropertyDefinitionRepository: PluginActionPropertyDefinitionRepository
     lateinit var pluginDeploymentListener: PluginDeploymentListener
@@ -45,11 +47,13 @@ internal class PluginDeploymentListenerTest {
     fun beforeAll() {
         pluginDefinitionResolver = mock()
         pluginDefinitionRepository = mock()
+        pluginPropertyRepository = mock()
         pluginActionDefinitionRepository = mock()
         pluginActionPropertyDefinitionRepository = mock()
         pluginDeploymentListener = PluginDeploymentListener(
             pluginDefinitionResolver,
             pluginDefinitionRepository,
+            pluginPropertyRepository,
             pluginActionDefinitionRepository,
             pluginActionPropertyDefinitionRepository
         )

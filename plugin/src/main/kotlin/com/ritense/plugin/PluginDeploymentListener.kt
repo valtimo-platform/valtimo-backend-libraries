@@ -16,7 +16,6 @@
 
 package com.ritense.plugin
 
-import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -29,23 +28,30 @@ import com.ritense.plugin.exception.PluginDefinitionNotDeployedException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.plugin.repository.PluginPropertyRepository
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationStartedEvent
-import org.springframework.transaction.event.TransactionalEventListener
+import org.springframework.context.event.EventListener
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
+import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 
 class PluginDeploymentListener(
     private val pluginDefinitionResolver: PluginDefinitionResolver,
     private val pluginDefinitionRepository: PluginDefinitionRepository,
+    private val pluginPropertyRepository: PluginPropertyRepository,
     private val pluginActionDefinitionRepository: PluginActionDefinitionRepository,
     private val pluginActionPropertyDefinitionRepository: PluginActionPropertyDefinitionRepository
 ) {
 
-    @TransactionalEventListener(ApplicationStartedEvent::class)
+    @EventListener(ApplicationStartedEvent::class)
     fun deployPluginDefinitions() {
         logger.info { "Deploying plugins" }
+        pluginPropertyRepository.deleteAll()
+        pluginActionPropertyDefinitionRepository.deleteAll()
+        pluginActionDefinitionRepository.deleteAll()
+
         val classes = findPluginClasses()
 
         classes.forEach { (clazz, pluginAnnotation) ->
