@@ -39,6 +39,7 @@ dependencies {
     testImplementation "mysql:mysql-connector-java"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation 'org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.16.0'
 
     jar {
         enabled = true

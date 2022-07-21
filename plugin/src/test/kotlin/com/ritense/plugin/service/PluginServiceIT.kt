@@ -16,9 +16,14 @@
 
 package com.ritense.plugin.service
 
+import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.BaseIntegrationTest
+import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.TestPlugin
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
@@ -26,10 +31,11 @@ import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.valtimo.contract.json.Mapper
-import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.lang.reflect.InvocationTargetException
 import java.util.UUID
 import kotlin.test.assertFailsWith
+import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -45,6 +51,9 @@ internal class PluginServiceIT: BaseIntegrationTest() {
 
     @Autowired
     lateinit var pluginConfigurationRepository: PluginConfigurationRepository
+
+    @Autowired
+    lateinit var pluginFactory: PluginFactory<TestPlugin>
 
     lateinit var pluginConfiguration: PluginConfiguration
     @BeforeEach
@@ -70,10 +79,37 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "test123"}""")
         )
 
-        var execution: DelegateExecution = mock()
-        whenever(execution.processInstanceId).thenReturn("1")
+        val execution = DelegateExecutionFake.of()
+            .withProcessInstanceId(UUID.randomUUID().toString())
 
         pluginService.invoke(execution, processLink)
+    }
+
+    @Test
+    @Transactional
+    fun `should invoke an action with a placeholder value on the plugin`() {
+        val processLink = PluginProcessLink(
+            PluginProcessLinkId.newId(),
+            processDefinitionId = UUID.randomUUID().toString(),
+            activityId = "test",
+            pluginConfigurationId = pluginConfiguration.id,
+            pluginActionDefinitionKey = "other-test-action",
+            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "pv:placeholder"}""")
+        )
+
+        val testPlugin = spy(TestPlugin("someString"))
+        whenever(pluginFactory.create(pluginConfiguration)).thenReturn(testPlugin)
+
+        val execution = DelegateExecutionFake.of()
+            .withProcessInstanceId(UUID.randomUUID().toString())
+            .withVariable("placeholder", "1234")
+
+        pluginService.invoke(execution, processLink)
+
+        val argumentCaptor = argumentCaptor<String>()
+        verify(testPlugin).testAction(argumentCaptor.capture())
+
+        assertEquals("1234", argumentCaptor.firstValue)
     }
 
     @Test

@@ -16,6 +16,9 @@
 
 package com.ritense.plugin
 
+import com.nhaarman.mockitokotlin2.spy
+import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.extension.mockito.service.RuntimeServiceFluentMock
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
@@ -32,7 +35,12 @@ class TestApplication {
     class TestConfig {
         @Bean
         fun testPlugin(): PluginFactory<TestPlugin> {
-            return TestPluginFactory("someString")
+            return spy(TestPluginFactory("someString"))
+        }
+
+        @Bean
+        fun runtimeService():RuntimeService {
+            return RuntimeServiceFluentMock().runtimeService
         }
     }
 }

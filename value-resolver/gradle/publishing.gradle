@@ -19,9 +19,8 @@ pluginManager.withPlugin('maven-publish') {
         publications {
             maven(MavenPublication) {
                 pom {
-                    name = 'Objects-api module'
-                    description = 'The objects-api module exposes a wrapper around the Common Ground Objects API and' +
-                        ' features an implementation of the connector module interface'
+                    name = 'Value resolver module'
+                    description = 'The value-resolver module provides functionality to resolve values using placeholders'
                     developers {
                         developer {
                             id = "team-valtimo"
