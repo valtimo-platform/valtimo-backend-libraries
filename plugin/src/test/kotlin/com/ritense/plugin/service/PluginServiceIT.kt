@@ -17,6 +17,7 @@
 package com.ritense.plugin.service
 
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -25,6 +26,7 @@ import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.valtimo.contract.json.Mapper
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.lang.reflect.InvocationTargetException
 import java.util.UUID
 import kotlin.test.assertFailsWith
@@ -67,7 +69,11 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             pluginActionDefinitionKey = "other-test-action",
             actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "test123"}""")
         )
-        pluginService.invoke(mock(), processLink)
+
+        var execution: DelegateExecution = mock()
+        whenever(execution.processInstanceId).thenReturn("1")
+
+        pluginService.invoke(execution, processLink)
     }
 
     @Test

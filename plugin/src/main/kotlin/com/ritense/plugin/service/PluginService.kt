@@ -156,7 +156,7 @@ class PluginService(
         pluginProcessLinkRepository.save(link)
     }
 
-    fun invoke(execution:DelegateExecution, processLink: PluginProcessLink) {
+    fun invoke(execution: DelegateExecution, processLink: PluginProcessLink) {
         val configuration = pluginConfigurationRepository.getById(processLink.pluginConfigurationId)
         val instance = createPluginInstance(configuration)
 
@@ -169,15 +169,14 @@ class PluginService(
 
         val actionParamValueMap = resolveActionParamValues(execution, method, actionProperties)
 
-        return method.parameters.map { param -> {
+        return method.parameters.map { param ->
             actionParamValueMap[param]
-                ?:{
+                ?:
                     if (param.type.isInstance(execution)) {
                         execution
                     } else {
                         null
                     }
-                }}
 
         }.toTypedArray()
     }
@@ -205,21 +204,15 @@ class PluginService(
             }.run {
                 // Resolve all string values, which might or might not be placeholders.
                 valueResolverService.resolveValues(execution.processInstanceId, execution, values.toList())
-            }.mapValues {
-                // We need a JsonNode so Jackson can do the conversion later on
-                objectMapper.valueToTree<JsonNode>(it.value)
             }
 
-        return paramValues.map { (param, value) ->
-            param to {
-                val node = if (value.isTextual) {
-                    placeHolderValueMap.getOrDefault(value.textValue(), value)
-                } else { value }
-
-                // Let Jackson do the type conversion
-                objectMapper.treeToValue(node, param.type)
-            }
-        }.toMap()
+        return paramValues.mapValues { (param, value) ->
+                if (value.isTextual) {
+                    placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
+                } else {
+                    objectMapper.treeToValue(value, param.type)
+                }
+        }
     }
 
     private fun createPluginInstance(configuration: PluginConfiguration): Any {
