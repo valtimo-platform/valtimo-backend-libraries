@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest.dto
+package com.ritense.plugin.web.rest.result
 
 class PluginActionDefinitionDto(
     val key: String,

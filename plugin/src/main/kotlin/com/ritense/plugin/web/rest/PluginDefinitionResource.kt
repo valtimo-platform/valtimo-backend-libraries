@@ -19,7 +19,7 @@ package com.ritense.plugin.web.rest
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.dto.PluginActionDefinitionDto
+import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
