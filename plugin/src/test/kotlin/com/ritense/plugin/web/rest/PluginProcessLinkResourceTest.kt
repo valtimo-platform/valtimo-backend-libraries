@@ -23,9 +23,9 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkCreateDto
-import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkResultDto
-import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkUpdateDto
+import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
+import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
+import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
 import com.ritense.valtimo.contract.json.Mapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

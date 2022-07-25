@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest.dto.processlink
+package com.ritense.plugin.web.rest.request
 
 import com.fasterxml.jackson.databind.JsonNode
 import java.util.UUID

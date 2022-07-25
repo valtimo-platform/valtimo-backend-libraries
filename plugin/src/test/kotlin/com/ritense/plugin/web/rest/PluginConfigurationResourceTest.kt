@@ -26,8 +26,8 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.dto.CreatePluginConfiguration
-import com.ritense.plugin.web.rest.dto.UpdatePluginConfiguration
+import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
+import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
 import com.ritense.valtimo.contract.json.Mapper
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
@@ -45,19 +45,19 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 
-internal class PluginInstanceResourceTest {
+internal class PluginConfigurationResourceTest {
 
     lateinit var mockMvc: MockMvc
     lateinit var pluginService: PluginService
-    lateinit var pluginInstanceResource: PluginInstanceResource
+    lateinit var pluginConfigurationResource: PluginConfigurationResource
 
     @BeforeEach
     fun init() {
         pluginService = mock()
-        pluginInstanceResource = PluginInstanceResource(pluginService)
+        pluginConfigurationResource = PluginConfigurationResource(pluginService)
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(pluginInstanceResource)
+            .standaloneSetup(pluginConfigurationResource)
             .build()
     }
 
@@ -125,7 +125,7 @@ internal class PluginInstanceResourceTest {
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties, plugin)
         whenever(pluginService.createPluginConfiguration(any(), any(), any())).thenReturn(pluginConfiguration)
 
-        val pluginConfiguratieDto = CreatePluginConfiguration(
+        val pluginConfiguratieDto = CreatePluginConfigurationDto(
             "title",
             properties,
             "key"
@@ -172,7 +172,7 @@ internal class PluginInstanceResourceTest {
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.existingId(pluginConfigurationId), "title", properties, plugin)
         whenever(pluginService.updatePluginConfiguration(any(), any(), any())).thenReturn(pluginConfiguration)
 
-        val pluginConfiguratieDto = UpdatePluginConfiguration(
+        val pluginConfiguratieDto = UpdatePluginConfigurationDto(
             "title",
             properties
         )

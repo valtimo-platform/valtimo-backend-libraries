@@ -191,7 +191,7 @@ internal class PluginServiceTest {
         verify(pluginActionDefinitionRepository).findByIdPluginDefinitionKey("test")
 
         assertEquals(1, actions.size)
-        assertEquals("some-key", actions[0].key)
+        assertEquals("some-key", actions[0].id.key)
         assertEquals("title", actions[0].title)
         assertEquals("description", actions[0].description)
     }
@@ -219,7 +219,7 @@ internal class PluginServiceTest {
             ActivityType.SERVICE_TASK)
 
         assertEquals(1, actions.size)
-        assertEquals("some-key", actions[0].key)
+        assertEquals("some-key", actions[0].id.key)
         assertEquals("title", actions[0].title)
         assertEquals("description", actions[0].description)
     }
