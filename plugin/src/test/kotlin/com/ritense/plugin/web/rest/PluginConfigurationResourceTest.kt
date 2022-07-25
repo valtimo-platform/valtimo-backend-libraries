@@ -28,6 +28,7 @@ import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
 import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
+import com.ritense.plugin.web.rest.result.PluginConfigurationDto
 import com.ritense.valtimo.contract.json.Mapper
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
@@ -123,6 +124,7 @@ internal class PluginConfigurationResourceTest {
         val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
         val plugin = PluginDefinition("key", "title", "description", "className")
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties, plugin)
+
         whenever(pluginService.createPluginConfiguration(any(), any(), any())).thenReturn(pluginConfiguration)
 
         val pluginConfiguratieDto = CreatePluginConfigurationDto(
