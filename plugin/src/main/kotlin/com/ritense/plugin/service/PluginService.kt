@@ -80,7 +80,7 @@ class PluginService(
         val pluginDefinition = pluginConfigurationRepository.getById(pluginConfigurationId)
 
         pluginDefinition.title = title
-        pluginDefinition.properties = properties
+        pluginDefinition.updateProperties(properties)
 
         return pluginConfigurationRepository.save(pluginDefinition)
     }

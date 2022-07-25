@@ -17,6 +17,8 @@
 package com.ritense.plugin.domain
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.plugin.service.PluginConfigurationEntityListener
 import com.ritense.valtimo.contract.json.Mapper
 import org.hibernate.annotations.Type
@@ -41,7 +43,7 @@ class PluginConfiguration(
     var title: String,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "properties", columnDefinition = "JSON")
-    var properties: JsonNode? = null,
+    val properties: JsonNode? = null,
     @JoinColumn(name = "plugin_definition_key", updatable = false, nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
     val pluginDefinition: PluginDefinition,
@@ -52,5 +54,21 @@ class PluginConfiguration(
         } else {
             Mapper.INSTANCE.get().treeToValue(properties, T::class.java)
         }
+    }
+
+    fun updateProperties(propertiesForUpdate: JsonNode) {
+        if (properties is ObjectNode) {
+            pluginDefinition.pluginProperties.forEach {
+                val updateValue = propertiesForUpdate.get(it.fieldName)
+                if (!it.secret || !nodeIsEmpty(updateValue)) {
+                    properties.replace(it.fieldName, updateValue)
+                }
+            }
+        }
+    }
+
+    private fun nodeIsEmpty(node: JsonNode?): Boolean {
+        return node == null || node.isNull ||
+            (node is TextNode && node.textValue() == "")
     }
 }
