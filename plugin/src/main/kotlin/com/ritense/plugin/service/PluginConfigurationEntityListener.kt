@@ -84,8 +84,10 @@ class PluginConfigurationEntityListener(
     private fun replaceProperty(properties: JsonNode, propertyName: String,  transformFun: (JsonNode) -> JsonNode) {
         if (properties is ObjectNode) {
             val originalValue = properties.get(propertyName)
-            val newValue = transformFun(originalValue)
-            properties.replace(propertyName, newValue)
+            if (originalValue != null && !originalValue.isNull) {
+                val newValue = transformFun(originalValue)
+                properties.replace(propertyName, newValue)
+            }
         }
     }
 
