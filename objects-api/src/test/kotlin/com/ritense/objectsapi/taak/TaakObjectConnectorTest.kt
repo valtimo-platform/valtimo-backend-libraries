@@ -114,7 +114,7 @@ internal class TaakObjectConnectorTest {
 
         whenever(
             valueResolverService.resolveValues(
-                eq(CamundaProcessInstanceId(task.processInstanceId)),
+                eq(task.processInstanceId),
                 eq(task),
                 eq(listOf("pv:my-process-var"))
             )
