@@ -93,6 +93,26 @@ internal class ValueResolverFactoryServiceTest {
     }
 
     @Test
+    @Throws(RuntimeException::class)
+    fun `Should throw exception when no resolvers are configured`() {
+        val resolverService = ValueResolverService(listOf())
+        val exception = assertThrows<RuntimeException> {
+            resolverService.resolveValues(
+                processInstanceId = UUID.randomUUID().toString(),
+                variableScope = DelegateTaskFake()
+                    .withVariable("firstName", "John")
+                    .withVariable("lastName", "Doe")
+                    .withVariable("active", true),
+                listOf(
+                    "xyz:firstName"
+                )
+            )
+        }
+
+        assertThat(exception.message).startsWith("No resolver factory found for value prefix xyz")
+    }
+
+    @Test
     fun `Should handle list of values`() {
         val processInstanceId = UUID.randomUUID().toString()
         val variableScope = DelegateTaskFake()
