@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi.taak.resolve
+package com.ritense.processdocument.resolver
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentService
-import com.ritense.processdocument.domain.ProcessInstanceId
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
+import com.ritense.valueresolver.ValueResolverFactory
 import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.function.Function
 
@@ -43,10 +44,10 @@ class DocumentValueResolverFactory(
     }
 
     override fun createResolver(
-        processInstanceId: ProcessInstanceId,
+        processInstanceId: String,
         variableScope: VariableScope
     ): Function<String, Any?> {
-        val document = processDocumentService.getDocument(processInstanceId, variableScope)
+        val document = processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)
 
         return Function { requestedValue ->
             val node = document.content().getValueBy(JsonPointer.valueOf(requestedValue)).orElse(null)
@@ -61,11 +62,11 @@ class DocumentValueResolverFactory(
     }
 
     override fun handleValues(
-        processInstanceId: ProcessInstanceId,
+        processInstanceId: String,
         variableScope: VariableScope,
         values: Map<String, Any>
     ) {
-        val document = processDocumentService.getDocument(processInstanceId, variableScope)
+        val document = processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)
         val documentContent = document.content().asJson()
         val jsonPatchBuilder = JsonPatchBuilder()
 

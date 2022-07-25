@@ -30,6 +30,7 @@ import com.ritense.processdocument.domain.listener.StartEventFromCallActivityLis
 import com.ritense.processdocument.domain.listener.StartEventListener;
 import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
+import com.ritense.processdocument.resolver.DocumentValueResolverFactory;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentDeploymentService;
 import com.ritense.processdocument.service.ProcessDocumentService;
@@ -40,6 +41,7 @@ import com.ritense.processdocument.web.rest.ProcessDocumentResource;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
+import com.ritense.valueresolver.ValueResolverFactory;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -169,4 +171,11 @@ public class ProcessDocumentAutoConfiguration {
         );
     }
 
+    @Bean
+    @ConditionalOnMissingBean(DocumentValueResolverFactory.class)
+    public ValueResolverFactory documentValueResolver(
+        ProcessDocumentService processDocumentService,
+        DocumentService documentService)  {
+        return new DocumentValueResolverFactory(processDocumentService, documentService);
+    }
 }

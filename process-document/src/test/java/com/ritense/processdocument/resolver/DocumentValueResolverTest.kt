@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi.taak.resolve
+package com.ritense.processdocument.resolver
 
 import com.fasterxml.jackson.databind.node.BooleanNode
 import com.fasterxml.jackson.databind.node.IntNode
@@ -31,11 +31,11 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 internal class DocumentValueResolverTest {
 
@@ -44,7 +44,7 @@ internal class DocumentValueResolverTest {
 
     private lateinit var documentValueResolver: DocumentValueResolverFactory
 
-    private lateinit var processInstanceId: CamundaProcessInstanceId
+    private lateinit var processInstanceId: String
     private lateinit var variableScope: DelegateTaskFake
     private lateinit var document: Document
 
@@ -54,10 +54,10 @@ internal class DocumentValueResolverTest {
         documentService = mock()
         documentValueResolver = DocumentValueResolverFactory(processDocumentService, documentService)
 
-        processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        processInstanceId = UUID.randomUUID().toString()
         variableScope = DelegateTaskFake()
         document = mock()
-        whenever(processDocumentService.getDocument(processInstanceId, variableScope)).thenReturn(document)
+        whenever(processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)).thenReturn(document)
     }
 
     @Test
