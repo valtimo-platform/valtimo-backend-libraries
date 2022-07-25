@@ -86,6 +86,7 @@ internal class PluginFactoryTest {
                 ),
                 "property1",
                 true,
+                false,
                 "property1",
                 String::class.java.name
             )
@@ -99,6 +100,7 @@ internal class PluginFactoryTest {
                 ),
                 "property2",
                 true,
+                false,
                 "property2",
                 Boolean::class.java.name
             )
@@ -112,6 +114,7 @@ internal class PluginFactoryTest {
                 ),
                 "property3",
                 true,
+                false,
                 "property3",
                 Number::class.java.name
             )

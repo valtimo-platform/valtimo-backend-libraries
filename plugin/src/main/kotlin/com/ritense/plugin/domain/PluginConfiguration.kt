@@ -17,12 +17,13 @@
 package com.ritense.plugin.domain
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.plugin.service.PluginConfigurationEntityListener
 import com.ritense.valtimo.contract.json.Mapper
 import org.hibernate.annotations.Type
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
+import javax.persistence.EntityListeners
 import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
@@ -30,6 +31,7 @@ import javax.persistence.ManyToOne
 import javax.persistence.Table
 
 @Entity
+@EntityListeners(PluginConfigurationEntityListener::class)
 @Table(name = "plugin_configuration")
 class PluginConfiguration(
     @Id
@@ -41,7 +43,7 @@ class PluginConfiguration(
     @Column(name = "properties", columnDefinition = "JSON")
     var properties: JsonNode? = null,
     @JoinColumn(name = "plugin_definition_key", updatable = false, nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     val pluginDefinition: PluginDefinition,
 ) {
     inline fun <reified T> getProperties(): T {

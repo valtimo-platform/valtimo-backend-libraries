@@ -65,6 +65,7 @@ data class PluginDefinition (
                 ),
                 propertyAnnotation.title,
                 propertyAnnotation.required,
+                propertyAnnotation.secret,
                 field.name,
                 field.type.typeName
             )

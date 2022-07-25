@@ -242,6 +242,7 @@ internal class PluginServiceTest {
                 PluginPropertyId("property1", pluginDefinition),
                 "property1",
                 true,
+                false,
                 "name",
                 String::class.java.name
             )

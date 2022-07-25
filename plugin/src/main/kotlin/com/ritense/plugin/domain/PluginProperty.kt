@@ -32,6 +32,8 @@ class PluginProperty(
     val title: String,
     @Column(name = "required")
     val required: Boolean,
+    @Column(name = "secret")
+    val secret: Boolean,
     @Column(name = "field_name")
     val fieldName: String,
     @Column(name = "field_type")

@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -24,13 +25,16 @@ import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.valtimo.contract.json.Mapper
-import java.lang.reflect.InvocationTargetException
-import java.util.UUID
-import kotlin.test.assertFailsWith
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.transaction.annotation.Transactional
+import java.lang.reflect.InvocationTargetException
+import java.util.UUID
+import javax.persistence.EntityManager
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 
 internal class PluginServiceIT: BaseIntegrationTest() {
@@ -44,6 +48,7 @@ internal class PluginServiceIT: BaseIntegrationTest() {
     lateinit var pluginConfigurationRepository: PluginConfigurationRepository
 
     lateinit var pluginConfiguration: PluginConfiguration
+
     @BeforeEach
     fun init() {
         val pluginDefinition = pluginDefinitionRepository.getById("test-plugin");
@@ -53,6 +58,30 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             null,
             pluginDefinition
         ))
+    }
+
+    @Test
+    @Transactional
+    fun `should be able to save configuration with encypted property and decrypt on load`() {
+        val input = """
+            {
+                "property1": "test123",
+                "property2": false,
+                "property3": 123
+            }
+        """.trimMargin()
+
+        val configuration = pluginService.createPluginConfiguration(
+            "title",
+            Mapper.INSTANCE.get().readTree(input),
+            "test-plugin"
+        )
+
+        // value should be decrypted when loading from database
+        val configurations = pluginService.getPluginConfigurations()
+        val configurationFromDatabase = configurations.filter { it.id.id == configuration.id.id }.first()
+
+        assertEquals("test123", configurationFromDatabase.properties!!.get("property1").textValue())
     }
 
     @Test
