@@ -75,9 +75,6 @@ class BaseSmartDocumentsIntegrationTest : BaseIntegrationTest() {
     @AfterEach
     internal fun tearDown() {
         server.shutdown()
-        pluginPropertyRepository.deleteAll()
-        pluginActionDefinitionRepository.deleteAll()
-        pluginDefinitionRepository.deleteAll()
     }
 
     fun startMockServer() {
