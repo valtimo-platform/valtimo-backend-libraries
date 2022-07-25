@@ -22,6 +22,7 @@ import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.domain.ActivityType
+import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -33,14 +34,13 @@ import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
-import com.ritense.plugin.web.rest.dto.PluginActionDefinitionDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkCreateDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkResultDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkUpdateDto
 import com.ritense.valtimo.contract.json.Mapper
+import mu.KotlinLogging
 import java.lang.reflect.Method
 import javax.validation.ValidationException
-import mu.KotlinLogging
 
 class PluginService(
     private val pluginDefinitionRepository: PluginDefinitionRepository,
@@ -94,19 +94,11 @@ class PluginService(
     fun getPluginDefinitionActions(
         pluginDefinitionKey: String,
         activityType: ActivityType?
-    ): List<PluginActionDefinitionDto> {
-        val actions = if (activityType == null)
+    ): List<PluginActionDefinition> {
+        return if (activityType == null)
             pluginActionDefinitionRepository.findByIdPluginDefinitionKey(pluginDefinitionKey)
         else
             pluginActionDefinitionRepository.findByIdPluginDefinitionKeyAndActivityTypes(pluginDefinitionKey, activityType)
-
-        return actions.map {
-            PluginActionDefinitionDto(
-                it.id.key,
-                it.title,
-                it.description
-            )
-        }
     }
 
     fun getProcessLinks(

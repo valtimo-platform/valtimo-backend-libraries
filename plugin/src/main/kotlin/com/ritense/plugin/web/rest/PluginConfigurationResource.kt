@@ -19,8 +19,8 @@ package com.ritense.plugin.web.rest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.dto.CreatePluginConfiguration
-import com.ritense.plugin.web.rest.dto.UpdatePluginConfiguration
+import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
+import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -46,7 +46,7 @@ class PluginConfigurationResource(
 
     @PostMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun createPluginConfiguration(
-        @RequestBody createPluginConfiguration: CreatePluginConfiguration
+        @RequestBody createPluginConfiguration: CreatePluginConfigurationDto
     ): ResponseEntity<PluginConfiguration> {
         return ResponseEntity.ok(
             pluginService.createPluginConfiguration(
@@ -60,7 +60,7 @@ class PluginConfigurationResource(
     @PutMapping(value = ["/configuration/{pluginConfigurationId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun updatePluginConfiguration(
         @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID,
-        @RequestBody updatePluginConfiguration: UpdatePluginConfiguration
+        @RequestBody updatePluginConfiguration: UpdatePluginConfigurationDto
     ): ResponseEntity<PluginConfiguration> {
         return ResponseEntity.ok(
             pluginService.updatePluginConfiguration(

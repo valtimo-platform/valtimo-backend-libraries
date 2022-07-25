@@ -82,15 +82,19 @@ internal class PluginDefinitionResourceTest {
     @Test
     fun `should get plugin action definitions`() {
         val actions = listOf(
-            PluginActionDefinitionDto(
-                "some-key",
+            PluginActionDefinition(
+                PluginActionDefinitionId("some-key", mock()),
                 "title",
-                "description"
+                "description",
+                "methodName",
+                mock()
             ),
-            PluginActionDefinitionDto(
-                "some-other-key",
+            PluginActionDefinition(
+                PluginActionDefinitionId("some-other-key", mock()),
                 "other-title",
-                "other-description"
+                "other-description",
+                "methodName",
+                mock()
             )
         )
         whenever(pluginService.getPluginDefinitionActions("test", null)).thenReturn(actions)

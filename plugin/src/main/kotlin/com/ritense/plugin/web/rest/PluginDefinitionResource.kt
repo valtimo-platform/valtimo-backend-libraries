@@ -44,6 +44,14 @@ class PluginDefinitionResource(
         @PathVariable pluginDefinitionKey: String,
         @RequestParam("activityType") activityType: ActivityType?
     ): ResponseEntity<List<PluginActionDefinitionDto>> {
-        return ResponseEntity.ok(pluginService.getPluginDefinitionActions(pluginDefinitionKey, activityType))
+        return ResponseEntity.ok(
+            pluginService.getPluginDefinitionActions(pluginDefinitionKey, activityType).map {
+                PluginActionDefinitionDto(
+                    it.id.key,
+                    it.title,
+                    it.description
+                )
+            }
+        )
     }
 }
