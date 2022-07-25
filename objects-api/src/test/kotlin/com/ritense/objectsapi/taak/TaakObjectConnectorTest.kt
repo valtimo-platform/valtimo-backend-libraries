@@ -28,10 +28,10 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.objectsapi.domain.request.CreateObjectRequest
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.service.ObjectsApiProperties
-import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.openzaak.provider.KvkProvider
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.valueresolver.ValueResolverService
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
@@ -82,7 +82,7 @@ internal class TaakObjectConnectorTest {
 
         whenever(
             valueResolverService.resolveValues(
-                eq(CamundaProcessInstanceId(task.processInstanceId)),
+                eq(task.processInstanceId),
                 eq(task),
                 eq(listOf("pv:my-process-var"))
             )
@@ -114,7 +114,7 @@ internal class TaakObjectConnectorTest {
 
         whenever(
             valueResolverService.resolveValues(
-                eq(CamundaProcessInstanceId(task.processInstanceId)),
+                eq(task.processInstanceId),
                 eq(task),
                 eq(listOf("pv:my-process-var"))
             )

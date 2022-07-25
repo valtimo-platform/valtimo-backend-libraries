@@ -54,15 +54,15 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
     // Camunda
-    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter:7.14.0"
-    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:7.14.0"
+    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter:${camundaVersion}"
+    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${camundaVersion}"
 
     // Cockpit
-    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:7.14.0"
+    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:${camundaVersion}"
 
     // Camunda plugins
-    implementation "org.camunda.bpm:camunda-engine-plugin-spin:7.14.0"
-    implementation "org.camunda.bpm:camunda-engine-plugin-connect:7.14.0"
+    implementation "org.camunda.bpm:camunda-engine-plugin-spin:${camundaVersion}"
+    implementation "org.camunda.bpm:camunda-engine-plugin-connect:${camundaVersion}"
     api 'org.camunda.bpm.extension.reactor:camunda-bpm-reactor-spring-starter:2.1.2'
 
     // spring boot admin client

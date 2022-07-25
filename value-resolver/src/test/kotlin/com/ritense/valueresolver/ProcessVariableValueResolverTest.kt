@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi.taak.resolve
+package com.ritense.valueresolver
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.RuntimeService
@@ -36,7 +35,7 @@ internal class ProcessVariableValueResolverTest {
             .withVariable("firstName", "John")
             .withVariable(somePropertyName, true)
             .withVariable("lastName", "Doe")
-        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val processInstanceId = UUID.randomUUID().toString()
 
         val resolvedValue = processVariableValueResolver.createResolver(
             processInstanceId = processInstanceId,
@@ -54,7 +53,7 @@ internal class ProcessVariableValueResolverTest {
         val variableScope = DelegateTaskFake()
             .withVariable("firstName", "John")
             .withVariable("lastName", "Doe")
-        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val processInstanceId = UUID.randomUUID().toString()
 
         val resolvedValue = processVariableValueResolver.createResolver(
             processInstanceId = processInstanceId,
@@ -69,7 +68,7 @@ internal class ProcessVariableValueResolverTest {
     @Test
     fun `should handle value from process variables`() {
         val variableScope = DelegateTaskFake()
-        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val processInstanceId = UUID.randomUUID().toString()
 
         processVariableValueResolver.handleValues(
             processInstanceId, variableScope, mapOf("firstName" to "John")

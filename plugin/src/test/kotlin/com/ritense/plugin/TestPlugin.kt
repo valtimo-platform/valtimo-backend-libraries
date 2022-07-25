@@ -45,7 +45,6 @@ class TestPlugin(
     )
     fun testAction() {
         //do nothing
-        shouldNotBeDeployed()
     }
 
     @PluginAction(
@@ -56,7 +55,6 @@ class TestPlugin(
     )
     fun testAction(@PluginActionProperty someString: String) {
         //do nothing
-        shouldAlsoNotBeDeployed()
     }
 
     @PluginAction(

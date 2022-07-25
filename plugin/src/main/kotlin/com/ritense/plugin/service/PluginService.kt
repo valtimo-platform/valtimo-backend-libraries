@@ -22,7 +22,6 @@ import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.domain.ActivityType
-import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -34,12 +33,15 @@ import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.plugin.web.rest.dto.PluginActionDefinitionDto
 import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
 import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
 import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valueresolver.ValueResolverService
 import mu.KotlinLogging
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.lang.reflect.Method
+import java.lang.reflect.Parameter
 import javax.validation.ValidationException
 
 class PluginService(
@@ -48,7 +50,8 @@ class PluginService(
     private val pluginActionDefinitionRepository: PluginActionDefinitionRepository,
     private val pluginProcessLinkRepository: PluginProcessLinkRepository,
     private val pluginFactories: List<PluginFactory<*>>,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val valueResolverService: ValueResolverService
 ) {
 
     fun getPluginDefinitions(): List<PluginDefinition> {
@@ -96,11 +99,19 @@ class PluginService(
     fun getPluginDefinitionActions(
         pluginDefinitionKey: String,
         activityType: ActivityType?
-    ): List<PluginActionDefinition> {
-        return if (activityType == null)
+    ): List<PluginActionDefinitionDto> {
+        val actions = if (activityType == null)
             pluginActionDefinitionRepository.findByIdPluginDefinitionKey(pluginDefinitionKey)
         else
             pluginActionDefinitionRepository.findByIdPluginDefinitionKeyAndActivityTypes(pluginDefinitionKey, activityType)
+
+        return actions.map {
+            PluginActionDefinitionDto(
+                it.id.key,
+                it.title,
+                it.description
+            )
+        }
     }
 
     fun getProcessLinks(
@@ -147,39 +158,63 @@ class PluginService(
         pluginProcessLinkRepository.save(link)
     }
 
-    fun invoke(executionContext:Any, processLink: PluginProcessLink) {
+    fun invoke(execution: DelegateExecution, processLink: PluginProcessLink) {
         val configuration = pluginConfigurationRepository.getById(processLink.pluginConfigurationId)
         val instance = createPluginInstance(configuration)
 
         val method = getActionMethod(instance, processLink)
-        val methodArguments = resolveMethodArguments(method, executionContext, processLink.actionProperties)
+        val methodArguments = resolveMethodArguments(method, execution, processLink.actionProperties)
         method.invoke(instance, *methodArguments)
     }
 
-    private fun resolveMethodArguments(method: Method, executionContext: Any, actionProperties: JsonNode?): Array<Any?> {
+    private fun resolveMethodArguments(method: Method, execution: DelegateExecution, actionProperties: JsonNode?): Array<Any?> {
+
+        val actionParamValueMap = resolveActionParamValues(execution, method, actionProperties)
 
         return method.parameters.map { param ->
-            if (param.isAnnotationPresent(PluginActionProperty::class.java)) {
-                if (actionProperties == null) {
-                    null
-                } else {
-                    getTypedProperty(param.name, param.type, actionProperties)
-                }
-            } else if (param.type.isInstance(executionContext)) {
-                executionContext
-            } else {
-                // TODO: Implement some argument resolver using the given executionContext?
-                throw RuntimeException("Could not resolve parameter ${param.name}")
-            }
+            actionParamValueMap[param]
+                ?:
+                    if (param.type.isInstance(execution)) {
+                        execution
+                    } else {
+                        null
+                    }
+
         }.toTypedArray()
     }
 
-    private fun getTypedProperty(name: String, type: Class<*>?, actionProperties: JsonNode): Any? {
-        val value = actionProperties.get(name)
-        if (value.isNull) {
-            return null
+    private fun resolveActionParamValues(execution: DelegateExecution, method: Method, actionProperties: JsonNode?) : Map<Parameter, Any> {
+        if (actionProperties == null) {
+            return mapOf()
         }
-        return objectMapper.treeToValue(value, type)
+
+        val paramValues = method.parameters.filter { param ->
+            param.isAnnotationPresent(PluginActionProperty::class.java)
+        }.mapNotNull { param ->
+            param to actionProperties.get(param.name)
+        }.toMap()
+
+        // We want to process all placeholder values together to improve performance if external sources are needed.
+        val placeHolderValueMap = method.parameters.filter { param ->
+                param.isAnnotationPresent(PluginActionProperty::class.java)
+            }.mapNotNull { param ->
+                param to actionProperties.get(param.name)
+            }.toMap()
+            .filterValues { it.isTextual }
+            .mapValues {
+                it.value.textValue()
+            }.run {
+                // Resolve all string values, which might or might not be placeholders.
+                valueResolverService.resolveValues(execution.processInstanceId, execution, values.toList())
+            }
+
+        return paramValues.mapValues { (param, value) ->
+                if (value.isTextual) {
+                    placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
+                } else {
+                    objectMapper.treeToValue(value, param.type)
+                }
+        }
     }
 
     private fun createPluginInstance(configuration: PluginConfiguration): Any {
@@ -215,7 +250,7 @@ class PluginService(
             } else {
                 try {
                     val propertyClass = Class.forName(pluginProperty.fieldType)
-                    val property = Mapper.INSTANCE.get().treeToValue(propertyNode, propertyClass)
+                    val property = objectMapper.treeToValue(propertyNode, propertyClass)
                     assert(property != null)
                 } catch (e: Exception) {
                     errors.add(PluginPropertyParseException(pluginProperty.fieldName, pluginDefinition.title, e))

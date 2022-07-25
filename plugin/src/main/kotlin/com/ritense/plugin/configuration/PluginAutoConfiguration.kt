@@ -30,6 +30,7 @@ import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.EncryptionService
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.PluginDefinitionResource
+import com.ritense.valueresolver.ValueResolverService
 import org.hibernate.cfg.AvailableSettings
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
@@ -51,7 +52,8 @@ import javax.sql.DataSource
         PluginConfigurationRepository::class,
         PluginActionDefinitionRepository::class,
         PluginProcessLinkRepository::class,
-        PluginPropertyRepository::class
+        PluginPropertyRepository::class,
+        PluginActionPropertyDefinitionRepository::class,
     ]
 )
 @EntityScan(basePackages = ["com.ritense.plugin.domain"])
@@ -93,14 +95,16 @@ class PluginAutoConfiguration {
         pluginActionDefinitionRepository: PluginActionDefinitionRepository,
         pluginProcessLinkRepository: PluginProcessLinkRepository,
         pluginFactories: List<PluginFactory<*>>,
-        objectMapper: ObjectMapper
+        objectMapper: ObjectMapper,
+        valueResolverService: ValueResolverService
     ): PluginService {
         return PluginService(pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
             pluginProcessLinkRepository,
             pluginFactories,
-            objectMapper
+            objectMapper,
+            valueResolverService
         )
     }
 

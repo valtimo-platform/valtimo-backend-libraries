@@ -24,7 +24,6 @@ import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
-import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
@@ -33,6 +32,7 @@ import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.camunda.bpm.engine.task.Task
@@ -139,7 +139,7 @@ class TaakObjectListener(
         resolvedValues: Map<String, Any>
     ) {
         if (resolvedValues.isNotEmpty()) {
-            valueResolverService.handleValues(processInstanceId, variableScope, resolvedValues)
+            valueResolverService.handleValues(processInstanceId.toString(), variableScope, resolvedValues)
         }
     }
 

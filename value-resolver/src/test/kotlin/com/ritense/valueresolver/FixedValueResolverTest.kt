@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi.taak.resolve
+package com.ritense.valueresolver
 
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
@@ -29,7 +28,7 @@ internal class FixedValueResolverTest {
 
     @Test
     fun `should resolve boolean value from requestedValue`() {
-        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val processInstanceId = UUID.randomUUID().toString()
         val variableScope = DelegateTaskFake()
 
         val resolvedValue = fixedValueResolver.createResolver(
@@ -44,7 +43,7 @@ internal class FixedValueResolverTest {
 
     @Test
     fun `should resolve long value from requestedValue`() {
-        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val processInstanceId = UUID.randomUUID().toString()
         val variableScope = DelegateTaskFake()
 
         val resolvedValue = fixedValueResolver.createResolver(
@@ -59,7 +58,7 @@ internal class FixedValueResolverTest {
 
     @Test
     fun `should resolve double value from requestedValue`() {
-        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val processInstanceId = UUID.randomUUID().toString()
         val variableScope = DelegateTaskFake()
 
         val resolvedValue = fixedValueResolver.createResolver(
@@ -74,7 +73,7 @@ internal class FixedValueResolverTest {
 
     @Test
     fun `should resolve string value from requestedValue`() {
-        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val processInstanceId = UUID.randomUUID().toString()
         val variableScope = DelegateTaskFake()
 
         val resolvedValue = fixedValueResolver.createResolver(
@@ -89,7 +88,7 @@ internal class FixedValueResolverTest {
 
     @Test
     fun `should NOT handle value`() {
-        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val processInstanceId = UUID.randomUUID().toString()
         val variableScope = DelegateTaskFake()
 
         assertThrows<RuntimeException>("Can't handle value that doesn't have a prefix. firstName to John") {

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi.taak.resolve
+package com.ritense.valueresolver
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
@@ -44,13 +43,13 @@ internal class ValueResolverFactoryServiceTest {
             )
         }
 
-        assertThat(exception.message).startsWith("Found more than 1 resolver for prefix 'pv'")
+        assertThat(exception.message).startsWith("Expected 1 resolver for prefix 'pv'")
     }
 
     @Test
     fun `Should resolve list of requested values`() {
         val resolvedValues = resolverService.resolveValues(
-            processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString()),
+            processInstanceId = UUID.randomUUID().toString(),
             variableScope = DelegateTaskFake()
                 .withVariable("firstName", "John")
                 .withVariable("lastName", "Doe")
@@ -79,7 +78,27 @@ internal class ValueResolverFactoryServiceTest {
     fun `Should throw exception on unknown prefix`() {
         val exception = assertThrows<RuntimeException> {
             resolverService.resolveValues(
-                processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString()),
+                processInstanceId = UUID.randomUUID().toString(),
+                variableScope = DelegateTaskFake()
+                    .withVariable("firstName", "John")
+                    .withVariable("lastName", "Doe")
+                    .withVariable("active", true),
+                listOf(
+                    "xyz:firstName"
+                )
+            )
+        }
+
+        assertThat(exception.message).startsWith("No resolver factory found for value prefix xyz")
+    }
+
+    @Test
+    @Throws(RuntimeException::class)
+    fun `Should throw exception when no resolvers are configured`() {
+        val resolverService = ValueResolverService(listOf())
+        val exception = assertThrows<RuntimeException> {
+            resolverService.resolveValues(
+                processInstanceId = UUID.randomUUID().toString(),
                 variableScope = DelegateTaskFake()
                     .withVariable("firstName", "John")
                     .withVariable("lastName", "Doe")
@@ -95,7 +114,7 @@ internal class ValueResolverFactoryServiceTest {
 
     @Test
     fun `Should handle list of values`() {
-        val processInstanceId = CamundaProcessInstanceId(UUID.randomUUID().toString())
+        val processInstanceId = UUID.randomUUID().toString()
         val variableScope = DelegateTaskFake()
 
         resolverService.handleValues(
@@ -106,7 +125,7 @@ internal class ValueResolverFactoryServiceTest {
             )
         )
 
-        verify(runtimeService).setVariables(processInstanceId.toString(), mapOf(
+        verify(runtimeService).setVariables(processInstanceId, mapOf(
             "firstName" to "John",
             "lastName" to "Doe",
             "active" to true,

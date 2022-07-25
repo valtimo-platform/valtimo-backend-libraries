@@ -23,7 +23,7 @@ dockerCompose {
 
 dependencies {
     api project(":contract")
-    api "org.camunda.bpm:camunda-engine:7.14.0"
+    api "org.camunda.bpm:camunda-engine:${camundaVersion}"
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

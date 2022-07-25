@@ -32,12 +32,13 @@ import com.ritense.plugin.repository.PluginPropertyRepository
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
+import org.springframework.transaction.annotation.Transactional
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 
-class PluginDeploymentListener(
+open class PluginDeploymentListener(
     private val pluginDefinitionResolver: PluginDefinitionResolver,
     private val pluginDefinitionRepository: PluginDefinitionRepository,
     private val pluginPropertyRepository: PluginPropertyRepository,
@@ -45,8 +46,9 @@ class PluginDeploymentListener(
     private val pluginActionPropertyDefinitionRepository: PluginActionPropertyDefinitionRepository
 ) {
 
+    @Transactional
     @EventListener(ApplicationStartedEvent::class)
-    fun deployPluginDefinitions() {
+    open fun deployPluginDefinitions() {
         logger.info { "Deploying plugins" }
         pluginPropertyRepository.deleteAll()
         pluginActionPropertyDefinitionRepository.deleteAll()
