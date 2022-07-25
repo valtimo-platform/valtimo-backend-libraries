@@ -15,8 +15,6 @@
  */
 package com.ritense.smartdocuments.plugin
 
-import com.fasterxml.jackson.core.JsonPointer
-import com.ritense.document.domain.Document
 import com.ritense.document.domain.Document.Id
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
@@ -34,8 +32,8 @@ import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.utils.RequestHelper
+import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.engine.delegate.VariableScope
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import java.nio.file.Files
@@ -58,6 +56,7 @@ class SmartDocumentsPlugin(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val smartDocumentsClient: SmartDocumentsClient,
     private val threadPoolTaskScheduler: ThreadPoolTaskScheduler,
+    private val valueResolverService: ValueResolverService,
 ) {
 
     @PluginProperty(key = "url", required = true)
@@ -79,13 +78,13 @@ class SmartDocumentsPlugin(
         execution: DelegateExecution,
         @PluginActionProperty templateGroup: String,
         @PluginActionProperty templateName: String,
-        @PluginActionProperty format: DocumentFormatOption,
+        @PluginActionProperty format: String,
         @PluginActionProperty templatePlaceholders: Map<String, String>,
         @PluginActionProperty resultingDocumentLocation: String,
     ) {
         val document = processDocumentService.getDocument(execution)
-        val templateData = getTemplateData(templatePlaceholders, execution, document)
-        val generatedDocument = generateDocument(templateGroup, templateName, templateData, format)
+        val templateData = getTemplateData(templatePlaceholders, execution)
+        val generatedDocument = generateDocument(templateGroup, templateName, templateData, DocumentFormatOption.valueOf(format))
         publishDossierDocumentGeneratedEvent(document.id(), templateName)
         val tempFilePath = saveGeneratedDocumentToTempFile(generatedDocument)
         val generatedSmartDocumentFile = GeneratedSmartDocumentFile(
@@ -143,35 +142,15 @@ class SmartDocumentsPlugin(
 
     private fun getTemplateData(
         templatePlaceholders: Map<String, String>,
-        variableScope: VariableScope,
-        document: Document
+        execution: DelegateExecution
     ): Map<String, Any> {
-        return templatePlaceholders.entries
-            .associate { it.key to getPlaceholderValue(it.value, variableScope, document) }
-    }
-
-    private fun getPlaceholderValue(value: String, variableScope: VariableScope, document: Document): Any {
-        return if (value.startsWith("pv:")) {
-            getPlaceholderValueFromProcessVariable(value.substring("pv:".length), variableScope)
-        } else if (value.startsWith("doc:")) {
-            getPlaceholderValueFromDocument(value.substring("doc:".length), document)
-        } else {
-            value
-        }
-    }
-
-    private fun getPlaceholderValueFromProcessVariable(value: String, variableScope: VariableScope): Any {
-        return variableScope.variables[value].toString()
-    }
-
-    private fun getPlaceholderValueFromDocument(path: String, document: Document): Any {
-        val node = document.content().getValueBy(JsonPointer.valueOf(path)).orElse(null)
-        return if (node == null || node.isMissingNode || node.isNull) {
-            ""
-        } else if (node.isValueNode || node.isArray || node.isObject) {
-            Mapper.INSTANCE.get().treeToValue(node, Object::class.java)
-        } else {
-            node.asText()
+        val placeHolderValueMap = valueResolverService.resolveValues(
+            execution.processInstanceId,
+            execution,
+            templatePlaceholders.values.toList()
+        )
+        return templatePlaceholders.mapValues { (_, value) ->
+            placeHolderValueMap.getOrDefault(value, value)
         }
     }
 }

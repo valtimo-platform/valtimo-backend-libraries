@@ -30,6 +30,7 @@ dependencies {
     implementation project(':plugin')
     implementation project(':process-document')
     implementation project(':resource')
+    implementation project(':value-resolver')
     api project(':document-generation')
 
     api "org.springframework.security:spring-security-core"

@@ -33,6 +33,7 @@ import com.ritense.smartdocuments.security.config.SmartDocumentsHttpSecurityConf
 import com.ritense.smartdocuments.service.CamundaSmartDocumentGenerator
 import com.ritense.smartdocuments.service.SmartDocumentGenerator
 import com.ritense.smartdocuments.web.rest.SmartDocumentsDemoResource
+import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
@@ -133,12 +134,14 @@ class SmartDocumentsAutoConfiguration {
         applicationEventPublisher: ApplicationEventPublisher,
         smartDocumentsClient: SmartDocumentsClient,
         threadPoolTaskScheduler: ThreadPoolTaskScheduler,
+        valueResolverService: ValueResolverService,
     ): PluginFactory<SmartDocumentsPlugin> {
         return SmartDocumentsPluginFactory(
             processDocumentService,
             applicationEventPublisher,
             smartDocumentsClient,
             threadPoolTaskScheduler,
+            valueResolverService
         )
     }
 

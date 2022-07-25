@@ -125,11 +125,11 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
             findRequestBody(HttpMethod.POST, "/wsxmldeposit/deposit/unattended", SmartDocumentsRequest::class.java)
         assertThat(requestBody.smartDocument.selection.templateGroup).isEqualTo("test-template-group")
         assertThat(requestBody.smartDocument.selection.template).isEqualTo("test-template-name")
-        assertThat(requestBody.customerData).isEqualTo(mapOf("achternaam" to "Klaveren", "leeftijd" to "138"))
+        assertThat(requestBody.customerData).isEqualTo(mapOf("achternaam" to "Klaveren", "leeftijd" to 138))
     }
 
     @Test
-    fun `should set generated document path in process variable`() {
+    fun `should create temp file when generating document`() {
         // given
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
@@ -141,10 +141,10 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
         val generatedDocument = runtimeService.createVariableInstanceQuery()
             .variableName("my-generated-document")
             .singleResult()
-            .value as Map<String, String>
+            .value as Map<*, *>
         assertThat(generatedDocument["fileName"]).isEqualTo("integration-test_answer.xml")
         assertThat(generatedDocument["fileExtension"]).isEqualTo("xml")
-        assertThat(File(generatedDocument["filePath"]!!).readText()).isEqualToIgnoringWhitespace(
+        assertThat(File(generatedDocument["filePath"] as String).readText()).isEqualToIgnoringWhitespace(
             """
             <?xml version="1.0" encoding="UTF-8"?>
             <root>
