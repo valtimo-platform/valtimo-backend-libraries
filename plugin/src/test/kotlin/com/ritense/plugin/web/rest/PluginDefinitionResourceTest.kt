@@ -18,10 +18,9 @@ package com.ritense.plugin.web.rest
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import com.ritense.plugin.domain.PluginActionDefinition
-import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -79,19 +78,15 @@ internal class PluginDefinitionResourceTest {
     @Test
     fun `should get plugin action definitions`() {
         val actions = listOf(
-            PluginActionDefinition(
-                PluginActionDefinitionId("some-key", mock()),
+            PluginActionDefinitionDto(
+                "some-key",
                 "title",
-                "description",
-                "methodName",
-                mock()
+                "description"
             ),
-            PluginActionDefinition(
-                PluginActionDefinitionId("some-other-key", mock()),
+            PluginActionDefinitionDto(
+                "some-other-key",
                 "other-title",
-                "other-description",
-                "methodName",
-                mock()
+                "other-description"
             )
         )
         whenever(pluginService.getPluginDefinitionActions("test", null)).thenReturn(actions)
