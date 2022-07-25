@@ -23,26 +23,28 @@ import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.FileStreamResponse
 import com.ritense.smartdocuments.domain.FilesResponse
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
-import org.springframework.http.HttpStatus
-import io.netty.handler.ssl.SslContextBuilder
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory
-import org.aspectj.util.FileUtil.Pipe
+import org.apache.commons.io.FilenameUtils
+import org.apache.commons.text.StringEscapeUtils
+import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.http.codec.ClientCodecConfigurer
 import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.reactive.function.BodyExtractors
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
-import java.io.OutputStreamWriter
+import org.springframework.web.reactive.function.client.bodyToFlux
+import java.io.File
+import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
-import java.time.Duration
-import reactor.netty.http.client.HttpClient
+import java.io.RandomAccessFile
+import java.io.Writer
+import java.nio.file.Files
+import java.util.Base64
+import java.util.concurrent.Executors
+import kotlin.io.path.deleteIfExists
 
 
 class SmartDocumentsClient(
@@ -72,54 +74,28 @@ class SmartDocumentsClient(
         outputFormat: DocumentFormatOption,
     ): FileStreamResponse {
         try {
-            val responseOut = PipedOutputStream()
-            val responseIn = PipedInputStream(responseOut)
-
-            webClient().post()
+            val bodyFlux = webClient().post()
                 .uri("/wsxmldeposit/deposit/unattended")
                 .contentType(APPLICATION_JSON)
                 .bodyValue(smartDocumentsRequest)
                 .retrieve()
-                .toEntityFlux()
-                .exchangeToFlux { response ->
-                    if (response.statusCode().equals(HttpStatus.OK)) {
-                        response.body(BodyExtractors.toDataBuffers())
-                    } else {
-                        response.createException().flatMapMany { Mono.error(it) }
-                    }
-                }
-                .publishOn(Schedulers.boundedElastic())
-                .map { bodyPart -> responseOut.write(bodyPart.asInputStream().readBytes()) }
-                .blockLast(Duration.ofMinutes(5))
+                .bodyToFlux<DataBuffer>()
 
-            var fileName: String? = null
-            var correctOutputFormat = false
-            var writtenDocumentData = false
+            val tempFile = Files.createTempFile("smartDocumentsResponse", ".tmp")
+            DataBufferUtils.write(bodyFlux, tempFile).share().block()
 
-            val documentDataOut = PipedOutputStream()
-            val documentDataIn = PipedInputStream(documentDataOut)
-            val documentDataWriter = OutputStreamWriter(documentDataOut)
+            val parsedResponse = parseSmartDocumentsResponseFile(tempFile.toFile(), outputFormat)
+            val dataInputStream = fileDataToInputStream(
+                file = tempFile.toFile(),
+                parsedResponse = parsedResponse,
+                onComplete = { tempFile.deleteIfExists() }
+            )
 
-            val jsonParser = JsonFactory().createParser(responseIn)
-            while (jsonParser.nextToken() !== JsonToken.END_OBJECT) {
-                val fieldName = jsonParser.currentName
-                if ("filename" == fieldName) {
-                    fileName = jsonParser.nextTextValue()
-                } else if ("outputFormat" == fieldName && outputFormat.toString() == jsonParser.nextTextValue()) {
-                    correctOutputFormat = true
-                } else if ("data" == fieldName) {
-                    jsonParser.nextToken()
-                    jsonParser.getText(documentDataWriter)
-                    writtenDocumentData = true
-                }
-
-                if (correctOutputFormat && fileName != null && writtenDocumentData) {
-                    break
-                }
-            }
-            jsonParser.close()
-
-            return FileStreamResponse(fileName!!, documentDataIn)
+            return FileStreamResponse(
+                parsedResponse.fileName,
+                FilenameUtils.getExtension(parsedResponse.fileName),
+                dataInputStream
+            )
         } catch (e: WebClientResponseException) {
             throw HttpClientErrorException(e.statusCode, e.responseBodyAsString)
         }
@@ -143,20 +119,82 @@ class SmartDocumentsClient(
             }
             .build()
 
-        val sslContext = SslContextBuilder
-            .forClient()
-            .trustManager(InsecureTrustManagerFactory.INSTANCE)
-            .build()
-
-        val httpClient = HttpClient.create().secure { t -> t.sslContext(sslContext) }
-
         return smartDocumentsWebClientBuilder
             .clone()
             .baseUrl(smartDocumentsConnectorProperties.url!!)
             .filter(basicAuthentication)
             .exchangeStrategies(exchangeStrategies)
-            .clientConnector(ReactorClientHttpConnector(httpClient))
             .build()
     }
+
+    private fun parseSmartDocumentsResponseFile(
+        responseFile: File,
+        outputFormat: DocumentFormatOption
+    ): ParsedResponse {
+        var fileName: String? = null
+        var correctOutputFormat = false
+        var documentDataStart = -1L
+        var documentDataEnd = -1L
+
+        val jsonParser = JsonFactory().createParser(responseFile)
+        while (jsonParser.nextToken() !== JsonToken.END_ARRAY) {
+            val fieldName = jsonParser.currentName
+            if ("filename" == fieldName) {
+                fileName = jsonParser.nextTextValue()
+            } else if ("outputFormat" == fieldName && outputFormat.toString() == jsonParser.nextTextValue()) {
+                correctOutputFormat = true
+            } else if ("data" == fieldName) {
+                jsonParser.nextToken()
+                documentDataStart = jsonParser.currentLocation.byteOffset
+                jsonParser.nextToken()
+                documentDataEnd = jsonParser.currentLocation.byteOffset - 2
+            }
+
+            if (correctOutputFormat && fileName != null && documentDataStart != -1L) {
+                break
+            }
+        }
+        jsonParser.close()
+        if (!correctOutputFormat) {
+            throw IllegalStateException("SmartDocuments didn't generate document with format '$outputFormat'")
+        }
+        if (fileName == null) {
+            throw IllegalStateException("SmartDocuments response didn't contain field 'filename'")
+        }
+        if (documentDataStart == -1L) {
+            throw IllegalStateException("SmartDocuments didn't generate document")
+        }
+        return ParsedResponse(fileName, documentDataStart, documentDataEnd)
+    }
+
+    private fun fileDataToInputStream(file: File, parsedResponse: ParsedResponse, onComplete: () -> Unit): InputStream {
+        val documentDataOut = PipedOutputStream()
+        val documentDataIn = PipedInputStream(documentDataOut)
+        val documentDataOutWriter = documentDataOut.writer()
+
+        Executors.newSingleThreadExecutor().execute {
+            writeFileData(documentDataOutWriter, file, parsedResponse.documentDataStart, parsedResponse.documentDataEnd)
+            documentDataOutWriter.close()
+            onComplete.invoke()
+        }
+        return Base64.getDecoder().wrap(documentDataIn)
+    }
+
+    private fun writeFileData(outputWriter: Writer, inputFile: File, startByteOffset: Long, endByteOffset: Long) {
+        val raf = RandomAccessFile(inputFile, "r")
+        raf.seek(startByteOffset)
+        val buffer = ByteArray(1024)
+        while (raf.filePointer < endByteOffset) {
+            val len = raf.read(buffer, 0, (endByteOffset - raf.filePointer).toInt().coerceAtMost(buffer.size))
+            outputWriter.write(StringEscapeUtils.unescapeJson(String(buffer, 0, len)))
+        }
+        outputWriter.flush()
+    }
+
+    private data class ParsedResponse(
+        val fileName: String,
+        val documentDataStart: Long,
+        val documentDataEnd: Long,
+    )
 
 }

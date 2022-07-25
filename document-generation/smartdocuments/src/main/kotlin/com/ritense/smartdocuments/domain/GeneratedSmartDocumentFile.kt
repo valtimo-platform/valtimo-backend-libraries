@@ -16,10 +16,8 @@
 
 package com.ritense.smartdocuments.domain
 
-import java.io.InputStream
-
-data class FileStreamResponse(
-    val filename: String,
-    val extension: String,
-    val documentData: InputStream,
+data class GeneratedSmartDocumentFile(
+    val fileName: String,
+    val fileExtension: String,
+    val filePath: String,
 )

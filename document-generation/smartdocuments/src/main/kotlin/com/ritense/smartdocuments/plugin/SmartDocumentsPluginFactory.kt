@@ -19,17 +19,20 @@ import com.ritense.plugin.PluginFactory
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 
 class SmartDocumentsPluginFactory(
     private val processDocumentService: ProcessDocumentService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val smartDocumentsClient: SmartDocumentsClient,
+    private val threadPoolTaskScheduler: ThreadPoolTaskScheduler,
 ) : PluginFactory<SmartDocumentsPlugin>() {
     override fun create(): SmartDocumentsPlugin {
         return SmartDocumentsPlugin(
             processDocumentService,
             applicationEventPublisher,
-            smartDocumentsClient
+            smartDocumentsClient,
+            threadPoolTaskScheduler,
         )
     }
 }

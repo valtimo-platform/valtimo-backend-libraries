@@ -27,21 +27,24 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
-import com.ritense.smartdocuments.domain.GeneratedSmartDocumentStream
+import com.ritense.smartdocuments.domain.FileStreamResponse
+import com.ritense.smartdocuments.domain.GeneratedSmartDocumentFile
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.utils.RequestHelper
-import org.apache.commons.io.FilenameUtils
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import java.nio.file.Files
 import java.nio.file.Path
+import java.time.Duration
+import java.time.Instant
 import java.time.LocalDateTime
-import java.util.Base64
 import java.util.UUID
+import kotlin.io.path.deleteIfExists
 import kotlin.io.path.outputStream
 import kotlin.io.path.pathString
 
@@ -54,6 +57,7 @@ class SmartDocumentsPlugin(
     private val processDocumentService: ProcessDocumentService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val smartDocumentsClient: SmartDocumentsClient,
+    private val threadPoolTaskScheduler: ThreadPoolTaskScheduler,
 ) {
 
     @PluginProperty(key = "url", required = true)
@@ -83,17 +87,22 @@ class SmartDocumentsPlugin(
         val templateData = getTemplateData(templatePlaceholders, execution, document)
         val generatedDocument = generateDocument(templateGroup, templateName, templateData, format)
         publishDossierDocumentGeneratedEvent(document.id(), templateName)
-        val tempFilePath = saveGeneratedDocument(generatedDocument)
-        execution.setVariable(resultingDocumentLocation, tempFilePath.pathString)
+        val tempFilePath = saveGeneratedDocumentToTempFile(generatedDocument)
+        val generatedSmartDocumentFile = GeneratedSmartDocumentFile(
+            generatedDocument.filename,
+            generatedDocument.extension,
+            tempFilePath.pathString,
+        )
+        execution.setVariable(
+            resultingDocumentLocation,
+            Mapper.INSTANCE.get().convertValue(generatedSmartDocumentFile, Map::class.java)
+        )
     }
 
-    private fun saveGeneratedDocument(
-        generatedDocument: GeneratedSmartDocumentStream,
-    ): Path {
+    private fun saveGeneratedDocumentToTempFile(generatedDocument: FileStreamResponse): Path {
         val tempFile = Files.createTempFile("tempSmartDocument", ".${generatedDocument.extension}")
-        tempFile.outputStream().use { tempFileOut ->
-            generatedDocument.data.use { documentData -> tempFileOut.write(documentData.readBytes()) }
-        }
+        tempFile.outputStream().use { tempFileOut -> generatedDocument.documentData.copyTo(tempFileOut) }
+        threadPoolTaskScheduler.schedule({ tempFile.deleteIfExists() }, Instant.now().plus(Duration.ofMinutes(5)))
         return tempFile.toAbsolutePath()
     }
 
@@ -118,7 +127,7 @@ class SmartDocumentsPlugin(
         templateName: String,
         templateData: Map<String, Any>,
         format: DocumentFormatOption
-    ): GeneratedSmartDocumentStream {
+    ): FileStreamResponse {
         val request = SmartDocumentsRequest(
             templateData,
             SmartDocumentsRequest.SmartDocument(
@@ -129,13 +138,7 @@ class SmartDocumentsPlugin(
             )
         )
         smartDocumentsClient.setProperties(SmartDocumentsConnectorProperties(url, username, password))
-        val fileStreamResponse = smartDocumentsClient.generateDocumentStream(request, format)
-        return GeneratedSmartDocumentStream(
-            fileStreamResponse.filename,
-            FilenameUtils.getExtension(fileStreamResponse.filename),
-            format.mediaType.toString(),
-            Base64.getDecoder().wrap(fileStreamResponse.documentData),
-        )
+        return smartDocumentsClient.generateDocumentStream(request, format)
     }
 
     private fun getTemplateData(

@@ -110,7 +110,7 @@ data class DelegateExecutionSmall(
     override fun getVariableNames() = throw NotImplementedError()
     override fun getVariableNamesLocal() = throw NotImplementedError()
     override fun setVariable(variableName: String?, value: Any?, activityId: String?) = throw NotImplementedError()
-    override fun setVariable(variableName: String?, value: Any?) = throw NotImplementedError()
+    override fun setVariable(variableName: String?, value: Any?) {}
     override fun setVariableLocal(variableName: String?, value: Any?) = throw NotImplementedError()
     override fun setVariables(variables: MutableMap<String, out Any>?) = throw NotImplementedError()
     override fun setVariablesLocal(variables: MutableMap<String, out Any>?) = throw NotImplementedError()
