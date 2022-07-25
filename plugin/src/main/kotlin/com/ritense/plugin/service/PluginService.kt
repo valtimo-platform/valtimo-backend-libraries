@@ -37,6 +37,7 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
 import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
+import com.ritense.plugin.web.rest.result.PluginConfigurationDto
 import com.ritense.valtimo.contract.json.Mapper
 import mu.KotlinLogging
 import java.lang.reflect.Method
@@ -63,12 +64,14 @@ class PluginService(
         title: String,
         properties: JsonNode,
         pluginDefinitionKey: String
-    ): PluginConfiguration {
+    ): PluginConfigurationDto {
         val pluginDefinition = pluginDefinitionRepository.getById(pluginDefinitionKey)
         validateProperties(properties, pluginDefinition)
 
-        return pluginConfigurationRepository.save(
-            PluginConfiguration(PluginConfigurationId.newId(), title, properties, pluginDefinition)
+        return PluginConfigurationDto(
+            pluginConfigurationRepository.save(
+                PluginConfiguration(PluginConfigurationId.newId(), title, properties, pluginDefinition)
+            )
         )
     }
 
