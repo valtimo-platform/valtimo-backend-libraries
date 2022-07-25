@@ -44,7 +44,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
-    implementation group: 'org.camunda.bpm.model', name: 'camunda-bpmn-model', version: '7.14.0'
+    implementation "org.camunda.bpm.model:camunda-bpmn-model:${camundaVersion}"
 
     implementation "org.hibernate:hibernate-core"
     implementation "org.hibernate:hibernate-envers"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2020 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,37 +14,35 @@
  * limitations under the License.
  */
 
+projectVersion = 1.0
+
 dockerCompose {
-    projectName = "plugin"
+    projectName = "value-resolver"
     isRequiredBy(integrationTesting)
     isRequiredBy(securityTesting)
     useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
 }
 
 dependencies {
-    implementation project(':contract')
-    implementation project(':value-resolver')
-
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-    implementation "org.springframework.boot:spring-boot-starter"
-    implementation "org.springframework.boot:spring-boot-starter-web"
-    implementation "org.springframework.boot:spring-boot-starter-validation"
-    implementation "org.springframework.boot:spring-boot-starter-security"
-
-    implementation "io.github.classgraph:classgraph:4.8.147"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation 'io.github.microutils:kotlin-logging:2.1.23'
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
-    testImplementation "org.springframework.boot:spring-boot-starter-test"
-    testImplementation "mysql:mysql-connector-java"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-autoconfigure"
+
+    api "org.camunda.bpm:camunda-engine:${camundaVersion}"
+
     testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation 'org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.16.0'
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
     jar {
         enabled = true
         manifest {
-            attributes("Implementation-Title": "Ritense Plugin module")
+            attributes("Implementation-Title": "Ritense Value-resolver Spring Boot Starter")
             attributes("Implementation-Version": projectVersion)
         }
     }

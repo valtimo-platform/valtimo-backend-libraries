@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.objectsapi.taak.resolve
+package com.ritense.valueresolver
 
-import com.ritense.processdocument.domain.ProcessInstanceId
 import org.camunda.bpm.engine.delegate.VariableScope
 
 class ValueResolverService(
@@ -24,7 +23,10 @@ class ValueResolverService(
 ) {
     private val resolverFactoryMap: Map<String, ValueResolverFactory> = valueResolverFactories.groupBy { it.supportedPrefix() }
         .filter { (key, value) ->
-            if(value.size == 1) true else throw RuntimeException("Found more than 1 resolver for prefix '$key': ${value.joinToString { resolver -> resolver.javaClass.simpleName }}")
+            if(value.size != 1) {
+                throw RuntimeException("Expected 1 resolver for prefix '$key'. Found: ${value.joinToString { resolver -> resolver.javaClass.simpleName }}")
+            }
+            true
         }.map { (key, value) ->
             key to value.first()
         }.toMap()
@@ -44,7 +46,7 @@ class ValueResolverService(
      * @return A map where the key is the requestedValue, and the value the resolved value.
      */
     fun resolveValues(
-        processInstanceId: ProcessInstanceId,
+        processInstanceId: String,
         variableScope: VariableScope,
         requestedValues: List<String>
     ): Map<String, Any> {
@@ -71,7 +73,7 @@ class ValueResolverService(
      * @param values mapOf(doc:add:/firstname to John)
      */
     fun handleValues(
-        processInstanceId: ProcessInstanceId,
+        processInstanceId: String,
         variableScope: VariableScope,
         values: Map<String, Any>
     ) {
