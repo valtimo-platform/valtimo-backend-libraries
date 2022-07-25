@@ -57,7 +57,13 @@ class TaakObjectConnector(
     }
 
     fun createTask(task: DelegateTask, formulierId: String) {
-        val taakObject = createTaakObjectDto(task, formulierId)
+        val taakObject = createTaakObjectDto(task = task, formulierId = formulierId, formulierUrl = null)
+
+        createObjectRecord(taakObject)
+    }
+
+    fun createTaskWithFormUrl(task: DelegateTask, formulierUrl: String) {
+        val taakObject = createTaakObjectDto(task = task, formulierId = null, formulierUrl = formulierUrl)
 
         createObjectRecord(taakObject)
     }
@@ -119,13 +125,15 @@ class TaakObjectConnector(
 
     private fun createTaakObjectDto(
         task: DelegateTask,
-        formulierId: String
+        formulierId: String?,
+        formulierUrl: String?,
     ): TaakObjectDto {
         val taakObject = TaakObjectDto(
             bsn = bsnProvider?.getBurgerServiceNummer(task),
             kvk = kvkProvider?.getKvkNummer(task),
             verwerkerTaakId = UUID.fromString(task.id),
             formulierId = formulierId,
+            formulierUrl = formulierUrl,
             data = getTaskProperties(task),
             status = TaakObjectStatus.open,
             title = task.name,
