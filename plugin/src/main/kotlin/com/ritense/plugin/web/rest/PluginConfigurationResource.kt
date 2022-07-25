@@ -32,11 +32,10 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
-import javax.websocket.server.PathParam
 
 @RestController
 @RequestMapping(value = ["/api/plugin"])
-class PluginInstanceResource(
+class PluginConfigurationResource(
     private var pluginService: PluginService
 ) {
 

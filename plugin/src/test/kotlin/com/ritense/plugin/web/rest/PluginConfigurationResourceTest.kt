@@ -45,19 +45,19 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 
-internal class PluginInstanceResourceTest {
+internal class PluginConfigurationResourceTest {
 
     lateinit var mockMvc: MockMvc
     lateinit var pluginService: PluginService
-    lateinit var pluginInstanceResource: PluginInstanceResource
+    lateinit var pluginConfigurationResource: PluginConfigurationResource
 
     @BeforeEach
     fun init() {
         pluginService = mock()
-        pluginInstanceResource = PluginInstanceResource(pluginService)
+        pluginConfigurationResource = PluginConfigurationResource(pluginService)
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(pluginInstanceResource)
+            .standaloneSetup(pluginConfigurationResource)
             .build()
     }
 
