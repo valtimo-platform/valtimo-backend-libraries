@@ -77,12 +77,14 @@ class PluginService(
         title: String,
         properties: JsonNode,
     ): PluginConfiguration {
-        val pluginDefinition = pluginConfigurationRepository.getById(pluginConfigurationId)
+        val pluginConfiguration = pluginConfigurationRepository.getById(pluginConfigurationId)
 
-        pluginDefinition.title = title
-        pluginDefinition.updateProperties(properties)
+        pluginConfiguration.title = title
+        pluginConfiguration.updateProperties(properties)
 
-        return pluginConfigurationRepository.save(pluginDefinition)
+        validateProperties(pluginConfiguration.properties!!, pluginConfiguration.pluginDefinition)
+
+        return pluginConfigurationRepository.save(pluginConfiguration)
     }
 
     fun deletePluginConfiguration(
