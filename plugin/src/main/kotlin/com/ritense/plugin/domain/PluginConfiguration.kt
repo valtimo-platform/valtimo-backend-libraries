@@ -43,7 +43,7 @@ class PluginConfiguration(
     var title: String,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "properties", columnDefinition = "JSON")
-    val properties: JsonNode? = null,
+    val properties: ObjectNode? = null,
     @JoinColumn(name = "plugin_definition_key", updatable = false, nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
     val pluginDefinition: PluginDefinition,
@@ -56,13 +56,11 @@ class PluginConfiguration(
         }
     }
 
-    fun updateProperties(propertiesForUpdate: JsonNode) {
-        if (properties is ObjectNode) {
-            pluginDefinition.pluginProperties.forEach {
-                val updateValue = propertiesForUpdate.get(it.fieldName)
-                if (!it.secret || !nodeIsEmpty(updateValue)) {
-                    properties.replace(it.fieldName, updateValue)
-                }
+    fun updateProperties(propertiesForUpdate: ObjectNode) {
+        pluginDefinition.pluginProperties.forEach {
+            val updateValue = propertiesForUpdate.get(it.fieldName)
+            if (!it.secret || !nodeIsEmpty(updateValue)) {
+                properties?.replace(it.fieldName, updateValue)
             }
         }
     }

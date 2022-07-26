@@ -16,16 +16,16 @@
 
 package com.ritense.plugin.web.rest
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
-import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
+import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.valtimo.contract.json.Mapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -60,7 +60,7 @@ internal class PluginProcessLinkResourceTest {
 
     @Test
     fun `should list plugin process links`() {
-        val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
+        val properties: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
         val id1 = UUID.randomUUID()
         val id2 = UUID.randomUUID()
         val processDefinitionId = "pid"
@@ -116,7 +116,7 @@ internal class PluginProcessLinkResourceTest {
 
     @Test
     fun `should add plugin process link`() {
-        val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
+        val properties: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
 
         val pluginProcessLinkDto = PluginProcessLinkCreateDto(
             processDefinitionId = UUID.randomUUID().toString(),
@@ -141,7 +141,7 @@ internal class PluginProcessLinkResourceTest {
 
     @Test
     fun `should update plugin process link`() {
-        val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
+        val properties: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
 
         val pluginProcessLinkDto = PluginProcessLinkUpdateDto(
             id = UUID.randomUUID(),

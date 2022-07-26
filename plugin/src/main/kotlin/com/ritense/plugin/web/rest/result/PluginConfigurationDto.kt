@@ -1,6 +1,5 @@
 package com.ritense.plugin.web.rest.result
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginDefinition
@@ -10,7 +9,7 @@ class PluginConfigurationDto(
 ) {
     val id: String
     val title: String
-    var properties: JsonNode? = null
+    var properties: ObjectNode? = null
     val pluginDefinition: PluginDefinition
 
     init {

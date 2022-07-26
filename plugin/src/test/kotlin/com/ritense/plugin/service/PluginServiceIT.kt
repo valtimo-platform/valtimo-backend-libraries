@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.service
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
@@ -81,7 +82,7 @@ internal class PluginServiceIT: BaseIntegrationTest() {
 
         val configuration = pluginService.createPluginConfiguration(
             "title",
-            Mapper.INSTANCE.get().readTree(input),
+            Mapper.INSTANCE.get().readTree(input) as ObjectNode,
             "test-plugin"
         )
 
@@ -101,7 +102,7 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "other-test-action",
-            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "test123"}""")
+            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "test123"}""") as ObjectNode
         )
 
         val execution = DelegateExecutionFake.of()
@@ -119,7 +120,7 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "other-test-action",
-            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "pv:placeholder"}""")
+            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "pv:placeholder"}""") as ObjectNode
         )
 
         val testPlugin = spy(TestPlugin("someString"))

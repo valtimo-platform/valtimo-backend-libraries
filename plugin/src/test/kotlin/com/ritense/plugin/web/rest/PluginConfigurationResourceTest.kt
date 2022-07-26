@@ -16,8 +16,8 @@
 
 package com.ritense.plugin.web.rest
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -28,7 +28,6 @@ import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
 import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
-import com.ritense.plugin.web.rest.result.PluginConfigurationDto
 import com.ritense.valtimo.contract.json.Mapper
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
@@ -64,8 +63,8 @@ internal class PluginConfigurationResourceTest {
 
     @Test
     fun `should get plugin configurations`() {
-        val properties1: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
-        val properties2: JsonNode = ObjectMapper().readTree("{\"other\": \"something\" }")
+        val properties1: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
+        val properties2: ObjectNode = ObjectMapper().readTree("{\"other\": \"something\" }") as ObjectNode
         val plugin = PluginDefinition("key", "title", "description", "className")
         val plugin2 = PluginDefinition("key2", "title2", "description2", "className2")
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties1, plugin)
@@ -121,7 +120,7 @@ internal class PluginConfigurationResourceTest {
 
     @Test
     fun `should save plugin configuration`() {
-        val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
+        val properties: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
         val plugin = PluginDefinition("key", "title", "description", "className")
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties, plugin)
 
@@ -168,7 +167,7 @@ internal class PluginConfigurationResourceTest {
 
     @Test
     fun `should update plugin configuration`() {
-        val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
+        val properties: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
         val plugin = PluginDefinition("key", "title", "description", "className")
         val pluginConfigurationId = UUID.randomUUID()
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.existingId(pluginConfigurationId), "title", properties, plugin)

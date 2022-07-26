@@ -17,6 +17,7 @@
 package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
@@ -26,7 +27,6 @@ import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.domain.PluginPropertyId
 import com.ritense.valtimo.contract.json.Mapper
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -99,7 +99,7 @@ internal class PluginConfigurationEntityListenerTest {
         val configuration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            Mapper.INSTANCE.get().readTree(input),
+            Mapper.INSTANCE.get().readTree(input) as ObjectNode,
             pluginDefinition
         )
 
@@ -122,7 +122,7 @@ internal class PluginConfigurationEntityListenerTest {
         val configuration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            Mapper.INSTANCE.get().readTree(input),
+            Mapper.INSTANCE.get().readTree(input) as ObjectNode,
             pluginDefinition
         )
 
@@ -144,7 +144,7 @@ internal class PluginConfigurationEntityListenerTest {
         val configuration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            Mapper.INSTANCE.get().readTree(input),
+            Mapper.INSTANCE.get().readTree(input) as ObjectNode,
             pluginDefinition
         )
 
@@ -167,7 +167,7 @@ internal class PluginConfigurationEntityListenerTest {
         val configuration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            Mapper.INSTANCE.get().readTree(input),
+            Mapper.INSTANCE.get().readTree(input) as ObjectNode,
             pluginDefinition
         )
 
@@ -190,7 +190,7 @@ internal class PluginConfigurationEntityListenerTest {
         val configuration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            Mapper.INSTANCE.get().readTree(input),
+            Mapper.INSTANCE.get().readTree(input) as ObjectNode,
             pluginDefinition
         )
 
@@ -212,7 +212,7 @@ internal class PluginConfigurationEntityListenerTest {
         val configuration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            Mapper.INSTANCE.get().readTree(input),
+            Mapper.INSTANCE.get().readTree(input) as ObjectNode,
             pluginDefinition
         )
 

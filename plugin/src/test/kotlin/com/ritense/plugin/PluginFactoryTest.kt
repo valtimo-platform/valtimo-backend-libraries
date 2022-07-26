@@ -17,6 +17,7 @@
 package com.ritense.plugin
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -47,7 +48,7 @@ internal class PluginFactoryTest {
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            ObjectMapper().valueToTree("{\"name\": \"whatever\" }"),
+            ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode,
             pluginDefinition
         )
 
@@ -60,7 +61,7 @@ internal class PluginFactoryTest {
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            ObjectMapper().valueToTree("{\"name\": \"whatever\" }"),
+            ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode,
             pluginDefinition
         )
 

@@ -81,13 +81,11 @@ class PluginConfigurationEntityListener(
         return objectMapper.readTree(decryptedValue)
     }
 
-    private fun replaceProperty(properties: JsonNode, propertyName: String,  transformFun: (JsonNode) -> JsonNode) {
-        if (properties is ObjectNode) {
-            val originalValue = properties.get(propertyName)
-            if (originalValue != null && !originalValue.isNull) {
-                val newValue = transformFun(originalValue)
-                properties.replace(propertyName, newValue)
-            }
+    private fun replaceProperty(properties: ObjectNode, propertyName: String,  transformFun: (JsonNode) -> JsonNode) {
+        val originalValue = properties.get(propertyName)
+        if (originalValue != null && !originalValue.isNull) {
+            val newValue = transformFun(originalValue)
+            properties.replace(propertyName, newValue)
         }
     }
 

@@ -16,7 +16,7 @@
 
 package com.ritense.plugin.web.rest.result
 
-import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import java.util.UUID
 
 data class PluginProcessLinkResultDto (
@@ -25,5 +25,5 @@ data class PluginProcessLinkResultDto (
     val activityId: String,
     val pluginConfigurationId: UUID,
     val pluginActionDefinitionKey: String,
-    val actionProperties: JsonNode? = null
+    val actionProperties: ObjectNode? = null
 )

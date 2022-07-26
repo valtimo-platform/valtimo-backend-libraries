@@ -1,5 +1,6 @@
 package com.ritense.plugin.web.rest.result
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -93,7 +94,7 @@ internal class PluginConfigurationDtoTest {
         val configuration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            Mapper.INSTANCE.get().readTree(input),
+            Mapper.INSTANCE.get().readTree(input) as ObjectNode,
             pluginDefinition
         )
 

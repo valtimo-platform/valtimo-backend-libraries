@@ -123,19 +123,4 @@ class PluginAutoConfiguration {
     ): EncryptionService {
         return EncryptionService(secret)
     }
-
-    @Bean
-    fun entityManagerFactory(
-        builder: EntityManagerFactoryBuilder,
-        dataSource: DataSource,
-        beanFactory: ConfigurableListableBeanFactory
-    ): LocalContainerEntityManagerFactoryBean {
-        val localContainerEntityManagerFactoryBean = builder
-            .dataSource(dataSource)
-            .packages("com.ritense.plugin.domain")
-            .build()
-        localContainerEntityManagerFactoryBean.jpaPropertyMap[AvailableSettings.BEAN_CONTAINER] =
-            SpringBeanContainer(beanFactory)
-        return localContainerEntityManagerFactoryBean
-    }
 }
