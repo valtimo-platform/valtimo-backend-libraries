@@ -24,14 +24,15 @@ class EncryptionService(
     secret: String
 ) {
     private var key = SecretKeySpec(secret.toByteArray(), AES)
-    private var cipher = Cipher.getInstance(AES)
 
     fun encrypt(value: String): String {
+        val cipher = Cipher.getInstance(AES)
         cipher.init(Cipher.ENCRYPT_MODE, key)
         return Base64.getEncoder().encodeToString(cipher.doFinal(value.toByteArray()))
     }
 
     fun decrypt(value: String): String {
+        val cipher = Cipher.getInstance(AES)
         cipher.init(Cipher.DECRYPT_MODE, key)
         return String(cipher.doFinal(Base64.getDecoder().decode(value)))
     }
