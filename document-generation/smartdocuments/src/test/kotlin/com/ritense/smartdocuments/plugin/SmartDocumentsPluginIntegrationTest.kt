@@ -16,6 +16,7 @@
 
 package com.ritense.smartdocuments.plugin
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -76,7 +77,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
             "Smart documents plugin configuration",
             Mapper.INSTANCE.get().readTree(
                 "{\"url\":\"${server.url("/")}\",\"username\":\"test-username\",\"password\":\"test-password\"}"
-            ),
+            ) as ObjectNode,
             "smartdocuments"
         )
         val generateDocumentActionProperties =
@@ -93,7 +94,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
                 PluginProcessLinkId(UUID.randomUUID()),
                 processDefinitionId.id,
                 "GenerateDocument",
-                Mapper.INSTANCE.get().readTree(generateDocumentActionProperties),
+                Mapper.INSTANCE.get().readTree(generateDocumentActionProperties) as ObjectNode,
                 configuration.id,
                 "generate-document"
             )
