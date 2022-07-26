@@ -83,10 +83,16 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
                 "templateGroup": "test-template-group",
                 "templateName": "test-template-name",
                 "format": "XML",
-                "templatePlaceholders": {
-                    "achternaam": "doc:/lastname",
-                    "leeftijd": "pv:age"
-                },
+                "templateData": [
+                    {
+                        "key": "achternaam",
+                        "value": "doc:/lastname"
+                    },
+                    {
+                        "key": "leeftijd",
+                        "value": "pv:age"
+                    }
+                ],
                 "resultingDocumentLocation": "my-generated-document"
             }
         """.trimIndent()

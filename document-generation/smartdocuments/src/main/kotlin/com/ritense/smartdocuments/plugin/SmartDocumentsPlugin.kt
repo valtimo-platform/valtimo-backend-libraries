@@ -79,12 +79,13 @@ class SmartDocumentsPlugin(
         @PluginActionProperty templateGroup: String,
         @PluginActionProperty templateName: String,
         @PluginActionProperty format: String,
-        @PluginActionProperty templatePlaceholders: Map<String, String>,
+        @PluginActionProperty templateData: Array<TemplateDataEntry>,
         @PluginActionProperty resultingDocumentLocation: String,
     ) {
         val document = processDocumentService.getDocument(execution)
-        val templateData = getTemplateData(templatePlaceholders, execution)
-        val generatedDocument = generateDocument(templateGroup, templateName, templateData, DocumentFormatOption.valueOf(format))
+        val templateData = resolveTemplateData(templateData, execution)
+        val generatedDocument =
+            generateDocument(templateGroup, templateName, templateData, DocumentFormatOption.valueOf(format))
         publishDossierDocumentGeneratedEvent(document.id(), templateName)
         val tempFilePath = saveGeneratedDocumentToTempFile(generatedDocument)
         val generatedSmartDocumentFile = GeneratedSmartDocumentFile(
@@ -140,17 +141,15 @@ class SmartDocumentsPlugin(
         return smartDocumentsClient.generateDocumentStream(request, format)
     }
 
-    private fun getTemplateData(
-        templatePlaceholders: Map<String, String>,
+    private fun resolveTemplateData(
+        templateData: Array<TemplateDataEntry>,
         execution: DelegateExecution
     ): Map<String, Any> {
         val placeHolderValueMap = valueResolverService.resolveValues(
             execution.processInstanceId,
             execution,
-            templatePlaceholders.values.toList()
+            templateData.map { it.value }.toList()
         )
-        return templatePlaceholders.mapValues { (_, value) ->
-            placeHolderValueMap.getOrDefault(value, value)
-        }
+        return templateData.associate { it.key to placeHolderValueMap.getOrDefault(it.value, it.value) }
     }
 }
