@@ -130,6 +130,21 @@ internal class PluginServiceTest {
     }
 
     @Test
+    fun `should throw exception when required plugin property field is empty string`() {
+        val pluginDefinition = newPluginDefinition()
+        addPluginProperty(pluginDefinition)
+        newPluginConfiguration(pluginDefinition)
+
+        val exception = assertThrows(PluginPropertyRequiredException::class.java) {
+            pluginService
+                .createPluginConfiguration(
+                    "title", ObjectMapper().readTree("{\"name\": \"\"}"), "key"
+                )
+        }
+        assertEquals("Plugin property with name 'name' is required for plugin 'Test Plugin'", exception.message)
+    }
+
+    @Test
     fun `should throw exception when plugin property field has incorrect type`() {
         val pluginDefinition = newPluginDefinition()
         addPluginProperty(pluginDefinition)
