@@ -90,7 +90,8 @@
     <changeSet id="5" author="jhipster">
         <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists foreignKeyName="fk_evt_pers_audit_evt_data"/>
+                <foreignKeyConstraintExists foreignKeyTableName="jhi_persistent_audit_evt_data"
+                                            foreignKeyName="fk_evt_pers_audit_evt_data"/>
             </not>
         </preConditions>
 
