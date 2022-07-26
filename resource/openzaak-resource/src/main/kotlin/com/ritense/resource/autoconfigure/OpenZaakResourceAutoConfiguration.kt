@@ -23,18 +23,22 @@ import com.ritense.resource.service.OpenZaakService
 import com.ritense.resource.web.rest.OpenZaakResource
 import com.ritense.resource.web.rest.OpenZaakUploadResource
 import com.ritense.resource.web.rest.ResourceResource
-import javax.servlet.http.HttpServletRequest
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import javax.servlet.http.HttpServletRequest
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.resource.repository"])
 @EntityScan("com.ritense.resource.domain")
 class OpenZaakResourceAutoConfiguration {
 
+    @Primary
+    @Qualifier("openZaakService")
     @Bean
     @ConditionalOnMissingBean(OpenZaakService::class)
     fun openZaakService(

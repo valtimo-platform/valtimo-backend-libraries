@@ -15,6 +15,7 @@ dependencies {
     implementation(project(":document-generation:smartdocuments"))
     implementation(project(":openzaak"))
     implementation(project(":resource:openzaak-resource"))
+    implementation(project(":resource:temporary-resource"))
     implementation(project(":mail:local-mail"))
     implementation(project(":connector"))
     implementation(project(":objects-api"))
