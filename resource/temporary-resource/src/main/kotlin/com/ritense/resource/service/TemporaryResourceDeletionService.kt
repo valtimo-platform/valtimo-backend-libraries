@@ -33,9 +33,9 @@ open class TemporaryResourceDeletionService {
 
         TEMP_DIR.listDirectoryEntries().forEach { file ->
             try {
-                val attributes = Files.readAttributes(file, BasicFileAttributes::class.java)
+                val fileCreationTime = Files.readAttributes(file, BasicFileAttributes::class.java).creationTime()
 
-                if (attributes.creationTime().toInstant().plus(Duration.ofMinutes(5)) < Instant.now()) {
+                if (fileCreationTime.toInstant().plus(Duration.ofMinutes(5)) < Instant.now()) {
                     file.deleteIfExists()
                 }
             } catch (e: Exception) {

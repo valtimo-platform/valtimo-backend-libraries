@@ -19,8 +19,8 @@ pluginManager.withPlugin('maven-publish') {
         publications {
             maven(MavenPublication) {
                 pom {
-                    name = 'Local resource module'
-                    description = 'The temporary resource module is an implementation of the resource module.'
+                    name = 'Temporary resource module'
+                    description = 'The temporary resource module allows data to be stored on disk for a short period of time.'
                     developers {
                         developer {
                             id = "team-valtimo"

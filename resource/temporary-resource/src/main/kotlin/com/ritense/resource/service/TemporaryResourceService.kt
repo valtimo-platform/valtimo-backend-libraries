@@ -18,25 +18,19 @@ package com.ritense.resource.service
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ritense.resource.domain.MetadataType
-import com.ritense.resource.service.request.FileUploadRequest
-import com.ritense.resource.web.ResourceDTO
 import com.ritense.valtimo.contract.json.Mapper
-import com.ritense.valtimo.contract.resource.FileStatus
-import com.ritense.valtimo.contract.resource.Resource
-import org.springframework.web.multipart.MultipartFile
 import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.UUID
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.inputStream
 import kotlin.io.path.notExists
 import kotlin.io.path.readText
 
-class TemporaryResourceService : ResourceService {
+class TemporaryResourceService {
 
-    override fun store(inputStream: InputStream, metadata: Map<String, Any>): String {
+    fun store(inputStream: InputStream, metadata: Map<String, Any> = emptyMap()): String {
         val dataFile = Files.createTempFile(TEMP_DIR, "temporaryResource", ".tmp")
         dataFile.toFile().outputStream().use { inputStream.copyTo(it) }
 
@@ -48,7 +42,7 @@ class TemporaryResourceService : ResourceService {
         return metaDataFile.absolutePathString()
     }
 
-    override fun deleteResource(id: String): Boolean {
+    fun deleteResource(id: String): Boolean {
         val metaDataFile = Path(id)
         if (metaDataFile.notExists()) {
             return false
@@ -61,13 +55,13 @@ class TemporaryResourceService : ResourceService {
         return deleted
     }
 
-    override fun getResourceContentAsInputStream(id: String): InputStream {
+    fun getResourceContentAsInputStream(id: String): InputStream {
         val metadata = getResourceMetadata(id)
         val dataFile = Path(metadata[MetadataType.FILE_PATH.toString()] as String)
         return dataFile.inputStream()
     }
 
-    override fun getResourceMetadata(id: String): Map<String, Any> {
+    fun getResourceMetadata(id: String): Map<String, Any> {
         val metaDataFile = Path(id)
         if (metaDataFile.notExists()) {
             throw IllegalArgumentException("No resource found with id '$id'")
@@ -75,32 +69,6 @@ class TemporaryResourceService : ResourceService {
         val typeRef = object : TypeReference<Map<String, Any>>() {}
         return Mapper.INSTANCE.get().readValue(metaDataFile.readText(), typeRef)
     }
-
-    override fun store(key: String, multipartFile: MultipartFile) = throw NotImplementedError()
-    override fun store(key: String, multipartFile: MultipartFile, fileStatus: FileStatus) = throw NotImplementedError()
-    override fun store(documentDefinitionName: String, name: String, multipartFile: MultipartFile) =
-        throw NotImplementedError()
-
-    override fun store(key: String, fileUploadRequest: FileUploadRequest) = throw NotImplementedError()
-    override fun store(key: String, fileUploadRequest: FileUploadRequest, fileStatus: FileStatus) =
-        throw NotImplementedError()
-
-    override fun getResourceUrl(id: UUID) = throw NotImplementedError()
-    override fun getResourceUrl(fileName: String) = throw NotImplementedError()
-
-    override fun getResourceContent(id: UUID) = throw NotImplementedError()
-
-    override fun removeResource(id: UUID) = throw NotImplementedError()
-    override fun removeResource(key: String) = throw NotImplementedError()
-
-    override fun registerResource(resourceDTO: ResourceDTO) = throw NotImplementedError()
-
-    override fun getResource(id: UUID): Resource = throw NotImplementedError()
-    override fun getResourceByKey(fileName: String) = throw NotImplementedError()
-
-    override fun activate(id: UUID) = throw NotImplementedError()
-
-    override fun pending(id: UUID) = throw NotImplementedError()
 
     companion object {
         val TEMP_DIR: Path = Files.createTempDirectory("temporaryResourceDirectory")

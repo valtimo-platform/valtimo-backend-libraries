@@ -23,13 +23,10 @@ import com.ritense.resource.web.ResourceDTO
 import com.ritense.valtimo.contract.resource.FileStatus
 import com.ritense.valtimo.contract.resource.Resource
 import org.springframework.web.multipart.MultipartFile
-import java.io.InputStream
 import java.net.URL
 import java.util.UUID
 
 interface ResourceService {
-
-    fun store(inputStream: InputStream, metadata: Map<String, Any> = emptyMap()): String = TODO("Not yet implemented")
 
     fun store(key: String, multipartFile: MultipartFile): Resource
 
@@ -47,13 +44,7 @@ interface ResourceService {
 
     fun getResourceContent(id: UUID): ObjectContentDTO
 
-    fun getResourceContentAsInputStream(id: String): InputStream = TODO("Not yet implemented")
-
-    fun getResourceMetadata(id: String): Map<String, Any> = TODO("Not yet implemented")
-
     fun removeResource(id: UUID)
-
-    fun deleteResource(id: String): Boolean = TODO("Not yet implemented")
 
     fun registerResource(resourceDTO: ResourceDTO): ResourceDTO
 

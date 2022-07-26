@@ -15,7 +15,7 @@
  */
 
 dependencies {
-    api project(':resource')
+    api project(':contract')
 
     implementation "org.springframework.boot:spring-boot-starter-web"
 
