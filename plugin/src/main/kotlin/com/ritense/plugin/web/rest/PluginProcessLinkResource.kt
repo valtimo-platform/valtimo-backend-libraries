@@ -18,8 +18,8 @@ package com.ritense.plugin.web.rest
 
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
-import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
+import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
