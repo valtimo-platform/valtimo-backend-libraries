@@ -38,11 +38,11 @@ import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkCreateDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkResultDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkUpdateDto
 import com.ritense.valueresolver.ValueResolverService
+import mu.KotlinLogging
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import javax.validation.ValidationException
-import mu.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
 
 class PluginService(
     private val pluginDefinitionRepository: PluginDefinitionRepository,
@@ -241,7 +241,8 @@ class PluginService(
         pluginDefinition.pluginProperties.forEach { pluginProperty ->
             val propertyNode = properties[pluginProperty.fieldName]
 
-            if (propertyNode == null || propertyNode.isMissingNode || propertyNode.isNull) {
+            if (propertyNode == null || propertyNode.isMissingNode || propertyNode.isNull
+                || (propertyNode.isTextual && propertyNode.textValue().isEmpty())) {
                 if (pluginProperty.required) {
                     errors.add(PluginPropertyRequiredException(pluginProperty.fieldName, pluginDefinition.title))
                 }
