@@ -46,6 +46,7 @@ class SmartDocumentsDemoResource(
         @RequestParam templateGroup: String,
         @RequestParam templateName: String,
         @RequestParam format: String,
+        @RequestParam resultingDocumentLocation: String,
         @RequestParam templatePlaceholders: Map<String, String>,
     ): ResponseEntity<Void> {
         val variables = runtimeService.getVariables(processInstanceId)
@@ -56,6 +57,7 @@ class SmartDocumentsDemoResource(
                 templateGroup,
                 templateName,
                 DocumentFormatOption.valueOf(format),
+                resultingDocumentLocation,
                 templatePlaceholders
             )
         ))
@@ -77,6 +79,7 @@ data class SmartDocumentsPluginGenerateDocumentProperties(
     val templateGroup: String,
     val templateName: String,
     val format: DocumentFormatOption,
+    val resultingDocumentLocation: String,
     val templatePlaceholders: Map<String, String>
 )
 
@@ -107,7 +110,7 @@ data class DelegateExecutionSmall(
     override fun getVariableNames() = throw NotImplementedError()
     override fun getVariableNamesLocal() = throw NotImplementedError()
     override fun setVariable(variableName: String?, value: Any?, activityId: String?) = throw NotImplementedError()
-    override fun setVariable(variableName: String?, value: Any?) = throw NotImplementedError()
+    override fun setVariable(variableName: String?, value: Any?) {}
     override fun setVariableLocal(variableName: String?, value: Any?) = throw NotImplementedError()
     override fun setVariables(variables: MutableMap<String, out Any>?) = throw NotImplementedError()
     override fun setVariablesLocal(variables: MutableMap<String, out Any>?) = throw NotImplementedError()
