@@ -87,9 +87,15 @@ class SmartDocumentsAutoConfiguration {
     fun smartDocumentsClient(
         smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
         smartDocumentsWebClientBuilder: WebClient.Builder,
-        @Value("\${valtimo.smartdocuments.max-file-size-mb:10}") maxFileSize: Int
+        @Value("\${valtimo.smartdocuments.max-file-size-mb:10}") maxFileSize: Int,
+        temporaryResourceStorageService: TemporaryResourceStorageService,
     ): SmartDocumentsClient {
-        return SmartDocumentsClient(smartDocumentsConnectorProperties, smartDocumentsWebClientBuilder, maxFileSize)
+        return SmartDocumentsClient(
+            smartDocumentsConnectorProperties,
+            smartDocumentsWebClientBuilder,
+            maxFileSize,
+            temporaryResourceStorageService
+        )
     }
 
     @Bean
