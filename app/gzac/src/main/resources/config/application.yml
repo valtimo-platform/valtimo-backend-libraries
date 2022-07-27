@@ -208,6 +208,7 @@ scheduling:
             syncAuth0LogsEvents: 0 0 3 * * ? # Every day at 3:00
             cleanupAuditEvents: 0 0 4 * * ? # Every day at 00:00
             taskNotificationReminder: 0 0 10 * * ? # Every day at 10:00
+            cleanupTemporaryResources: 0 */5 * * * ? # Every 5 minutes
 camunda:
     bpm:
         history-level: AUDIT

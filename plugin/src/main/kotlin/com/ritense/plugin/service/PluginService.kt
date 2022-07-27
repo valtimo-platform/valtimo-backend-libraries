@@ -18,6 +18,7 @@ package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -200,7 +201,7 @@ class PluginService(
             }.mapNotNull { param ->
                 param to actionProperties.get(param.name)
             }.toMap()
-            .filterValues { it.isTextual }
+            .filterValues { it != null && it.isTextual }
             .mapValues {
                 it.value.textValue()
             }.run {
@@ -209,7 +210,7 @@ class PluginService(
             }
 
         return paramValues.mapValues { (param, value) ->
-                if (value.isTextual) {
+                if (value != null && value.isTextual) {
                     placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
                 } else {
                     objectMapper.treeToValue(value, param.type)
@@ -241,7 +242,8 @@ class PluginService(
         pluginDefinition.pluginProperties.forEach { pluginProperty ->
             val propertyNode = properties[pluginProperty.fieldName]
 
-            if (propertyNode == null || propertyNode.isMissingNode || propertyNode.isNull) {
+            if (propertyNode == null || propertyNode.isMissingNode || propertyNode.isNull ||
+                (propertyNode is TextNode && propertyNode.textValue() == "")) {
                 if (pluginProperty.required) {
                     errors.add(PluginPropertyRequiredException(pluginProperty.fieldName, pluginDefinition.title))
                 }

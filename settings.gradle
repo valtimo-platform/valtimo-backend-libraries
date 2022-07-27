@@ -35,6 +35,7 @@ include(
         "form-flow",
         "form-flow-valtimo",
         "form-link",
+        "gradle:license-report",
         "haalcentraal",
         "haalcentraal:haalcentraal-brp",
         "keycloak-iam",
@@ -52,9 +53,9 @@ include(
         "resource",
         "resource:local-resource",
         "resource:openzaak-resource",
+        "resource:temporary-resource-storage",
         "test-utils-common",
         "value-resolver",
         "view-configurator",
         "web"
 )
-

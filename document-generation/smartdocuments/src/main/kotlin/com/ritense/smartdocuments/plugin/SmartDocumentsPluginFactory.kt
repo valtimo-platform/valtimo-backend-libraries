@@ -15,27 +15,27 @@
  */
 package com.ritense.smartdocuments.plugin
 
-import com.ritense.document.service.DocumentService
 import com.ritense.plugin.PluginFactory
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.resource.service.ResourceService
+import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
+import com.ritense.valueresolver.ValueResolverService
 import org.springframework.context.ApplicationEventPublisher
 
 class SmartDocumentsPluginFactory(
-    private val documentService: DocumentService,
-    private val resourceService: ResourceService,
     private val processDocumentService: ProcessDocumentService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val smartDocumentsClient: SmartDocumentsClient,
+    private val valueResolverService: ValueResolverService,
+    private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ) : PluginFactory<SmartDocumentsPlugin>() {
     override fun create(): SmartDocumentsPlugin {
         return SmartDocumentsPlugin(
-            documentService,
-            resourceService,
             processDocumentService,
             applicationEventPublisher,
-            smartDocumentsClient
+            smartDocumentsClient,
+            valueResolverService,
+            temporaryResourceStorageService
         )
     }
 }
