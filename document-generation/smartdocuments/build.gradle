@@ -30,6 +30,7 @@ dependencies {
     implementation project(':plugin')
     implementation project(':process-document')
     implementation project(':resource')
+    implementation project(':resource:temporary-resource-storage')
     implementation project(':value-resolver')
     api project(':document-generation')
 

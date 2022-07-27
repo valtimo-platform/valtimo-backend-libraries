@@ -22,29 +22,21 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.resource.domain.MetadataType
+import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.FileStreamResponse
-import com.ritense.smartdocuments.domain.GeneratedSmartDocumentFile
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.utils.RequestHelper
 import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
-import java.nio.file.Files
-import java.nio.file.Path
-import java.time.Duration
-import java.time.Instant
 import java.time.LocalDateTime
 import java.util.UUID
-import kotlin.io.path.deleteIfExists
-import kotlin.io.path.outputStream
-import kotlin.io.path.pathString
 
 @Plugin(
     key = "smartdocuments",
@@ -55,8 +47,8 @@ class SmartDocumentsPlugin(
     private val processDocumentService: ProcessDocumentService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val smartDocumentsClient: SmartDocumentsClient,
-    private val threadPoolTaskScheduler: ThreadPoolTaskScheduler,
     private val valueResolverService: ValueResolverService,
+    private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ) {
 
     @PluginProperty(key = "url", required = true)
@@ -86,23 +78,13 @@ class SmartDocumentsPlugin(
         val resolvedTemplateData = resolveTemplateData(templateData, execution)
         val generatedDocument = generateDocument(templateGroup, templateName, resolvedTemplateData, DocumentFormatOption.valueOf(format))
         publishDossierDocumentGeneratedEvent(document.id(), templateName)
-        val tempFilePath = saveGeneratedDocumentToTempFile(generatedDocument)
-        val generatedSmartDocumentFile = GeneratedSmartDocumentFile(
-            generatedDocument.filename,
-            generatedDocument.extension,
-            tempFilePath.pathString,
-        )
-        execution.setVariable(
-            resultingDocumentLocation,
-            Mapper.INSTANCE.get().convertValue(generatedSmartDocumentFile, Map::class.java)
-        )
+        val resourceId = saveGeneratedDocumentToTempFile(generatedDocument)
+        execution.setVariable(resultingDocumentLocation, resourceId)
     }
 
-    private fun saveGeneratedDocumentToTempFile(generatedDocument: FileStreamResponse): Path {
-        val tempFile = Files.createTempFile("tempSmartDocument", ".${generatedDocument.extension}")
-        tempFile.outputStream().use { tempFileOut -> generatedDocument.documentData.copyTo(tempFileOut) }
-        threadPoolTaskScheduler.schedule({ tempFile.deleteIfExists() }, Instant.now().plus(Duration.ofMinutes(5)))
-        return tempFile.toAbsolutePath()
+    private fun saveGeneratedDocumentToTempFile(generatedDocument: FileStreamResponse): String {
+        val metadata = mapOf(MetadataType.FILE_NAME.name to generatedDocument.filename)
+        return temporaryResourceStorageService.store(generatedDocument.documentData, metadata)
     }
 
     private fun publishDossierDocumentGeneratedEvent(

@@ -17,25 +17,25 @@ package com.ritense.smartdocuments.plugin
 
 import com.ritense.plugin.PluginFactory
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 
 class SmartDocumentsPluginFactory(
     private val processDocumentService: ProcessDocumentService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val smartDocumentsClient: SmartDocumentsClient,
-    private val threadPoolTaskScheduler: ThreadPoolTaskScheduler,
     private val valueResolverService: ValueResolverService,
+    private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ) : PluginFactory<SmartDocumentsPlugin>() {
     override fun create(): SmartDocumentsPlugin {
         return SmartDocumentsPlugin(
             processDocumentService,
             applicationEventPublisher,
             smartDocumentsClient,
-            threadPoolTaskScheduler,
             valueResolverService,
+            temporaryResourceStorageService
         )
     }
 }

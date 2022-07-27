@@ -24,6 +24,8 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.resource.domain.MetadataType
+import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.BaseSmartDocumentsIntegrationTest
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.valtimo.contract.json.Mapper
@@ -37,7 +39,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.http.HttpMethod
 import org.springframework.transaction.annotation.Transactional
-import java.io.File
 import java.util.UUID
 
 @Transactional
@@ -65,6 +66,9 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
 
     @Autowired
     lateinit var runtimeService: RuntimeService
+
+    @Autowired
+    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
 
     lateinit var smartDocumentsPlugin: SmartDocumentsPlugin
 
@@ -144,13 +148,14 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
         processDocumentService.newDocumentAndStartProcess(request)
 
         // then
-        val generatedDocument = runtimeService.createVariableInstanceQuery()
+        val resourceId = runtimeService.createVariableInstanceQuery()
             .variableName("my-generated-document")
             .singleResult()
-            .value as Map<*, *>
-        assertThat(generatedDocument["fileName"]).isEqualTo("integration-test_answer.xml")
-        assertThat(generatedDocument["fileExtension"]).isEqualTo("xml")
-        assertThat(File(generatedDocument["filePath"] as String).readText()).isEqualToIgnoringWhitespace(
+            .value as String
+        val metadata = temporaryResourceStorageService.getResourceMetadata(resourceId)
+        val content = temporaryResourceStorageService.getResourceContentAsInputStream(resourceId).reader().readText()
+        assertThat(metadata[MetadataType.FILE_NAME.name]).isEqualTo("integration-test_answer.xml")
+        assertThat(content).isEqualToIgnoringWhitespace(
             """
             <?xml version="1.0" encoding="UTF-8"?>
             <root>

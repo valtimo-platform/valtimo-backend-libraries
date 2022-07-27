@@ -24,6 +24,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.ResourceService
+import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.smartdocuments.connector.SmartDocumentsConnector
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
@@ -44,7 +45,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
 import org.springframework.core.annotation.Order
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import reactor.netty.transport.logging.AdvancedByteBufFormat
@@ -133,15 +133,15 @@ class SmartDocumentsAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         applicationEventPublisher: ApplicationEventPublisher,
         smartDocumentsClient: SmartDocumentsClient,
-        threadPoolTaskScheduler: ThreadPoolTaskScheduler,
         valueResolverService: ValueResolverService,
+        temporaryResourceStorageService: TemporaryResourceStorageService,
     ): PluginFactory<SmartDocumentsPlugin> {
         return SmartDocumentsPluginFactory(
             processDocumentService,
             applicationEventPublisher,
             smartDocumentsClient,
-            threadPoolTaskScheduler,
-            valueResolverService
+            valueResolverService,
+            temporaryResourceStorageService,
         )
     }
 
@@ -159,14 +159,5 @@ class SmartDocumentsAutoConfiguration {
         runtimeService: RuntimeService,
     ): SmartDocumentsDemoResource {
         return SmartDocumentsDemoResource(pluginService, runtimeService)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(ThreadPoolTaskScheduler::class)
-    fun threadPoolTaskScheduler(): ThreadPoolTaskScheduler {
-        val threadPoolTaskScheduler = ThreadPoolTaskScheduler()
-        threadPoolTaskScheduler.poolSize = 5
-        threadPoolTaskScheduler.threadNamePrefix = "ThreadPoolTaskScheduler"
-        return threadPoolTaskScheduler
     }
 }
