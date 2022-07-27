@@ -19,8 +19,9 @@ package com.ritense.plugin.web.rest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.dto.CreatePluginConfiguration
-import com.ritense.plugin.web.rest.dto.UpdatePluginConfiguration
+import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
+import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
+import com.ritense.plugin.web.rest.result.PluginConfigurationDto
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -32,11 +33,10 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
-import javax.websocket.server.PathParam
 
 @RestController
 @RequestMapping(value = ["/api/plugin"])
-class PluginInstanceResource(
+class PluginConfigurationResource(
     private var pluginService: PluginService
 ) {
 
@@ -47,13 +47,15 @@ class PluginInstanceResource(
 
     @PostMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun createPluginConfiguration(
-        @RequestBody createPluginConfiguration: CreatePluginConfiguration
-    ): ResponseEntity<PluginConfiguration> {
+        @RequestBody createPluginConfiguration: CreatePluginConfigurationDto
+    ): ResponseEntity<PluginConfigurationDto> {
         return ResponseEntity.ok(
-            pluginService.createPluginConfiguration(
-                createPluginConfiguration.title,
-                createPluginConfiguration.properties,
-                createPluginConfiguration.definitionKey
+            PluginConfigurationDto(
+                pluginService.createPluginConfiguration(
+                    createPluginConfiguration.title,
+                    createPluginConfiguration.properties,
+                    createPluginConfiguration.definitionKey
+                )
             )
         )
     }
@@ -61,7 +63,7 @@ class PluginInstanceResource(
     @PutMapping(value = ["/configuration/{pluginConfigurationId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun updatePluginConfiguration(
         @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID,
-        @RequestBody updatePluginConfiguration: UpdatePluginConfiguration
+        @RequestBody updatePluginConfiguration: UpdatePluginConfigurationDto
     ): ResponseEntity<PluginConfiguration> {
         return ResponseEntity.ok(
             pluginService.updatePluginConfiguration(

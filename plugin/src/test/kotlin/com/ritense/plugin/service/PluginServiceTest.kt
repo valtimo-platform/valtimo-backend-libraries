@@ -17,6 +17,7 @@
 package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
@@ -94,7 +95,7 @@ internal class PluginServiceTest {
 
         pluginService
             .createPluginConfiguration(
-                "title", ObjectMapper().readTree("{\"name\": \"whatever\" }"), "key"
+                "title", ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode, "key"
             )
         verify(pluginConfigurationRepository).save(any())
     }
@@ -108,7 +109,7 @@ internal class PluginServiceTest {
         val exception = assertThrows(PluginPropertyRequiredException::class.java) {
             pluginService
                 .createPluginConfiguration(
-                    "title", ObjectMapper().readTree("{}"), "key"
+                    "title", ObjectMapper().readTree("{}") as ObjectNode, "key"
                 )
         }
         assertEquals("Plugin property with name 'name' is required for plugin 'Test Plugin'", exception.message)
@@ -123,7 +124,7 @@ internal class PluginServiceTest {
         val exception = assertThrows(PluginPropertyRequiredException::class.java) {
             pluginService
                 .createPluginConfiguration(
-                    "title", ObjectMapper().readTree("{\"name\": null}"), "key"
+                    "title", ObjectMapper().readTree("{\"name\": null}") as ObjectNode, "key"
                 )
         }
         assertEquals("Plugin property with name 'name' is required for plugin 'Test Plugin'", exception.message)
@@ -138,7 +139,7 @@ internal class PluginServiceTest {
         val exception = assertThrows(PluginPropertyRequiredException::class.java) {
             pluginService
                 .createPluginConfiguration(
-                    "title", ObjectMapper().readTree("{\"name\": \"\"}"), "key"
+                    "title", ObjectMapper().readTree("{\"name\": \"\"}") as ObjectNode, "key"
                 )
         }
         assertEquals("Plugin property with name 'name' is required for plugin 'Test Plugin'", exception.message)
@@ -153,7 +154,7 @@ internal class PluginServiceTest {
         val exception = assertThrows(PluginPropertyParseException::class.java) {
             pluginService
                 .createPluginConfiguration(
-                    "title", ObjectMapper().readTree("{\"name\": [\"incorrect-type\"]}"), "key"
+                    "title", ObjectMapper().readTree("{\"name\": [\"incorrect-type\"]}") as ObjectNode, "key"
                 )
         }
         assertEquals("Plugin property with name 'name' failed to parse for plugin 'Test Plugin'", exception.message)
@@ -166,7 +167,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
 
         val pluginConfigurationCaptor = argumentCaptor<PluginConfiguration>()
-        val newProperties = ObjectMapper().readTree("{\"name\": \"whatever\" }")
+        val newProperties = ObjectMapper().readTree("{\"name\": \"whatever\" }")  as ObjectNode
 
         whenever(pluginConfigurationRepository.getById(pluginConfiguration.id)).thenReturn(pluginConfiguration)
 
@@ -262,6 +263,7 @@ internal class PluginServiceTest {
                 PluginPropertyId("property1", pluginDefinition),
                 "property1",
                 true,
+                false,
                 "name",
                 String::class.java.name
             )
@@ -272,7 +274,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            ObjectMapper().readTree("{\"name\": \"whatever\" }"),
+            ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode,
             pluginDefinition
         )
         whenever(pluginConfigurationRepository.save(any())).thenReturn(pluginConfiguration)

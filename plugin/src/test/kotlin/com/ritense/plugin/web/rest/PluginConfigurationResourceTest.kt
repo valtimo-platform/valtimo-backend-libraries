@@ -16,8 +16,8 @@
 
 package com.ritense.plugin.web.rest
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -26,8 +26,8 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.dto.CreatePluginConfiguration
-import com.ritense.plugin.web.rest.dto.UpdatePluginConfiguration
+import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
+import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
 import com.ritense.valtimo.contract.json.Mapper
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
@@ -45,26 +45,26 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 
-internal class PluginInstanceResourceTest {
+internal class PluginConfigurationResourceTest {
 
     lateinit var mockMvc: MockMvc
     lateinit var pluginService: PluginService
-    lateinit var pluginInstanceResource: PluginInstanceResource
+    lateinit var pluginConfigurationResource: PluginConfigurationResource
 
     @BeforeEach
     fun init() {
         pluginService = mock()
-        pluginInstanceResource = PluginInstanceResource(pluginService)
+        pluginConfigurationResource = PluginConfigurationResource(pluginService)
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(pluginInstanceResource)
+            .standaloneSetup(pluginConfigurationResource)
             .build()
     }
 
     @Test
     fun `should get plugin configurations`() {
-        val properties1: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
-        val properties2: JsonNode = ObjectMapper().readTree("{\"other\": \"something\" }")
+        val properties1: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
+        val properties2: ObjectNode = ObjectMapper().readTree("{\"other\": \"something\" }") as ObjectNode
         val plugin = PluginDefinition("key", "title", "description", "className")
         val plugin2 = PluginDefinition("key2", "title2", "description2", "className2")
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties1, plugin)
@@ -120,12 +120,13 @@ internal class PluginInstanceResourceTest {
 
     @Test
     fun `should save plugin configuration`() {
-        val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
+        val properties: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
         val plugin = PluginDefinition("key", "title", "description", "className")
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties, plugin)
+
         whenever(pluginService.createPluginConfiguration(any(), any(), any())).thenReturn(pluginConfiguration)
 
-        val pluginConfiguratieDto = CreatePluginConfiguration(
+        val pluginConfiguratieDto = CreatePluginConfigurationDto(
             "title",
             properties,
             "key"
@@ -166,13 +167,13 @@ internal class PluginInstanceResourceTest {
 
     @Test
     fun `should update plugin configuration`() {
-        val properties: JsonNode = ObjectMapper().readTree("{\"name\": \"whatever\" }")
+        val properties: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
         val plugin = PluginDefinition("key", "title", "description", "className")
         val pluginConfigurationId = UUID.randomUUID()
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.existingId(pluginConfigurationId), "title", properties, plugin)
         whenever(pluginService.updatePluginConfiguration(any(), any(), any())).thenReturn(pluginConfiguration)
 
-        val pluginConfiguratieDto = UpdatePluginConfiguration(
+        val pluginConfiguratieDto = UpdatePluginConfigurationDto(
             "title",
             properties
         )

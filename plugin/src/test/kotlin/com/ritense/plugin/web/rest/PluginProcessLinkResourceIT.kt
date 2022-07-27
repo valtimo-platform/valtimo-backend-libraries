@@ -25,8 +25,8 @@ import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
-import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkCreateDto
-import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkUpdateDto
+import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
+import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
 import java.nio.charset.StandardCharsets
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach

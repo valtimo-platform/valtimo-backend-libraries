@@ -16,8 +16,8 @@
 
 package com.ritense.plugin.service
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.annotation.PluginAction
@@ -34,10 +34,10 @@ import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
-import com.ritense.plugin.web.rest.dto.PluginActionDefinitionDto
-import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkCreateDto
-import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkResultDto
-import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkUpdateDto
+import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
+import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
+import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
+import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.valueresolver.ValueResolverService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -65,7 +65,7 @@ class PluginService(
 
     fun createPluginConfiguration(
         title: String,
-        properties: JsonNode,
+        properties: ObjectNode,
         pluginDefinitionKey: String
     ): PluginConfiguration {
         val pluginDefinition = pluginDefinitionRepository.getById(pluginDefinitionKey)
@@ -79,14 +79,16 @@ class PluginService(
     fun updatePluginConfiguration(
         pluginConfigurationId: PluginConfigurationId,
         title: String,
-        properties: JsonNode,
+        properties: ObjectNode,
     ): PluginConfiguration {
-        val pluginDefinition = pluginConfigurationRepository.getById(pluginConfigurationId)
+        val pluginConfiguration = pluginConfigurationRepository.getById(pluginConfigurationId)
 
-        pluginDefinition.title = title
-        pluginDefinition.properties = properties
+        pluginConfiguration.title = title
+        pluginConfiguration.updateProperties(properties)
 
-        return pluginConfigurationRepository.save(pluginDefinition)
+        validateProperties(pluginConfiguration.properties!!, pluginConfiguration.pluginDefinition)
+
+        return pluginConfigurationRepository.save(pluginConfiguration)
     }
 
     fun deletePluginConfiguration(
@@ -166,7 +168,7 @@ class PluginService(
         method.invoke(instance, *methodArguments)
     }
 
-    private fun resolveMethodArguments(method: Method, execution: DelegateExecution, actionProperties: JsonNode?): Array<Any?> {
+    private fun resolveMethodArguments(method: Method, execution: DelegateExecution, actionProperties: ObjectNode?): Array<Any?> {
 
         val actionParamValueMap = resolveActionParamValues(execution, method, actionProperties)
 
@@ -182,7 +184,7 @@ class PluginService(
         }.toTypedArray()
     }
 
-    private fun resolveActionParamValues(execution: DelegateExecution, method: Method, actionProperties: JsonNode?) : Map<Parameter, Any> {
+    private fun resolveActionParamValues(execution: DelegateExecution, method: Method, actionProperties: ObjectNode?) : Map<Parameter, Any> {
         if (actionProperties == null) {
             return mapOf()
         }
@@ -235,9 +237,7 @@ class PluginService(
         return method
     }
 
-    private fun validateProperties(properties: JsonNode, pluginDefinition: PluginDefinition) {
-        assert(properties.isObject)
-
+    private fun validateProperties(properties: ObjectNode, pluginDefinition: PluginDefinition) {
         val errors = mutableListOf<Throwable>()
         pluginDefinition.pluginProperties.forEach { pluginProperty ->
             val propertyNode = properties[pluginProperty.fieldName]

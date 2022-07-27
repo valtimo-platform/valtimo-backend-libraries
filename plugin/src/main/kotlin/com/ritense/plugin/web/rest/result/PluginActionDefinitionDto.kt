@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest.dto.processlink
+package com.ritense.plugin.web.rest.result
 
-import com.fasterxml.jackson.databind.JsonNode
-import java.util.UUID
-
-data class PluginProcessLinkResultDto (
-    val id: UUID,
-    val processDefinitionId: String,
-    val activityId: String,
-    val pluginConfigurationId: UUID,
-    val pluginActionDefinitionKey: String,
-    val actionProperties: JsonNode? = null
+class PluginActionDefinitionDto(
+    val key: String,
+    val title: String,
+    val description: String
 )

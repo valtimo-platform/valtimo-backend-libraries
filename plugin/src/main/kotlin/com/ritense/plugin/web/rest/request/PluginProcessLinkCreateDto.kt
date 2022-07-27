@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest.dto
+package com.ritense.plugin.web.rest.request
 
-class PluginActionDefinitionDto(
-    val key: String,
-    val title: String,
-    val description: String
+import com.fasterxml.jackson.databind.node.ObjectNode
+import java.util.UUID
+
+data class PluginProcessLinkCreateDto(
+    val processDefinitionId: String,
+    val activityId: String,
+    val pluginConfigurationId: UUID,
+    val pluginActionDefinitionKey: String,
+    val actionProperties: ObjectNode? = null
 )

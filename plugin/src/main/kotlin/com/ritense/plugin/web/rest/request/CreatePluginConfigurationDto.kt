@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest.dto
+package com.ritense.plugin.web.rest.request
 
-import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 
-class UpdatePluginConfiguration(
+class CreatePluginConfigurationDto(
     val title: String,
-    val properties: JsonNode
+    val properties: ObjectNode,
+    val definitionKey: String
 )

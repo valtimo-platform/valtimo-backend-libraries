@@ -30,11 +30,11 @@ import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
 class TestPlugin(
     val someObject: String
 ) : TestPluginParent() {
-    @PluginProperty(key = "property1")
+    @PluginProperty(key = "property1", secret = true)
     lateinit var property1: String
-    @PluginProperty(key = "property2", required = false)
+    @PluginProperty(key = "property2", required = false, secret = false)
     var property2: Boolean? = null
-    @PluginProperty(key = "property3")
+    @PluginProperty(key = "property3", secret = false)
     lateinit var property3: Number
 
     @PluginAction(

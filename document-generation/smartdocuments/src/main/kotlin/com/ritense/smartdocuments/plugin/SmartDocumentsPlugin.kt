@@ -51,13 +51,13 @@ class SmartDocumentsPlugin(
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ) {
 
-    @PluginProperty(key = "url", required = true)
+    @PluginProperty(key = "url", required = true, secret = false)
     private lateinit var url: String
 
-    @PluginProperty(key = "username", required = true)
+    @PluginProperty(key = "username", required = true, secret = false)
     private lateinit var username: String
 
-    @PluginProperty(key = "password", required = true)
+    @PluginProperty(key = "password", required = true, secret = true)
     private lateinit var password: String
 
     @PluginAction(
