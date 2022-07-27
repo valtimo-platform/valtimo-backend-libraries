@@ -28,7 +28,7 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.notExists
 import kotlin.io.path.readText
 
-class TemporaryResourceService {
+class TemporaryResourceStorageService {
 
     fun store(inputStream: InputStream, metadata: Map<String, Any> = emptyMap()): String {
         val dataFile = Files.createTempFile(TEMP_DIR, "temporaryResource", ".tmp")

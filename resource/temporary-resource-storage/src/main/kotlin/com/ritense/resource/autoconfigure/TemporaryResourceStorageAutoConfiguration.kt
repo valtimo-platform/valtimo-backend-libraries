@@ -16,27 +16,27 @@
 
 package com.ritense.resource.autoconfigure
 
-import com.ritense.resource.service.TemporaryResourceDeletionService
-import com.ritense.resource.service.TemporaryResourceService
+import com.ritense.resource.service.TemporaryResourceStorageDeletionService
+import com.ritense.resource.service.TemporaryResourceStorageService
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class TemporaryResourceAutoConfiguration {
+class TemporaryResourceStorageAutoConfiguration {
 
-    @Qualifier("temporaryResourceService")
+    @Qualifier("temporaryResourceStorageService")
     @Bean
-    @ConditionalOnMissingBean(TemporaryResourceService::class)
-    fun temporaryResourceService(): TemporaryResourceService {
-        return TemporaryResourceService()
+    @ConditionalOnMissingBean(TemporaryResourceStorageService::class)
+    fun temporaryResourceStorageService(): TemporaryResourceStorageService {
+        return TemporaryResourceStorageService()
     }
 
     @Bean
-    @ConditionalOnMissingBean(TemporaryResourceDeletionService::class)
-    fun temporaryResourceDeletionService(): TemporaryResourceDeletionService {
-        return TemporaryResourceDeletionService()
+    @ConditionalOnMissingBean(TemporaryResourceStorageDeletionService::class)
+    fun temporaryResourceStorageDeletionService(): TemporaryResourceStorageDeletionService {
+        return TemporaryResourceStorageDeletionService()
     }
 
 }

@@ -25,17 +25,17 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TemporaryResourceServiceIntegrationTest : BaseIntegrationTest() {
+class TemporaryResourceStorageServiceIntegrationTest : BaseIntegrationTest() {
 
     @Autowired
-    lateinit var temporaryResourceService: TemporaryResourceService
+    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
 
     @Test
     fun `should store and get resource as inputStream`() {
         val fileData = "My file data"
 
-        val resourceId = temporaryResourceService.store(fileData.byteInputStream())
-        val result = temporaryResourceService.getResourceContentAsInputStream(resourceId)
+        val resourceId = temporaryResourceStorageService.store(fileData.byteInputStream())
+        val result = temporaryResourceStorageService.getResourceContentAsInputStream(resourceId)
 
         assertThat(result.reader().readText()).isEqualTo(fileData)
     }
@@ -45,24 +45,24 @@ class TemporaryResourceServiceIntegrationTest : BaseIntegrationTest() {
         val fileData = "My file data"
         val fileName = "test.txt"
 
-        val resourceId = temporaryResourceService.store(
+        val resourceId = temporaryResourceStorageService.store(
             fileData.byteInputStream(),
             mapOf(MetadataType.FILE_NAME.toString() to fileName)
         )
 
-        val metadata = temporaryResourceService.getResourceMetadata(resourceId)
+        val metadata = temporaryResourceStorageService.getResourceMetadata(resourceId)
         assertThat(metadata[MetadataType.FILE_NAME.toString()]).isEqualTo(fileName)
     }
 
     @Test
     fun `should delete resource`() {
-        val resourceId = temporaryResourceService.store("My file data".byteInputStream())
+        val resourceId = temporaryResourceStorageService.store("My file data".byteInputStream())
 
-        val deleted = temporaryResourceService.deleteResource(resourceId)
+        val deleted = temporaryResourceStorageService.deleteResource(resourceId)
 
         assertThat(deleted).isTrue
         val exception = assertThrows<IllegalArgumentException> {
-            temporaryResourceService.getResourceContentAsInputStream(resourceId)
+            temporaryResourceStorageService.getResourceContentAsInputStream(resourceId)
         }
         assertThat(exception.message).isEqualTo("No resource found with id '$resourceId'")
     }

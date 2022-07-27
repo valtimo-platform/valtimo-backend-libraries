@@ -30,25 +30,25 @@ import java.time.Instant
 import kotlin.io.path.Path
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TemporaryResourceDeletionServiceIntegrationTest : BaseIntegrationTest() {
+class TemporaryResourceStorageDeletionServiceIntegrationTest : BaseIntegrationTest() {
 
     @Autowired
-    lateinit var temporaryResourceService: TemporaryResourceService
+    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
 
     @Autowired
-    lateinit var temporaryResourceDeletionService: TemporaryResourceDeletionService
+    lateinit var temporaryResourceStorageDeletionService: TemporaryResourceStorageDeletionService
 
     @Test
     fun `should delete files older that 5 minutes`() {
-        val resourceId = temporaryResourceService.store("My file data".byteInputStream())
+        val resourceId = temporaryResourceStorageService.store("My file data".byteInputStream())
         val attributes = Files.getFileAttributeView(Path(resourceId), BasicFileAttributeView::class.java)
         val time = FileTime.from(Instant.now().minus(Duration.ofMinutes(5)))
         attributes.setTimes(time, time, time)
 
-        temporaryResourceDeletionService.deleteOldTemporaryResources()
+        temporaryResourceStorageDeletionService.deleteOldTemporaryResources()
 
         val exception = assertThrows<IllegalArgumentException> {
-            temporaryResourceService.getResourceContentAsInputStream(resourceId)
+            temporaryResourceStorageService.getResourceContentAsInputStream(resourceId)
         }
         assertThat(exception.message).isEqualTo("No resource found with id '$resourceId'")
     }

@@ -27,7 +27,7 @@ dependencies {
     jar {
         enabled = true
         manifest {
-            attributes("Implementation-Title": "Ritense Temporary-Resource spring boot starter")
+            attributes("Implementation-Title": "Ritense Temporary Resource Storage spring boot starter")
             attributes("Implementation-Version": projectVersion)
         }
     }
