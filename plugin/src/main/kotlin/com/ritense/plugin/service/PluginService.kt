@@ -18,6 +18,7 @@ package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -241,7 +242,8 @@ class PluginService(
         pluginDefinition.pluginProperties.forEach { pluginProperty ->
             val propertyNode = properties[pluginProperty.fieldName]
 
-            if (propertyNode == null || propertyNode.isMissingNode || propertyNode.isNull) {
+            if (propertyNode == null || propertyNode.isMissingNode || propertyNode.isNull ||
+                (propertyNode is TextNode && propertyNode.textValue() == "")) {
                 if (pluginProperty.required) {
                     errors.add(PluginPropertyRequiredException(pluginProperty.fieldName, pluginDefinition.title))
                 }
