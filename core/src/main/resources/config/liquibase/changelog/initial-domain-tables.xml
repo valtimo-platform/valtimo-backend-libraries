@@ -110,7 +110,8 @@
             <and>
                 <and>
                     <not>
-                        <foreignKeyConstraintExists foreignKeyName="fk_choicefieldvalue_choicefield_id"/>
+                        <foreignKeyConstraintExists foreignKeyTableName="choice_field_values"
+                                                    foreignKeyName="fk_choicefieldvalue_choicefield_id"/>
                     </not>
                     <columnExists tableName="choice_field_values" columnName="choice_field_id"/>
                 </and>
@@ -190,7 +191,8 @@
 
     <changeSet id="13" author="Niels Leemburg">
         <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="fk_choicefieldvalue_choicefield_id"/>
+            <foreignKeyConstraintExists foreignKeyTableName="choice_field_values"
+                                        foreignKeyName="fk_choicefieldvalue_choicefield_id"/>
         </preConditions>
         <dropForeignKeyConstraint
                 baseTableName="choice_field_values"
