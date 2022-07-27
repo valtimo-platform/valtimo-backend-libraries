@@ -72,14 +72,14 @@ class SmartDocumentsPlugin(
         @PluginActionProperty templateName: String,
         @PluginActionProperty format: String,
         @PluginActionProperty templateData: Array<TemplateDataEntry>,
-        @PluginActionProperty resultingDocumentLocation: String,
+        @PluginActionProperty resultingDocumentProcessVariableName: String,
     ) {
         val document = processDocumentService.getDocument(execution)
         val resolvedTemplateData = resolveTemplateData(templateData, execution)
         val generatedDocument = generateDocument(templateGroup, templateName, resolvedTemplateData, DocumentFormatOption.valueOf(format))
         publishDossierDocumentGeneratedEvent(document.id(), templateName)
         val resourceId = saveGeneratedDocumentToTempFile(generatedDocument)
-        execution.setVariable(resultingDocumentLocation, resourceId)
+        execution.setVariable(resultingDocumentProcessVariableName, resourceId)
     }
 
     private fun saveGeneratedDocumentToTempFile(generatedDocument: FileStreamResponse): String {
