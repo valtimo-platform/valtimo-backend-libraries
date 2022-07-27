@@ -39,11 +39,11 @@ import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkCreateDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkResultDto
 import com.ritense.plugin.web.rest.dto.processlink.PluginProcessLinkUpdateDto
 import com.ritense.valueresolver.ValueResolverService
+import mu.KotlinLogging
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import javax.validation.ValidationException
-import mu.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
 
 class PluginService(
     private val pluginDefinitionRepository: PluginDefinitionRepository,
@@ -199,7 +199,7 @@ class PluginService(
             }.mapNotNull { param ->
                 param to actionProperties.get(param.name)
             }.toMap()
-            .filterValues { it.isTextual }
+            .filterValues { it != null && it.isTextual }
             .mapValues {
                 it.value.textValue()
             }.run {
@@ -208,7 +208,7 @@ class PluginService(
             }
 
         return paramValues.mapValues { (param, value) ->
-                if (value.isTextual) {
+                if (value != null && value.isTextual) {
                     placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
                 } else {
                     objectMapper.treeToValue(value, param.type)
