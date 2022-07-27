@@ -18,8 +18,6 @@ package com.ritense.smartdocuments.web.rest
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.service.PluginService
-import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
-import com.ritense.smartdocuments.plugin.SmartDocumentsPluginFactory
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -28,7 +26,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.util.UUID
 
 internal class SmartDocumentsDemoResourceTest {
 
@@ -60,6 +57,7 @@ internal class SmartDocumentsDemoResourceTest {
                 .param("templateGroup", "test-template-group")
                 .param("templateName", "test-template-name")
                 .param("format", "PDF")
+                .param("resultingDocumentLocation", "my-generated-document-process-variable")
                 .param("leeftijd", "pv:age")
         )
             .andDo(print())
