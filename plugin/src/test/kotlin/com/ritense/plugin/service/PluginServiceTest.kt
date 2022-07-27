@@ -139,7 +139,7 @@ internal class PluginServiceTest {
         val exception = assertThrows(PluginPropertyRequiredException::class.java) {
             pluginService
                 .createPluginConfiguration(
-                    "title", ObjectMapper().readTree("{\"name\": \"\"}"), "key"
+                    "title", ObjectMapper().readTree("{\"name\": \"\"}") as ObjectNode, "key"
                 )
         }
         assertEquals("Plugin property with name 'name' is required for plugin 'Test Plugin'", exception.message)
