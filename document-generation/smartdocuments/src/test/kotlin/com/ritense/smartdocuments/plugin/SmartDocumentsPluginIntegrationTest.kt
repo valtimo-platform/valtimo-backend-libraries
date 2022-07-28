@@ -98,7 +98,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
                         "value": "pv:age"
                     }
                 ],
-                "resultingDocumentLocation": "my-generated-document"
+                "resultingDocumentProcessVariableName": "my-generated-document"
             }
         """.trimIndent()
 
