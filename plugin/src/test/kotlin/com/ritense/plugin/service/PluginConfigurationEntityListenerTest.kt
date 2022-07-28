@@ -64,7 +64,8 @@ internal class PluginConfigurationEntityListenerTest {
 
         props.add(
             PluginProperty(
-                PluginPropertyId("key", pluginDefinition),
+                "key",
+                pluginDefinition,
                 "title",
                 false,
                 true,
@@ -75,7 +76,8 @@ internal class PluginConfigurationEntityListenerTest {
 
         props.add(
             PluginProperty(
-                PluginPropertyId("key", pluginDefinition),
+                "key",
+                pluginDefinition,
                 "title",
                 false,
                 false,

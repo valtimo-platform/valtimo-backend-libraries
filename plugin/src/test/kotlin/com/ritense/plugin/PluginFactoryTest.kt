@@ -81,10 +81,8 @@ internal class PluginFactoryTest {
 
         properties.add(
             PluginProperty(
-                PluginPropertyId(
-                    "property1",
-                    pluginDefinition
-                ),
+                "property1",
+                pluginDefinition,
                 "property1",
                 true,
                 false,
@@ -95,10 +93,8 @@ internal class PluginFactoryTest {
 
         properties.add(
             PluginProperty(
-                PluginPropertyId(
-                    "property2",
-                    pluginDefinition
-                ),
+                "property2",
+                pluginDefinition,
                 "property2",
                 true,
                 false,
@@ -109,10 +105,8 @@ internal class PluginFactoryTest {
 
         properties.add(
             PluginProperty(
-                PluginPropertyId(
-                    "property3",
-                    pluginDefinition
-                ),
+                "property3",
+                pluginDefinition,
                 "property3",
                 true,
                 false,

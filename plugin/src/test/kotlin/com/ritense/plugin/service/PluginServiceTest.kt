@@ -260,7 +260,8 @@ internal class PluginServiceTest {
     private fun addPluginProperty(pluginDefinition: PluginDefinition) {
         (pluginDefinition.pluginProperties as MutableSet).add(
             PluginProperty(
-                PluginPropertyId("property1", pluginDefinition),
+                "property1",
+                pluginDefinition,
                 "property1",
                 true,
                 false,
