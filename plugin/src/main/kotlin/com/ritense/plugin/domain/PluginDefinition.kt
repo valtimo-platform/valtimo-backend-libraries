@@ -40,7 +40,9 @@ data class PluginDefinition (
     @JsonIgnore
     @Column(name = "class_name")
     val fullyQualifiedClassName: String,
-    @JsonIgnore@OneToMany(mappedBy = "pluginDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "pluginDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL],
+        orphanRemoval = true)
     val pluginProperties: Set<PluginProperty> = setOf(),
 ) {
     fun findPluginProperty(propertyKey: String): PluginProperty? {
