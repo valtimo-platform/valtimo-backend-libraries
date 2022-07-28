@@ -19,15 +19,23 @@ package com.ritense.plugin.domain
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
-import javax.persistence.Id
+import javax.persistence.FetchType
+import javax.persistence.JoinColumn
+import javax.persistence.JoinColumns
+import javax.persistence.ManyToOne
+import javax.persistence.MapsId
 import javax.persistence.Table
 
 @Entity
 @Table(name = "plugin_property")
 class PluginProperty(
-    @Id
-    @EmbeddedId
-    val id: PluginPropertyId,
+    key: String,
+    @ManyToOne(targetEntity = PluginDefinition::class, fetch = FetchType.LAZY)
+    @MapsId("pluginDefinitionId")
+    @JoinColumns(
+        JoinColumn(name = "plugin_definition_key", referencedColumnName = "plugin_definition_key"),
+    )
+    var pluginDefinition: PluginDefinition,
     @Column(name = "title")
     val title: String,
     @Column(name = "required")
@@ -38,4 +46,11 @@ class PluginProperty(
     val fieldName: String,
     @Column(name = "field_type")
     val fieldType: String
-)
+){
+    @EmbeddedId
+    val id: PluginPropertyId
+
+    init {
+        id = PluginPropertyId(key, pluginDefinition.key)
+    }
+}

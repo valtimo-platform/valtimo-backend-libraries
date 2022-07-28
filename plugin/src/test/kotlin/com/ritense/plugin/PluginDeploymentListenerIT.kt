@@ -83,10 +83,11 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
                     hasProperty("id",
                         allOf(
                             hasProperty("key", `is`("property1")),
-                            hasProperty<PluginDefinition>("pluginDefinition",
-                                hasProperty<String>("key", `is`(definitionKey))
-                            )
+                            hasProperty<String>("pluginDefinitionId", `is`(definitionKey)),
                         ),
+                    ),
+                    hasProperty("pluginDefinition",
+                        hasProperty<String>("key", `is`(definitionKey))
                     ),
                     hasProperty("required", `is`(true)),
                     hasProperty("fieldName", `is`("property1")),
@@ -96,10 +97,11 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
                     hasProperty("id",
                         allOf(
                             hasProperty("key", `is`("property2")),
-                            hasProperty<PluginDefinition>("pluginDefinition",
-                                hasProperty<String>("key", `is`(definitionKey))
-                            )
+                            hasProperty<String>("pluginDefinitionId", `is`(definitionKey)),
                         ),
+                    ),
+                    hasProperty("pluginDefinition",
+                        hasProperty<String>("key", `is`(definitionKey))
                     ),
                     hasProperty("required", `is`(false))
                 )

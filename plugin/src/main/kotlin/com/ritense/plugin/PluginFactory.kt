@@ -66,7 +66,7 @@ abstract class PluginFactory<T> {
 
         val pluginDefinition = configuration.pluginDefinition
         val mapper = ObjectMapper()
-        val propertyIterator = configuration.properties!!.fields()
+        val propertyIterator = configuration.properties.fields()
 
         while (propertyIterator.hasNext()) {
             val configuredPropertyEntry = propertyIterator.next()

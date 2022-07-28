@@ -49,7 +49,8 @@ internal class PluginConfigurationTest {
 
         props.add(
             PluginProperty(
-                PluginPropertyId("key", pluginDefinition),
+                "key",
+                pluginDefinition,
                 "title",
                 false,
                 true,
@@ -60,7 +61,8 @@ internal class PluginConfigurationTest {
 
         props.add(
             PluginProperty(
-                PluginPropertyId("key", pluginDefinition),
+                "key",
+                pluginDefinition,
                 "title",
                 false,
                 false,
@@ -70,7 +72,8 @@ internal class PluginConfigurationTest {
         )
         props.add(
             PluginProperty(
-                PluginPropertyId("key", pluginDefinition),
+                "key",
+                pluginDefinition,
                 "title",
                 false,
                 false,
