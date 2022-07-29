@@ -69,3 +69,5 @@ valtimo:
         reminderTemplate: bpc-task-reminder
     public-task:
         token-secret: mfEddMIK+lrHfNK1J6rfLcdQ1Tao8OCpWrpmXvyEQGd5FhOkNfHlX9hyWHs+4GfGhUky8kv4v4Ar3JOvbOGGgQ==
+    plugin:
+        encryption-secret: "abcdefghijklmnop"

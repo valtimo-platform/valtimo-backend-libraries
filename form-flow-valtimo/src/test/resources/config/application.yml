@@ -40,3 +40,7 @@ spring:
 spring-actuator:
   username: test
   password: test
+
+valtimo:
+  plugin:
+    encryption-secret: "abcdefghijklmnop"

@@ -73,3 +73,5 @@ valtimo:
         domain: ritense.eu.auth0.com
         issuer: https://ritense.eu.auth0.com/
         managementTokenApiClientSecret: #external
+    plugin:
+        encryption-secret: "abcdefghijklmnop"
