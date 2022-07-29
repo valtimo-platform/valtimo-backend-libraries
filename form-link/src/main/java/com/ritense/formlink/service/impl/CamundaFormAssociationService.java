@@ -284,9 +284,12 @@ public class CamundaFormAssociationService implements FormAssociationService {
     @Override
     @Transactional
     public CamundaFormAssociation upsertFormAssociation(String processDefinitionKey, FormLinkRequest formLinkRequest) {
-        final var formAssociation = getFormAssociationByFormLinkId(
-            processDefinitionKey, formLinkRequest.getId()
-        );
+        Optional<CamundaFormAssociation> formAssociation;
+        if (formLinkRequest.getType() == FormAssociationType.START_EVENT) {
+            formAssociation = getStartEventFormDefinitionByProcessDefinitionKey(processDefinitionKey);
+        } else {
+            formAssociation = getFormAssociationByFormLinkId(processDefinitionKey, formLinkRequest.getId());
+        }
         return formAssociation.map(
             camundaFormAssociation -> modifyFormAssociation(new ModifyFormAssociationRequest(
                     processDefinitionKey,

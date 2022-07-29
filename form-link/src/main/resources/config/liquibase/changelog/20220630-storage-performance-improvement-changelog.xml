@@ -118,4 +118,19 @@
         </sql>
     </changeSet>
 
+    <changeSet author="Ritense" id="4">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql,postgresql"/>
+        </preConditions>
+        <sql>
+            DELETE FROM process_form_association_v2
+            WHERE form_association_type = 'start-event' and form_association_id != (select * from(
+                SELECT c.form_association_id
+                FROM process_form_association_v2 as c
+                WHERE c.form_association_type = 'start-event' and c.process_definition_key = process_definition_key
+                LIMIT 1
+            ) as b);
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
