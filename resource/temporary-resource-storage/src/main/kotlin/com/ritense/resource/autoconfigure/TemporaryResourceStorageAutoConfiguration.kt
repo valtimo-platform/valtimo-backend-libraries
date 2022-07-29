@@ -19,10 +19,13 @@ package com.ritense.resource.autoconfigure
 import com.ritense.resource.service.TemporaryResourceStorageDeletionService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.scheduling.annotation.EnableScheduling
 
+@EnableScheduling
 @Configuration
 class TemporaryResourceStorageAutoConfiguration {
 
@@ -35,8 +38,10 @@ class TemporaryResourceStorageAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(TemporaryResourceStorageDeletionService::class)
-    fun temporaryResourceStorageDeletionService(): TemporaryResourceStorageDeletionService {
-        return TemporaryResourceStorageDeletionService()
+    fun temporaryResourceStorageDeletionService(
+        @Value("\${valtimo.temporaryResourceStorage.retentionInMinutes:5}") retentionInDays: Long
+    ): TemporaryResourceStorageDeletionService {
+        return TemporaryResourceStorageDeletionService(retentionInDays)
     }
 
 }
