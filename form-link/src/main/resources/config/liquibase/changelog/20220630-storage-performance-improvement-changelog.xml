@@ -120,13 +120,18 @@
 
     <changeSet author="Ritense" id="4">
         <sql>
-            DELETE FROM process_form_association_v2
-            WHERE form_association_type = 'start-event' and form_association_id != (select * from(
-                SELECT c.form_association_id
-                FROM process_form_association_v2 as c
-                WHERE c.form_association_type = 'start-event' and c.process_definition_key = process_definition_key
-                LIMIT 1
-            ) as b);
+            DELETE
+            FROM process_form_association_v2
+            WHERE form_association_id in (SELECT * FROM (
+                SELECT a.form_association_id
+                FROM process_form_association_v2 AS a
+                WHERE a.form_association_type = 'start-event' AND a.form_association_id != (
+                    SELECT b.form_association_id
+                    FROM process_form_association_v2 AS b
+                    WHERE b.form_association_type = 'start-event' AND b.process_definition_key = a.process_definition_key
+                    limit 1
+                )
+            ) AS d)
         </sql>
     </changeSet>
 
