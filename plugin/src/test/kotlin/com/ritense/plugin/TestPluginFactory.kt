@@ -16,9 +16,12 @@
 
 package com.ritense.plugin
 
+import com.ritense.plugin.service.PluginService
+
 class TestPluginFactory(
-    private val someObject: String
-) : PluginFactory<TestPlugin>() {
+    private val someObject: String,
+    pluginService: PluginService
+) : PluginFactory<TestPlugin>(pluginService) {
     override fun create(): TestPlugin {
         return TestPlugin(someObject)
     }

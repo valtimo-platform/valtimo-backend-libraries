@@ -36,6 +36,8 @@ class TestPlugin(
     var property2: Boolean? = null
     @PluginProperty(key = "property3", secret = false)
     lateinit var property3: Number
+    @PluginProperty(key = "property4", secret = false)
+    lateinit var property4: TestPluginCategory
 
     @PluginAction(
         key = "test-action",

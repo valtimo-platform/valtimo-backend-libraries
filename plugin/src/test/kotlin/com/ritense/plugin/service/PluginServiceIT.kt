@@ -57,6 +57,7 @@ internal class PluginServiceIT: BaseIntegrationTest() {
     lateinit var pluginFactory: PluginFactory<TestPlugin>
 
     lateinit var pluginConfiguration: PluginConfiguration
+    lateinit var categoryPluginConfiguration: PluginConfiguration
 
     @BeforeEach
     fun init() {
@@ -66,6 +67,14 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             "title",
             null,
             pluginDefinition
+        ))
+
+        val categoryPluginDefinition = pluginDefinitionRepository.getById("test-category-plugin");
+        categoryPluginConfiguration = pluginConfigurationRepository.save(PluginConfiguration(
+            PluginConfigurationId.newId(),
+            "title",
+            null,
+            categoryPluginDefinition
         ))
     }
 
