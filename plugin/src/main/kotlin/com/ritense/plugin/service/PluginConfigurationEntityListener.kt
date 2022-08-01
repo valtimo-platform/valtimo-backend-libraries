@@ -36,7 +36,7 @@ class PluginConfigurationEntityListener(
     @PreUpdate
     fun encryptPropertiesOnSave(pluginConfiguration: PluginConfiguration) {
         logger.debug { "Encrypting secrets for PluginConfiguration ${pluginConfiguration.title}" }
-        pluginConfiguration.pluginDefinition.pluginProperties.filter {
+        pluginConfiguration.pluginDefinition.properties.filter {
             it.secret
         }.filter {
             pluginConfiguration.properties?.has(it.fieldName) ?: false
@@ -55,7 +55,7 @@ class PluginConfigurationEntityListener(
     @PostUpdate
     fun decryptPropertiesOnLoad(pluginConfiguration: PluginConfiguration) {
         logger.debug { "Decrypting secrets for PluginConfiguration ${pluginConfiguration.title}" }
-        pluginConfiguration.pluginDefinition.pluginProperties.filter {
+        pluginConfiguration.pluginDefinition.properties.filter {
             it.secret
         }.filter {
             pluginConfiguration.properties?.has(it.fieldName) ?: false

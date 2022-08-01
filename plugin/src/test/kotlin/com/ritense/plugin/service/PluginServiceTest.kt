@@ -31,7 +31,6 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
-import com.ritense.plugin.domain.PluginPropertyId
 import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
@@ -258,7 +257,7 @@ internal class PluginServiceTest {
     }
 
     private fun addPluginProperty(pluginDefinition: PluginDefinition) {
-        (pluginDefinition.pluginProperties as MutableSet).add(
+        (pluginDefinition.properties as MutableSet).add(
             PluginProperty(
                 "property1",
                 pluginDefinition,

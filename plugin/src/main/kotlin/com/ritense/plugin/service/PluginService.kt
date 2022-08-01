@@ -239,7 +239,7 @@ class PluginService(
 
     private fun validateProperties(properties: ObjectNode, pluginDefinition: PluginDefinition) {
         val errors = mutableListOf<Throwable>()
-        pluginDefinition.pluginProperties.forEach { pluginProperty ->
+        pluginDefinition.properties.forEach { pluginProperty ->
             val propertyNode = properties[pluginProperty.fieldName]
 
             if (propertyNode == null || propertyNode.isMissingNode || propertyNode.isNull ||

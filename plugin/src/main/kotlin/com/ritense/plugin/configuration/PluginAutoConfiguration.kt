@@ -17,11 +17,13 @@
 package com.ritense.plugin.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.plugin.PluginCategoryResolver
 import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
+import com.ritense.plugin.repository.PluginCategoryRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
@@ -31,19 +33,13 @@ import com.ritense.plugin.service.EncryptionService
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.PluginDefinitionResource
 import com.ritense.valueresolver.ValueResolverService
-import org.hibernate.cfg.AvailableSettings
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import org.springframework.orm.hibernate5.SpringBeanContainer
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
-import javax.sql.DataSource
 
 @Configuration
 @EnableJpaRepositories(
@@ -62,15 +58,17 @@ class PluginAutoConfiguration {
     @Bean
     fun pluginDeploymentListener(
         pluginDefinitionResolver: PluginDefinitionResolver,
+        pluginCategoryResolver: PluginCategoryResolver,
         pluginDefinitionRepository: PluginDefinitionRepository,
-        pluginPropertyRepository: PluginPropertyRepository,
+        pluginCategoryRepository: PluginCategoryRepository,
         pluginActionDefinitionRepository: PluginActionDefinitionRepository,
         pluginActionPropertyDefinitionRepository: PluginActionPropertyDefinitionRepository
     ): PluginDeploymentListener {
         return PluginDeploymentListener(
             pluginDefinitionResolver,
+            pluginCategoryResolver,
             pluginDefinitionRepository,
-            pluginPropertyRepository,
+            pluginCategoryRepository,
             pluginActionDefinitionRepository,
             pluginActionPropertyDefinitionRepository
         )
@@ -79,6 +77,11 @@ class PluginAutoConfiguration {
     @Bean
     fun pluginDefinitionResolver(): PluginDefinitionResolver {
         return PluginDefinitionResolver()
+    }
+
+    @Bean
+    fun pluginCategoryResolver(): PluginCategoryResolver {
+        return PluginCategoryResolver()
     }
 
     @Order(420)

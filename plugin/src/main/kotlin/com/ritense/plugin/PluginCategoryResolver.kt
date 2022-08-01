@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.domain
+package com.ritense.plugin
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import com.ritense.plugin.annotation.PluginCategory
+import io.github.classgraph.ClassGraph
 
-@Entity
-@Table(name = "plugin_category")
-class PluginCategory(
-    @Id
-    @Column(name = "plugin_category_key")
-    val key: String,
-    @Column(name = "class_name")
-    val fullyQualifiedClassName: String,
-)
+class PluginCategoryResolver {
+    internal fun findPluginCategoryClasses() : Map<Class<*>, PluginCategory> {
+        val pluginCategoryClasses = ClassGraph()
+            .enableClassInfo()
+            .enableAnnotationInfo()
+            .scan()
+            .getClassesWithAnnotation(PluginCategory::class.java)
+
+        return pluginCategoryClasses.associate {
+            it.loadClass() to it.getAnnotationInfo(PluginCategory::class.java).loadClassAndInstantiate() as PluginCategory
+        }
+    }
+}

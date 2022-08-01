@@ -19,6 +19,7 @@ package com.ritense.plugin
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
 import com.ritense.plugin.domain.PluginActionDefinition
+import com.ritense.plugin.domain.PluginCategory
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
@@ -60,12 +61,13 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
             deployedPlugins[0].description)
         assertEquals("com.ritense.plugin.TestPlugin", deployedPlugins[0].fullyQualifiedClassName)
 
-        assertPluginPropertiesPresent(deployedPlugins[0].pluginProperties.toList(), deployedPlugins[0].key)
+        assertPluginPropertiesPresent(deployedPlugins[0].properties.toList(), deployedPlugins[0].key)
         assertTestActionPresent(deployedActions)
         assertOtherTestActionPresent(deployedActions)
         assertInheritedActionPresent(deployedActions)
         assertOverridingActionPresent(deployedActions)
         assertOverriddenActionNotPresent(deployedActions)
+        assertPluginCategoryPresent(deployedPlugins[0].categories)
 
         val deployedActionProperties = pluginActionPropertyDefinitionRepository.findAll()
         assertThat(deployedActionProperties.size, `is`(1))
@@ -104,6 +106,22 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
                         hasProperty<String>("key", `is`(definitionKey))
                     ),
                     hasProperty("required", `is`(false))
+                )
+            )
+        )
+    }
+
+    private fun assertPluginCategoryPresent(
+        pluginCategories: Set<PluginCategory>
+    ) {
+        assertEquals(1, pluginCategories.size)
+        assertThat(
+            pluginCategories,
+            hasItems(
+                allOf(
+                    hasProperty("key", `is`("test-interface")),
+                    hasProperty("fullyQualifiedClassName",
+                        `is`("com.ritense.plugin.TestPluginInterface"))
                 )
             )
         )

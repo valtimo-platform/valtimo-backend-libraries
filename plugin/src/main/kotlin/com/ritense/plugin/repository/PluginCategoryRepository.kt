@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.domain
+package com.ritense.plugin.repository
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import com.ritense.plugin.domain.PluginCategory
+import org.springframework.data.jpa.repository.JpaRepository
 
-@Entity
-@Table(name = "plugin_category")
-class PluginCategory(
-    @Id
-    @Column(name = "plugin_category_key")
-    val key: String,
-    @Column(name = "class_name")
-    val fullyQualifiedClassName: String,
-)
+interface PluginCategoryRepository: JpaRepository<PluginCategory, String>
