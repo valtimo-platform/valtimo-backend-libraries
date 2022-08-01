@@ -44,6 +44,8 @@ data class PluginDefinition (
     @OneToMany(mappedBy = "pluginDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL],
         orphanRemoval = true)
     val pluginProperties: Set<PluginProperty> = setOf(),
+    @JsonIgnore
+    val pluginCategories: Set<PluginCategory> = setOf(),
 ) {
     fun findPluginProperty(propertyKey: String): PluginProperty? {
         val filteredProperties = pluginProperties.filter {
