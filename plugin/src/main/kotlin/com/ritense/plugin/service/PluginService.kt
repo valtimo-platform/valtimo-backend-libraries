@@ -160,8 +160,7 @@ class PluginService(
     }
 
     fun invoke(execution: DelegateExecution, processLink: PluginProcessLink) {
-        val configuration = pluginConfigurationRepository.getById(processLink.pluginConfigurationId)
-        val instance = createPluginInstance(configuration)
+        val instance = createInstance(processLink.pluginConfigurationId)
 
         val method = getActionMethod(instance, processLink)
         val methodArguments = resolveMethodArguments(method, execution, processLink.actionProperties)
@@ -218,7 +217,8 @@ class PluginService(
         }
     }
 
-    private fun createPluginInstance(configuration: PluginConfiguration): Any {
+    fun createInstance(pluginConfigurationId: PluginConfigurationId): Any {
+        val configuration = pluginConfigurationRepository.getById(pluginConfigurationId)
         return  pluginFactories.first {
             it.canCreate(configuration)
         }.create(configuration)!!
