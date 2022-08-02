@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi
+package com.ritense.openzaak.plugin
 
-import com.ritense.plugin.annotation.PluginCategory
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction
+import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
+import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.service.PluginService
 
-@PluginCategory("DocumentenApiAuthentication")
-interface DocumentenApiAuthentication : ExchangeFilterFunction
+class OpenZaakAuthenticationPluginFactory(
+    pluginService: PluginService,
+    val tokenGeneratorService: OpenZaakTokenGeneratorService
+) : PluginFactory<OpenZaakAuthentication>(pluginService) {
+
+    override fun create(): OpenZaakAuthentication {
+        return OpenZaakAuthentication(tokenGeneratorService)
+    }
+}

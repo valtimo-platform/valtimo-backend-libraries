@@ -58,6 +58,5 @@ include(
     "value-resolver",
     "view-configurator",
     "web",
-    "zgw:documenten-api",
-    "zgw:openzaak"
+    "zgw:documenten-api"
 )
