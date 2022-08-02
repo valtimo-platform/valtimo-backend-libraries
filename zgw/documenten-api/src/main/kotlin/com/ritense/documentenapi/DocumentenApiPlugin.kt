@@ -25,7 +25,7 @@ import com.ritense.plugin.annotation.PluginProperty
     description = "Connects to the Documenten API to store documents"
 )
 class DocumentenApiPlugin(
-    val client: DocumentenApiClient
+    //val client: DocumentenApiClient
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: String
