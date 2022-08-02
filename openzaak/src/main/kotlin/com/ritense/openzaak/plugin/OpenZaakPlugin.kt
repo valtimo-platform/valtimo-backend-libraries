@@ -35,7 +35,7 @@ class OpenZaakPlugin(
 ): DocumentenApiAuthentication {
     @PluginProperty(key = "clientId", secret = false, required = true)
     lateinit var clientId: String
-    @PluginProperty(key = "secretKey", secret = true, required = true)
+    @PluginProperty(key = "clientSecret", secret = true, required = true)
     lateinit var secretKey: String
 
     override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
