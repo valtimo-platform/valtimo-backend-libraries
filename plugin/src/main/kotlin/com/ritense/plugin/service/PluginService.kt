@@ -46,7 +46,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import java.util.UUID
 import javax.validation.ValidationException
-open class PluginService(
+class PluginService(
     private val pluginDefinitionRepository: PluginDefinitionRepository,
     private val pluginConfigurationRepository: PluginConfigurationRepository,
     private val pluginActionDefinitionRepository: PluginActionDefinitionRepository,

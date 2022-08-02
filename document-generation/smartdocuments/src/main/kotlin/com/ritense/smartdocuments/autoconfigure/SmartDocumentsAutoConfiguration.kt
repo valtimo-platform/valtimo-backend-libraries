@@ -140,7 +140,7 @@ class SmartDocumentsAutoConfiguration {
         smartDocumentsClient: SmartDocumentsClient,
         valueResolverService: ValueResolverService,
         temporaryResourceStorageService: TemporaryResourceStorageService,
-        @Lazy pluginService: PluginService
+        pluginService: PluginService
     ): PluginFactory<SmartDocumentsPlugin> {
         return SmartDocumentsPluginFactory(
             processDocumentService,
