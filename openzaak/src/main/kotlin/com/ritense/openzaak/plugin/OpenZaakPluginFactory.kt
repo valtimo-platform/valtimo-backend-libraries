@@ -20,12 +20,12 @@ import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 
-class OpenZaakAuthenticationPluginFactory(
+class OpenZaakPluginFactory(
     pluginService: PluginService,
     val tokenGeneratorService: OpenZaakTokenGeneratorService
-) : PluginFactory<OpenZaakAuthentication>(pluginService) {
+) : PluginFactory<OpenZaakPlugin>(pluginService) {
 
-    override fun create(): OpenZaakAuthentication {
-        return OpenZaakAuthentication(tokenGeneratorService)
+    override fun create(): OpenZaakPlugin {
+        return OpenZaakPlugin(tokenGeneratorService)
     }
 }

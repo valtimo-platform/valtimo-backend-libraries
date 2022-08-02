@@ -26,11 +26,11 @@ import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
 
 @Plugin(
-    key = "openzaak-authentication",
-    title = "OpenZaak Authentication",
-    description = "Authentication plugin for OpenZaak"
+    key = "openzaak",
+    title = "OpenZaak plugin",
+    description = "Plugin used to provide authentication for openzaak"
 )
-class OpenZaakAuthentication(
+class OpenZaakPlugin(
     val tokenGeneratorService: OpenZaakTokenGeneratorService
 ): DocumentenApiAuthentication {
     @PluginProperty(key = "clientId", secret = false, required = true)
