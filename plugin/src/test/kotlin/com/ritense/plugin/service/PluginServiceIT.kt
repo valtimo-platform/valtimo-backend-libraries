@@ -81,18 +81,25 @@ internal class PluginServiceIT: BaseIntegrationTest() {
     @Test
     @Transactional
     fun `should be able to save configuration with encypted property and decrypt on load`() {
+        val categoryConfiguration = pluginService.createPluginConfiguration(
+            "title",
+            Mapper.INSTANCE.get().readTree("{}") as ObjectNode,
+            "test-category-plugin",
+        )
+
         val input = """
             {
                 "property1": "test123",
                 "property2": false,
-                "property3": 123
+                "property3": 123,
+                "property4": "${categoryConfiguration.id.id}"
             }
         """.trimMargin()
 
         val configuration = pluginService.createPluginConfiguration(
             "title",
             Mapper.INSTANCE.get().readTree(input) as ObjectNode,
-            "test-plugin"
+            "test-plugin",
         )
 
         // value should be decrypted when loading from database

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
+import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -43,6 +44,7 @@ import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
+import java.util.UUID
 import javax.validation.ValidationException
 
 class PluginService(
@@ -250,8 +252,14 @@ class PluginService(
             } else {
                 try {
                     val propertyClass = Class.forName(pluginProperty.fieldType)
-                    val property = objectMapper.treeToValue(propertyNode, propertyClass)
-                    assert(property != null)
+                    if (propertyClass.isAnnotationPresent(PluginCategory::class.java)) {
+                        val propertyConfigurationId = PluginConfigurationId.existingId(UUID.fromString(propertyNode.textValue()))
+                        val propertyConfiguration = pluginConfigurationRepository.findById(propertyConfigurationId)
+                        assert(propertyConfiguration.isPresent) { "Plugin configuration with id ${propertyConfigurationId.id} does not exist!" }
+                    } else {
+                        val property = objectMapper.treeToValue(propertyNode, propertyClass)
+                        assert(property != null)
+                    }
                 } catch (e: Exception) {
                     errors.add(PluginPropertyParseException(pluginProperty.fieldName, pluginDefinition.title, e))
                 }
