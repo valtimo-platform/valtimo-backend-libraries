@@ -19,5 +19,5 @@ package com.ritense.documentenapi
 import com.ritense.plugin.annotation.PluginCategory
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
-@PluginCategory("DocumentenApiAuthentication")
+@PluginCategory("documenten-api-authentication")
 interface DocumentenApiAuthentication : ExchangeFilterFunction
