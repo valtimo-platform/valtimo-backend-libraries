@@ -36,6 +36,7 @@ include(
         "form-flow-valtimo",
         "form-link",
         "gradle:license-report",
+        "gradle:vce-report",
         "haalcentraal",
         "haalcentraal:haalcentraal-brp",
         "keycloak-iam",
