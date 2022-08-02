@@ -87,6 +87,12 @@ internal class PluginServiceTest {
     }
 
     @Test
+    fun `should get plugin configurations from repository by category`(){
+        pluginService.getPluginConfigurationsByCategory("test")
+        verify(pluginConfigurationRepository).findByPluginDefinition_Categories_Key("test")
+    }
+
+    @Test
     fun `should save plugin configuration`(){
         val pluginDefinition = newPluginDefinition()
         addPluginProperty(pluginDefinition)

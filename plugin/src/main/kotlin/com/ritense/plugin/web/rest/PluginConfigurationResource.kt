@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
@@ -41,8 +42,12 @@ class PluginConfigurationResource(
 ) {
 
     @GetMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getPluginDefinitions(): ResponseEntity<List<PluginConfiguration>> {
-        return ResponseEntity.ok(pluginService.getPluginConfigurations())
+    fun getPluginDefinitions(@RequestParam("category") category: String?): ResponseEntity<List<PluginConfiguration>> {
+        return if (category != null) {
+            ResponseEntity.ok(pluginService.getPluginConfigurationsByCategory(category))
+        } else {
+            ResponseEntity.ok(pluginService.getPluginConfigurations())
+        }
     }
 
     @PostMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])

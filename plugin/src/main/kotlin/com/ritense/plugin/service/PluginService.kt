@@ -64,6 +64,10 @@ open class PluginService(
         return pluginConfigurationRepository.findAll()
     }
 
+    fun getPluginConfigurationsByCategory(category: String): List<PluginConfiguration> {
+        return pluginConfigurationRepository.findByPluginDefinition_Categories_Key(category)
+    }
+
     fun createPluginConfiguration(
         title: String,
         properties: ObjectNode,
