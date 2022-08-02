@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
 import org.springframework.web.util.HtmlUtils;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
@@ -165,8 +167,12 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         final JsonNode formDefinition = asJson();
         final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinition);
 
-        inputFields.forEach(field -> getExternalFormField(field).ifPresent(externalContentItem ->
-            map.computeIfAbsent(externalContentItem.externalFormFieldType, externalFormFieldType -> new ArrayList<>()).add(externalContentItem))
+        inputFields.forEach(field -> getExternalFormField(field)
+            .ifPresent(externalContentItem ->
+                map.computeIfAbsent(
+                    externalContentItem.externalFormFieldType, externalFormFieldType -> new ArrayList<>()
+                ).add(externalContentItem)
+            )
         );
         return map;
     }
@@ -264,10 +270,10 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         assertArgumentNotNull(content, "content is required");
         getContentItem(field)
             .flatMap(
-                contentItem -> getValueBy(content, contentItem.getJsonPointer()))
-            .ifPresent(valueNode -> {
-                field.set(DEFAULT_VALUE_FIELD, htmlEscape(valueNode));
-            });
+                contentItem -> getValueBy(content, contentItem.getJsonPointer())
+            ).ifPresent(
+                valueNode -> field.set(DEFAULT_VALUE_FIELD, htmlEscape(valueNode))
+            );
     }
 
     private Optional<? extends ContentItem> getContentItem(ObjectNode node) {
@@ -325,7 +331,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                 return false;
             }
         }
-
         return !key.isEmpty() && !key.startsWith(PROCESS_VAR_PREFIX.toUpperCase());
     }
 
