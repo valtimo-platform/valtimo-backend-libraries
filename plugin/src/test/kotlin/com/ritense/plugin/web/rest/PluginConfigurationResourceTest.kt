@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -77,7 +78,35 @@ internal class PluginConfigurationResourceTest {
             .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())
-            .andExpect(status().is2xxSuccessful)
+            .assertConfigurationListOutput()
+
+        verify(pluginService).getPluginConfigurations()
+    }
+
+    @Test
+    fun `should get plugin configurations by category`() {
+        val properties1: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
+        val properties2: ObjectNode = ObjectMapper().readTree("{\"other\": \"something\" }") as ObjectNode
+        val plugin = PluginDefinition("key", "title", "description", "className")
+        val plugin2 = PluginDefinition("key2", "title2", "description2", "className2")
+        val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties1, plugin)
+        val pluginConfiguration2 = PluginConfiguration(PluginConfigurationId.newId(), "title2", properties2, plugin2)
+        whenever(pluginService.getPluginConfigurationsByCategory("some-category"))
+            .thenReturn(listOf(pluginConfiguration, pluginConfiguration2))
+
+        mockMvc.perform(get("/api/plugin/configuration?category=some-category")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .assertConfigurationListOutput()
+
+        verify(pluginService).getPluginConfigurationsByCategory("some-category")
+    }
+
+    private fun ResultActions.assertConfigurationListOutput() {
+        this.andExpect(status().is2xxSuccessful)
             .andExpect(
                 jsonPath("$").isNotEmpty)
             .andExpect(
