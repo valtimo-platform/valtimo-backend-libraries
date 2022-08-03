@@ -42,11 +42,13 @@ class PluginConfigurationResource(
 ) {
 
     @GetMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getPluginDefinitions(@RequestParam("category") category: String?): ResponseEntity<List<PluginConfiguration>> {
+    fun getPluginDefinitions(@RequestParam("category") category: String?): ResponseEntity<List<PluginConfigurationDto>> {
         return if (category != null) {
-            ResponseEntity.ok(pluginService.getPluginConfigurationsByCategory(category))
+            ResponseEntity.ok(pluginService.getPluginConfigurationsByCategory(category)
+                .map { PluginConfigurationDto(it) })
         } else {
-            ResponseEntity.ok(pluginService.getPluginConfigurations())
+            ResponseEntity.ok(pluginService.getPluginConfigurations()
+                .map { PluginConfigurationDto(it) })
         }
     }
 
@@ -69,12 +71,14 @@ class PluginConfigurationResource(
     fun updatePluginConfiguration(
         @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID,
         @RequestBody updatePluginConfiguration: UpdatePluginConfigurationDto
-    ): ResponseEntity<PluginConfiguration> {
+    ): ResponseEntity<PluginConfigurationDto> {
         return ResponseEntity.ok(
-            pluginService.updatePluginConfiguration(
-                PluginConfigurationId.existingId(pluginConfigurationId),
-                updatePluginConfiguration.title,
-                updatePluginConfiguration.properties
+            PluginConfigurationDto(
+                pluginService.updatePluginConfiguration(
+                    PluginConfigurationId.existingId(pluginConfigurationId),
+                    updatePluginConfiguration.title,
+                    updatePluginConfiguration.properties
+                )
             )
         )
     }
