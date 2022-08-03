@@ -376,11 +376,12 @@ public class CamundaFormAssociationService implements FormAssociationService {
     }
 
     public void prefillDataResolverFields(FormIoFormDefinition formDefinition, Document document, JsonNode extendedDocumentContent) {
-        //FormFieldDataResolver pre-filling
-        formDefinition.buildExternalFormFieldsMap()
+        // FormFieldDataResolver pre-filling
+        formDefinition
+            .buildExternalFormFieldsMap()
             .forEach((externalFormFieldType, externalContentItems) -> formFieldDataResolvers
                 .stream()
-                .filter(formFieldDataResolver -> formFieldDataResolver.supports(externalFormFieldType))
+                .filter(formFieldDataResolver -> formFieldDataResolver.supports(externalFormFieldType.name()))
                 .collect(singleElementCollector())
                 .ifPresent(
                     formFieldDataResolver -> {

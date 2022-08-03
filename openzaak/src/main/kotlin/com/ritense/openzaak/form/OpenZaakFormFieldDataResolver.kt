@@ -33,6 +33,10 @@ class OpenZaakFormFieldDataResolver(
         return externalFormFieldType == ExternalFormFieldType.OZ
     }
 
+    override fun supports(externalFormFieldType: String): Boolean {
+        return externalFormFieldType == ExternalFormFieldType.OZ.name
+    }
+
     override fun get(documentDefinitionName: String, documentId: UUID, vararg varNames: String): Map<String, Any> {
         val result = mutableMapOf<String, String>()
         try {

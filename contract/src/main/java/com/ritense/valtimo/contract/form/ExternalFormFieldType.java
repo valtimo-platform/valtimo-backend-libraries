@@ -18,8 +18,7 @@ package com.ritense.valtimo.contract.form;
 
 public enum ExternalFormFieldType {
     OZ("OpenZaak"),
-    OA("ObjectsApi"),
-    CUSTOM("Custom");
+    OA("ObjectsApi");
 
     private final String name;
 

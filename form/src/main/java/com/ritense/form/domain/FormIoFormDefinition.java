@@ -61,6 +61,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String COMPONENTS_KEY = "components";
     public static final String DEFAULT_VALUE_FIELD = "defaultValue";
     public static final String PROCESS_VAR_PREFIX = "pv";
+    public static final String EXTERNAL_FORM_FIELD_TYPE_SEPARTOR = ":";
 
     @Id
     @Column(name = "id", updatable = false)
@@ -162,8 +163,8 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         return Collections.unmodifiableList(processVarNames);
     }
 
-    public Map<ExternalFormFieldType, List<ExternalContentItem>> buildExternalFormFieldsMap() {
-        var map = new HashMap<ExternalFormFieldType, List<ExternalContentItem>>();
+    public Map<String, List<ExternalContentItem>> buildExternalFormFieldsMap() {
+        var map = new HashMap<String, List<ExternalContentItem>>();
         final JsonNode formDefinition = asJson();
         final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinition);
 
@@ -292,7 +293,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             String escapedContent = HtmlUtils.htmlEscape(input.textValue(), StandardCharsets.UTF_8.name());
             return new TextNode(escapedContent);
         }
-
         return input;
     }
 
@@ -337,9 +337,17 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     private Optional<ExternalContentItem> getExternalFormField(JsonNode field) {
         return getExternalFormFieldType(field).flatMap(externalFormFieldType -> {
             String jsonPath = field.get(PROPERTY_KEY).asText().replace(".", "/");
-            String name = jsonPath.substring(externalFormFieldType.name().length() + 1);//example pv.varName -> gets varName
+            String name = jsonPath.substring(externalFormFieldType.length() + 1); // example pv.varName -> gets varName
             jsonPath = "/" + jsonPath;
-            return buildJsonPointer(jsonPath).flatMap(jsonPointer -> Optional.of(new ExternalContentItem(name, jsonPointer, externalFormFieldType)));
+            return buildJsonPointer(jsonPath)
+                .flatMap(jsonPointer -> Optional.of(
+                        new ExternalContentItem(
+                            name,
+                            jsonPointer,
+                            externalFormFieldType
+                        )
+                    )
+                );
         });
     }
 
@@ -347,23 +355,17 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         if (!field.has(PROPERTY_KEY) && !field.get(PROPERTY_KEY).asText().isEmpty()) {
             return false;
         }
-        var propertyValue = field.get(PROPERTY_KEY).asText().toUpperCase();
-        for (ExternalFormFieldType externalFormFieldType : ExternalFormFieldType.values()) {
-            if (propertyValue.startsWith(externalFormFieldType.name().toUpperCase())) {
-                return true;
-            }
-        }
-        return false;
+        final String key = field.get(PROPERTY_KEY).asText().toUpperCase();
+        return key.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARTOR);
     }
 
-    private Optional<ExternalFormFieldType> getExternalFormFieldType(JsonNode field) {
-        var propertyValue = field.get(PROPERTY_KEY).asText().toUpperCase();
-        for (ExternalFormFieldType externalFormFieldType : ExternalFormFieldType.values()) {
-            if (propertyValue.startsWith(externalFormFieldType.name().toUpperCase())) {
-                return Optional.of(externalFormFieldType);
-            }
+    private Optional<String> getExternalFormFieldType(JsonNode field) {
+        final String key = field.get(PROPERTY_KEY).asText().toUpperCase();
+        // Note key can be -> "ExternalFormFieldTypeName:propertyName"
+        if (!key.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARTOR)) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        return Optional.of(key.substring(0, key.indexOf(":")));
     }
 
     private static Optional<JsonNode> getValueBy(JsonNode rootNode, JsonPointer jsonPointer) {
@@ -470,9 +472,13 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     public static class ExternalContentItem extends ContentItem {
 
-        private final ExternalFormFieldType externalFormFieldType;
+        private final String externalFormFieldType;
 
-        public ExternalContentItem(String name, JsonPointer jsonPointer, ExternalFormFieldType externalFormFieldType) {
+        public ExternalContentItem(
+            String name,
+            JsonPointer jsonPointer,
+            String externalFormFieldType
+        ) {
             super(name, jsonPointer);
             this.externalFormFieldType = externalFormFieldType;
         }
