@@ -27,8 +27,10 @@ import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormLoaderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -49,6 +51,7 @@ public class FormIoFormDefinitionServiceTest extends BaseTest {
         formDefinitionRepository = mock(FormDefinitionRepository.class);
         when(documentSequenceGeneratorService.next(any())).thenReturn(1L);
         formLoaderService = new FormIoFormLoaderService(documentService, formDefinitionRepository);
+        mockSpringContextHelper();
     }
 
     @Test

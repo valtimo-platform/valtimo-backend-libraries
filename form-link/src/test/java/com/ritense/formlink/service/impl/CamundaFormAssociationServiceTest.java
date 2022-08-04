@@ -19,7 +19,6 @@ package com.ritense.formlink.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.ritense.document.config.SpringContextHelper;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -39,7 +38,6 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.TaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -100,12 +98,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         when(processFormAssociationRepository.findByCamundaFormAssociationId(any()))
             .thenReturn(processFormAssociation.getFormAssociations().stream().findFirst().orElseThrow());
 
-        var applicationContext = mock(ApplicationContext.class);
-        var formFieldDataResolver = mock(FormFieldDataResolver.class);
-        when(formFieldDataResolver.supports(eq("oz"))).thenReturn(true);
-        when(applicationContext.getBeansOfType(FormFieldDataResolver.class)).thenReturn(Map.of("Test", formFieldDataResolver));
-        var springContextHelper = new SpringContextHelper();
-        springContextHelper.setApplicationContext(applicationContext);
+        mockSpringContextHelper();
     }
 
     @Test

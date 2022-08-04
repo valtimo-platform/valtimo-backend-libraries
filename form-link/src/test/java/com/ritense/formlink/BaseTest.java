@@ -16,6 +16,7 @@
 
 package com.ritense.formlink;
 
+import com.ritense.document.config.SpringContextHelper;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchema;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -36,14 +37,20 @@ import com.ritense.formlink.domain.request.ModifyFormAssociationRequest;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
+import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import org.apache.commons.io.IOUtils;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationContext;
+
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,6 +64,15 @@ public abstract class BaseTest {
         MockitoAnnotations.openMocks(this);
         documentSequenceGeneratorService = mock(DocumentSequenceGeneratorService.class);
         when(documentSequenceGeneratorService.next(any())).thenReturn(1L);
+    }
+
+    protected static void mockSpringContextHelper() {
+        var applicationContext = mock(ApplicationContext.class);
+        var formFieldDataResolver = mock(FormFieldDataResolver.class);
+        when(formFieldDataResolver.supports(eq("oz"))).thenReturn(true);
+        when(applicationContext.getBeansOfType(FormFieldDataResolver.class)).thenReturn(Map.of("Test", formFieldDataResolver));
+        var springContextHelper = new SpringContextHelper();
+        springContextHelper.setApplicationContext(applicationContext);
     }
 
     protected CamundaProcessFormAssociation processFormAssociation(UUID id, UUID formId) {
