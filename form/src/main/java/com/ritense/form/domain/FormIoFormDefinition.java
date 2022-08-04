@@ -354,14 +354,13 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     private boolean isExternalFormField(JsonNode field) {
-        if (!field.has(PROPERTY_KEY) && !field.get(PROPERTY_KEY).asText().isEmpty()) {
-            return false;
-        }
-        final String key = field.get(PROPERTY_KEY).asText().toUpperCase();
-        return key.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR);
+        return getExternalFormFieldType(field).isPresent();
     }
 
     private Optional<String> getExternalFormFieldType(JsonNode field) {
+        if (!field.has(PROPERTY_KEY) && !field.get(PROPERTY_KEY).asText().isEmpty()) {
+            return Optional.empty();
+        }
         final String key = field.get(PROPERTY_KEY).asText().toUpperCase();
         // Note key can be -> "ExternalFormFieldTypeName.propertyName"
         if (!key.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)) {
