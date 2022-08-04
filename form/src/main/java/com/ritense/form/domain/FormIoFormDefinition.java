@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.ritense.document.config.SpringContextHelper;
 import com.ritense.form.domain.event.FormRegisteredEvent;
-import com.ritense.valtimo.contract.form.ExternalFormFieldType;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
@@ -328,10 +327,8 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             return false;
         }
         String key = field.get(PROPERTY_KEY).asText().toUpperCase();
-        for (ExternalFormFieldType externalFormFieldType : ExternalFormFieldType.values()) {
-            if (key.startsWith(externalFormFieldType.name().toUpperCase())) {
-                return false;
-            }
+        if (getExternalFormFieldType(field).isPresent()) {
+            return false;
         }
         return !key.isEmpty() && !key.startsWith(PROCESS_VAR_PREFIX.toUpperCase());
     }
@@ -339,6 +336,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     private Optional<ExternalContentItem> getExternalFormField(JsonNode field) {
         return getExternalFormFieldType(field).flatMap(externalFormFieldType -> {
             String jsonPath = field.get(PROPERTY_KEY).asText().replace(".", "/");
+            // Note: Name is limited to 1 level of depth. Not support = pv.aa.bbb
             String name = jsonPath.substring(externalFormFieldType.length() + 1); // example pv.varName -> gets varName
             jsonPath = "/" + jsonPath;
             return buildJsonPointer(jsonPath)
