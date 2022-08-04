@@ -381,18 +381,23 @@ public class CamundaFormAssociationService implements FormAssociationService {
             .buildExternalFormFieldsMap()
             .forEach((externalFormFieldType, externalContentItems) -> formFieldDataResolvers
                 .stream()
-                .filter(formFieldDataResolver -> formFieldDataResolver.supports(externalFormFieldType.name()))
+                .filter(formFieldDataResolver -> formFieldDataResolver.supports(externalFormFieldType))
                 .collect(singleElementCollector())
                 .ifPresent(
                     formFieldDataResolver -> {
-                        String[] varNames = externalContentItems.stream()
+                        final String[] varNames = externalContentItems.stream()
                             .map(FormIoFormDefinition.ExternalContentItem::getName).toArray(String[]::new);
-                        Map<String, Object> externalDataMap = formFieldDataResolver.get(
+
+                        var externalDataMap = formFieldDataResolver.get(
                             document.definitionId().name(),
                             document.id().getId(),
                             varNames
                         );
-                        formDefinition.preFillWith(externalFormFieldType.name().toLowerCase(), externalDataMap);
+
+                        formDefinition.preFillWith(
+                            externalFormFieldType,
+                            externalDataMap
+                        );
                     }
                 )
             );

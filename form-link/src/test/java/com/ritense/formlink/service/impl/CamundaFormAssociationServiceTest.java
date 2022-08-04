@@ -19,6 +19,7 @@ package com.ritense.formlink.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ritense.document.config.SpringContextHelper;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -38,6 +39,7 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.TaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -49,6 +51,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -96,6 +99,13 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         processFormAssociation = processFormAssociation(processFormAssociationId, formId);
         when(processFormAssociationRepository.findByCamundaFormAssociationId(any()))
             .thenReturn(processFormAssociation.getFormAssociations().stream().findFirst().orElseThrow());
+
+        var applicationContext = mock(ApplicationContext.class);
+        var formFieldDataResolver = mock(FormFieldDataResolver.class);
+        when(formFieldDataResolver.supports(eq("oz"))).thenReturn(true);
+        when(applicationContext.getBeansOfType(FormFieldDataResolver.class)).thenReturn(Map.of("Test", formFieldDataResolver));
+        var springContextHelper = new SpringContextHelper();
+        springContextHelper.setApplicationContext(applicationContext);
     }
 
     @Test
@@ -146,7 +156,6 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
     @Test
     public void shouldModifyFormAssociation() {
         when(formDefinitionService.formDefinitionExistsById(any())).thenReturn(true);
-        //when(processFormAssociationRepository.saveAndFlush(any())).thenReturn(processFormAssociation);
 
         final var formId = UUID.randomUUID();
         final var formAssociationId = processFormAssociation
@@ -214,14 +223,13 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         when(formDefinitionService.formDefinitionExistsById(any())).thenReturn(true);
         var formDefinition = formDefinitionOf("user-task-with-external-form-field");
         when(formDefinitionService.getFormDefinitionById(any())).thenReturn(Optional.of(formDefinition));
-        // when(processFormAssociationRepository.get(any())).thenReturn(processFormAssociation);
 
         var documentContent = documentContent();
         final var jsonDocumentContent = JsonDocumentContent.build(documentContent);
         Optional<JsonSchemaDocument> documentOptional = Optional.of(createDocument(jsonDocumentContent));
         when(documentService.findBy(any())).thenReturn(documentOptional);
 
-        when(formFieldDataResolver.supports(any())).thenReturn(true);
+        when(formFieldDataResolver.supports(anyString())).thenReturn(true);
         when(formFieldDataResolver.get(any(), any(), any())).thenReturn(Map.of("voornaam", "Jan (OpenZaak)"));
 
         final var formLink = processFormAssociation
@@ -271,7 +279,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         Map<String, Object> formFieldData = new HashMap<>();
         formFieldData.put("voornaam", "test-value");
 
-        when(formFieldDataResolver.supports(any())).thenReturn(true);
+        when(formFieldDataResolver.supports(eq("oz"))).thenReturn(true);
         when(formFieldDataResolver.get(any(), any(), any())).thenReturn(formFieldData);
         when(documentService.findBy(any())).thenReturn(documentOptional);
 

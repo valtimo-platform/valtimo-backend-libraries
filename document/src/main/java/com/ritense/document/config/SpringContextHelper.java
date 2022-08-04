@@ -21,6 +21,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.util.Map;
+
 public class SpringContextHelper implements ApplicationContextAware {
 
     private static ApplicationContext context;
@@ -33,4 +35,9 @@ public class SpringContextHelper implements ApplicationContextAware {
     public static <T> T getProperty(String property, Class<T> targetClass) {
         return context.getEnvironment().getProperty(property, targetClass);
     }
+
+    public static <T> Map<String, T> getBeansOfType(Class<T> targetClass) {
+        return context.getBeansOfType(targetClass);
+    }
+
 }

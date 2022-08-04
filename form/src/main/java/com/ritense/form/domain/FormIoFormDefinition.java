@@ -23,8 +23,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.ritense.document.config.SpringContextHelper;
 import com.ritense.form.domain.event.FormRegisteredEvent;
 import com.ritense.valtimo.contract.form.ExternalFormFieldType;
+import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +63,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String COMPONENTS_KEY = "components";
     public static final String DEFAULT_VALUE_FIELD = "defaultValue";
     public static final String PROCESS_VAR_PREFIX = "pv";
-    public static final String EXTERNAL_FORM_FIELD_TYPE_SEPARTOR = ":";
+    public static final String EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ".";
 
     @Id
     @Column(name = "id", updatable = false)
@@ -171,7 +173,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         inputFields.forEach(field -> getExternalFormField(field)
             .ifPresent(externalContentItem ->
                 map.computeIfAbsent(
-                    externalContentItem.externalFormFieldType, externalFormFieldType -> new ArrayList<>()
+                    externalContentItem.externalFormFieldType.toLowerCase(), externalFormFieldType -> new ArrayList<>()
                 ).add(externalContentItem)
             )
         );
@@ -356,16 +358,25 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             return false;
         }
         final String key = field.get(PROPERTY_KEY).asText().toUpperCase();
-        return key.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARTOR);
+        return key.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR);
     }
 
     private Optional<String> getExternalFormFieldType(JsonNode field) {
         final String key = field.get(PROPERTY_KEY).asText().toUpperCase();
-        // Note key can be -> "ExternalFormFieldTypeName:propertyName"
-        if (!key.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARTOR)) {
+        // Note key can be -> "ExternalFormFieldTypeName.propertyName"
+        if (!key.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)) {
             return Optional.empty();
         }
-        return Optional.of(key.substring(0, key.indexOf(":")));
+        // Check if key prefix is supported by a resolver.
+        final var resolvers = SpringContextHelper.getBeansOfType(FormFieldDataResolver.class);
+        for (var entry : resolvers.entrySet()) {
+            // Get prefix up to first dot
+            final var prefix = key.substring(0, key.indexOf(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)).toLowerCase();
+            if (entry.getValue().supports(prefix)) {
+                return Optional.of(prefix);
+            }
+        }
+        return Optional.empty();
     }
 
     private static Optional<JsonNode> getValueBy(JsonNode rootNode, JsonPointer jsonPointer) {
