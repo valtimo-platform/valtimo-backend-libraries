@@ -23,19 +23,25 @@ import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.Duration
 import java.time.Instant
+import java.util.concurrent.TimeUnit
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.listDirectoryEntries
 
-open class TemporaryResourceStorageDeletionService {
+open class TemporaryResourceStorageDeletionService(
+    private val retentionInMinutes: Long,
+) {
 
-    @Scheduled(cron = "\${scheduling.job.cron.cleanupTemporaryResources:-}")
+    @Scheduled(
+        fixedRateString = "\${valtimo.temporaryResourceStorage.retentionInMinutes:5}",
+        timeUnit = TimeUnit.MINUTES
+    )
     open fun deleteOldTemporaryResources() {
 
         TEMP_DIR.listDirectoryEntries().forEach { file ->
             try {
                 val fileCreationTime = Files.readAttributes(file, BasicFileAttributes::class.java).creationTime()
 
-                if (fileCreationTime.toInstant().plus(Duration.ofMinutes(5)) < Instant.now()) {
+                if (fileCreationTime.toInstant().plus(Duration.ofMinutes(retentionInMinutes)) < Instant.now()) {
                     file.deleteIfExists()
                 }
             } catch (e: Exception) {
