@@ -28,7 +28,7 @@ import reactor.core.publisher.Mono
 @Plugin(
     key = "openzaak",
     title = "OpenZaak plugin",
-    description = "Plugin used to provide authentication for openzaak"
+    description = "Plugin used to provide authentication for OpenZaak"
 )
 class OpenZaakPlugin(
     val tokenGeneratorService: OpenZaakTokenGeneratorService

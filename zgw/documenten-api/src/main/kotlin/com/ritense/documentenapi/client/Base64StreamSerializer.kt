@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi
+package com.ritense.documentenapi.client
 
-import com.ritense.documentenapi.client.DocumentenApiClient
-import com.ritense.plugin.PluginFactory
-import com.ritense.plugin.service.PluginService
-import com.ritense.resource.service.TemporaryResourceStorageService
+import com.fasterxml.jackson.core.Base64Variants
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.SerializerProvider
+import java.io.InputStream
 
-class DocumentenApiPluginFactory(
-    pluginService: PluginService,
-    val client: DocumentenApiClient,
-    val storageService: TemporaryResourceStorageService
-) : PluginFactory<DocumentenApiPlugin>(pluginService) {
-
-    override fun create(): DocumentenApiPlugin {
-        return DocumentenApiPlugin(client, storageService)
+class Base64StreamSerializer: JsonSerializer<InputStream>() {
+    override fun serialize(value: InputStream, gen: JsonGenerator, serializers: SerializerProvider) {
+        gen.writeBinary(Base64Variants.getDefaultVariant(), value, -1)
     }
 }

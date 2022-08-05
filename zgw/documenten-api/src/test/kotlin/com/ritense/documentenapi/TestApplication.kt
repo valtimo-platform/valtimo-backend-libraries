@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi
+package com.ritense.documentenapi.com.ritense.documentenapi
 
-import com.ritense.documentenapi.client.DocumentenApiClient
-import com.ritense.plugin.PluginFactory
-import com.ritense.plugin.service.PluginService
-import com.ritense.resource.service.TemporaryResourceStorageService
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+import org.springframework.boot.test.context.TestConfiguration
 
-class DocumentenApiPluginFactory(
-    pluginService: PluginService,
-    val client: DocumentenApiClient,
-    val storageService: TemporaryResourceStorageService
-) : PluginFactory<DocumentenApiPlugin>(pluginService) {
+@SpringBootApplication
+class TestApplication {
 
-    override fun create(): DocumentenApiPlugin {
-        return DocumentenApiPlugin(client, storageService)
+    fun main(args: Array<String>) {
+        runApplication<TestApplication>(*args)
     }
+
+    @TestConfiguration
+    class TestConfig
 }

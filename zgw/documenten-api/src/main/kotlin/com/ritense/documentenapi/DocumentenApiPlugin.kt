@@ -16,8 +16,17 @@
 
 package com.ritense.documentenapi
 
+import com.ritense.documentenapi.client.CreateDocumentRequest
+import com.ritense.documentenapi.client.DocumentStatusType
+import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.plugin.annotation.Plugin
+import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.domain.ActivityType
+import com.ritense.resource.domain.MetadataType
+import com.ritense.resource.service.TemporaryResourceStorageService
+import org.camunda.bpm.engine.delegate.DelegateExecution
 
 @Plugin(
     key = "documentenapi",
@@ -25,15 +34,45 @@ import com.ritense.plugin.annotation.PluginProperty
     description = "Connects to the Documenten API to store documents"
 )
 class DocumentenApiPlugin(
-    //val client: DocumentenApiClient
+    val client: DocumentenApiClient,
+    val storageService: TemporaryResourceStorageService
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: String
     @PluginProperty(key = "bronorganisatie", secret = false)
     lateinit var bronorganisatie: String
-    @PluginProperty(key = "authenticationPluginConfiguration", secret = false, required = false)
+    @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: DocumentenApiAuthentication
 
-    fun storeDocument(documentId: String){
+    @PluginAction(
+        key = "store-temp-document",
+        title = "Store temporary document",
+        description = "Store a temporary document in the Documenten API",
+        activityTypes = [ActivityType.SERVICE_TASK]
+    )
+    fun storeTemporaryDocument(
+        execution: DelegateExecution,
+        @PluginActionProperty localDocumentLocation: String,
+        @PluginActionProperty storedDocumentUrl: String,
+        @PluginActionProperty informatieobjecttype: String,
+        @PluginActionProperty taal: String = "nld",
+        @PluginActionProperty status: DocumentStatusType = DocumentStatusType.DEFINITIEF
+    ){
+        val documentLocation = execution.getVariable(localDocumentLocation) as String
+        val contentAsInputStream = storageService.getResourceContentAsInputStream(documentLocation)
+        val documentMetaData = storageService.getResourceMetadata(documentLocation)
+
+        val request = CreateDocumentRequest(
+            bronorganisatie = bronorganisatie,
+            titel = documentMetaData[MetadataType.FILE_NAME.name] as String,
+            bestandsnaam = documentMetaData[MetadataType.FILE_NAME.name] as String,
+            taal = taal,
+            inhoud = contentAsInputStream,
+            informatieobjecttype = informatieobjecttype,
+            status = status
+        )
+
+        val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)
+        execution.setVariable(storedDocumentUrl, documentCreateResult.url)
     }
 }

@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi
+package com.ritense.documentenapi.client
 
-import org.springframework.web.reactive.function.client.WebClient
-
-class DocumentenApiClient(
-    val webclient: WebClient,
-    val authentication: DocumentenApiAuthentication
-) {
-    fun storeDocument(){
-    }
-}
+class CreateDocumentResult(
+    val url: String,
+)
