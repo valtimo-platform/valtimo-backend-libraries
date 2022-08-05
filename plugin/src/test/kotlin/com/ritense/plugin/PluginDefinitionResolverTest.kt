@@ -16,6 +16,8 @@
 
 package com.ritense.plugin
 
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -27,8 +29,7 @@ internal class PluginDefinitionResolverTest {
         val resolver = PluginDefinitionResolver()
 
         val pluginMap = resolver.findPluginClasses()
-
-        assertEquals(1, pluginMap.size)
+        assertThat(pluginMap.size, Matchers.greaterThanOrEqualTo(1))
         assertTrue(pluginMap.contains(TestPlugin::class.java))
         val testPlugin = pluginMap[TestPlugin::class.java]!!
         assertEquals("test-plugin", testPlugin.key)

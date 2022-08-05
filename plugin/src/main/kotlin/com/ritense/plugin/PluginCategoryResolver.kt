@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.repository
+package com.ritense.plugin
 
-import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
-import org.springframework.data.jpa.repository.JpaRepository
+import com.ritense.plugin.annotation.PluginCategory
+import io.github.classgraph.ClassGraph
 
-interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, PluginConfigurationId> {
-    fun findByPluginDefinition_Categories_Key(category: String): List<PluginConfiguration>
+class PluginCategoryResolver {
+    internal fun findPluginCategoryClasses() : Map<Class<*>, PluginCategory> {
+        val pluginCategoryClasses = ClassGraph()
+            .enableClassInfo()
+            .enableAnnotationInfo()
+            .scan()
+            .getClassesWithAnnotation(PluginCategory::class.java)
+
+        return pluginCategoryClasses.associate {
+            it.loadClass() to it.getAnnotationInfo(PluginCategory::class.java).loadClassAndInstantiate() as PluginCategory
+        }
+    }
 }

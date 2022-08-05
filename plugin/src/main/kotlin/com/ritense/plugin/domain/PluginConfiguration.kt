@@ -57,7 +57,7 @@ class PluginConfiguration(
     }
 
     fun updateProperties(propertiesForUpdate: ObjectNode) {
-        pluginDefinition.pluginProperties.forEach {
+        pluginDefinition.properties.forEach {
             val updateValue = propertiesForUpdate.get(it.fieldName)
             if (!it.secret || !nodeIsEmpty(updateValue)) {
                 properties?.replace(it.fieldName, updateValue)

@@ -16,13 +16,20 @@
 
 package com.ritense.plugin
 
-import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.annotation.Plugin
+import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginActionProperty
+import com.ritense.plugin.annotation.PluginCategory
+import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
 
-class TestPluginFactory(
-    private val someObject: String,
-    pluginService: PluginService
-) : PluginFactory<TestPlugin>(pluginService) {
-    override fun create(): TestPlugin {
-        return TestPlugin(someObject)
-    }
+@PluginCategory("test-interface")
+interface TestPluginInterface {
+    @PluginAction(
+        key = "interface-action",
+        title = "Interface test action",
+        description = "This is an action that should be implemented in a plugin",
+        activityTypes = [SERVICE_TASK]
+    )
+    fun interfaceAction();
 }

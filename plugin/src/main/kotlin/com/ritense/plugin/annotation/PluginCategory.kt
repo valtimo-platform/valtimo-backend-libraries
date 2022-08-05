@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.repository
+package com.ritense.plugin.annotation
 
-import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
-import org.springframework.data.jpa.repository.JpaRepository
-
-interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, PluginConfigurationId> {
-    fun findByPluginDefinition_Categories_Key(category: String): List<PluginConfiguration>
-}
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class PluginCategory(
+    val key: String
+)

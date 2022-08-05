@@ -19,6 +19,7 @@ package com.ritense.plugin
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
 import com.ritense.plugin.domain.PluginActionDefinition
+import com.ritense.plugin.domain.PluginCategory
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
@@ -35,6 +36,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import javax.transaction.Transactional
+import org.hamcrest.Matchers.greaterThanOrEqualTo
+import org.junit.jupiter.api.Assertions.fail
 
 internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
 
@@ -53,19 +56,20 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
         val deployedPlugins = pluginDefinitionRepository.findAll()
         val deployedActions = pluginActionDefinitionRepository.findAll()
 
-        assertEquals(1, deployedPlugins.size)
-        assertEquals("test-plugin", deployedPlugins[0].key)
-        assertEquals("Test plugin", deployedPlugins[0].title)
+        val plugin =
+            deployedPlugins.find { it.key == "test-plugin" } ?: fail { "test-plugin was not deployed!" }
+        assertEquals("Test plugin", plugin.title)
         assertEquals("This is a test plugin used to verify plugin framework functionality",
-            deployedPlugins[0].description)
-        assertEquals("com.ritense.plugin.TestPlugin", deployedPlugins[0].fullyQualifiedClassName)
+            plugin.description)
+        assertEquals("com.ritense.plugin.TestPlugin", plugin.fullyQualifiedClassName)
 
-        assertPluginPropertiesPresent(deployedPlugins[0].pluginProperties.toList(), deployedPlugins[0].key)
+        assertPluginPropertiesPresent(plugin.properties.toList(), plugin.key)
         assertTestActionPresent(deployedActions)
         assertOtherTestActionPresent(deployedActions)
         assertInheritedActionPresent(deployedActions)
         assertOverridingActionPresent(deployedActions)
         assertOverriddenActionNotPresent(deployedActions)
+        assertPluginCategoryPresent(plugin.categories)
 
         val deployedActionProperties = pluginActionPropertyDefinitionRepository.findAll()
         assertThat(deployedActionProperties.size, `is`(1))
@@ -75,7 +79,7 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
         pluginProperties: List<PluginProperty>,
         definitionKey: String
     ) {
-        assertEquals(3, pluginProperties.size)
+        assertThat(pluginProperties.size, greaterThanOrEqualTo(3))
         assertThat(
             pluginProperties,
             hasItems(
@@ -104,6 +108,22 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
                         hasProperty<String>("key", `is`(definitionKey))
                     ),
                     hasProperty("required", `is`(false))
+                )
+            )
+        )
+    }
+
+    private fun assertPluginCategoryPresent(
+        pluginCategories: Set<PluginCategory>
+    ) {
+        assertEquals(1, pluginCategories.size)
+        assertThat(
+            pluginCategories,
+            hasItems(
+                allOf(
+                    hasProperty("key", `is`("test-interface")),
+                    hasProperty("fullyQualifiedClassName",
+                        `is`("com.ritense.plugin.TestPluginInterface"))
                 )
             )
         )

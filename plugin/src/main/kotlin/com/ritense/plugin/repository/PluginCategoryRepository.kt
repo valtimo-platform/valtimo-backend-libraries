@@ -16,10 +16,7 @@
 
 package com.ritense.plugin.repository
 
-import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.plugin.domain.PluginCategory
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, PluginConfigurationId> {
-    fun findByPluginDefinition_Categories_Key(category: String): List<PluginConfiguration>
-}
+interface PluginCategoryRepository: JpaRepository<PluginCategory, String>

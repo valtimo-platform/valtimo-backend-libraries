@@ -18,11 +18,13 @@ package com.ritense.plugin
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
-import com.ritense.plugin.domain.PluginPropertyId
+import com.ritense.plugin.service.PluginService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -32,10 +34,12 @@ import org.junit.jupiter.api.Test
 
 internal class PluginFactoryTest {
     lateinit var pluginFactory: PluginFactory<*>
+    lateinit var pluginService: PluginService
 
     @BeforeEach
     fun init() {
-        pluginFactory = TestPluginFactory("someObject")
+        pluginService = mock()
+        pluginFactory = TestPluginFactory("someObject", pluginService)
     }
 
     @Test
@@ -115,11 +119,26 @@ internal class PluginFactoryTest {
             )
         )
 
+        properties.add(
+            PluginProperty(
+                "property4",
+                pluginDefinition,
+                "property4",
+                true,
+                false,
+                "property4",
+                TestPluginCategory::class.java.name
+            )
+        )
+
+        val categoryPluginConfigurationId = PluginConfigurationId.newId()
+        val pluginCategory = object : TestPluginCategory {}
+        whenever(pluginService.createInstance(categoryPluginConfigurationId)).thenReturn(pluginCategory)
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
             ObjectMapper().valueToTree(
-                    TestPluginConfiguredProperties(property1 = "whatever", property3 = 2)
+                    TestPluginConfiguredProperties(property1 = "whatever", property3 = 2, property4= categoryPluginConfigurationId.id.toString())
             ),
             pluginDefinition
         )
@@ -128,5 +147,6 @@ internal class PluginFactoryTest {
         assertEquals("whatever", pluginInstance.property1)
         assertNull(pluginInstance.property2)
         assertEquals(2, pluginInstance.property3)
+        assertEquals(pluginCategory, pluginInstance.property4)
     }
 }

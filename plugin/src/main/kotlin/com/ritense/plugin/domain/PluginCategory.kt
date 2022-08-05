@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.repository
+package com.ritense.plugin.domain
 
-import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
-import org.springframework.data.jpa.repository.JpaRepository
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.Table
 
-interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, PluginConfigurationId> {
-    fun findByPluginDefinition_Categories_Key(category: String): List<PluginConfiguration>
-}
+@Entity
+@Table(name = "plugin_category")
+class PluginCategory(
+    @Id
+    @Column(name = "plugin_category_key")
+    val key: String,
+    @Column(name = "class_name")
+    val fullyQualifiedClassName: String,
+)
