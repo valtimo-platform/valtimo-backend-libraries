@@ -38,9 +38,21 @@ class ValueResolverAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(FixedValueResolverFactory::class)
+    @ConditionalOnMissingBean(name = ["fixedValueResolver"])
     fun fixedValueResolver(): ValueResolverFactory {
         return FixedValueResolverFactory()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = ["httpValueResolver"])
+    fun httpValueResolver(): ValueResolverFactory {
+        return FixedValueResolverFactory("http")
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = ["httpsValueResolver"])
+    fun httpsValueResolver(): ValueResolverFactory {
+        return FixedValueResolverFactory("https")
     }
 
     @Bean
