@@ -17,7 +17,7 @@
 package com.ritense.openzaak.plugin
 
 import com.ritense.documentenapi.DocumentenApiAuthentication
-import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
+import com.ritense.openzaak.service.TokenGeneratorService
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import org.springframework.web.reactive.function.client.ClientRequest
@@ -31,7 +31,7 @@ import reactor.core.publisher.Mono
     description = "Plugin used to provide authentication for OpenZaak"
 )
 class OpenZaakPlugin(
-    val tokenGeneratorService: OpenZaakTokenGeneratorService
+    val tokenGeneratorService: TokenGeneratorService
 ): DocumentenApiAuthentication {
     @PluginProperty(key = "clientId", secret = false, required = true)
     lateinit var clientId: String

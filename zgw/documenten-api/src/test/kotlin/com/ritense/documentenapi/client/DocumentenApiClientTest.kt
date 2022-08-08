@@ -107,6 +107,9 @@ internal class DocumentenApiClientTest {
             request
         )
 
+        val recordedRequest = mockDocumentenApi.takeRequest()
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
         assertEquals("http://example.com", result.url)
     }
 
@@ -118,7 +121,10 @@ internal class DocumentenApiClientTest {
 
     class TestAuthentication: DocumentenApiAuthentication {
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
-            return next.exchange(request)
+            val filteredRequest = ClientRequest.from(request).headers { headers ->
+                headers.setBearerAuth("test")
+            }.build()
+            return next.exchange(filteredRequest)
         }
     }
 }
