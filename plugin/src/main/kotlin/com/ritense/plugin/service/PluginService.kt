@@ -214,17 +214,17 @@ class PluginService(
             }
 
         return paramValues.mapValues { (param, value) ->
-                if (value != null && value.isTextual) {
-                    //TODO: possible issue here. what if value is textual but argument type isn't
-                    val placeHolderValue = placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
-                    if (placeHolderValue::class.java.isAssignableFrom(param.type)) {
-                        placeHolderValue
-                    } else {
-                        objectMapper.treeToValue(value, param.type)
-                    }
+            if (value != null && value.isTextual) {
+                //TODO: possible issue here. resulting placeHolderValue might be a string value of an enum or date
+                val placeHolderValue = placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
+                if (placeHolderValue::class.java.isAssignableFrom(param.type)) {
+                    placeHolderValue
                 } else {
                     objectMapper.treeToValue(value, param.type)
                 }
+            } else {
+                objectMapper.treeToValue(value, param.type)
+            }
         }
     }
 

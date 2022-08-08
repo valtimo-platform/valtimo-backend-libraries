@@ -16,13 +16,13 @@
 
 package com.ritense.openzaak.plugin
 
-import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
+import com.ritense.openzaak.service.TokenGeneratorService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 
 class OpenZaakPluginFactory(
     pluginService: PluginService,
-    val tokenGeneratorService: OpenZaakTokenGeneratorService
+    val tokenGeneratorService: TokenGeneratorService
 ) : PluginFactory<OpenZaakPlugin>(pluginService) {
 
     override fun create(): OpenZaakPlugin {
