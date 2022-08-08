@@ -30,6 +30,8 @@ dependencies {
     implementation project(':document')
     implementation project(':process-document')
     implementation project(':resource')
+    implementation project(':plugin')
+    implementation project(':zgw:documenten-api')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
