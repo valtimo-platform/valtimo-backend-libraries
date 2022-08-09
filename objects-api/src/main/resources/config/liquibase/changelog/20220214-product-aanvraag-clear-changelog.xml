@@ -19,18 +19,27 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
     <changeSet author="Klaas Schuijtemaker" id="1">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <delete tableName="connector_instance">
             <where>connector_properties LIKE '%TaakProperties%' OR connector_properties LIKE '%ProductAanvraagProperties%' OR connector_properties LIKE '%ObjectsApiProperties%'</where>
         </delete>
     </changeSet>
 
     <changeSet author="Klaas Schuijtemaker" id="2">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <delete tableName="connector_type">
             <where>name='Taak' OR name='ProductAanvragen' OR name='ObjectsApi'</where>
         </delete>
     </changeSet>
 
     <changeSet author="Klaas Schuijtemaker" id="3">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <delete tableName="opennotificatie_abonnement_link"/>
     </changeSet>
 

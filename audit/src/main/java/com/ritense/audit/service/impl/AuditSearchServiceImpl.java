@@ -18,26 +18,30 @@ package com.ritense.audit.service.impl;
 
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.service.AuditSearchService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
+import com.ritense.valtimo.contract.database.QueryDialectHelper;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class AuditSearchServiceImpl implements AuditSearchService {
 
     private final EntityManager entityManager;
 
-    public AuditSearchServiceImpl(EntityManager entityManager) {
+    private final QueryDialectHelper queryDialectHelper;
+
+    public AuditSearchServiceImpl(EntityManager entityManager, QueryDialectHelper queryDialectHelper) {
         this.entityManager = entityManager;
+        this.queryDialectHelper = queryDialectHelper;
     }
 
     @Override
@@ -67,31 +71,8 @@ public class AuditSearchServiceImpl implements AuditSearchService {
         return new PageImpl<>(typedQuery.getResultList());
     }
 
-    private Predicate getEqualPredicate(CriteriaBuilder builder, Root<AuditRecord> root, String path, String value) {
-        return builder.equal(
-            builder.function(
-                "JSON_EXTRACT",
-                AuditRecord.class,
-                root.get("auditEvent"),
-                builder.literal(path)
-            ),
-            value
-        );
-    }
-
     private Predicate isNotNull(CriteriaBuilder cb, Root<AuditRecord> root, String path, String value) {
-        return cb.isNotNull(
-            cb.function(
-                "JSON_SEARCH",
-                AuditRecord.class,
-                cb.function("lower", String.class, root.get("auditEvent")),
-                cb.literal("all"),
-                cb.function("lower", String.class, cb.literal(value)),
-                cb.nullLiteral(String.class),
-                cb.function("lower", String.class, cb.literal(path))
-            )
-        );
-
+        return queryDialectHelper.getJsonValueExistsInPathExpression(cb, root.get("auditEvent"), path, value);
     }
 
 }

@@ -22,17 +22,17 @@ import com.ritense.audit.domain.AuditRecordId;
 import com.ritense.audit.domain.MetaData;
 import com.ritense.audit.domain.event.TestEvent;
 import com.ritense.audit.exception.AuditRecordNotFoundException;
-import com.ritense.audit.repository.impl.AuditRecordImplRepository;
+import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.audit.service.AuditService;
 import com.ritense.valtimo.contract.audit.AuditEvent;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -45,11 +45,11 @@ import static org.mockito.Mockito.when;
 public class AuditServiceImplTest extends AbstractTestHelper {
 
     private AuditService auditService;
-    private AuditRecordImplRepository auditRecordRepository;
+    private AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository;
 
     @BeforeEach
     public void setUp() {
-        auditRecordRepository = mock(AuditRecordImplRepository.class);
+        auditRecordRepository = mock(AuditRecordRepository.class);
         auditService = new AuditServiceImpl(auditRecordRepository);
     }
 

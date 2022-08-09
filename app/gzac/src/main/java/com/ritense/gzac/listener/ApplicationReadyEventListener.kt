@@ -100,7 +100,8 @@ class ApplicationReadyEventListener(
                     "http://localhost:8001",
                     "valtimo_client",
                     "e09b8bc5-5831-4618-ab28-41411304309d",
-                    Rsin("051845623")
+                    Rsin("051845623"),
+                    "http://localhost:4200/catalogi/api/v1/catalogussen/8225508a-6840-413e-acc9-6422af120db1"
                 )
             )
         )

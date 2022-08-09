@@ -22,10 +22,11 @@ import com.ritense.document.domain.DocumentContent;
 import com.ritense.document.domain.diff.JsonDifferenceService;
 import com.ritense.document.domain.patch.JsonPatchService;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import java.util.Objects;
 import java.util.Optional;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import org.hibernate.annotations.Type;
 import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowArrayRemovalOperations;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
@@ -33,6 +34,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 @Embeddable
 public class JsonDocumentContent implements DocumentContent {
 
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "json_document_content", columnDefinition = "json")
     private String content;
 

@@ -26,6 +26,7 @@ import com.ritense.valtimo.security.config.ActuatorHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ApiLoginHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.AuthorityHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CamundaCockpitHttpSecurityConfigurer;
+import com.ritense.valtimo.security.config.CamundaHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CamundaRestHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ChoiceFieldHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ContextHttpSecurityConfigurer;
@@ -197,6 +198,14 @@ public class HttpSecurityAutoConfiguration {
     public AccountHttpSecurityConfigurer accountHttpSecurityConfigurer() {
         return new AccountHttpSecurityConfigurer();
     }
+
+    @Order(391)
+    @Bean
+    @ConditionalOnMissingBean(CamundaHttpSecurityConfigurer.class)
+    public CamundaHttpSecurityConfigurer camundaHttpSecurityConfigurer() {
+        return new CamundaHttpSecurityConfigurer();
+    }
+
 
     //DEFAULTS SECURITY CHAIN
 

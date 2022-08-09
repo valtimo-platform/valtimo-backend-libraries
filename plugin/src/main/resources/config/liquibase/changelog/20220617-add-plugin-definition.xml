@@ -58,4 +58,18 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="4" author="Ritense">
+        <createTable tableName="plugin_action_property_definition">
+            <column name="plugin_action_definition_key" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="plugin_definition_key" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="plugin_action_property_definition_key" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>

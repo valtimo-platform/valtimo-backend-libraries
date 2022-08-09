@@ -38,6 +38,7 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+
 import javax.transaction.Transactional;
 import java.util.UUID;
 
@@ -53,7 +54,16 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
     private final SubmissionTransformerService submissionTransformerService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public CamundaFormAssociationSubmissionService(FormDefinitionService formDefinitionService, DocumentService documentService, ProcessDocumentAssociationService processDocumentAssociationService, FormAssociationService formAssociationService, ProcessDocumentService processDocumentService, CamundaTaskService camundaTaskService, SubmissionTransformerService submissionTransformerService, ApplicationEventPublisher applicationEventPublisher) {
+    public CamundaFormAssociationSubmissionService(
+        FormDefinitionService formDefinitionService,
+        DocumentService documentService,
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        FormAssociationService formAssociationService,
+        ProcessDocumentService processDocumentService,
+        CamundaTaskService camundaTaskService,
+        SubmissionTransformerService submissionTransformerService,
+        ApplicationEventPublisher applicationEventPublisher
+    ) {
         this.formDefinitionService = formDefinitionService;
         this.documentService = documentService;
         this.processDocumentAssociationService = processDocumentAssociationService;

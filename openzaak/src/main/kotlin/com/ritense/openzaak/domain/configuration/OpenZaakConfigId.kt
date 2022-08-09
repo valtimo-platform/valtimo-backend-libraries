@@ -25,7 +25,7 @@ import javax.persistence.Embeddable
 @Embeddable
 data class OpenZaakConfigId(
 
-    @Column(name = "open_zaak_config_id", columnDefinition = "BINARY(16)")
+    @Column(name = "open_zaak_config_id")
     @JsonValue
     val id: UUID
 

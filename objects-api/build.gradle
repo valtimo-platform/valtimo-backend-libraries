@@ -33,6 +33,7 @@ dependencies {
     implementation project(':openzaak')
     implementation project(':klant')
     implementation project(':resource:openzaak-resource')
+    implementation project(':value-resolver')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

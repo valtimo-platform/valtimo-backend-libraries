@@ -17,8 +17,10 @@
 package com.ritense.valtimo.camunda.command;
 
 import com.ritense.valtimo.contract.config.LiquibaseRunner;
+import java.sql.SQLException;
 import org.camunda.bpm.engine.SchemaOperationsCommand;
 import org.camunda.bpm.engine.impl.db.PersistenceSession;
+import org.camunda.bpm.engine.impl.db.sql.DbSqlSession;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.slf4j.Logger;
 
@@ -35,7 +37,17 @@ public class ValtimoSchemaOperationsCommand implements SchemaOperationsCommand {
     public Void execute(CommandContext commandContext) {
         PersistenceSession persistenceSession = commandContext.getSession(PersistenceSession.class);
         persistenceSession.dbSchemaUpdate();
+
+        // TODO: not this
+        if (persistenceSession instanceof DbSqlSession) {
+            try {
+                ((DbSqlSession) persistenceSession).getSqlSession().getConnection().commit();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
         persistenceSession.close();
+
         try {
             liquibaseRunner.run();
         } catch (Exception e) {

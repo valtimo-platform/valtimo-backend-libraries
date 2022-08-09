@@ -29,7 +29,7 @@ data class AbonnementLink(
     @EmbeddedId
     var connectorId: ConnectorInstanceId,
 
-    @Column(name = "abonnement_id", columnDefinition = "BINARY(16)")
+    @Column(name = "abonnement_id")
     var abonnementId: UUID,
 
     @Column(name = "auth_key")

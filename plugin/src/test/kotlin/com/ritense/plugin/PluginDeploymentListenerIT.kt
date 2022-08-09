@@ -18,10 +18,12 @@ package com.ritense.plugin
 
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
-import com.ritense.plugin.domain.ActivityType.USER_TASK
 import com.ritense.plugin.domain.PluginActionDefinition
+import com.ritense.plugin.domain.PluginCategory
 import com.ritense.plugin.domain.PluginDefinition
+import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
+import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.allOf
@@ -34,6 +36,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import javax.transaction.Transactional
+import org.hamcrest.Matchers.greaterThanOrEqualTo
+import org.junit.jupiter.api.Assertions.fail
 
 internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
 
@@ -43,24 +47,86 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
     @Autowired
     lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
 
+    @Autowired
+    lateinit var pluginActionPropertyDefinitionRepository: PluginActionPropertyDefinitionRepository
+
     @Test
     @Transactional
     fun `should deploy test plugin`() {
         val deployedPlugins = pluginDefinitionRepository.findAll()
         val deployedActions = pluginActionDefinitionRepository.findAll()
 
-        assertEquals(1, deployedPlugins.size)
-        assertEquals("test-plugin", deployedPlugins[0].key)
-        assertEquals("Test plugin", deployedPlugins[0].title)
+        val plugin =
+            deployedPlugins.find { it.key == "test-plugin" } ?: fail { "test-plugin was not deployed!" }
+        assertEquals("Test plugin", plugin.title)
         assertEquals("This is a test plugin used to verify plugin framework functionality",
-            deployedPlugins[0].description)
-        assertEquals("com.ritense.plugin.TestPlugin", deployedPlugins[0].fullyQualifiedClassName)
+            plugin.description)
+        assertEquals("com.ritense.plugin.TestPlugin", plugin.fullyQualifiedClassName)
 
+        assertPluginPropertiesPresent(plugin.properties.toList(), plugin.key)
         assertTestActionPresent(deployedActions)
         assertOtherTestActionPresent(deployedActions)
         assertInheritedActionPresent(deployedActions)
         assertOverridingActionPresent(deployedActions)
         assertOverriddenActionNotPresent(deployedActions)
+        assertPluginCategoryPresent(plugin.categories)
+
+        val deployedActionProperties = pluginActionPropertyDefinitionRepository.findAll()
+        assertThat(deployedActionProperties.size, `is`(1))
+    }
+
+    private fun assertPluginPropertiesPresent(
+        pluginProperties: List<PluginProperty>,
+        definitionKey: String
+    ) {
+        assertThat(pluginProperties.size, greaterThanOrEqualTo(3))
+        assertThat(
+            pluginProperties,
+            hasItems(
+                allOf(
+                    hasProperty("id",
+                        allOf(
+                            hasProperty("key", `is`("property1")),
+                            hasProperty<String>("pluginDefinitionId", `is`(definitionKey)),
+                        ),
+                    ),
+                    hasProperty("pluginDefinition",
+                        hasProperty<String>("key", `is`(definitionKey))
+                    ),
+                    hasProperty("required", `is`(true)),
+                    hasProperty("fieldName", `is`("property1")),
+                    hasProperty("fieldType", `is`(String::class.java.name))
+                ),
+                allOf(
+                    hasProperty("id",
+                        allOf(
+                            hasProperty("key", `is`("property2")),
+                            hasProperty<String>("pluginDefinitionId", `is`(definitionKey)),
+                        ),
+                    ),
+                    hasProperty("pluginDefinition",
+                        hasProperty<String>("key", `is`(definitionKey))
+                    ),
+                    hasProperty("required", `is`(false))
+                )
+            )
+        )
+    }
+
+    private fun assertPluginCategoryPresent(
+        pluginCategories: Set<PluginCategory>
+    ) {
+        assertEquals(1, pluginCategories.size)
+        assertThat(
+            pluginCategories,
+            hasItems(
+                allOf(
+                    hasProperty("key", `is`("test-interface")),
+                    hasProperty("fullyQualifiedClassName",
+                        `is`("com.ritense.plugin.TestPluginInterface"))
+                )
+            )
+        )
     }
 
     private fun assertTestActionPresent(deployedActions: List<PluginActionDefinition>) {
@@ -71,7 +137,7 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
             "Test action",
             "This is an action used to verify plugin framework functionality",
             "testAction",
-            arrayOf(USER_TASK)
+            arrayOf(SERVICE_TASK)
         )
     }
 
@@ -83,7 +149,7 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
             "Test action 2",
             "This is an action used to test method overloading",
             "testAction",
-            arrayOf(USER_TASK, SERVICE_TASK)
+            arrayOf(SERVICE_TASK)
         )
     }
 
@@ -95,7 +161,7 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
             "Parent test action",
             "This is an action used to test method inheritance",
             "testAction",
-            arrayOf(USER_TASK, SERVICE_TASK)
+            arrayOf(SERVICE_TASK)
         )
     }
 
