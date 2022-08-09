@@ -39,7 +39,6 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.request.Request
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
-import com.ritense.valtimo.contract.form.ExternalFormFieldType
 import com.ritense.valtimo.contract.json.JsonPointerHelper
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.result.OperationError
@@ -70,7 +69,7 @@ data class FormIoSubmission(
     private var documentFieldReferences: MutableList<DocumentFieldReference> = mutableListOf()
     private var preJsonPatch: JsonPatch? = null
     private val request: Request
-    private lateinit var externalFormData: Map<ExternalFormFieldType, Map<String, Any>>
+    private lateinit var externalFormData: Map<String, Map<String, Any>>
 
     init {
         initDocumentDefinitionFieldReferences()  //Load all mappable document definition form fields

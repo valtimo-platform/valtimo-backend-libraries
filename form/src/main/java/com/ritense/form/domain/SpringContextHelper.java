@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.document.config;
+package com.ritense.form.domain;
 
+import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import java.util.Map;
 
 public class SpringContextHelper implements ApplicationContextAware {
 
@@ -28,8 +31,8 @@ public class SpringContextHelper implements ApplicationContextAware {
         context = applicationContext;
     }
 
-    public static <T> T getProperty(String property, Class<T> targetClass) {
-        return context.getEnvironment().getProperty(property, targetClass);
+    static Map<String, FormFieldDataResolver> getFormFieldDataResolver() {
+        return context.getBeansOfType(FormFieldDataResolver.class);
     }
 
 }

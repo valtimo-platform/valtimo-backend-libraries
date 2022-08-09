@@ -21,7 +21,12 @@ import java.util.UUID;
 
 public interface FormFieldDataResolver {
 
+    @Deprecated(forRemoval = true, since = "9.18")
     boolean supports(ExternalFormFieldType externalFormFieldType);
+
+    default boolean supports(String externalFormFieldType) {
+        return false;
+    }
 
     Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames);
 
