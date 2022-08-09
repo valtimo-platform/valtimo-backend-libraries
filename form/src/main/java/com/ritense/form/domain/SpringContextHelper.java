@@ -17,8 +17,6 @@
 package com.ritense.form.domain;
 
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -29,7 +27,7 @@ public class SpringContextHelper implements ApplicationContextAware {
     private static ApplicationContext context;
 
     @Override
-    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) {
         context = applicationContext;
     }
 

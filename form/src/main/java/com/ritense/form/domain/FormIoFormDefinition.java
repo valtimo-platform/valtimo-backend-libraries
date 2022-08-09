@@ -335,12 +335,12 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         return getExternalFormFieldType(field).flatMap(externalFormFieldType -> {
             String jsonPath = field.get(PROPERTY_KEY).asText().replace(".", "/");
             // Note: Name is limited to 1 level of depth. Not support = pv.aa.bbb
-            String name = jsonPath.substring(externalFormFieldType.length() + 1); // example pv.varName -> gets varName
+            String propertyName = jsonPath.substring(externalFormFieldType.length() + 1); // example pv.varName -> gets varName
             jsonPath = "/" + jsonPath;
             return buildJsonPointer(jsonPath)
                 .flatMap(jsonPointer -> Optional.of(
                         new ExternalContentItem(
-                            name,
+                            propertyName,
                             jsonPointer,
                             externalFormFieldType
                         )
