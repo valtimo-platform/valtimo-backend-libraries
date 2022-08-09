@@ -145,12 +145,10 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
             )
         )
 
-        // given
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("localDocumentVariableName" to documentId))
 
-        // when
         processDocumentService.newDocumentAndStartProcess(request)
 
         val resourceId = runtimeService.createVariableInstanceQuery()
