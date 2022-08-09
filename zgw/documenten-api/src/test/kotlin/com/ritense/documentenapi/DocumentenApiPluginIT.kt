@@ -30,7 +30,6 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.json.Mapper
-import mu.KotlinLogging
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -64,8 +63,6 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
 
     @Autowired
     lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
-
-    lateinit var plugin: DocumentenApiPlugin
 
     lateinit var server: MockWebServer
 
@@ -230,9 +227,5 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
         }
-    }
-
-    companion object {
-        val logger = KotlinLogging.logger {}
     }
 }
