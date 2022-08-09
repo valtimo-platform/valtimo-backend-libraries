@@ -16,6 +16,7 @@
 
 package com.ritense.plugin
 
+import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.extension.mockito.service.RuntimeServiceFluentMock
@@ -35,7 +36,7 @@ class TestApplication {
     class TestConfig {
         @Bean
         fun testPlugin(): PluginFactory<TestPlugin> {
-            return spy(TestPluginFactory("someString"))
+            return spy(TestPluginFactory("someString", mock()))
         }
 
         @Bean

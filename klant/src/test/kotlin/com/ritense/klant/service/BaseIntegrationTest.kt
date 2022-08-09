@@ -38,5 +38,4 @@ abstract class BaseIntegrationTest {
 
     @MockBean
     lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
-
 }

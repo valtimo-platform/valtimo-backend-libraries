@@ -20,6 +20,7 @@ import com.ritense.connector.domain.Connector
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.ResourceService
@@ -39,6 +40,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Scope
 import org.springframework.core.annotation.Order
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
@@ -138,6 +140,7 @@ class SmartDocumentsAutoConfiguration {
         smartDocumentsClient: SmartDocumentsClient,
         valueResolverService: ValueResolverService,
         temporaryResourceStorageService: TemporaryResourceStorageService,
+        pluginService: PluginService
     ): PluginFactory<SmartDocumentsPlugin> {
         return SmartDocumentsPluginFactory(
             processDocumentService,
@@ -145,6 +148,7 @@ class SmartDocumentsAutoConfiguration {
             smartDocumentsClient,
             valueResolverService,
             temporaryResourceStorageService,
+            pluginService
         )
     }
 

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
+import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -43,8 +44,8 @@ import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
+import java.util.UUID
 import javax.validation.ValidationException
-
 class PluginService(
     private val pluginDefinitionRepository: PluginDefinitionRepository,
     private val pluginConfigurationRepository: PluginConfigurationRepository,
@@ -61,6 +62,10 @@ class PluginService(
 
     fun getPluginConfigurations(): List<PluginConfiguration> {
         return pluginConfigurationRepository.findAll()
+    }
+
+    fun getPluginConfigurationsByCategory(category: String): List<PluginConfiguration> {
+        return pluginConfigurationRepository.findByPluginDefinition_Categories_Key(category)
     }
 
     fun createPluginConfiguration(
@@ -160,8 +165,7 @@ class PluginService(
     }
 
     fun invoke(execution: DelegateExecution, processLink: PluginProcessLink) {
-        val configuration = pluginConfigurationRepository.getById(processLink.pluginConfigurationId)
-        val instance = createPluginInstance(configuration)
+        val instance = createInstance(processLink.pluginConfigurationId)
 
         val method = getActionMethod(instance, processLink)
         val methodArguments = resolveMethodArguments(method, execution, processLink.actionProperties)
@@ -210,15 +214,22 @@ class PluginService(
             }
 
         return paramValues.mapValues { (param, value) ->
-                if (value != null && value.isTextual) {
-                    placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
+            if (value != null && value.isTextual) {
+                //TODO: possible issue here. resulting placeHolderValue might be a string value of an enum or date
+                val placeHolderValue = placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
+                if (placeHolderValue::class.java.isAssignableFrom(param.type)) {
+                    placeHolderValue
                 } else {
                     objectMapper.treeToValue(value, param.type)
                 }
+            } else {
+                objectMapper.treeToValue(value, param.type)
+            }
         }
     }
 
-    private fun createPluginInstance(configuration: PluginConfiguration): Any {
+    fun createInstance(pluginConfigurationId: PluginConfigurationId): Any {
+        val configuration = pluginConfigurationRepository.getById(pluginConfigurationId)
         return  pluginFactories.first {
             it.canCreate(configuration)
         }.create(configuration)!!
@@ -239,7 +250,7 @@ class PluginService(
 
     private fun validateProperties(properties: ObjectNode, pluginDefinition: PluginDefinition) {
         val errors = mutableListOf<Throwable>()
-        pluginDefinition.pluginProperties.forEach { pluginProperty ->
+        pluginDefinition.properties.forEach { pluginProperty ->
             val propertyNode = properties[pluginProperty.fieldName]
 
             if (propertyNode == null || propertyNode.isMissingNode || propertyNode.isNull ||
@@ -250,8 +261,14 @@ class PluginService(
             } else {
                 try {
                     val propertyClass = Class.forName(pluginProperty.fieldType)
-                    val property = objectMapper.treeToValue(propertyNode, propertyClass)
-                    assert(property != null)
+                    if (propertyClass.isAnnotationPresent(PluginCategory::class.java)) {
+                        val propertyConfigurationId = PluginConfigurationId.existingId(UUID.fromString(propertyNode.textValue()))
+                        val propertyConfiguration = pluginConfigurationRepository.findById(propertyConfigurationId)
+                        assert(propertyConfiguration.isPresent) { "Plugin configuration with id ${propertyConfigurationId.id} does not exist!" }
+                    } else {
+                        val property = objectMapper.treeToValue(propertyNode, propertyClass)
+                        assert(property != null)
+                    }
                 } catch (e: Exception) {
                     errors.add(PluginPropertyParseException(pluginProperty.fieldName, pluginDefinition.title, e))
                 }

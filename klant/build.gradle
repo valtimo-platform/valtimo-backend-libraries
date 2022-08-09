@@ -60,6 +60,7 @@ dependencies {
     testImplementation project(':core')
     testImplementation project(':audit')
     testImplementation project(':document')
+    testImplementation project(':zgw:documenten-api')
     testImplementation project(':openzaak')
     testImplementation project(':process-document')
     testImplementation project(':resource:openzaak-resource')

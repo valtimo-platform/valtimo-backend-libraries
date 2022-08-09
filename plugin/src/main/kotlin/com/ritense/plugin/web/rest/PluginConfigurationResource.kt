@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
@@ -41,8 +42,14 @@ class PluginConfigurationResource(
 ) {
 
     @GetMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getPluginDefinitions(): ResponseEntity<List<PluginConfiguration>> {
-        return ResponseEntity.ok(pluginService.getPluginConfigurations())
+    fun getPluginDefinitions(@RequestParam("category") category: String?): ResponseEntity<List<PluginConfigurationDto>> {
+        return if (category != null) {
+            ResponseEntity.ok(pluginService.getPluginConfigurationsByCategory(category)
+                .map { PluginConfigurationDto(it) })
+        } else {
+            ResponseEntity.ok(pluginService.getPluginConfigurations()
+                .map { PluginConfigurationDto(it) })
+        }
     }
 
     @PostMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -64,12 +71,14 @@ class PluginConfigurationResource(
     fun updatePluginConfiguration(
         @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID,
         @RequestBody updatePluginConfiguration: UpdatePluginConfigurationDto
-    ): ResponseEntity<PluginConfiguration> {
+    ): ResponseEntity<PluginConfigurationDto> {
         return ResponseEntity.ok(
-            pluginService.updatePluginConfiguration(
-                PluginConfigurationId.existingId(pluginConfigurationId),
-                updatePluginConfiguration.title,
-                updatePluginConfiguration.properties
+            PluginConfigurationDto(
+                pluginService.updatePluginConfiguration(
+                    PluginConfigurationId.existingId(pluginConfigurationId),
+                    updatePluginConfiguration.title,
+                    updatePluginConfiguration.properties
+                )
             )
         )
     }
