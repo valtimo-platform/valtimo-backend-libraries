@@ -108,7 +108,7 @@ data class FormIoSubmission(
         }
     }
 
-    public fun documentContent(): ObjectNode {
+    fun documentContent(): ObjectNode {
         return documentContent
     }
 

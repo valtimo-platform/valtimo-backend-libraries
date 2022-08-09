@@ -126,6 +126,13 @@ public class FormIoFormDefinitionTest extends BaseTest {
         assertThat(components).hasSize(6);
     }
 
+    @Test
+    public void shouldGetDocumentMappedFields() throws IOException {
+        final var formDefinition = formDefinitionOf("form-example-nested-components");
+        var result = formDefinition.getDocumentMappedFields();
+        assertThat(result).hasSize(12);
+    }
+
     public JsonNode content(Object content) throws JsonProcessingException {
         String jsonString = Mapper.INSTANCE.get().writeValueAsString(content);
         return Mapper.INSTANCE.get().readTree(jsonString);

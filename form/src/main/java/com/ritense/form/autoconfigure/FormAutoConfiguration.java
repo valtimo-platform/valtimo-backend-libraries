@@ -19,6 +19,7 @@ package com.ritense.form.autoconfigure;
 import com.ritense.document.service.DocumentService;
 import com.ritense.form.autodeployment.FormApplicationReadyEventListener;
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService;
+import com.ritense.form.domain.SpringContextHelper;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.service.FormLoaderService;
@@ -84,6 +85,11 @@ public class FormAutoConfiguration {
     @ConditionalOnMissingBean(FormManagementResource.class)
     public FormIoFormManagementResource formManagementResource(FormDefinitionService formDefinitionService) {
         return new FormIoFormManagementResource(formDefinitionService);
+    }
+
+    @Bean
+    public SpringContextHelper springContextHelper() {
+        return new SpringContextHelper();
     }
 
 }
