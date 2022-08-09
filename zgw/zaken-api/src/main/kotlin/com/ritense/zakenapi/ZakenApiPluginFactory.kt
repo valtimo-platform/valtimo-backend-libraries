@@ -19,7 +19,6 @@ package com.ritense.zakenapi
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
-import com.ritense.resource.service.OpenZaakService
 import com.ritense.zakenapi.client.ZakenApiClient
 
 class ZakenApiPluginFactory(

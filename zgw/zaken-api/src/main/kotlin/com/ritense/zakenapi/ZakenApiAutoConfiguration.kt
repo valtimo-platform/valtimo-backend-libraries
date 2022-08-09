@@ -18,7 +18,6 @@ package com.ritense.zakenapi
 
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
-import com.ritense.resource.service.OpenZaakService
 import com.ritense.zakenapi.client.ZakenApiClient
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean

@@ -18,7 +18,6 @@ package com.ritense.documentenapi
 
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.plugin.service.PluginService
-import com.ritense.resource.service.OpenZaakService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean

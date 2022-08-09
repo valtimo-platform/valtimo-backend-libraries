@@ -30,6 +30,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 
 internal class DocumentenApiPluginFactoryTest {
 
@@ -38,9 +39,10 @@ internal class DocumentenApiPluginFactoryTest {
         val pluginService: PluginService = mock()
         val client: DocumentenApiClient = mock()
         val storageService: TemporaryResourceStorageService = mock()
-        val authenticationMock = mock<DocumentenApiAuthentication>()
+        val applicationEventPublisher = mock<ApplicationEventPublisher>()
+        val authentication = mock<DocumentenApiAuthentication>()
 
-        whenever(pluginService.createInstance(any())).thenReturn(authenticationMock)
+        whenever(pluginService.createInstance(any())).thenReturn(authentication)
 
         val propertyString = """
           {
@@ -79,13 +81,14 @@ internal class DocumentenApiPluginFactoryTest {
             )
         )
 
-        val factory = DocumentenApiPluginFactory(pluginService, client, storageService)
+        val factory = DocumentenApiPluginFactory(pluginService, client, storageService, applicationEventPublisher)
 
         val plugin = factory.create(configuration)
 
         assertEquals("http://some-url", plugin.url)
         assertEquals("123456789", plugin.bronorganisatie)
-        assertEquals(authenticationMock, plugin.authenticationPluginConfiguration)
+        assertEquals(authentication, plugin.authenticationPluginConfiguration)
+        assertEquals(applicationEventPublisher, plugin.applicationEventPublisher)
         assertEquals(client, plugin.client)
         assertEquals(storageService, plugin.storageService)
     }
