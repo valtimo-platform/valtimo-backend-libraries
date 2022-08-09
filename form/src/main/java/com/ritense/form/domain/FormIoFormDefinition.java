@@ -23,9 +23,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.ritense.document.config.SpringContextHelper;
+import com.ritense.form.config.SpringContextHelper;
 import com.ritense.form.domain.event.FormRegisteredEvent;
-import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -365,7 +364,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             return Optional.empty();
         }
         // Check if key prefix is supported by a resolver.
-        final var resolvers = SpringContextHelper.getBeansOfType(FormFieldDataResolver.class);
+        final var resolvers = SpringContextHelper.getFormFieldDataResolver();
         for (var entry : resolvers.entrySet()) {
             // Get prefix up to first dot
             final var prefix = key.substring(0, key.indexOf(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)).toLowerCase();
