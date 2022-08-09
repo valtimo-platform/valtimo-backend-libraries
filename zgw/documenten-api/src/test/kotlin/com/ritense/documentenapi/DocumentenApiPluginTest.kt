@@ -29,7 +29,9 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import java.io.InputStream
+import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -39,9 +41,17 @@ internal class DocumentenApiPluginTest {
     fun `should call client to store file`() {
         val client: DocumentenApiClient = mock()
         val storageService: TemporaryResourceStorageService = mock()
+        val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
         val executionMock = mock<DelegateExecution>()
         val fileStream = mock<InputStream>()
+        val result = CreateDocumentResult(
+            "returnedUrl",
+            "returnedAuthor",
+            "returnedFileName",
+            1L,
+            LocalDateTime.now()
+        )
 
         whenever(executionMock.getVariable("localDocumentVariableName"))
             .thenReturn("localDocumentLocation")
@@ -49,9 +59,9 @@ internal class DocumentenApiPluginTest {
             .thenReturn(fileStream)
         whenever(storageService.getResourceMetadata("localDocumentLocation"))
             .thenReturn(mapOf(MetadataType.FILE_NAME.name to "test.ext"))
-        whenever(client.storeDocument(any(), any(), any())).thenReturn(CreateDocumentResult("returnedUrl"))
+        whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
-        val plugin = DocumentenApiPlugin(client, storageService)
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher)
         plugin.url = "http://some-url"
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock

@@ -28,7 +28,7 @@ import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 
@@ -72,13 +72,7 @@ internal class DocumentenApiPluginFactoryTest {
             PluginConfigurationId.newId(),
             "title",
             ObjectMapper().readTree(propertyString) as ObjectNode,
-            PluginDefinition(
-                "key",
-                "title",
-                "descriptioon",
-                "class",
-                propertyDefinitions
-            )
+            pluginDefinition
         )
 
         val factory = DocumentenApiPluginFactory(pluginService, client, storageService, applicationEventPublisher)
