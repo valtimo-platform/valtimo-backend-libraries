@@ -33,7 +33,7 @@ public class SpringContextHelper implements ApplicationContextAware {
         context = applicationContext;
     }
 
-    protected static Map<String, FormFieldDataResolver> getFormFieldDataResolver() {
+    static Map<String, FormFieldDataResolver> getFormFieldDataResolver() {
         return context.getBeansOfType(FormFieldDataResolver.class);
     }
 
