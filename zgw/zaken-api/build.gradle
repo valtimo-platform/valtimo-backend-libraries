@@ -15,7 +15,7 @@
  */
 
 dockerCompose {
-    projectName = "documenten-api"
+    projectName = "zaken-api"
     isRequiredBy(integrationTesting)
     isRequiredBy(securityTesting)
     useComposeFiles.addAll("../../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
@@ -23,8 +23,8 @@ dockerCompose {
 
 dependencies {
     implementation project(':core')
+    implementation project(':document')
     implementation project(':plugin')
-    implementation project(':resource:temporary-resource-storage')
     implementation project(':resource:openzaak-resource')
 
     implementation "io.github.microutils:kotlin-logging:2.0.4"
@@ -42,7 +42,7 @@ dependencies {
     jar {
         enabled = true
         manifest {
-            attributes("Implementation-Title": "ZGW Documenten API plugin spring boot starter")
+            attributes("Implementation-Title": "ZGW Zaken API plugin spring boot starter")
             attributes("Implementation-Version": projectVersion)
         }
     }

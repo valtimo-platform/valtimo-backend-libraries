@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.client
+package com.ritense.zakenapi.client
 
-import java.time.LocalDateTime
-
-class CreateDocumentResult(
-    val url: String,
-    val auteur: String?,
-    val bestandsnaam: String,
-    val bestandsomvang: Long,
-    val beginRegistratie: LocalDateTime,
+class LinkDocumentRequest(
+    informatieobject: String,
+    zaak: String,
+    titel: String?,
+    beschrijving: String?
 )

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi
+package com.ritense.zakenapi
 
-import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.OpenZaakService
-import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.zakenapi.client.ZakenApiClient
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -30,26 +30,33 @@ import reactor.netty.http.client.HttpClient
 import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
-class DocumentenApiAutoConfiguration {
+class ZakenApiAutoConfiguration {
 
     @Bean
-    fun documentenApiClient(webclient: WebClient): DocumentenApiClient {
-        return DocumentenApiClient(webclient)
+    fun zakenApiClient(webclient: WebClient): ZakenApiClient {
+        return ZakenApiClient(webclient)
     }
 
     @Bean
-    fun documentenApiPluginFactory(
+    fun zakenApiPluginFactory(
         pluginService: PluginService,
-        client: DocumentenApiClient,
-        storageService: TemporaryResourceStorageService,
-        openZaakService: OpenZaakService
-    ): DocumentenApiPluginFactory {
-        return DocumentenApiPluginFactory(pluginService, client, storageService, openZaakService)
+        zakenApiClient: ZakenApiClient,
+        urlProvider: ZaakUrlProvider,
+        openZaakService: OpenZaakService,
+        documentService: DocumentService,
+    ): ZakenApiPluginFactory {
+        return ZakenApiPluginFactory(
+            pluginService,
+            zakenApiClient,
+            urlProvider,
+            openZaakService,
+            documentService
+        )
     }
 
     @Bean
     @ConditionalOnMissingBean(WebClient::class)
-    fun documentenApiWebClient(): WebClient {
+    fun zakenApiWebClient(): WebClient {
         return WebClient.builder().clientConnector(
             ReactorClientHttpConnector(
                 HttpClient.create().wiretap(

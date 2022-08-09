@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.client
+package com.ritense.openzaak.plugin
 
-import java.time.LocalDateTime
+import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
+import com.ritense.zakenapi.ZaakUrlProvider
+import java.util.UUID
 
-class CreateDocumentResult(
-    val url: String,
-    val auteur: String?,
-    val bestandsnaam: String,
-    val bestandsomvang: Long,
-    val beginRegistratie: LocalDateTime,
-)
+class OpenZaakUrlProvider(
+    val zaakInstanceLinkService: ZaakInstanceLinkService
+): ZaakUrlProvider {
+    override fun getZaak(documentId: UUID): String {
+        return zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl.toString()
+    }
+}

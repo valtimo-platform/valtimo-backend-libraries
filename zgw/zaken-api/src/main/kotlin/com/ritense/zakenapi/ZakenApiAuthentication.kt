@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.client
+package com.ritense.zakenapi
 
-import java.time.LocalDateTime
+import com.ritense.plugin.annotation.PluginCategory
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
-class CreateDocumentResult(
-    val url: String,
-    val auteur: String?,
-    val bestandsnaam: String,
-    val bestandsomvang: Long,
-    val beginRegistratie: LocalDateTime,
-)
+@PluginCategory("zaken-api-authentication")
+interface ZakenApiAuthentication : ExchangeFilterFunction

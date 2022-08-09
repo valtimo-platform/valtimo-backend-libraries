@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi
+package com.ritense.zakenapi
 
-import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.document.service.DocumentService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.OpenZaakService
-import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.zakenapi.client.ZakenApiClient
 
-class DocumentenApiPluginFactory(
+class ZakenApiPluginFactory(
     pluginService: PluginService,
-    val client: DocumentenApiClient,
-    val storageService: TemporaryResourceStorageService,
-    val openZaakService: OpenZaakService
-) : PluginFactory<DocumentenApiPlugin>(pluginService) {
+    private val client: ZakenApiClient,
+    private val zaakUrlProvider: ZaakUrlProvider,
+    private val openZaakService: OpenZaakService,
+    private val documentService: DocumentService,
+) : PluginFactory<ZakenApiPlugin>(pluginService) {
 
-    override fun create(): DocumentenApiPlugin {
-        return DocumentenApiPlugin(client, storageService, openZaakService)
+    override fun create(): ZakenApiPlugin {
+        return ZakenApiPlugin(client, zaakUrlProvider, openZaakService, documentService)
     }
 }
