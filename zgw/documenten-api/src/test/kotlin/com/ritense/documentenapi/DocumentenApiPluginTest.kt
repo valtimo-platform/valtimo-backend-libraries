@@ -25,6 +25,7 @@ import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.CreateDocumentResult
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -50,7 +51,7 @@ internal class DocumentenApiPluginTest {
             "returnedAuthor",
             "returnedFileName",
             1L,
-            LocalDateTime.now()
+            LocalDateTime.of(2020, 1, 1, 1, 1, 1)
         )
 
         whenever(executionMock.getVariable("localDocumentVariableName"))
@@ -75,11 +76,13 @@ internal class DocumentenApiPluginTest {
             DocumentStatusType.IN_BEWERKING
         )
 
-        val captor = argumentCaptor<CreateDocumentRequest>()
-        verify(client).storeDocument(any(), any(), captor.capture())
+        val apiRequestCaptor = argumentCaptor<CreateDocumentRequest>()
+        val eventCaptor = argumentCaptor<DocumentCreated>()
+        verify(client).storeDocument(any(), any(), apiRequestCaptor.capture())
+        verify(applicationEventPublisher).publishEvent(eventCaptor.capture())
         verify(executionMock).setVariable("storedDocumentVariableName", "returnedUrl")
 
-        val request = captor.firstValue
+        val request = apiRequestCaptor.firstValue
         assertEquals("123456789", request.bronorganisatie)
         assertNotNull(request.creatiedatum)
         assertEquals("test.ext", request.titel)
@@ -90,6 +93,13 @@ internal class DocumentenApiPluginTest {
         assertEquals("type", request.informatieobjecttype)
         assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
         assertEquals(false, request.indicatieGebruiksrecht)
+
+        val emittedEvent = eventCaptor.firstValue
+        assertEquals("returnedUrl", emittedEvent.url)
+        assertEquals("returnedAuthor", emittedEvent.auteur)
+        assertEquals("returnedFileName", emittedEvent.bestandsnaam)
+        assertEquals(1L, emittedEvent.bestandsomvang)
+        assertEquals(LocalDateTime.of(2020, 1, 1, 1, 1, 1), emittedEvent.beginRegistratie)
     }
 
 }
