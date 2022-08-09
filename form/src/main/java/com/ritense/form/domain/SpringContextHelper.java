@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.form.config;
+package com.ritense.form.domain;
 
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +33,7 @@ public class SpringContextHelper implements ApplicationContextAware {
         context = applicationContext;
     }
 
-    public static Map<String, FormFieldDataResolver> getFormFieldDataResolver() {
+    protected static Map<String, FormFieldDataResolver> getFormFieldDataResolver() {
         return context.getBeansOfType(FormFieldDataResolver.class);
     }
 

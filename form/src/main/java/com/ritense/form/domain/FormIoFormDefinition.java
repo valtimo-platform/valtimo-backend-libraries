@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.ritense.form.config.SpringContextHelper;
 import com.ritense.form.domain.event.FormRegisteredEvent;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
