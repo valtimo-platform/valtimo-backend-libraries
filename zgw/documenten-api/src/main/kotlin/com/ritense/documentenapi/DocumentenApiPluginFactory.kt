@@ -19,17 +19,17 @@ package com.ritense.documentenapi
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
-import com.ritense.resource.service.OpenZaakService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import org.springframework.context.ApplicationEventPublisher
 
 class DocumentenApiPluginFactory(
     pluginService: PluginService,
     val client: DocumentenApiClient,
     val storageService: TemporaryResourceStorageService,
-    val openZaakService: OpenZaakService
+    val applicationEventPublisher: ApplicationEventPublisher
 ) : PluginFactory<DocumentenApiPlugin>(pluginService) {
 
     override fun create(): DocumentenApiPlugin {
-        return DocumentenApiPlugin(client, storageService, openZaakService)
+        return DocumentenApiPlugin(client, storageService, applicationEventPublisher)
     }
 }

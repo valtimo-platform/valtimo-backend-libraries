@@ -42,14 +42,14 @@ class ZakenApiAutoConfiguration {
         pluginService: PluginService,
         zakenApiClient: ZakenApiClient,
         urlProvider: ZaakUrlProvider,
-        openZaakService: OpenZaakService,
+        resourceProvider: ResourceProvider,
         documentService: DocumentService,
     ): ZakenApiPluginFactory {
         return ZakenApiPluginFactory(
             pluginService,
             zakenApiClient,
             urlProvider,
-            openZaakService,
+            resourceProvider,
             documentService
         )
     }

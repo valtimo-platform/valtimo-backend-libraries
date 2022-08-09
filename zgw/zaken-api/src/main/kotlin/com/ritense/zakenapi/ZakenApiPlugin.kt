@@ -23,11 +23,9 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
-import com.ritense.resource.service.OpenZaakService
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import org.camunda.bpm.engine.delegate.DelegateExecution
-import java.net.URI
 import java.util.UUID
 
 @Plugin(
@@ -38,7 +36,7 @@ import java.util.UUID
 class ZakenApiPlugin(
     private val client: ZakenApiClient,
     private val zaakUrlProvider: ZaakUrlProvider,
-    private val openZaakService: OpenZaakService,
+    private val resourceProvider: ResourceProvider,
     private val documentService: DocumentService,
 ) {
     @PluginProperty(key = "url", secret = false)
@@ -69,7 +67,7 @@ class ZakenApiPlugin(
         )
 
         client.linkDocument(authenticationPluginConfiguration, url, request)
-        val resource = openZaakService.getResourceByInformatieObjectUrl(URI(documentUrl))
-        documentService.assignResource(JsonSchemaDocumentId.existingId(documentId), resource.resourceId.id)
+        val resource = resourceProvider.getResource(documentUrl)
+        documentService.assignResource(JsonSchemaDocumentId.existingId(documentId), resource.id())
     }
 }

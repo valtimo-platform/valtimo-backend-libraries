@@ -23,9 +23,9 @@ dockerCompose {
 
 dependencies {
     implementation project(':core')
+    implementation project(':contract')
     implementation project(':document')
     implementation project(':plugin')
-    implementation project(':resource:openzaak-resource')
 
     implementation "io.github.microutils:kotlin-logging:2.0.4"
     implementation "org.springframework.boot:spring-boot-starter-webflux"

@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.client
+package com.ritense.resource.service
 
-import java.time.LocalDateTime
+import com.ritense.valtimo.contract.resource.Resource
+import com.ritense.zakenapi.ResourceProvider
+import java.net.URI
 
-class CreateDocumentResult(
-    val url: String,
-    val auteur: String,
-    val bestandsnaam: String,
-    val bestandsomvang: Long,
-    val beginRegistratie: LocalDateTime,
-)
+class OpenZaakResourceProvider(
+    val openZaakService: OpenZaakService
+): ResourceProvider {
+    override fun getResource(documentUrl: String): Resource {
+        return openZaakService.getResourceByInformatieObjectUrl(URI(documentUrl))
+    }
+}

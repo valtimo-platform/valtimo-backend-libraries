@@ -26,11 +26,11 @@ class ZakenApiPluginFactory(
     pluginService: PluginService,
     private val client: ZakenApiClient,
     private val zaakUrlProvider: ZaakUrlProvider,
-    private val openZaakService: OpenZaakService,
+    private val resourceProvider: ResourceProvider,
     private val documentService: DocumentService,
 ) : PluginFactory<ZakenApiPlugin>(pluginService) {
 
     override fun create(): ZakenApiPlugin {
-        return ZakenApiPlugin(client, zaakUrlProvider, openZaakService, documentService)
+        return ZakenApiPlugin(client, zaakUrlProvider, resourceProvider, documentService)
     }
 }

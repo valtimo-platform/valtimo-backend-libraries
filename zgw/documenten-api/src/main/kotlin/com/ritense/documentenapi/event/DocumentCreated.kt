@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.client
+package com.ritense.documentenapi.event
 
 import java.time.LocalDateTime
 
-class CreateDocumentResult(
+class DocumentCreated(
     val url: String,
     val auteur: String,
     val bestandsnaam: String,
     val bestandsomvang: Long,
-    val beginRegistratie: LocalDateTime,
+    val beginRegistratie: LocalDateTime
 )

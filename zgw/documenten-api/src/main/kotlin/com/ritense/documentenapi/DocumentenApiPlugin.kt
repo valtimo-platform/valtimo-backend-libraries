@@ -19,17 +19,16 @@ package com.ritense.documentenapi
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
-import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
+import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.resource.domain.MetadataType
-import com.ritense.resource.service.OpenZaakService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.camunda.bpm.engine.delegate.DelegateExecution
-import java.net.URI
+import org.springframework.context.ApplicationEventPublisher
 
 @Plugin(
     key = "documentenapi",
@@ -39,7 +38,7 @@ import java.net.URI
 class DocumentenApiPlugin(
     val client: DocumentenApiClient,
     val storageService: TemporaryResourceStorageService,
-    val openZaakService: OpenZaakService
+    val applicationEventPublisher: ApplicationEventPublisher
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: String
@@ -78,14 +77,14 @@ class DocumentenApiPlugin(
 
         val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)
 
-        openZaakService.store(InformatieObject(
-            URI(documentCreateResult.url),
+        val event = DocumentCreated(
+            documentCreateResult.url,
             documentCreateResult.auteur,
             documentCreateResult.bestandsnaam,
             documentCreateResult.bestandsomvang,
             documentCreateResult.beginRegistratie
-        ))
-
+        )
+        applicationEventPublisher.publishEvent(event)
         execution.setVariable(storedDocumentUrl, documentCreateResult.url)
     }
 }

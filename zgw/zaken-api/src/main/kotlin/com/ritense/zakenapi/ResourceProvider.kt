@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.client
+package com.ritense.zakenapi
 
-import java.time.LocalDateTime
+import com.ritense.valtimo.contract.resource.Resource
 
-class CreateDocumentResult(
-    val url: String,
-    val auteur: String,
-    val bestandsnaam: String,
-    val bestandsomvang: Long,
-    val beginRegistratie: LocalDateTime,
-)
+interface ResourceProvider {
+    fun getResource(documentUrl: String): Resource
+}

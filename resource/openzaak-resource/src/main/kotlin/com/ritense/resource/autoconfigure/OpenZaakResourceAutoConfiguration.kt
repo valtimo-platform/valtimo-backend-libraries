@@ -17,12 +17,15 @@
 package com.ritense.resource.autoconfigure
 
 import com.ritense.openzaak.service.DocumentenService
+import com.ritense.resource.listener.DocumentCreatedListener
 import com.ritense.resource.listener.DocumentRelatedFileAddedEventListener
 import com.ritense.resource.repository.OpenZaakResourceRepository
+import com.ritense.resource.service.OpenZaakResourceProvider
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.resource.web.rest.OpenZaakResource
 import com.ritense.resource.web.rest.OpenZaakUploadResource
 import com.ritense.resource.web.rest.ResourceResource
+import com.ritense.zakenapi.ResourceProvider
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
@@ -63,5 +66,20 @@ class OpenZaakResourceAutoConfiguration {
         documentenService: DocumentenService
     ): DocumentRelatedFileAddedEventListener {
         return DocumentRelatedFileAddedEventListener(openZaakService, documentenService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentCreatedListener::class)
+    fun documentCreatedListener(
+        openZaakService: OpenZaakService
+    ): DocumentCreatedListener {
+        return DocumentCreatedListener(openZaakService)
+    }
+
+    @Bean
+    fun openZaakResourceProvider(
+        openZaakService: OpenZaakService
+    ): ResourceProvider {
+        return OpenZaakResourceProvider(openZaakService)
     }
 }

@@ -22,6 +22,7 @@ import com.ritense.resource.service.OpenZaakService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
@@ -42,9 +43,9 @@ class DocumentenApiAutoConfiguration {
         pluginService: PluginService,
         client: DocumentenApiClient,
         storageService: TemporaryResourceStorageService,
-        openZaakService: OpenZaakService
+        applicationEventPublisher: ApplicationEventPublisher
     ): DocumentenApiPluginFactory {
-        return DocumentenApiPluginFactory(pluginService, client, storageService, openZaakService)
+        return DocumentenApiPluginFactory(pluginService, client, storageService, applicationEventPublisher)
     }
 
     @Bean
