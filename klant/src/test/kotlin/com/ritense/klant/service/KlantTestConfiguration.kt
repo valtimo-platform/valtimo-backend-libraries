@@ -26,6 +26,7 @@ import com.ritense.document.autoconfigure.DocumentLiquibaseAutoConfiguration
 import com.ritense.document.autoconfigure.DocumentRetryAutoConfiguration
 import com.ritense.document.autoconfigure.DocumentSecurityAutoConfiguration
 import com.ritense.document.autoconfigure.DocumentSnapshotAutoConfiguration
+import com.ritense.documentenapi.DocumentenApiAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakLiquibaseAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakSecurityAutoConfiguration
@@ -73,6 +74,7 @@ import org.springframework.boot.test.context.TestConfiguration
         DataSourceAutoConfiguration::class,
         DataSourceTransactionManagerAutoConfiguration::class,
         DocumentAutoConfiguration::class,
+        DocumentenApiAutoConfiguration::class,
         DocumentSnapshotAutoConfiguration::class,
         DocumentLiquibaseAutoConfiguration::class,
         DocumentSecurityAutoConfiguration::class,
