@@ -26,6 +26,7 @@ import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,6 +51,8 @@ public interface DocumentService {
     void assignRelatedFile(Document.Id documentId, RelatedFile relatedFile);
 
     void assignResource(Document.Id documentId, UUID resourceId);
+
+    void assignResource(Document.Id documentId, UUID resourceId, Map<String, Object> metadata);
 
     void removeRelatedFile(Document.Id documentId, UUID fileId);
 

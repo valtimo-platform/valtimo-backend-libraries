@@ -15,6 +15,7 @@ import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProcessResultSucceeded
 import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.resource.domain.ResourceId
 import com.ritense.resource.repository.OpenZaakResourceRepository
@@ -24,7 +25,8 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.RuntimeService
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -39,9 +41,6 @@ import java.util.UUID
 import kotlin.test.assertEquals
 
 class ZakenApiPluginIT : BaseIntegrationTest() {
-
-    @Autowired
-    lateinit var runtimeService: RuntimeService
 
     @Autowired
     lateinit var repositoryService: RepositoryService
@@ -116,7 +115,6 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
                 "link-document-to-zaak"
             )
         )
-
     }
 
     @Test
@@ -136,20 +134,25 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         openZaakResourceRepository.save(resource)
 
         // Start the process
-        procesDocumentService.newDocumentAndStartProcess(request)
+        val response = procesDocumentService.newDocumentAndStartProcess(request)
+        assertTrue(response is NewDocumentAndStartProcessResultSucceeded)
 
         // Check the request that was sent to the open zaak api
         val recordedRequest = server.takeRequest()
         val requestString = recordedRequest.body.readUtf8()
         val parsedOutput = Mapper.INSTANCE.get().readValue(requestString, Map::class.java)
 
+        assertEquals(4, parsedOutput.size)
         assertEquals(INFORMATIE_OBJECT_URL, parsedOutput["informatieobject"])
         assertEquals(ZAAK_URL, parsedOutput["zaak"])
         assertEquals("titelVariableName", parsedOutput["titel"])
         assertEquals("beschrijvingVariableName", parsedOutput["beschrijving"])
 
         // Check to see if the document is correctly linked inside the valtimo database as well
-//        documentService.get()
+        assertNotNull(response.resultingDocument())
+        assertTrue(response.resultingDocument().isPresent)
+        val processDocumentId = response.resultingDocument().get().id().id
+        assertNotNull(documentService.get(processDocumentId.toString()))
     }
 
     private fun setupMockZakenApiServer() {

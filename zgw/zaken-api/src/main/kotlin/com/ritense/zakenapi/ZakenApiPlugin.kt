@@ -68,6 +68,10 @@ class ZakenApiPlugin(
 
         client.linkDocument(authenticationPluginConfiguration, url, request)
         val resource = resourceProvider.getResource(documentUrl)
-        documentService.assignResource(JsonSchemaDocumentId.existingId(documentId), resource.id())
+        documentService.assignResource(
+            JsonSchemaDocumentId.existingId(documentId),
+            resource.id(),
+            mapOf("createInformatieObject" to false)
+        )
     }
 }
