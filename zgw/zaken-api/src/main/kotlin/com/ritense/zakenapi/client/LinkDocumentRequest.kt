@@ -17,8 +17,8 @@
 package com.ritense.zakenapi.client
 
 class LinkDocumentRequest(
-    informatieobject: String,
-    zaak: String,
-    titel: String?,
-    beschrijving: String?
+    val informatieobject: String,
+    val zaak: String,
+    val titel: String?,
+    val beschrijving: String?
 )

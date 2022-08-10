@@ -20,12 +20,12 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class LinkDocumentResult(
-    url: String,
-    uuid: UUID,
-    informatieobject: String,
-    zaak: String,
-    aardRelatieWeergave: String?,
-    titel: String?,
-    beschrijving: String?,
-    registratiedatum: LocalDateTime
+    val url: String,
+    val uuid: UUID,
+    val informatieobject: String,
+    val zaak: String,
+    val aardRelatieWeergave: String?,
+    val titel: String?,
+    val beschrijving: String?,
+    val registratiedatum: LocalDateTime
 )
