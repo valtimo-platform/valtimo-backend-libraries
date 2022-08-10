@@ -96,7 +96,7 @@ internal class FixedValueResolverTest {
             processInstanceId = processInstanceId,
             variableScope = variableScope
         ).apply(
-            "http://localhost.local"
+            "//localhost.local"
         )
 
         Assertions.assertThat(resolvedValue).isEqualTo("http://localhost.local")

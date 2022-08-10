@@ -17,7 +17,6 @@
 package com.ritense.documentenapi.client
 
 import com.ritense.documentenapi.DocumentenApiAuthentication
-import mu.KotlinLogging
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient

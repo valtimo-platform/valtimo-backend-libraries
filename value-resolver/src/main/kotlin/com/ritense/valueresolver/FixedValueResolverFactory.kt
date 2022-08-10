@@ -43,7 +43,7 @@ class FixedValueResolverFactory(
             requestedValue.toBooleanStrictOrNull()
                 ?: requestedValue.toLongOrNull()
                 ?: requestedValue.toDoubleOrNull()
-                ?: requestedValue
+                ?: "$prefix:$requestedValue"
         }
     }
 
