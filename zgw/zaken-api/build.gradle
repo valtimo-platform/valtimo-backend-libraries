@@ -30,6 +30,10 @@ dependencies {
     implementation "io.github.microutils:kotlin-logging:2.0.4"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
 
+    testImplementation project(':process-document')
+    testImplementation project(':resource:openzaak-resource')
+    testImplementation project(':openzaak')
+
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"

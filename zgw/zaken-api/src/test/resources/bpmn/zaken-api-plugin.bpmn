@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0wkbaj7" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.6.0">
+  <bpmn:process id="zaken-api-plugin" name="Zaak link process" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>SequenceFlow_0rqqr55</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0rqqr55" sourceRef="StartEvent_1" targetRef="LinkDocument" />
+    <bpmn:endEvent id="EndEvent_0v6qdzq">
+      <bpmn:incoming>Flow_1mvuu3n</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_17rgisa" sourceRef="LinkDocument" targetRef="Verify" />
+    <bpmn:serviceTask id="LinkDocument" name="Link Document" camunda:expression="${null}">
+      <bpmn:extensionElements />
+      <bpmn:incoming>SequenceFlow_0rqqr55</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_17rgisa</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Verify" name="Verify">
+      <bpmn:incoming>SequenceFlow_17rgisa</bpmn:incoming>
+      <bpmn:outgoing>Flow_1mvuu3n</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1mvuu3n" sourceRef="Verify" targetRef="EndEvent_0v6qdzq" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="zaken-api-plugin">
+      <bpmndi:BPMNEdge id="Flow_1mvuu3n_di" bpmnElement="Flow_1mvuu3n">
+        <di:waypoint x="500" y="159" />
+        <di:waypoint x="562" y="159" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_17rgisa_di" bpmnElement="SequenceFlow_17rgisa">
+        <di:waypoint x="341" y="159" />
+        <di:waypoint x="400" y="159" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0rqqr55_di" bpmnElement="SequenceFlow_0rqqr55">
+        <di:waypoint x="191" y="159" />
+        <di:waypoint x="241" y="159" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="155" y="141" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0v6qdzq_di" bpmnElement="EndEvent_0v6qdzq">
+        <dc:Bounds x="562" y="141" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0alraup_di" bpmnElement="LinkDocument">
+        <dc:Bounds x="241" y="119" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_10se3l1_di" bpmnElement="Verify">
+        <dc:Bounds x="400" y="119" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

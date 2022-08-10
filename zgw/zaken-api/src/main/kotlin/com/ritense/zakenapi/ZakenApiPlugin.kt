@@ -34,10 +34,10 @@ import java.util.UUID
     description = "Connects to the Zaken API"
 )
 class ZakenApiPlugin(
-    private val client: ZakenApiClient,
-    private val zaakUrlProvider: ZaakUrlProvider,
-    private val resourceProvider: ResourceProvider,
-    private val documentService: DocumentService,
+    val client: ZakenApiClient,
+    val zaakUrlProvider: ZaakUrlProvider,
+    val resourceProvider: ResourceProvider,
+    val documentService: DocumentService,
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: String
