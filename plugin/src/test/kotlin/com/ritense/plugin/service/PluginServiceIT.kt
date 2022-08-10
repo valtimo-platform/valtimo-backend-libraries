@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.lang.reflect.InvocationTargetException
 import java.util.UUID
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotEquals
 
 
 internal class PluginServiceIT: BaseIntegrationTest() {
@@ -107,6 +108,23 @@ internal class PluginServiceIT: BaseIntegrationTest() {
         val configurationFromDatabase = configurations.filter { it.id.id == configuration.id.id }.first()
 
         assertEquals("test123", configurationFromDatabase.properties!!.get("property1").textValue())
+
+        // should still work after updating configuration
+        val update = """
+            {
+                "property1": "test1234",
+                "property2": false,
+                "property3": 123,
+                "property4": "${categoryConfiguration.id.id}"
+            }
+        """.trimMargin()
+        pluginService.updatePluginConfiguration(configurationFromDatabase.id,"test" ,Mapper.INSTANCE.get().readTree(update) as ObjectNode)
+
+        val configurations2 = pluginService.getPluginConfigurations()
+        val configurationFromDatabase2 = configurations2.filter { it.id.id == configuration.id.id }.first()
+
+        assertEquals("test1234", configurationFromDatabase2.properties!!.get("property1").textValue())
+        assertNotEquals("test1234", configurationFromDatabase2.rawProperties!!.get("property1").textValue())
     }
 
     @Test
