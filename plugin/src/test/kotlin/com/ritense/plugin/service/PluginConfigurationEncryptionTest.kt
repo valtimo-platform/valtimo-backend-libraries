@@ -106,8 +106,8 @@ internal class PluginConfigurationEncryptionTest {
 
         listener.encryptPropertiesOnSave(configuration)
 
-        assertEquals("output", configuration.properties?.get("property1")?.textValue())
-        assertEquals("test2", configuration.properties?.get("property2")?.textValue())
+        assertEquals("output", configuration.rawProperties?.get("property1")?.textValue())
+        assertEquals("test2", configuration.rawProperties?.get("property2")?.textValue())
     }
 
     @Test
@@ -129,8 +129,8 @@ internal class PluginConfigurationEncryptionTest {
 
         listener.encryptPropertiesOnSave(configuration)
 
-        assertTrue(configuration.properties?.get("property1")!!.isNull)
-        assertEquals("test2", configuration.properties?.get("property2")?.textValue())
+        assertTrue(configuration.rawProperties?.get("property1")!!.isNull)
+        assertEquals("test2", configuration.rawProperties?.get("property2")?.textValue())
     }
 
     @Test
@@ -151,8 +151,8 @@ internal class PluginConfigurationEncryptionTest {
 
         listener.encryptPropertiesOnSave(configuration)
 
-        assertNull(configuration.properties?.get("property1"))
-        assertEquals("test2", configuration.properties?.get("property2")?.textValue())
+        assertNull(configuration.rawProperties?.get("property1"))
+        assertEquals("test2", configuration.rawProperties?.get("property2")?.textValue())
     }
 
     @Test
