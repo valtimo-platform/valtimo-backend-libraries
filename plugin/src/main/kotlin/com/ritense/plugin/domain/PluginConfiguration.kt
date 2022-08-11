@@ -51,7 +51,7 @@ class PluginConfiguration(
 ) {
     // used to store unencrypted properties without dirtying the managed entity
     @Transient
-    var properties: ObjectNode? = rawProperties
+    var properties: ObjectNode? = rawProperties?.deepCopy()
         get() {
             if (field == null && rawProperties != null) {
                 field = this.rawProperties?.deepCopy()
