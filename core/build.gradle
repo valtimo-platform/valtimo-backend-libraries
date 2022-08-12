@@ -23,7 +23,6 @@ dockerCompose {
 
 dependencies {
     implementation project(":contract")
-    implementation project(":plugin")
     implementation project(":resource")
     implementation project(":web")
 
