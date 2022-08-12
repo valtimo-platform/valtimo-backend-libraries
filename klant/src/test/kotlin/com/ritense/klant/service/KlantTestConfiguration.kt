@@ -42,7 +42,6 @@ import com.ritense.valtimo.autoconfigure.ContextAutoConfiguration
 import com.ritense.valtimo.autoconfigure.EmailNotificationSettingsAutoConfiguration
 import com.ritense.valtimo.autoconfigure.HttpSecurityAutoConfiguration
 import com.ritense.valtimo.autoconfigure.LiquibaseAutoConfiguration
-import com.ritense.valtimo.autoconfigure.ProcessLinkAutoConfiguration
 import com.ritense.valtimo.autoconfigure.ProcessDataObjectAutoConfiguration
 import com.ritense.valtimo.autoconfigure.ValtimoAutoConfiguration
 import com.ritense.valtimo.autoconfigure.ValtimoMethodSecurityAutoConfiguration
@@ -92,8 +91,7 @@ import org.springframework.boot.test.context.TestConfiguration
         ProcessDocumentAuditAutoConfiguration::class,
         ValtimoAutoConfiguration::class,
         ValtimoMethodSecurityAutoConfiguration::class,
-        ValtimoMybatisAutoConfiguration::class,
-        ProcessLinkAutoConfiguration::class,
+        ValtimoMybatisAutoConfiguration::class
     ]
 )
 class KlantTestConfiguration {

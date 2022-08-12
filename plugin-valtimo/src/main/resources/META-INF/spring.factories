@@ -1,0 +1,3 @@
+# AutoConfigurations
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.ritense.valtimo.processlink.ProcessLinkAutoConfiguration

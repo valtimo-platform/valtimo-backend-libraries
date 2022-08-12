@@ -49,6 +49,7 @@ include(
         "objects-api",
         "openzaak",
         "plugin",
+        "plugin-valtimo",
         "process-document",
         "resource",
         "resource:local-resource",
