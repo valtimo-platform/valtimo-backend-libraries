@@ -15,7 +15,7 @@
  */
 
 dependencies {
-    implementation project(':plugin')
+    api project(':plugin')
     implementation project(':core')
 
     implementation "org.springframework.boot:spring-boot-starter"

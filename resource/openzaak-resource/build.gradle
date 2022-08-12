@@ -63,6 +63,10 @@ dependencies {
     //Kotlin
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
+    testImplementation project(':zgw:documenten-api')
+    testImplementation project(':zgw:zaken-api')
+
+
     jar {
         enabled = true
         manifest {

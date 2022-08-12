@@ -79,6 +79,10 @@ dependencies {
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation "org.mockito:mockito-inline"
 
+    testImplementation project(':plugin')
+    testImplementation project(':zgw:zaken-api')
+    testImplementation project(':zgw:documenten-api')
+
     jar {
         enabled = true
         manifest {
