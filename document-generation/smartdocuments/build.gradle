@@ -27,12 +27,14 @@ dependencies {
     implementation project(':core')
     implementation project(':document')
     implementation project(":document-generation")
-    implementation project(':plugin')
     implementation project(':process-document')
     implementation project(':resource')
     implementation project(':resource:temporary-resource-storage')
     implementation project(':value-resolver')
+
     api project(':document-generation')
+
+    compileOnly project(':plugin')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -71,6 +73,7 @@ dependencies {
     testImplementation "com.squareup.okhttp3:okhttp:4.9.3"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation project(':test-utils-common')
+    testImplementation project(':plugin-valtimo')
 }
 
 apply from: "gradle/publishing.gradle"

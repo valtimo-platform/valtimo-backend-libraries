@@ -30,9 +30,10 @@ dependencies {
     implementation project(':document')
     implementation project(':process-document')
     implementation project(':resource')
-    implementation project(':plugin')
-    implementation project(':zgw:documenten-api')
-    implementation project(':zgw:zaken-api')
+
+    compileOnly project(':plugin')
+    compileOnly project(':zgw:zaken-api')
+    compileOnly project(':zgw:documenten-api')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -77,6 +78,10 @@ dependencies {
     //Kotlin
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation "org.mockito:mockito-inline"
+
+    testImplementation project(':plugin')
+    testImplementation project(':zgw:zaken-api')
+    testImplementation project(':zgw:documenten-api')
 
     jar {
         enabled = true
