@@ -29,6 +29,7 @@ import com.ritense.resource.web.ResourceDTO
 import com.ritense.valtimo.contract.resource.FileStatus
 import com.ritense.valtimo.contract.resource.Resource
 import org.springframework.web.multipart.MultipartFile
+import java.net.URI
 import java.net.URL
 import java.time.LocalDateTime
 import java.util.UUID
@@ -161,6 +162,10 @@ class OpenZaakService(
 
     override fun pending(id: UUID) {
         TODO("Not yet implemented")
+    }
+
+    fun getResourceByInformatieObjectUrl(url: URI): OpenZaakResource {
+        return openZaakResourceRepository.findByInformatieObjectUrl(url)
     }
 
     private fun getDownloadUrl(resource: OpenZaakResource): URL {

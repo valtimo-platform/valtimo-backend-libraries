@@ -17,7 +17,6 @@
 package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import java.io.InputStream
 import java.time.LocalDate

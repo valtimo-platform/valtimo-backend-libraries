@@ -17,10 +17,11 @@
 package com.ritense.plugin.domain
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
+import com.ritense.plugin.service.EncryptionService
 import com.ritense.plugin.service.PluginConfigurationEntityListener
-import com.ritense.valtimo.contract.json.Mapper
 import org.hibernate.annotations.Type
 import javax.persistence.Column
 import javax.persistence.Embedded
@@ -43,18 +44,25 @@ class PluginConfiguration(
     var title: String,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "properties", columnDefinition = "JSON")
-    val properties: ObjectNode? = null,
+    internal var rawProperties: ObjectNode? = null,
     @JoinColumn(name = "plugin_definition_key", updatable = false, nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
     val pluginDefinition: PluginDefinition,
 ) {
-    inline fun <reified T> getProperties(): T {
-        return if (properties == null) {
-            throw IllegalStateException("No properties found for plugin configuration $title (${id.id})")
-        } else {
-            Mapper.INSTANCE.get().treeToValue(properties, T::class.java)
+    // used to store unencrypted properties without dirtying the managed entity
+    @Transient
+    var properties: ObjectNode? = rawProperties?.deepCopy()
+        get() {
+            if (field == null && rawProperties != null) {
+                field = this.rawProperties?.deepCopy()
+                decryptProperties()
+            }
+            return field
         }
-    }
+    @Transient
+    var encryptionService: EncryptionService? = null
+    @Transient
+    var objectMapper: ObjectMapper? = null
 
     fun updateProperties(propertiesForUpdate: ObjectNode) {
         pluginDefinition.properties.forEach {
@@ -62,6 +70,66 @@ class PluginConfiguration(
             if (!it.secret || !nodeIsEmpty(updateValue)) {
                 properties?.replace(it.fieldName, updateValue)
             }
+        }
+        encryptProperties(properties)
+    }
+
+    internal fun encryptProperties() {
+        encryptProperties(this.rawProperties)
+    }
+
+    private fun encryptProperties(propertiesToEncrypt: ObjectNode?) {
+        if (propertiesToEncrypt !== this.rawProperties) {
+            this.rawProperties = propertiesToEncrypt?.deepCopy()
+        }
+        PluginConfigurationEntityListener.logger.debug { "Encrypting secrets for PluginConfiguration ${title}" }
+        pluginDefinition.properties.filter {
+            it.secret
+        }.filter {
+            this.rawProperties?.has(it.fieldName) ?: false
+        }.forEach {
+            PluginConfigurationEntityListener.logger.debug { "Encrypting property ${it.fieldName} for PluginConfiguration ${title}" }
+            replaceProperty(
+                this.rawProperties!!,
+                it.fieldName,
+                this::encryptProperty
+            )
+        }
+    }
+
+    internal fun decryptProperties() {
+        PluginConfigurationEntityListener.logger.debug { "Decrypting secrets for PluginConfiguration ${title}" }
+        pluginDefinition.properties.filter {
+            it.secret
+        }.filter {
+            properties?.has(it.fieldName) ?: false
+        }.forEach {
+            PluginConfigurationEntityListener.logger.debug { "Decrypting property ${it.fieldName} for PluginConfiguration ${title}" }
+            replaceProperty(
+                properties!!,
+                it.fieldName,
+                this::decryptProperty
+            )
+        }
+    }
+
+    private fun encryptProperty(property: JsonNode): JsonNode {
+        val serializedValue = objectMapper!!.writeValueAsString(property)
+        val encryptedValue = encryptionService!!.encrypt(serializedValue)
+        return TextNode(encryptedValue)
+    }
+
+    private fun decryptProperty(property: JsonNode): JsonNode {
+        val serializedValue = property.textValue()
+        val decryptedValue = encryptionService!!.decrypt(serializedValue)
+        return objectMapper!!.readTree(decryptedValue)
+    }
+
+    private fun replaceProperty(properties: ObjectNode, propertyName: String,  transformFun: (JsonNode) -> JsonNode) {
+        val originalValue = properties.get(propertyName)
+        if (originalValue != null && !originalValue.isNull) {
+            val newValue = transformFun(originalValue)
+            properties.replace(propertyName, newValue)
         }
     }
 

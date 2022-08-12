@@ -42,6 +42,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
@@ -120,7 +121,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     public void modifyDocument(Document document, JsonNode jsonNode) {
         final var documentRequest = ModifyDocumentRequest.create(document, jsonNode);
         final var modifyResult = modifyDocument(documentRequest);
-        if (modifyResult.errors().size() > 0) {
+        if (!modifyResult.errors().isEmpty()) {
             throw new ModifyDocumentException(modifyResult.errors());
         }
     }
@@ -181,9 +182,15 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Override
     @Transactional
     public void assignResource(Document.Id documentId, UUID resourceId) {
+        assignResource(documentId, resourceId, null);
+    }
+
+    @Override
+    @Transactional
+    public void assignResource(Document.Id documentId, UUID resourceId, Map<String, Object> metadata) {
         JsonSchemaDocument document = getDocumentBy(documentId);
         final Resource resource = resourceService.getResource(resourceId);
-        document.addRelatedFile(JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin()));
+        document.addRelatedFile(JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin()), metadata);
         documentRepository.save(document);
     }
 
