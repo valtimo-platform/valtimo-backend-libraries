@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-@ConditionalOnClass(PluginService::class)
+@ConditionalOnClass(PluginService::class, ZaakUrlProvider::class)
 class OpenZaakPluginAutoConfiguration {
 
     @Bean
