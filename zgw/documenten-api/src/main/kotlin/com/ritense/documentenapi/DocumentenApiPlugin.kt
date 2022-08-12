@@ -19,6 +19,7 @@ package com.ritense.documentenapi
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -27,6 +28,7 @@ import com.ritense.plugin.domain.ActivityType
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.springframework.context.ApplicationEventPublisher
 
 @Plugin(
     key = "documentenapi",
@@ -35,7 +37,8 @@ import org.camunda.bpm.engine.delegate.DelegateExecution
 )
 class DocumentenApiPlugin(
     val client: DocumentenApiClient,
-    val storageService: TemporaryResourceStorageService
+    val storageService: TemporaryResourceStorageService,
+    val applicationEventPublisher: ApplicationEventPublisher
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: String
@@ -73,6 +76,15 @@ class DocumentenApiPlugin(
         )
 
         val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)
+
+        val event = DocumentCreated(
+            documentCreateResult.url,
+            documentCreateResult.auteur,
+            documentCreateResult.bestandsnaam,
+            documentCreateResult.bestandsomvang,
+            documentCreateResult.beginRegistratie
+        )
+        applicationEventPublisher.publishEvent(event)
         execution.setVariable(storedDocumentUrl, documentCreateResult.url)
     }
 }

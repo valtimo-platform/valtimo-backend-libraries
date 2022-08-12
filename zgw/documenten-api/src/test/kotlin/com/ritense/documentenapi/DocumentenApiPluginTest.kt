@@ -25,11 +25,14 @@ import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.CreateDocumentResult
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import java.io.InputStream
+import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -39,9 +42,17 @@ internal class DocumentenApiPluginTest {
     fun `should call client to store file`() {
         val client: DocumentenApiClient = mock()
         val storageService: TemporaryResourceStorageService = mock()
+        val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
         val executionMock = mock<DelegateExecution>()
         val fileStream = mock<InputStream>()
+        val result = CreateDocumentResult(
+            "returnedUrl",
+            "returnedAuthor",
+            "returnedFileName",
+            1L,
+            LocalDateTime.of(2020, 1, 1, 1, 1, 1)
+        )
 
         whenever(executionMock.getVariable("localDocumentVariableName"))
             .thenReturn("localDocumentLocation")
@@ -49,9 +60,9 @@ internal class DocumentenApiPluginTest {
             .thenReturn(fileStream)
         whenever(storageService.getResourceMetadata("localDocumentLocation"))
             .thenReturn(mapOf(MetadataType.FILE_NAME.name to "test.ext"))
-        whenever(client.storeDocument(any(), any(), any())).thenReturn(CreateDocumentResult("returnedUrl"))
+        whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
-        val plugin = DocumentenApiPlugin(client, storageService)
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher)
         plugin.url = "http://some-url"
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -65,11 +76,13 @@ internal class DocumentenApiPluginTest {
             DocumentStatusType.IN_BEWERKING
         )
 
-        val captor = argumentCaptor<CreateDocumentRequest>()
-        verify(client).storeDocument(any(), any(), captor.capture())
+        val apiRequestCaptor = argumentCaptor<CreateDocumentRequest>()
+        val eventCaptor = argumentCaptor<DocumentCreated>()
+        verify(client).storeDocument(any(), any(), apiRequestCaptor.capture())
+        verify(applicationEventPublisher).publishEvent(eventCaptor.capture())
         verify(executionMock).setVariable("storedDocumentVariableName", "returnedUrl")
 
-        val request = captor.firstValue
+        val request = apiRequestCaptor.firstValue
         assertEquals("123456789", request.bronorganisatie)
         assertNotNull(request.creatiedatum)
         assertEquals("test.ext", request.titel)
@@ -80,6 +93,13 @@ internal class DocumentenApiPluginTest {
         assertEquals("type", request.informatieobjecttype)
         assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
         assertEquals(false, request.indicatieGebruiksrecht)
+
+        val emittedEvent = eventCaptor.firstValue
+        assertEquals("returnedUrl", emittedEvent.url)
+        assertEquals("returnedAuthor", emittedEvent.auteur)
+        assertEquals("returnedFileName", emittedEvent.bestandsnaam)
+        assertEquals(1L, emittedEvent.bestandsomvang)
+        assertEquals(LocalDateTime.of(2020, 1, 1, 1, 1, 1), emittedEvent.beginRegistratie)
     }
 
 }

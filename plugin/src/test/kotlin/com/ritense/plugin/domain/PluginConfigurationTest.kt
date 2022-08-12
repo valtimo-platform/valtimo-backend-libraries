@@ -16,7 +16,12 @@
 
 package com.ritense.plugin.domain
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.plugin.service.EncryptionService
 import com.ritense.valtimo.contract.json.Mapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -88,6 +93,12 @@ internal class PluginConfigurationTest {
             Mapper.INSTANCE.get().readTree(input) as ObjectNode,
             pluginDefinition
         )
+
+        val encryptionService = mock<EncryptionService>()
+        whenever(encryptionService.encrypt(any())).thenAnswer { it.arguments[0] }
+        whenever(encryptionService.decrypt(any())).thenAnswer { it.arguments[0] }
+        configuration.objectMapper = ObjectMapper()
+        configuration.encryptionService = encryptionService
     }
 
     @Test

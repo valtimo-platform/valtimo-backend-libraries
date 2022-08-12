@@ -45,3 +45,4 @@ services:
 #   url: jdbc:mysql://localhost:3322/plugin-test
 #   url: jdbc:mysql://localhost:3323/value-resolver-test
 #   url: jdbc:mysql://localhost:3324/documenten-api-test
+#   url: jdbc:mysql://localhost:3325/zaken-api-test

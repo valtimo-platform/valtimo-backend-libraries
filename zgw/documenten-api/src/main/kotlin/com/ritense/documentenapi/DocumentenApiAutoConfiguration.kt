@@ -21,6 +21,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
@@ -40,14 +41,15 @@ class DocumentenApiAutoConfiguration {
     fun documentenApiPluginFactory(
         pluginService: PluginService,
         client: DocumentenApiClient,
-        storageService: TemporaryResourceStorageService
+        storageService: TemporaryResourceStorageService,
+        applicationEventPublisher: ApplicationEventPublisher
     ): DocumentenApiPluginFactory {
-        return DocumentenApiPluginFactory(pluginService, client, storageService)
+        return DocumentenApiPluginFactory(pluginService, client, storageService, applicationEventPublisher)
     }
 
     @Bean
     @ConditionalOnMissingBean(WebClient::class)
-    fun haalcentraalWebClient(): WebClient {
+    fun documentenApiWebClient(): WebClient {
         return WebClient.builder().clientConnector(
             ReactorClientHttpConnector(
                 HttpClient.create().wiretap(

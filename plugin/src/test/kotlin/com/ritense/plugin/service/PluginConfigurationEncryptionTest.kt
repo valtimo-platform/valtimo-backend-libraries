@@ -25,7 +25,6 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
-import com.ritense.plugin.domain.PluginPropertyId
 import com.ritense.valtimo.contract.json.Mapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -33,7 +32,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-internal class PluginConfigurationEntityListenerTest {
+internal class PluginConfigurationEncryptionTest {
 
     lateinit var listener: PluginConfigurationEntityListener
 
@@ -107,8 +106,8 @@ internal class PluginConfigurationEntityListenerTest {
 
         listener.encryptPropertiesOnSave(configuration)
 
-        assertEquals("output", configuration.properties?.get("property1")?.textValue())
-        assertEquals("test2", configuration.properties?.get("property2")?.textValue())
+        assertEquals("output", configuration.rawProperties?.get("property1")?.textValue())
+        assertEquals("test2", configuration.rawProperties?.get("property2")?.textValue())
     }
 
     @Test
@@ -130,8 +129,8 @@ internal class PluginConfigurationEntityListenerTest {
 
         listener.encryptPropertiesOnSave(configuration)
 
-        assertTrue(configuration.properties?.get("property1")!!.isNull)
-        assertEquals("test2", configuration.properties?.get("property2")?.textValue())
+        assertTrue(configuration.rawProperties?.get("property1")!!.isNull)
+        assertEquals("test2", configuration.rawProperties?.get("property2")?.textValue())
     }
 
     @Test
@@ -152,8 +151,8 @@ internal class PluginConfigurationEntityListenerTest {
 
         listener.encryptPropertiesOnSave(configuration)
 
-        assertNull(configuration.properties?.get("property1"))
-        assertEquals("test2", configuration.properties?.get("property2")?.textValue())
+        assertNull(configuration.rawProperties?.get("property1"))
+        assertEquals("test2", configuration.rawProperties?.get("property2")?.textValue())
     }
 
     @Test
@@ -173,7 +172,8 @@ internal class PluginConfigurationEntityListenerTest {
             pluginDefinition
         )
 
-        listener.decryptPropertiesOnLoad(configuration)
+        listener.setBeans(configuration)
+        configuration.decryptProperties()
 
         assertEquals("output", configuration.properties?.get("property1")?.textValue())
         assertEquals("test2", configuration.properties?.get("property2")?.textValue())
@@ -196,7 +196,8 @@ internal class PluginConfigurationEntityListenerTest {
             pluginDefinition
         )
 
-        listener.decryptPropertiesOnLoad(configuration)
+        listener.setBeans(configuration)
+        configuration.decryptProperties()
 
         assertTrue(configuration.properties?.get("property1")!!.isNull)
         assertEquals("test2", configuration.properties?.get("property2")?.textValue())
@@ -218,7 +219,8 @@ internal class PluginConfigurationEntityListenerTest {
             pluginDefinition
         )
 
-        listener.decryptPropertiesOnLoad(configuration)
+        listener.setBeans(configuration)
+        configuration.decryptProperties()
 
         assertNull(configuration.properties?.get("property1"))
         assertEquals("test2", configuration.properties?.get("property2")?.textValue())

@@ -22,15 +22,18 @@ import com.nhaarman.mockitokotlin2.doCallRealMethod
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
+import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.MetadataType
+import com.ritense.resource.repository.OpenZaakResourceRepository
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.json.Mapper
-import mu.KotlinLogging
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -44,11 +47,13 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
+import java.net.URI
 import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
 import javax.transaction.Transactional
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @Transactional
 internal class DocumentenApiPluginIT: BaseIntegrationTest(){
@@ -60,12 +65,16 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
     lateinit var runtimeService: RuntimeService
 
     @Autowired
+    lateinit var processDocumentService: ProcessDocumentService
+
+    @Autowired
     lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
 
     @Autowired
     lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
 
-    lateinit var plugin: DocumentenApiPlugin
+    @Autowired
+    lateinit var openZaakResourceRepository: OpenZaakResourceRepository
 
     lateinit var server: MockWebServer
 
@@ -136,15 +145,19 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
             )
         )
 
-        runtimeService
-            .createProcessInstanceById(processDefinitionId)
-            .setVariable("localDocumentVariableName", documentId)
-            .execute()
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
+            .withProcessVars(mapOf("localDocumentVariableName" to documentId))
+
+        processDocumentService.newDocumentAndStartProcess(request)
 
         val resourceId = runtimeService.createVariableInstanceQuery()
             .variableName("storedDocumentVariableName")
             .singleResult()
             .value as String
+
+        val resource = openZaakResourceRepository.findByInformatieObjectUrl(URI("http://example.com"))
+        assertNotNull(resource)
 
         val recordedRequest = server.takeRequest()
         val requestString = recordedRequest.body.readUtf8()
@@ -233,6 +246,7 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
     }
 
     companion object {
-        val logger = KotlinLogging.logger {}
+        private const val PROCESS_DEFINITION_KEY = "documenten-api-plugin"
+        private const val DOCUMENT_DEFINITION_KEY = "profile"
     }
 }

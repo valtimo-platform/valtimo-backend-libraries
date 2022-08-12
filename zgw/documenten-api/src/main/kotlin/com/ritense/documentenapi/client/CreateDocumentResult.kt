@@ -16,6 +16,12 @@
 
 package com.ritense.documentenapi.client
 
+import java.time.LocalDateTime
+
 class CreateDocumentResult(
     val url: String,
+    val auteur: String,
+    val bestandsnaam: String,
+    val bestandsomvang: Long,
+    val beginRegistratie: LocalDateTime,
 )
