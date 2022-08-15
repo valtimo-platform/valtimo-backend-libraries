@@ -24,6 +24,7 @@ dependencies {
     implementation(project(":plugin-valtimo"))
     implementation(project(":zgw:documenten-api"))
     implementation(project(":zgw:zaken-api"))
+    implementation(project(":zgw:objecten-api"))
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
