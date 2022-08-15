@@ -21,7 +21,7 @@ internal class ZakenApiPluginFactoryTest {
     fun `should create ZakenApiPlugin`() {
         val pluginService: PluginService = mock()
         val authenticationMock = mock<ZakenApiAuthentication>()
-        whenever(pluginService.createInstance(any())).thenReturn(authenticationMock);
+        whenever(pluginService.createInstance(any())).thenReturn(authenticationMock)
 
         val client: ZakenApiClient = mock()
         val zaakUrlProvider: ZaakUrlProvider = mock()
@@ -72,7 +72,7 @@ internal class ZakenApiPluginFactoryTest {
 
         propertyDefinitions.add(
             PluginProperty("url", pluginDefinition, "title", required = true,
-            secret = false, "url","java.lang.Sring"))
+            secret = false, "url","java.lang.String"))
         propertyDefinitions.add(PluginProperty("authenticationPluginConfiguration", pluginDefinition, "title",
             required = true, secret = false, "authenticationPluginConfiguration",
             "com.ritense.zakenapi.ZakenApiAuthentication"))

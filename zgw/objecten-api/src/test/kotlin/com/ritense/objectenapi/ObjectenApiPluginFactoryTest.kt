@@ -35,7 +35,7 @@ internal class ObjectenApiPluginFactoryTest {
     fun `should create ObjectenApiPlugin`() {
         val pluginService: PluginService = mock()
         val authenticationMock = mock<ObjectenApiAuthentication>()
-        whenever(pluginService.createInstance(any())).thenReturn(authenticationMock);
+        whenever(pluginService.createInstance(any())).thenReturn(authenticationMock)
 
         val factory = ObjectenApiPluginFactory(
             pluginService
@@ -73,7 +73,7 @@ internal class ObjectenApiPluginFactoryTest {
 
         propertyDefinitions.add(
             PluginProperty("url", pluginDefinition, "title", required = true,
-                secret = false, "url","java.lang.Sring")
+                secret = false, "url","java.lang.String")
         )
         propertyDefinitions.add(
             PluginProperty("authenticationPluginConfiguration", pluginDefinition, "title",

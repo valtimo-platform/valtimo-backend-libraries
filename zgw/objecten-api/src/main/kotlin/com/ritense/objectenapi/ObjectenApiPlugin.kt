@@ -24,11 +24,9 @@ import com.ritense.plugin.annotation.PluginProperty
     title = "Objecten API",
     description = "Connects to the Objecten API"
 )
-class ObjectenApiPlugin(
-
-) {
+class ObjectenApiPlugin {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: String
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
-    lateinit var authenticationPluginConfiguration: ObjectenApiAutoConfiguration
+    lateinit var authenticationPluginConfiguration: ObjectenApiAuthentication
 }
