@@ -21,11 +21,12 @@ import com.ritense.valtimo.contract.domain.AbstractId
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Embeddable
+import org.hibernate.annotations.Type
 
 @Embeddable
 data class ConnectorTypeId(
 
-    @Column(name = "connector_type_id", columnDefinition = "BINARY(16)")
+    @Column(name = "connector_type_id")
     @JsonValue
     val id: UUID
 

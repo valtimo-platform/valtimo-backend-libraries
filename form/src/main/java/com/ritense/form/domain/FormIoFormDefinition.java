@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.ritense.form.domain.event.FormRegisteredEvent;
 import com.ritense.valtimo.contract.form.ExternalFormFieldType;
 import org.hibernate.annotations.Type;
@@ -29,11 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
+import org.springframework.web.util.HtmlUtils;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,14 +61,14 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String PROCESS_VAR_PREFIX = "pv";
 
     @Id
-    @Column(name = "id", columnDefinition = "BINARY(16)", updatable = false)
+    @Column(name = "id", updatable = false)
     private UUID id;
 
     @Column(name = "name", columnDefinition = "VARCHAR(255)")
     private String name;
 
     @Column(name = "form_definition", columnDefinition = "json")
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     private String formDefinition;
 
     @Column(name = "read_only", columnDefinition = "BIT")
@@ -259,17 +262,32 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     private void fill(ObjectNode field, JsonNode content) {
         assertArgumentNotNull(field, "field is required");
         assertArgumentNotNull(content, "content is required");
-        if (isDocumentContentVar(field)) {
-            getDocumentContentVar(field).flatMap(contentItem -> getValueBy(content, contentItem.getJsonPointer()))
-                .ifPresent(valueNode -> field.set(DEFAULT_VALUE_FIELD, valueNode));
-        } else if (isProcessVar(field)) {
-            getProcessVar(field).flatMap(contentItem -> getValueBy(content, contentItem.getJsonPointer()))
-                .ifPresent(valueNode -> field.set(DEFAULT_VALUE_FIELD, valueNode));
-        } else if (isExternalFormField(field)) {
-            getExternalFormField(field).flatMap(externalContentItem ->
-                getValueBy(content, externalContentItem.getJsonPointer())).ifPresent(valueNode -> field.set(DEFAULT_VALUE_FIELD, valueNode)
-            );
+        getContentItem(field)
+            .flatMap(
+                contentItem -> getValueBy(content, contentItem.getJsonPointer()))
+            .ifPresent(valueNode -> {
+                field.set(DEFAULT_VALUE_FIELD, htmlEscape(valueNode));
+            });
+    }
+
+    private Optional<? extends ContentItem> getContentItem(ObjectNode node) {
+        if (isDocumentContentVar(node)) {
+            return getDocumentContentVar(node);
+        } else if (isProcessVar(node)) {
+            return getProcessVar(node);
+        } else if (isExternalFormField(node)) {
+            return getExternalFormField(node);
         }
+        return Optional.empty();
+    }
+
+    private JsonNode htmlEscape(JsonNode input) {
+        if (input.isTextual()) {
+            String escapedContent = HtmlUtils.htmlEscape(input.textValue(), StandardCharsets.UTF_8.name());
+            return new TextNode(escapedContent);
+        }
+
+        return input;
     }
 
     private Optional<JsonPointer> buildJsonPointer(String jsonPath) {

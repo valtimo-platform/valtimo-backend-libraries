@@ -16,11 +16,16 @@
 
 package com.ritense.plugin.domain
 
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
+import com.ritense.plugin.service.PluginConfigurationEntityListener
 import com.ritense.valtimo.contract.json.Mapper
 import org.hibernate.annotations.Type
 import javax.persistence.Column
+import javax.persistence.Embedded
 import javax.persistence.Entity
+import javax.persistence.EntityListeners
 import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
@@ -28,25 +33,40 @@ import javax.persistence.ManyToOne
 import javax.persistence.Table
 
 @Entity
+@EntityListeners(PluginConfigurationEntityListener::class)
 @Table(name = "plugin_configuration")
 class PluginConfiguration(
     @Id
-    @Column(name = "plugin_configuration_key")
-    val key: String,
+    @Embedded
+    val id: PluginConfigurationId,
     @Column(name = "title")
-    val title: String,
+    var title: String,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "properties", columnDefinition = "JSON")
-    val properties: String? = null,
+    val properties: ObjectNode? = null,
     @JoinColumn(name = "plugin_definition_key", updatable = false, nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     val pluginDefinition: PluginDefinition,
 ) {
     inline fun <reified T> getProperties(): T {
         return if (properties == null) {
-            throw IllegalStateException("No properties found for plugin configuration $key")
+            throw IllegalStateException("No properties found for plugin configuration $title (${id.id})")
         } else {
-            Mapper.INSTANCE.get().readValue(properties)
+            Mapper.INSTANCE.get().treeToValue(properties, T::class.java)
         }
+    }
+
+    fun updateProperties(propertiesForUpdate: ObjectNode) {
+        pluginDefinition.pluginProperties.forEach {
+            val updateValue = propertiesForUpdate.get(it.fieldName)
+            if (!it.secret || !nodeIsEmpty(updateValue)) {
+                properties?.replace(it.fieldName, updateValue)
+            }
+        }
+    }
+
+    private fun nodeIsEmpty(node: JsonNode?): Boolean {
+        return node == null || node.isNull ||
+            (node is TextNode && node.textValue() == "")
     }
 }

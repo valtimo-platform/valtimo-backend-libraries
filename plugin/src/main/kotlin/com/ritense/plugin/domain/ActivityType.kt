@@ -17,6 +17,5 @@
 package com.ritense.plugin.domain
 
 enum class ActivityType {
-    USER_TASK,
     SERVICE_TASK
 }

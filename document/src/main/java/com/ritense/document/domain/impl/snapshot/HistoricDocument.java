@@ -67,11 +67,11 @@ public class HistoricDocument implements Document {
     @Column(name = "document_sequence", columnDefinition = "BIGINT")
     private Long sequence;
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "document_relations", columnDefinition = "json")
     private Set<? extends DocumentRelation> documentRelations = new HashSet<>();
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "document_related_files", columnDefinition = "json")
     private Set<? extends RelatedFile> relatedFiles = new HashSet<>();
 

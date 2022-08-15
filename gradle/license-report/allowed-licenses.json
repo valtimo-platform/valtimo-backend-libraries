@@ -1,0 +1,112 @@
+{
+    "allowedLicenses": [
+        {
+            "moduleLicense": "Apache License, Version 2.0"
+        },
+        {
+            "moduleLicense": "BSD Zero Clause License"
+        },
+        {
+            "moduleLicense": "The 2-Clause BSD License"
+        },
+        {
+            "moduleLicense": "The 3-Clause BSD License"
+        },
+        {
+            "moduleLicense": "Go License"
+        },
+        {
+            "moduleLicense": "MPL 2.0 or EPL 1.0"
+        },
+        {
+            "moduleLicense": "GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1"
+        },
+        {
+            "moduleLicense": "GNU LESSER GENERAL PUBLIC LICENSE, Version 3"
+        },
+        {
+            "moduleLicense": "Oracle Free Use Terms and Conditions (FUTC)"
+        },
+        {
+            "moduleLicense": "Eclipse Distribution License - v 1.0"
+        },
+        {
+            "moduleLicense": "Eclipse Public License - v 1.0"
+        },
+        {
+            "moduleLicense": "Eclipse Public License - v 2.0"
+        },
+        {
+            "moduleLicense": "MIT License"
+        },
+        {
+            "moduleLicense": "GNU GENERAL PUBLIC LICENSE, Version 2 + Classpath Exception"
+        },
+        {
+            "moduleLicense": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0"
+        },
+        {
+            "moduleLicense": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1"
+        },
+        {
+            "moduleLicense": "CDDL v 1.1 + GPLv2 with classpath exception"
+        },
+        {
+            "moduleLicense": "Bouncy Castle Licence"
+        },
+        {
+            "moduleLicense": "Creative Commons Legal Code"
+        },
+        {
+            "moduleLicense": "PUBLIC DOMAIN"
+        },
+        {
+            "moduleLicense": "The JSON License"
+        },
+        {
+            "moduleLicense": null,
+            "moduleVersion": "2.*",
+            "moduleName": "com.fasterxml.jackson:jackson-bom"
+        },
+        {
+            "moduleLicense": null,
+            "moduleVersion": "2.*",
+            "moduleName": "io.github.microutils:kotlin-logging"
+        },
+        {
+            "moduleLicense": null,
+            "moduleVersion": "2.*",
+            "moduleName": "io.github.microutils:kotlin-logging"
+        },
+        {
+            "moduleLicense": null,
+            "moduleVersion": "1.*",
+            "moduleName": "org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec"
+        },
+        {
+            "moduleLicense": null,
+            "moduleVersion": "1.*",
+            "moduleName": "org.jetbrains.kotlinx:kotlinx-coroutines-bom"
+        },
+        {
+            "moduleLicense": null,
+            "moduleVersion": "1.*",
+            "moduleName": "org.jetbrains.kotlinx:kotlinx-coroutines-core"
+        },
+        {
+            "moduleLicense": null,
+            "moduleVersion": "5.*",
+            "moduleName": "org.junit:junit-bom"
+        },
+        {
+            "moduleLicense": null,
+            "moduleVersion": "1.*",
+            "moduleName": "org.mapstruct:mapstruct-jdk8"
+        },
+        {
+            "moduleLicense": null,
+            "moduleVersion": "9.*",
+            "moduleName": "com.microsoft.sqlserver:mssql-jdbc"
+        }
+    ]
+}

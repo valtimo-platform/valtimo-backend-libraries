@@ -23,6 +23,7 @@ dockerCompose {
 
 dependencies {
     implementation project(':contract')
+    implementation project(':value-resolver')
 
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter"
@@ -31,13 +32,14 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
 
     implementation "io.github.classgraph:classgraph:4.8.147"
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation 'io.github.microutils:kotlin-logging:2.1.23'
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "mysql:mysql-connector-java"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation 'org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.16.0'
 
     jar {
         enabled = true

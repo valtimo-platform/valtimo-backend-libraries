@@ -30,6 +30,7 @@ import com.ritense.openzaak.autoconfigure.OpenZaakAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakLiquibaseAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakSecurityAutoConfiguration
 import com.ritense.openzaak.catalogi.CatalogiAutoConfiguration
+import com.ritense.plugin.configuration.PluginAutoConfiguration
 import com.ritense.processdocument.autoconfigure.ProcessDocumentAuditAutoConfiguration
 import com.ritense.processdocument.autoconfigure.ProcessDocumentAutoConfiguration
 import com.ritense.resource.autoconfigure.OpenZaakResourceAutoConfiguration
@@ -84,12 +85,13 @@ import org.springframework.boot.test.context.TestConfiguration
         OpenZaakLiquibaseAutoConfiguration::class,
         OpenZaakResourceAutoConfiguration::class,
         OpenZaakSecurityAutoConfiguration::class,
+        PluginAutoConfiguration::class,
         ProcessDataObjectAutoConfiguration::class,
         ProcessDocumentAutoConfiguration::class,
         ProcessDocumentAuditAutoConfiguration::class,
         ValtimoAutoConfiguration::class,
         ValtimoMethodSecurityAutoConfiguration::class,
-        ValtimoMybatisAutoConfiguration::class,
+        ValtimoMybatisAutoConfiguration::class
     ]
 )
 class KlantTestConfiguration {

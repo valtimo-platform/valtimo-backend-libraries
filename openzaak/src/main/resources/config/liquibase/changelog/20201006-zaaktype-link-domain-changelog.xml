@@ -20,6 +20,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="1" author="Tom Bokma">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createTable tableName="zaak_type_link">
             <column name="zaak_type_link_id" type="BINARY(16)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="zaaktype_linkPK"/>
@@ -39,9 +42,34 @@
     </changeSet>
 
     <changeSet id="2" author="Julia de Lozanne">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <addColumn tableName="zaak_type_link">
             <column name="service_task_handlers" type="JSON"/>
         </addColumn>
+    </changeSet>
+
+    <changeSet id="3" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <createTable tableName="zaak_type_link">
+            <column name="zaak_type_link_id" type="${uuidType}">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="zaaktype_linkPK"/>
+            </column>
+            <column name="document_definition_name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zaak_type_url" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="service_task_handlers" type="${jsonType}"/>
+        </createTable>
+        <addUniqueConstraint tableName="zaak_type_link"
+            columnNames="document_definition_name, zaak_type_url"
+            constraintName="zaak_type_url_constraint"
+        />
     </changeSet>
 
 </databaseChangeLog>

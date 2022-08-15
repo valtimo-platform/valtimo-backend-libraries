@@ -16,13 +16,31 @@
 
 package com.ritense.plugin
 
+import com.nhaarman.mockitokotlin2.spy
+import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.extension.mockito.service.RuntimeServiceFluentMock
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 
 @SpringBootApplication
 class TestApplication {
 
     fun main(args: Array<String>) {
         runApplication<TestApplication>(*args)
+    }
+
+    @TestConfiguration
+    class TestConfig {
+        @Bean
+        fun testPlugin(): PluginFactory<TestPlugin> {
+            return spy(TestPluginFactory("someString"))
+        }
+
+        @Bean
+        fun runtimeService():RuntimeService {
+            return RuntimeServiceFluentMock().runtimeService
+        }
     }
 }

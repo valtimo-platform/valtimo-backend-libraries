@@ -15,6 +15,7 @@ dependencies {
     implementation(project(":document-generation:smartdocuments"))
     implementation(project(":openzaak"))
     implementation(project(":resource:openzaak-resource"))
+    implementation(project(":resource:temporary-resource-storage"))
     implementation(project(":mail:local-mail"))
     implementation(project(":connector"))
     implementation(project(":objects-api"))
@@ -49,6 +50,8 @@ dependencies {
 
     // Database
     implementation "mysql:mysql-connector-java"
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.1'
+
 }
 
 apply from: "gradle/publishing.gradle"

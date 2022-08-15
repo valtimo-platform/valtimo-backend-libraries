@@ -17,26 +17,30 @@
 package com.ritense.audit.service.impl;
 
 import com.ritense.audit.domain.AuditRecord;
+import com.ritense.audit.domain.AuditRecordBuilder;
+import com.ritense.audit.domain.AuditRecordId;
 import com.ritense.audit.domain.MetaData;
 import com.ritense.audit.domain.MetaDataBuilder;
 import com.ritense.audit.exception.AuditRecordAlreadyProcessedException;
 import com.ritense.audit.exception.AuditRuntimeException;
-import com.ritense.audit.repository.impl.AuditRecordImplRepository;
+import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.audit.service.AuditEventProcessor;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.sql.SQLIntegrityConstraintViolationException;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class AuditEventProcessorImpl implements AuditEventProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(AuditEventProcessorImpl.class);
-    private final AuditRecordImplRepository auditRecordRepository;
+    private final AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository;
 
-    public AuditEventProcessorImpl(AuditRecordImplRepository auditRecordRepository) {
+    public AuditEventProcessorImpl(AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository) {
         this.auditRecordRepository = auditRecordRepository;
     }
 
@@ -55,8 +59,8 @@ public class AuditEventProcessorImpl implements AuditEventProcessor {
                 .occurredOn(event.getOccurredOn())
                 .user(event.getUser())
                 .build();
-            final AuditRecord auditRecord = AuditRecord.builder()
-                .id(event.getId())
+            final AuditRecord auditRecord = new AuditRecordBuilder()
+                .id(AuditRecordId.newId(event.getId()))
                 .metaData(metaData)
                 .auditEvent(event)
                 .documentId(event.getDocumentId())

@@ -16,15 +16,20 @@
 
 package com.ritense.plugin.domain
 
+import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 import com.fasterxml.jackson.annotation.JsonIgnore
+import java.lang.reflect.Field
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.Id
+import javax.persistence.OneToMany
 import javax.persistence.Table
 
 @Entity
 @Table(name = "plugin_definition")
-class PluginDefinition (
+data class PluginDefinition (
     @Id
     @Column(name = "plugin_definition_key")
     val key: String,
@@ -34,5 +39,35 @@ class PluginDefinition (
     val description: String,
     @JsonIgnore
     @Column(name = "class_name")
-    val fullyQualifiedClassName: String
-)
+    val fullyQualifiedClassName: String,
+    @JsonIgnore
+    @OneToMany(mappedBy = "pluginDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL],
+        orphanRemoval = true)
+    val pluginProperties: Set<PluginProperty> = setOf(),
+) {
+    fun findPluginProperty(propertyKey: String): PluginProperty? {
+        val filteredProperties = pluginProperties.filter {
+            it.id.key == propertyKey
+        }
+
+        return if (filteredProperties.size == 1) {
+            filteredProperties[0]
+        } else {
+            null
+        }
+    }
+
+    fun addProperty(field: Field, propertyAnnotation: PluginPropertyAnnotation) {
+        (pluginProperties as MutableSet).add(
+            PluginProperty(
+                propertyAnnotation.key,
+                this,
+                propertyAnnotation.title,
+                propertyAnnotation.required,
+                propertyAnnotation.secret,
+                field.name,
+                field.type.typeName
+            )
+        )
+    }
+}

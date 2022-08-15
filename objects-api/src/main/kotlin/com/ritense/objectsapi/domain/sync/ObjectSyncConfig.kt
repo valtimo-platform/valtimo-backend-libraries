@@ -31,7 +31,7 @@ data class ObjectSyncConfig(
     @EmbeddedId
     val id: ObjectSyncConfigId,
 
-    @Column(name = "connector_instance_id", columnDefinition = "BINARY(16)", nullable = false)
+    @Column(name = "connector_instance_id", nullable = false)
     val connectorInstanceId: UUID,
 
     @Column(name = "enabled", columnDefinition = "BIT")
@@ -42,7 +42,7 @@ data class ObjectSyncConfig(
     @field:NotBlank
     val documentDefinitionName: String,
 
-    @Column(name = "object_type_id", columnDefinition = "BINARY(16)", nullable = false)
+    @Column(name = "object_type_id", nullable = false)
     val objectTypeId: UUID
 ) : Validatable {
 

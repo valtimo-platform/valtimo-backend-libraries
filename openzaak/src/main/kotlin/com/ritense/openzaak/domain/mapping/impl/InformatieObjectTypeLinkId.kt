@@ -25,7 +25,7 @@ import javax.persistence.Embeddable
 @Embeddable
 data class InformatieObjectTypeLinkId(
 
-    @Column(name = "informatie_object_type_link_id", columnDefinition = "BINARY(16)")
+    @Column(name = "informatie_object_type_link_id")
     @JsonValue
     val id: UUID
 

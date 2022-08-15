@@ -28,9 +28,27 @@
             </column>
         </createTable>
     </changeSet>
+
     <changeSet author="tom (generated)" id="1564574430316-2">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createTable tableName="camunda_process_json_schema_document_instance">
             <column name="json_schema_document_id" type="BINARY(16)">
+                <constraints primaryKey="true" primaryKeyName="camunda_process_json_schema_document_instancePK"/>
+            </column>
+            <column name="camunda_process_instance_id" type="VARCHAR(64)">
+                <constraints primaryKey="true" primaryKeyName="camunda_process_json_schema_document_instancePK"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Ivo Zaal" id="1564574430316-3">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <createTable tableName="camunda_process_json_schema_document_instance">
+            <column name="json_schema_document_id" type="${uuidType}">
                 <constraints primaryKey="true" primaryKeyName="camunda_process_json_schema_document_instancePK"/>
             </column>
             <column name="camunda_process_instance_id" type="VARCHAR(64)">
