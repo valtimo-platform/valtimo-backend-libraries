@@ -20,7 +20,7 @@ import com.ritense.objectenapi.ObjectenApiAuthentication
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 
-class ObjectenApiAuthenticationFactory(
+class ObjectenApiAuthenticationPluginFactory(
     pluginService: PluginService
 ): PluginFactory<ObjectenApiAuthentication>(pluginService) {
 

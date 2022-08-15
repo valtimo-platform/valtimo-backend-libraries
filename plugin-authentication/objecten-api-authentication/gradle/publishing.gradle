@@ -19,8 +19,8 @@ pluginManager.withPlugin('maven-publish') {
         publications {
             maven(MavenPublication) {
                 pom {
-                    name = 'Zaken API module'
-                    description = 'The Zaken API module contains the plugin to connect to the Zaken API'
+                    name = 'Objecten API Authentication module'
+                    description = 'The Objecten API Authentication module contains the plugin for authentication of Objecten API'
                     developers {
                         developer {
                             id = "team-valtimo"

@@ -22,7 +22,6 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':core')
     implementation project(':plugin')
 
     implementation "io.github.microutils:kotlin-logging:2.0.4"

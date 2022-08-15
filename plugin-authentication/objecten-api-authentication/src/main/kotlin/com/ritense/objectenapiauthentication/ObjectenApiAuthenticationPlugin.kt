@@ -31,7 +31,7 @@ import reactor.core.publisher.Mono
 )
 class ObjectenApiAuthenticationPlugin : ObjectenApiAuthentication {
 
-    @PluginProperty(key = "token", secret = false, required = true)
+    @PluginProperty(key = "token", secret = true, required = true)
     lateinit var token: String
 
     override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
