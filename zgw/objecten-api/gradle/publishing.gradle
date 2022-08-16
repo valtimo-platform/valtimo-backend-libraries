@@ -20,7 +20,7 @@ pluginManager.withPlugin('maven-publish') {
             maven(MavenPublication) {
                 pom {
                     name = 'Objecten API module'
-                    description = 'The Objecteb API module contains the plugin to connect to the Objecten API'
+                    description = 'The Objecten API module contains the plugin to connect to the Objecten API'
                     developers {
                         developer {
                             id = "team-valtimo"
