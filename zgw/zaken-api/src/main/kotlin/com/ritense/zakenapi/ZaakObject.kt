@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.repository
+package com.ritense.zakenapi
 
-import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
-import org.springframework.data.jpa.repository.JpaRepository
+import java.net.URL
+import java.util.UUID
 
-interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, PluginConfigurationId> {
-    fun findByPluginDefinition_Categories_Key(category: String): List<PluginConfiguration>
-    fun findByPluginDefinitionKey(pluginDefinitionKey: String): List<PluginConfiguration>
-}
+data class ZaakObject(
+    val url: URL,
+    val uuid: UUID,
+    val zaak: URL,
+    val `object`: URL,
+    val objectType: String,
+    val objectTypeOverig: String,
+    val relatieomschrijving: String
+)

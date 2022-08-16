@@ -25,19 +25,20 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
+import java.net.URI
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.util.UUID
 
 @Plugin(
-    key = "zakenapi",
+    key = ZakenApiPlugin.PLUGIN_KEY,
     title = "Zaken API",
     description = "Connects to the Zaken API"
 )
 class ZakenApiPlugin(
-    val client: ZakenApiClient,
-    val zaakUrlProvider: ZaakUrlProvider,
-    val resourceProvider: ResourceProvider,
-    val documentService: DocumentService,
+    private val client: ZakenApiClient,
+    private val zaakUrlProvider: ZaakUrlProvider,
+    private val resourceProvider: ResourceProvider,
+    private val documentService: DocumentService,
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: String
@@ -73,5 +74,13 @@ class ZakenApiPlugin(
             resource.id(),
             mapOf("createInformatieObject" to false)
         )
+    }
+
+    fun getZaakObjecten(zaakUrl: URI): List<ZaakObject> {
+        TODO("Not yet implemented")
+    }
+
+    companion object {
+        const val PLUGIN_KEY = "zakenapi"
     }
 }

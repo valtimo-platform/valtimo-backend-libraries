@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.repository
+package com.ritense.objecttypenapi
 
-import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
-import org.springframework.data.jpa.repository.JpaRepository
+import java.net.URI
 
-interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, PluginConfigurationId> {
-    fun findByPluginDefinition_Categories_Key(category: String): List<PluginConfiguration>
-    fun findByPluginDefinitionKey(pluginDefinitionKey: String): List<PluginConfiguration>
-}
+data class ObjectType (
+    val url: URI,
+    val name: String
+)

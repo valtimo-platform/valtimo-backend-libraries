@@ -16,11 +16,13 @@
 
 package com.ritense.objectenapi
 
+import com.ritense.objectenapi.service.ObjectValue
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
+import java.net.URL
 
 @Plugin(
-    key = "objectenapi",
+    key = ObjectenApiPlugin.PLUGIN_KEY,
     title = "Objecten API",
     description = "Connects to the Objecten API"
 )
@@ -29,4 +31,12 @@ class ObjectenApiPlugin {
     lateinit var url: String
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: ObjectenApiAuthentication
+
+    fun getObject(objectUrl: URL): ObjectValue {
+        TODO("Not yet implemented")
+    }
+
+    companion object {
+        const val PLUGIN_KEY = "objectenapi"
+    }
 }

@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.service
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
@@ -228,12 +229,15 @@ class PluginService(
             }
         }
     }
-
     fun createInstance(pluginConfigurationId: PluginConfigurationId): Any {
         val configuration = pluginConfigurationRepository.getById(pluginConfigurationId)
+        return createInstance(configuration)
+    }
+
+    fun createInstance(pluginConfiguration: PluginConfiguration): Any {
         return  pluginFactories.first {
-            it.canCreate(configuration)
-        }.create(configuration)!!
+            it.canCreate(pluginConfiguration)
+        }.create(pluginConfiguration)!!
     }
 
     private fun getActionMethod(
@@ -279,6 +283,14 @@ class PluginService(
         if (errors.isNotEmpty()) {
             errors.forEach { logger.error { it } }
             throw errors.first()
+        }
+    }
+
+    fun findPluginConfiguration(pluginDefinitionKey: String, filter: (JsonNode) -> Boolean): PluginConfiguration? {
+        val configurations = pluginConfigurationRepository.findByPluginDefinitionKey(pluginDefinitionKey)
+        return configurations.firstOrNull { config ->
+            val configProperties = config.properties
+            configProperties != null && filter(configProperties)
         }
     }
 
