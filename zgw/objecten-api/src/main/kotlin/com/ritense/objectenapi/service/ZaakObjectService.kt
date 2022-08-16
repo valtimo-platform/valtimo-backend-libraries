@@ -37,7 +37,7 @@ class ZaakObjectService(
         val pluginConfig = pluginService.findPluginConfiguration(ZakenApiPlugin.PLUGIN_KEY) { properties: JsonNode ->
             zaakUrl.toString().startsWith(properties.get("url").textValue())
         }
-        requireNotNull(pluginConfig) { "No plugin configuration was found for zaak with URL ${zaakUrl}" }
+        requireNotNull(pluginConfig) { "No plugin configuration was found for zaak with URL $zaakUrl" }
         val zakenApiPluginInstance = pluginService.createInstance(pluginConfig) as ZakenApiPlugin
 
         return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
@@ -56,7 +56,7 @@ class ZaakObjectService(
             pluginService.findPluginConfiguration(ObjectenApiPlugin.PLUGIN_KEY) { properties: JsonNode ->
                 objectUrl.toString().startsWith(properties.get("url").textValue())
             }?: return null
-        val objectenApiPlugin = pluginService.createInstance(objectPluginConfig!!) as ObjectenApiPlugin
+        val objectenApiPlugin = pluginService.createInstance(objectPluginConfig) as ObjectenApiPlugin
         return objectenApiPlugin.getObject(objectUrl)
     }
 
