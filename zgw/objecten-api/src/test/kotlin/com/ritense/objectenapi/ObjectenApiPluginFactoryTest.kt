@@ -1,43 +1,49 @@
-package com.ritense.zakenapi
+/*
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.ritense.objectenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import com.ritense.document.service.DocumentService
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
-import com.ritense.zakenapi.client.ZakenApiClient
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
-internal class ZakenApiPluginFactoryTest {
+internal class ObjectenApiPluginFactoryTest {
 
     @Test
-    fun `should create ZakenApiPlugin`() {
+    fun `should create ObjectenApiPlugin`() {
         val pluginService: PluginService = mock()
-        val authenticationMock = mock<ZakenApiAuthentication>()
+        val authenticationMock = mock<ObjectenApiAuthentication>()
         whenever(pluginService.createInstance(any())).thenReturn(authenticationMock)
 
-        val client: ZakenApiClient = mock()
-        val zaakUrlProvider: ZaakUrlProvider = mock()
-        val documentService: DocumentService = mock()
-        val resourceProvider: ResourceProvider = mock()
-
-        val factory = ZakenApiPluginFactory(
-            pluginService,
-            client,
-            zaakUrlProvider,
-            resourceProvider,
-            documentService
+        val factory = ObjectenApiPluginFactory(
+            pluginService
         )
-        val zakenApiPluginProperties: String = """
+
+        val objectenApiPluginProperties: String = """
             {
-              "url": "http://zaken.plugin.url",
+              "url": "http://objecten.plugin.url",
               "authenticationPluginConfiguration": "7c4e15e4-c245-4fd9-864b-dd36baa02abf"
             }
         """.trimIndent()
@@ -46,18 +52,13 @@ internal class ZakenApiPluginFactoryTest {
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            ObjectMapper().readTree(zakenApiPluginProperties) as ObjectNode,
+            ObjectMapper().readTree(objectenApiPluginProperties) as ObjectNode,
             pluginDefinition
         )
-
         val plugin = factory.create(pluginConfiguration)
 
-        assertEquals("http://zaken.plugin.url", plugin.url)
+        assertEquals("http://objecten.plugin.url", plugin.url)
         assertEquals(authenticationMock, plugin.authenticationPluginConfiguration)
-        assertEquals(client, plugin.client)
-        assertEquals(zaakUrlProvider, plugin.zaakUrlProvider)
-        assertEquals(resourceProvider, plugin.resourceProvider)
-        assertEquals(documentService, plugin.documentService)
     }
 
     private fun createPluginDefinition(): PluginDefinition {
@@ -72,10 +73,13 @@ internal class ZakenApiPluginFactoryTest {
 
         propertyDefinitions.add(
             PluginProperty("url", pluginDefinition, "title", required = true,
-            secret = false, "url","java.lang.String"))
-        propertyDefinitions.add(PluginProperty("authenticationPluginConfiguration", pluginDefinition, "title",
+                secret = false, "url","java.lang.String")
+        )
+        propertyDefinitions.add(
+            PluginProperty("authenticationPluginConfiguration", pluginDefinition, "title",
             required = true, secret = false, "authenticationPluginConfiguration",
-            "com.ritense.zakenapi.ZakenApiAuthentication"))
+            "com.ritense.objectenapi.ObjectenApiAuthentication")
+        )
 
         return pluginDefinition
     }

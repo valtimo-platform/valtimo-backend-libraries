@@ -50,6 +50,7 @@ include(
     "openzaak",
     "plugin",
     "plugin-valtimo",
+    "plugin-authentication:objecten-api-authentication",
     "process-document",
     "resource",
     "resource:local-resource",
@@ -60,5 +61,6 @@ include(
     "view-configurator",
     "web",
     "zgw:documenten-api",
+    "zgw:objecten-api",
     "zgw:zaken-api"
 )
