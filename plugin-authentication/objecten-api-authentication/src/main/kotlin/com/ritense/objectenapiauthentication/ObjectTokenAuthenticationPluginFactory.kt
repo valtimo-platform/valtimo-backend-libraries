@@ -16,17 +16,14 @@
 
 package com.ritense.objectenapiauthentication
 
+import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
-@Configuration
-class ObjecenApiAuthenticationAutoConfiguration {
+class ObjectTokenAuthenticationPluginFactory(
+    pluginService: PluginService
+): PluginFactory<ObjectTokenAuthenticationPlugin>(pluginService) {
 
-    @Bean
-    fun objectenApiAuthenticationPluginFactory(
-        pluginService: PluginService
-    ): ObjectenApiAuthenticationPluginFactory {
-        return ObjectenApiAuthenticationPluginFactory(pluginService)
+    override fun create(): ObjectTokenAuthenticationPlugin {
+        return ObjectTokenAuthenticationPlugin()
     }
 }

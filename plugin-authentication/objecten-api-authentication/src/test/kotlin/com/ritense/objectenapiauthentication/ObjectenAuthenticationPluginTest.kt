@@ -34,7 +34,7 @@ internal class ObjectenAuthenticationPluginTest {
     @Test
     fun `should add header to request`() {
         val requestCaptor = argumentCaptor<ClientRequest>()
-        val plugin = ObjectenApiAuthenticationPlugin()
+        val plugin = ObjectTokenAuthenticationPlugin()
         plugin.token = "token"
 
         val request = ClientRequest.create(

@@ -61,6 +61,6 @@ include(
     "view-configurator",
     "web",
     "zgw:documenten-api",
-    "zgw:zaken-api",
-    "zgw:objecten-api"
+    "zgw:objecten-api",
+    "zgw:zaken-api"
 )

@@ -25,11 +25,11 @@ import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
 
 @Plugin(
-    key = "objectenapiauthentication",
-    title = "Objecten API Authentication",
-    description = "Plugin used to provide authentication for Objecten API"
+    key = "objecttokenauthentication",
+    title = "Object Token Authentication",
+    description = "Plugin used to provide authentication based on a token"
 )
-class ObjectenApiAuthenticationPlugin : ObjectenApiAuthentication {
+class ObjectTokenAuthenticationPlugin : ObjectenApiAuthentication {
 
     @PluginProperty(key = "token", secret = true, required = true)
     lateinit var token: String

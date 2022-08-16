@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.objectenapiauthentication.ObjecenApiAuthenticationAutoConfiguration
+  com.ritense.objectenapiauthentication.ObjectTokenAuthenticationPluginAutoConfiguration
