@@ -62,5 +62,6 @@ include(
     "web",
     "zgw:documenten-api",
     "zgw:objecten-api",
+    "zgw:objecttypen-api",
     "zgw:zaken-api"
 )
