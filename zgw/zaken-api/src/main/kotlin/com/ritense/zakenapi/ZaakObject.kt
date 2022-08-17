@@ -16,14 +16,17 @@
 
 package com.ritense.zakenapi
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
 import java.util.UUID
 
 data class ZaakObject(
     val url: URL,
     val uuid: UUID,
-    val zaak: URL,
-    val `object`: URL,
+    @JsonProperty("zaak")
+    val zaakUrl: URL,
+    @JsonProperty("object")
+    val objectUrl: URL,
     val objectType: String,
     val objectTypeOverig: String,
     val relatieomschrijving: String

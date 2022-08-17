@@ -34,11 +34,13 @@ class ZaakObjectService(
 ) {
     fun getZaakObjectTypes(documentId: UUID): List<ObjectType> {
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
-        val pluginConfig = pluginService.findPluginConfiguration(ZakenApiPlugin.PLUGIN_KEY) { properties: JsonNode ->
+
+        val zakenApiPluginInstance = pluginService
+            .createInstanceConditional(ZakenApiPlugin::class.java) { properties: JsonNode ->
             zaakUrl.toString().startsWith(properties.get("url").textValue())
         }
-        requireNotNull(pluginConfig) { "No plugin configuration was found for zaak with URL $zaakUrl" }
-        val zakenApiPluginInstance = pluginService.createInstance(pluginConfig) as ZakenApiPlugin
+
+        requireNotNull(zakenApiPluginInstance) { "No plugin configuration was found for zaak with URL $zaakUrl" }
 
         return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
             .mapNotNull {
@@ -51,22 +53,19 @@ class ZaakObjectService(
     }
 
     private fun getObjectByZaakObjectUrl(it: ZaakObject) : ObjectValue? {
-        val objectUrl = it.`object`
-        val objectPluginConfig =
-            pluginService.findPluginConfiguration(ObjectenApiPlugin.PLUGIN_KEY) { properties: JsonNode ->
+        val objectUrl = it.objectUrl
+        val objectenApiPlugin = pluginService
+            .createInstanceConditional(ObjectenApiPlugin::class.java) { properties: JsonNode ->
                 objectUrl.toString().startsWith(properties.get("url").textValue())
             }?: return null
-        val objectenApiPlugin = pluginService.createInstance(objectPluginConfig) as ObjectenApiPlugin
         return objectenApiPlugin.getObject(objectUrl)
     }
 
     private fun getObjectTypeByUrl(it: URL): ObjectType? {
-        val objectTypePluginConfig =
-            pluginService.findPluginConfiguration(ObjecttypenApiPlugin.PLUGIN_KEY) { properties: JsonNode ->
+        val objectTypePluginInstance = pluginService
+            .createInstanceConditional(ObjecttypenApiPlugin::class.java) { properties: JsonNode ->
                 it.toString().startsWith(properties.get("url").textValue())
             }?: return null
-
-        val objectTypePluginInstance = pluginService.createInstance(objectTypePluginConfig) as ObjecttypenApiPlugin
 
         return objectTypePluginInstance.getObjectType(it)
     }
