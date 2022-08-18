@@ -20,6 +20,7 @@ import com.ritense.objectenapi.ObjectenApiAuthentication
 import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
+import org.springframework.http.HttpHeaders
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -38,7 +39,7 @@ class ObjectTokenAuthenticationPlugin
 
     override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
         val filteredRequest = ClientRequest.from(request).headers {
-            headers -> headers.setBearerAuth(token)
+            headers -> headers.set(HttpHeaders.AUTHORIZATION, "Token $token")
         }.build()
         return next.exchange(filteredRequest)
     }

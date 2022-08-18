@@ -29,10 +29,7 @@ import java.util.UUID
 
 
 @RestController
-@RequestMapping(value = ["/api/document/{documentId}/zaak"],
-    produces = [MediaType.APPLICATION_JSON_VALUE],
-    consumes = [MediaType.APPLICATION_JSON_VALUE]
-)
+@RequestMapping(value = ["/api/document/{documentId}/zaak"])
 class ZaakObjectResource(
     val zaakObjectService: ZaakObjectService
 ) {

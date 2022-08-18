@@ -18,7 +18,8 @@ package com.ritense.objectenapi
 
 import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
-import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
+import com.ritense.objectenapi.service.ZaakObjectService
+import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -64,9 +65,17 @@ class ObjectenApiAutoConfiguration {
         )
     }
 
+    @Bean
+    fun zaakObjectService(
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        pluginService : PluginService
+    ): ZaakObjectService {
+        return ZaakObjectService(zaakInstanceLinkService, pluginService)
+    }
+
     @Order(400)
     @Bean
-    fun pluginHttpSecurityConfigurer(): ObjectenApiHttpSecurityConfigurer {
+    fun objectenApiHttpSecurityConfigurer(): ObjectenApiHttpSecurityConfigurer {
         return ObjectenApiHttpSecurityConfigurer()
     }
 }
