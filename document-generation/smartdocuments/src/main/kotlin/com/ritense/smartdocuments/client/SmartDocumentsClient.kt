@@ -24,11 +24,14 @@ import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.FileStreamResponse
 import com.ritense.smartdocuments.domain.FilesResponse
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import io.netty.handler.ssl.SslContextBuilder
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.text.StringEscapeUtils
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.http.codec.ClientCodecConfigurer
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
@@ -36,6 +39,7 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.bodyToFlux
+import reactor.netty.http.client.HttpClient
 import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
@@ -113,6 +117,12 @@ class SmartDocumentsClient(
             smartDocumentsConnectorProperties.password!!
         )
 
+        val sslContext = SslContextBuilder
+            .forClient()
+            .trustManager(InsecureTrustManagerFactory.INSTANCE)
+            .build()
+        val httpClient = HttpClient.create().secure { t -> t.sslContext(sslContext) }
+
         // Setting the max file size for the smart documents response
         val exchangeStrategies = ExchangeStrategies
             .builder()
@@ -123,6 +133,7 @@ class SmartDocumentsClient(
 
         return smartDocumentsWebClientBuilder
             .clone()
+            .clientConnector(ReactorClientHttpConnector(httpClient))
             .baseUrl(smartDocumentsConnectorProperties.url!!)
             .filter(basicAuthentication)
             .exchangeStrategies(exchangeStrategies)

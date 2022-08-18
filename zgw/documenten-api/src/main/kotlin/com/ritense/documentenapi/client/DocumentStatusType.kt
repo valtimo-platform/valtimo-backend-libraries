@@ -24,8 +24,7 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 
-enum class DocumentStatusType
-{
+enum class DocumentStatusType {
     @JsonProperty("in_bewerking")
     IN_BEWERKING,
     @JsonProperty("ter_vaststelling")

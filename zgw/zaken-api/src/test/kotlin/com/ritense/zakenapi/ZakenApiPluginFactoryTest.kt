@@ -12,7 +12,7 @@ import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.client.ZakenApiClient
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 internal class ZakenApiPluginFactoryTest {
@@ -68,7 +68,7 @@ internal class ZakenApiPluginFactoryTest {
 
         propertyDefinitions.add(
             PluginProperty("url", pluginDefinition, "title", required = true,
-            secret = false, "url","java.lang.String"))
+            secret = false, "url","java.net.URI"))
         propertyDefinitions.add(PluginProperty("authenticationPluginConfiguration", pluginDefinition, "title",
             required = true, secret = false, "authenticationPluginConfiguration",
             "com.ritense.zakenapi.ZakenApiAuthentication"))

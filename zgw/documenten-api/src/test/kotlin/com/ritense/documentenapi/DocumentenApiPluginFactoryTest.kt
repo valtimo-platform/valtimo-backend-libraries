@@ -42,7 +42,7 @@ internal class DocumentenApiPluginFactoryTest {
         val applicationEventPublisher = mock<ApplicationEventPublisher>()
         val authentication = mock<DocumentenApiAuthentication>()
 
-        whenever(pluginService.createInstance(any())).thenReturn(authentication)
+        whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authentication)
 
         val propertyString = """
           {
@@ -61,7 +61,7 @@ internal class DocumentenApiPluginFactoryTest {
             propertyDefinitions
         )
         propertyDefinitions.add(PluginProperty("url", pluginDefinition, "title", required = true,
-            secret = false, "url", "java.lang.String"))
+            secret = false, "url", "java.net.URI"))
         propertyDefinitions.add(PluginProperty("bronorganisatie", pluginDefinition, "title", required = true,
             secret = false, "bronorganisatie", "java.lang.String"))
         propertyDefinitions.add(PluginProperty("authenticationPluginConfiguration", pluginDefinition, "title",

@@ -79,7 +79,7 @@ internal class ObjectenApiPluginFactoryTest {
 
         propertyDefinitions.add(
             PluginProperty("url", pluginDefinition, "title", required = true,
-                secret = false, "url","java.lang.String")
+                secret = false, "url","java.net.URI")
         )
         propertyDefinitions.add(
             PluginProperty("authenticationPluginConfiguration", pluginDefinition, "title",
