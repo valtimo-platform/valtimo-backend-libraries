@@ -19,6 +19,7 @@ package com.ritense.plugin.web.rest
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -103,6 +104,24 @@ internal class PluginConfigurationResourceTest {
             .assertConfigurationListOutput()
 
         verify(pluginService).getPluginConfigurationsByCategory("some-category")
+    }
+
+    @Test
+    fun `should filter on plugins with actions`() {
+        val properties1: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
+        val plugin = PluginDefinition("key", "title", "description", "className")
+        val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties1, plugin)
+
+        whenever(pluginService.getPluginConfigurations()).thenReturn(listOf(pluginConfiguration))
+
+        mockMvc.perform(get("/api/plugin/configuration?includeActionless=false")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$").isArray)
+            .andExpect(jsonPath("$").isEmpty)
+
+        verify(pluginService).getPluginDefinitionActions(any(), eq(null))
     }
 
     private fun ResultActions.assertConfigurationListOutput() {

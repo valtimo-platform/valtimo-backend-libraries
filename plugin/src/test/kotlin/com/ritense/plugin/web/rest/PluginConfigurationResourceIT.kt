@@ -19,6 +19,7 @@ package com.ritense.plugin.web.rest
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import org.hamcrest.Matchers.hasSize
@@ -101,5 +102,32 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
                 jsonPath("$").isArray)
             .andExpect(
                 jsonPath("$.*", hasSize<Int>(0)))
+    }
+
+    @Test
+    fun `should filter plugin configurations by action`() {
+        // Addding another plugin definition (without actions)
+        val pluginDefinition = PluginDefinition("key", "title", "description", "class")
+        pluginDefinitionRepository.save(pluginDefinition)
+        pluginConfiguration = pluginConfigurationRepository.save(
+            PluginConfiguration(
+                PluginConfigurationId.newId(),
+                "some-config-without-action",
+                null,
+                pluginDefinition
+            )
+        )
+
+        // assert that the new plugin configuration is not included in the result
+        mockMvc.perform(get("/api/plugin/configuration?includeActionless=false")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$").isArray)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$.*", hasSize<Int>(1)))
+            .andExpect(jsonPath("$[0].title").value("some-config"))
     }
 }

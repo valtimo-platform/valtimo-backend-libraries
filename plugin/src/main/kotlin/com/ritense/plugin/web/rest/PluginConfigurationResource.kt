@@ -16,7 +16,6 @@
 
 package com.ritense.plugin.web.rest
 
-import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
@@ -42,12 +41,26 @@ class PluginConfigurationResource(
 ) {
 
     @GetMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getPluginDefinitions(@RequestParam("category") category: String?): ResponseEntity<List<PluginConfigurationDto>> {
+    fun getPluginDefinitions(@RequestParam("category") category: String?,
+                             @RequestParam("includeActionless", defaultValue = "true") includeActionless: Boolean)
+        : ResponseEntity<List<PluginConfigurationDto>> {
         return if (category != null) {
             ResponseEntity.ok(pluginService.getPluginConfigurationsByCategory(category)
+                .filter { pluginConfiguration ->
+                    includeActionless ||
+                        pluginService
+                            .getPluginDefinitionActions(pluginConfiguration.pluginDefinition.key, null)
+                            .isNotEmpty()
+            }
                 .map { PluginConfigurationDto(it) })
         } else {
             ResponseEntity.ok(pluginService.getPluginConfigurations()
+                .filter { pluginConfiguration ->
+                    includeActionless ||
+                        pluginService
+                            .getPluginDefinitionActions(pluginConfiguration.pluginDefinition.key, null)
+                            .isNotEmpty()
+                }
                 .map { PluginConfigurationDto(it) })
         }
     }
