@@ -23,7 +23,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.form.domain.FormIoFormDefinition;
-import com.ritense.form.domain.SpringContextHelper;
+import com.ritense.form.domain.FormSpringContextHelper;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociationId;
@@ -71,7 +71,7 @@ public abstract class BaseTest {
         var formFieldDataResolver = mock(FormFieldDataResolver.class);
         when(formFieldDataResolver.supports(eq("oz"))).thenReturn(true);
         when(applicationContext.getBeansOfType(FormFieldDataResolver.class)).thenReturn(Map.of("Test", formFieldDataResolver));
-        var springContextHelper = new SpringContextHelper();
+        var springContextHelper = new FormSpringContextHelper();
         springContextHelper.setApplicationContext(applicationContext);
     }
 
