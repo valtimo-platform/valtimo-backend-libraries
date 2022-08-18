@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi
+package com.ritense.objectenapi.service
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import java.net.URL
-import java.util.UUID
+import org.junit.jupiter.api.Test
 
-data class ZaakObject(
-    val url: URL,
-    val uuid: UUID,
-    @JsonProperty("zaak")
-    val zaakUrl: URL,
-    @JsonProperty("object")
-    val objectUrl: URL,
-    val objectType: String,
-    val objectTypeOverig: String,
-    val relatieomschrijving: String
-)
+internal class ZaakObjectServiceTest {
+
+    @Test
+    fun `getZaakObjectTypes`() {
+
+    }
+
+}

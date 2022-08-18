@@ -16,28 +16,21 @@
 
 package com.ritense.objectenapi.client
 
-import com.ritense.objectenapi.ObjectenApiAuthentication
-import org.springframework.web.reactive.function.client.WebClient
-import java.net.URI
+import java.time.LocalDate
 
-class ObjectenApiClient(
-    val webClient: WebClient
-) {
+class ObjectRecord(
+    val index: Int,
+    val typeVersion: Int,
+    val data: Map<String, Any>,
+    val geometry: ObjectGeometry,
+    val startAt: LocalDate,
+    val endAt: LocalDate,
+    val registrationAt: LocalDate,
+    val correctionFor: String,
+    val correctedBy: String
+)
 
-    fun getObject(
-        authentication: ObjectenApiAuthentication,
-        objectUrl: URI
-    ): ObjectWrapper {
-        val result = webClient
-            .mutate()
-            .filter(authentication)
-            .build()
-            .get()
-            .uri(objectUrl)
-            .retrieve()
-            .toEntity(ObjectWrapper::class.java)
-            .block()
-
-        return result?.body!!
-    }
-}
+class ObjectGeometry(
+    val type: String,
+    val coordinates: Array<Int>
+)

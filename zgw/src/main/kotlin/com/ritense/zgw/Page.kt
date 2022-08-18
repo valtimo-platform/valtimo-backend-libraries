@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2021 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-dependencies {
-    api project(':plugin')
+package com.ritense.zgw
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
-    implementation "org.springframework.boot:spring-boot-starter"
-    implementation "org.springframework.boot:spring-boot-starter-web"
+import java.net.URI
 
-    testImplementation "org.jetbrains.kotlin:kotlin-test"
-    testImplementation "org.junit.jupiter:junit-jupiter"
-    testImplementation "org.springframework.boot:spring-boot-starter-test"
-}
-
-apply from: "gradle/publishing.gradle"
+data class Page<T>(
+    val count: Int,
+    val next: URI? = null,
+    val previous: URI? = null,
+    val results: List<T>
+)

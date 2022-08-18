@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.service
+package com.ritense.zakenapi.domain
 
-import java.net.URL
+import com.fasterxml.jackson.annotation.JsonProperty
+import java.net.URI
+import java.util.UUID
 
-data class ObjectValue(
-    val type: URL
+data class ZaakObject(
+    val url: URI,
+    val uuid: UUID,
+    @JsonProperty("zaak")
+    val zaakUrl: URI,
+    @JsonProperty("object")
+    val objectUrl: URI,
+    val objectType: String,
+    val objectTypeOverige: String,
+    val relatieomschrijving: String
 )

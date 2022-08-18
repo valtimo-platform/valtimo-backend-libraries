@@ -18,7 +18,7 @@ package com.ritense.objecttypenapi
 
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
-import java.net.URL
+import java.net.URI
 
 @Plugin(
    key = ObjecttypenApiPlugin.PLUGIN_KEY,
@@ -27,11 +27,11 @@ import java.net.URL
 )
 class ObjecttypenApiPlugin {
     @PluginProperty(key = "url", secret = false)
-    lateinit var url: String
+    lateinit var url: URI
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: ObjecttypenApiAuthentication
 
-    fun getObjectType(it: URL): ObjectType {
+    fun getObjectType(typeUrl: URI): ObjectType {
         TODO("Not yet implemented")
     }
 

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -28,17 +29,21 @@ import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.springframework.web.util.DefaultUriBuilderFactory
+import java.net.URI
 
 internal class ObjectenApiPluginFactoryTest {
 
     @Test
     fun `should create ObjectenApiPlugin`() {
-        val pluginService: PluginService = mock()
+        val pluginService = mock<PluginService>()
+        val objectenApiClient = mock<ObjectenApiClient>()
         val authenticationMock = mock<ObjectenApiAuthentication>()
-        whenever(pluginService.createInstance(any())).thenReturn(authenticationMock)
+        whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authenticationMock)
 
         val factory = ObjectenApiPluginFactory(
-            pluginService
+            pluginService,
+            objectenApiClient
         )
 
         val objectenApiPluginProperties: String = """
@@ -59,6 +64,7 @@ internal class ObjectenApiPluginFactoryTest {
 
         assertEquals("http://objecten.plugin.url", plugin.url)
         assertEquals(authenticationMock, plugin.authenticationPluginConfiguration)
+        assertEquals(objectenApiClient, plugin.objectenApiClient)
     }
 
     private fun createPluginDefinition(): PluginDefinition {

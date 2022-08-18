@@ -18,14 +18,14 @@ package com.ritense.objectenapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.objectenapi.ObjectenApiPlugin
+import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objecttypenapi.ObjectType
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
-import com.ritense.zakenapi.ZaakObject
 import com.ritense.zakenapi.ZakenApiPlugin
+import com.ritense.zakenapi.domain.ZaakObject
 import java.net.URI
-import java.net.URL
 import java.util.UUID
 
 class ZaakObjectService(
@@ -52,8 +52,8 @@ class ZaakObjectService(
             }
     }
 
-    private fun getObjectByZaakObjectUrl(it: ZaakObject) : ObjectValue? {
-        val objectUrl = it.objectUrl
+    private fun getObjectByZaakObjectUrl(zaakObject: ZaakObject) : ObjectWrapper? {
+        val objectUrl = zaakObject.objectUrl
         val objectenApiPlugin = pluginService
             .createInstanceConditional(ObjectenApiPlugin::class.java) { properties: JsonNode ->
                 objectUrl.toString().startsWith(properties.get("url").textValue())
@@ -61,13 +61,13 @@ class ZaakObjectService(
         return objectenApiPlugin.getObject(objectUrl)
     }
 
-    private fun getObjectTypeByUrl(it: URL): ObjectType? {
+    private fun getObjectTypeByUrl(objectTypeUrl: URI): ObjectType? {
         val objectTypePluginInstance = pluginService
             .createInstanceConditional(ObjecttypenApiPlugin::class.java) { properties: JsonNode ->
-                it.toString().startsWith(properties.get("url").textValue())
+                objectTypeUrl.toString().startsWith(properties.get("url").textValue())
             }?: return null
 
-        return objectTypePluginInstance.getObjectType(it)
+        return objectTypePluginInstance.getObjectType(objectTypeUrl)
     }
 
     fun getZaakObjecten(documentId: UUID, typeUrl: URI): List<Any> {

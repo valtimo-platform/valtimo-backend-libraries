@@ -21,7 +21,7 @@ internal class ZakenApiPluginFactoryTest {
     fun `should create ZakenApiPlugin`() {
         val pluginService: PluginService = mock()
         val authenticationMock = mock<ZakenApiAuthentication>()
-        whenever(pluginService.createInstance(any())).thenReturn(authenticationMock)
+        whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authenticationMock)
 
         val client: ZakenApiClient = mock()
         val zaakUrlProvider: ZaakUrlProvider = mock()
@@ -52,12 +52,8 @@ internal class ZakenApiPluginFactoryTest {
 
         val plugin = factory.create(pluginConfiguration)
 
-        assertEquals("http://zaken.plugin.url", plugin.url)
+        assertEquals("http://zaken.plugin.url", plugin.url.toString())
         assertEquals(authenticationMock, plugin.authenticationPluginConfiguration)
-        assertEquals(client, plugin.client)
-        assertEquals(zaakUrlProvider, plugin.zaakUrlProvider)
-        assertEquals(resourceProvider, plugin.resourceProvider)
-        assertEquals(documentService, plugin.documentService)
     }
 
     private fun createPluginDefinition(): PluginDefinition {

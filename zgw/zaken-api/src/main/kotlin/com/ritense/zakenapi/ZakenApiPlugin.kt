@@ -25,6 +25,8 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
+import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zgw.Page
 import java.net.URI
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.util.UUID
@@ -41,7 +43,7 @@ class ZakenApiPlugin(
     private val documentService: DocumentService,
 ) {
     @PluginProperty(key = "url", secret = false)
-    lateinit var url: String
+    lateinit var url: URI
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: ZakenApiAuthentication
 
@@ -77,7 +79,21 @@ class ZakenApiPlugin(
     }
 
     fun getZaakObjecten(zaakUrl: URI): List<ZaakObject> {
-        TODO("Not yet implemented")
+        var currentPage = 1
+        var currentResults: Page<ZaakObject>?
+        val results = mutableListOf<ZaakObject>()
+
+        do {
+            currentResults = client.getZaakObjecten(
+                authenticationPluginConfiguration,
+                url,
+                zaakUrl,
+                currentPage++
+            )
+            results.addAll(currentResults.results)
+        } while(currentResults?.next != null)
+
+        return results
     }
 
     companion object {
