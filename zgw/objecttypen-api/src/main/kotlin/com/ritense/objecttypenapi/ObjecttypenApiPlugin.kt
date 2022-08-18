@@ -35,7 +35,7 @@ class ObjecttypenApiPlugin(
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: ObjecttypenApiAuthentication
 
-    fun getObjectType(typeUrl: URI): Objecttype {
+    fun getObjecttype(typeUrl: URI): Objecttype {
         return objecttypenApiClient.getObjecttype(authenticationPluginConfiguration, typeUrl)
     }
 }

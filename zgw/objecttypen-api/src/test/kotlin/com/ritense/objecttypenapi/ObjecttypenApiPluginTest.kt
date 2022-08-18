@@ -44,7 +44,7 @@ internal class ObjecttypenApiPluginTest{
         val objecttypeMock = mock<Objecttype>()
         whenever(client.getObjecttype(plugin.authenticationPluginConfiguration, objecttypeUrl)).thenReturn(objecttypeMock)
 
-        val result = plugin.getObjectType(objecttypeUrl)
+        val result = plugin.getObjecttype(objecttypeUrl)
 
         assertEquals(objecttypeMock, result)
         verify(client).getObjecttype(any(), any())

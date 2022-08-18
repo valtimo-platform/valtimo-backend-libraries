@@ -17,11 +17,14 @@
 package com.ritense.objectenapi
 
 import com.ritense.objectenapi.client.ObjectenApiClient
+import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
+import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.PluginService
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
@@ -59,5 +62,11 @@ class ObjectenApiAutoConfiguration {
             pluginService,
             objectenApiClient
         )
+    }
+
+    @Order(400)
+    @Bean
+    fun pluginHttpSecurityConfigurer(): ObjectenApiHttpSecurityConfigurer {
+        return ObjectenApiHttpSecurityConfigurer()
     }
 }

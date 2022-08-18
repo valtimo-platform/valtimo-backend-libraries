@@ -17,15 +17,15 @@
 package com.ritense.objectenapi.web.rest
 
 import com.ritense.objectenapi.service.ZaakObjectService
-import com.ritense.objecttypenapi.ObjectType
-import java.net.URI
-import java.util.UUID
+import com.ritense.objectenapi.web.rest.result.ObjecttypeDto
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.net.URI
+import java.util.UUID
 
 
 @RestController
@@ -39,8 +39,10 @@ class ZaakObjectResource(
     @GetMapping(value = ["/objecttype"])
     fun getZaakObjecttypes(
         @PathVariable(name = "documentId") documentId: UUID
-    ): ResponseEntity<List<ObjectType>> {
-        val zaakObjectTypes = zaakObjectService.getZaakObjectTypes(documentId)
+    ): ResponseEntity<List<ObjecttypeDto>> {
+        val zaakObjectTypes = zaakObjectService.getZaakObjectTypes(documentId).map {
+            ObjecttypeDto(it.url, it.name)
+        }
         return ResponseEntity.ok(zaakObjectTypes)
     }
 

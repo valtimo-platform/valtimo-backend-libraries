@@ -19,8 +19,8 @@ package com.ritense.objectenapi.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectWrapper
-import com.ritense.objecttypenapi.ObjectType
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
+import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZakenApiPlugin
@@ -32,7 +32,7 @@ class ZaakObjectService(
     val zaakInstanceLinkService: ZaakInstanceLinkService,
     val pluginService : PluginService
 ) {
-    fun getZaakObjectTypes(documentId: UUID): List<ObjectType> {
+    fun getZaakObjectTypes(documentId: UUID): List<Objecttype> {
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
 
         val zakenApiPluginInstance = pluginService
@@ -61,13 +61,13 @@ class ZaakObjectService(
         return objectenApiPlugin.getObject(objectUrl)
     }
 
-    private fun getObjectTypeByUrl(objectTypeUrl: URI): ObjectType? {
+    private fun getObjectTypeByUrl(objectTypeUrl: URI): Objecttype? {
         val objectTypePluginInstance = pluginService
             .createInstanceConditional(ObjecttypenApiPlugin::class.java) { properties: JsonNode ->
                 objectTypeUrl.toString().startsWith(properties.get("url").textValue())
             }?: return null
 
-        return objectTypePluginInstance.getObjectType(objectTypeUrl)
+        return objectTypePluginInstance.getObjecttype(objectTypeUrl)
     }
 
     fun getZaakObjecten(documentId: UUID, typeUrl: URI): List<Any> {
