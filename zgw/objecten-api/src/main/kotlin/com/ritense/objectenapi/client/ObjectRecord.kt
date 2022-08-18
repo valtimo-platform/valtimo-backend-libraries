@@ -19,15 +19,15 @@ package com.ritense.objectenapi.client
 import java.time.LocalDate
 
 class ObjectRecord(
-    val index: Int,
+    val index: Int?,
     val typeVersion: Int,
-    val data: Map<String, Any>,
-    val geometry: ObjectGeometry,
+    val data: Map<String, Any>?,
+    val geometry: ObjectGeometry?,
     val startAt: LocalDate,
-    val endAt: LocalDate,
-    val registrationAt: LocalDate,
-    val correctionFor: String,
-    val correctedBy: String
+    val endAt: LocalDate?,
+    val registrationAt: LocalDate?,
+    val correctionFor: String?,
+    val correctedBy: String?
 )
 
 class ObjectGeometry(
