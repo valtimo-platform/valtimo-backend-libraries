@@ -55,7 +55,7 @@ data class Zaak(
     val archiefstatus: String,
     val archiefactiedatum: String?,
     val resultaat: URI?,
-    var resulaatOmschrijving: String?
+    var resultaatOmschrijving: String?
 ) {
     class Zaakgeometrie(
         val type: String?,

@@ -100,7 +100,7 @@ class ZaakService(
             .build()
             .execute(Zaak::class.java)
         zaak.statusOmschrijving = zaak.status?.let { getZaakStatusOmschrijving(it) }
-        zaak.resulaatOmschrijving = zaak.resultaat?.let { getZaakResultaatOmschrijving(it) }
+        zaak.resultaatOmschrijving = zaak.resultaat?.let { getZaakResultaatOmschrijving(it) }
         return zaak
     }
 
