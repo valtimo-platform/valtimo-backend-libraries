@@ -28,7 +28,7 @@ class ObjectenApiHttpSecurityConfigurer: HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/document/{documentId}/zaak/objecttype").hasAuthority(USER)
-                .antMatchers(GET, "/api/document/{documentId}/zaak/object/{typeUrl}").hasAuthority(USER)
+                .antMatchers(GET, "/api/document/{documentId}/zaak/object").hasAuthority(USER)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

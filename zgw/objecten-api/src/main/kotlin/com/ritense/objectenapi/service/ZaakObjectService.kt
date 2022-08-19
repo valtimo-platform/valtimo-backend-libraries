@@ -70,14 +70,21 @@ class ZaakObjectService(
         return objectTypePluginInstance.getObjecttype(objectTypeUrl)
     }
 
-    fun getZaakObjecten(documentId: UUID, typeUrl: URI): List<Any> {
+    fun getZaakObjecten(documentId: UUID, typeUrl: URI): List<ObjectWrapper> {
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
-        //TODO: get plugin configuration for zaak objecten
-        //TODO: get zaak object urls by zaakURL (zaakapi plugin)
-        //TODO: get plugin configurations for objecten by urls
-        //TODO: get zaak objecten by type urls (object api plugin)
 
-        TODO()
+        val zakenApiPluginInstance = pluginService
+            .createInstanceConditional(ZakenApiPlugin::class.java) { properties: JsonNode ->
+                zaakUrl.toString().startsWith(properties.get("url").textValue())
+            }
+
+        requireNotNull(zakenApiPluginInstance) { "No plugin configuration was found for zaak with URL $zaakUrl" }
+
+        return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
+            .mapNotNull {
+                getObjectByZaakObjectUrl(it)
+            }.filter {
+                it.type == typeUrl
+            }
     }
-
 }

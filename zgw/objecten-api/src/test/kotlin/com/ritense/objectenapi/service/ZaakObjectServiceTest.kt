@@ -139,6 +139,40 @@ internal class ZaakObjectServiceTest {
         assertTrue(zaakObjectTypes.isEmpty())
     }
 
+    @Test
+    fun `should get objects for document and objecttype`() {
+        val documentId = UUID.randomUUID()
+        val objecttypeUrl = URI("http://example.com/objecttype")
+
+        val zaakInstanceUrl = setupZaakInstanceLink(documentId)
+        setupPlugins(zaakInstanceUrl)
+        val object1 = setupObjectWithRelations(zaakInstanceUrl, objecttypeUrl)
+        val object2 = setupObjectWithRelations(zaakInstanceUrl, objecttypeUrl)
+
+        val zaakObjects = zaakObjectService.getZaakObjecten(documentId, objecttypeUrl)
+
+        assertEquals(object1, zaakObjects[0])
+        assertEquals(object2, zaakObjects[1])
+    }
+
+    @Test
+    fun `should not get objects for other objecttype`() {
+        val documentId = UUID.randomUUID()
+        val objecttypeUrl = URI("http://example.com/objecttype")
+        val otherObjecttypeUrl = URI("http://example.com/objecttype/2")
+
+        val zaakInstanceUrl = setupZaakInstanceLink(documentId)
+        setupPlugins(zaakInstanceUrl)
+
+        setupObjectWithRelations(zaakInstanceUrl, otherObjecttypeUrl)
+        setupObjectWithRelations(zaakInstanceUrl, otherObjecttypeUrl)
+
+        val zaakObjects = zaakObjectService.getZaakObjecten(documentId, objecttypeUrl)
+
+        assertTrue(zaakObjects.isEmpty())
+    }
+
+
     private fun setupZaakInstanceLink(documentId: UUID): URI {
         val zaakInstanceUrl = URI("http://example.com/zaak/${UUID.randomUUID()}")
         val zaakInstanceLink = mock<ZaakInstanceLink>()
@@ -173,6 +207,11 @@ internal class ZaakObjectServiceTest {
         val zaakobject = setupZaakObject(zaakUrl)
         val objectWrapper = setupObject(zaakobject, objecttypeUrl)
         return mockObjecttypeRetrieval(objectWrapper, objecttype)
+    }
+
+    private fun setupObjectWithRelations(zaakUrl: URI, objecttypeUrl: URI): ObjectWrapper {
+        val zaakobject = setupZaakObject(zaakUrl)
+        return setupObject(zaakobject, objecttypeUrl)
     }
 
     private fun setupZaakObject(zaakUrl: URI): ZaakObject{
