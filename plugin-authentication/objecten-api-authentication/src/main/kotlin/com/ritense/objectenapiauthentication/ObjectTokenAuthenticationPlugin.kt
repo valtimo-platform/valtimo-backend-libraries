@@ -17,6 +17,7 @@
 package com.ritense.objectenapiauthentication
 
 import com.ritense.objectenapi.ObjectenApiAuthentication
+import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import org.springframework.web.reactive.function.client.ClientRequest
@@ -29,7 +30,8 @@ import reactor.core.publisher.Mono
     title = "Object Token Authentication",
     description = "Plugin used to provide authentication based on a token"
 )
-class ObjectTokenAuthenticationPlugin : ObjectenApiAuthentication {
+class ObjectTokenAuthenticationPlugin
+    : ObjectenApiAuthentication, ObjecttypenApiAuthentication {
 
     @PluginProperty(key = "token", secret = true, required = true)
     lateinit var token: String
