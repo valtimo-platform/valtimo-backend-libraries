@@ -19,7 +19,7 @@ package com.ritense.document.config;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-public class SpringContextHelper implements ApplicationContextAware {
+public class DocumentSpringContextHelper implements ApplicationContextAware {
 
     private static ApplicationContext context;
 
