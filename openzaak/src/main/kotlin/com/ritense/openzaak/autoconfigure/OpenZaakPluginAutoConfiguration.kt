@@ -22,10 +22,12 @@ import com.ritense.openzaak.service.TokenGeneratorService
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
+@ConditionalOnClass(PluginService::class, ZaakUrlProvider::class)
 class OpenZaakPluginAutoConfiguration {
 
     @Bean

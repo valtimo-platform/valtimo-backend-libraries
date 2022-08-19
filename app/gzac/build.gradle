@@ -21,7 +21,7 @@ dependencies {
     implementation(project(":objects-api"))
     implementation(project(":besluit"))
     implementation(project(":haalcentraal:haalcentraal-brp"))
-    implementation(project(":plugin"))
+    implementation(project(":plugin-valtimo"))
     implementation(project(":zgw:documenten-api"))
     implementation(project(":zgw:zaken-api"))
 

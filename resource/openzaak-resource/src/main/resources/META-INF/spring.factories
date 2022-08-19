@@ -1,4 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.resource.autoconfigure.OpenZaakResourceAutoConfiguration, \
+  com.ritense.resource.autoconfigure.OpenZaakResourcePluginAutoConfiguration, \
   com.ritense.resource.autoconfigure.OpenZaakResourceLiquibaseAutoConfiguration, \
   com.ritense.resource.autoconfigure.OpenZaakResourceSecurityAutoConfiguration

@@ -19,28 +19,21 @@ package com.ritense.smartdocuments.autoconfigure
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
-import com.ritense.plugin.PluginFactory
-import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
-import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.ResourceService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.smartdocuments.connector.SmartDocumentsConnector
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
-import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
-import com.ritense.smartdocuments.plugin.SmartDocumentsPluginFactory
 import com.ritense.smartdocuments.security.config.SmartDocumentsHttpSecurityConfigurer
 import com.ritense.smartdocuments.service.CamundaSmartDocumentGenerator
 import com.ritense.smartdocuments.service.SmartDocumentGenerator
-import com.ritense.valueresolver.ValueResolverService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Scope
 import org.springframework.core.annotation.Order
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
@@ -130,26 +123,6 @@ class SmartDocumentsAutoConfiguration {
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     fun smartDocumentsConnectorProperties(): SmartDocumentsConnectorProperties {
         return SmartDocumentsConnectorProperties()
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(SmartDocumentsPluginFactory::class)
-    fun smartDocumentsPluginFactory(
-        processDocumentService: ProcessDocumentService,
-        applicationEventPublisher: ApplicationEventPublisher,
-        smartDocumentsClient: SmartDocumentsClient,
-        valueResolverService: ValueResolverService,
-        temporaryResourceStorageService: TemporaryResourceStorageService,
-        pluginService: PluginService
-    ): PluginFactory<SmartDocumentsPlugin> {
-        return SmartDocumentsPluginFactory(
-            processDocumentService,
-            applicationEventPublisher,
-            smartDocumentsClient,
-            valueResolverService,
-            temporaryResourceStorageService,
-            pluginService
-        )
     }
 
     @Order(480)
