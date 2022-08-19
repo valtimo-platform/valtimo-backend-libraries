@@ -20,7 +20,7 @@ import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -112,9 +112,9 @@ internal class ObjecttypenApiClientTest {
         assertEquals(UpdateFrequency.REAL_TIME, result.updateFrequency)
         assertEquals("string", result.providerOrganization)
         assertEquals(URI("http://example.com"), result.documentationUrl)
-        assertEquals("something", result.labels["property1"].toString())
-        assertEquals("other", result.labels["property2"].toString())
-        assertEquals("other", result.labels["property2"].toString())
+        assertEquals("something", result.labels?.get("property1").toString())
+        assertEquals("other", result.labels?.get("property2").toString())
+        assertEquals("other", result.labels?.get("property2").toString())
         assertEquals(LocalDate.of(2019, 8, 24), result.createdAt)
         assertEquals(LocalDate.of(2019, 8, 24), result.modifiedAt)
         assertEquals(listOf(URI("http://example.com")), result.versions)

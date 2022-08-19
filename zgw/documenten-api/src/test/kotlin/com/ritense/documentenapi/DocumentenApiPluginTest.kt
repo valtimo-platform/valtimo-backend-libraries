@@ -32,6 +32,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import java.io.InputStream
+import java.net.URI
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -63,7 +64,7 @@ internal class DocumentenApiPluginTest {
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
         val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher)
-        plugin.url = "http://some-url"
+        plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
 

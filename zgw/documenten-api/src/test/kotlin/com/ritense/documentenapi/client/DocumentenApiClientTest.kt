@@ -103,7 +103,7 @@ internal class DocumentenApiClientTest {
 
         val result = client.storeDocument(
             TestAuthentication(),
-            mockDocumentenApi.url("/").toString(),
+            mockDocumentenApi.url("/").toUri(),
             request
         )
 

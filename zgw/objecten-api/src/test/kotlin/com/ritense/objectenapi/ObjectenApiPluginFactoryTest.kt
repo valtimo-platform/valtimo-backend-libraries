@@ -62,7 +62,7 @@ internal class ObjectenApiPluginFactoryTest {
         )
         val plugin = factory.create(pluginConfiguration)
 
-        assertEquals("http://objecten.plugin.url", plugin.url)
+        assertEquals(URI("http://objecten.plugin.url"), plugin.url)
         assertEquals(authenticationMock, plugin.authenticationPluginConfiguration)
         assertEquals(objectenApiClient, plugin.objectenApiClient)
     }

@@ -31,6 +31,7 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
+import java.net.URI
 
 internal class DocumentenApiPluginFactoryTest {
 
@@ -79,7 +80,7 @@ internal class DocumentenApiPluginFactoryTest {
 
         val plugin = factory.create(configuration)
 
-        assertEquals("http://some-url", plugin.url)
+        assertEquals(URI("http://some-url"), plugin.url)
         assertEquals("123456789", plugin.bronorganisatie)
         assertEquals(authentication, plugin.authenticationPluginConfiguration)
         assertEquals(applicationEventPublisher, plugin.applicationEventPublisher)
