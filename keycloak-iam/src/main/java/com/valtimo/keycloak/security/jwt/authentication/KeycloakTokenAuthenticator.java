@@ -96,8 +96,8 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
 
         List<String> roles = new ArrayList<>(realmSettings.get(ROLES_SCOPE));
 
-        if (!clientName.isBlank()) {
-            roles.addAll(resourceSettings.get(clientName).get("roles"));
+        if (!clientName.isBlank() && resourceSettings != null && resourceSettings.containsKey(clientName)) {
+            roles.addAll(resourceSettings.get(clientName).get(ROLES_SCOPE));
         }
 
         return roles;

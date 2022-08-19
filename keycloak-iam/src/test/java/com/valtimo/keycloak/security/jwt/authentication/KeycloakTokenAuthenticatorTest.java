@@ -24,20 +24,17 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.security.Keys;
-import lombok.val;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-
 import java.security.KeyPair;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
@@ -102,8 +99,9 @@ public class KeycloakTokenAuthenticatorTest {
 
         assertThat(authentication).isNotNull();
         assertThat(authentication).isInstanceOf(UsernamePasswordAuthenticationToken.class);
-        val authorities = authentication.getAuthorities();
-        val userAuthorities = authorities.stream().filter(authority -> authority.getAuthority().equals(USER)).collect(Collectors.toList());
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        List<? extends GrantedAuthority> userAuthorities = authorities.stream()
+            .filter(authority -> authority.getAuthority().equals(USER)).collect(Collectors.toList());
         assertThat(userAuthorities.size()).isEqualTo(1);
     }
 
