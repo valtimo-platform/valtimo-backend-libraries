@@ -25,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,8 +39,11 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
 
     private static final Logger logger = LoggerFactory.getLogger(KeycloakTokenAuthenticator.class);
     public final static String REALM_ACCESS = "realm_access";
+    public final static String RESOURCE_ACCESS = "resource_access";
+    private final String clientName;
 
-    public KeycloakTokenAuthenticator() {
+    public KeycloakTokenAuthenticator(String keycloakClient) {
+        this.clientName = keycloakClient;
     }
 
     @Override
@@ -88,7 +92,15 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
 
     private List<String> getRoles(Claims claims) {
         final Map<String, List<String>> realmSettings = claims.get(REALM_ACCESS, Map.class);
-        return realmSettings.get(ROLES_SCOPE);
+        final Map<String, Map<String, List<String>>> resourceSettings = claims.get(RESOURCE_ACCESS, Map.class);
+
+        List<String> roles = new ArrayList<>(realmSettings.get(ROLES_SCOPE));
+
+        if (!clientName.isBlank() && resourceSettings != null && resourceSettings.containsKey(clientName)) {
+            roles.addAll(resourceSettings.get(clientName).get(ROLES_SCOPE));
+        }
+
+        return roles;
     }
 
 }

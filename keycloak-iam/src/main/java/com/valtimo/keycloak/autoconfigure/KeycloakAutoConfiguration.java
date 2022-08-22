@@ -38,8 +38,10 @@ public class KeycloakAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(KeycloakTokenAuthenticator.class)
-    public KeycloakTokenAuthenticator keycloakTokenAuthenticator() {
-        return new KeycloakTokenAuthenticator();
+    public KeycloakTokenAuthenticator keycloakTokenAuthenticator(
+        @Value("${valtimo.keycloak.client:}") final String keycloakClient
+    ) {
+        return new KeycloakTokenAuthenticator(keycloakClient);
     }
 
     @Bean

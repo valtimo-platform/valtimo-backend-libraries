@@ -28,6 +28,7 @@ import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.REALM_ACCESS;
+import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.RESOURCE_ACCESS;
 
 public class KeycloakSecretKeyProvider implements SecretKeyProvider {
 
@@ -40,7 +41,7 @@ public class KeycloakSecretKeyProvider implements SecretKeyProvider {
 
     @Override
     public boolean supports(SignatureAlgorithm algorithm, Claims claims) {
-        return algorithm.isRsa() && claims.containsKey(REALM_ACCESS);
+        return algorithm.isRsa() && (claims.containsKey(REALM_ACCESS) || claims.containsKey(RESOURCE_ACCESS));
     }
 
     @Override
