@@ -127,6 +127,20 @@ public abstract class BaseTest {
         );
     }
 
+    protected CreateFormAssociationRequest createFormFlowUserTaskFormAssociationRequest(String formFlowId) {
+        return new CreateFormAssociationRequest(
+            PROCESS_DEFINITION_KEY,
+            new FormLinkRequest(
+                "userTaskId",
+                FormAssociationType.USER_TASK,
+                null,
+                formFlowId,
+                null,
+                null
+            )
+        );
+    }
+
     protected CreateFormAssociationRequest createFormAssociationRequestWithStartEvent(UUID formId) {
         return new CreateFormAssociationRequest(
             PROCESS_DEFINITION_KEY,
