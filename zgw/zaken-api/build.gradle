@@ -52,4 +52,29 @@ dependencies {
     }
 }
 
+apply plugin: 'org.openapi.generator'
 apply from: "gradle/publishing.gradle"
+
+openApiGenerate {
+    generatorName = "java"
+    library = "webclient"
+    inputSpec = "$rootDir/zgw/zaken-api/zaken-api-1.0.3.json".toString()
+    outputDir = "$buildDir/generated".toString()
+    apiPackage = "org.openapi.example.api"
+    invokerPackage = "org.openapi.example.invoker"
+    modelPackage = "org.openapi.example.model"
+    configOptions = [
+        dateLibrary: "java8"
+    ]
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "${buildDir}/generated/src/main/java"
+        }
+    }
+}
+
+
+tasks.compileJava.dependsOn tasks.openApiGenerate

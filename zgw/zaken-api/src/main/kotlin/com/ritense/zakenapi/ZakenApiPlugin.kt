@@ -26,6 +26,10 @@ import com.ritense.plugin.domain.ActivityType
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.openapi.example.api.ZaakinformatieobjectenApi
+import org.openapi.example.invoker.ApiClient
+import org.openapi.example.model.ZaakInformatieObject
+import java.net.URI
 import java.util.UUID
 
 @Plugin(
@@ -59,14 +63,26 @@ class ZakenApiPlugin(
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaak(documentId)
 
-        val request = LinkDocumentRequest(
-            documentUrl,
-            zaakUrl,
-            titel,
-            beschrijving
-        )
+        val webclientWIthFilter = client.webclient
+            .mutate()
+            .filter(authenticationPluginConfiguration)
+            .build()
+        val apiClient = ApiClient(webclientWIthFilter)
 
-        client.linkDocument(authenticationPluginConfiguration, url, request)
+        val api = ZaakinformatieobjectenApi(apiClient)
+        val zaakRequest = ZaakInformatieObject().apply {
+            this.informatieobject = URI(documentUrl)
+            this.zaak = URI(zaakUrl)
+            this.titel = titel
+            this.beschrijving = beschrijving
+        }
+
+        api.zaakinformatieobjectCreate(
+            zaakRequest,
+            null,
+            null
+        ).block()
+
         val resource = resourceProvider.getResource(documentUrl)
         documentService.assignResource(
             JsonSchemaDocumentId.existingId(documentId),
