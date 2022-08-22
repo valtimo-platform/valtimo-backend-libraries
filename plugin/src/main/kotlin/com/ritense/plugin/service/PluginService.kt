@@ -16,10 +16,12 @@
 
 package com.ritense.plugin.service
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginCategory
@@ -165,12 +167,12 @@ class PluginService(
         pluginProcessLinkRepository.save(link)
     }
 
-    fun invoke(execution: DelegateExecution, processLink: PluginProcessLink) {
+    fun invoke(execution: DelegateExecution, processLink: PluginProcessLink): Any? {
         val instance = createInstance(processLink.pluginConfigurationId)
 
         val method = getActionMethod(instance, processLink)
         val methodArguments = resolveMethodArguments(method, execution, processLink.actionProperties)
-        method.invoke(instance, *methodArguments)
+        return method.invoke(instance, *methodArguments)
     }
 
     private fun resolveMethodArguments(method: Method, execution: DelegateExecution, actionProperties: ObjectNode?): Array<Any?> {
@@ -228,12 +230,24 @@ class PluginService(
             }
         }
     }
-
     fun createInstance(pluginConfigurationId: PluginConfigurationId): Any {
         val configuration = pluginConfigurationRepository.getById(pluginConfigurationId)
+        return createInstance(configuration)
+    }
+
+    fun createInstance(pluginConfiguration: PluginConfiguration): Any {
         return  pluginFactories.first {
-            it.canCreate(configuration)
-        }.create(configuration)!!
+            it.canCreate(pluginConfiguration)
+        }.create(pluginConfiguration)!!
+    }
+
+    fun <T> createInstance(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): T? {
+        val annotation = clazz.getAnnotation(Plugin::class.java)
+            ?: throw IllegalArgumentException("Requested plugin for class ${clazz.name}, but class is not annotated as plugin")
+
+        val pluginConfiguration = findPluginConfiguration(annotation.key, configurationFilter)
+
+        return pluginConfiguration?.let { createInstance(it) as T }
     }
 
     private fun getActionMethod(
@@ -279,6 +293,14 @@ class PluginService(
         if (errors.isNotEmpty()) {
             errors.forEach { logger.error { it } }
             throw errors.first()
+        }
+    }
+
+    private fun findPluginConfiguration(pluginDefinitionKey: String, filter: (JsonNode) -> Boolean): PluginConfiguration? {
+        val configurations = pluginConfigurationRepository.findByPluginDefinitionKey(pluginDefinitionKey)
+        return configurations.firstOrNull { config ->
+            val configProperties = config.properties
+            configProperties != null && filter(configProperties)
         }
     }
 

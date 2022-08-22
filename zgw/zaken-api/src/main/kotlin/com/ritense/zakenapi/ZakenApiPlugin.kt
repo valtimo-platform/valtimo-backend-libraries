@@ -25,22 +25,25 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
+import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zgw.Page
+import java.net.URI
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.util.UUID
 
 @Plugin(
-    key = "zakenapi",
+    key = ZakenApiPlugin.PLUGIN_KEY,
     title = "Zaken API",
     description = "Connects to the Zaken API"
 )
 class ZakenApiPlugin(
-    val client: ZakenApiClient,
-    val zaakUrlProvider: ZaakUrlProvider,
-    val resourceProvider: ResourceProvider,
-    val documentService: DocumentService,
+    private val client: ZakenApiClient,
+    private val zaakUrlProvider: ZaakUrlProvider,
+    private val resourceProvider: ResourceProvider,
+    private val documentService: DocumentService,
 ) {
     @PluginProperty(key = "url", secret = false)
-    lateinit var url: String
+    lateinit var url: URI
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: ZakenApiAuthentication
 
@@ -73,5 +76,27 @@ class ZakenApiPlugin(
             resource.id(),
             mapOf("createInformatieObject" to false)
         )
+    }
+
+    fun getZaakObjecten(zaakUrl: URI): List<ZaakObject> {
+        var currentPage = 1
+        var currentResults: Page<ZaakObject>?
+        val results = mutableListOf<ZaakObject>()
+
+        do {
+            currentResults = client.getZaakObjecten(
+                authenticationPluginConfiguration,
+                url,
+                zaakUrl,
+                currentPage++
+            )
+            results.addAll(currentResults.results)
+        } while(currentResults?.next != null)
+
+        return results
+    }
+
+    companion object {
+        const val PLUGIN_KEY = "zakenapi"
     }
 }

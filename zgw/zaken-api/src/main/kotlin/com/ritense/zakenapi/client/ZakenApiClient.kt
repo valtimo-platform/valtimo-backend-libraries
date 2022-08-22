@@ -17,16 +17,20 @@
 package com.ritense.zakenapi.client
 
 import com.ritense.zakenapi.ZakenApiAuthentication
+import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zgw.ClientTools
+import com.ritense.zgw.Page
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import java.net.URI
 
 class ZakenApiClient(
     val webclient: WebClient
 ) {
     fun linkDocument(
         authentication: ZakenApiAuthentication,
-        baseUrl: String,
+        baseUrl: URI,
         request: LinkDocumentRequest
     ): LinkDocumentResult {
         val result = webclient
@@ -34,11 +38,40 @@ class ZakenApiClient(
             .filter(authentication)
             .build()
             .post()
-            .uri(baseUrl + "zaakinformatieobjecten")
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("zaakinformatieobjecten")
+                    .build()
+            }
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(request))
             .retrieve()
             .toEntity(LinkDocumentResult::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
+    fun getZaakObjecten(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        zaakUrl: URI,
+        page: Int
+    ): Page<ZaakObject> {
+        val result = webclient
+            .mutate()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("zaakobjecten")
+                    .queryParam("page", page)
+                    .queryParam("zaak", zaakUrl)
+                    .build()
+            }
+            .retrieve()
+            .toEntity(ClientTools.getTypedPage(ZaakObject::class.java))
             .block()
 
         return result?.body!!
