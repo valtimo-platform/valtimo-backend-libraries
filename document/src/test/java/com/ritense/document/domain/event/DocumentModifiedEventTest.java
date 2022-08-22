@@ -16,7 +16,7 @@
 
 package com.ritense.document.domain.event;
 
-import com.ritense.document.config.SpringContextHelper;
+import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentFieldChangedEvent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentModifiedEvent;
@@ -49,7 +49,7 @@ class DocumentModifiedEventTest {
     void shouldReturnChangesWhenPropertyIsSet() throws NoSuchFieldException, IllegalAccessException {
         environment.setProperty("valtimo.audit.auditDocumentChanges", "true");
 
-        Field field = SpringContextHelper.class.getDeclaredField("context");
+        Field field = DocumentSpringContextHelper.class.getDeclaredField("context");
         injectMock(field, applicationContext);
         when(applicationContext.getEnvironment()).thenReturn(environment);
 
@@ -63,7 +63,7 @@ class DocumentModifiedEventTest {
 
     @Test
     void shouldReturnNothingWhenPropertyIsNotSet() throws NoSuchFieldException, IllegalAccessException {
-        Field field = SpringContextHelper.class.getDeclaredField("context");
+        Field field = DocumentSpringContextHelper.class.getDeclaredField("context");
         injectMock(field, applicationContext);
         when(applicationContext.getEnvironment()).thenReturn(environment);
 
