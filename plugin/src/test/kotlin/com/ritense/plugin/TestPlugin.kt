@@ -55,8 +55,8 @@ class TestPlugin(
         description = "This is an action used to test method overloading",
         activityTypes = [SERVICE_TASK]
     )
-    fun testAction(@PluginActionProperty someString: String) {
-        //do nothing
+    fun testAction(@PluginActionProperty someString: String): String {
+        return someString
     }
 
     @PluginAction(

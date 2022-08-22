@@ -47,6 +47,6 @@ internal class ObjectenAuthenticationPluginTest {
         plugin.filter(request, nextFilter)
 
         verify(nextFilter).exchange(requestCaptor.capture())
-        assertEquals("Bearer token", requestCaptor.firstValue.headers()["Authorization"]?.get(0))
+        assertEquals("Token token", requestCaptor.firstValue.headers()["Authorization"]?.get(0))
     }
 }

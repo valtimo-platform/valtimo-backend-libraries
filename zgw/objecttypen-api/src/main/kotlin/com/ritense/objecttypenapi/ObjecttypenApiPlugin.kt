@@ -16,17 +16,26 @@
 
 package com.ritense.objecttypenapi
 
+import com.ritense.objecttypenapi.client.Objecttype
+import com.ritense.objecttypenapi.client.ObjecttypenApiClient
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
+import java.net.URI
 
 @Plugin(
    key = "objecttypenapi",
    title = "Objecttypen API",
    description = "Connects to the Objecttypen API"
 )
-class ObjecttypenApiPlugin {
+class ObjecttypenApiPlugin(
+    val objecttypenApiClient: ObjecttypenApiClient
+) {
     @PluginProperty(key = "url", secret = false)
-    lateinit var url: String
+    lateinit var url: URI
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: ObjecttypenApiAuthentication
+
+    fun getObjecttype(typeUrl: URI): Objecttype {
+        return objecttypenApiClient.getObjecttype(authenticationPluginConfiguration, typeUrl)
+    }
 }

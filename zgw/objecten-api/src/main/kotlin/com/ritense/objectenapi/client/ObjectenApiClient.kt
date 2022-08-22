@@ -16,10 +16,28 @@
 
 package com.ritense.objectenapi.client
 
+import com.ritense.objectenapi.ObjectenApiAuthentication
 import org.springframework.web.reactive.function.client.WebClient
+import java.net.URI
 
 class ObjectenApiClient(
     val webClient: WebClient
 ) {
 
+    fun getObject(
+        authentication: ObjectenApiAuthentication,
+        objectUrl: URI
+    ): ObjectWrapper {
+        val result = webClient
+            .mutate()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri(objectUrl)
+            .retrieve()
+            .toEntity(ObjectWrapper::class.java)
+            .block()
+
+        return result?.body!!
+    }
 }

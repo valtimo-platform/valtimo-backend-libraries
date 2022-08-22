@@ -52,8 +52,9 @@ class ObjecttypenApiAutoConfiguration {
 
     @Bean
     fun objecttypenApiPluginFactory(
-        pluginService: PluginService
+        pluginService: PluginService,
+        objecttypenApiClient: ObjecttypenApiClient
     ): ObjecttypenApiPluginFactory {
-        return ObjecttypenApiPluginFactory(pluginService)
+        return ObjecttypenApiPluginFactory(pluginService, objecttypenApiClient)
     }
 }

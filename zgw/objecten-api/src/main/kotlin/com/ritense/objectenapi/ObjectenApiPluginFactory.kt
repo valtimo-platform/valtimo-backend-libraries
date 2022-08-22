@@ -16,14 +16,16 @@
 
 package com.ritense.objectenapi
 
+import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 
 class ObjectenApiPluginFactory(
     pluginService: PluginService,
+    val objectenApiClient: ObjectenApiClient
 ) : PluginFactory<ObjectenApiPlugin>(pluginService) {
 
     override fun create(): ObjectenApiPlugin {
-        return ObjectenApiPlugin();
+        return ObjectenApiPlugin(objectenApiClient)
     }
 }

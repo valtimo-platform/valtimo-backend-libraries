@@ -12,7 +12,7 @@ import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.client.ZakenApiClient
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 internal class ZakenApiPluginFactoryTest {
@@ -21,7 +21,7 @@ internal class ZakenApiPluginFactoryTest {
     fun `should create ZakenApiPlugin`() {
         val pluginService: PluginService = mock()
         val authenticationMock = mock<ZakenApiAuthentication>()
-        whenever(pluginService.createInstance(any())).thenReturn(authenticationMock)
+        whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authenticationMock)
 
         val client: ZakenApiClient = mock()
         val zaakUrlProvider: ZaakUrlProvider = mock()
@@ -52,12 +52,8 @@ internal class ZakenApiPluginFactoryTest {
 
         val plugin = factory.create(pluginConfiguration)
 
-        assertEquals("http://zaken.plugin.url", plugin.url)
+        assertEquals("http://zaken.plugin.url", plugin.url.toString())
         assertEquals(authenticationMock, plugin.authenticationPluginConfiguration)
-        assertEquals(client, plugin.client)
-        assertEquals(zaakUrlProvider, plugin.zaakUrlProvider)
-        assertEquals(resourceProvider, plugin.resourceProvider)
-        assertEquals(documentService, plugin.documentService)
     }
 
     private fun createPluginDefinition(): PluginDefinition {
@@ -72,7 +68,7 @@ internal class ZakenApiPluginFactoryTest {
 
         propertyDefinitions.add(
             PluginProperty("url", pluginDefinition, "title", required = true,
-            secret = false, "url","java.lang.String"))
+            secret = false, "url","java.net.URI"))
         propertyDefinitions.add(PluginProperty("authenticationPluginConfiguration", pluginDefinition, "title",
             required = true, secret = false, "authenticationPluginConfiguration",
             "com.ritense.zakenapi.ZakenApiAuthentication"))

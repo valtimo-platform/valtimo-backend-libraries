@@ -25,6 +25,7 @@ dependencies {
     implementation project(':core')
     implementation project(':plugin')
     implementation project(':resource:temporary-resource-storage')
+    implementation project(':zgw')
 
     implementation "io.github.microutils:kotlin-logging:2.0.4"
     implementation "org.springframework.boot:spring-boot-starter-webflux"

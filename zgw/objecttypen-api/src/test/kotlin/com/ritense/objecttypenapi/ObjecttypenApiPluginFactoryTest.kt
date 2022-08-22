@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.objecttypenapi.client.ObjecttypenApiClient
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -28,16 +29,18 @@ import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.net.URI
 
 internal class ObjecttypenApiPluginFactoryTest {
 
     @Test
     fun `should create ObjecttypenApiPlugin`() {
-        val pluginService: PluginService = mock()
+        val pluginService = mock<PluginService>()
+        val objecttypenApiClient = mock<ObjecttypenApiClient>()
         val authenticationMock = mock<ObjecttypenApiAuthentication>()
-        whenever(pluginService.createInstance(any())).thenReturn(authenticationMock)
+        whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authenticationMock)
 
-        val factory = ObjecttypenApiPluginFactory(pluginService)
+        val factory = ObjecttypenApiPluginFactory(pluginService, objecttypenApiClient)
 
         val objecttypenApiPluginProperties: String = """
             {
@@ -55,7 +58,7 @@ internal class ObjecttypenApiPluginFactoryTest {
         )
         val plugin = factory.create(pluginConfiguration)
 
-        Assertions.assertEquals("http://objecttypen.plugin.url", plugin.url)
+        Assertions.assertEquals(URI("http://objecttypen.plugin.url"), plugin.url)
         Assertions.assertEquals(authenticationMock, plugin.authenticationPluginConfiguration)
     }
 
@@ -71,7 +74,7 @@ internal class ObjecttypenApiPluginFactoryTest {
 
         propertyDefinitions.add(
             PluginProperty("url", pluginDefinition, "title", required = true,
-                secret = false, "url","java.lang.String")
+                secret = false, "url","java.net.URI")
         )
         propertyDefinitions.add(
             PluginProperty("authenticationPluginConfiguration", pluginDefinition, "title",

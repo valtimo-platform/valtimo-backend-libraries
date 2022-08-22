@@ -16,10 +16,28 @@
 
 package com.ritense.objecttypenapi.client
 
+import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
 import org.springframework.web.reactive.function.client.WebClient
+import java.net.URI
 
 class ObjecttypenApiClient(
     val webClient: WebClient
 ) {
 
+    fun getObjecttype(
+        authentication: ObjecttypenApiAuthentication,
+        objecttypeUrl: URI
+    ): Objecttype {
+        val result = webClient
+            .mutate()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri(objecttypeUrl)
+            .retrieve()
+            .toEntity(Objecttype::class.java)
+            .block()
+
+        return result?.body!!
+    }
 }

@@ -20,7 +20,7 @@ pluginManager.withPlugin('maven-publish') {
             maven(MavenPublication) {
                 pom {
                     name = 'Zaak Gericht Werken module'
-                    description = 'The ZGW module contains modules to connect to different ZGW components'
+                    description = 'The ZGW module contains common tools shared by different ZGW components'
                     developers {
                         developer {
                             id = "team-valtimo"
