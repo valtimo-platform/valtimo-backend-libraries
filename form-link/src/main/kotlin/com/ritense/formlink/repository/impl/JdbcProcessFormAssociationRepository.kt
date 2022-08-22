@@ -29,9 +29,11 @@ import com.ritense.formlink.repository.ProcessFormAssociationRepository
 import mu.KotlinLogging
 import org.hibernate.type.descriptor.java.UUIDTypeDescriptor
 import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.jdbc.core.SqlParameterValue
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.transaction.annotation.Transactional
 import java.sql.ResultSet
+import java.sql.Types
 import java.util.UUID
 
 @Transactional
@@ -67,15 +69,15 @@ class JdbcProcessFormAssociationRepository(
         val result = namedParameterJdbcTemplate.update(
             sql,
             mapOf(
-                ID_COLUMN to UUID.nameUUIDFromBytes(processDefinitionKey.toByteArray()).asBytes(),
-                PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey,
-                FORM_ASSOCIATION_ID to camundaFormAssociation.id.asBytes(),
-                FORM_ASSOCIATION_TYPE to camundaFormAssociation.asType(),
-                FORM_LINK_ELEMENT_ID to camundaFormAssociation.formLink.id,
-                FORM_LINK_FORM_ID to if (camundaFormAssociation.formLink is BpmnElementFormIdLink) camundaFormAssociation.formLink.formId.asBytes() else null,
-                FORM_LINK_FLOW_ID to if (camundaFormAssociation.formLink is BpmnElementFormFlowIdLink) camundaFormAssociation.formLink.formFlowId else null,
-                FORM_LINK_CUSTOM_URL to if (camundaFormAssociation.formLink is BpmnElementUrlLink) camundaFormAssociation.formLink.url else null,
-                FORM_LINK_ANGULAR_STATE_URL to if (camundaFormAssociation.formLink is BpmnElementAngularStateUrlLink) camundaFormAssociation.formLink.url else null
+                ID_COLUMN to SqlParameterValue(Types.BINARY, UUID.nameUUIDFromBytes(processDefinitionKey.toByteArray()).asBytes()),
+                PROCESS_DEFINITION_KEY_COLUMN to SqlParameterValue(Types.VARCHAR, processDefinitionKey),
+                FORM_ASSOCIATION_ID to SqlParameterValue(Types.BINARY, camundaFormAssociation.id.asBytes()),
+                FORM_ASSOCIATION_TYPE to SqlParameterValue(Types.VARCHAR, camundaFormAssociation.asType()),
+                FORM_LINK_ELEMENT_ID to SqlParameterValue(Types.VARCHAR, camundaFormAssociation.formLink.id),
+                FORM_LINK_FORM_ID to if (camundaFormAssociation.formLink is BpmnElementFormIdLink) SqlParameterValue(Types.BINARY, camundaFormAssociation.formLink.formId.asBytes()) else SqlParameterValue(Types.NULL, null),
+                FORM_LINK_FLOW_ID to if (camundaFormAssociation.formLink is BpmnElementFormFlowIdLink) SqlParameterValue(Types.VARCHAR, camundaFormAssociation.formLink.formFlowId) else SqlParameterValue(Types.NULL, null),
+                FORM_LINK_CUSTOM_URL to if (camundaFormAssociation.formLink is BpmnElementUrlLink) SqlParameterValue(Types.VARCHAR, camundaFormAssociation.formLink.url) else SqlParameterValue(Types.NULL, null),
+                FORM_LINK_ANGULAR_STATE_URL to if (camundaFormAssociation.formLink is BpmnElementAngularStateUrlLink) SqlParameterValue(Types.VARCHAR, camundaFormAssociation.formLink.url) else SqlParameterValue(Types.NULL, null)
             )
         )
         require(result == 1)
@@ -96,14 +98,14 @@ class JdbcProcessFormAssociationRepository(
         val result = namedParameterJdbcTemplate.update(
             sql,
             mapOf(
-                PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey,
-                FORM_ASSOCIATION_ID to camundaFormAssociation.id.asBytes(),
-                FORM_ASSOCIATION_TYPE to camundaFormAssociation.asType(),
-                FORM_LINK_ELEMENT_ID to camundaFormAssociation.formLink.id,
-                FORM_LINK_FORM_ID to if (camundaFormAssociation.formLink is BpmnElementFormIdLink) camundaFormAssociation.formLink.formId.asBytes() else null,
-                FORM_LINK_FLOW_ID to if (camundaFormAssociation.formLink is BpmnElementFormFlowIdLink) camundaFormAssociation.formLink.formFlowId else null,
-                FORM_LINK_CUSTOM_URL to if (camundaFormAssociation.formLink is BpmnElementUrlLink) camundaFormAssociation.formLink.url else null,
-                FORM_LINK_ANGULAR_STATE_URL to if (camundaFormAssociation.formLink is BpmnElementAngularStateUrlLink) camundaFormAssociation.formLink.url else null
+                PROCESS_DEFINITION_KEY_COLUMN to SqlParameterValue(Types.VARCHAR, processDefinitionKey),
+                FORM_ASSOCIATION_ID to SqlParameterValue(Types.BINARY, camundaFormAssociation.id.asBytes()),
+                FORM_ASSOCIATION_TYPE to SqlParameterValue(Types.VARCHAR, camundaFormAssociation.asType()),
+                FORM_LINK_ELEMENT_ID to SqlParameterValue(Types.VARCHAR, camundaFormAssociation.formLink.id),
+                FORM_LINK_FORM_ID to if (camundaFormAssociation.formLink is BpmnElementFormIdLink) SqlParameterValue(Types.BINARY, camundaFormAssociation.formLink.formId.asBytes()) else SqlParameterValue(Types.NULL, null),
+                FORM_LINK_FLOW_ID to if (camundaFormAssociation.formLink is BpmnElementFormFlowIdLink) SqlParameterValue(Types.VARCHAR, camundaFormAssociation.formLink.formFlowId) else SqlParameterValue(Types.NULL, null),
+                FORM_LINK_CUSTOM_URL to if (camundaFormAssociation.formLink is BpmnElementUrlLink) SqlParameterValue(Types.VARCHAR, camundaFormAssociation.formLink.url) else SqlParameterValue(Types.NULL, null),
+                FORM_LINK_ANGULAR_STATE_URL to if (camundaFormAssociation.formLink is BpmnElementAngularStateUrlLink) SqlParameterValue(Types.VARCHAR, camundaFormAssociation.formLink.url) else SqlParameterValue(Types.VARCHAR, null)
             )
         )
         require(result == 1)
@@ -114,7 +116,7 @@ class JdbcProcessFormAssociationRepository(
         val associations = mutableSetOf<CamundaFormAssociation>()
         namedParameterJdbcTemplate.query(
             sql,
-            mapOf(PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey)
+            mapOf(PROCESS_DEFINITION_KEY_COLUMN to SqlParameterValue(Types.VARCHAR, processDefinitionKey))
         ) { rs: ResultSet, _: Int -> associations.add(camundaFormAssociation(rs)) }
         if (associations.isEmpty()) {
             return null
@@ -133,8 +135,8 @@ class JdbcProcessFormAssociationRepository(
             return namedParameterJdbcTemplate.queryForObject(
                 sql,
                 mapOf(
-                    PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey,
-                    FORM_LINK_ELEMENT_ID to formLinkId
+                    PROCESS_DEFINITION_KEY_COLUMN to SqlParameterValue(Types.VARCHAR, processDefinitionKey),
+                    FORM_LINK_ELEMENT_ID to SqlParameterValue(Types.VARCHAR, formLinkId)
                 )
             )
             { rs, _ -> camundaFormAssociation(rs) }
@@ -153,7 +155,7 @@ class JdbcProcessFormAssociationRepository(
         """.trimIndent()
             return namedParameterJdbcTemplate.queryForObject(
                 sql,
-                mapOf(PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey)
+                mapOf(PROCESS_DEFINITION_KEY_COLUMN to SqlParameterValue(Types.VARCHAR, processDefinitionKey))
             )
             { rs, _ -> camundaFormAssociation(rs) }
         } catch (ex: EmptyResultDataAccessException) {
@@ -171,8 +173,8 @@ class JdbcProcessFormAssociationRepository(
             val result = namedParameterJdbcTemplate.update(
                 sql,
                 mapOf(
-                    PROCESS_DEFINITION_KEY_COLUMN to processDefinitionKey,
-                    FORM_ASSOCIATION_ID to formAssociationId.asBytes()
+                    PROCESS_DEFINITION_KEY_COLUMN to SqlParameterValue(Types.VARCHAR, processDefinitionKey),
+                    FORM_ASSOCIATION_ID to SqlParameterValue(Types.BINARY, formAssociationId.asBytes())
                 )
             )
             require(result == 1)
@@ -187,7 +189,7 @@ class JdbcProcessFormAssociationRepository(
             namedParameterJdbcTemplate.queryForObject(
                 sql,
                 mapOf(
-                    FORM_ASSOCIATION_ID to camundaFormAssociationId.asBytes()
+                    FORM_ASSOCIATION_ID to SqlParameterValue(Types.BINARY, camundaFormAssociationId.asBytes())
                 )
             )
             { rs, _ -> camundaFormAssociation(rs) }
