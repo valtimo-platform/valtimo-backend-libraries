@@ -99,7 +99,7 @@ internal class ZaakObjectServiceTest {
         val zaakInstanceUrl = setupZaakInstanceLink(documentId)
         setupPlugins(zaakInstanceUrl)
         setupObjecttypeWithRelations(zaakInstanceUrl)
-        whenever(pluginService.createInstanceConditional(eq(ZakenApiPlugin::class.java), any()))
+        whenever(pluginService.createInstance(eq(ZakenApiPlugin::class.java), any()))
             .thenReturn(null)
 
         val exception = assertThrows(IllegalArgumentException::class.java) {
@@ -116,7 +116,7 @@ internal class ZaakObjectServiceTest {
         val zaakInstanceUrl = setupZaakInstanceLink(documentId)
         setupPlugins(zaakInstanceUrl)
         setupObjecttypeWithRelations(zaakInstanceUrl)
-        whenever(pluginService.createInstanceConditional(eq(ObjectenApiPlugin::class.java), any()))
+        whenever(pluginService.createInstance(eq(ObjectenApiPlugin::class.java), any()))
             .thenReturn(null)
 
         val zaakObjectTypes = zaakObjectService.getZaakObjectTypes(documentId)
@@ -131,7 +131,7 @@ internal class ZaakObjectServiceTest {
         val zaakInstanceUrl = setupZaakInstanceLink(documentId)
         setupPlugins(zaakInstanceUrl)
         setupObjecttypeWithRelations(zaakInstanceUrl)
-        whenever(pluginService.createInstanceConditional(eq(ObjecttypenApiPlugin::class.java), any()))
+        whenever(pluginService.createInstance(eq(ObjecttypenApiPlugin::class.java), any()))
             .thenReturn(null)
 
         val zaakObjectTypes = zaakObjectService.getZaakObjectTypes(documentId)
@@ -183,15 +183,15 @@ internal class ZaakObjectServiceTest {
 
     private fun setupPlugins(zaakUrl: URI) {
         zaakPlugin = mock()
-        whenever(pluginService.createInstanceConditional(eq(ZakenApiPlugin::class.java), any()))
+        whenever(pluginService.createInstance(eq(ZakenApiPlugin::class.java), any()))
             .thenReturn(zaakPlugin)
 
         objectenApiPlugin = mock()
-        whenever(pluginService.createInstanceConditional(eq(ObjectenApiPlugin::class.java), any()))
+        whenever(pluginService.createInstance(eq(ObjectenApiPlugin::class.java), any()))
             .thenReturn(objectenApiPlugin)
 
         objecttypenApiPlugin = mock()
-        whenever(pluginService.createInstanceConditional(eq(ObjecttypenApiPlugin::class.java), any()))
+        whenever(pluginService.createInstance(eq(ObjecttypenApiPlugin::class.java), any()))
             .thenReturn(objecttypenApiPlugin)
 
         whenever(zaakPlugin?.getZaakObjecten(zaakUrl)).thenReturn(zaakObjecten)

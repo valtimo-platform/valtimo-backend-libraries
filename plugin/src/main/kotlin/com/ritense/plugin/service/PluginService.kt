@@ -241,11 +241,11 @@ class PluginService(
         }.create(pluginConfiguration)!!
     }
 
-    fun <T> createInstanceConditional(clazz: Class<T>, filter: (JsonNode) -> Boolean): T? {
+    fun <T> createInstance(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): T? {
         val annotation = clazz.getAnnotation(Plugin::class.java)
             ?: throw IllegalArgumentException("Requested plugin for class ${clazz.name}, but class is not annotated as plugin")
 
-        val pluginConfiguration = findPluginConfiguration(annotation.key, filter)
+        val pluginConfiguration = findPluginConfiguration(annotation.key, configurationFilter)
 
         return pluginConfiguration?.let { createInstance(it) as T }
     }
@@ -296,7 +296,7 @@ class PluginService(
         }
     }
 
-    fun findPluginConfiguration(pluginDefinitionKey: String, filter: (JsonNode) -> Boolean): PluginConfiguration? {
+    private fun findPluginConfiguration(pluginDefinitionKey: String, filter: (JsonNode) -> Boolean): PluginConfiguration? {
         val configurations = pluginConfigurationRepository.findByPluginDefinitionKey(pluginDefinitionKey)
         return configurations.firstOrNull { config ->
             val configProperties = config.properties

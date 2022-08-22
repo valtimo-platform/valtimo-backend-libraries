@@ -36,7 +36,7 @@ class ZaakObjectService(
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
 
         val zakenApiPluginInstance = pluginService
-            .createInstanceConditional(ZakenApiPlugin::class.java) { properties: JsonNode ->
+            .createInstance(ZakenApiPlugin::class.java) { properties: JsonNode ->
             zaakUrl.toString().startsWith(properties.get("url").textValue())
         }
 
@@ -55,7 +55,7 @@ class ZaakObjectService(
     private fun getObjectByZaakObjectUrl(zaakObject: ZaakObject) : ObjectWrapper? {
         val objectUrl = zaakObject.objectUrl
         val objectenApiPlugin = pluginService
-            .createInstanceConditional(ObjectenApiPlugin::class.java) { properties: JsonNode ->
+            .createInstance(ObjectenApiPlugin::class.java) { properties: JsonNode ->
                 objectUrl.toString().startsWith(properties.get("url").textValue())
             }?: return null
         return objectenApiPlugin.getObject(objectUrl)
@@ -63,7 +63,7 @@ class ZaakObjectService(
 
     private fun getObjectTypeByUrl(objectTypeUrl: URI): Objecttype? {
         val objectTypePluginInstance = pluginService
-            .createInstanceConditional(ObjecttypenApiPlugin::class.java) { properties: JsonNode ->
+            .createInstance(ObjecttypenApiPlugin::class.java) { properties: JsonNode ->
                 objectTypeUrl.toString().startsWith(properties.get("url").textValue())
             }?: return null
 
@@ -74,7 +74,7 @@ class ZaakObjectService(
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
 
         val zakenApiPluginInstance = pluginService
-            .createInstanceConditional(ZakenApiPlugin::class.java) { properties: JsonNode ->
+            .createInstance(ZakenApiPlugin::class.java) { properties: JsonNode ->
                 zaakUrl.toString().startsWith(properties.get("url").textValue())
             }
 
