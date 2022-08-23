@@ -59,6 +59,7 @@ internal class PluginServiceTest {
     lateinit var pluginFactory: PluginFactory<Any>
     lateinit var valueResolverService: ValueResolverService
     lateinit var pluginService: PluginService
+    lateinit var pluginConfigurationSearchService: PluginConfigurationSearchService
 
     @BeforeEach
     fun init() {
@@ -68,6 +69,7 @@ internal class PluginServiceTest {
         pluginProcessLinkRepository = mock()
         pluginFactory = mock()
         valueResolverService = mock()
+        pluginConfigurationSearchService = mock()
         pluginService = PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
@@ -75,8 +77,8 @@ internal class PluginServiceTest {
             pluginProcessLinkRepository,
             listOf(pluginFactory),
             Mapper.INSTANCE.get(),
-            valueResolverService
-
+            valueResolverService,
+            pluginConfigurationSearchService
         )
     }
 
@@ -88,7 +90,7 @@ internal class PluginServiceTest {
 
     @Test
     fun `should get plugin configurations from repository`(){
-        pluginService.getPluginConfigurations()
+        pluginService.getPluginConfigurations(PluginConfigurationSearchParameters())
         verify(pluginConfigurationRepository).findAll()
     }
 

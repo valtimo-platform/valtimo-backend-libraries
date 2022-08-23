@@ -54,6 +54,10 @@ data class PluginDefinition (
         joinColumns = [JoinColumn(name = "plugin_definition_key")],
         inverseJoinColumns = [JoinColumn(name = "plugin_category_key")])
     val categories: Set<PluginCategory> = setOf(),
+    @JsonIgnore
+    @OneToMany(mappedBy = "id.pluginDefinition", fetch = FetchType.LAZY, cascade = [CascadeType.ALL],
+        orphanRemoval = true)
+    val actions: Set<PluginActionDefinition> = setOf(),
 ) {
     fun findPluginProperty(propertyKey: String): PluginProperty? {
         val filteredProperties = properties.filter {

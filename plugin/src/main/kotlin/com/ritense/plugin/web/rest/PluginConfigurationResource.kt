@@ -16,7 +16,9 @@
 
 package com.ritense.plugin.web.rest
 
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
 import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
@@ -42,27 +44,17 @@ class PluginConfigurationResource(
 
     @GetMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getPluginDefinitions(@RequestParam("category") category: String?,
-                             @RequestParam("includeActionless", defaultValue = "true") includeActionless: Boolean)
+                             @RequestParam("activityType") activityType: ActivityType?)
         : ResponseEntity<List<PluginConfigurationDto>> {
-        return if (category != null) {
-            ResponseEntity.ok(pluginService.getPluginConfigurationsByCategory(category)
-                .filter { pluginConfiguration ->
-                    includeActionless ||
-                        pluginService
-                            .getPluginDefinitionActions(pluginConfiguration.pluginDefinition.key, null)
-                            .isNotEmpty()
-            }
-                .map { PluginConfigurationDto(it) })
-        } else {
-            ResponseEntity.ok(pluginService.getPluginConfigurations()
-                .filter { pluginConfiguration ->
-                    includeActionless ||
-                        pluginService
-                            .getPluginDefinitionActions(pluginConfiguration.pluginDefinition.key, null)
-                            .isNotEmpty()
-                }
-                .map { PluginConfigurationDto(it) })
-        }
+
+        return ResponseEntity.ok(
+            pluginService.getPluginConfigurations(
+                PluginConfigurationSearchParameters(
+                    category,
+                    activityType
+                )
+            )
+            .map { PluginConfigurationDto(it) })
     }
 
     @PostMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])

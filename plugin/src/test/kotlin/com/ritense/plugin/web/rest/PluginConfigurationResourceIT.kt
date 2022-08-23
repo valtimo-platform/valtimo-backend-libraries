@@ -119,7 +119,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
         )
 
         // assert that the new plugin configuration is not included in the result
-        mockMvc.perform(get("/api/plugin/configuration?includeActionless=false")
+        mockMvc.perform(get("/api/plugin/configuration?activityType=SERVICE_TASK")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
         )

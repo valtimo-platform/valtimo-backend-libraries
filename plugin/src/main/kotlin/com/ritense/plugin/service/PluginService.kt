@@ -54,15 +54,21 @@ class PluginService(
     private val pluginProcessLinkRepository: PluginProcessLinkRepository,
     private val pluginFactories: List<PluginFactory<*>>,
     private val objectMapper: ObjectMapper,
-    private val valueResolverService: ValueResolverService
+    private val valueResolverService: ValueResolverService,
+    private val pluginConfigurationSearchService: PluginConfigurationSearchService
 ) {
 
     fun getPluginDefinitions(): List<PluginDefinition> {
         return pluginDefinitionRepository.findAll()
     }
 
-    fun getPluginConfigurations(): List<PluginConfiguration> {
-        return pluginConfigurationRepository.findAll()
+    fun getPluginConfigurations(
+        pluginConfigurationSearchParameters: PluginConfigurationSearchParameters
+    ): List<PluginConfiguration> {
+//        if (pluginConfigurationSearchParameters.category != null) {
+//            return getPluginConfigurationsByCategory(pluginConfigurationSearchParameters.category)
+//        }
+        return pluginConfigurationSearchService.search(pluginConfigurationSearchParameters)
     }
 
     fun getPluginConfigurationsByCategory(category: String): List<PluginConfiguration> {

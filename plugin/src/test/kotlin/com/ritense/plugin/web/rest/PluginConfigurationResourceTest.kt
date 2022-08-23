@@ -71,7 +71,7 @@ internal class PluginConfigurationResourceTest {
         val plugin2 = PluginDefinition("key2", "title2", "description2", "className2")
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties1, plugin)
         val pluginConfiguration2 = PluginConfiguration(PluginConfigurationId.newId(), "title2", properties2, plugin2)
-        whenever(pluginService.getPluginConfigurations()).thenReturn(listOf(pluginConfiguration, pluginConfiguration2))
+        whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf(pluginConfiguration, pluginConfiguration2))
 
         mockMvc.perform(get("/api/plugin/configuration")
             .characterEncoding(StandardCharsets.UTF_8.name())
@@ -81,7 +81,7 @@ internal class PluginConfigurationResourceTest {
             .andDo(print())
             .assertConfigurationListOutput()
 
-        verify(pluginService).getPluginConfigurations()
+        verify(pluginService).getPluginConfigurations(any())
     }
 
     @Test
@@ -112,7 +112,7 @@ internal class PluginConfigurationResourceTest {
         val plugin = PluginDefinition("key", "title", "description", "className")
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties1, plugin)
 
-        whenever(pluginService.getPluginConfigurations()).thenReturn(listOf(pluginConfiguration))
+        whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf(pluginConfiguration))
 
         mockMvc.perform(get("/api/plugin/configuration?includeActionless=false")
             .characterEncoding(StandardCharsets.UTF_8.name())

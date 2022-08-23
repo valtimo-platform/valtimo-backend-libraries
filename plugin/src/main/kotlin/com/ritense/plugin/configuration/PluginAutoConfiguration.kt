@@ -30,6 +30,7 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.EncryptionService
+import com.ritense.plugin.service.PluginConfigurationSearchService
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.PluginDefinitionResource
 import com.ritense.valueresolver.ValueResolverService
@@ -41,16 +42,18 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import javax.persistence.EntityManager
 
 @Configuration
 @EnableJpaRepositories(
     basePackageClasses = [
-        PluginDefinitionRepository::class,
-        PluginConfigurationRepository::class,
         PluginActionDefinitionRepository::class,
+        PluginActionPropertyDefinitionRepository::class,
+        PluginCategoryRepository::class,
+        PluginConfigurationRepository::class,
+        PluginDefinitionRepository::class,
         PluginProcessLinkRepository::class,
         PluginPropertyRepository::class,
-        PluginActionPropertyDefinitionRepository::class,
     ]
 )
 @EntityScan(basePackages = ["com.ritense.plugin.domain"])
@@ -100,7 +103,8 @@ class PluginAutoConfiguration {
         pluginProcessLinkRepository: PluginProcessLinkRepository,
         @Lazy pluginFactories: List<PluginFactory<*>>,
         objectMapper: ObjectMapper,
-        valueResolverService: ValueResolverService
+        valueResolverService: ValueResolverService,
+        pluginConfigurationSearchService: PluginConfigurationSearchService
     ): PluginService {
         return PluginService(pluginDefinitionRepository,
             pluginConfigurationRepository,
@@ -108,8 +112,15 @@ class PluginAutoConfiguration {
             pluginProcessLinkRepository,
             pluginFactories,
             objectMapper,
-            valueResolverService
+            valueResolverService,
+            pluginConfigurationSearchService
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun pluginConfigurationSearchService(entityManager: EntityManager): PluginConfigurationSearchService {
+        return PluginConfigurationSearchService(entityManager)
     }
 
     @Bean
