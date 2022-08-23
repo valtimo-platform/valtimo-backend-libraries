@@ -18,6 +18,8 @@ dependencies {
     api project(':plugin')
 
     implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-starter-web"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
