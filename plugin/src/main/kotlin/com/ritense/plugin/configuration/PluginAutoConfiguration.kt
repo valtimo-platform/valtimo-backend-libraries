@@ -25,12 +25,12 @@ import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginCategoryRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
+import com.ritense.plugin.repository.PluginConfigurationSearchRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.EncryptionService
-import com.ritense.plugin.service.PluginConfigurationSearchService
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.PluginDefinitionResource
 import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
@@ -111,7 +111,7 @@ class PluginAutoConfiguration {
         @Lazy pluginFactories: List<PluginFactory<*>>,
         objectMapper: ObjectMapper,
         valueResolverService: ValueResolverService,
-        pluginConfigurationSearchService: PluginConfigurationSearchService
+        pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
     ): PluginService {
         return PluginService(pluginDefinitionRepository,
             pluginConfigurationRepository,
@@ -120,14 +120,14 @@ class PluginAutoConfiguration {
             pluginFactories,
             objectMapper,
             valueResolverService,
-            pluginConfigurationSearchService
+            pluginConfigurationSearchRepository
         )
     }
 
     @Bean
     @ConditionalOnMissingBean
-    fun pluginConfigurationSearchService(entityManager: EntityManager): PluginConfigurationSearchService {
-        return PluginConfigurationSearchService(entityManager)
+    fun pluginConfigurationSearchRepository(entityManager: EntityManager): PluginConfigurationSearchRepository {
+        return PluginConfigurationSearchRepository(entityManager)
     }
 
     @Bean

@@ -33,6 +33,7 @@ import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
+import com.ritense.plugin.repository.PluginConfigurationSearchRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
@@ -55,7 +56,7 @@ class PluginService(
     private val pluginFactories: List<PluginFactory<*>>,
     private val objectMapper: ObjectMapper,
     private val valueResolverService: ValueResolverService,
-    private val pluginConfigurationSearchService: PluginConfigurationSearchService
+    private val pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
 ) {
 
     fun getPluginDefinitions(): List<PluginDefinition> {
@@ -65,11 +66,7 @@ class PluginService(
     fun getPluginConfigurations(
         pluginConfigurationSearchParameters: PluginConfigurationSearchParameters
     ): List<PluginConfiguration> {
-        return pluginConfigurationSearchService.search(pluginConfigurationSearchParameters)
-    }
-
-    fun getPluginConfigurationsByCategory(category: String): List<PluginConfiguration> {
-        return pluginConfigurationRepository.findByPluginDefinition_Categories_Key(category)
+        return pluginConfigurationSearchRepository.search(pluginConfigurationSearchParameters)
     }
 
     fun createPluginConfiguration(
