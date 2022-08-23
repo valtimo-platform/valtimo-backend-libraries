@@ -33,6 +33,7 @@ import com.ritense.plugin.service.EncryptionService
 import com.ritense.plugin.service.PluginConfigurationSearchService
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.PluginDefinitionResource
+import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -76,6 +77,12 @@ class PluginAutoConfiguration {
             pluginActionDefinitionRepository,
             pluginActionPropertyDefinitionRepository
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(StringToActivityTypeConverter::class)
+    fun stringToActivityTypeConverter(): StringToActivityTypeConverter {
+        return StringToActivityTypeConverter()
     }
 
     @Bean

@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.domain
+package com.ritense.plugin.web.rest.converter
 
-import mu.KotlinLogging
+import com.ritense.plugin.domain.ActivityType
+import org.springframework.core.convert.converter.Converter
 
-enum class ActivityType {
-    SERVICE_TASK;
+class StringToActivityTypeConverter
+    : Converter<String, ActivityType> {
 
-    companion object {
-        fun from(bpmnTask: String?): ActivityType? {
-            return when(bpmnTask) {
-                "bpmn:ServiceTask" -> SERVICE_TASK
-                else -> {
-                    logger.error { "Unable to find an ActivityType for $bpmnTask" }
-                    null
-                }
-            }
-        }
-
-        val logger = KotlinLogging.logger {}
+    override fun convert(source: String): ActivityType? {
+        return ActivityType.from(source)
     }
 }

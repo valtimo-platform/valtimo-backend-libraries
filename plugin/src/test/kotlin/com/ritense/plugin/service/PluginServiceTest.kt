@@ -91,7 +91,7 @@ internal class PluginServiceTest {
     @Test
     fun `should get plugin configurations from repository`(){
         pluginService.getPluginConfigurations(PluginConfigurationSearchParameters())
-        verify(pluginConfigurationRepository).findAll()
+        verify(pluginConfigurationSearchService).search(any())
     }
 
     @Test

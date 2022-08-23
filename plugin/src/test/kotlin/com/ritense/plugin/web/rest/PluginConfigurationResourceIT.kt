@@ -105,7 +105,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
     }
 
     @Test
-    fun `should filter plugin configurations by action`() {
+    fun `should filter plugin configurations based on activityType`() {
         // Addding another plugin definition (without actions)
         val pluginDefinition = PluginDefinition("key", "title", "description", "class")
         pluginDefinitionRepository.save(pluginDefinition)
@@ -119,7 +119,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
         )
 
         // assert that the new plugin configuration is not included in the result
-        mockMvc.perform(get("/api/plugin/configuration?activityType=SERVICE_TASK")
+        mockMvc.perform(get("/api/plugin/configuration?activityType=bpmn:ServiceTask")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
