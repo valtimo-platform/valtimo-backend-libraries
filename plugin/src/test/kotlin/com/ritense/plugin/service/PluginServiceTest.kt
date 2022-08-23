@@ -40,6 +40,7 @@ import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
+import com.ritense.plugin.repository.PluginConfigurationSearchRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.valtimo.contract.json.Mapper
@@ -59,6 +60,7 @@ internal class PluginServiceTest {
     lateinit var pluginFactory: PluginFactory<Any>
     lateinit var valueResolverService: ValueResolverService
     lateinit var pluginService: PluginService
+    lateinit var pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
 
     @BeforeEach
     fun init() {
@@ -68,6 +70,7 @@ internal class PluginServiceTest {
         pluginProcessLinkRepository = mock()
         pluginFactory = mock()
         valueResolverService = mock()
+        pluginConfigurationSearchRepository = mock()
         pluginService = PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
@@ -75,8 +78,8 @@ internal class PluginServiceTest {
             pluginProcessLinkRepository,
             listOf(pluginFactory),
             Mapper.INSTANCE.get(),
-            valueResolverService
-
+            valueResolverService,
+            pluginConfigurationSearchRepository
         )
     }
 
@@ -88,16 +91,9 @@ internal class PluginServiceTest {
 
     @Test
     fun `should get plugin configurations from repository`(){
-        pluginService.getPluginConfigurations()
-        verify(pluginConfigurationRepository).findAll()
+        pluginService.getPluginConfigurations(PluginConfigurationSearchParameters())
+        verify(pluginConfigurationSearchRepository).search(any())
     }
-
-    @Test
-    fun `should get plugin configurations from repository by category`(){
-        pluginService.getPluginConfigurationsByCategory("test")
-        verify(pluginConfigurationRepository).findByPluginDefinition_Categories_Key("test")
-    }
-
     @Test
     fun `should save plugin configuration`(){
         val pluginDefinition = newPluginDefinition()

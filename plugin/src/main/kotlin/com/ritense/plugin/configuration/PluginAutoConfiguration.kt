@@ -25,6 +25,7 @@ import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginCategoryRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
+import com.ritense.plugin.repository.PluginConfigurationSearchRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.repository.PluginPropertyRepository
@@ -32,6 +33,7 @@ import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.EncryptionService
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.PluginDefinitionResource
+import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -41,16 +43,18 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import javax.persistence.EntityManager
 
 @Configuration
 @EnableJpaRepositories(
     basePackageClasses = [
-        PluginDefinitionRepository::class,
-        PluginConfigurationRepository::class,
         PluginActionDefinitionRepository::class,
+        PluginActionPropertyDefinitionRepository::class,
+        PluginCategoryRepository::class,
+        PluginConfigurationRepository::class,
+        PluginDefinitionRepository::class,
         PluginProcessLinkRepository::class,
         PluginPropertyRepository::class,
-        PluginActionPropertyDefinitionRepository::class,
     ]
 )
 @EntityScan(basePackages = ["com.ritense.plugin.domain"])
@@ -73,6 +77,12 @@ class PluginAutoConfiguration {
             pluginActionDefinitionRepository,
             pluginActionPropertyDefinitionRepository
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(StringToActivityTypeConverter::class)
+    fun stringToActivityTypeConverter(): StringToActivityTypeConverter {
+        return StringToActivityTypeConverter()
     }
 
     @Bean
@@ -100,7 +110,8 @@ class PluginAutoConfiguration {
         pluginProcessLinkRepository: PluginProcessLinkRepository,
         @Lazy pluginFactories: List<PluginFactory<*>>,
         objectMapper: ObjectMapper,
-        valueResolverService: ValueResolverService
+        valueResolverService: ValueResolverService,
+        pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
     ): PluginService {
         return PluginService(pluginDefinitionRepository,
             pluginConfigurationRepository,
@@ -108,8 +119,15 @@ class PluginAutoConfiguration {
             pluginProcessLinkRepository,
             pluginFactories,
             objectMapper,
-            valueResolverService
+            valueResolverService,
+            pluginConfigurationSearchRepository
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun pluginConfigurationSearchRepository(entityManager: EntityManager): PluginConfigurationSearchRepository {
+        return PluginConfigurationSearchRepository(entityManager)
     }
 
     @Bean
