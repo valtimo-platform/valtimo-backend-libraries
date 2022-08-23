@@ -65,9 +65,6 @@ class PluginService(
     fun getPluginConfigurations(
         pluginConfigurationSearchParameters: PluginConfigurationSearchParameters
     ): List<PluginConfiguration> {
-//        if (pluginConfigurationSearchParameters.category != null) {
-//            return getPluginConfigurationsByCategory(pluginConfigurationSearchParameters.category)
-//        }
         return pluginConfigurationSearchService.search(pluginConfigurationSearchParameters)
     }
 
