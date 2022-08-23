@@ -28,7 +28,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "plugin_action_definition")
-data class PluginActionDefinition(
+class PluginActionDefinition(
     @EmbeddedId
     @Column(name = "plugin_action_definition_key")
     val id: PluginActionDefinitionId,

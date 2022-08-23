@@ -16,7 +16,6 @@
 
 package com.ritense.plugin.domain
 
-import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 import com.fasterxml.jackson.annotation.JsonIgnore
 import java.lang.reflect.Field
 import javax.persistence.CascadeType
@@ -29,10 +28,11 @@ import javax.persistence.JoinTable
 import javax.persistence.ManyToMany
 import javax.persistence.OneToMany
 import javax.persistence.Table
+import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 
 @Entity
 @Table(name = "plugin_definition")
-data class PluginDefinition (
+class PluginDefinition (
     @Id
     @Column(name = "plugin_definition_key")
     val key: String,
@@ -55,7 +55,7 @@ data class PluginDefinition (
         inverseJoinColumns = [JoinColumn(name = "plugin_category_key")])
     val categories: Set<PluginCategory> = setOf(),
     @JsonIgnore
-    @OneToMany(mappedBy = "id.pluginDefinition", fetch = FetchType.LAZY, cascade = [CascadeType.ALL],
+    @OneToMany(mappedBy = "id.pluginDefinition", fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE],
         orphanRemoval = true)
     val actions: Set<PluginActionDefinition> = setOf(),
 ) {
