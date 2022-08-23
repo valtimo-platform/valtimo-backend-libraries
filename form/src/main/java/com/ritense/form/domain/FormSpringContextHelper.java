@@ -22,7 +22,7 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.util.Map;
 
-public class SpringContextHelper implements ApplicationContextAware {
+public class FormSpringContextHelper implements ApplicationContextAware {
 
     private static ApplicationContext context;
 

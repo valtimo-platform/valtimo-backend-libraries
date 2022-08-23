@@ -363,7 +363,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             return Optional.empty();
         }
         // Check if key prefix is supported by a resolver.
-        final var resolvers = SpringContextHelper.getFormFieldDataResolver();
+        final var resolvers = FormSpringContextHelper.getFormFieldDataResolver();
         for (var entry : resolvers.entrySet()) {
             // Get prefix up to first dot
             final var prefix = key.substring(0, key.indexOf(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)).toLowerCase();

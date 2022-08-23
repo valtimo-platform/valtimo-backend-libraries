@@ -129,7 +129,25 @@ internal class PluginServiceIT: BaseIntegrationTest() {
 
     @Test
     @Transactional
-    fun `should invoke an action on the plugin`() {
+    fun `should invoke an action on the plugin with void return type`() {
+        val processLink = PluginProcessLink(
+            PluginProcessLinkId.newId(),
+            processDefinitionId = UUID.randomUUID().toString(),
+            activityId = "test",
+            pluginConfigurationId = pluginConfiguration.id,
+            pluginActionDefinitionKey = "test-action",
+            actionProperties = Mapper.INSTANCE.get().readTree("{}") as ObjectNode
+        )
+
+        val execution = DelegateExecutionFake.of()
+            .withProcessInstanceId(UUID.randomUUID().toString())
+
+        pluginService.invoke(execution, processLink)
+    }
+
+    @Test
+    @Transactional
+    fun `should invoke an action on the plugin with return type`() {
         val processLink = PluginProcessLink(
             PluginProcessLinkId.newId(),
             processDefinitionId = UUID.randomUUID().toString(),
@@ -142,7 +160,9 @@ internal class PluginServiceIT: BaseIntegrationTest() {
         val execution = DelegateExecutionFake.of()
             .withProcessInstanceId(UUID.randomUUID().toString())
 
-        pluginService.invoke(execution, processLink)
+        val result = pluginService.invoke(execution, processLink)
+
+        assertEquals("test123", result)
     }
 
     @Test
