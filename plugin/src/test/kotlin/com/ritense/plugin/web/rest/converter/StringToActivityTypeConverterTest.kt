@@ -17,12 +17,19 @@
 package com.ritense.plugin.web.rest.converter
 
 import com.ritense.plugin.domain.ActivityType
-import org.springframework.core.convert.converter.Converter
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
-class StringToActivityTypeConverter
-    : Converter<String, ActivityType> {
+internal class StringToActivityTypeConverterTest {
 
-    override fun convert(source: String): ActivityType {
-        return ActivityType.fromValue(source)
+    @Test
+    fun `should return SERVICE_TASK`() {
+        assertEquals(ActivityType.SERVICE_TASK, ActivityType.fromValue("bpmn:ServiceTask"))
+    }
+
+    @Test()
+    fun `should return error on invalid value`() {
+        assertThrows<IllegalStateException> { ActivityType.fromValue("invalidValue") }
     }
 }
