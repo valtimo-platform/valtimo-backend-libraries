@@ -34,13 +34,7 @@ class ZaakObjectService(
 ) {
     fun getZaakObjectTypes(documentId: UUID): List<Objecttype> {
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
-
-        val zakenApiPluginInstance = pluginService
-            .createInstance(ZakenApiPlugin::class.java) { properties: JsonNode ->
-            zaakUrl.toString().startsWith(properties.get("url").textValue())
-        }
-
-        requireNotNull(zakenApiPluginInstance) { "No plugin configuration was found for zaak with URL $zaakUrl" }
+        val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
 
         return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
             .mapNotNull {
@@ -70,15 +64,9 @@ class ZaakObjectService(
         return objectTypePluginInstance.getObjecttype(objectTypeUrl)
     }
 
-    fun getZaakObjecten(documentId: UUID, typeUrl: URI): List<ObjectWrapper> {
+    fun getZaakObjectenOfType(documentId: UUID, typeUrl: URI): List<ObjectWrapper> {
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
-
-        val zakenApiPluginInstance = pluginService
-            .createInstance(ZakenApiPlugin::class.java) { properties: JsonNode ->
-                zaakUrl.toString().startsWith(properties.get("url").textValue())
-            }
-
-        requireNotNull(zakenApiPluginInstance) { "No plugin configuration was found for zaak with URL $zaakUrl" }
+        val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
 
         return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
             .mapNotNull {
@@ -86,5 +74,45 @@ class ZaakObjectService(
             }.filter {
                 it.type == typeUrl
             }
+    }
+
+    fun getZaakObjectOfTypeByName(documentId: UUID, objecttypeName: String): ObjectWrapper {
+        val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
+        val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
+
+        val listOfObjecttypeWithCorrectName = zakenApiPluginInstance.getZaakObjecten(zaakUrl)
+            .mapNotNull {
+                getObjectByZaakObjectUrl(it)
+            }.groupBy {
+                it.type
+            }.filter {
+                getObjectTypeByUrl(it.key)?.name == objecttypeName
+            }.map {
+                it.value
+            }
+
+        if (listOfObjecttypeWithCorrectName.isEmpty()) {
+            throw IllegalStateException("No object was found of type '$objecttypeName' for document $documentId")
+        } else if (listOfObjecttypeWithCorrectName.size > 1) {
+            throw IllegalStateException("More than one objecttype with name '$objecttypeName' was found for document $documentId")
+        } else {
+            val objectsOfType = listOfObjecttypeWithCorrectName[0]
+            if (objectsOfType.size > 1) {
+                throw IllegalStateException("More than one object of type '$objecttypeName' was found for document $documentId")
+            } else {
+                return objectsOfType[0]
+            }
+        }
+    }
+
+    private fun findZakenApiPlugin(zaakUrl: URI): ZakenApiPlugin {
+        val zakenApiPluginInstance = pluginService
+            .createInstance(ZakenApiPlugin::class.java) { properties: JsonNode ->
+                zaakUrl.toString().startsWith(properties.get("url").textValue())
+            }
+
+        requireNotNull(zakenApiPluginInstance) { "No plugin configuration was found for zaak with URL $zaakUrl" }
+
+        return zakenApiPluginInstance
     }
 }

@@ -31,7 +31,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -109,7 +108,7 @@ internal class ZaakObjectResourceTest {
         whenever(objectRecord2.registrationAt).thenReturn(null)
         whenever(objectRecord2.data).thenReturn(mapOf())
 
-        whenever(zaakObjectService.getZaakObjecten(documentId, URI("http://example.com/objecttype")))
+        whenever(zaakObjectService.getZaakObjectenOfType(documentId, URI("http://example.com/objecttype")))
             .thenReturn(listOf(object1, object2))
 
         mockMvc

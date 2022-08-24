@@ -16,9 +16,12 @@
 
 package com.ritense.objectenapi
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
+import com.ritense.objectenapi.service.ZaakObjectDataResolver
 import com.ritense.objectenapi.service.ZaakObjectService
+import com.ritense.objectenapi.service.ZaakObjectSubmittedListener
 import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
 import io.netty.handler.logging.LogLevel
@@ -77,5 +80,18 @@ class ObjectenApiAutoConfiguration {
     @Bean
     fun objectenApiHttpSecurityConfigurer(): ObjectenApiHttpSecurityConfigurer {
         return ObjectenApiHttpSecurityConfigurer()
+    }
+
+    @Bean
+    fun zaakObjectDataResolver(
+        zaakObjectService: ZaakObjectService,
+        objectMapper: ObjectMapper
+    ): ZaakObjectDataResolver {
+        return ZaakObjectDataResolver(zaakObjectService, objectMapper)
+    }
+
+    @Bean
+    fun zaakObjectSubmittedListener(): ZaakObjectSubmittedListener {
+        return ZaakObjectSubmittedListener()
     }
 }
