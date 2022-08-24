@@ -17,7 +17,9 @@
 package com.ritense.processdocument.domain.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.processdocument.domain.ProcessDocumentInstance;
+import org.hibernate.annotations.Formula;
 import org.springframework.data.domain.Persistable;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -37,6 +39,14 @@ public class CamundaProcessJsonSchemaDocumentInstance
 
     @Column(name = "process_name", columnDefinition = "VARCHAR(255)")
     private String processName;
+
+    @Formula("( " +
+        " SELECT   if(proc.state_ = \"ACTIVE\", true, false)" +
+        " FROM     act_hi_procinst proc " +
+        " WHERE    proc.id_ = camunda_process_instance_id" +
+        " LIMIT    1)")
+    @JsonProperty
+    public boolean isActive;
 
     public CamundaProcessJsonSchemaDocumentInstance(
         final CamundaProcessJsonSchemaDocumentInstanceId processDocumentInstanceId,
