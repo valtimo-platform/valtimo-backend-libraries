@@ -22,6 +22,7 @@ import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 data class FormFlowStep(
     val key: String,
     val nextSteps: List<FormFlowNextStep> = listOf(),
+    val onBack: List<String> = listOf(),
     val onOpen: List<String> = listOf(),
     val onComplete: List<String> = listOf(),
     val type: FormFlowStepType
@@ -37,6 +38,7 @@ data class FormFlowStep(
             }
         }) return false
 
+        if (onBack != other.onBack.toList()) return false
         if (onOpen != other.onOpen.toList()) return false
         if (onComplete != other.onComplete.toList()) return false
         if (type != other.type) return false
@@ -51,6 +53,7 @@ data class FormFlowStep(
         return FormFlowStepEntity(
             FormFlowStepId.create(key),
             nextSteps,
+            onBack,
             onOpen,
             onComplete,
             type
