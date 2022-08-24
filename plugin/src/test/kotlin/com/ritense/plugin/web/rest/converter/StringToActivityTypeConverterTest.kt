@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.repository
+package com.ritense.plugin.web.rest.converter
 
-import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
-import org.springframework.data.jpa.repository.JpaRepository
+import com.ritense.plugin.domain.ActivityType
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
-interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, PluginConfigurationId> {
-    fun findByPluginDefinitionKey(pluginDefinitionKey: String): List<PluginConfiguration>
+internal class StringToActivityTypeConverterTest {
+
+    @Test
+    fun `should return SERVICE_TASK`() {
+        assertEquals(ActivityType.SERVICE_TASK, ActivityType.fromValue("bpmn:ServiceTask"))
+    }
+
+    @Test()
+    fun `should return error on invalid value`() {
+        assertThrows<IllegalStateException> { ActivityType.fromValue("invalidValue") }
+    }
 }

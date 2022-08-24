@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.repository
+package com.ritense.plugin.web.rest.converter
 
-import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
-import org.springframework.data.jpa.repository.JpaRepository
+import com.ritense.plugin.domain.ActivityType
+import org.springframework.core.convert.converter.Converter
 
-interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, PluginConfigurationId> {
-    fun findByPluginDefinitionKey(pluginDefinitionKey: String): List<PluginConfiguration>
+class StringToActivityTypeConverter
+    : Converter<String, ActivityType> {
+
+    override fun convert(source: String): ActivityType {
+        return ActivityType.fromValue(source)
+    }
 }
