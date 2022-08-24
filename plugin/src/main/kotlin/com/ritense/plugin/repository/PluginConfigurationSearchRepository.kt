@@ -17,15 +17,14 @@
 package com.ritense.plugin.repository
 
 import com.ritense.plugin.domain.PluginActionDefinition
-import com.ritense.plugin.domain.PluginCategory
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import javax.persistence.EntityManager
 import javax.persistence.TypedQuery
 import javax.persistence.criteria.CriteriaBuilder
+import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Join
-import javax.persistence.criteria.JoinType
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
@@ -36,8 +35,8 @@ class PluginConfigurationSearchRepository(
         val criteriaBuilder = entityManager.criteriaBuilder
         val query = criteriaBuilder.createQuery(PluginConfiguration::class.java)
         val selectRoot = query.from(PluginConfiguration::class.java)
-        query.select(selectRoot).distinct(true)
-        query.where(*createWhereClause(pluginConfigurationSearchParameters, criteriaBuilder, selectRoot))
+        query.select(selectRoot)
+        query.where(*createWhereClause(pluginConfigurationSearchParameters, criteriaBuilder, selectRoot, query))
 
         val typedQuery: TypedQuery<PluginConfiguration> = entityManager
             .createQuery(query)
@@ -48,29 +47,60 @@ class PluginConfigurationSearchRepository(
     private fun createWhereClause(
         pluginConfigurationSearchParameters: PluginConfigurationSearchParameters,
         cb: CriteriaBuilder,
-        root: Root<PluginConfiguration>
+        root: Root<PluginConfiguration>,
+        query: CriteriaQuery<PluginConfiguration>
     ): Array<Predicate> {
         val predicates: MutableList<Predicate> = mutableListOf()
         if (pluginConfigurationSearchParameters.activityType != null) {
-            val definitionJoin: Join<PluginConfiguration, PluginDefinition> =
-                root.join(PLUGIN_DEFINITION)
-            val actionDefinitionJoin: Join<PluginDefinition, PluginActionDefinition> =
-                definitionJoin.join(PLUGIN_ACTION_DEFINITIONS)
-            predicates.add(cb.isMember(
-                pluginConfigurationSearchParameters.activityType, actionDefinitionJoin.get(ACTIVITY_TYPES)
-            ))
+            predicates.add(activityTypePredicate(pluginConfigurationSearchParameters, cb, root, query))
         }
 
         if (pluginConfigurationSearchParameters.category != null) {
-            val definitionJoin: Join<PluginConfiguration, PluginDefinition> =
-                root.join(PLUGIN_DEFINITION, JoinType.LEFT)
-
-            val categoryJoin: Join<PluginDefinition, PluginCategory> =
-                definitionJoin.join(PLUGIN_CATEGORIES, JoinType.LEFT)
-
-            predicates.add(cb.equal(categoryJoin.get<String>(CATEGORY_KEY), pluginConfigurationSearchParameters.category))
+            predicates.add(categoryPredicate(pluginConfigurationSearchParameters, cb, root, query))
         }
         return predicates.toTypedArray()
+    }
+
+    private fun activityTypePredicate(
+        pluginConfigurationSearchParameters: PluginConfigurationSearchParameters,
+        cb: CriteriaBuilder,
+        root: Root<PluginConfiguration>,
+        query: CriteriaQuery<PluginConfiguration>
+    ): Predicate {
+        val subQueryDefinitions = query.subquery(PluginDefinition::class.java)
+        val definitionsFrom = subQueryDefinitions.from(PluginDefinition::class.java)
+        val actionDefinitionJoin: Join<PluginDefinition, PluginActionDefinition> =
+            definitionsFrom.join(PLUGIN_ACTION_DEFINITIONS)
+
+        subQueryDefinitions.select(definitionsFrom)
+        subQueryDefinitions.where(
+            cb.equal(root.get<PluginDefinition>(PLUGIN_DEFINITION), definitionsFrom),
+            cb.isMember(
+                pluginConfigurationSearchParameters.activityType, actionDefinitionJoin.get(ACTIVITY_TYPES)
+            )
+        )
+
+        return cb.exists(subQueryDefinitions)
+    }
+
+    private fun categoryPredicate(
+        pluginConfigurationSearchParameters: PluginConfigurationSearchParameters,
+        cb: CriteriaBuilder,
+        root: Root<PluginConfiguration>,
+        query: CriteriaQuery<PluginConfiguration>
+    ) : Predicate {
+        val subQueryDefinitions = query.subquery(PluginDefinition::class.java)
+        val definitionsFrom = subQueryDefinitions.from(PluginDefinition::class.java)
+        val categoryJoin: Join<PluginDefinition, PluginActionDefinition> =
+            definitionsFrom.join(PLUGIN_CATEGORIES)
+
+        subQueryDefinitions.select(definitionsFrom)
+        subQueryDefinitions.where(
+            cb.equal(root.get<PluginDefinition>(PLUGIN_DEFINITION), definitionsFrom),
+            cb.equal(categoryJoin.get<String>(CATEGORY_KEY), pluginConfigurationSearchParameters.category)
+        )
+
+        return cb.exists(subQueryDefinitions)
     }
 
     companion object {
