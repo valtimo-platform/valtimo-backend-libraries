@@ -222,8 +222,12 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         Optional<JsonSchemaDocument> documentOptional = Optional.of(createDocument(jsonDocumentContent));
         when(documentService.findBy(any())).thenReturn(documentOptional);
 
+        Map<String, Object> externalFieldVars = new HashMap<>();
+        externalFieldVars.put("voornaam", "Jan (OpenZaak)");
+        externalFieldVars.put("achternaam", "Test (OpenZaak)");
+
         when(formFieldDataResolver.supports(anyString())).thenReturn(true);
-        when(formFieldDataResolver.get(any(), any(), any())).thenReturn(Map.of("voornaam", "Jan (OpenZaak)"));
+        when(formFieldDataResolver.get(any(), any(), any())).thenReturn(externalFieldVars);
 
         final var formLink = processFormAssociation
             .getFormAssociations().stream().findFirst().orElseThrow().getFormLink();
@@ -245,12 +249,13 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         //then
         assertThat(form).isPresent();
         assertThat(form.get().at("/components/0/defaultValue").textValue()).isEqualTo("Jan"); // Exists already
-        assertThat(form.get().at("/components/1/defaultValue").textValue()).isEqualTo("Jan (OpenZaak)");
+        assertThat(form.get().at("/components/1/defaultValue").textValue()).isEqualTo("Test (OpenZaak)");
+        assertThat(form.get().at("/components/2/defaultValue").textValue()).isEqualTo("Jan (OpenZaak)");
     }
 
     @Test
     void shouldGetFormDefinitionByFormKey() throws IOException {
-        final var formDefinition = formDefinitionOf("form-open-zaak-variables-example");
+        final var formDefinition = formDefinitionOf("user-task-with-external-form-field");
         when(formDefinitionService.getFormDefinitionByName(any())).thenReturn(Optional.of(formDefinition));
 
         Optional<JsonNode> form = camundaFormAssociationService
@@ -262,7 +267,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
     @Test
     void shouldGetPrefilledFormDefinitionByFormKey() throws IOException {
         final var documentId = (Document.Id) JsonSchemaDocumentId.existingId(UUID.randomUUID());
-        final var formDefinition = formDefinitionOf("form-open-zaak-variables-example");
+        final var formDefinition = formDefinitionOf("user-task-with-external-form-field");
         when(formDefinitionService.getFormDefinitionByName(any())).thenReturn(Optional.of(formDefinition));
 
         final var documentContent = documentContent();
@@ -271,6 +276,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
 
         Map<String, Object> formFieldData = new HashMap<>();
         formFieldData.put("voornaam", "test-value");
+        formFieldData.put("achternaam", "test-value-2");
 
         when(formFieldDataResolver.supports(eq("oz"))).thenReturn(true);
         when(formFieldDataResolver.get(any(), any(), any())).thenReturn(formFieldData);
@@ -284,6 +290,8 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
             .get("defaultValue").textValue()).isEqualTo("Jan");
         assertThat(findArrayEntry(form.get().get("components"), "key", "oz.voornaam")
             .get("defaultValue").textValue()).isEqualTo("test-value");
+        assertThat(findArrayEntry(form.get().get("components"), "key", "oz:achternaam")
+            .get("defaultValue").textValue()).isEqualTo("test-value-2");
     }
 
     private ObjectNode documentContent() {
