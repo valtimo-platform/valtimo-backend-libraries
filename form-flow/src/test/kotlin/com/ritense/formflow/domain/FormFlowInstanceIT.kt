@@ -72,8 +72,6 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
         assertNull(secondStep.submissionData)
     }
 
-
-
     @Test
     fun `complete goes through the entire flow`() {
         val formFlowDefinition =
