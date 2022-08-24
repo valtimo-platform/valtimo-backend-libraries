@@ -34,7 +34,6 @@ import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessor
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
-import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import org.junit.jupiter.api.BeforeEach
@@ -93,12 +92,28 @@ internal class FormFlowServiceTest : BaseTest() {
         verify(expressionProcessor, times(2)).process<Any>(anyString(), isNull())
     }
 
+    @Test
+    fun `should handle multiple onBack expressions when going back`() {
+        val instance = createAndOpenFormFlowInstance(
+            onBack = listOf(
+                "\${'Hello '+'World!'}", "\${3 / 1}"
+            )
+        )
+
+        instance.getCurrentStep().back()
+        verify(expressionProcessor, times(2)).process<Any>(anyString(), isNull())
+
+    }
+
     private fun createAndOpenFormFlowInstance(
-        onOpen: List<String>? = null, onComplete: List<String>? = null
+        onBack: List<String>? = null,
+        onOpen: List<String>? = null,
+        onComplete: List<String>? = null
     ): FormFlowInstance {
         val step = FormFlowStep(
             FormFlowStepId("start-step"),
             listOf(),
+            onBack?: listOf(),
             onOpen?: listOf(),
             onComplete?:listOf(),
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
