@@ -17,16 +17,18 @@
 package com.ritense.documentenapi.client
 
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.zgw.ClientTools
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import java.net.URI
 
 class DocumentenApiClient(
     val webclient: WebClient
 ) {
     fun storeDocument(
         authentication: DocumentenApiAuthentication,
-        baseUrl: String,
+        baseUrl: URI,
         request: CreateDocumentRequest
     ): CreateDocumentResult {
         val result = webclient
@@ -34,7 +36,11 @@ class DocumentenApiClient(
             .filter(authentication)
             .build()
             .post()
-            .uri(baseUrl + "enkelvoudiginformatieobjecten")
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("enkelvoudiginformatieobjecten")
+                    .build()
+            }
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(request))
             .retrieve()

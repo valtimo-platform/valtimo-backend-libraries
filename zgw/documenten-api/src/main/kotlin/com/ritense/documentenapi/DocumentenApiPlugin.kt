@@ -29,6 +29,7 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.context.ApplicationEventPublisher
+import java.net.URI
 
 @Plugin(
     key = "documentenapi",
@@ -41,7 +42,7 @@ class DocumentenApiPlugin(
     val applicationEventPublisher: ApplicationEventPublisher
 ) {
     @PluginProperty(key = "url", secret = false)
-    lateinit var url: String
+    lateinit var url: URI
     @PluginProperty(key = "bronorganisatie", secret = false)
     lateinit var bronorganisatie: String
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)

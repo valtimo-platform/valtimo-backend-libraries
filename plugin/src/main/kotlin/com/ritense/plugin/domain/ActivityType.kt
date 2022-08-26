@@ -16,6 +16,13 @@
 
 package com.ritense.plugin.domain
 
-enum class ActivityType {
-    SERVICE_TASK
+enum class ActivityType(
+    val bpmnModelValue: String
+) {
+    SERVICE_TASK("bpmn:ServiceTask");
+
+    companion object {
+        private val mapping = values().associateBy(ActivityType::bpmnModelValue)
+        fun fromValue(value:String) = mapping[value] ?: error("Can't find ActivityType with value $value")
+    }
 }

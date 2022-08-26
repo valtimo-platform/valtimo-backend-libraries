@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.form.domain;
+package com.ritense.plugin.web.rest.converter
 
-import com.ritense.valtimo.contract.form.FormFieldDataResolver;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import com.ritense.plugin.domain.ActivityType
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
-import java.util.Map;
+internal class StringToActivityTypeConverterTest {
 
-public class SpringContextHelper implements ApplicationContextAware {
-
-    private static ApplicationContext context;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        context = applicationContext;
+    @Test
+    fun `should return SERVICE_TASK`() {
+        assertEquals(ActivityType.SERVICE_TASK, ActivityType.fromValue("bpmn:ServiceTask"))
     }
 
-    static Map<String, FormFieldDataResolver> getFormFieldDataResolver() {
-        return context.getBeansOfType(FormFieldDataResolver.class);
+    @Test()
+    fun `should return error on invalid value`() {
+        assertThrows<IllegalStateException> { ActivityType.fromValue("invalidValue") }
     }
-
 }

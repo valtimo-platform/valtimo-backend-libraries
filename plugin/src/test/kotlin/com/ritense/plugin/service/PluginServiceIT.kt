@@ -104,7 +104,7 @@ internal class PluginServiceIT: BaseIntegrationTest() {
         )
 
         // value should be decrypted when loading from database
-        val configurations = pluginService.getPluginConfigurations()
+        val configurations = pluginService.getPluginConfigurations(PluginConfigurationSearchParameters())
         val configurationFromDatabase = configurations.filter { it.id.id == configuration.id.id }.first()
 
         assertEquals("test123", configurationFromDatabase.properties!!.get("property1").textValue())
@@ -120,7 +120,7 @@ internal class PluginServiceIT: BaseIntegrationTest() {
         """.trimMargin()
         pluginService.updatePluginConfiguration(configurationFromDatabase.id,"test" ,Mapper.INSTANCE.get().readTree(update) as ObjectNode)
 
-        val configurations2 = pluginService.getPluginConfigurations()
+        val configurations2 = pluginService.getPluginConfigurations(PluginConfigurationSearchParameters())
         val configurationFromDatabase2 = configurations2.filter { it.id.id == configuration.id.id }.first()
 
         assertEquals("test1234", configurationFromDatabase2.properties!!.get("property1").textValue())
@@ -129,7 +129,25 @@ internal class PluginServiceIT: BaseIntegrationTest() {
 
     @Test
     @Transactional
-    fun `should invoke an action on the plugin`() {
+    fun `should invoke an action on the plugin with void return type`() {
+        val processLink = PluginProcessLink(
+            PluginProcessLinkId.newId(),
+            processDefinitionId = UUID.randomUUID().toString(),
+            activityId = "test",
+            pluginConfigurationId = pluginConfiguration.id,
+            pluginActionDefinitionKey = "test-action",
+            actionProperties = Mapper.INSTANCE.get().readTree("{}") as ObjectNode
+        )
+
+        val execution = DelegateExecutionFake.of()
+            .withProcessInstanceId(UUID.randomUUID().toString())
+
+        pluginService.invoke(execution, processLink)
+    }
+
+    @Test
+    @Transactional
+    fun `should invoke an action on the plugin with return type`() {
         val processLink = PluginProcessLink(
             PluginProcessLinkId.newId(),
             processDefinitionId = UUID.randomUUID().toString(),
@@ -142,7 +160,9 @@ internal class PluginServiceIT: BaseIntegrationTest() {
         val execution = DelegateExecutionFake.of()
             .withProcessInstanceId(UUID.randomUUID().toString())
 
-        pluginService.invoke(execution, processLink)
+        val result = pluginService.invoke(execution, processLink)
+
+        assertEquals("test123", result)
     }
 
     @Test

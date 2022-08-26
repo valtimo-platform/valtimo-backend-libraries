@@ -46,6 +46,9 @@ data class FormFlowStepInstance(
     val definition: FormFlowStep
         get() = instance.formFlowDefinition.getStepByKey(stepKey)
 
+    fun back() {
+        processExpressions(FormFlowStep::onBack)
+    }
     fun open() {
         processExpressions(FormFlowStep::onOpen)
     }

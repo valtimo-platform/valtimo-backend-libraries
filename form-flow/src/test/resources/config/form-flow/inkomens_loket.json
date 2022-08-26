@@ -31,6 +31,9 @@
         },
         {
             "key": "leeftijd",
+            "onBack": [
+                "${formFlowBeanTestHelper.parseAdditionalProperties(additionalProperties)}"
+            ],
             "nextSteps": [
                 {
                     "condition": "${submissionData.leeftijd.isOuderDan21 == true && submissionData.leeftijd.isJongerDanAOW == true}",
