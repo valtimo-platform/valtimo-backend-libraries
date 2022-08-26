@@ -1,0 +1,47 @@
+6aa63eb - Updated version to 9.17.0.RELEASEea3ec53 - Merge branch 'rc/9.17.0.143.RC'
+c0560d5 - Updated version to 9.17.0.RELEASE
+e5a14a5 - Added release notes file
+6aa63eb - Updated version to 9.17.0.RELEASE
+8661869 - Fixed dependency issue
+d5f8358 - Updated version to 9.17.0.143.RC-SNAPSHOT
+ace75bd - Bugfix/load plugin fix (#264)
+45d91b2 - Fix tests (#263)
+e6df995 - Encrypt plugin properties that are marked with encrypt in annotation (#258)
+08bb96a - #36265 (#262)
+6f342f5 - License report (#225)
+bda1413 - #36265 store smart documents generated document in temp folder (#257)
+c665801 - #36275 Temporary file storage (#259)
+257a713 - return error on required string property when value is empty (#261)
+3aef5ae - 36388 - foreignKeyTableName is required foreignKeyConstraintExists on Liquibase 3.8.x and higher (#260)
+7f14af6 - 36041 Resolving of plugin configuration placeholder variables (#256)
+5189e6b - Fix plugin integration tests (#255)
+bba8fd7 - #35635 Ophalen Formulier definitie uit Objecten API (#254)
+cb4771f - Bugfix Plugin deployment (#252)
+ec1bfb6 - feat: return collections with DocumentVariableDelegateImpl (#253)
+1cc798a - Only apply changeset to mysql (#251)
+ab169f1 - Added support for PostgreSQL (#247)
+722de35 - Bugfix: ProcessDefinition key length was limited (#248)
+52013b4 - bugfix postgres DB: ERROR: invalid input syntax for type json (#246)
+ff1de24 - Merge branch 'main' into development
+8840397 - Small fixes to auto deployment of plugins (#245)
+8f36963 - fix for postgres (#244)
+3547029 - postgres DB doesn't support 'unhex' and double quotes for strings (#243)
+66da663 - Fix error on postgres DB: (#242)
+0ad74e8 - #36023 execute plugin action (#240)
+de0049a - Added endpoints to update and delete plugin configuration (#241)
+acdc99f - 36022 - Save and retrieve plugin action configurations / process links (#239)
+43b705a - #36040 Validatie plugin configuratie properties (#237)
+0e8de85 - Fix errors (#236)
+cb75088 - Fixed plugin tests (#238)
+d124915 - Fix errors: PluginService cyclic dependency. Failing integration test. Nonexistent method AuditRecord.builder() (#235)
+1e93b36 - Feature/35829 initializing plugins (#233)
+ff4abd6 - Bugfix/security testing issues (#234)
+e119df4 - Added http configuration for camunda webapps (#232)
+6540243 - Feature - Alternative way of storing form associations (#230)
+2359c19 - #35638 Opslaan taak titel in Taakobject (#231)
+da5d907 - Merge branch 'main' into development
+13ae14d - Fix error: 'Expected single result but found' (#229)
+a0e32a3 - Disabled outdated test (#228)
+80ce7ed - 35880 - Sanitizing user input before form definition is pre-filled (#227)
+7f04c93 - Feature/changes to plugin configuration endpoint (#226)
+f5a0e02 - Merge branch 'main' into development
