@@ -18,6 +18,7 @@ package com.ritense.plugin
 
 import com.ritense.plugin.annotation.Plugin
 import io.github.classgraph.ClassGraph
+import mu.KotlinLogging
 
 class PluginDefinitionResolver {
     internal fun findPluginClasses() : Map<Class<*>, Plugin> {
@@ -27,8 +28,21 @@ class PluginDefinitionResolver {
             .scan()
             .getClassesWithAnnotation(Plugin::class.java)
 
-        return pluginClasses.associate {
-            it.loadClass() to it.getAnnotationInfo(Plugin::class.java).loadClassAndInstantiate() as Plugin
-        }
+        return pluginClasses.filter {
+                try {
+                    it.loadClass()
+                    true
+                } catch (e: Exception) {
+                    logger.warn { "Unable to load plugin ${it.name} class, skipped" }
+                    logger.debug(e) {"Unable to load plugin ${it.name} because of the following exception"}
+                    false
+                }
+            }.associate {
+                it.loadClass() to it.getAnnotationInfo(Plugin::class.java).loadClassAndInstantiate() as Plugin
+            }
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }

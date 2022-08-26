@@ -29,13 +29,15 @@ import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
 )
 class TestPlugin(
     val someObject: String
-) : TestPluginParent() {
-    @PluginProperty(key = "property1")
+) : TestPluginParent(), TestPluginInterface{
+    @PluginProperty(key = "property1", secret = true)
     lateinit var property1: String
-    @PluginProperty(key = "property2", required = false)
+    @PluginProperty(key = "property2", required = false, secret = false)
     var property2: Boolean? = null
-    @PluginProperty(key = "property3")
+    @PluginProperty(key = "property3", secret = false)
     lateinit var property3: Number
+    @PluginProperty(key = "property4", secret = false)
+    lateinit var property4: TestPluginCategory
 
     @PluginAction(
         key = "test-action",
@@ -64,6 +66,10 @@ class TestPlugin(
         activityTypes = []
     )
     override fun overrideAction() {
+        //do nothing
+    }
+
+    override fun interfaceAction() {
         //do nothing
     }
 

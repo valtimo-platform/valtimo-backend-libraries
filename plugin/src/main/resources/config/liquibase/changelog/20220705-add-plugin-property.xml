@@ -41,4 +41,11 @@
                                  referencedTableName="plugin_definition"
                                  referencedColumnNames="plugin_definition_key"/>
     </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <addColumn tableName="plugin_property">
+            <column name="secret" type="BOOLEAN" valueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

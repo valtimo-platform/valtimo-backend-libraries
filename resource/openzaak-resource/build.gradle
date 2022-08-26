@@ -18,6 +18,9 @@ dependencies {
     api project(':resource')
     api project(':openzaak')
 
+    compileOnly project(':zgw:documenten-api')
+    compileOnly project(':zgw:zaken-api')
+
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
@@ -59,6 +62,10 @@ dependencies {
 
     //Kotlin
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+
+    testImplementation project(':zgw:documenten-api')
+    testImplementation project(':zgw:zaken-api')
+
 
     jar {
         enabled = true

@@ -73,7 +73,7 @@ internal class EigenschappenSubmittedListenerTest {
         MockitoAnnotations.openMocks(this)
 
         event = ExternalDataSubmittedEvent(
-            mapOf(ExternalFormFieldType.OZ to mapOf("voornaam" to "Piet")),
+            mapOf(ExternalFormFieldType.OZ.name.lowercase() to mapOf("voornaam" to "Piet")),
             documentDefinition,
             documentId
         )

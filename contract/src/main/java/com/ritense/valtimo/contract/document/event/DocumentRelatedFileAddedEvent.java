@@ -23,6 +23,7 @@ import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
@@ -32,6 +33,8 @@ public class DocumentRelatedFileAddedEvent extends AuditMetaData implements Audi
     private final UUID fileId;
     private final String fileName;
 
+    private final Map<String, Object> metadata;
+
     @JsonCreator
     public DocumentRelatedFileAddedEvent(
         UUID id,
@@ -40,7 +43,8 @@ public class DocumentRelatedFileAddedEvent extends AuditMetaData implements Audi
         String user,
         UUID documentId,
         UUID fileId,
-        String fileName
+        String fileName,
+        Map<String, Object> metadata
     ) {
         super(id, origin, occurredOn, user);
         assertArgumentNotNull(documentId, "documentId is required");
@@ -49,6 +53,7 @@ public class DocumentRelatedFileAddedEvent extends AuditMetaData implements Audi
         this.documentId = documentId;
         this.fileId = fileId;
         this.fileName = fileName;
+        this.metadata = metadata;
     }
 
     @Override
@@ -66,4 +71,7 @@ public class DocumentRelatedFileAddedEvent extends AuditMetaData implements Audi
         return fileName;
     }
 
+    public Map<String, Object> getMetadata() {
+        return metadata;
+    }
 }

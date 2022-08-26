@@ -35,6 +35,8 @@ valtimo:
         notificationTemplate: bpc-task-notification
         completionTemplate: bpc-task-completion
         reminderTemplate: bpc-task-reminder
+    plugin:
+        encryption-secret: "abcdefghijklmnop"
 
 aws:
     profile: ritense

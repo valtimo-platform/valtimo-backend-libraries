@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.service
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
@@ -31,15 +32,16 @@ import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.valtimo.contract.json.Mapper
-import java.lang.reflect.InvocationTargetException
-import java.util.UUID
-import kotlin.test.assertFailsWith
 import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.lang.reflect.InvocationTargetException
+import java.util.UUID
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotEquals
 
 
 internal class PluginServiceIT: BaseIntegrationTest() {
@@ -56,6 +58,8 @@ internal class PluginServiceIT: BaseIntegrationTest() {
     lateinit var pluginFactory: PluginFactory<TestPlugin>
 
     lateinit var pluginConfiguration: PluginConfiguration
+    lateinit var categoryPluginConfiguration: PluginConfiguration
+
     @BeforeEach
     fun init() {
         val pluginDefinition = pluginDefinitionRepository.getById("test-plugin");
@@ -65,6 +69,62 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             null,
             pluginDefinition
         ))
+
+        val categoryPluginDefinition = pluginDefinitionRepository.getById("test-category-plugin");
+        categoryPluginConfiguration = pluginConfigurationRepository.save(PluginConfiguration(
+            PluginConfigurationId.newId(),
+            "title",
+            null,
+            categoryPluginDefinition
+        ))
+    }
+
+    @Test
+    @Transactional
+    fun `should be able to save configuration with encypted property and decrypt on load`() {
+        val categoryConfiguration = pluginService.createPluginConfiguration(
+            "title",
+            Mapper.INSTANCE.get().readTree("{}") as ObjectNode,
+            "test-category-plugin",
+        )
+
+        val input = """
+            {
+                "property1": "test123",
+                "property2": false,
+                "property3": 123,
+                "property4": "${categoryConfiguration.id.id}"
+            }
+        """.trimMargin()
+
+        val configuration = pluginService.createPluginConfiguration(
+            "title",
+            Mapper.INSTANCE.get().readTree(input) as ObjectNode,
+            "test-plugin",
+        )
+
+        // value should be decrypted when loading from database
+        val configurations = pluginService.getPluginConfigurations()
+        val configurationFromDatabase = configurations.filter { it.id.id == configuration.id.id }.first()
+
+        assertEquals("test123", configurationFromDatabase.properties!!.get("property1").textValue())
+
+        // should still work after updating configuration
+        val update = """
+            {
+                "property1": "test1234",
+                "property2": false,
+                "property3": 123,
+                "property4": "${categoryConfiguration.id.id}"
+            }
+        """.trimMargin()
+        pluginService.updatePluginConfiguration(configurationFromDatabase.id,"test" ,Mapper.INSTANCE.get().readTree(update) as ObjectNode)
+
+        val configurations2 = pluginService.getPluginConfigurations()
+        val configurationFromDatabase2 = configurations2.filter { it.id.id == configuration.id.id }.first()
+
+        assertEquals("test1234", configurationFromDatabase2.properties!!.get("property1").textValue())
+        assertNotEquals("test1234", configurationFromDatabase2.rawProperties!!.get("property1").textValue())
     }
 
     @Test
@@ -76,7 +136,7 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "other-test-action",
-            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "test123"}""")
+            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "test123"}""") as ObjectNode
         )
 
         val execution = DelegateExecutionFake.of()
@@ -94,7 +154,7 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "other-test-action",
-            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "pv:placeholder"}""")
+            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "pv:placeholder"}""") as ObjectNode
         )
 
         val testPlugin = spy(TestPlugin("someString"))

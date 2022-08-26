@@ -27,10 +27,12 @@ import org.camunda.bpm.engine.delegate.VariableScope
  *
  * These requestedValues do not have a prefix
  */
-class FixedValueResolverFactory : ValueResolverFactory {
+class FixedValueResolverFactory(
+    val prefix: String = ""
+) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
-        return ""
+        return prefix
     }
 
     override fun createResolver(
@@ -41,7 +43,11 @@ class FixedValueResolverFactory : ValueResolverFactory {
             requestedValue.toBooleanStrictOrNull()
                 ?: requestedValue.toLongOrNull()
                 ?: requestedValue.toDoubleOrNull()
-                ?: requestedValue
+                ?:  if (prefix.isEmpty()) {
+                        requestedValue
+                    } else {
+                        "$prefix:$requestedValue"
+                    }
         }
     }
 
@@ -51,6 +57,6 @@ class FixedValueResolverFactory : ValueResolverFactory {
         values: Map<String, Any>
     ) {
         val firstValue = values.iterator().next()
-        throw RuntimeException("Can't handle value that doesn't have a prefix. {${firstValue.key} to ${firstValue.value}}")
+        throw RuntimeException("Can't save fixed value (unknown destination): {${firstValue.key} to ${firstValue.value}}")
     }
 }

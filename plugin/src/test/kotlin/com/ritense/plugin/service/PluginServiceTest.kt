@@ -17,20 +17,25 @@
 package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
+import com.ritense.plugin.domain.PluginProcessLink
+import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.domain.PluginProperty
-import com.ritense.plugin.domain.PluginPropertyId
 import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
@@ -39,6 +44,7 @@ import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valueresolver.ValueResolverService
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -87,6 +93,12 @@ internal class PluginServiceTest {
     }
 
     @Test
+    fun `should get plugin configurations from repository by category`(){
+        pluginService.getPluginConfigurationsByCategory("test")
+        verify(pluginConfigurationRepository).findByPluginDefinition_Categories_Key("test")
+    }
+
+    @Test
     fun `should save plugin configuration`(){
         val pluginDefinition = newPluginDefinition()
         addPluginProperty(pluginDefinition)
@@ -94,7 +106,7 @@ internal class PluginServiceTest {
 
         pluginService
             .createPluginConfiguration(
-                "title", ObjectMapper().readTree("{\"name\": \"whatever\" }"), "key"
+                "title", ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode, "key"
             )
         verify(pluginConfigurationRepository).save(any())
     }
@@ -108,7 +120,7 @@ internal class PluginServiceTest {
         val exception = assertThrows(PluginPropertyRequiredException::class.java) {
             pluginService
                 .createPluginConfiguration(
-                    "title", ObjectMapper().readTree("{}"), "key"
+                    "title", ObjectMapper().readTree("{}") as ObjectNode, "key"
                 )
         }
         assertEquals("Plugin property with name 'name' is required for plugin 'Test Plugin'", exception.message)
@@ -123,7 +135,22 @@ internal class PluginServiceTest {
         val exception = assertThrows(PluginPropertyRequiredException::class.java) {
             pluginService
                 .createPluginConfiguration(
-                    "title", ObjectMapper().readTree("{\"name\": null}"), "key"
+                    "title", ObjectMapper().readTree("{\"name\": null}") as ObjectNode, "key"
+                )
+        }
+        assertEquals("Plugin property with name 'name' is required for plugin 'Test Plugin'", exception.message)
+    }
+
+    @Test
+    fun `should throw exception when required plugin property field is empty string`() {
+        val pluginDefinition = newPluginDefinition()
+        addPluginProperty(pluginDefinition)
+        newPluginConfiguration(pluginDefinition)
+
+        val exception = assertThrows(PluginPropertyRequiredException::class.java) {
+            pluginService
+                .createPluginConfiguration(
+                    "title", ObjectMapper().readTree("{\"name\": \"\"}") as ObjectNode, "key"
                 )
         }
         assertEquals("Plugin property with name 'name' is required for plugin 'Test Plugin'", exception.message)
@@ -138,7 +165,7 @@ internal class PluginServiceTest {
         val exception = assertThrows(PluginPropertyParseException::class.java) {
             pluginService
                 .createPluginConfiguration(
-                    "title", ObjectMapper().readTree("{\"name\": [\"incorrect-type\"]}"), "key"
+                    "title", ObjectMapper().readTree("{\"name\": [\"incorrect-type\"]}") as ObjectNode, "key"
                 )
         }
         assertEquals("Plugin property with name 'name' failed to parse for plugin 'Test Plugin'", exception.message)
@@ -151,7 +178,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
 
         val pluginConfigurationCaptor = argumentCaptor<PluginConfiguration>()
-        val newProperties = ObjectMapper().readTree("{\"name\": \"whatever\" }")
+        val newProperties = ObjectMapper().readTree("{\"name\": \"whatever\" }")  as ObjectNode
 
         whenever(pluginConfigurationRepository.getById(pluginConfiguration.id)).thenReturn(pluginConfiguration)
 
@@ -229,7 +256,87 @@ internal class PluginServiceTest {
         assertEquals("description", actions[0].description)
     }
 
-    private fun newPluginDefinition(): PluginDefinition {
+    @Test
+    fun `should invoke method`(){
+        val execution = mock<DelegateExecution>()
+        val processLink = PluginProcessLink(
+            PluginProcessLinkId.newId(),
+            "process",
+            "activity",
+            Mapper.INSTANCE.get().readTree("{\"test\":123}") as ObjectNode,
+            PluginConfigurationId.newId(),
+            "test-action"
+        )
+
+        val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
+        val pluginConfiguration = newPluginConfiguration(pluginDefinition)
+        val testDependency = mock<TestDependency>()
+
+        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginFactory.canCreate(any())).thenReturn(true)
+        whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
+        whenever(execution.processInstanceId).thenReturn("test")
+        whenever(valueResolverService.resolveValues(any(), any(), any())).thenReturn(mapOf("test" to 123))
+
+        pluginService.invoke(execution, processLink)
+
+        verify(testDependency).processInt(123)
+    }
+
+    @Test
+    fun `should throw exception when invoking method with resolved variable where result does not match argument type`(){
+        val execution = mock<DelegateExecution>()
+        val processLink = PluginProcessLink(
+            PluginProcessLinkId.newId(),
+            "process",
+            "activity",
+            Mapper.INSTANCE.get().readTree("{\"test\":\"test:some-value\"}") as ObjectNode,
+            PluginConfigurationId.newId(),
+            "test-action"
+        )
+
+        val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
+        val pluginConfiguration = newPluginConfiguration(pluginDefinition)
+        val testDependency = mock<TestDependency>()
+
+        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginFactory.canCreate(any())).thenReturn(true)
+        whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
+        whenever(execution.processInstanceId).thenReturn("test")
+        whenever(valueResolverService.resolveValues(any(), any(), any())).thenReturn(mapOf("test" to 123))
+
+        val exception = assertThrows(InvalidFormatException::class.java) {
+            pluginService.invoke(execution, processLink)
+        }
+    }
+
+    @Test
+    fun `should throw exception when invoking method with variable where argument type doesn't match`(){
+        val execution = mock<DelegateExecution>()
+        val processLink = PluginProcessLink(
+            PluginProcessLinkId.newId(),
+            "process",
+            "activity",
+            Mapper.INSTANCE.get().readTree("{\"test\":\"some-value\"}") as ObjectNode,
+            PluginConfigurationId.newId(),
+            "test-action"
+        )
+
+        val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
+        val pluginConfiguration = newPluginConfiguration(pluginDefinition)
+        val testDependency = mock<TestDependency>()
+
+        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginFactory.canCreate(any())).thenReturn(true)
+        whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
+        whenever(execution.processInstanceId).thenReturn("test")
+
+        val exception = assertThrows(InvalidFormatException::class.java) {
+            pluginService.invoke(execution, processLink)
+        }
+    }
+
+    private fun newPluginDefinition(className: String = "className"): PluginDefinition {
         val pluginDefinition = PluginDefinition(
             "TestPlugin",
             "Test Plugin",
@@ -242,11 +349,13 @@ internal class PluginServiceTest {
     }
 
     private fun addPluginProperty(pluginDefinition: PluginDefinition) {
-        (pluginDefinition.pluginProperties as MutableSet).add(
+        (pluginDefinition.properties as MutableSet).add(
             PluginProperty(
-                PluginPropertyId("property1", pluginDefinition),
+                "property1",
+                pluginDefinition,
                 "property1",
                 true,
+                false,
                 "name",
                 String::class.java.name
             )
@@ -257,11 +366,28 @@ internal class PluginServiceTest {
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            ObjectMapper().readTree("{\"name\": \"whatever\" }"),
+            ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode,
             pluginDefinition
         )
         whenever(pluginConfigurationRepository.save(any())).thenReturn(pluginConfiguration)
         return pluginConfiguration
     }
 
+    class TestPlugin(
+        val testDependency: TestDependency
+    ) {
+        @PluginAction(
+            key = "test-action",
+            title = "Test action",
+            description = "This is an action used to verify plugin framework functionality",
+            activityTypes = [ActivityType.SERVICE_TASK]
+        )
+        fun doThing(@PluginActionProperty test: Int) {
+            testDependency.processInt(test)
+        }
+    }
+
+    interface TestDependency{
+        fun processInt(test: Int)
+    }
 }
