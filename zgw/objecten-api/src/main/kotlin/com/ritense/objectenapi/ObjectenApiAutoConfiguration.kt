@@ -21,7 +21,6 @@ import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
 import com.ritense.objectenapi.service.ZaakObjectDataResolver
 import com.ritense.objectenapi.service.ZaakObjectService
-import com.ritense.objectenapi.service.ZaakObjectSubmittedListener
 import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
 import io.netty.handler.logging.LogLevel
