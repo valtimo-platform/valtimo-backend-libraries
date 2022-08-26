@@ -12,4 +12,5 @@ d0ef6f4 - added missing bean (#273)
 80f6fb1 - Feature/support plugin category (#268)
 d423375 - #36265 Enable Scheduling (#267)
 4da0811 - fix: 36319 multiple forms linked to single start event (#266)
-ed759b0 - Fix tests (#265)
+ed759b0 - Fix tests (#265)e8db219 - Merge branch 'rc/9.18.0.152.RC'
+aebf625 - Updated version to 9.18.0.RELEASE
