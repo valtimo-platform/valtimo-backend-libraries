@@ -3,6 +3,7 @@
     "steps": [
         {
             "key": "step1",
+            "onBack": [],
             "onOpen": [],
             "onComplete": [],
             "nextSteps": [
@@ -20,6 +21,7 @@
         },
         {
             "key": "step2",
+            "onBack": [],
             "onOpen": [],
             "onComplete": [],
             "nextSteps": [
@@ -37,6 +39,7 @@
         },
         {
             "key": "step3",
+            "onBack": [],
             "onOpen": [],
             "onComplete": [],
             "nextSteps": [
