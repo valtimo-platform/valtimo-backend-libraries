@@ -89,9 +89,4 @@ class ObjectenApiAutoConfiguration {
     ): ZaakObjectDataResolver {
         return ZaakObjectDataResolver(zaakObjectService, objectMapper)
     }
-
-    @Bean
-    fun zaakObjectSubmittedListener(): ZaakObjectSubmittedListener {
-        return ZaakObjectSubmittedListener()
-    }
 }
