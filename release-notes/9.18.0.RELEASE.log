@@ -12,4 +12,25 @@ d0ef6f4 - added missing bean (#273)
 80f6fb1 - Feature/support plugin category (#268)
 d423375 - #36265 Enable Scheduling (#267)
 4da0811 - fix: 36319 multiple forms linked to single start event (#266)
+ed759b0 - Fix tests (#265)e8db219 - Merge branch 'rc/9.18.0.152.RC'
+aebf625 - Updated version to 9.18.0.RELEASE8ce5edb - Merge branch 'rc/9.18.0.152.RC'
+648bf83 - Updated version to 9.18.0.RELEASE
+0847b7c - Added release notes file
+e8db219 - Merge branch 'rc/9.18.0.152.RC'
+aebf625 - Updated version to 9.18.0.RELEASE
+5ef8056 - Added release notes file
+8736f2a - Updated version to 9.18.0.RELEASE
+22b250b - merge main
+0c2da20 - Updated version to 9.18.0.152.RC-SNAPSHOT
+30da81c - Fixed issue with classloading plugin (#277)
+3f4c909 - Fixed plugin dependencies (#276)
+35026ab - Link document in Zaken API plugin (#275)
+d0ef6f4 - added missing bean (#273)
+6df1c31 - Feature/support for custom external field resolver (#269)
+150131a - Fixed integration tests for Klant API (#272)
+19c9a05 - Feature/zgw plugins (#271)
+1cb291d - Feature/zgw plugins (#270)
+80f6fb1 - Feature/support plugin category (#268)
+d423375 - #36265 Enable Scheduling (#267)
+4da0811 - fix: 36319 multiple forms linked to single start event (#266)
 ed759b0 - Fix tests (#265)
