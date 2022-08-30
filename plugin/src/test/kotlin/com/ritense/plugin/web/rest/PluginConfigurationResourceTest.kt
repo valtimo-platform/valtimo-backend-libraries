@@ -26,12 +26,14 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
 import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
 import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
 import com.ritense.valtimo.contract.json.Mapper
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.format.support.FormattingConversionService
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
@@ -57,8 +59,12 @@ internal class PluginConfigurationResourceTest {
         pluginService = mock()
         pluginConfigurationResource = PluginConfigurationResource(pluginService)
 
+        val formattingConversionService = FormattingConversionService()
+        formattingConversionService.addConverter(StringToActivityTypeConverter())
+
         mockMvc = MockMvcBuilders
             .standaloneSetup(pluginConfigurationResource)
+            .setConversionService(formattingConversionService)
             .build()
     }
 
@@ -70,7 +76,7 @@ internal class PluginConfigurationResourceTest {
         val plugin2 = PluginDefinition("key2", "title2", "description2", "className2")
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties1, plugin)
         val pluginConfiguration2 = PluginConfiguration(PluginConfigurationId.newId(), "title2", properties2, plugin2)
-        whenever(pluginService.getPluginConfigurations()).thenReturn(listOf(pluginConfiguration, pluginConfiguration2))
+        whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf(pluginConfiguration, pluginConfiguration2))
 
         mockMvc.perform(get("/api/plugin/configuration")
             .characterEncoding(StandardCharsets.UTF_8.name())
@@ -80,7 +86,7 @@ internal class PluginConfigurationResourceTest {
             .andDo(print())
             .assertConfigurationListOutput()
 
-        verify(pluginService).getPluginConfigurations()
+        verify(pluginService).getPluginConfigurations(any())
     }
 
     @Test
@@ -91,7 +97,8 @@ internal class PluginConfigurationResourceTest {
         val plugin2 = PluginDefinition("key2", "title2", "description2", "className2")
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties1, plugin)
         val pluginConfiguration2 = PluginConfiguration(PluginConfigurationId.newId(), "title2", properties2, plugin2)
-        whenever(pluginService.getPluginConfigurationsByCategory("some-category"))
+        whenever(pluginService
+            .getPluginConfigurations(any()))
             .thenReturn(listOf(pluginConfiguration, pluginConfiguration2))
 
         mockMvc.perform(get("/api/plugin/configuration?category=some-category")
@@ -101,8 +108,19 @@ internal class PluginConfigurationResourceTest {
         )
             .andDo(print())
             .assertConfigurationListOutput()
+    }
 
-        verify(pluginService).getPluginConfigurationsByCategory("some-category")
+    @Test
+    fun `should filter on plugins for activityType`() {
+        whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
+
+        mockMvc.perform(get("/api/plugin/configuration?activityType=bpmn:ServiceTask")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$").isArray)
+            .andExpect(jsonPath("$").isEmpty)
     }
 
     private fun ResultActions.assertConfigurationListOutput() {

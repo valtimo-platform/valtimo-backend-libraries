@@ -98,6 +98,7 @@ class FormFlowDeploymentService(
     private fun validate(formFlowDefinitionConfig: FormFlowDefinition) {
         val expressionProcessor = ExpressionProcessorFactoryHolder.getinstance()!!.create()
         formFlowDefinitionConfig.steps.forEach { step ->
+            step.onBack.forEach { expression -> expressionProcessor.validate(expression) }
             step.onOpen.forEach { expression -> expressionProcessor.validate(expression) }
             step.onComplete.forEach { expression -> expressionProcessor.validate(expression) }
         }

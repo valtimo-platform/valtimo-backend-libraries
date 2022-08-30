@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.client
+package com.ritense.plugin.web.rest.converter
 
-import java.time.LocalDate
+import com.ritense.plugin.domain.ActivityType
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
-class ObjectRecord(
-    val index: Int?,
-    val typeVersion: Int,
-    val data: Map<String, Any?>?,
-    val geometry: ObjectGeometry?,
-    val startAt: LocalDate,
-    val endAt: LocalDate?,
-    val registrationAt: LocalDate?,
-    val correctionFor: String?,
-    val correctedBy: String?
-)
+internal class StringToActivityTypeConverterTest {
 
-class ObjectGeometry(
-    val type: String,
-    val coordinates: Array<Int>
-)
+    @Test
+    fun `should return SERVICE_TASK`() {
+        assertEquals(ActivityType.SERVICE_TASK, ActivityType.fromValue("bpmn:ServiceTask"))
+    }
+
+    @Test()
+    fun `should return error on invalid value`() {
+        assertThrows<IllegalStateException> { ActivityType.fromValue("invalidValue") }
+    }
+}

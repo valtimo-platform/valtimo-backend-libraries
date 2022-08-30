@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.client
+package com.ritense.valtimo.contract.form;
 
-import java.time.LocalDate
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
-class ObjectRecord(
-    val index: Int?,
-    val typeVersion: Int,
-    val data: Map<String, Any?>?,
-    val geometry: ObjectGeometry?,
-    val startAt: LocalDate,
-    val endAt: LocalDate?,
-    val registrationAt: LocalDate?,
-    val correctionFor: String?,
-    val correctedBy: String?
-)
+class ExternalFormFieldTypeTest {
 
-class ObjectGeometry(
-    val type: String,
-    val coordinates: Array<Int>
-)
+    @Test
+    public void shouldFindExternalFormFieldTypeByKey() {
+        assertEquals(ExternalFormFieldType.OZ, ExternalFormFieldType.fromKey("OZ"));
+    }
+
+    @Test
+    public void shouldFindExternalFormFieldTypeByName() {
+        assertEquals(ExternalFormFieldType.OZ, ExternalFormFieldType.fromString("OpenZaak"));
+    }
+
+}

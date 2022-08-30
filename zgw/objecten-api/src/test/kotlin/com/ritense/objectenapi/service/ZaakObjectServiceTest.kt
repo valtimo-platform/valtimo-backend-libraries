@@ -72,8 +72,8 @@ internal class ZaakObjectServiceTest {
         setupPlugins(zaakInstanceUrl)
         val objecttype = mock<Objecttype>()
         val objecttypeUrl = URI("http://example.com/objecttype/123")
-        setupRelationsForObjecttype(zaakInstanceUrl, objecttype, objecttypeUrl)
-        setupRelationsForObjecttype(zaakInstanceUrl, objecttype, objecttypeUrl)
+        setupObjectForObjecttype(zaakInstanceUrl, objecttype, objecttypeUrl)
+        setupObjectForObjecttype(zaakInstanceUrl, objecttype, objecttypeUrl)
 
         val zaakObjectTypes = zaakObjectService.getZaakObjectTypes(documentId)
 
@@ -149,7 +149,7 @@ internal class ZaakObjectServiceTest {
         val object1 = setupObjectWithRelations(zaakInstanceUrl, objecttypeUrl)
         val object2 = setupObjectWithRelations(zaakInstanceUrl, objecttypeUrl)
 
-        val zaakObjects = zaakObjectService.getZaakObjecten(documentId, objecttypeUrl)
+        val zaakObjects = zaakObjectService.getZaakObjectenOfType(documentId, objecttypeUrl)
 
         assertEquals(object1, zaakObjects[0])
         assertEquals(object2, zaakObjects[1])
@@ -167,11 +167,103 @@ internal class ZaakObjectServiceTest {
         setupObjectWithRelations(zaakInstanceUrl, otherObjecttypeUrl)
         setupObjectWithRelations(zaakInstanceUrl, otherObjecttypeUrl)
 
-        val zaakObjects = zaakObjectService.getZaakObjecten(documentId, objecttypeUrl)
+        val zaakObjects = zaakObjectService.getZaakObjectenOfType(documentId, objecttypeUrl)
 
         assertTrue(zaakObjects.isEmpty())
     }
 
+    @Test
+    fun `should get zaakobject of correct type`() {
+        val documentId = UUID.randomUUID()
+        val objecttypeName = "test"
+        val objecttypeUrl = URI("http://example.com/objecttype")
+        val otherObjecttypeUrl = URI("http://example.com/objecttype/2")
+
+        val zaakInstanceUrl = setupZaakInstanceLink(documentId)
+        setupPlugins(zaakInstanceUrl)
+
+        //set up object that should not be found
+        val otherObjecttype = mock<Objecttype>()
+        whenever(otherObjecttype.name).thenReturn("other")
+        setupObjectForObjecttype(zaakInstanceUrl, otherObjecttype, otherObjecttypeUrl)
+
+        //set up object with correct type name that should be found
+        val objecttype = mock<Objecttype>()
+        whenever(objecttype.name).thenReturn(objecttypeName)
+        val objectOfType = setupObjectForObjecttype(zaakInstanceUrl, objecttype, objecttypeUrl)
+
+        val resultObject = zaakObjectService.getZaakObjectOfTypeByName(documentId, objecttypeName)
+
+        assertEquals(objectOfType, resultObject)
+    }
+
+    @Test
+    fun `should throw exception when there are multiple types with same name`() {
+        val documentId = UUID.randomUUID()
+        val objecttypeName = "test"
+        val objecttypeUrl = URI("http://example.com/objecttype")
+        val otherObjecttypeUrl = URI("http://example.com/objecttype/2")
+
+        val zaakInstanceUrl = setupZaakInstanceLink(documentId)
+        setupPlugins(zaakInstanceUrl)
+
+        //set up objecttype
+        val objecttype = mock<Objecttype>()
+        whenever(objecttype.name).thenReturn(objecttypeName)
+        setupObjectForObjecttype(zaakInstanceUrl, objecttype, objecttypeUrl)
+
+        //set up other objecttype with same name but different url
+        val otherObjecttype = mock<Objecttype>()
+        whenever(otherObjecttype.name).thenReturn(objecttypeName)
+        setupObjectForObjecttype(zaakInstanceUrl, otherObjecttype, otherObjecttypeUrl)
+
+        val exception = assertThrows(IllegalStateException::class.java) {
+            zaakObjectService.getZaakObjectOfTypeByName(documentId, objecttypeName)
+        }
+
+        assertEquals("More than one objecttype with name 'test' was found for document $documentId",
+            exception.message)
+    }
+
+    @Test
+    fun `should throw exception when getting object by type and there are multiple objects`() {
+        val documentId = UUID.randomUUID()
+        val objecttypeName = "test"
+        val objecttypeUrl = URI("http://example.com/objecttype")
+
+        val zaakInstanceUrl = setupZaakInstanceLink(documentId)
+        setupPlugins(zaakInstanceUrl)
+
+        //set up objecttype with multiple objects for that type
+        val objecttype = mock<Objecttype>()
+        whenever(objecttype.name).thenReturn(objecttypeName)
+        setupObjectForObjecttype(zaakInstanceUrl, objecttype, objecttypeUrl)
+        setupObjectForObjecttype(zaakInstanceUrl, objecttype, objecttypeUrl)
+
+        val exception = assertThrows(IllegalStateException::class.java) {
+            zaakObjectService.getZaakObjectOfTypeByName(documentId, objecttypeName)
+        }
+
+        assertEquals("More than one object of type 'test' was found for document $documentId",
+            exception.message)
+    }
+
+    @Test
+    fun `should throw exception when getting object by type and there are no objects`() {
+        val documentId = UUID.randomUUID()
+        val objecttypeName = "test"
+        val objecttypeUrl = URI("http://example.com/objecttype")
+
+        val zaakInstanceUrl = setupZaakInstanceLink(documentId)
+        setupPlugins(zaakInstanceUrl)
+
+        val exception = assertThrows(IllegalStateException::class.java) {
+            zaakObjectService.getZaakObjectOfTypeByName(documentId, objecttypeName)
+        }
+
+        assertEquals("No object was found of type 'test' for document $documentId",
+            exception.message)
+    }
 
     private fun setupZaakInstanceLink(documentId: UUID): URI {
         val zaakInstanceUrl = URI("http://example.com/zaak/${UUID.randomUUID()}")
@@ -203,10 +295,11 @@ internal class ZaakObjectServiceTest {
         return setupObjecttype(objectWrapper)
     }
 
-    private fun setupRelationsForObjecttype(zaakUrl: URI, objecttype: Objecttype, objecttypeUrl: URI): Objecttype {
+    private fun setupObjectForObjecttype(zaakUrl: URI, objecttype: Objecttype, objecttypeUrl: URI): ObjectWrapper {
         val zaakobject = setupZaakObject(zaakUrl)
         val objectWrapper = setupObject(zaakobject, objecttypeUrl)
-        return mockObjecttypeRetrieval(objectWrapper, objecttype)
+        mockObjecttypeRetrieval(objectWrapper, objecttype)
+        return objectWrapper
     }
 
     private fun setupObjectWithRelations(zaakUrl: URI, objecttypeUrl: URI): ObjectWrapper {

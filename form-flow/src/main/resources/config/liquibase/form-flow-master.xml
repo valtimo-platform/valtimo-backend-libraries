@@ -29,5 +29,6 @@
 
     <include file="changelog/20220317-add-form-flow-definition.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220328-add-form-flow-instance.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20220824-add-form-flow-on-back.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

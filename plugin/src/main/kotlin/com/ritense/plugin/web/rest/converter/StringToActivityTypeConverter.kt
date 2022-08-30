@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.client
+package com.ritense.plugin.web.rest.converter
 
-import java.time.LocalDate
+import com.ritense.plugin.domain.ActivityType
+import org.springframework.core.convert.converter.Converter
 
-class ObjectRecord(
-    val index: Int?,
-    val typeVersion: Int,
-    val data: Map<String, Any?>?,
-    val geometry: ObjectGeometry?,
-    val startAt: LocalDate,
-    val endAt: LocalDate?,
-    val registrationAt: LocalDate?,
-    val correctionFor: String?,
-    val correctedBy: String?
-)
+class StringToActivityTypeConverter
+    : Converter<String, ActivityType> {
 
-class ObjectGeometry(
-    val type: String,
-    val coordinates: Array<Int>
-)
+    override fun convert(source: String): ActivityType {
+        return ActivityType.fromValue(source)
+    }
+}
