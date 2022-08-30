@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.client
+package com.ritense.objectenapi.service
 
-import java.time.LocalDate
-
-class ObjectRecord(
-    val index: Int?,
-    val typeVersion: Int,
-    val data: Map<String, Any?>?,
-    val geometry: ObjectGeometry?,
-    val startAt: LocalDate,
-    val endAt: LocalDate?,
-    val registrationAt: LocalDate?,
-    val correctionFor: String?,
-    val correctedBy: String?
-)
-
-class ObjectGeometry(
-    val type: String,
-    val coordinates: Array<Int>
-)
+class ZaakObjectConstants {
+    companion object {
+        val ZAAKOBJECT_PREFIX = "zaakobject"
+    }
+}

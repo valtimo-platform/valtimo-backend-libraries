@@ -49,7 +49,7 @@ class ZaakObjectResource(
         @PathVariable(name = "documentId") documentId: UUID,
         @RequestParam(name = "typeUrl") typeUrl: URI
     ): ResponseEntity<List<Any>>{
-        val objectDtos = zaakObjectService.getZaakObjecten(documentId, typeUrl).map {
+        val objectDtos = zaakObjectService.getZaakObjectenOfType(documentId, typeUrl).map {
             ObjectDto(
                 it.url,
                 it.record.index,

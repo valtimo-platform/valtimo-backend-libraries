@@ -19,6 +19,17 @@
             }
         },
         {
+            "label": "External Achternaam",
+            "key": "oz:achternaam",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "maxLength": 10,
+                "unique": false,
+                "multiple": false
+            }
+        },
+        {
             "label": "External Voornaam",
             "key": "oz.voornaam",
             "type": "textfield",

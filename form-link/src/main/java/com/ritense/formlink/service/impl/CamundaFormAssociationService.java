@@ -54,6 +54,7 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import static com.ritense.form.domain.FormIoFormDefinition.EXTERNAL_FORM_FIELD_TYPE_SEPARATOR;
 import static com.ritense.form.domain.FormIoFormDefinition.PROCESS_VAR_PREFIX;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
@@ -394,6 +395,20 @@ public class CamundaFormAssociationService implements FormAssociationService {
                             varNames
                         );
 
+                        //TODO: remove support for legacy separator type and clean up code
+                        //support new notation prefix:some-expression
+                        final ObjectNode dataNode = JsonNodeFactory.instance.objectNode();
+                        externalContentItems.forEach(contentItem -> {
+                            if (contentItem.getSeparator().equals(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)) {
+                                String fieldname = externalFormFieldType + EXTERNAL_FORM_FIELD_TYPE_SEPARATOR + contentItem.getName();
+                                dataNode.set(fieldname, Mapper.INSTANCE.objectMapper()
+                                    .valueToTree(externalDataMap.get(contentItem.getName())));
+                                externalDataMap.remove(contentItem.getName());
+                            }
+                        });
+                        formDefinition.preFill(dataNode);
+
+                        //support old notation prefix.some-expression
                         formDefinition.preFillWith(
                             externalFormFieldType,
                             externalDataMap
