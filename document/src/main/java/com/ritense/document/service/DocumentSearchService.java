@@ -28,4 +28,9 @@ public interface DocumentSearchService {
         Pageable pageable
     );
 
+    Page<? extends Document> searchWithoutAuthorization(
+        SearchRequest searchRequest,
+        Pageable pageable
+    );
+
 }
