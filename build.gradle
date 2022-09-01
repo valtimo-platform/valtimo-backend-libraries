@@ -1,9 +1,3 @@
-buildscript {
-    dependencies {
-        classpath 'org.owasp:dependency-check-gradle:7.1.1'
-    }
-}
-
 plugins {
     id "idea"
 
@@ -21,6 +15,7 @@ plugins {
     id "jacoco"
     id "com.avast.gradle.docker-compose" version "0.14.9"
     id "com.github.jk1.dependency-license-report" version "2.1"
+    id "org.owasp.dependencycheck" version "7.1.2"
 }
 
 /*
@@ -125,29 +120,6 @@ subprojects { subproject ->
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_13
         }
-    }
-
-    dependencyCheck {
-        formats = [ 'HTML', 'CSV' ]
-        analyzedTypes = [ 'jar', 'aar', 'war', 'ear', 'zip' ]
-        /* TODO: setting to true will re-download every time on a CI runner, so need some nice way to cache it */
-        autoUpdate = false
-        suppressionFiles = [
-            /* TODO: rem example for 1 suppressed vulnerability in `:gradle` */
-            './gradle/vce-report/vce-exclusions.xml'
-        ]
-        analyzers {
-            // disables dotnet & js checking
-            assemblyEnabled = false
-            nodeEnabled = false
-        }
-        data {
-            /* TODO: support building locally with cache too */
-//            directory = '/tmp/vce-cache'
-        }
-        /* TODO: output dir cannot be absolute it seems, so some script will likely have to cp them over,
-             or know where they are to check */
-//        outputDirectory = '...'
     }
 
     checkstyle {
