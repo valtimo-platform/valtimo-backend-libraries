@@ -16,6 +16,7 @@
 
 package com.ritense.objectenapi
 
+import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.plugin.annotation.Plugin
@@ -37,5 +38,9 @@ class ObjectenApiPlugin(
 
     fun getObject(objectUrl: URI): ObjectWrapper {
         return objectenApiClient.getObject(authenticationPluginConfiguration, objectUrl)
+    }
+
+    fun objectUpdate(objectUrl: URI, objectRequest: ObjectRequest): ObjectWrapper {
+        return objectenApiClient.objectUpdate(authenticationPluginConfiguration, objectUrl, objectRequest)
     }
 }

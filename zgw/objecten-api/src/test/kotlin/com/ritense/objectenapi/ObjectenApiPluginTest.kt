@@ -20,6 +20,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectenApiClient
 import org.junit.jupiter.api.BeforeEach
@@ -48,6 +49,19 @@ internal class ObjectenApiPluginTest{
 
         assertEquals(objectMock, result)
         verify(client).getObject(any(), any())
+    }
+
+    @Test
+    fun `should call client on update object`() {
+        val objectUrl = URI("http://example.com")
+        val objectMock = mock<ObjectWrapper>()
+        val objectRequest = mock<ObjectRequest>()
+        whenever(client.objectUpdate(plugin.authenticationPluginConfiguration, objectUrl, objectRequest)).thenReturn(objectMock)
+
+        val result = plugin.objectUpdate(objectUrl,  objectRequest)
+
+        assertEquals(objectMock, result)
+        verify(client).objectUpdate(any(), any(), any())
     }
 
 }
