@@ -68,6 +68,7 @@ internal class ZaakObjectDataResolverTest {
             "path" to "test-value-1",
             "nested" to nested
         )
+
         val objectDataJsonNode = Mapper.INSTANCE.get().valueToTree<JsonNode>(objectData1)
         val objectRecord1 = mock<ObjectRecord>()
         whenever(object1.record).thenReturn(objectRecord1)
@@ -80,6 +81,7 @@ internal class ZaakObjectDataResolverTest {
         val objectData2 = mapOf(
             "other-type-path" to "test-value-3"
         )
+        
         val object2DataJsonNode = Mapper.INSTANCE.get().valueToTree<JsonNode>(objectData2)
         val objectRecord2 = mock<ObjectRecord>()
         whenever(object2.record).thenReturn(objectRecord2)
