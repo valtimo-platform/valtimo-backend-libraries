@@ -118,7 +118,7 @@ class ZaakObjectService(
         }?.let {
             val formName = "${it.name}$FORM_SUFFIX"
             logger.trace { "Getting form for objecttype $it with formName $formName" }
-            formDefinitionService.getFormDefinitionByName("${it.name}$FORM_SUFFIX")
+            formDefinitionService.getFormDefinitionByName(formName)
         }
         ?.orElse(null)
         ?.preFill(theObject.record.data)
