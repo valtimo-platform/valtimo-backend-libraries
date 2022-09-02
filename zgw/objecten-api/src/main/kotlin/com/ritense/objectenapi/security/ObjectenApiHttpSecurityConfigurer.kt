@@ -29,6 +29,7 @@ class ObjectenApiHttpSecurityConfigurer: HttpSecurityConfigurer {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/document/{documentId}/zaak/objecttype").hasAuthority(USER)
                 .antMatchers(GET, "/api/document/{documentId}/zaak/object").hasAuthority(USER)
+                .antMatchers(GET, "/api/document/{documentId}/zaak/object/form").hasAuthority(USER)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
