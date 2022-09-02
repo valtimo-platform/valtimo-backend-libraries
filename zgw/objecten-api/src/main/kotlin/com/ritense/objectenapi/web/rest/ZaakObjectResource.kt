@@ -55,7 +55,11 @@ class ZaakObjectResource(
                 it.url,
                 it.record.index,
                 it.record.registrationAt,
-                it.record.data?.get("title") as String?
+                if (it.record.data?.get("title")?.isTextual == true) {
+                    it.record.data.get("title").asText()
+                } else {
+                    null
+                }
             )
         }
         return ResponseEntity.ok(objectDtos)

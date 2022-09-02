@@ -16,24 +16,10 @@
 
 package com.ritense.objectenapi.client
 
-import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.databind.JsonNode
-import java.time.LocalDate
+import java.net.URI
 
-class ObjectRecord(
-    val index: Int? = null,
-    val typeVersion: Int,
-    val data: JsonNode? = null,
-    val geometry: ObjectGeometry? = null,
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    val startAt: LocalDate,
-    val endAt: LocalDate? = null,
-    val registrationAt: LocalDate? = null,
-    val correctionFor: String? = null,
-    val correctedBy: String? = null
-)
-
-class ObjectGeometry(
-    val type: String,
-    val coordinates: Array<Int>
-)
+class ObjectRequest(
+    val type: URI,
+    val record: ObjectRecord
+) {
+}
