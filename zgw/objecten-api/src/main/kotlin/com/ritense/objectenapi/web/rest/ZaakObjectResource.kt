@@ -72,6 +72,4 @@ class ZaakObjectResource(
         val form = zaakObjectService.getZaakObjectForm(objectUrl)
         return form?.let { ResponseEntity.ok(it) } ?: ResponseEntity.notFound().build()
     }
-
-
 }
