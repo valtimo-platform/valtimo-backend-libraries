@@ -25,7 +25,6 @@ class ObjectRecord(
     val typeVersion: Int,
     val data: JsonNode? = null,
     val geometry: ObjectGeometry? = null,
-    @JsonFormat(pattern = "yyyy-MM-dd")
     val startAt: LocalDate,
     val endAt: LocalDate? = null,
     val registrationAt: LocalDate? = null,
