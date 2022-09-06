@@ -26,6 +26,8 @@ dependencies {
     implementation project(":resource")
     implementation project(":web")
 
+    testImplementation project(':test-utils-common')
+
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"

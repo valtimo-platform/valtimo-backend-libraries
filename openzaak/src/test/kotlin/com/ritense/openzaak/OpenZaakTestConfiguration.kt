@@ -18,12 +18,17 @@ package com.ritense.openzaak
 
 import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.mail.MailSender
+import com.ritense.zakenapi.ZakenApiAutoConfiguration
 import org.mockito.Mockito
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
 
-@SpringBootApplication
+@SpringBootApplication(
+    exclude = [
+        ZakenApiAutoConfiguration::class
+    ]
+)
 class OpenZaakTestConfiguration {
 
     @Bean
