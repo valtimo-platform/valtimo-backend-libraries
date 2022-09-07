@@ -18,6 +18,7 @@ package com.ritense.objectenapi.web.rest
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.service.ZaakObjectService
@@ -131,6 +132,53 @@ internal class ZaakObjectResourceTest {
             .andExpect(jsonPath("$.[1].registrationAt").isEmpty)
             .andExpect(jsonPath("$.[0].title").value("some object"))
             .andExpect(jsonPath("$.[1].title").isEmpty)
+    }
+
+    @Test
+    fun `should get form for object`() {
+        val documentId = UUID.randomUUID()
+        val formId = UUID.randomUUID()
+        val objectUrl = URI("http://example.com/object")
+        val formDefinition = FormIoFormDefinition(
+            formId,
+            "form-name",
+            "{\"content\":\"test\"}",
+            false
+        )
+
+        whenever(zaakObjectService.getZaakObjectForm(objectUrl)).thenReturn(formDefinition)
+
+        mockMvc
+            .perform(
+                get("/api/document/$documentId/zaak/object/form?objectUrl=$objectUrl")
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$.id").value(formId.toString()))
+            .andExpect(jsonPath("$.name").value("form-name"))
+            .andExpect(jsonPath("$.formDefinition.content").value("test"))
+    }
+
+    @Test
+    fun `should return 404 when no form is found for object`() {
+        val documentId = UUID.randomUUID()
+        val objectUrl = URI("http://example.com/object")
+
+        whenever(zaakObjectService.getZaakObjectForm(objectUrl)).thenReturn(null)
+
+        mockMvc
+            .perform(
+                get("/api/document/$documentId/zaak/object/form?objectUrl=$objectUrl")
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isNotFound)
     }
 
     private fun jacksonMessageConverter(): MappingJackson2HttpMessageConverter {

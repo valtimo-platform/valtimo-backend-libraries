@@ -16,6 +16,7 @@
 
 package com.ritense.objectenapi.web.rest
 
+import com.ritense.form.domain.FormDefinition
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.web.rest.result.ObjectDto
 import com.ritense.objectenapi.web.rest.result.ObjecttypeDto
@@ -53,5 +54,12 @@ class ZaakObjectResource(
             .map(ObjectDto::create)
         return ResponseEntity.ok(objectDtos)
     }
-}
 
+    @GetMapping(value = ["/object/form"])
+    fun getZaakObjecten(
+        @RequestParam(name = "objectUrl") objectUrl: URI
+    ): ResponseEntity<FormDefinition>{
+        val form = zaakObjectService.getZaakObjectForm(objectUrl)
+        return form?.let { ResponseEntity.ok(it) } ?: ResponseEntity.notFound().build()
+    }
+}

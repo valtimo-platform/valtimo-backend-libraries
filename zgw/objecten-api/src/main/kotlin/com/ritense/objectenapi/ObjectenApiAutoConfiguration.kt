@@ -17,6 +17,7 @@
 package com.ritense.objectenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.objectenapi.listener.ZaakObjectListener
 import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
@@ -80,9 +81,10 @@ class ObjectenApiAutoConfiguration {
     @Bean
     fun zaakObjectService(
         zaakInstanceLinkService: ZaakInstanceLinkService,
-        pluginService : PluginService
+        pluginService : PluginService,
+        formDefinitionService : FormDefinitionService
     ): ZaakObjectService {
-        return ZaakObjectService(zaakInstanceLinkService, pluginService)
+        return ZaakObjectService(zaakInstanceLinkService, pluginService, formDefinitionService)
     }
 
     @Order(400)
