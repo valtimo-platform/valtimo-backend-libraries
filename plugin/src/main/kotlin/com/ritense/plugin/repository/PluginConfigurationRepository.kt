@@ -20,4 +20,6 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, PluginConfigurationId>
+interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, PluginConfigurationId> {
+    fun findByPluginDefinitionKey(pluginDefinitionKey: String): List<PluginConfiguration>
+}

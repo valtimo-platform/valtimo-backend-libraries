@@ -35,7 +35,7 @@ class EigenschappenSubmittedListener(
 
     @EventListener(ExternalDataSubmittedEvent::class)
     fun handle(event: ExternalDataSubmittedEvent) {
-        event.data[ExternalFormFieldType.OZ]?.let {
+        event.data[ExternalFormFieldType.OZ.name.lowercase()]?.let {
             val mappedEigenschappen: MutableMap<URI, String> = mutableMapOf()
             val zaakTypeLink = zaakTypeLinkService.findBy(event.documentDefinition)
             val zaakInstanceLink = zaakInstanceLinkService.getByDocumentId(event.documentId)

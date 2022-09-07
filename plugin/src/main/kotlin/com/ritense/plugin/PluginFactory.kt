@@ -18,15 +18,21 @@ package com.ritense.plugin
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.domain.PluginConfiguration
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProperty
+import com.ritense.plugin.service.PluginService
+import java.util.UUID
 import org.apache.commons.lang3.reflect.FieldUtils
 
 /**
  *  This factory is meant to be extended for a specific type of plugin. It can create a plugin of type T given a
  *  configuration. The class extending this factory has to be registered as a bean of type PluginFactory<T>.
  */
-abstract class PluginFactory<T> {
+abstract class PluginFactory<T>(
+    var pluginService: PluginService
+) {
     private var fullyQualifiedClassName: String = ""
 
     /**
@@ -86,10 +92,22 @@ abstract class PluginFactory<T> {
         configuredProperty: JsonNode,
         mapper: ObjectMapper
     ) {
-        val propertyValue = mapper.treeToValue(
-            configuredProperty,
-            Class.forName(propertyDefinition.fieldType)
-        )
+        val propertyType = Class.forName(propertyDefinition.fieldType)
+
+        val propertyValue = if (propertyType.isAnnotationPresent(PluginCategory::class.java)) {
+                val configurationId = PluginConfigurationId.existingId(UUID.fromString(configuredProperty.textValue()))
+
+                pluginService.createInstance(configurationId)
+            } else {
+                mapper.treeToValue(
+                    configuredProperty,
+                    propertyType
+                )
+            }
+
+        if(propertyDefinition.required) {
+            requireNotNull(propertyValue) { "${propertyDefinition.fieldName} value was null on plugin '${propertyDefinition.pluginDefinition.key}'"}
+        }
 
         FieldUtils.writeField(instance, propertyDefinition.fieldName, propertyValue, true)
     }

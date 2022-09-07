@@ -16,6 +16,7 @@
 
 package com.ritense.valueresolver
 
+import java.io.InvalidClassException
 import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
@@ -87,13 +88,29 @@ internal class FixedValueResolverTest {
     }
 
     @Test
+    fun `should resolve prefixed value from requestedValue`() {
+        val processInstanceId = UUID.randomUUID().toString()
+        val variableScope = DelegateTaskFake()
+
+        val resolvedValue = FixedValueResolverFactory("http").createResolver(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope
+        ).apply(
+            "//localhost.local"
+        )
+
+        Assertions.assertThat(resolvedValue).isEqualTo("http://localhost.local")
+    }
+
+    @Test
     fun `should NOT handle value`() {
         val processInstanceId = UUID.randomUUID().toString()
         val variableScope = DelegateTaskFake()
 
-        assertThrows<RuntimeException>("Can't handle value that doesn't have a prefix. firstName to John") {
+        val throwable = assertThrows<RuntimeException> {
             fixedValueResolver.handleValues(processInstanceId, variableScope, mapOf("firstName" to "John"))
         }
+        Assertions.assertThat(throwable.message).isEqualTo("Can't save fixed value (unknown destination): {firstName to John}")
     }
 
 }

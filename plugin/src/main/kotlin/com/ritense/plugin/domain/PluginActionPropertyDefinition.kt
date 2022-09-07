@@ -16,16 +16,13 @@
 
 package com.ritense.plugin.domain
 
-import javax.persistence.Embedded
+import javax.persistence.EmbeddedId
 import javax.persistence.Entity
-import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
 @Table(name = "plugin_action_property_definition")
 data class PluginActionPropertyDefinition(
-    @Id
-    @Embedded
+    @EmbeddedId
     val id: PluginActionPropertyDefinitionId,
-
 )

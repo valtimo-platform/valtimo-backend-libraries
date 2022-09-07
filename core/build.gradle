@@ -23,7 +23,6 @@ dockerCompose {
 
 dependencies {
     implementation project(":contract")
-    implementation project(":plugin")
     implementation project(":resource")
     implementation project(":web")
 
@@ -70,6 +69,7 @@ dependencies {
 
     implementation "org.springframework.security:spring-security-data"
     implementation "org.springframework:spring-jdbc"
+    implementation "org.springframework:spring-orm"
     implementation "org.springframework:spring-aspects"
 
     // Jackson

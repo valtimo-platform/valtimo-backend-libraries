@@ -42,4 +42,7 @@ aws:
         bucketName: bucketName
         bucketRegion: US-EAST
 
-valtimo.versioning.enabled: true
+valtimo:
+    versioning.enabled: true
+    plugin:
+        encryption-secret: "abcdefghijklmnop"

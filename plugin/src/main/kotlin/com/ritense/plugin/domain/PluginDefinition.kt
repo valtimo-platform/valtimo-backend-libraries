@@ -23,13 +23,16 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.JoinTable
+import javax.persistence.ManyToMany
 import javax.persistence.OneToMany
 import javax.persistence.Table
 import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 
 @Entity
 @Table(name = "plugin_definition")
-data class PluginDefinition (
+class PluginDefinition (
     @Id
     @Column(name = "plugin_definition_key")
     val key: String,
@@ -41,11 +44,23 @@ data class PluginDefinition (
     @Column(name = "class_name")
     val fullyQualifiedClassName: String,
     @JsonIgnore
-    @OneToMany(mappedBy = "id.pluginDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
-    val pluginProperties: Set<PluginProperty> = setOf(),
+    @OneToMany(mappedBy = "pluginDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL],
+        orphanRemoval = true)
+    val properties: Set<PluginProperty> = setOf(),
+    @JsonIgnore
+    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "plugin_definition_category",
+        joinColumns = [JoinColumn(name = "plugin_definition_key")],
+        inverseJoinColumns = [JoinColumn(name = "plugin_category_key")])
+    val categories: Set<PluginCategory> = setOf(),
+    @JsonIgnore
+    @OneToMany(mappedBy = "id.pluginDefinition", fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE],
+        orphanRemoval = true)
+    val actions: Set<PluginActionDefinition> = setOf(),
 ) {
     fun findPluginProperty(propertyKey: String): PluginProperty? {
-        val filteredProperties = pluginProperties.filter {
+        val filteredProperties = properties.filter {
             it.id.key == propertyKey
         }
 
@@ -57,17 +72,20 @@ data class PluginDefinition (
     }
 
     fun addProperty(field: Field, propertyAnnotation: PluginPropertyAnnotation) {
-        (pluginProperties as MutableSet).add(
+        (properties as MutableSet).add(
             PluginProperty(
-                PluginPropertyId(
-                    propertyAnnotation.key,
-                    this
-                ),
+                propertyAnnotation.key,
+                this,
                 propertyAnnotation.title,
                 propertyAnnotation.required,
+                propertyAnnotation.secret,
                 field.name,
                 field.type.typeName
             )
         )
+    }
+
+    fun addCategory(category: PluginCategory) {
+        (categories as MutableSet).add(category)
     }
 }

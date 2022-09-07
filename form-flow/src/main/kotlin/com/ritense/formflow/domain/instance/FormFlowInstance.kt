@@ -90,6 +90,8 @@ class FormFlowInstance(
     fun back(): FormFlowStepInstance? {
         val previousStepOrder = getCurrentStep().order - 1
         return if (previousStepOrder >= 0) {
+            val formFlowStepInstance = getCurrentStep()
+            formFlowStepInstance.back()
             val previousStep = history.single { it.order == previousStepOrder }
             currentFormFlowStepInstanceId = previousStep.id
             previousStep

@@ -25,4 +25,5 @@ annotation class PluginProperty(
     val key: String,
     val title: String = "",
     val required: Boolean = true,
+    val secret: Boolean
 )

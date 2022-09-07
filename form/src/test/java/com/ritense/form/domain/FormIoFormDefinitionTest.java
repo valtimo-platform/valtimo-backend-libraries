@@ -22,14 +22,22 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.form.BaseTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
 public class FormIoFormDefinitionTest extends BaseTest {
+
+    @BeforeEach
+    void setUp() {
+        mockSpringContextHelper();
+    }
 
     @Test
     public void getProcessVarsNames() throws IOException {
@@ -116,6 +124,13 @@ public class FormIoFormDefinitionTest extends BaseTest {
         List<ObjectNode> components = FormIoFormDefinition.getInputFields(definition);
 
         assertThat(components).hasSize(6);
+    }
+
+    @Test
+    public void shouldGetDocumentMappedFields() throws IOException {
+        final var formDefinition = formDefinitionOf("form-example-nested-components");
+        var result = formDefinition.getDocumentMappedFields();
+        assertThat(result).hasSize(12);
     }
 
     public JsonNode content(Object content) throws JsonProcessingException {

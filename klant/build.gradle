@@ -19,7 +19,6 @@ projectVersion = 1.0
 dependencies {
     implementation project(':contract')
     implementation project(':openzaak')
-    implementation project(':plugin')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -60,6 +59,7 @@ dependencies {
     testImplementation project(':core')
     testImplementation project(':audit')
     testImplementation project(':document')
+    testImplementation project(':zgw:documenten-api')
     testImplementation project(':openzaak')
     testImplementation project(':process-document')
     testImplementation project(':resource:openzaak-resource')

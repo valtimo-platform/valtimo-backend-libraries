@@ -15,11 +15,18 @@ dependencies {
     implementation(project(":document-generation:smartdocuments"))
     implementation(project(":openzaak"))
     implementation(project(":resource:openzaak-resource"))
+    implementation(project(":resource:temporary-resource-storage"))
     implementation(project(":mail:local-mail"))
     implementation(project(":connector"))
     implementation(project(":objects-api"))
     implementation(project(":besluit"))
     implementation(project(":haalcentraal:haalcentraal-brp"))
+    implementation(project(":plugin-valtimo"))
+    implementation(project(":plugin-authentication:objecten-api-authentication"))
+    implementation(project(":zgw:documenten-api"))
+    implementation(project(":zgw:objecten-api"))
+    implementation(project(":zgw:objecttypen-api"))
+    implementation(project(":zgw:zaken-api"))
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

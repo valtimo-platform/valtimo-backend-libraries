@@ -24,16 +24,22 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.security.Keys;
+import java.security.KeyPair;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import java.security.KeyPair;
-import java.util.List;
+import org.springframework.security.core.GrantedAuthority;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
 import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.REALM_ACCESS;
+import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.RESOURCE_ACCESS;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,7 +54,7 @@ public class KeycloakTokenAuthenticatorTest {
     @BeforeEach
     public void before() {
         keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256);
-        keycloakTokenAuthenticator = new KeycloakTokenAuthenticator();
+        keycloakTokenAuthenticator = new KeycloakTokenAuthenticator("test-client-resource");
         keycloakSecretKeyProvider = new KeycloakSecretKeyProvider(encodeBase64String(keyPair.getPublic().getEncoded()));
         secretKeyResolver = new SecretKeyResolver(List.of(keycloakSecretKeyProvider));
         tokenAuthenticationService = new TokenAuthenticationService(
@@ -82,16 +88,52 @@ public class KeycloakTokenAuthenticatorTest {
         assertThat(authentication).isInstanceOf(UsernamePasswordAuthenticationToken.class);
     }
 
+    @Test
+    public void shouldReturnAuthenticationForResourceRoleUser() {
+        String jwt = Jwts.builder()
+                .setClaims(claimsWithRealmAndResourceAccessRoles())
+                .signWith(keyPair.getPrivate())
+                .compact();
+
+        Authentication authentication = tokenAuthenticationService.getAuthentication(jwt);
+
+        assertThat(authentication).isNotNull();
+        assertThat(authentication).isInstanceOf(UsernamePasswordAuthenticationToken.class);
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        List<? extends GrantedAuthority> userAuthorities = authorities.stream()
+            .filter(authority -> authority.getAuthority().equals(USER)).collect(Collectors.toList());
+        assertThat(userAuthorities.size()).isEqualTo(1);
+    }
+
     private Claims claimsWithRealmAccessRoles() {
         final Claims roles = new DefaultClaims();
         roles.put(ROLES_SCOPE, List.of(USER));
         return defaultKeycloakClaimWith(roles);
     }
 
+    private Claims claimsWithRealmAndResourceAccessRoles() {
+        final Claims roles = new DefaultClaims();
+        roles.put(ROLES_SCOPE, List.of(USER));
+        return keycloakClaimWithRealmAndResourceRoles(roles);
+    }
+
     private Claims claimsWithUnknownRealmAccessRoles() {
         final Claims roles = new DefaultClaims();
         roles.put(ROLES_SCOPE, List.of("unknown-role"));
         return defaultKeycloakClaimWith(roles);
+    }
+
+    private Claims keycloakClaimWithRealmAndResourceRoles(Claims role) {
+        Claims claims = claimsWithUnknownRealmAccessRoles();
+        Map<String, Map<String, List<String>>> resourceclient = new HashMap<>();
+        Map<String, List<String>> resourceClientRoles = new HashMap<>();
+
+        resourceClientRoles.put("roles", List.of(USER));
+        resourceclient.put("test-client-resource", resourceClientRoles);
+
+        claims.put(RESOURCE_ACCESS, resourceclient);
+
+        return claims;
     }
 
     private Claims defaultKeycloakClaimWith(Claims role) {

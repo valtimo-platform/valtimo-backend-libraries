@@ -24,13 +24,13 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.ritense.form.domain.event.FormRegisteredEvent;
-import com.ritense.valtimo.contract.form.ExternalFormFieldType;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
 import org.springframework.web.util.HtmlUtils;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
@@ -59,6 +60,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String COMPONENTS_KEY = "components";
     public static final String DEFAULT_VALUE_FIELD = "defaultValue";
     public static final String PROCESS_VAR_PREFIX = "pv";
+    public static final String EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ".";
 
     @Id
     @Column(name = "id", updatable = false)
@@ -160,13 +162,17 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         return Collections.unmodifiableList(processVarNames);
     }
 
-    public Map<ExternalFormFieldType, List<ExternalContentItem>> buildExternalFormFieldsMap() {
-        var map = new HashMap<ExternalFormFieldType, List<ExternalContentItem>>();
+    public Map<String, List<ExternalContentItem>> buildExternalFormFieldsMap() {
+        var map = new HashMap<String, List<ExternalContentItem>>();
         final JsonNode formDefinition = asJson();
         final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinition);
 
-        inputFields.forEach(field -> getExternalFormField(field).ifPresent(externalContentItem ->
-            map.computeIfAbsent(externalContentItem.externalFormFieldType, externalFormFieldType -> new ArrayList<>()).add(externalContentItem))
+        inputFields.forEach(field -> getExternalFormField(field)
+            .ifPresent(externalContentItem ->
+                map.computeIfAbsent(
+                    externalContentItem.externalFormFieldType.toLowerCase(), externalFormFieldType -> new ArrayList<>()
+                ).add(externalContentItem)
+            )
         );
         return map;
     }
@@ -264,10 +270,10 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         assertArgumentNotNull(content, "content is required");
         getContentItem(field)
             .flatMap(
-                contentItem -> getValueBy(content, contentItem.getJsonPointer()))
-            .ifPresent(valueNode -> {
-                field.set(DEFAULT_VALUE_FIELD, htmlEscape(valueNode));
-            });
+                contentItem -> getValueBy(content, contentItem.getJsonPointer())
+            ).ifPresent(
+                valueNode -> field.set(DEFAULT_VALUE_FIELD, htmlEscape(valueNode))
+            );
     }
 
     private Optional<? extends ContentItem> getContentItem(ObjectNode node) {
@@ -286,7 +292,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             String escapedContent = HtmlUtils.htmlEscape(input.textValue(), StandardCharsets.UTF_8.name());
             return new TextNode(escapedContent);
         }
-
         return input;
     }
 
@@ -320,42 +325,50 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             return false;
         }
         String key = field.get(PROPERTY_KEY).asText().toUpperCase();
-        for (ExternalFormFieldType externalFormFieldType : ExternalFormFieldType.values()) {
-            if (key.startsWith(externalFormFieldType.name().toUpperCase())) {
-                return false;
-            }
+        if (getExternalFormFieldType(field).isPresent()) {
+            return false;
         }
-
         return !key.isEmpty() && !key.startsWith(PROCESS_VAR_PREFIX.toUpperCase());
     }
 
     private Optional<ExternalContentItem> getExternalFormField(JsonNode field) {
         return getExternalFormFieldType(field).flatMap(externalFormFieldType -> {
             String jsonPath = field.get(PROPERTY_KEY).asText().replace(".", "/");
-            String name = jsonPath.substring(externalFormFieldType.name().length() + 1);//example pv.varName -> gets varName
+            // Note: Name is limited to 1 level of depth. Not support = pv.aa.bbb
+            String propertyName = jsonPath.substring(externalFormFieldType.length() + 1); // example pv.varName -> gets varName
             jsonPath = "/" + jsonPath;
-            return buildJsonPointer(jsonPath).flatMap(jsonPointer -> Optional.of(new ExternalContentItem(name, jsonPointer, externalFormFieldType)));
+            return buildJsonPointer(jsonPath)
+                .flatMap(jsonPointer -> Optional.of(
+                        new ExternalContentItem(
+                            propertyName,
+                            jsonPointer,
+                            externalFormFieldType
+                        )
+                    )
+                );
         });
     }
 
     private boolean isExternalFormField(JsonNode field) {
-        if (!field.has(PROPERTY_KEY) && !field.get(PROPERTY_KEY).asText().isEmpty()) {
-            return false;
-        }
-        var propertyValue = field.get(PROPERTY_KEY).asText().toUpperCase();
-        for (ExternalFormFieldType externalFormFieldType : ExternalFormFieldType.values()) {
-            if (propertyValue.startsWith(externalFormFieldType.name().toUpperCase())) {
-                return true;
-            }
-        }
-        return false;
+        return getExternalFormFieldType(field).isPresent();
     }
 
-    private Optional<ExternalFormFieldType> getExternalFormFieldType(JsonNode field) {
-        var propertyValue = field.get(PROPERTY_KEY).asText().toUpperCase();
-        for (ExternalFormFieldType externalFormFieldType : ExternalFormFieldType.values()) {
-            if (propertyValue.startsWith(externalFormFieldType.name().toUpperCase())) {
-                return Optional.of(externalFormFieldType);
+    private Optional<String> getExternalFormFieldType(JsonNode field) {
+        if (!field.has(PROPERTY_KEY) && !field.get(PROPERTY_KEY).asText().isEmpty()) {
+            return Optional.empty();
+        }
+        final String key = field.get(PROPERTY_KEY).asText().toUpperCase();
+        // Note key can be -> "ExternalFormFieldTypeName.propertyName"
+        if (!key.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)) {
+            return Optional.empty();
+        }
+        // Check if key prefix is supported by a resolver.
+        final var resolvers = FormSpringContextHelper.getFormFieldDataResolver();
+        for (var entry : resolvers.entrySet()) {
+            // Get prefix up to first dot
+            final var prefix = key.substring(0, key.indexOf(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)).toLowerCase();
+            if (entry.getValue().supports(prefix)) {
+                return Optional.of(prefix);
             }
         }
         return Optional.empty();
@@ -465,9 +478,13 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     public static class ExternalContentItem extends ContentItem {
 
-        private final ExternalFormFieldType externalFormFieldType;
+        private final String externalFormFieldType;
 
-        public ExternalContentItem(String name, JsonPointer jsonPointer, ExternalFormFieldType externalFormFieldType) {
+        public ExternalContentItem(
+            String name,
+            JsonPointer jsonPointer,
+            String externalFormFieldType
+        ) {
             super(name, jsonPointer);
             this.externalFormFieldType = externalFormFieldType;
         }

@@ -284,9 +284,12 @@ public class CamundaFormAssociationService implements FormAssociationService {
     @Override
     @Transactional
     public CamundaFormAssociation upsertFormAssociation(String processDefinitionKey, FormLinkRequest formLinkRequest) {
-        final var formAssociation = getFormAssociationByFormLinkId(
-            processDefinitionKey, formLinkRequest.getId()
-        );
+        Optional<CamundaFormAssociation> formAssociation;
+        if (formLinkRequest.getType() == FormAssociationType.START_EVENT) {
+            formAssociation = getStartEventFormDefinitionByProcessDefinitionKey(processDefinitionKey);
+        } else {
+            formAssociation = getFormAssociationByFormLinkId(processDefinitionKey, formLinkRequest.getId());
+        }
         return formAssociation.map(
             camundaFormAssociation -> modifyFormAssociation(new ModifyFormAssociationRequest(
                     processDefinitionKey,
@@ -373,22 +376,28 @@ public class CamundaFormAssociationService implements FormAssociationService {
     }
 
     public void prefillDataResolverFields(FormIoFormDefinition formDefinition, Document document, JsonNode extendedDocumentContent) {
-        //FormFieldDataResolver pre-filling
-        formDefinition.buildExternalFormFieldsMap()
+        // FormFieldDataResolver pre-filling
+        formDefinition
+            .buildExternalFormFieldsMap()
             .forEach((externalFormFieldType, externalContentItems) -> formFieldDataResolvers
                 .stream()
                 .filter(formFieldDataResolver -> formFieldDataResolver.supports(externalFormFieldType))
                 .collect(singleElementCollector())
                 .ifPresent(
                     formFieldDataResolver -> {
-                        String[] varNames = externalContentItems.stream()
+                        final String[] varNames = externalContentItems.stream()
                             .map(FormIoFormDefinition.ExternalContentItem::getName).toArray(String[]::new);
-                        Map<String, Object> externalDataMap = formFieldDataResolver.get(
+
+                        var externalDataMap = formFieldDataResolver.get(
                             document.definitionId().name(),
                             document.id().getId(),
                             varNames
                         );
-                        formDefinition.preFillWith(externalFormFieldType.name().toLowerCase(), externalDataMap);
+
+                        formDefinition.preFillWith(
+                            externalFormFieldType,
+                            externalDataMap
+                        );
                     }
                 )
             );
