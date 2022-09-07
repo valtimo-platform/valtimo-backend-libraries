@@ -32,6 +32,7 @@ import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
+import org.camunda.bpm.engine.RuntimeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Optional;
@@ -52,6 +53,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
     private DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
     private DocumentDefinitionService documentDefinitionService;
     private CamundaProcessService camundaProcessService;
+    private RuntimeService runtimeService;
 
     @BeforeEach
     public void setUp() {
@@ -60,13 +62,15 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         documentDefinitionRepository = mock(DocumentDefinitionRepository.class);
         documentDefinitionService = mock(DocumentDefinitionService.class);
         camundaProcessService = mock(CamundaProcessService.class);
+        runtimeService = mock(RuntimeService.class);
 
         service = new CamundaProcessJsonSchemaDocumentAssociationService(
             processDocumentDefinitionRepository,
             processDocumentInstanceRepository,
             documentDefinitionRepository,
             documentDefinitionService,
-            camundaProcessService
+            camundaProcessService,
+            runtimeService
         );
     }
 
