@@ -32,7 +32,9 @@ import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.EncryptionService
 import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.web.rest.PluginConfigurationResource
 import com.ritense.plugin.web.rest.PluginDefinitionResource
+import com.ritense.plugin.web.rest.PluginProcessLinkResource
 import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.beans.factory.annotation.Value
@@ -136,6 +138,22 @@ class PluginAutoConfiguration {
         pluginService: PluginService
     ): PluginDefinitionResource {
         return PluginDefinitionResource(pluginService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginConfigurationResource::class)
+    fun pluginConfigurationResource(
+        pluginService: PluginService
+    ): PluginConfigurationResource {
+        return PluginConfigurationResource(pluginService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginProcessLinkResource::class)
+    fun pluginProcessLinkResource(
+        pluginService: PluginService
+    ): PluginProcessLinkResource {
+        return PluginProcessLinkResource(pluginService)
     }
 
     @Bean
