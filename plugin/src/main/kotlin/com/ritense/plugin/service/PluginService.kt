@@ -167,6 +167,10 @@ class PluginService(
         pluginProcessLinkRepository.save(link)
     }
 
+    fun deleteProcessLink(id: UUID) {
+        pluginProcessLinkRepository.deleteById(PluginProcessLinkId.existingId(id))
+    }
+
     fun invoke(execution: DelegateExecution, processLink: PluginProcessLink): Any? {
         val instance = createInstance(processLink.pluginConfigurationId)
 
