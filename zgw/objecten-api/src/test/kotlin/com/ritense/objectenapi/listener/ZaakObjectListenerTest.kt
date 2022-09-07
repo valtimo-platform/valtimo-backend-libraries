@@ -17,6 +17,7 @@
 package com.ritense.objectenapi.listener
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.IntNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
@@ -73,8 +74,9 @@ class ZaakObjectListenerTest {
         )
 
         val eventData = mapOf("zaakobject" to
-            mapOf("objecttype:/person/firstname" to TextNode("Peter"),
-                  "objecttype:/person/lastname" to TextNode("van Klaveren")))
+            mapOf("objecttype:/person/firstname" to TextNode("John"),
+                  "objecttype:/person/lastname" to TextNode("Doe"),
+                  "objecttype:/person/age" to IntNode(30)))
         val event = ExternalDataSubmittedEvent(
             data = eventData,
             documentDefinition = "documentDefinition",
@@ -106,7 +108,9 @@ class ZaakObjectListenerTest {
         val capturedObjectRecord = capturedObjectRequest.record
         assertEquals(currentTypeVersion, capturedObjectRecord.typeVersion)
         assertEquals(currentIndexVersion.toString(), capturedObjectRecord.correctionFor)
-        assertEquals("Peter", capturedObjectRecord.data!!.get("person").get("firstname").textValue())
-        assertEquals("van Klaveren", capturedObjectRecord.data!!.get("person").get("lastname").textValue())
+        assertEquals("John", capturedObjectRecord.data!!.get("person").get("firstname").textValue())
+        assertEquals("Doe", capturedObjectRecord.data!!.get("person").get("lastname").textValue())
+        assertEquals(true, capturedObjectRecord.data!!.get("person").get("age").isInt)
+        assertEquals(30, capturedObjectRecord.data!!.get("person").get("age").intValue())
     }
 }

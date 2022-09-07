@@ -27,7 +27,9 @@ class ObjectRecord(
     val geometry: ObjectGeometry? = null,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val startAt: LocalDate,
+    @JsonFormat(pattern = "yyyy-MM-dd")
     val endAt: LocalDate? = null,
+    @JsonFormat(pattern = "yyyy-MM-dd")
     val registrationAt: LocalDate? = null,
     val correctionFor: String? = null,
     val correctedBy: String? = null
