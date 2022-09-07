@@ -315,7 +315,7 @@ internal class ZaakObjectServiceTest {
             """.trimIndent(),
             false
         )
-        whenever(formDefinitionService.getFormDefinitionByName("some-type.editform"))
+        whenever(formDefinitionService.getFormDefinitionByNameIgnoringCase("some-type.editform"))
             .thenReturn(Optional.of(formDefinition))
 
         val resultingForm = zaakObjectService.getZaakObjectForm(objectUrl)
@@ -385,11 +385,11 @@ internal class ZaakObjectServiceTest {
         """.trimIndent())
         whenever(objectRecord.data).thenReturn(objectData)
 
-        whenever(formDefinitionService.getFormDefinitionByName("some-type.editform")).thenReturn(null)
+        whenever(formDefinitionService.getFormDefinitionByNameIgnoringCase("some-type.editform")).thenReturn(null)
 
         val resultingForm = zaakObjectService.getZaakObjectForm(objectUrl)
 
-        verify(formDefinitionService).getFormDefinitionByName("some-type.editform")
+        verify(formDefinitionService).getFormDefinitionByNameIgnoringCase("some-type.editform")
         assertNull(resultingForm)
     }
 

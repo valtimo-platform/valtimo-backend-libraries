@@ -29,5 +29,7 @@ import java.util.UUID;
 public interface FormDefinitionRepository extends JpaRepository<FormIoFormDefinition, UUID> {
     Optional<FormIoFormDefinition> findByName(String name);
 
+    Optional<FormIoFormDefinition> findByNameIgnoreCase(String name);
+
     Page<FormDefinition> findAllByNameContainingIgnoreCase(String name, Pageable pageable);
 }
