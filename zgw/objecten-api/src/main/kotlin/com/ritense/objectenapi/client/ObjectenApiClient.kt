@@ -40,4 +40,24 @@ class ObjectenApiClient(
 
         return result?.body!!
     }
+
+    fun objectUpdate(
+        authentication: ObjectenApiAuthentication,
+        objectUrl: URI,
+        objectRequest: ObjectRequest
+    ): ObjectWrapper {
+        val result = webClient
+            .mutate()
+            .filter(authentication)
+            .build()
+            .put()
+            .uri(objectUrl)
+            .header("Content-Crs", "EPSG:4326")
+            .bodyValue(objectRequest)
+            .retrieve()
+            .toEntity(ObjectWrapper::class.java)
+            .block()
+
+        return result?.body!!
+    }
 }

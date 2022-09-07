@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,19 @@
 
 package com.ritense.valtimo.contract.form;
 
-import java.util.Map;
-import java.util.UUID;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
-public interface FormFieldDataResolver {
+class ExternalFormFieldTypeTest {
 
-    @Deprecated(forRemoval = true, since = "9.18")
-    default boolean supports(ExternalFormFieldType externalFormFieldType) {
-        return false;
+    @Test
+    public void shouldFindExternalFormFieldTypeByKey() {
+        assertEquals(ExternalFormFieldType.OZ, ExternalFormFieldType.fromKey("OZ"));
     }
 
-    default boolean supports(String externalFormFieldType) {
-        return supports(ExternalFormFieldType.fromKey(externalFormFieldType));
+    @Test
+    public void shouldFindExternalFormFieldTypeByName() {
+        assertEquals(ExternalFormFieldType.OZ, ExternalFormFieldType.fromString("OpenZaak"));
     }
-
-    Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames);
 
 }

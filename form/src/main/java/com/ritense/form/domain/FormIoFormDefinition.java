@@ -60,7 +60,8 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String COMPONENTS_KEY = "components";
     public static final String DEFAULT_VALUE_FIELD = "defaultValue";
     public static final String PROCESS_VAR_PREFIX = "pv";
-    public static final String EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ".";
+    public static final String EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ":";
+    public static final String LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ".";
 
     @Id
     @Column(name = "id", updatable = false)
@@ -333,14 +334,27 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     private Optional<ExternalContentItem> getExternalFormField(JsonNode field) {
         return getExternalFormFieldType(field).flatMap(externalFormFieldType -> {
-            String jsonPath = field.get(PROPERTY_KEY).asText().replace(".", "/");
-            // Note: Name is limited to 1 level of depth. Not support = pv.aa.bbb
-            String propertyName = jsonPath.substring(externalFormFieldType.length() + 1); // example pv.varName -> gets varName
-            jsonPath = "/" + jsonPath;
+            String fieldKey = field.get(PROPERTY_KEY).asText();
+            String propertyName = fieldKey.substring(externalFormFieldType.length() + 1); // example pv:varName -> gets varName
+            String jsonPath;
+            String separator;
+
+            if (fieldKey.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)) {
+                jsonPath = "/" + fieldKey
+                    .replace("/", "~1")
+                    .replace(".", "/");
+                separator = EXTERNAL_FORM_FIELD_TYPE_SEPARATOR;
+            } else {
+                //support for legacy dot separator (pv.varName)
+                jsonPath = "/" + fieldKey.replace(LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR, "/");
+                separator = LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR;
+            }
+
             return buildJsonPointer(jsonPath)
                 .flatMap(jsonPointer -> Optional.of(
                         new ExternalContentItem(
                             propertyName,
+                            separator,
                             jsonPointer,
                             externalFormFieldType
                         )
@@ -358,15 +372,20 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             return Optional.empty();
         }
         final String key = field.get(PROPERTY_KEY).asText().toUpperCase();
-        // Note key can be -> "ExternalFormFieldTypeName.propertyName"
-        if (!key.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)) {
+        // Note key can be -> "ExternalFormFieldTypeName:propertyName"
+        if (!(key.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)
+            || key.contains(LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR))) {
             return Optional.empty();
         }
+
+        // Get prefix up to first separator
+        String prefix = key.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR) ?
+            key.substring(0, key.indexOf(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)).toLowerCase() :
+            key.substring(0, key.indexOf(LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)).toLowerCase();
+
         // Check if key prefix is supported by a resolver.
         final var resolvers = FormSpringContextHelper.getFormFieldDataResolver();
         for (var entry : resolvers.entrySet()) {
-            // Get prefix up to first dot
-            final var prefix = key.substring(0, key.indexOf(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)).toLowerCase();
             if (entry.getValue().supports(prefix)) {
                 return Optional.of(prefix);
             }
@@ -479,16 +498,30 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static class ExternalContentItem extends ContentItem {
 
         private final String externalFormFieldType;
+        private final String separator;
 
         public ExternalContentItem(
             String name,
             JsonPointer jsonPointer,
             String externalFormFieldType
         ) {
-            super(name, jsonPointer);
-            this.externalFormFieldType = externalFormFieldType;
+            this(name, LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR, jsonPointer, externalFormFieldType);
         }
 
+        public ExternalContentItem(
+            String name,
+            String separator,
+            JsonPointer jsonPointer,
+            String externalFormFieldType
+        ) {
+            super(name, jsonPointer);
+            this.externalFormFieldType = externalFormFieldType;
+            this.separator = separator;
+        }
+
+        public String getSeparator() {
+            return separator;
+        }
     }
 
 }
