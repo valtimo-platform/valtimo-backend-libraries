@@ -38,7 +38,7 @@
         "bijlagen": {
             "type": "array",
             "items": {
-                "$ref": "formio-file.schema.json"
+                "$ref": "reference/formio-file.schema.json"
             }
         }
     }

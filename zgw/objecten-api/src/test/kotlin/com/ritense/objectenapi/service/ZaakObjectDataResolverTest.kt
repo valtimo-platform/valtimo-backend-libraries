@@ -16,6 +16,7 @@
 
 package com.ritense.objectenapi.service
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -26,6 +27,7 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
+import com.ritense.valtimo.contract.json.Mapper
 import org.junit.jupiter.api.Test
 import java.util.UUID
 import kotlin.test.assertEquals
@@ -66,9 +68,11 @@ internal class ZaakObjectDataResolverTest {
             "path" to "test-value-1",
             "nested" to nested
         )
+
+        val objectDataJsonNode = Mapper.INSTANCE.get().valueToTree<JsonNode>(objectData1)
         val objectRecord1 = mock<ObjectRecord>()
         whenever(object1.record).thenReturn(objectRecord1)
-        whenever(objectRecord1.data).thenReturn(objectData1)
+        whenever(objectRecord1.data).thenReturn(objectDataJsonNode)
         whenever(zaakObjectService.getZaakObjectOfTypeByName(documentId, "sometype"))
             .thenReturn(object1)
 
@@ -77,9 +81,11 @@ internal class ZaakObjectDataResolverTest {
         val objectData2 = mapOf(
             "other-type-path" to "test-value-3"
         )
+        
+        val object2DataJsonNode = Mapper.INSTANCE.get().valueToTree<JsonNode>(objectData2)
         val objectRecord2 = mock<ObjectRecord>()
         whenever(object2.record).thenReturn(objectRecord2)
-        whenever(objectRecord2.data).thenReturn(objectData2)
+        whenever(objectRecord2.data).thenReturn(object2DataJsonNode)
         whenever(zaakObjectService.getZaakObjectOfTypeByName(documentId, "typeWithColon: inName"))
             .thenReturn(object2)
 
@@ -120,7 +126,7 @@ internal class ZaakObjectDataResolverTest {
 
     @Test
     fun `should handle missing field type property`() {
-        val resolvedVariable = testForValueMap(mapOf())
+        val resolvedVariable = testForValueMap(Mapper.INSTANCE.get().valueToTree(""))
         assertNull(resolvedVariable)
     }
 
@@ -158,13 +164,15 @@ internal class ZaakObjectDataResolverTest {
 
     private fun testForVariableType(value: Any?): Any? {
         return testForValueMap(
-            mapOf(
-                "path" to value
+            Mapper.INSTANCE.get().valueToTree(
+                mapOf(
+                    "path" to value
+                )
             )
         )
     }
 
-    private fun testForValueMap(value: Map<String, Any?>): Any? {
+    private fun testForValueMap(value: JsonNode): Any? {
         val documentId = UUID.randomUUID()
         val fieldsToRequest = arrayOf(
             "sometype:/path"
