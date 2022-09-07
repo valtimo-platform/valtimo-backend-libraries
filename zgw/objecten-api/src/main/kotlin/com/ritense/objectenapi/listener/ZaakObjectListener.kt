@@ -20,8 +20,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.ValueNode
-import com.fasterxml.jackson.databind.node.JsonNodeType
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectRequest
@@ -32,7 +30,6 @@ import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import org.springframework.context.event.EventListener
 import java.net.URI
 import java.time.LocalDate
-import java.util.InvalidPropertiesFormatException
 import java.util.UUID
 
 class ZaakObjectListener(
