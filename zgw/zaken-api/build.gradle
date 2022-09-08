@@ -34,6 +34,7 @@ dependencies {
     testImplementation project(':process-document')
     testImplementation project(':resource:openzaak-resource')
     testImplementation project(':openzaak')
+    testImplementation project(':plugin-valtimo')
 
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
@@ -43,6 +44,8 @@ dependencies {
     testImplementation "com.squareup.okhttp3:okhttp:4.10.0"
     //Kotlin
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+
+    testImplementation project(':test-utils-common')
 
     jar {
         enabled = true

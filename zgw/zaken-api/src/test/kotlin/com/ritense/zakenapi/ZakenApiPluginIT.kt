@@ -38,8 +38,10 @@ import java.net.URI
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
+import javax.transaction.Transactional
 import kotlin.test.assertEquals
 
+@Transactional
 class ZakenApiPluginIT : BaseIntegrationTest() {
 
     @Autowired

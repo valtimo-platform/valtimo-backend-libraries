@@ -39,6 +39,7 @@ class PluginHttpSecurityConfigurer: HttpSecurityConfigurer {
                 .antMatchers(GET, "/api/process-link").hasAuthority(ADMIN)
                 .antMatchers(POST, "/api/process-link").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/process-link").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/process-link/{processLinkId}").hasAuthority(ADMIN)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
