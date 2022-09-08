@@ -19,8 +19,12 @@ package com.ritense.objectenapi.service
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.form.domain.FormIoFormDefinition
+import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.ObjectenApiPlugin
+import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.objecttypenapi.client.Objecttype
@@ -28,20 +32,25 @@ import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.exception.ZaakInstanceLinkNotFoundException
 import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.ZaakObject
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import java.net.URI
+import java.util.Optional
 import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 internal class ZaakObjectServiceTest {
 
     val zaakInstanceLinkService = mock<ZaakInstanceLinkService>()
     val pluginService = mock<PluginService>()
-    val zaakObjectService = ZaakObjectService(zaakInstanceLinkService, pluginService)
+    val formDefinitionService = mock<FormDefinitionService>()
+    val zaakObjectService = ZaakObjectService(zaakInstanceLinkService, pluginService, formDefinitionService)
 
     var zaakPlugin: ZakenApiPlugin? = null
     var objectenApiPlugin: ObjectenApiPlugin? = null
@@ -263,6 +272,125 @@ internal class ZaakObjectServiceTest {
 
         assertEquals("No object was found of type 'test' for document $documentId",
             exception.message)
+    }
+
+    @Test
+    fun `should get prefilled form for object`() {
+        val zaakInstanceUrl = URI("http://not-relevant")
+        val objectUrl = URI("http://example.com/object")
+        val objecttypeUrl = URI("http://example.com/objecttype")
+        val objecttypeName = "some-type"
+
+        setupPlugins(zaakInstanceUrl)
+        val theObject = setupObjectWithRelations(zaakInstanceUrl, objecttypeUrl)
+        val objecttype = setupObjecttype(theObject)
+        whenever(objecttype.name).thenReturn(objecttypeName)
+        whenever(objectenApiPlugin?.getObject(objectUrl)).thenReturn(theObject)
+
+        val objectRecord = mock<ObjectRecord>()
+        whenever(theObject.record).thenReturn(objectRecord)
+        val objectData = Mapper.INSTANCE.get().readTree("""
+            {
+              "test": "test-value"
+            }
+        """.trimIndent())
+        whenever(objectRecord.data).thenReturn(objectData)
+
+        val formDefinition = FormIoFormDefinition(
+            UUID.randomUUID(),
+            "form-name",
+            """
+                {
+                    "display": "form",
+                    "settings": {},
+                    "components": [
+                        {
+                            "label": "Test",
+                            "key": "test",
+                            "type": "textfield",
+                            "input": true
+                        }
+                    ]
+                }
+            """.trimIndent(),
+            false
+        )
+        whenever(formDefinitionService.getFormDefinitionByNameIgnoringCase("some-type.editform"))
+            .thenReturn(Optional.of(formDefinition))
+
+        val resultingForm = zaakObjectService.getZaakObjectForm(objectUrl)
+
+        assertNotNull(resultingForm)
+        assertEquals("test-value", resultingForm.formDefinition.get("components").get(0).get("defaultValue").textValue())
+    }
+
+    @Test
+    fun `should return null when getting form for object and object does not exist`() {
+        val zaakInstanceUrl = URI("http://not-relevant")
+        val objectUrl = URI("http://example.com/object")
+
+        setupPlugins(zaakInstanceUrl)
+        whenever(objectenApiPlugin?.getObject(objectUrl)).thenReturn(null)
+
+        val resultingForm = zaakObjectService.getZaakObjectForm(objectUrl)
+
+        verify(objectenApiPlugin)?.getObject(any())
+        assertNull(resultingForm)
+    }
+
+    @Test
+    fun `should return null when getting form for object and objecttype does not exist`() {
+        val zaakInstanceUrl = URI("http://not-relevant")
+        val objectUrl = URI("http://example.com/object")
+        val objecttypeUrl = URI("http://example.com/objecttype")
+
+        setupPlugins(zaakInstanceUrl)
+        val theObject = setupObjectWithRelations(zaakInstanceUrl, objecttypeUrl)
+        whenever(objectenApiPlugin?.getObject(objectUrl)).thenReturn(theObject)
+
+        val objectRecord = mock<ObjectRecord>()
+        whenever(theObject.record).thenReturn(objectRecord)
+        val objectData = Mapper.INSTANCE.get().readTree("""
+            {
+              "test": "test-value"
+            }
+        """.trimIndent())
+        whenever(objectRecord.data).thenReturn(objectData)
+
+        val resultingForm = zaakObjectService.getZaakObjectForm(objectUrl)
+
+        verify(objecttypenApiPlugin)?.getObjecttype(any())
+        assertNull(resultingForm)
+    }
+
+    @Test
+    fun `should return null when getting form for object and form does not exist`() {
+        val zaakInstanceUrl = URI("http://not-relevant")
+        val objectUrl = URI("http://example.com/object")
+        val objecttypeUrl = URI("http://example.com/objecttype")
+        val objecttypeName = "some-type"
+
+        setupPlugins(zaakInstanceUrl)
+        val theObject = setupObjectWithRelations(zaakInstanceUrl, objecttypeUrl)
+        val objecttype = setupObjecttype(theObject)
+        whenever(objecttype.name).thenReturn(objecttypeName)
+        whenever(objectenApiPlugin?.getObject(objectUrl)).thenReturn(theObject)
+
+        val objectRecord = mock<ObjectRecord>()
+        whenever(theObject.record).thenReturn(objectRecord)
+        val objectData = Mapper.INSTANCE.get().readTree("""
+            {
+              "test": "test-value"
+            }
+        """.trimIndent())
+        whenever(objectRecord.data).thenReturn(objectData)
+
+        whenever(formDefinitionService.getFormDefinitionByNameIgnoringCase("some-type.editform")).thenReturn(null)
+
+        val resultingForm = zaakObjectService.getZaakObjectForm(objectUrl)
+
+        verify(formDefinitionService).getFormDefinitionByNameIgnoringCase("some-type.editform")
+        assertNull(resultingForm)
     }
 
     private fun setupZaakInstanceLink(documentId: UUID): URI {

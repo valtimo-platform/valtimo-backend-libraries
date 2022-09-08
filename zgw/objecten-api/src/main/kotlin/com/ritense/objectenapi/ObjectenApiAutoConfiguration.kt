@@ -17,7 +17,9 @@
 package com.ritense.objectenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.client.ObjectenApiClient
+import com.ritense.objectenapi.listener.ZaakObjectListener
 import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
 import com.ritense.objectenapi.service.ZaakObjectDataResolver
 import com.ritense.objectenapi.service.ZaakObjectService
@@ -35,6 +37,15 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
 class ObjectenApiAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakObjectListener::class)
+    fun formSubmissionListener(
+        pluginService: PluginService,
+        zaakObjectService: ZaakObjectService
+    ): ZaakObjectListener {
+        return ZaakObjectListener(pluginService, zaakObjectService)
+    }
 
     @Bean
     @ConditionalOnMissingBean(ObjectenApiClient::class)
@@ -70,9 +81,10 @@ class ObjectenApiAutoConfiguration {
     @Bean
     fun zaakObjectService(
         zaakInstanceLinkService: ZaakInstanceLinkService,
-        pluginService : PluginService
+        pluginService : PluginService,
+        formDefinitionService : FormDefinitionService
     ): ZaakObjectService {
-        return ZaakObjectService(zaakInstanceLinkService, pluginService)
+        return ZaakObjectService(zaakInstanceLinkService, pluginService, formDefinitionService)
     }
 
     @Order(400)

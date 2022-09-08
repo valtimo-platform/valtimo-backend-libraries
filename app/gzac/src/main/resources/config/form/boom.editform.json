@@ -1,0 +1,117 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "label": "Boombeeld",
+            "key": "boombeeld",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Boomgroep",
+            "key": "boomgroep",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Groeifase",
+            "key": "groeifase",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Snoeifase",
+            "key": "snoeifase",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Boomspiegel",
+            "key": "boomspiegel",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Meerstammig",
+            "optionsLabelPosition": "right",
+            "inline": false,
+            "tableView": false,
+            "values": [
+                {
+                    "label": "Yes",
+                    "value": "true",
+                    "shortcut": ""
+                },
+                {
+                    "label": "No",
+                    "value": "false",
+                    "shortcut": ""
+                }
+            ],
+            "dataType": "boolean",
+            "key": "meerstammig",
+            "type": "radio",
+            "input": true,
+            "defaultValue": false
+        },
+        {
+            "label": "Takvrijestam",
+            "key": "takvrijestam",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Beleidsstatus",
+            "key": "beleidsstatus",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Boombeschermer",
+            "key": "boombeschermer",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Herplantplicht",
+            "optionsLabelPosition": "right",
+            "inline": false,
+            "tableView": false,
+            "values": [
+                {
+                    "label": "Yes",
+                    "value": "true",
+                    "shortcut": ""
+                },
+                {
+                    "label": "No",
+                    "value": "false",
+                    "shortcut": ""
+                }
+            ],
+            "dataType": "boolean",
+            "key": "herplantplicht",
+            "type": "radio",
+            "input": true,
+            "defaultValue": false
+        },
+        {
+            "label": "Feestverlichting",
+            "key": "feestverlichting",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Beoogdeomlooptijd",
+            "key": "beoogdeomlooptijd",
+            "type": "textfield",
+            "input": true
+        }
+    ]
+}
