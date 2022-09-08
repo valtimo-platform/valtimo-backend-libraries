@@ -64,9 +64,9 @@ public class KeycloakAutoConfiguration {
     @ConditionalOnWebApplication
     public KeycloakUserManagementService keycloakUserManagementService(
         final KeycloakService keycloakService,
-        @Value("${valtimo.keycloak.client:}") final String keycloakClient
+        @Value("${valtimo.keycloak.client:}") final String keycloakClientName
     ) {
-        return new KeycloakUserManagementService(keycloakService, keycloakClient);
+        return new KeycloakUserManagementService(keycloakService, keycloakClientName);
     }
 
     @Bean
@@ -74,9 +74,9 @@ public class KeycloakAutoConfiguration {
     @ConditionalOnWebApplication
     public KeycloakService keycloakService(
             final KeycloakSpringBootProperties properties,
-            @Value("${valtimo.keycloak.client:}") final String keycloakClient
+            @Value("${valtimo.keycloak.client:}") final String keycloakClientName
     ) {
-        return new KeycloakService(properties, keycloakClient);
+        return new KeycloakService(properties, keycloakClientName);
     }
 
 }

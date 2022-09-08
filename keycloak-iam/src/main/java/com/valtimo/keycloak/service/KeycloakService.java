@@ -31,9 +31,9 @@ public class KeycloakService {
     private final KeycloakSpringBootProperties properties;
     private final String clientName;
 
-    public KeycloakService(KeycloakSpringBootProperties properties, String keycloakClient) {
+    public KeycloakService(KeycloakSpringBootProperties properties, String keycloakClientName) {
         this.properties = properties;
-        this.clientName = keycloakClient;
+        this.clientName = keycloakClientName;
     }
 
     public Keycloak keycloak() {

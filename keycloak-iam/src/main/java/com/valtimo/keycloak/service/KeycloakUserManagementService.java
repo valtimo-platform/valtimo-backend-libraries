@@ -24,6 +24,8 @@ import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -35,13 +37,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class KeycloakUserManagementService implements UserManagementService {
+    private static final Logger logger = LoggerFactory.getLogger(KeycloakUserManagementService.class);
 
     private final KeycloakService keycloakService;
     private final String clientName;
 
-    public KeycloakUserManagementService(KeycloakService keycloakService, String keycloakClient) {
+    public KeycloakUserManagementService(KeycloakService keycloakService, String keycloakClientName) {
         this.keycloakService = keycloakService;
-        this.clientName = keycloakClient;
+        this.clientName = keycloakClientName;
     }
 
     @Override
@@ -110,24 +113,25 @@ public class KeycloakUserManagementService implements UserManagementService {
     @Override
     public List<ManageableUser> findByRole(String authority) {
         Set<UserRepresentation> roleUserMembers = new HashSet<>();
-        boolean notFoundInRealmRoles = false;
-        boolean notFoundInClientRoles = false;
+        boolean rolesFound = false;
 
         try {
             roleUserMembers.addAll(keycloakService.realmRolesResource().get(authority).getRoleUserMembers());
+            rolesFound = true;
         } catch (NotFoundException e) {
-            notFoundInRealmRoles = true;
+            logger.debug("Could not find realm roles: {}", e.getMessage());
         }
 
         if (!clientName.isBlank()) {
             try {
                 roleUserMembers.addAll(keycloakService.clientRolesResource().get(authority).getRoleUserMembers());
-            } catch(NotFoundException e) {
-                notFoundInClientRoles = true;
+                rolesFound = true;
+            } catch (NotFoundException e) {
+                logger.debug("Could not find client roles: {}", e.getMessage());
             }
         }
 
-        if (notFoundInRealmRoles && notFoundInClientRoles || notFoundInRealmRoles && clientName.isBlank()) {
+        if (!rolesFound) {
             throw new NotFoundException("Role not Found");
         }
 
