@@ -21,18 +21,20 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-internal class CreateDocumentRequestTest{
+internal class CreateDocumentRequestTest {
     @Test
     fun `should serialize inhoud value as base64`() {
         val requestToSerialize = CreateDocumentRequest(
             bronorganisatie = "123",
             creatiedatum = LocalDate.of(2020, 5, 3),
             titel = "titel",
-            bestandsnaam = "test",
+            vertrouwelijkheidaanduiding = ConfidentialityNotice.ZAAKVERTROUWELIJK.key,
+            status = DocumentStatusType.DEFINITIEF,
             taal = "taal",
+            bestandsnaam = "test",
             inhoud = "test".byteInputStream(),
+            beschrijving = "beschrijving",
             informatieobjecttype = "type",
-            status = DocumentStatusType.DEFINITIEF
         )
         val output = Mapper.INSTANCE.get().writeValueAsString(requestToSerialize)
 

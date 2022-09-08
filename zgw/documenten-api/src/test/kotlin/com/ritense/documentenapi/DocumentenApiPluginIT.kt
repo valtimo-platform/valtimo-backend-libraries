@@ -30,7 +30,6 @@ import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.repository.OpenZaakResourceRepository
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.json.Mapper
@@ -110,6 +109,10 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
         )
         val actionProperties = """
             {
+                "fileName": "test.ext",
+                "confidentialityNotice": "zaakvertrouwelijk",
+                "title": "title",
+                "description": "description",
                 "localDocumentLocation": "localDocumentVariableName",
                 "storedDocumentUrl": "storedDocumentVariableName",
                 "informatieobjecttype": "testtype",
@@ -139,10 +142,7 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
     @Test
     fun `should store temp file in documenten api`() {
         val documentId = temporaryResourceStorageService.store(
-            "test".byteInputStream(),
-            mapOf(
-                MetadataType.FILE_NAME.name to "test.ext"
-            )
+            "test".byteInputStream()
         )
 
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
@@ -166,7 +166,9 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
 
         assertEquals("123456789", parsedOutput["bronorganisatie"])
         assertEquals(LocalDate.now().toString(), parsedOutput["creatiedatum"])
-        assertEquals("test.ext", parsedOutput["titel"])
+        assertEquals("zaakvertrouwelijk", parsedOutput["vertrouwelijkheidaanduiding"])
+        assertEquals("title", parsedOutput["titel"])
+        assertEquals("description", parsedOutput["beschrijving"])
         assertEquals("GZAC", parsedOutput["auteur"])
         assertEquals("test.ext", parsedOutput["bestandsnaam"])
         assertEquals("nld", parsedOutput["taal"])
