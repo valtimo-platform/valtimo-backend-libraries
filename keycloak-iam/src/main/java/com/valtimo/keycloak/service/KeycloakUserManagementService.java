@@ -26,16 +26,22 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import javax.ws.rs.NotFoundException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class KeycloakUserManagementService implements UserManagementService {
 
     private final KeycloakService keycloakService;
+    private final String clientName;
 
-    public KeycloakUserManagementService(KeycloakService keycloakService) {
+    public KeycloakUserManagementService(KeycloakService keycloakService, String keycloakClient) {
         this.keycloakService = keycloakService;
+        this.clientName = keycloakClient;
     }
 
     @Override
@@ -103,7 +109,29 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public List<ManageableUser> findByRole(String authority) {
-        return keycloakService.rolesResource().get(authority).getRoleUserMembers().stream()
+        Set<UserRepresentation> roleUserMembers = new HashSet<>();
+        boolean notFoundInRealmRoles = false;
+        boolean notFoundInClientRoles = false;
+
+        try {
+            roleUserMembers.addAll(keycloakService.realmRolesResource().get(authority).getRoleUserMembers());
+        } catch (NotFoundException e) {
+            notFoundInRealmRoles = true;
+        }
+
+        if (!clientName.isBlank()) {
+            try {
+                roleUserMembers.addAll(keycloakService.clientRolesResource().get(authority).getRoleUserMembers());
+            } catch(NotFoundException e) {
+                notFoundInClientRoles = true;
+            }
+        }
+
+        if (notFoundInRealmRoles && notFoundInClientRoles || notFoundInRealmRoles && clientName.isBlank()) {
+            throw new NotFoundException("Role not Found");
+        }
+
+        return roleUserMembers.stream()
             .filter(UserRepresentation::isEnabled)
             .map(this::userRepresentationToManagableUser)
             .collect(Collectors.toList());

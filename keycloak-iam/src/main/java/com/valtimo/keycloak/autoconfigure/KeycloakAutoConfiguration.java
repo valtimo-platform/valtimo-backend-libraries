@@ -63,16 +63,20 @@ public class KeycloakAutoConfiguration {
     @ConditionalOnMissingBean(KeycloakUserManagementService.class)
     @ConditionalOnWebApplication
     public KeycloakUserManagementService keycloakUserManagementService(
-        final KeycloakService keycloakService
+        final KeycloakService keycloakService,
+        @Value("${valtimo.keycloak.client:}") final String keycloakClient
     ) {
-        return new KeycloakUserManagementService(keycloakService);
+        return new KeycloakUserManagementService(keycloakService, keycloakClient);
     }
 
     @Bean
     @ConditionalOnMissingBean(KeycloakService.class)
     @ConditionalOnWebApplication
-    public KeycloakService keycloakService(final KeycloakSpringBootProperties properties) {
-        return new KeycloakService(properties);
+    public KeycloakService keycloakService(
+            final KeycloakSpringBootProperties properties,
+            @Value("${valtimo.keycloak.client:}") final String keycloakClient
+    ) {
+        return new KeycloakService(properties, keycloakClient);
     }
 
 }
