@@ -12,12 +12,7 @@ enum class ConfidentialityNotice(val key: String) {
 
     companion object {
         fun fromKey(key: String): ConfidentialityNotice {
-            for (confidentialityNotice in ConfidentialityNotice.values()) {
-                if (confidentialityNotice.key.equals(key, ignoreCase = true)) {
-                    return confidentialityNotice
-                }
-            }
-            throw IllegalStateException(String.format("Cannot create ConfidentialityNotice from key %s", key))
+            return ConfidentialityNotice.valueOf(key.uppercase())
         }
     }
 }
