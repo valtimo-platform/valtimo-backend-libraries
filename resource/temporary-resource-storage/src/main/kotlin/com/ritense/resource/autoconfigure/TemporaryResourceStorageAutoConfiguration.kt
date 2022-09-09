@@ -16,13 +16,16 @@
 
 package com.ritense.resource.autoconfigure
 
+import com.ritense.resource.security.config.TemporaryResourceStorageHttpSecurityConfigurer
 import com.ritense.resource.service.TemporaryResourceStorageDeletionService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.resource.web.rest.TemporaryResourceStorageResource
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.scheduling.annotation.EnableScheduling
 
 @EnableScheduling
@@ -42,6 +45,21 @@ class TemporaryResourceStorageAutoConfiguration {
         @Value("\${valtimo.temporaryResourceStorage.retentionInMinutes:5}") retentionInMinutes: Long
     ): TemporaryResourceStorageDeletionService {
         return TemporaryResourceStorageDeletionService(retentionInMinutes)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(TemporaryResourceStorageResource::class)
+    fun temporaryResourceStorageResource(
+        temporaryResourceStorageService: TemporaryResourceStorageService
+    ): TemporaryResourceStorageResource {
+        return TemporaryResourceStorageResource(temporaryResourceStorageService)
+    }
+
+    @Order(490)
+    @Bean
+    @ConditionalOnMissingBean(TemporaryResourceStorageHttpSecurityConfigurer::class)
+    fun temporaryResourceStorageHttpSecurityConfigurer(): TemporaryResourceStorageHttpSecurityConfigurer {
+        return TemporaryResourceStorageHttpSecurityConfigurer()
     }
 
 }
