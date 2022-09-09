@@ -28,19 +28,19 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/resource/temp")
 class TemporaryResourceStorageResource(
     private val resourceService: TemporaryResourceStorageService
 ) {
 
-    @PostMapping(value = ["/resource/temp"], consumes = [MULTIPART_FORM_DATA_VALUE])
+    @PostMapping(consumes = [MULTIPART_FORM_DATA_VALUE])
     fun uploadFileWithMetadata(
         @RequestParam("file") file: MultipartFile,
         @RequestParam metaData: Map<String, Any>,
     ): ResponseEntity<ResourceDto> {
         val mutableMetaData = metaData.toMutableMap()
-        mutableMetaData.putIfAbsent(MetadataType.FILE_NAME.name, file.originalFilename)
-        mutableMetaData.putIfAbsent(MetadataType.CONTENT_TYPE.name, file.contentType)
+        file.originalFilename?.let { mutableMetaData.putIfAbsent(MetadataType.FILE_NAME.name, it) }
+        file.contentType?.let { mutableMetaData.putIfAbsent(MetadataType.CONTENT_TYPE.name, it) }
         val resourceId = resourceService.store(file.inputStream, mutableMetaData)
         return ResponseEntity.ok(ResourceDto(resourceId))
     }
