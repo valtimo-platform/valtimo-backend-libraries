@@ -30,10 +30,13 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskResult;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
+import org.camunda.bpm.engine.RuntimeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
+
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.List;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
@@ -46,6 +49,9 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
 
     private static final String DOCUMENT_DEFINITION_NAME = "house";
     private static final String PROCESS_DEFINITION_KEY = "loan-process-demo";
+
+    @Inject
+    private RuntimeService runtimeService;
 
     @Test
     public void findProcessDocumentDefinition() {
@@ -113,6 +119,12 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id().toString()
         );
 
+        final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstancesBeforeComplete = camundaProcessJsonSchemaDocumentAssociationService
+            .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id());
+
+        assertThat(processDocumentInstancesBeforeComplete).hasSize(1);
+        assertThat(processDocumentInstancesBeforeComplete.get(0).isActive()).isEqualTo(true);
+
         final Document document = newDocumentAndStartProcessResult.resultingDocument().orElseThrow();
 
         final JsonNode jsonDataUpdate = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
@@ -132,6 +144,8 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
         final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstances = camundaProcessJsonSchemaDocumentAssociationService
             .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id());
         assertThat(processDocumentInstances).hasSize(2);
+        assertThat(processDocumentInstances.get(0).isActive()).isEqualTo(false);
+        assertThat(processDocumentInstances.get(1).isActive()).isEqualTo(false);
     }
 
     @Test

@@ -83,14 +83,16 @@ public class ProcessDocumentAutoConfiguration {
         ProcessDocumentInstanceRepository processDocumentInstanceRepository,
         DocumentDefinitionRepository documentDefinitionRepository,
         DocumentDefinitionService documentDefinitionService,
-        CamundaProcessService camundaProcessService
+        CamundaProcessService camundaProcessService,
+        RuntimeService runtimeService
     ) {
         return new CamundaProcessJsonSchemaDocumentAssociationService(
             processDocumentDefinitionRepository,
             processDocumentInstanceRepository,
             documentDefinitionRepository,
             documentDefinitionService,
-            camundaProcessService
+            camundaProcessService,
+            runtimeService
         );
     }
 
