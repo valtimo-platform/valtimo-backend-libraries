@@ -14,24 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi
+package com.ritense.resource.web.rest.response
 
-import com.ritense.openzaak.autoconfigure.OpenZaakPluginAutoConfiguration
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
-import org.springframework.boot.test.context.TestConfiguration
-
-@SpringBootApplication(
-    exclude = [
-        OpenZaakPluginAutoConfiguration::class
-    ]
+data class ResourceDto(
+    val id: String,
 )
-class TestApplication {
-
-    fun main(args: Array<String>) {
-        runApplication<TestApplication>(*args)
-    }
-
-    @TestConfiguration
-    class TestConfig
-}

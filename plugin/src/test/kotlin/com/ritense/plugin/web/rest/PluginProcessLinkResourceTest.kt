@@ -31,6 +31,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
@@ -161,5 +162,16 @@ internal class PluginProcessLinkResourceTest {
             .andExpect(status().isNoContent)
 
         verify(pluginService).updateProcessLink(pluginProcessLinkDto)
+    }
+
+    @Test
+    fun `should delete plugin process link`() {
+        val pluginProcessLinkId = UUID.randomUUID()
+
+        mockMvc.perform(delete("/api/process-link/{processLinkId}", pluginProcessLinkId))
+            .andDo(print())
+            .andExpect(status().isNoContent)
+
+        verify(pluginService).deleteProcessLink(pluginProcessLinkId)
     }
 }
