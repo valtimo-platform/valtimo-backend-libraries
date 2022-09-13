@@ -40,9 +40,9 @@ public class ProcessDefinitionDeployedEventPublisher implements Deployer {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReadyEvent() {
+        isApplicationReady = true;
         events.forEach(applicationEventPublisher::publishEvent);
         events = null;
-        isApplicationReady = true;
     }
 
     @Override
