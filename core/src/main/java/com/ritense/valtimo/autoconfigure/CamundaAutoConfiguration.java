@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.autoconfigure;
 
+import com.ritense.valtimo.camunda.ProcessDefinitionDeployedEventPublisher;
 import com.ritense.valtimo.camunda.command.ValtimoSchemaOperationsCommand;
 import com.ritense.valtimo.camunda.processaudit.HistoryEventAuditProcessEnginePlugin;
 import com.ritense.valtimo.camunda.processaudit.TaskEventHandler;
@@ -75,9 +76,10 @@ public class CamundaAutoConfiguration {
     @ConditionalOnMissingBean(CamundaConfiguration.class)
     public CamundaConfiguration camundaConfiguration(
         final ValtimoSchemaOperationsCommand valtimoSchemaOperationsCommand,
-        final CustomRepositoryServiceImpl repositoryService
+        final CustomRepositoryServiceImpl repositoryService,
+        final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher
     ) {
-        return new CamundaConfiguration(valtimoSchemaOperationsCommand, repositoryService);
+        return new CamundaConfiguration(valtimoSchemaOperationsCommand, repositoryService, processDefinitionDeployedEventPublisher);
     }
 
     @Bean
@@ -134,4 +136,13 @@ public class CamundaAutoConfiguration {
     public TaskEventHandler taskEventHandler(final ApplicationEventPublisher applicationEventPublisher) {
         return new TaskEventHandler(applicationEventPublisher);
     }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionDeployedEventPublisher.class)
+    public ProcessDefinitionDeployedEventPublisher bpmnPropertyListener(
+        final ApplicationEventPublisher applicationEventPublisher
+    ) {
+        return new ProcessDefinitionDeployedEventPublisher(applicationEventPublisher);
+    }
+
 }
