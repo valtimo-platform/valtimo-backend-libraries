@@ -23,7 +23,7 @@ public class ProcessDefinitionDiagramWithPropertyDto {
     private String id;
     private String bpmn20Xml;
     private boolean readOnly;
-    private boolean systemProperty;
+    private boolean systemProcess;
 
     public String getId() {
         return id;
@@ -37,15 +37,15 @@ public class ProcessDefinitionDiagramWithPropertyDto {
         return readOnly;
     }
 
-    public boolean isSystemProperty() {
-        return systemProperty;
+    public boolean isSystemProcess() {
+        return systemProcess;
     }
 
-    public ProcessDefinitionDiagramWithPropertyDto(ProcessDefinitionDiagramDto processDefinitionDiagramDto, boolean readOnly, boolean systemProperty) {
+    public ProcessDefinitionDiagramWithPropertyDto(ProcessDefinitionDiagramDto processDefinitionDiagramDto, boolean readOnly, boolean systemProcess) {
         this.id = processDefinitionDiagramDto.getId();
         this.bpmn20Xml = processDefinitionDiagramDto.getBpmn20Xml();
         this.readOnly = readOnly;
-        this.systemProperty = systemProperty;
+        this.systemProcess = systemProcess;
     }
 
 }
