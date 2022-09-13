@@ -36,6 +36,10 @@ public class ProcessPropertyService {
         this.repositoryService = repositoryService;
     }
 
+    public boolean isSystemProcessById(String processDefinitionId) {
+        return isSystemProcess(getProcessDefinitionKeyById(processDefinitionId));
+    }
+
     public boolean isSystemProcess(String processDefinitionKey) {
         final var processProperties = processDefinitionPropertiesRepository.findByProcessDefinitionKey(processDefinitionKey);
         if (processProperties == null) {
@@ -44,16 +48,12 @@ public class ProcessPropertyService {
         return processProperties.isSystemProcess();
     }
 
-    public boolean isReadOnly(String processDefinitionKey) {
-        return !valtimoProperties.getProcess().isSystemProcessUpdatable() && isSystemProcess(processDefinitionKey);
-    }
-
-    public boolean isSystemProcessById(String processDefinitionId) {
-        return isSystemProcess(getProcessDefinitionKeyById(processDefinitionId));
-    }
-
     public boolean isReadOnlyById(String processDefinitionId) {
         return isReadOnly(getProcessDefinitionKeyById(processDefinitionId));
+    }
+
+    public boolean isReadOnly(String processDefinitionKey) {
+        return !valtimoProperties.getProcess().isSystemProcessUpdatable() && isSystemProcess(processDefinitionKey);
     }
 
     private String getProcessDefinitionKeyById(String processDefinitionId) {

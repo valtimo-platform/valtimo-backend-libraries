@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -73,6 +74,19 @@ class ProcessResourceIntTest extends BaseIntegrationTest {
             .andExpect(jsonPath("$.bpmn20Xml").isNotEmpty())
             .andExpect(jsonPath("$.readOnly").value(true))
             .andExpect(jsonPath("$.systemProcess").value(true));
+    }
+
+    @Test
+    void shouldThrowForbiddenWhenMigratingAReadOnlyProcess() throws Exception {
+        var processDefinition = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("test-process")
+            .latestVersion()
+            .singleResult();
+
+        mockMvc.perform(post("/api/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/migrate", processDefinition.getId(), processDefinition.getId())
+                .accept(APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isForbidden());
     }
 
 }
