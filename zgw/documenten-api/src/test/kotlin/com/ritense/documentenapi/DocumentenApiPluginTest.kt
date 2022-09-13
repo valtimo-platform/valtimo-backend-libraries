@@ -21,12 +21,12 @@ import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.documentenapi.client.ConfidentialityLevel
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.CreateDocumentResult
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.event.DocumentCreated
-import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.Test
@@ -59,8 +59,6 @@ internal class DocumentenApiPluginTest {
             .thenReturn("localDocumentLocation")
         whenever(storageService.getResourceContentAsInputStream("localDocumentLocation"))
             .thenReturn(fileStream)
-        whenever(storageService.getResourceMetadata("localDocumentLocation"))
-            .thenReturn(mapOf(MetadataType.FILE_NAME.name to "test.ext"))
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
         val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher)
@@ -70,6 +68,10 @@ internal class DocumentenApiPluginTest {
 
         plugin.storeTemporaryDocument(
             executionMock,
+            "test.ext",
+            ConfidentialityLevel.ZAAKVERTROUWELIJK.key,
+            "title",
+            "description",
             "localDocumentVariableName",
             "storedDocumentVariableName",
             "type",
@@ -86,7 +88,7 @@ internal class DocumentenApiPluginTest {
         val request = apiRequestCaptor.firstValue
         assertEquals("123456789", request.bronorganisatie)
         assertNotNull(request.creatiedatum)
-        assertEquals("test.ext", request.titel)
+        assertEquals("title", request.titel)
         assertEquals("GZAC", request.auteur)
         assertEquals("test.ext", request.bestandsnaam)
         assertEquals("taal", request.taal)
