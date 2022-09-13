@@ -16,7 +16,7 @@
 
 package com.ritense.documentenapi
 
-import com.ritense.documentenapi.client.ConfidentialityNotice
+import com.ritense.documentenapi.client.ConfidentialityLevel
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
@@ -59,7 +59,7 @@ class DocumentenApiPlugin(
     fun storeTemporaryDocument(
         execution: DelegateExecution,
         @PluginActionProperty fileName: String,
-        @PluginActionProperty confidentialityNotice: String,
+        @PluginActionProperty confidentialityLevel: String,
         @PluginActionProperty title: String,
         @PluginActionProperty description: String,
         @PluginActionProperty localDocumentLocation: String,
@@ -74,7 +74,7 @@ class DocumentenApiPlugin(
         val request = CreateDocumentRequest(
             bronorganisatie = bronorganisatie,
             titel = title,
-            vertrouwelijkheidaanduiding = ConfidentialityNotice.fromKey(confidentialityNotice).key,
+            vertrouwelijkheidaanduiding = ConfidentialityLevel.fromKey(confidentialityLevel).key,
             status = status,
             taal = taal,
             bestandsnaam = fileName,

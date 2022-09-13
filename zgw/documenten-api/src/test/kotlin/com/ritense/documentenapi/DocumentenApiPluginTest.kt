@@ -21,7 +21,7 @@ import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import com.ritense.documentenapi.client.ConfidentialityNotice
+import com.ritense.documentenapi.client.ConfidentialityLevel
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.CreateDocumentResult
 import com.ritense.documentenapi.client.DocumentStatusType
@@ -69,7 +69,7 @@ internal class DocumentenApiPluginTest {
         plugin.storeTemporaryDocument(
             executionMock,
             "test.ext",
-            ConfidentialityNotice.ZAAKVERTROUWELIJK.key,
+            ConfidentialityLevel.ZAAKVERTROUWELIJK.key,
             "title",
             "description",
             "localDocumentVariableName",

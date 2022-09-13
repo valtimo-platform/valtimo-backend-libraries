@@ -110,7 +110,7 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
         val actionProperties = """
             {
                 "fileName": "test.ext",
-                "confidentialityNotice": "zaakvertrouwelijk",
+                "confidentialityLevel": "zaakvertrouwelijk",
                 "title": "title",
                 "description": "description",
                 "localDocumentLocation": "localDocumentVariableName",
