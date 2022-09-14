@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import com.ritense.valtimo.contract.form.FormFieldDataResolverProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
@@ -194,16 +196,14 @@ public class FormIoFormDefinitionTest extends BaseTest {
         }
 
         @Override
-        public Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames) {
-            return get(documentDefinitionName, documentId, Mapper.INSTANCE.get().createObjectNode(), varNames);
-        }
-
-        @Override
-        public Map<String, Object> get(String documentDefinitionName, UUID documentId, JsonNode formDefinition, String... varNames) {
+        public Map<String, Object> get(
+            String documentDefinitionName,
+            UUID documentId,
+            FormFieldDataResolverProperties additionalProperties,
+            String... varNames
+        ) {
             Map<String, Object> results = new HashMap<>();
-            Arrays.stream(varNames).forEach((name) -> {
-                results.put(name, "test");
-            });
+            Arrays.stream(varNames).forEach((name) -> results.put(name, "test"));
             return results;
         }
     }

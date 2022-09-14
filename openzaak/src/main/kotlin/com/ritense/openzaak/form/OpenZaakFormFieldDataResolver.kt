@@ -23,6 +23,7 @@ import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.valtimo.contract.form.ExternalFormFieldType
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
+import com.ritense.valtimo.contract.form.FormFieldDataResolverProperties
 import com.ritense.valtimo.contract.json.Mapper
 import java.util.UUID
 
@@ -39,19 +40,10 @@ class OpenZaakFormFieldDataResolver(
         return externalFormFieldType == ExternalFormFieldType.OZ.name
     }
 
-    override fun get(documentDefinitionName: String, documentId: UUID, vararg varNames: String): Map<String, Any> {
-        return get(
-            documentDefinitionName = documentDefinitionName,
-            documentId = documentId,
-            formDefinition = Mapper.INSTANCE.get().createObjectNode(),
-            varNames = varNames
-        )
-    }
-
     override fun get(
         documentDefinitionName: String,
         documentId: UUID,
-        formDefinition: JsonNode,
+        additionalProperties: FormFieldDataResolverProperties,
         vararg varNames: String
     ): Map<String, Any> {
         val result = mutableMapOf<String, String>()

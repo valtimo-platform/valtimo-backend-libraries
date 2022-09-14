@@ -27,6 +27,7 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
+import com.ritense.valtimo.contract.form.FormFieldDataResolverProperties
 import com.ritense.valtimo.contract.json.Mapper
 import org.junit.jupiter.api.Test
 import java.util.UUID
@@ -92,7 +93,7 @@ internal class ZaakObjectDataResolverTest {
         val variableMap = resolver.get(
             documentDefinitionName = "something",
             documentId = documentId,
-            formDefinition = Mapper.INSTANCE.get().createObjectNode(),
+            additionalProperties = FormFieldDataResolverProperties(Mapper.INSTANCE.get().createObjectNode()),
             *fieldsToRequest
         )
 
@@ -194,7 +195,7 @@ internal class ZaakObjectDataResolverTest {
         val variableMap = resolver.get(
             documentDefinitionName = "something",
             documentId = documentId,
-            formDefinition = Mapper.INSTANCE.get().createObjectNode(),
+            additionalProperties = FormFieldDataResolverProperties(Mapper.INSTANCE.get().createObjectNode()),
             *fieldsToRequest
         )
 

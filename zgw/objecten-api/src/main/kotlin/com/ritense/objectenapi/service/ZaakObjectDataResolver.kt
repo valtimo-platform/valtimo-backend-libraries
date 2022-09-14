@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeType.POJO
 import com.fasterxml.jackson.databind.node.JsonNodeType.STRING
 import com.ritense.objectenapi.service.ZaakObjectConstants.Companion.ZAAKOBJECT_PREFIX
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.form.FormFieldDataResolverProperties
 import java.util.UUID
 
 class ZaakObjectDataResolver(
@@ -44,20 +44,7 @@ class ZaakObjectDataResolver(
     override fun get(
         documentDefinitionName: String,
         documentId: UUID,
-        vararg varNames: String
-    ): Map<String, Any?> {
-        return get(
-            documentDefinitionName = documentDefinitionName,
-            documentId = documentId,
-            formDefinition = Mapper.INSTANCE.get().createObjectNode(),
-            varNames = varNames
-        )
-    }
-
-    override fun get(
-        documentDefinitionName: String,
-        documentId: UUID,
-        formDefinition: JsonNode,
+        additionalProperties: FormFieldDataResolverProperties,
         vararg varNames: String
     ): MutableMap<String, Any?> {
         val results = mutableMapOf<String, Any?>()
@@ -91,7 +78,6 @@ class ZaakObjectDataResolver(
             else -> null
         }
     }
-
 
     class RequestedData(
         val variableName: String,

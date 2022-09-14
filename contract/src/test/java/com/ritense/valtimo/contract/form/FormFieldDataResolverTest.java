@@ -49,13 +49,14 @@ class FormFieldDataResolverTest {
     }
 
     private static class FormFieldDataResolverImpl implements FormFieldDataResolver {
-        @Override
-        public Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames) {
-            return null;
-        }
 
         @Override
-        public Map<String, Object> get(String documentDefinitionName, UUID documentId, JsonNode formDefinition, String... varNames) {
+        public Map<String, Object> get(
+            String documentDefinitionName,
+            UUID documentId,
+            FormFieldDataResolverProperties additionalProperties,
+            String... varNames
+        ) {
             return null;
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package com.ritense.valtimo.contract.form;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Map;
 import java.util.UUID;
@@ -35,5 +33,10 @@ public interface FormFieldDataResolver {
     @Deprecated(forRemoval = true, since = "9.21")
     Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames);
 
-    Map<String, Object> get(String documentDefinitionName, UUID documentId, JsonNode formDefinition, String... varNames);
+    Map<String, Object> get(
+        String documentDefinitionName,
+        UUID documentId,
+        FormFieldDataResolverProperties additionalProperties,
+        String... varNames
+    );
 }
