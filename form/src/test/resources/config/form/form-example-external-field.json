@@ -9,13 +9,19 @@
     "components": [
         {
             "label": "Naam",
-            "key": "voornaam",
+            "key": "test:lastName",
             "type": "textfield",
             "input": true
         },
         {
-            "label": "OpenZaak",
-            "key": "oz.voornaam",
+            "label": "Naam",
+            "key": "test.firstName",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Naam",
+            "key": "other:field",
             "type": "textfield",
             "input": true
         },

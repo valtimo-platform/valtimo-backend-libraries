@@ -57,6 +57,11 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     }
 
     @Override
+    public Optional<FormIoFormDefinition> getFormDefinitionByNameIgnoringCase(String name) {
+        return formDefinitionRepository.findByNameIgnoreCase(name);
+    }
+
+    @Override
     @Transactional
     public FormIoFormDefinition createFormDefinition(CreateFormDefinitionRequest request) {
         return formDefinitionRepository.save(

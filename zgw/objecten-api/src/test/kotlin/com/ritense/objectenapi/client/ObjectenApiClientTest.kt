@@ -16,6 +16,8 @@
 
 package com.ritense.objectenapi.client
 
+import com.fasterxml.jackson.databind.node.IntNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -103,9 +105,9 @@ internal class ObjectenApiClientTest {
         assertEquals(URI("http://example.com"), result.type)
         assertEquals(0, result.record.index)
         assertEquals(32767, result.record.typeVersion)
-        assertEquals("henk", result.record.data?.get("property1"))
-        assertEquals(123, result.record.data?.get("property2"))
-        assertEquals(2, result.record.data?.size)
+        assertEquals("henk", (result.record.data?.get("property1") as TextNode).asText())
+        assertEquals(123, (result.record.data?.get("property2") as IntNode).asInt())
+        assertEquals(2, result.record.data?.size())
         assertEquals("string", result.record.geometry?.type)
         assertEquals(0, result.record.geometry?.coordinates?.get(0))
         assertEquals(0, result.record.geometry?.coordinates?.get(1))

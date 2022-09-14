@@ -18,6 +18,7 @@ package com.ritense.objectenapi.web.rest
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.service.ZaakObjectService
@@ -31,7 +32,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -99,7 +99,7 @@ internal class ZaakObjectResourceTest {
         whenever(object1.record).thenReturn(objectRecord1)
         whenever(objectRecord1.index).thenReturn(1)
         whenever(objectRecord1.registrationAt).thenReturn(LocalDate.of(2020, 2, 3))
-        whenever(objectRecord1.data).thenReturn(mapOf("title" to "some object"))
+        whenever(objectRecord1.data).thenReturn(Mapper.INSTANCE.get().valueToTree(mapOf("title" to "some object")))
 
         val object2 = mock<ObjectWrapper>()
         whenever(object2.url).thenReturn(URI("http://example.com/2"))
@@ -107,9 +107,9 @@ internal class ZaakObjectResourceTest {
         whenever(object2.record).thenReturn(objectRecord2)
         whenever(objectRecord2.index).thenReturn(null)
         whenever(objectRecord2.registrationAt).thenReturn(null)
-        whenever(objectRecord2.data).thenReturn(mapOf())
+        whenever(objectRecord2.data).thenReturn(Mapper.INSTANCE.get().valueToTree(""))
 
-        whenever(zaakObjectService.getZaakObjecten(documentId, URI("http://example.com/objecttype")))
+        whenever(zaakObjectService.getZaakObjectenOfType(documentId, URI("http://example.com/objecttype")))
             .thenReturn(listOf(object1, object2))
 
         mockMvc
@@ -134,7 +134,54 @@ internal class ZaakObjectResourceTest {
             .andExpect(jsonPath("$.[1].title").isEmpty)
     }
 
-    private fun jacksonMessageConverter(): MappingJackson2HttpMessageConverter? {
+    @Test
+    fun `should get form for object`() {
+        val documentId = UUID.randomUUID()
+        val formId = UUID.randomUUID()
+        val objectUrl = URI("http://example.com/object")
+        val formDefinition = FormIoFormDefinition(
+            formId,
+            "form-name",
+            "{\"content\":\"test\"}",
+            false
+        )
+
+        whenever(zaakObjectService.getZaakObjectForm(objectUrl)).thenReturn(formDefinition)
+
+        mockMvc
+            .perform(
+                get("/api/document/$documentId/zaak/object/form?objectUrl=$objectUrl")
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$.id").value(formId.toString()))
+            .andExpect(jsonPath("$.name").value("form-name"))
+            .andExpect(jsonPath("$.formDefinition.content").value("test"))
+    }
+
+    @Test
+    fun `should return 404 when no form is found for object`() {
+        val documentId = UUID.randomUUID()
+        val objectUrl = URI("http://example.com/object")
+
+        whenever(zaakObjectService.getZaakObjectForm(objectUrl)).thenReturn(null)
+
+        mockMvc
+            .perform(
+                get("/api/document/$documentId/zaak/object/form?objectUrl=$objectUrl")
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isNotFound)
+    }
+
+    private fun jacksonMessageConverter(): MappingJackson2HttpMessageConverter {
         val converter = MappingJackson2HttpMessageConverter()
         converter.objectMapper = Mapper.INSTANCE.get()
         return converter

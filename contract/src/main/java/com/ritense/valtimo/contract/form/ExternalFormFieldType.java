@@ -16,6 +16,11 @@
 
 package com.ritense.valtimo.contract.form;
 
+/**
+ * @deprecated use string instead to indicate external form field type. supports method in {@link FormFieldDataResolver}
+ * has been overloaded. use {@link FormFieldDataResolver#supports(String)}
+ */
+@Deprecated(since = "9.19.0", forRemoval = true)
 public enum ExternalFormFieldType {
     OZ("OpenZaak"),
     OA("ObjectsApi");
@@ -33,6 +38,15 @@ public enum ExternalFormFieldType {
             }
         }
         throw new IllegalStateException(String.format("Cannot create ExternalFormFieldType from string %s", text));
+    }
+
+    public static ExternalFormFieldType fromKey(String key) {
+        for (ExternalFormFieldType externalFormFieldType : ExternalFormFieldType.values()) {
+            if (externalFormFieldType.name().equalsIgnoreCase(key)) {
+                return externalFormFieldType;
+            }
+        }
+        throw new IllegalStateException(String.format("Cannot create ExternalFormFieldType from string %s", key));
     }
 
     public String toString() {

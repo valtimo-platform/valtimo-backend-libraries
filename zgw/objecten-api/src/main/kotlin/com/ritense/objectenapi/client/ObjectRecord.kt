@@ -16,18 +16,23 @@
 
 package com.ritense.objectenapi.client
 
+import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.databind.JsonNode
 import java.time.LocalDate
 
 class ObjectRecord(
-    val index: Int?,
+    val index: Int? = null,
     val typeVersion: Int,
-    val data: Map<String, Any>?,
-    val geometry: ObjectGeometry?,
+    val data: JsonNode? = null,
+    val geometry: ObjectGeometry? = null,
+    @JsonFormat(pattern = "yyyy-MM-dd")
     val startAt: LocalDate,
-    val endAt: LocalDate?,
-    val registrationAt: LocalDate?,
-    val correctionFor: String?,
-    val correctedBy: String?
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val endAt: LocalDate? = null,
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val registrationAt: LocalDate? = null,
+    val correctionFor: String? = null,
+    val correctedBy: String? = null
 )
 
 class ObjectGeometry(

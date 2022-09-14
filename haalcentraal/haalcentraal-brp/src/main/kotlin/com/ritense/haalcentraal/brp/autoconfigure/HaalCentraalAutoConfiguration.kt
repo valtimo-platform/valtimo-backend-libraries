@@ -16,6 +16,7 @@
 
 package com.ritense.haalcentraal.brp.autoconfigure
 
+import com.ritense.connector.service.ConnectorService
 import com.ritense.haalcentraal.brp.client.HaalCentraalBrpClient
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpConnector
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
@@ -79,7 +80,9 @@ internal class HaalCentraalAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(HaalCentraalBrpResource::class)
-    fun haalCentraalBrpResource() : HaalCentraalBrpResource {
-        return haalCentraalBrpResource()
+    fun haalCentraalBrpResource(
+        connectorService: ConnectorService
+    ) : HaalCentraalBrpResource {
+        return HaalCentraalBrpResource(connectorService)
     }
 }

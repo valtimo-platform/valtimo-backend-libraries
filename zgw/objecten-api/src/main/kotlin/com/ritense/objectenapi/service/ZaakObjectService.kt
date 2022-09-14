@@ -17,6 +17,8 @@
 package com.ritense.objectenapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.form.domain.FormDefinition
+import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
@@ -25,26 +27,22 @@ import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.ZaakObject
+import mu.KotlinLogging
 import java.net.URI
 import java.util.UUID
 
 class ZaakObjectService(
     val zaakInstanceLinkService: ZaakInstanceLinkService,
-    val pluginService : PluginService
+    val pluginService : PluginService,
+    val formDefinitionService : FormDefinitionService
 ) {
     fun getZaakObjectTypes(documentId: UUID): List<Objecttype> {
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
-
-        val zakenApiPluginInstance = pluginService
-            .createInstance(ZakenApiPlugin::class.java) { properties: JsonNode ->
-            zaakUrl.toString().startsWith(properties.get("url").textValue())
-        }
-
-        requireNotNull(zakenApiPluginInstance) { "No plugin configuration was found for zaak with URL $zaakUrl" }
+        val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
 
         return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
             .mapNotNull {
-                getObjectByZaakObjectUrl(it)
+                getObjectByObjectUrl(it.objectUrl)
             }.map { it.type }
             .distinct()
             .mapNotNull {
@@ -52,8 +50,7 @@ class ZaakObjectService(
             }
     }
 
-    private fun getObjectByZaakObjectUrl(zaakObject: ZaakObject) : ObjectWrapper? {
-        val objectUrl = zaakObject.objectUrl
+    private fun getObjectByObjectUrl(objectUrl: URI) : ObjectWrapper? {
         val objectenApiPlugin = pluginService
             .createInstance(ObjectenApiPlugin::class.java) { properties: JsonNode ->
                 objectUrl.toString().startsWith(properties.get("url").textValue())
@@ -70,9 +67,64 @@ class ZaakObjectService(
         return objectTypePluginInstance.getObjecttype(objectTypeUrl)
     }
 
-    fun getZaakObjecten(documentId: UUID, typeUrl: URI): List<ObjectWrapper> {
+    fun getZaakObjectenOfType(documentId: UUID, typeUrl: URI): List<ObjectWrapper> {
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
+        val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
 
+        return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
+            .mapNotNull {
+                getObjectByObjectUrl(it.objectUrl)
+            }.filter {
+                it.type == typeUrl
+            }
+    }
+
+    fun getZaakObjectOfTypeByName(documentId: UUID, objecttypeName: String): ObjectWrapper {
+        logger.debug { "Getting zaakobject for documentId $documentId and objecttypeName '$objecttypeName'" }
+        val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
+        val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
+
+        val listOfObjecttypeWithCorrectName = zakenApiPluginInstance.getZaakObjecten(zaakUrl)
+            .mapNotNull {
+                getObjectByObjectUrl(it.objectUrl)
+            }.groupBy {
+                it.type
+            }.filter {
+                getObjectTypeByUrl(it.key)?.name == objecttypeName
+            }.map {
+                it.value
+            }
+
+        if (listOfObjecttypeWithCorrectName.isEmpty()) {
+            throw IllegalStateException("No object was found of type '$objecttypeName' for document $documentId")
+        } else if (listOfObjecttypeWithCorrectName.size > 1) {
+            throw IllegalStateException("More than one objecttype with name '$objecttypeName' was found for document $documentId")
+        } else {
+            val objectsOfType = listOfObjecttypeWithCorrectName[0]
+            if (objectsOfType.size > 1) {
+                throw IllegalStateException("More than one object of type '$objecttypeName' was found for document $documentId")
+            } else {
+                return objectsOfType[0]
+            }
+        }
+    }
+
+    fun getZaakObjectForm(objectUrl: URI): FormDefinition? {
+        logger.debug { "Getting object for url $objectUrl" }
+        val theObject = getObjectByObjectUrl(objectUrl)
+        return theObject?.let {
+            logger.trace { "Getting objecttype for object $theObject" }
+            getObjectTypeByUrl(it.type)
+        }?.let {
+            val formName = "${it.name}$FORM_SUFFIX"
+            logger.trace { "Getting form for objecttype $it with formName $formName" }
+            formDefinitionService.getFormDefinitionByNameIgnoringCase(formName)
+        }
+        ?.orElse(null)
+        ?.preFill(theObject.record.data)
+    }
+
+    private fun findZakenApiPlugin(zaakUrl: URI): ZakenApiPlugin {
         val zakenApiPluginInstance = pluginService
             .createInstance(ZakenApiPlugin::class.java) { properties: JsonNode ->
                 zaakUrl.toString().startsWith(properties.get("url").textValue())
@@ -80,11 +132,11 @@ class ZaakObjectService(
 
         requireNotNull(zakenApiPluginInstance) { "No plugin configuration was found for zaak with URL $zaakUrl" }
 
-        return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
-            .mapNotNull {
-                getObjectByZaakObjectUrl(it)
-            }.filter {
-                it.type == typeUrl
-            }
+        return zakenApiPluginInstance
+    }
+
+    companion object {
+        const val FORM_SUFFIX = ".editform"
+        val logger = KotlinLogging.logger {}
     }
 }

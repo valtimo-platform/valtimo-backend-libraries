@@ -16,6 +16,7 @@
 
 package com.ritense.documentenapi
 
+import com.ritense.documentenapi.client.ConfidentialityLevel
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
@@ -25,7 +26,6 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
-import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.context.ApplicationEventPublisher
@@ -43,8 +43,10 @@ class DocumentenApiPlugin(
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
+
     @PluginProperty(key = "bronorganisatie", secret = false)
     lateinit var bronorganisatie: String
+
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: DocumentenApiAuthentication
 
@@ -56,24 +58,29 @@ class DocumentenApiPlugin(
     )
     fun storeTemporaryDocument(
         execution: DelegateExecution,
+        @PluginActionProperty fileName: String,
+        @PluginActionProperty confidentialityLevel: String,
+        @PluginActionProperty title: String,
+        @PluginActionProperty description: String,
         @PluginActionProperty localDocumentLocation: String,
         @PluginActionProperty storedDocumentUrl: String,
         @PluginActionProperty informatieobjecttype: String,
         @PluginActionProperty taal: String = "nld",
         @PluginActionProperty status: DocumentStatusType = DocumentStatusType.DEFINITIEF
-    ){
+    ) {
         val documentLocation = execution.getVariable(localDocumentLocation) as String
         val contentAsInputStream = storageService.getResourceContentAsInputStream(documentLocation)
-        val documentMetaData = storageService.getResourceMetadata(documentLocation)
 
         val request = CreateDocumentRequest(
             bronorganisatie = bronorganisatie,
-            titel = documentMetaData[MetadataType.FILE_NAME.name] as String,
-            bestandsnaam = documentMetaData[MetadataType.FILE_NAME.name] as String,
+            titel = title,
+            vertrouwelijkheidaanduiding = ConfidentialityLevel.fromKey(confidentialityLevel).key,
+            status = status,
             taal = taal,
+            bestandsnaam = fileName,
             inhoud = contentAsInputStream,
+            beschrijving = description,
             informatieobjecttype = informatieobjecttype,
-            status = status
         )
 
         val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)

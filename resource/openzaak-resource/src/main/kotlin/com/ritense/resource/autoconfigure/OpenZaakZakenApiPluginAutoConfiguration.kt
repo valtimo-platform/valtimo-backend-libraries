@@ -16,7 +16,6 @@
 
 package com.ritense.resource.autoconfigure
 
-import com.ritense.resource.listener.DocumentCreatedListener
 import com.ritense.resource.service.OpenZaakResourceProvider
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.zakenapi.ResourceProvider
@@ -26,15 +25,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @ConditionalOnClass(ResourceProvider::class)
-class OpenZaakResourcePluginAutoConfiguration {
-
-    @Bean
-    fun documentCreatedListener(
-        openZaakService: OpenZaakService
-    ): DocumentCreatedListener {
-        return DocumentCreatedListener(openZaakService)
-    }
-
+class OpenZaakZakenApiPluginAutoConfiguration {
     @Bean
     fun openZaakResourceProvider(
         openZaakService: OpenZaakService

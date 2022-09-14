@@ -16,6 +16,9 @@
 
 package com.ritense.document.service.impl;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.service.DocumentSearchService;
@@ -42,8 +45,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
 
 @Transactional
 public class JsonSchemaDocumentSearchService implements DocumentSearchService {
@@ -62,12 +63,21 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         final SearchRequest searchRequest,
         final Pageable pageable
     ) {
+        return search(searchRequest, pageable, true);
+    }
+
+    @Override
+    public Page<JsonSchemaDocument> searchWithoutAuthorization(SearchRequest searchRequest, Pageable pageable) {
+        return search(searchRequest, pageable, false);
+    }
+
+    private Page<JsonSchemaDocument> search(SearchRequest searchRequest, Pageable pageable, boolean withAuthorization) {
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaQuery<JsonSchemaDocument> query = cb.createQuery(JsonSchemaDocument.class);
         final Root<JsonSchemaDocument> selectRoot = query.from(JsonSchemaDocument.class);
 
         query.select(selectRoot);
-        query.where(createPredicates(searchRequest, cb, query, selectRoot));
+        query.where(createPredicates(searchRequest, cb, query, selectRoot, withAuthorization));
         query.orderBy(getOrderBy(cb, selectRoot, pageable.getSort()));
 
         final TypedQuery<JsonSchemaDocument> typedQuery = entityManager
@@ -78,18 +88,21 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         final CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<JsonSchemaDocument> countRoot = countQuery.from(JsonSchemaDocument.class);
         countQuery.select(cb.count(countRoot));
-        countQuery.where(createPredicates(searchRequest, cb, countQuery, countRoot));
+        countQuery.where(createPredicates(searchRequest, cb, countQuery, countRoot, withAuthorization));
 
         return new PageImpl<>(typedQuery.getResultList(), pageable, entityManager.createQuery(countQuery).getSingleResult());
     }
 
     @NotNull
-    private Predicate[] createPredicates(SearchRequest searchRequest, CriteriaBuilder cb, CriteriaQuery<?> query, Root<JsonSchemaDocument> documentRoot) {
+    private Predicate[] createPredicates(SearchRequest searchRequest, CriteriaBuilder cb, CriteriaQuery<?> query, Root<JsonSchemaDocument> documentRoot, boolean withAuthorization) {
         final List<Predicate> predicates = new ArrayList<>();
 
         addNonJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
         addJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
-        addUserRolePredicate(cb, query, documentRoot, predicates);
+        if (withAuthorization) {
+            addUserRolePredicate(cb, query, documentRoot, predicates);
+        }
+
 
         return predicates.toArray(Predicate[]::new);
     }

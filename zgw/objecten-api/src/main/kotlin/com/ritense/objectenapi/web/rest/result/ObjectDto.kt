@@ -17,6 +17,7 @@
 package com.ritense.objectenapi.web.rest.result
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.ritense.objectenapi.client.ObjectWrapper
 import java.net.URI
 import java.time.LocalDate
 
@@ -26,4 +27,19 @@ class ObjectDto(
     val index: Int?,
     val registrationAt: LocalDate?,
     val title: String?
-)
+) {
+    companion object {
+        fun create(objectWrapper: ObjectWrapper) : ObjectDto {
+             return ObjectDto(
+                objectWrapper.url,
+                objectWrapper.record.index,
+                objectWrapper.record.registrationAt,
+                if (objectWrapper.record.data?.get("title")?.isTextual == true) {
+                    objectWrapper.record.data.get("title").asText()
+                } else {
+                    null
+                }
+            )
+        }
+    }
+}

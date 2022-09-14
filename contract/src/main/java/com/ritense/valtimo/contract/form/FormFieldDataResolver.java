@@ -24,10 +24,12 @@ import java.util.UUID;
 public interface FormFieldDataResolver {
 
     @Deprecated(forRemoval = true, since = "9.18")
-    boolean supports(ExternalFormFieldType externalFormFieldType);
+    default boolean supports(ExternalFormFieldType externalFormFieldType) {
+        return false;
+    }
 
     default boolean supports(String externalFormFieldType) {
-        return false;
+        return supports(ExternalFormFieldType.fromKey(externalFormFieldType));
     }
 
     @Deprecated(forRemoval = true, since = "9.21")
