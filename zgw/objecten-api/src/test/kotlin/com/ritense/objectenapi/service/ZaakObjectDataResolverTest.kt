@@ -81,7 +81,7 @@ internal class ZaakObjectDataResolverTest {
         val objectData2 = mapOf(
             "other-type-path" to "test-value-3"
         )
-        
+
         val object2DataJsonNode = Mapper.INSTANCE.get().valueToTree<JsonNode>(objectData2)
         val objectRecord2 = mock<ObjectRecord>()
         whenever(object2.record).thenReturn(objectRecord2)
@@ -89,7 +89,12 @@ internal class ZaakObjectDataResolverTest {
         whenever(zaakObjectService.getZaakObjectOfTypeByName(documentId, "typeWithColon: inName"))
             .thenReturn(object2)
 
-        val variableMap = resolver.get("something", documentId, *fieldsToRequest)
+        val variableMap = resolver.get(
+            documentDefinitionName = "something",
+            documentId = documentId,
+            formDefinition = Mapper.INSTANCE.get().createObjectNode(),
+            *fieldsToRequest
+        )
 
         assertEquals("test-value-1", variableMap["sometype:/path"])
         assertEquals("test-value-2", variableMap["sometype:/nested/path"])
@@ -186,7 +191,12 @@ internal class ZaakObjectDataResolverTest {
         whenever(zaakObjectService.getZaakObjectOfTypeByName(documentId, "sometype"))
             .thenReturn(object1)
 
-        val variableMap = resolver.get("something", documentId, *fieldsToRequest)
+        val variableMap = resolver.get(
+            documentDefinitionName = "something",
+            documentId = documentId,
+            formDefinition = Mapper.INSTANCE.get().createObjectNode(),
+            *fieldsToRequest
+        )
 
         return variableMap["sometype:/path"]
     }

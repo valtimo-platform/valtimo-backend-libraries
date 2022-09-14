@@ -16,10 +16,15 @@
 
 package com.ritense.valtimo.contract.form;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import org.junit.jupiter.api.Test;
+
 import java.util.Map;
 import java.util.UUID;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FormFieldDataResolverTest {
 
@@ -43,10 +48,14 @@ class FormFieldDataResolverTest {
         assertEquals("Cannot create ExternalFormFieldType from string something-random", ise.getMessage());
     }
 
-
     private static class FormFieldDataResolverImpl implements FormFieldDataResolver {
         @Override
         public Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames) {
+            return null;
+        }
+
+        @Override
+        public Map<String, Object> get(String documentDefinitionName, UUID documentId, JsonNode formDefinition, String... varNames) {
             return null;
         }
     }
