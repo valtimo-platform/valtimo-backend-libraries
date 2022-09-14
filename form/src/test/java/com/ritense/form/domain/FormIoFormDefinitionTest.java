@@ -195,6 +195,11 @@ public class FormIoFormDefinitionTest extends BaseTest {
 
         @Override
         public Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames) {
+            return get(documentDefinitionName, documentId, Mapper.INSTANCE.get().createObjectNode(), varNames);
+        }
+
+        @Override
+        public Map<String, Object> get(String documentDefinitionName, UUID documentId, JsonNode formDefinition, String... varNames) {
             Map<String, Object> results = new HashMap<>();
             Arrays.stream(varNames).forEach((name) -> {
                 results.put(name, "test");
