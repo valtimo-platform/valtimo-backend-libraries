@@ -391,6 +391,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
                         var externalDataMap = formFieldDataResolver.get(
                             document.definitionId().name(),
                             document.id().getId(),
+                            formDefinition.getFormDefinition(),
                             varNames
                         );
 

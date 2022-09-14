@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.contract.form;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,6 +30,8 @@ public interface FormFieldDataResolver {
         return false;
     }
 
+    @Deprecated(forRemoval = true, since = "9.21")
     Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames);
 
+    Map<String, Object> get(String documentDefinitionName, UUID documentId, JsonNode formDefinition, String... varNames);
 }

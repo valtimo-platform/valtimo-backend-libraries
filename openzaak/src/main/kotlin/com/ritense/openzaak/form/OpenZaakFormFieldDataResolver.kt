@@ -16,12 +16,14 @@
 
 package com.ritense.openzaak.form
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.openzaak.exception.UnmappableOpenZaakPropertyException
 import com.ritense.openzaak.exception.ZaakInstanceNotFoundException
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.valtimo.contract.form.ExternalFormFieldType
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
+import com.ritense.valtimo.contract.json.Mapper
 import java.util.UUID
 
 class OpenZaakFormFieldDataResolver(
@@ -38,6 +40,20 @@ class OpenZaakFormFieldDataResolver(
     }
 
     override fun get(documentDefinitionName: String, documentId: UUID, vararg varNames: String): Map<String, Any> {
+        return get(
+            documentDefinitionName = documentDefinitionName,
+            documentId = documentId,
+            formDefinition = Mapper.INSTANCE.get().createObjectNode(),
+            varNames = varNames
+        )
+    }
+
+    override fun get(
+        documentDefinitionName: String,
+        documentId: UUID,
+        formDefinition: JsonNode,
+        vararg varNames: String
+    ): Map<String, Any> {
         val result = mutableMapOf<String, String>()
         try {
             val zaakInstanceLink = zaakInstanceLinkService.getByDocumentId(documentId)
@@ -56,5 +72,4 @@ class OpenZaakFormFieldDataResolver(
         }
         return result
     }
-
 }
