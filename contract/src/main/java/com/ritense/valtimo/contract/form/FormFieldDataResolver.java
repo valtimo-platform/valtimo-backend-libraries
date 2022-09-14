@@ -31,7 +31,9 @@ public interface FormFieldDataResolver {
     }
 
     @Deprecated(forRemoval = true, since = "9.21")
-    Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames);
+    default Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames) {
+        return get(documentDefinitionName, documentId, null, varNames);
+    }
 
     Map<String, Object> get(
         String documentDefinitionName,
