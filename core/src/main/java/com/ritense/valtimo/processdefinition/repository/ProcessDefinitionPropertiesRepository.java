@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.gzac;
+package com.ritense.valtimo.processdefinition.repository;
 
-import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.ritense.valtimo.domain.processdefinition.ProcessDefinitionProperties;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-@SpringBootApplication(scanBasePackages = "com.ritense.*")
-@EnableProcessApplication
-public class GzacApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(GzacApplication.class, args);
-    }
+@Repository
+public interface ProcessDefinitionPropertiesRepository extends JpaRepository<ProcessDefinitionProperties, String> {
+
+    ProcessDefinitionProperties findByProcessDefinitionKey(String processDefinitionKey);
 }
