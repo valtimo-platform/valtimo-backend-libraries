@@ -32,13 +32,15 @@ public interface FormFieldDataResolver {
 
     @Deprecated(forRemoval = true, since = "9.21")
     default Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames) {
-        return get(documentDefinitionName, documentId, null, varNames);
+        throw new RuntimeException("The 'get' method should be implemented!");
     }
 
-    Map<String, Object> get(
+    default Map<String, Object> get(
         String documentDefinitionName,
         UUID documentId,
         FormFieldDataResolverProperties additionalProperties,
         String... varNames
-    );
+    ) {
+        return get(documentDefinitionName, documentId, varNames);
+    }
 }
