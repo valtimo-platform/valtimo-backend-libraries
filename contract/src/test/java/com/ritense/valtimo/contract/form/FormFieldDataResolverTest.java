@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.contract.form;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -52,9 +51,7 @@ class FormFieldDataResolverTest {
 
         @Override
         public Map<String, Object> get(
-            String documentDefinitionName,
-            UUID documentId,
-            FormFieldDataResolverProperties additionalProperties,
+            DataResolvingContext dataResolvingContext,
             String... varNames
         ) {
             return null;

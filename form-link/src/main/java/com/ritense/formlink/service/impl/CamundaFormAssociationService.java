@@ -40,7 +40,7 @@ import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
-import com.ritense.valtimo.contract.form.FormFieldDataResolverProperties;
+import com.ritense.valtimo.contract.form.DataResolvingContext;
 import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.transaction.annotation.Transactional;
@@ -391,9 +391,11 @@ public class CamundaFormAssociationService implements FormAssociationService {
                             .map(FormIoFormDefinition.ExternalContentItem::getName).toArray(String[]::new);
 
                         var externalDataMap = formFieldDataResolver.get(
-                            document.definitionId().name(),
-                            document.id().getId(),
-                            new FormFieldDataResolverProperties(formDefinition.getFormDefinition()),
+                            new DataResolvingContext(
+                                document.definitionId().name(),
+                                document.id().getId(),
+                                formDefinition.getFormDefinition()
+                            ),
                             varNames
                         );
 

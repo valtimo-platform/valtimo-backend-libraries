@@ -17,13 +17,30 @@
 package com.ritense.valtimo.contract.form;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.UUID;
 
-public class FormFieldDataResolverProperties {
+public class DataResolvingContext {
 
+    private final String documentDefinitionName;
+    private final UUID documentId;
     private final JsonNode formDefinition;
 
-    public FormFieldDataResolverProperties(JsonNode formDefinition) {
+    public DataResolvingContext(
+        String documentDefinitionName,
+        UUID documentId,
+        JsonNode formDefinition
+    ) {
+        this.documentDefinitionName = documentDefinitionName;
+        this.documentId = documentId;
         this.formDefinition = formDefinition;
+    }
+
+    public String getDocumentDefinitionName() {
+        return documentDefinitionName;
+    }
+
+    public UUID getDocumentId() {
+        return documentId;
     }
 
     public JsonNode getFormDefinition() {

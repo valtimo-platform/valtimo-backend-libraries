@@ -36,11 +36,9 @@ public interface FormFieldDataResolver {
     }
 
     default Map<String, Object> get(
-        String documentDefinitionName,
-        UUID documentId,
-        FormFieldDataResolverProperties additionalProperties,
+        DataResolvingContext dataResolvingContext,
         String... varNames
     ) {
-        return get(documentDefinitionName, documentId, varNames);
+        return get(dataResolvingContext.getDocumentDefinitionName(), dataResolvingContext.getDocumentId(), varNames);
     }
 }

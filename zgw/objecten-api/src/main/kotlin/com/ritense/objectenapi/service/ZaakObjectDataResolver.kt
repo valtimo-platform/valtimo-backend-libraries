@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeType.POJO
 import com.fasterxml.jackson.databind.node.JsonNodeType.STRING
 import com.ritense.objectenapi.service.ZaakObjectConstants.Companion.ZAAKOBJECT_PREFIX
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
-import com.ritense.valtimo.contract.form.FormFieldDataResolverProperties
+import com.ritense.valtimo.contract.form.DataResolvingContext
 import java.util.UUID
 
 class ZaakObjectDataResolver(
@@ -42,9 +42,7 @@ class ZaakObjectDataResolver(
     }
 
     override fun get(
-        documentDefinitionName: String,
-        documentId: UUID,
-        additionalProperties: FormFieldDataResolverProperties,
+        dataResolvingContext: DataResolvingContext,
         vararg varNames: String
     ): MutableMap<String, Any?> {
         val results = mutableMapOf<String, Any?>()
@@ -54,7 +52,8 @@ class ZaakObjectDataResolver(
         }.groupBy {
             it.objectType
         }.forEach{ objectTypeGroup ->
-            val zaakObject = zaakObjectService.getZaakObjectOfTypeByName(documentId, objectTypeGroup.key)
+            val zaakObject = zaakObjectService.getZaakObjectOfTypeByName(
+                dataResolvingContext.documentId, objectTypeGroup.key)
             val dataAsJsonNode = objectMapper.valueToTree<JsonNode>(zaakObject.record.data)
             objectTypeGroup.value.forEach {
                 results[it.variableName] = extractValue(dataAsJsonNode.at(it.path))

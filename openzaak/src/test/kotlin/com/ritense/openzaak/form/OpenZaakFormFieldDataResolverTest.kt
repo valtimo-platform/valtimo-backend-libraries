@@ -26,7 +26,7 @@ import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.model.zaak.Eigenschap
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
-import com.ritense.valtimo.contract.form.FormFieldDataResolverProperties
+import com.ritense.valtimo.contract.form.DataResolvingContext
 import com.ritense.valtimo.contract.json.Mapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -88,9 +88,11 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
     @Test
     fun `should not contain eigenschap with unknown key`() {
         val resultMap = openZaakFormFieldDataResolver.get(
-            documentDefinitionName = "house",
-            documentId = document.id!!.id,
-            additionalProperties = FormFieldDataResolverProperties(Mapper.INSTANCE.get().createObjectNode()),
+            DataResolvingContext(
+                "house",
+                document.id!!.id,
+                Mapper.INSTANCE.get().createObjectNode()
+            ),
             "unknownVarName"
         )
         assertThat(resultMap).isNotNull
@@ -100,9 +102,11 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
     @Test
     fun `should get open zaak eigenschappen value`() {
         val resultMap = openZaakFormFieldDataResolver.get(
-            documentDefinitionName = "house",
-            documentId = document.id!!.id,
-            additionalProperties = FormFieldDataResolverProperties(Mapper.INSTANCE.get().createObjectNode()),
+            DataResolvingContext(
+                "house",
+                document.id!!.id,
+                Mapper.INSTANCE.get().createObjectNode()
+            ),
             "varNaam"
         )
         assertThat(resultMap).isNotNull
