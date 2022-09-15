@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,15 @@ public interface FormFieldDataResolver {
         return supports(ExternalFormFieldType.fromKey(externalFormFieldType));
     }
 
-    Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames);
+    @Deprecated(forRemoval = true, since = "9.21")
+    default Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames) {
+        throw new RuntimeException("The 'get' method should be implemented!");
+    }
 
+    default Map<String, Object> get(
+        DataResolvingContext dataResolvingContext,
+        String... varNames
+    ) {
+        return get(dataResolvingContext.getDocumentDefinitionName(), dataResolvingContext.getDocumentId(), varNames);
+    }
 }
