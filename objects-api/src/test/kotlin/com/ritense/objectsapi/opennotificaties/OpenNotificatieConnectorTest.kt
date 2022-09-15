@@ -56,6 +56,20 @@ class OpenNotificatieConnectorTest : BaseTest() {
         connector = OpenNotificatieConnector(openNotificatieProperties, abonnementLinkRepository, openNotificatieClient)
     }
 
+
+    @Test
+    fun `ensure kanaal exists creates kanaal when kanaal doesnt exisasdasdat`() {
+        val openNotificatieClient = OpenNotificatieClient(
+            OpenNotificatieProperties(
+                baseUrl = "",
+                clientId = "GZAC",
+                secret = "cfc25e24c2b04faf8a390db4bb76a795"
+            )
+        )
+        val token = openNotificatieClient.generateToken()
+        token.length
+    }
+
     @Test
     fun `ensure kanaal exists creates kanaal when kanaal doesnt exist`() {
         `when`(openNotificatieClient.getKanalen()).thenReturn(listOf(Kanaal("otherkanaal")))

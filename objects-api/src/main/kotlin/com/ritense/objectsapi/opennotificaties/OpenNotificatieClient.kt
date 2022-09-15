@@ -70,7 +70,7 @@ class OpenNotificatieClient(
             .token(generateToken())
     }
 
-    private fun generateToken(): String {
+    fun generateToken(): String {
         val signingKey = Keys.hmacShaKeyFor(openNotificatieProperties.secret.toByteArray(Charsets.UTF_8))
 
         val jwtBuilder = Jwts.builder()
