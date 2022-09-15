@@ -31,16 +31,20 @@ public class ValtimoProperties {
 
     private final Portal portal;
 
+    private final Process process;
+
     public ValtimoProperties(
         App app,
         Mandrill mandrill,
         JWT jwt,
-        Portal portal
+        Portal portal,
+        Process process
     ) {
         this.app = app != null ? app : new App();
         this.mandrill = mandrill != null ? mandrill : new Mandrill();
         this.jwt = jwt != null ? jwt : new JWT();
         this.portal = portal != null ? portal : new Portal();
+        this.process = process != null ? process : new Process();
     }
 
     public App getApp() {
@@ -57,6 +61,10 @@ public class ValtimoProperties {
 
     public Portal getPortal() {
         return portal;
+    }
+
+    public Process getProcess() {
+        return process;
     }
 
     public static class App {
@@ -195,6 +203,18 @@ public class ValtimoProperties {
 
         public String getBaselUrl() {
             return String.format("%s://%s/", scheme, hostname);
+        }
+    }
+
+    public static class Process {
+        private boolean systemProcessUpdatable = false;
+
+        public boolean isSystemProcessUpdatable() {
+            return systemProcessUpdatable;
+        }
+
+        public void setSystemProcessUpdatable(boolean systemProcessUpdatable) {
+            this.systemProcessUpdatable = systemProcessUpdatable;
         }
     }
 

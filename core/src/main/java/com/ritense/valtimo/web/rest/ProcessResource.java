@@ -23,11 +23,14 @@ import com.ritense.valtimo.repository.camunda.dto.ProcessInstance;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
+import com.ritense.valtimo.service.ProcessPropertyService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
 import com.ritense.valtimo.web.rest.dto.CommentDto;
 import com.ritense.valtimo.web.rest.dto.FlowNodeMigrationDTO;
 import com.ritense.valtimo.web.rest.dto.HeatmapTaskAverageDurationDTO;
 import com.ritense.valtimo.web.rest.dto.HeatmapTaskCountDTO;
+import com.ritense.valtimo.web.rest.dto.ProcessDefinitionDiagramWithPropertyDto;
+import com.ritense.valtimo.web.rest.dto.ProcessDefinitionWithPropertiesDto;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceDiagramDto;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceSearchDTO;
 import com.ritense.valtimo.web.rest.util.PaginationUtil;
@@ -74,6 +77,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -83,6 +87,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @RestController
@@ -97,6 +103,7 @@ public class ProcessResource extends AbstractProcessResource {
     private final CamundaProcessService camundaProcessService;
     private final ProcessShortTimerService processShortTimerService;
     private final CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository;
+    private final ProcessPropertyService processPropertyService;
 
     public ProcessResource(
         final TaskService taskService,
@@ -106,7 +113,8 @@ public class ProcessResource extends AbstractProcessResource {
         final CamundaTaskService camundaTaskService,
         final CamundaProcessService camundaProcessService,
         final ProcessShortTimerService processShortTimerService,
-        final CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository
+        final CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository,
+        final ProcessPropertyService processPropertyService
     ) {
         super(historyService, repositoryService, taskService);
         this.taskService = taskService;
@@ -117,15 +125,19 @@ public class ProcessResource extends AbstractProcessResource {
         this.camundaProcessService = camundaProcessService;
         this.processShortTimerService = processShortTimerService;
         this.camundaSearchProcessInstanceRepository = camundaSearchProcessInstanceRepository;
+        this.processPropertyService = processPropertyService;
     }
 
     @GetMapping(value = "/process/definition")
-    public ResponseEntity<List<ProcessDefinitionDto>> getProcessDefinitions() {
-        final List<ProcessDefinitionDto> definitions = camundaProcessService
+    public ResponseEntity<List<ProcessDefinitionWithPropertiesDto>> getProcessDefinitions() {
+        final List<ProcessDefinitionWithPropertiesDto> definitions = camundaProcessService
             .getDeployedDefinitions()
             .stream()
-            .map(ProcessDefinitionDto::fromProcessDefinition)
+            .map(ProcessDefinitionWithPropertiesDto::fromProcessDefinition)
             .collect(Collectors.toList());
+        definitions.forEach(definition ->
+            definition.setReadOnly(processPropertyService.isReadOnly(definition.getKey()))
+        );
         return ResponseEntity.ok(definitions);
     }
 
@@ -156,14 +168,20 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     @GetMapping(value = "/process/definition/{processDefinitionId}/xml")
-    public ResponseEntity<ProcessDefinitionDiagramDto> getProcessDefinitionXml(
+    public ResponseEntity<ProcessDefinitionDiagramWithPropertyDto> getProcessDefinitionXml(
         @PathVariable String processDefinitionId
     ) {
         try {
-            ProcessDefinitionDiagramDto definitionDiagramDto = createProcessDefinitionDiagramDto(processDefinitionId);
-            return Optional.ofNullable(definitionDiagramDto)
-                .map(process -> ResponseEntity.ok(definitionDiagramDto))
-                .orElse(ResponseEntity.notFound().build());
+            final var definitionDiagramDto = createProcessDefinitionDiagramDto(processDefinitionId);
+            if (definitionDiagramDto == null) {
+                return ResponseEntity.notFound().build();
+            }
+            final var definitionWithDiagramAndProperties = new ProcessDefinitionDiagramWithPropertyDto(
+                definitionDiagramDto,
+                processPropertyService.isReadOnlyById(processDefinitionId),
+                processPropertyService.isSystemProcessById(processDefinitionId)
+            );
+            return ResponseEntity.ok(definitionWithDiagramAndProperties);
         } catch (UnsupportedEncodingException e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
         }
@@ -470,6 +488,9 @@ public class ProcessResource extends AbstractProcessResource {
         @PathVariable String targetProcessDefinitionId,
         @RequestBody(required = false) Map<String, String> instructions
     ) {
+        if (processPropertyService.isReadOnlyById(targetProcessDefinitionId)) {
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
         MigrationPlanBuilder migrationPlanBuilder = ProcessEngines.getDefaultProcessEngine()
             .getRuntimeService()
             .createMigrationPlan(sourceProcessDefinitionId, targetProcessDefinitionId);
@@ -504,6 +525,9 @@ public class ProcessResource extends AbstractProcessResource {
     public ResponseEntity<Void> modifyProcessDefinitionIntoShortTimerVersionAndDeploy(
         @PathVariable String processDefinitionId
     ) throws ProcessNotFoundException, DocumentParserException {
+        if (processPropertyService.isReadOnlyById(processDefinitionId)) {
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
         processShortTimerService.modifyAndDeployShortTimerVersion(processDefinitionId);
         return ResponseEntity.ok().build();
     }
