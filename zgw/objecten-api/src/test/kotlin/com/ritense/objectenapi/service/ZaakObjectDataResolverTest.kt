@@ -91,10 +91,8 @@ internal class ZaakObjectDataResolverTest {
             .thenReturn(object2)
 
         val variableMap = resolver.get(
-            documentDefinitionName = "something",
-            documentId = documentId,
-            additionalProperties = DataResolvingContext(
-                documentDefinitionName,
+            DataResolvingContext(
+                "something",
                 documentId,
                 Mapper.INSTANCE.get().createObjectNode()
             ),
@@ -197,10 +195,8 @@ internal class ZaakObjectDataResolverTest {
             .thenReturn(object1)
 
         val variableMap = resolver.get(
-            documentDefinitionName = "something",
-            documentId = documentId,
-            additionalProperties = DataResolvingContext(
-                documentDefinitionName,
+            DataResolvingContext(
+                "something",
                 documentId,
                 Mapper.INSTANCE.get().createObjectNode()
             ),
