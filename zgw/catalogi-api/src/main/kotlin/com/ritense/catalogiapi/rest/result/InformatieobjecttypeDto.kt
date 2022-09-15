@@ -16,5 +16,9 @@
 
 package com.ritense.catalogiapi.rest.result
 
-class InformatieobjectDto {
-}
+import java.net.URI
+
+class InformatieobjecttypeDto(
+    val url: URI,
+    val name: String
+)

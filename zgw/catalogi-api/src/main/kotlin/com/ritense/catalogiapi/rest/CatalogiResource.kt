@@ -16,28 +16,28 @@
 
 package com.ritense.objectenapi.web.rest
 
-import com.ritense.catalogiapi.rest.result.InformatieobjectDto
+import com.ritense.catalogiapi.rest.result.InformatieobjecttypeDto
 import com.ritense.objectenapi.service.CatalogiService
-import com.ritense.objectenapi.web.rest.result.ObjecttypeDto
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
-
 
 @RestController
-@RequestMapping(value = ["/api/document/{documentId}/zaak"])
+@RequestMapping(value = ["/api/documentdefinition/{documentDefinitionName}/zaaktype"])
 class CatalogiResource(
     val catalogiService: CatalogiService
 ) {
     @GetMapping(value = ["/documenttype"])
     fun getZaakObjecttypes(
-        @PathVariable(name = "documentId") documentId: UUID
-    ): ResponseEntity<List<InformatieobjectDto>> {
-        val zaakObjectTypes = catalogiService.getZaakObjectTypes(documentId).map {
-            ObjecttypeDto(it.url, it.name)
+        @PathVariable(name = "documentDefinitionName") documentDefinitionName: String
+    ): ResponseEntity<List<InformatieobjecttypeDto>> {
+        val zaakObjectTypes = catalogiService.getZaaktypeInformatieobjecttypes(documentDefinitionName).map {
+            InformatieobjecttypeDto(
+                it.url!!,
+                it.omschrijving
+            )
         }
         return ResponseEntity.ok(zaakObjectTypes)
     }

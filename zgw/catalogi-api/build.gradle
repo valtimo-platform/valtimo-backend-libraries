@@ -30,6 +30,7 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:2.0.4"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-starter-security"
 
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
@@ -39,6 +40,7 @@ dependencies {
     testImplementation "com.squareup.okhttp3:okhttp:4.10.0"
     //Kotlin
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+
 
     jar {
         enabled = true

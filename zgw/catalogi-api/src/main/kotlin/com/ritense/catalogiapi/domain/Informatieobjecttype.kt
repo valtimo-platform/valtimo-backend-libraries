@@ -20,11 +20,11 @@ import java.net.URI
 import java.time.LocalDate
 
 class Informatieobjecttype(
-    url: URI?,
-    catalogus: URI,
-    omschrijving: String,
-    vertrouwelijkheidaanduiding: InformatieobjecttypeVertrouwelijkheid,
-    beginGeldigheid: LocalDate,
-    eindeGeldigheid: LocalDate?,
-    concept: Boolean
+    val url: URI?,
+    val catalogus: URI,
+    val omschrijving: String,
+    val vertrouwelijkheidaanduiding: InformatieobjecttypeVertrouwelijkheid,
+    val beginGeldigheid: LocalDate,
+    val eindeGeldigheid: LocalDate?,
+    val concept: Boolean
 )

@@ -16,12 +16,17 @@
 
 package com.ritense.catalogiapi
 
+import com.ritense.objectenapi.security.CatalogiApiHttpSecurityConfigurer
+import com.ritense.objectenapi.service.CatalogiService
+import com.ritense.openzaak.service.ZaakInstanceLinkService
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.client.CatalogiApiClient
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
@@ -55,5 +60,19 @@ class CatalogiApiAutoConfiguration {
                 )
             )
         ).build()
+    }
+
+    @Bean
+    fun catalogiService(
+        zaakTypeLinkService: ZaakTypeLinkService,
+        pluginService : PluginService
+    ): CatalogiService {
+        return CatalogiService(zaakTypeLinkService, pluginService)
+    }
+
+    @Order(400)
+    @Bean
+    fun catalogiApiHttpSecurityConfigurer(): CatalogiApiHttpSecurityConfigurer {
+        return CatalogiApiHttpSecurityConfigurer()
     }
 }

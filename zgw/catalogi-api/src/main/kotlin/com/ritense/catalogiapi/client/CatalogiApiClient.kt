@@ -18,6 +18,7 @@ package com.ritense.zakenapi.client
 
 import com.ritense.catalogiapi.CatalogiApiAuthentication
 import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
+import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
@@ -38,10 +39,10 @@ class CatalogiApiClient(
             .mutate()
             .filter(authentication)
             .build()
-            .post()
+            .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
-                    .path("zaakinformatieobjecten")
+                    .path("zaaktype-informatieobjecttypen")
                     .addOptionalQueryParamFromRequest("zaaktype", request.zaaktype)
                     .addOptionalQueryParamFromRequest("informatieobjecttype", request.informatieobjecttype)
                     .addOptionalQueryParamFromRequest("richting", request.richting?.getSearchValue())
@@ -49,9 +50,31 @@ class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
             }
-            .contentType(MediaType.APPLICATION_JSON)
             .retrieve()
             .toEntity(ClientTools.getTypedPage(ZaaktypeInformatieobjecttype::class.java))
+            .block()
+
+        return result?.body!!
+    }
+
+    fun getInformatieobjecttype(
+        authentication: CatalogiApiAuthentication,
+        baseUrl: URI,
+        informatieobjecttypeUrl: URI
+    ): Informatieobjecttype {
+        if (baseUrl.host != informatieobjecttypeUrl.host)
+            throw IllegalArgumentException(
+                "Requested informatieobjecttypeUrl '$informatieobjecttypeUrl' is not valid for baseUrl '$baseUrl'"
+            )
+
+        val result = webclient
+            .mutate()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri(informatieobjecttypeUrl)
+            .retrieve()
+            .toEntity(Informatieobjecttype::class.java)
             .block()
 
         return result?.body!!

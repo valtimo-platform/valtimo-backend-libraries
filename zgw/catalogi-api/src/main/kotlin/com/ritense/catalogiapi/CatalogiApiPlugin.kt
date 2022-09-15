@@ -16,10 +16,14 @@
 
 package com.ritense.catalogiapi
 
+import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
 import com.ritense.catalogiapi.domain.Informatieobjecttype
+import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.zakenapi.client.CatalogiApiClient
+import com.ritense.zgw.Page
+import mu.KotlinLogging
 import java.net.URI
 
 @Plugin(
@@ -39,7 +43,35 @@ class CatalogiApiPlugin(
     fun getZaaktypeInformatieobjecttypes(
         zaakTypeUrl: URI,
     ): List<Informatieobjecttype> {
-        //client
-        return listOf()
+        var currentPage = 1
+        var currentResults: Page<ZaaktypeInformatieobjecttype>?
+        val results = mutableListOf<Informatieobjecttype>()
+
+        do {
+            logger.debug { "Getting page of ZaaktypeInformatieobjecttypes, page $currentPage for zaaktype $zaakTypeUrl" }
+            currentResults = client.getZaaktypeInformatieobjecttypes(
+                authenticationPluginConfiguration,
+                url,
+                ZaaktypeInformatieobjecttypeRequest(
+                    zaaktype = zaakTypeUrl,
+                    page = currentPage++
+                )
+            )
+            currentResults.results.map {
+                logger.trace { "Getting Informatieobjecttype ${it.informatieobjecttype}" }
+                val informatieobjecttype = client.getInformatieobjecttype(
+                    authenticationPluginConfiguration,
+                    url,
+                    it.informatieobjecttype
+                )
+                results.add(informatieobjecttype)
+            }
+        } while(currentResults?.next != null)
+
+        return results
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }
