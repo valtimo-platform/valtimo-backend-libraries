@@ -105,4 +105,66 @@ internal class DocumentenApiPluginTest {
         assertEquals(LocalDateTime.of(2020, 1, 1, 1, 1, 1), emittedEvent.beginRegistratie)
     }
 
+    @Test
+    fun `should call cslient to store file`() {
+        val client: DocumentenApiClient = mock()
+        val storageService: TemporaryResourceStorageService = mock()
+        val applicationEventPublisher: ApplicationEventPublisher= mock()
+        val authenticationMock = mock<DocumentenApiAuthentication>()
+        val executionMock = mock<DelegateExecution>()
+        val fileStream = mock<InputStream>()
+        val result = CreateDocumentResult(
+            "returnedUrl",
+            "returnedAuthor",
+            "returnedFileName",
+            1L,
+            LocalDateTime.now()
+        )
+
+        whenever(executionMock.getVariable("localDocumentVariableName"))
+            .thenReturn("localDocumentLocation")
+        whenever(storageService.getResourceContentAsInputStream("localDocumentLocation"))
+            .thenReturn(fileStream)
+        whenever(storageService.getResourceMetadata("localDocumentLocation"))
+            .thenReturn(mapOf("title" to "title",
+                "confidentialityLevel" to "zaakvertrouwelijk",
+                "status" to "in_bewerking",
+                "language" to "taal",
+                "filename" to "test.ext",
+                "description" to "description",
+                "receiptDate" to "2022-09-15",
+                "sendDate" to "2022-09-16",
+                "description" to "description"))
+        whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
+
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher)
+        plugin.url = URI("http://some-url")
+        plugin.bronorganisatie = "123456789"
+        plugin.authenticationPluginConfiguration = authenticationMock
+
+        plugin.storeUploadedDocument(
+            executionMock,
+            "localDocumentVariableName",
+            "storedDocumentVariableName",
+            "type",
+            )
+
+        val apiRequestCaptor = argumentCaptor<CreateDocumentRequest>()
+        verify(client).storeDocument(any(), any(), apiRequestCaptor.capture())
+        verify(executionMock).setVariable("storedDocumentVariableName", "returnedUrl")
+
+        val request = apiRequestCaptor.firstValue
+        assertEquals("123456789", request.bronorganisatie)
+        assertNotNull(request.creatiedatum)
+        assertEquals("title", request.titel)
+        assertEquals("description", request.beschrijving)
+        assertEquals("GZAC", request.auteur)
+        assertEquals("test.ext", request.bestandsnaam)
+        assertEquals("taal", request.taal)
+        assertEquals(fileStream, request.inhoud)
+        assertEquals("type", request.informatieobjecttype)
+        assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
+        assertEquals(false, request.indicatieGebruiksrecht)
+    }
+
 }

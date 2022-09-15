@@ -29,6 +29,7 @@ internal class CreateDocumentRequestTest {
             creatiedatum = LocalDate.of(2020, 5, 3),
             titel = "titel",
             vertrouwelijkheidaanduiding = ConfidentialityLevel.ZAAKVERTROUWELIJK.key,
+            auteur = "GZAC",
             status = DocumentStatusType.DEFINITIEF,
             taal = "taal",
             bestandsnaam = "test",
