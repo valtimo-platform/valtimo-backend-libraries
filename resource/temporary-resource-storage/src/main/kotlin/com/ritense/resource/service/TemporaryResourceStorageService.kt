@@ -35,7 +35,7 @@ class TemporaryResourceStorageService {
         dataFile.toFile().outputStream().use { inputStream.copyTo(it) }
 
         val mutableMetadata = metadata.toMutableMap()
-        mutableMetadata[MetadataType.FILE_PATH.toString()] = dataFile.absolutePathString()
+        mutableMetadata[MetadataType.FILE_PATH.value] = dataFile.absolutePathString()
         val metaDataFile = Files.createTempFile(TEMP_DIR, "temporaryResourceMetadata", ".json")
         metaDataFile.toFile().writeText(Mapper.INSTANCE.get().writeValueAsString(mutableMetadata))
 
@@ -49,7 +49,7 @@ class TemporaryResourceStorageService {
         }
         val typeRef = object : TypeReference<Map<String, Any>>() {}
         val metadata = Mapper.INSTANCE.get().readValue(metaDataFile.readText(), typeRef)
-        val dataFile = Path(metadata[MetadataType.FILE_PATH.toString()] as String)
+        val dataFile = Path(metadata[MetadataType.FILE_PATH.value] as String)
         val deleted = Files.deleteIfExists(dataFile)
         Files.deleteIfExists(metaDataFile)
         return deleted
@@ -57,7 +57,7 @@ class TemporaryResourceStorageService {
 
     fun getResourceContentAsInputStream(id: String): InputStream {
         val metadata = getResourceMetadata(id)
-        val dataFile = Path(metadata[MetadataType.FILE_PATH.toString()] as String)
+        val dataFile = Path(metadata[MetadataType.FILE_PATH.value] as String)
         return dataFile.inputStream()
     }
 

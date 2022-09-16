@@ -16,17 +16,22 @@
 
 package com.ritense.resource.web.rest
 
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.atLeastOnce
+import com.nhaarman.mockitokotlin2.verify
 import com.ritense.resource.BaseIntegrationTest
+import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.resource.web.rest.response.ResourceDto
-import com.ritense.valtimo.contract.json.Mapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.PayloadApplicationEvent
 import org.springframework.http.MediaType
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
 import org.springframework.mock.web.MockMultipartFile
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
@@ -52,6 +57,7 @@ internal class TemporaryResourceStorageResourceIT : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(USER_EMAIL)
     fun `should upload file with meta data`() {
         val file = MockMultipartFile(
             "file",
@@ -60,23 +66,28 @@ internal class TemporaryResourceStorageResourceIT : BaseIntegrationTest() {
             """Hello World!""".byteInputStream()
         )
 
-        val response = mockMvc.perform(
+        mockMvc.perform(
             multipart("/api/resource/temp")
                 .file(file)
                 .param("author", "Klaveren")
                 .contentType(MULTIPART_FORM_DATA_VALUE)
         )
             .andDo(print())
-            .andExpect(status().isOk)
-            .andReturn()
-            .response
+            .andExpect(status().isNoContent)
 
-        val resource = Mapper.INSTANCE.get().readValue(response.contentAsString, ResourceDto::class.java)
-        val resourceContent = temporaryResourceStorageService.getResourceContentAsInputStream(resource.id)
-        val resourceMetaData = temporaryResourceStorageService.getResourceMetadata(resource.id)
+        val captor = argumentCaptor<PayloadApplicationEvent<TemporaryResourceUploadedEvent>>()
+        verify(applicationEventMulticaster, atLeastOnce()).multicastEvent(captor.capture(), any())
+        val resourceId = captor.firstValue.payload.resourceId
+        val resourceContent = temporaryResourceStorageService.getResourceContentAsInputStream(resourceId)
+        val resourceMetaData = temporaryResourceStorageService.getResourceMetadata(resourceId)
         assertThat(resourceContent.bufferedReader().readText()).isEqualTo("Hello World!")
         assertThat(resourceMetaData).containsEntry("author", "Klaveren")
-        assertThat(resourceMetaData).containsEntry("FILE_NAME", "hello.txt")
-        assertThat(resourceMetaData).containsEntry("CONTENT_TYPE", "text/plain")
+        assertThat(resourceMetaData).containsEntry("contentType", "text/plain")
+        assertThat(resourceMetaData).containsEntry("filename", "hello.txt")
+        assertThat(resourceMetaData).containsEntry("user", USER_EMAIL)
+    }
+
+    companion object {
+        private const val USER_EMAIL = "user@valtimo.nl"
     }
 }

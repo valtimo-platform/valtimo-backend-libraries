@@ -83,7 +83,7 @@ class SmartDocumentsPlugin(
     }
 
     private fun saveGeneratedDocumentToTempFile(generatedDocument: FileStreamResponse): String {
-        val metadata = mapOf(MetadataType.FILE_NAME.name to generatedDocument.filename)
+        val metadata = mapOf(MetadataType.FILE_NAME.value to generatedDocument.filename)
         return temporaryResourceStorageService.store(generatedDocument.documentData, metadata)
     }
 
