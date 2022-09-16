@@ -43,9 +43,9 @@ class TemporaryResourceStorageResource(
     ): ResponseEntity<Void> {
 
         val mutableMetaData = metaData.toMutableMap()
-        file.originalFilename?.let { mutableMetaData.putIfAbsent(MetadataType.FILE_NAME.value, it) }
-        file.contentType?.let { mutableMetaData.putIfAbsent(MetadataType.CONTENT_TYPE.value, it) }
-        SecurityUtils.getCurrentUserLogin()?.let { mutableMetaData.putIfAbsent(MetadataType.USER.value, it) }
+        file.originalFilename?.let { mutableMetaData.putIfAbsent(MetadataType.FILE_NAME.key, it) }
+        file.contentType?.let { mutableMetaData.putIfAbsent(MetadataType.CONTENT_TYPE.key, it) }
+        SecurityUtils.getCurrentUserLogin()?.let { mutableMetaData.putIfAbsent(MetadataType.USER.key, it) }
 
         val resourceId = resourceService.store(file.inputStream, mutableMetaData)
         applicationEventPublisher.publishEvent(TemporaryResourceUploadedEvent(resourceId))

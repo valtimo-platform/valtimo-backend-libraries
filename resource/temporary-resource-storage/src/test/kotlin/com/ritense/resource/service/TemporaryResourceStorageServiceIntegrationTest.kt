@@ -47,11 +47,11 @@ class TemporaryResourceStorageServiceIntegrationTest : BaseIntegrationTest() {
 
         val resourceId = temporaryResourceStorageService.store(
             fileData.byteInputStream(),
-            mapOf(MetadataType.FILE_NAME.value to fileName)
+            mapOf(MetadataType.FILE_NAME.key to fileName)
         )
 
         val metadata = temporaryResourceStorageService.getResourceMetadata(resourceId)
-        assertThat(metadata[MetadataType.FILE_NAME.value]).isEqualTo(fileName)
+        assertThat(metadata[MetadataType.FILE_NAME.key]).isEqualTo(fileName)
     }
 
     @Test

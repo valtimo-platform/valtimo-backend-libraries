@@ -33,7 +33,7 @@ class ResourceUploadedEventListener(
     @EventListener(TemporaryResourceUploadedEvent::class)
     fun handle(event: TemporaryResourceUploadedEvent) {
         val metadata = resourceService.getResourceMetadata(event.resourceId)
-        val documentId = metadata[MetadataType.DOCUMENT_ID.value] as String?
+        val documentId = metadata[MetadataType.DOCUMENT_ID.key] as String?
 
         if (documentId != null) {
             processDocumentService.startProcessForDocument(

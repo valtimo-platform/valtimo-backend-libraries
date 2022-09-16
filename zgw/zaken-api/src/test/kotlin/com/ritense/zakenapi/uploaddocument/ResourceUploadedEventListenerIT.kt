@@ -73,7 +73,7 @@ class ResourceUploadedEventListenerIT : BaseIntegrationTest() {
         val resourceId = temporaryResourceStorageService.store(
             "My file data".byteInputStream(),
             mapOf(
-                MetadataType.DOCUMENT_ID.value to documentId,
+                MetadataType.DOCUMENT_ID.key to documentId,
             ),
         )
 
