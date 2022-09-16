@@ -23,6 +23,7 @@ import com.ritense.resource.web.rest.TemporaryResourceStorageResource
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -50,9 +51,13 @@ class TemporaryResourceStorageAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(TemporaryResourceStorageResource::class)
     fun temporaryResourceStorageResource(
-        temporaryResourceStorageService: TemporaryResourceStorageService
+        temporaryResourceStorageService: TemporaryResourceStorageService,
+        applicationEventPublisher: ApplicationEventPublisher,
     ): TemporaryResourceStorageResource {
-        return TemporaryResourceStorageResource(temporaryResourceStorageService)
+        return TemporaryResourceStorageResource(
+            temporaryResourceStorageService,
+            applicationEventPublisher
+        )
     }
 
     @Order(490)
