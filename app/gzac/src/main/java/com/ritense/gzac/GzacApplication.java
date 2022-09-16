@@ -16,10 +16,12 @@
 
 package com.ritense.gzac;
 
+import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = "com.ritense.*")
+@EnableProcessApplication
 public class GzacApplication {
     public static void main(String[] args) {
         SpringApplication.run(GzacApplication.class, args);

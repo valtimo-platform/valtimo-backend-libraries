@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.web.rest.response
+package com.ritense.valtimo.processdefinition.repository;
 
-data class ResourceDto(
-    val id: String,
-)
+import com.ritense.valtimo.domain.processdefinition.ProcessDefinitionProperties;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface ProcessDefinitionPropertiesRepository extends JpaRepository<ProcessDefinitionProperties, String> {
+
+    ProcessDefinitionProperties findByProcessDefinitionKey(String processDefinitionKey);
+}

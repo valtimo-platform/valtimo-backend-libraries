@@ -52,6 +52,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "mysql:mysql-connector-java"
 
     // Spring
     implementation "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:3.2.1"

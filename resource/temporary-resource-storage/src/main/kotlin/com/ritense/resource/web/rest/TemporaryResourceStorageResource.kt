@@ -17,8 +17,10 @@
 package com.ritense.resource.web.rest
 
 import com.ritense.resource.domain.MetadataType
+import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.resource.web.rest.response.ResourceDto
+import com.ritense.valtimo.contract.utils.SecurityUtils
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -30,18 +32,24 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 @RequestMapping("/api/resource/temp")
 class TemporaryResourceStorageResource(
-    private val resourceService: TemporaryResourceStorageService
+    private val resourceService: TemporaryResourceStorageService,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
     @PostMapping(consumes = [MULTIPART_FORM_DATA_VALUE])
     fun uploadFileWithMetadata(
         @RequestParam("file") file: MultipartFile,
         @RequestParam metaData: Map<String, Any>,
-    ): ResponseEntity<ResourceDto> {
+    ): ResponseEntity<Void> {
+
         val mutableMetaData = metaData.toMutableMap()
-        file.originalFilename?.let { mutableMetaData.putIfAbsent(MetadataType.FILE_NAME.name, it) }
-        file.contentType?.let { mutableMetaData.putIfAbsent(MetadataType.CONTENT_TYPE.name, it) }
+        file.originalFilename?.let { mutableMetaData.putIfAbsent(MetadataType.FILE_NAME.key, it) }
+        file.contentType?.let { mutableMetaData.putIfAbsent(MetadataType.CONTENT_TYPE.key, it) }
+        SecurityUtils.getCurrentUserLogin()?.let { mutableMetaData.putIfAbsent(MetadataType.USER.key, it) }
+
         val resourceId = resourceService.store(file.inputStream, mutableMetaData)
-        return ResponseEntity.ok(ResourceDto(resourceId))
+        applicationEventPublisher.publishEvent(TemporaryResourceUploadedEvent(resourceId))
+
+        return ResponseEntity.noContent().build() // Don't respond with resourceId because the resourceId reveals the local file structure.
     }
 }

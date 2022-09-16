@@ -227,7 +227,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         externalFieldVars.put("achternaam", "Test (OpenZaak)");
 
         when(formFieldDataResolver.supports(anyString())).thenReturn(true);
-        when(formFieldDataResolver.get(any(), any(), any())).thenReturn(externalFieldVars);
+        when(formFieldDataResolver.get(any(), any())).thenReturn(externalFieldVars);
 
         final var formLink = processFormAssociation
             .getFormAssociations().stream().findFirst().orElseThrow().getFormLink();
@@ -279,7 +279,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         formFieldData.put("achternaam", "test-value-2");
 
         when(formFieldDataResolver.supports(eq("oz"))).thenReturn(true);
-        when(formFieldDataResolver.get(any(), any(), any())).thenReturn(formFieldData);
+        when(formFieldDataResolver.get(any(), any())).thenReturn(formFieldData);
         when(documentService.findBy(any())).thenReturn(documentOptional);
 
         Optional<JsonNode> form = camundaFormAssociationService

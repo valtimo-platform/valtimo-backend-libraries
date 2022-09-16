@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.config;
 
+import com.ritense.valtimo.camunda.ProcessDefinitionDeployedEventPublisher;
 import com.ritense.valtimo.camunda.command.ValtimoSchemaOperationsCommand;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
 import com.ritense.valtimo.validator.MaxDateValidator;
@@ -27,19 +28,24 @@ import org.camunda.bpm.engine.impl.form.validator.FormFieldValidator;
 import org.camunda.bpm.engine.impl.persistence.StrongUuidGenerator;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.spring.boot.starter.configuration.CamundaProcessEngineConfiguration;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CamundaConfiguration implements CamundaProcessEngineConfiguration {
 
     private final ValtimoSchemaOperationsCommand schemaOperationsCommand;
     private final RepositoryService repositoryService;
+    private final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher;
 
     public CamundaConfiguration(
         final ValtimoSchemaOperationsCommand valtimoSchemaOperationsCommand,
-        final CustomRepositoryServiceImpl repositoryService
+        final CustomRepositoryServiceImpl repositoryService,
+        final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher
     ) {
         this.schemaOperationsCommand = valtimoSchemaOperationsCommand;
         this.repositoryService = repositoryService;
+        this.processDefinitionDeployedEventPublisher = processDefinitionDeployedEventPublisher;
     }
 
     @Override
@@ -51,6 +57,11 @@ public class CamundaConfiguration implements CamundaProcessEngineConfiguration {
         customValidators.put("minDate", MinDateValidator.class);
         customValidators.put("maxDate", MaxDateValidator.class);
         processEngineConfiguration.setCustomFormFieldValidators(customValidators);
+
+        if (processEngineConfiguration.getCustomPostDeployers() == null) {
+            processEngineConfiguration.setCustomPostDeployers(new ArrayList<>());
+        }
+        processEngineConfiguration.getCustomPostDeployers().add(processDefinitionDeployedEventPublisher);
 
         //Override default
         processEngineConfiguration.setSchemaOperationsCommand(schemaOperationsCommand);
