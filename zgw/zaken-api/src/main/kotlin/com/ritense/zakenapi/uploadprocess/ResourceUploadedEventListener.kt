@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.uploaddocument
+package com.ritense.zakenapi.uploadprocess
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
