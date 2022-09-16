@@ -100,11 +100,10 @@ class DocumentenApiPlugin(
     )
     fun storeUploadedDocument(
         execution: DelegateExecution,
-        @PluginActionProperty localDocumentLocation: String,
         @PluginActionProperty storedDocumentUrl: String,
         @PluginActionProperty informatieobjecttype: String,
         ) {
-        val resourceId = execution.getVariable(localDocumentLocation) as String
+        val resourceId = execution.getVariable(RESOURCE_ID_PROCESS_VAR) as String
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
 
@@ -177,5 +176,6 @@ class DocumentenApiPlugin(
     companion object {
         const val DEFAULT_AUTHOR = "GZAC"
         const val DEFAULT_LANGUAGE = "nld"
+        const val RESOURCE_ID_PROCESS_VAR = "resourceId"
     }
 }
