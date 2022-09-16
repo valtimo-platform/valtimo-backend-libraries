@@ -21,6 +21,7 @@ import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.documentenapi.DocumentenApiPlugin.Companion.RESOURCE_ID_PROCESS_VAR
 import com.ritense.documentenapi.client.ConfidentialityLevel
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.CreateDocumentResult
@@ -106,7 +107,7 @@ internal class DocumentenApiPluginTest {
     }
 
     @Test
-    fun `should call cslient to store file`() {
+    fun `should call client to store file after document upload`() {
         val client: DocumentenApiClient = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val applicationEventPublisher: ApplicationEventPublisher= mock()
@@ -121,7 +122,7 @@ internal class DocumentenApiPluginTest {
             LocalDateTime.now()
         )
 
-        whenever(executionMock.getVariable("localDocumentVariableName"))
+        whenever(executionMock.getVariable(RESOURCE_ID_PROCESS_VAR))
             .thenReturn("localDocumentLocation")
         whenever(storageService.getResourceContentAsInputStream("localDocumentLocation"))
             .thenReturn(fileStream)
@@ -144,7 +145,6 @@ internal class DocumentenApiPluginTest {
 
         plugin.storeUploadedDocument(
             executionMock,
-            "localDocumentVariableName",
             "storedDocumentVariableName",
             "type",
             )
