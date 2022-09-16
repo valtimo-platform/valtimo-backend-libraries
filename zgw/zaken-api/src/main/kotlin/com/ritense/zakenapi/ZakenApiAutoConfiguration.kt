@@ -18,7 +18,10 @@ package com.ritense.zakenapi
 
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.client.ZakenApiClient
+import com.ritense.zakenapi.uploaddocument.ResourceUploadedEventListener
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -65,5 +68,17 @@ class ZakenApiAutoConfiguration {
                 )
             )
         ).build()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ResourceUploadedEventListener::class)
+    fun resourceUploadedEventListener(
+        resourceService: TemporaryResourceStorageService,
+        processDocumentService: ProcessDocumentService,
+    ): ResourceUploadedEventListener {
+        return ResourceUploadedEventListener(
+            resourceService,
+            processDocumentService,
+        )
     }
 }

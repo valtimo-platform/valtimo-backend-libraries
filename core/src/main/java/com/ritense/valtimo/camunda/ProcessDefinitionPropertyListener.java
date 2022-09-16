@@ -70,7 +70,7 @@ public class ProcessDefinitionPropertyListener {
     }
 
     private boolean isSystemProcess(CamundaProperty processProperty) {
-        return processProperty.getCamundaName().equals(SYSTEM_PROCESS_PROPERTY)
+        return SYSTEM_PROCESS_PROPERTY.equals(processProperty.getCamundaName())
             && Boolean.parseBoolean(processProperty.getCamundaValue());
     }
 

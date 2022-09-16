@@ -155,7 +155,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
             .value as String
         val metadata = temporaryResourceStorageService.getResourceMetadata(resourceId)
         val content = temporaryResourceStorageService.getResourceContentAsInputStream(resourceId).reader().readText()
-        assertThat(metadata[MetadataType.FILE_NAME.name]).isEqualTo("integration-test_answer.xml")
+        assertThat(metadata[MetadataType.FILE_NAME.key]).isEqualTo("integration-test_answer.xml")
         assertThat(content).isEqualToIgnoringWhitespace(
             """
             <?xml version="1.0" encoding="UTF-8"?>
