@@ -33,6 +33,7 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:2.0.4"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-starter-security"
 
     testImplementation project(":process-document")
     testImplementation project(":resource:openzaak-resource")
