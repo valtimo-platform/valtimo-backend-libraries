@@ -16,14 +16,26 @@
 
 package com.ritense.openzaak.plugin
 
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.zakenapi.ZaakUrlProvider
+import java.net.URI
 import java.util.UUID
 
 class OpenZaakUrlProvider(
-    val zaakInstanceLinkService: ZaakInstanceLinkService
-): ZaakUrlProvider {
+    val zaakInstanceLinkService: ZaakInstanceLinkService,
+    val zaakTypeLinkService: ZaakTypeLinkService
+): ZaakUrlProvider, ZaaktypeUrlProvider {
     override fun getZaak(documentId: UUID): String {
         return zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl.toString()
+    }
+
+    override fun getZaaktypeUrl(documentDefinitionName: String): URI {
+        val zaakTypeLink = zaakTypeLinkService.get(documentDefinitionName)
+        requireNotNull(zaakTypeLink) {
+            "No zaak type was found for document definition with name $documentDefinitionName"
+        }
+        return zaakTypeLink.zaakTypeUrl
     }
 }

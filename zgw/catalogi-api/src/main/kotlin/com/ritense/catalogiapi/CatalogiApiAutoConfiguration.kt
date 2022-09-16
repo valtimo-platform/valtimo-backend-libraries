@@ -16,10 +16,9 @@
 
 package com.ritense.catalogiapi
 
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.objectenapi.security.CatalogiApiHttpSecurityConfigurer
 import com.ritense.objectenapi.service.CatalogiService
-import com.ritense.openzaak.service.ZaakInstanceLinkService
-import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.client.CatalogiApiClient
 import io.netty.handler.logging.LogLevel
@@ -64,10 +63,10 @@ class CatalogiApiAutoConfiguration {
 
     @Bean
     fun catalogiService(
-        zaakTypeLinkService: ZaakTypeLinkService,
+        zaaktypeUrlProvider: ZaaktypeUrlProvider,
         pluginService : PluginService
     ): CatalogiService {
-        return CatalogiService(zaakTypeLinkService, pluginService)
+        return CatalogiService(zaaktypeUrlProvider, pluginService)
     }
 
     @Order(400)

@@ -16,7 +16,7 @@
 
 package com.ritense.objectenapi.web.rest
 
-import com.ritense.catalogiapi.rest.result.InformatieobjecttypeDto
+import com.ritense.catalogiapi.web.rest.result.InformatieobjecttypeDto
 import com.ritense.objectenapi.service.CatalogiService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -33,7 +33,7 @@ class CatalogiResource(
     fun getZaakObjecttypes(
         @PathVariable(name = "documentDefinitionName") documentDefinitionName: String
     ): ResponseEntity<List<InformatieobjecttypeDto>> {
-        val zaakObjectTypes = catalogiService.getZaaktypeInformatieobjecttypes(documentDefinitionName).map {
+        val zaakObjectTypes = catalogiService.getInformatieobjecttypes(documentDefinitionName).map {
             InformatieobjecttypeDto(
                 it.url!!,
                 it.omschrijving

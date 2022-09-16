@@ -42,7 +42,7 @@ class CatalogiApiClient(
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
-                    .path("zaaktype-informatieobjecttypen")
+                    .pathSegment("zaaktype-informatieobjecttypen")
                     .addOptionalQueryParamFromRequest("zaaktype", request.zaaktype)
                     .addOptionalQueryParamFromRequest("informatieobjecttype", request.informatieobjecttype)
                     .addOptionalQueryParamFromRequest("richting", request.richting?.getSearchValue())

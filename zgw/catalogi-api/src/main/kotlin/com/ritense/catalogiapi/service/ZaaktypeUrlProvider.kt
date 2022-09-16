@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.catalogiapi.rest.result
+package com.ritense.catalogiapi.service
 
 import java.net.URI
 
-class InformatieobjecttypeDto(
-    val url: URI,
-    val name: String
-)
+interface ZaaktypeUrlProvider {
+    fun getZaaktypeUrl(documentDefinitionName: String): URI
+}

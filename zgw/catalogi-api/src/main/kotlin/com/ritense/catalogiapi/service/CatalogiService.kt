@@ -19,25 +19,22 @@ package com.ritense.objectenapi.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.catalogiapi.domain.Informatieobjecttype
-import com.ritense.openzaak.service.ZaakTypeLinkService
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.plugin.service.PluginService
 import mu.KotlinLogging
 import java.net.URI
 
 class CatalogiService(
-    val zaakTypeLinkService: ZaakTypeLinkService,
+    val zaaktypeUrlProvider: ZaaktypeUrlProvider,
     val pluginService : PluginService
 ) {
-    fun getZaaktypeInformatieobjecttypes(documentDefinitionName: String): List<Informatieobjecttype> {
+    fun getInformatieobjecttypes(documentDefinitionName: String): List<Informatieobjecttype> {
         logger.debug { "Getting documenttypes for document definition $documentDefinitionName" }
-        val zaakTypeLink = zaakTypeLinkService.get(documentDefinitionName)
-        requireNotNull(zaakTypeLink) {
-            "No zaak type was found for document definition with name $documentDefinitionName"
-        }
+        val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(documentDefinitionName)
 
-        val catalogiApiPluginInstance = findZakenApiPlugin(zaakTypeLink.zaakTypeUrl)
+        val catalogiApiPluginInstance = findZakenApiPlugin(zaakTypeUrl)
 
-        return catalogiApiPluginInstance.getZaaktypeInformatieobjecttypes(zaakTypeLink.zaakTypeUrl)
+        return catalogiApiPluginInstance.getInformatieobjecttypes(zaakTypeUrl)
     }
 
     private fun findZakenApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin {

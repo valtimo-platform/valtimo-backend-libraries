@@ -24,7 +24,6 @@
 dependencies {
     implementation project(':contract')
     implementation project(':core')
-    implementation project(':openzaak')
     implementation project(':plugin')
     implementation project(':zgw')
 

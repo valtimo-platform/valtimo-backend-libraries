@@ -40,7 +40,7 @@ class CatalogiApiPlugin(
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: CatalogiApiAuthentication
 
-    fun getZaaktypeInformatieobjecttypes(
+    fun getInformatieobjecttypes(
         zaakTypeUrl: URI,
     ): List<Informatieobjecttype> {
         var currentPage = 1
