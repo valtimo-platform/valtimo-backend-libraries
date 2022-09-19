@@ -83,6 +83,7 @@ dependencies {
     testImplementation project(':plugin')
     testImplementation project(':zgw:zaken-api')
     testImplementation project(':zgw:documenten-api')
+    testImplementation project(':zgw:catalogi-api')
     testImplementation project(':test-utils-common')
 
     jar {
