@@ -21,6 +21,7 @@ import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.documentenapi.DocumentenApiPlugin.Companion.DOCUMENT_URL_PROCESS_VAR
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.RESOURCE_ID_PROCESS_VAR
 import com.ritense.documentenapi.client.ConfidentialityLevel
 import com.ritense.documentenapi.client.CreateDocumentRequest
@@ -135,7 +136,8 @@ internal class DocumentenApiPluginTest {
                 "description" to "description",
                 "receiptDate" to "2022-09-15",
                 "sendDate" to "2022-09-16",
-                "description" to "description"))
+                "description" to "description",
+                "informatieobjecttype" to "type"))
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
         val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher)
@@ -143,15 +145,11 @@ internal class DocumentenApiPluginTest {
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
 
-        plugin.storeUploadedDocument(
-            executionMock,
-            "storedDocumentVariableName",
-            "type",
-            )
+        plugin.storeUploadedDocument(executionMock)
 
         val apiRequestCaptor = argumentCaptor<CreateDocumentRequest>()
         verify(client).storeDocument(any(), any(), apiRequestCaptor.capture())
-        verify(executionMock).setVariable("storedDocumentVariableName", "returnedUrl")
+        verify(executionMock).setVariable(DOCUMENT_URL_PROCESS_VAR, "returnedUrl")
 
         val request = apiRequestCaptor.firstValue
         assertEquals("123456789", request.bronorganisatie)

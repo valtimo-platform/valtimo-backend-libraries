@@ -30,6 +30,7 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.context.ApplicationEventPublisher
+import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
 
@@ -74,22 +75,19 @@ class DocumentenApiPlugin(
         val contentAsInputStream = storageService.getResourceContentAsInputStream(documentLocation)
         val metadata = storageService.getResourceMetadata(documentLocation)
 
-        val request = CreateDocumentRequest(
-            bronorganisatie = bronorganisatie,
-            creatiedatum = getLocalDateFromMetaData(metadata, "creationDate", LocalDate.now())!!,
-            titel = title,
-            vertrouwelijkheidaanduiding = getConfidentialityLevel(confidentialityLevel),
-            auteur = metadata["author"] as String? ?: DEFAULT_AUTHOR,
+        storeDocument(
+            execution = execution,
+            metadata = metadata,
+            title = title,
+            confidentialityLevel = getConfidentialityLevel(confidentialityLevel),
             status = status,
-            taal = taal,
-            bestandsnaam = fileName,
-            inhoud = contentAsInputStream,
-            beschrijving = description,
-            ontvangstdatum = getLocalDateFromMetaData(metadata, "receiptDate"),
-            verzenddatum = getLocalDateFromMetaData(metadata, "sendDate"),
-            informatieobjecttype = informatieobjecttype,
+            language = taal,
+            filename = fileName,
+            contentAsInputStream = contentAsInputStream,
+            description = description,
+            informationObjectType = informatieobjecttype,
+            storedDocumentUrl = storedDocumentUrl
         )
-        storeDocument(execution, request, storedDocumentUrl)
     }
 
     @PluginAction(
@@ -99,37 +97,56 @@ class DocumentenApiPlugin(
         activityTypes = [ActivityType.SERVICE_TASK]
     )
     fun storeUploadedDocument(
-        execution: DelegateExecution,
-        @PluginActionProperty storedDocumentUrl: String,
-        @PluginActionProperty informatieobjecttype: String,
-        ) {
+        execution: DelegateExecution
+    ) {
         val resourceId = execution.getVariable(RESOURCE_ID_PROCESS_VAR) as String
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
 
-        val request = CreateDocumentRequest(
-            bronorganisatie = bronorganisatie,
-            creatiedatum = getLocalDateFromMetaData(metadata, "creationDate", LocalDate.now())!!,
-            titel = metadata["title"] as String,
-            vertrouwelijkheidaanduiding = getConfidentialityLevel(metadata["confidentialityLevel"] as String?),
-            auteur = metadata["author"] as String? ?: DEFAULT_AUTHOR,
+        storeDocument(
+            execution = execution,
+            metadata = metadata,
+            title = metadata["title"] as String,
+            confidentialityLevel = metadata["confidentialityLevel"] as String?,
             status = getStatusFromMetaData(metadata),
-            taal = metadata["language"] as String? ?: DEFAULT_LANGUAGE,
-            bestandsnaam = getFilenameFromMetaData(metadata),
-            inhoud = contentAsInputStream,
-            beschrijving = metadata["description"] as String?,
-            ontvangstdatum = getLocalDateFromMetaData(metadata, "receiptDate"),
-            verzenddatum = getLocalDateFromMetaData(metadata, "sendDate"),
-            informatieobjecttype = informatieobjecttype,
+            language = metadata["language"] as String?,
+            filename = getFilenameFromMetaData(metadata),
+            contentAsInputStream = contentAsInputStream,
+            description = metadata["description"] as String?,
+            informationObjectType = metadata["informatieobjecttype"] as String,
+            storedDocumentUrl = DOCUMENT_URL_PROCESS_VAR
         )
-        storeDocument(execution, request, storedDocumentUrl)
     }
 
     private fun storeDocument(
         execution: DelegateExecution,
-        request: CreateDocumentRequest,
+        metadata: Map<String, Any>,
+        title: String,
+        confidentialityLevel: String?,
+        status: DocumentStatusType,
+        language: String?,
+        filename: String?,
+        contentAsInputStream: InputStream,
+        description: String?,
+        informationObjectType: String,
         storedDocumentUrl: String
     ) {
+        val request = CreateDocumentRequest(
+            bronorganisatie = bronorganisatie,
+            creatiedatum = getLocalDateFromMetaData(metadata, "creationDate", LocalDate.now())!!,
+            titel = title,
+            vertrouwelijkheidaanduiding = getConfidentialityLevel(confidentialityLevel),
+            auteur = metadata["author"] as String? ?: DEFAULT_AUTHOR,
+            status = status,
+            taal = language ?: DEFAULT_LANGUAGE,
+            bestandsnaam = filename,
+            inhoud = contentAsInputStream,
+            beschrijving = description,
+            ontvangstdatum = getLocalDateFromMetaData(metadata, "receiptDate"),
+            verzenddatum = getLocalDateFromMetaData(metadata, "sendDate"),
+            informatieobjecttype = informationObjectType,
+        )
+
         val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)
 
         val event = DocumentCreated(
@@ -143,7 +160,11 @@ class DocumentenApiPlugin(
         execution.setVariable(storedDocumentUrl, documentCreateResult.url)
     }
 
-    private fun getLocalDateFromMetaData(metadata: Map<String, Any>, field: String, default: LocalDate? = null): LocalDate? {
+    private fun getLocalDateFromMetaData(
+        metadata: Map<String, Any>,
+        field: String,
+        default: LocalDate? = null
+    ): LocalDate? {
         val localDateString = metadata[field] as String?
         return if (localDateString != null) {
             LocalDate.parse(localDateString)
@@ -177,5 +198,6 @@ class DocumentenApiPlugin(
         const val DEFAULT_AUTHOR = "GZAC"
         const val DEFAULT_LANGUAGE = "nld"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
+        const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
     }
 }
