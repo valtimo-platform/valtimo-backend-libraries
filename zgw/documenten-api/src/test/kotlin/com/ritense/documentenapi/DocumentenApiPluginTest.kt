@@ -21,6 +21,8 @@ import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.documentenapi.DocumentenApiPlugin.Companion.DOCUMENT_URL_PROCESS_VAR
+import com.ritense.documentenapi.DocumentenApiPlugin.Companion.RESOURCE_ID_PROCESS_VAR
 import com.ritense.documentenapi.client.ConfidentialityLevel
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.CreateDocumentResult
@@ -103,6 +105,64 @@ internal class DocumentenApiPluginTest {
         assertEquals("returnedFileName", emittedEvent.bestandsnaam)
         assertEquals(1L, emittedEvent.bestandsomvang)
         assertEquals(LocalDateTime.of(2020, 1, 1, 1, 1, 1), emittedEvent.beginRegistratie)
+    }
+
+    @Test
+    fun `should call client to store file after document upload`() {
+        val client: DocumentenApiClient = mock()
+        val storageService: TemporaryResourceStorageService = mock()
+        val applicationEventPublisher: ApplicationEventPublisher= mock()
+        val authenticationMock = mock<DocumentenApiAuthentication>()
+        val executionMock = mock<DelegateExecution>()
+        val fileStream = mock<InputStream>()
+        val result = CreateDocumentResult(
+            "returnedUrl",
+            "returnedAuthor",
+            "returnedFileName",
+            1L,
+            LocalDateTime.now()
+        )
+
+        whenever(executionMock.getVariable(RESOURCE_ID_PROCESS_VAR))
+            .thenReturn("localDocumentLocation")
+        whenever(storageService.getResourceContentAsInputStream("localDocumentLocation"))
+            .thenReturn(fileStream)
+        whenever(storageService.getResourceMetadata("localDocumentLocation"))
+            .thenReturn(mapOf("title" to "title",
+                "confidentialityLevel" to "zaakvertrouwelijk",
+                "status" to "in_bewerking",
+                "language" to "taal",
+                "filename" to "test.ext",
+                "description" to "description",
+                "receiptDate" to "2022-09-15",
+                "sendDate" to "2022-09-16",
+                "description" to "description",
+                "informatieobjecttype" to "type"))
+        whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
+
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher)
+        plugin.url = URI("http://some-url")
+        plugin.bronorganisatie = "123456789"
+        plugin.authenticationPluginConfiguration = authenticationMock
+
+        plugin.storeUploadedDocument(executionMock)
+
+        val apiRequestCaptor = argumentCaptor<CreateDocumentRequest>()
+        verify(client).storeDocument(any(), any(), apiRequestCaptor.capture())
+        verify(executionMock).setVariable(DOCUMENT_URL_PROCESS_VAR, "returnedUrl")
+
+        val request = apiRequestCaptor.firstValue
+        assertEquals("123456789", request.bronorganisatie)
+        assertNotNull(request.creatiedatum)
+        assertEquals("title", request.titel)
+        assertEquals("description", request.beschrijving)
+        assertEquals("GZAC", request.auteur)
+        assertEquals("test.ext", request.bestandsnaam)
+        assertEquals("taal", request.taal)
+        assertEquals(fileStream, request.inhoud)
+        assertEquals("type", request.informatieobjecttype)
+        assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
+        assertEquals(false, request.indicatieGebruiksrecht)
     }
 
 }
