@@ -17,10 +17,9 @@
 package com.ritense.catalogiapi.client
 
 import com.ritense.catalogiapi.domain.InformatieobjecttypeRichting
-import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import java.net.URI
 
-class ZaaktypeInformatieobjecttypeRequest(
+data class ZaaktypeInformatieobjecttypeRequest(
     val zaaktype: URI? = null,
     val informatieobjecttype: URI? = null,
     val richting: InformatieobjecttypeRichting? = null,
