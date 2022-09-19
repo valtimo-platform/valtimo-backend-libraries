@@ -91,6 +91,7 @@ internal class DocumentenApiClientTest {
         mockDocumentenApi.enqueue(mockResponse(responseBody))
 
         val request = CreateDocumentRequest(
+            auteur = "GZAC",
             bronorganisatie = "123",
             creatiedatum = LocalDate.of(2020, 5, 3),
             titel = "titel",

@@ -17,20 +17,23 @@
 package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonValue
-import com.ritense.plugin.annotation.Plugin
-import com.ritense.plugin.annotation.PluginAction
-import com.ritense.plugin.annotation.PluginActionProperty
-import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
 
 enum class DocumentStatusType {
     @JsonProperty("in_bewerking")
     IN_BEWERKING,
+
     @JsonProperty("ter_vaststelling")
     TER_VASTSTELLING,
+
     @JsonProperty("definitief")
     DEFINITIEF,
+
     @JsonProperty("gearchiveerd")
-    GEARCHIVEERD
+    GEARCHIVEERD;
+
+    companion object {
+        fun fromKey(key: String): DocumentStatusType {
+            return DocumentStatusType.valueOf(key.uppercase())
+        }
+    }
 }

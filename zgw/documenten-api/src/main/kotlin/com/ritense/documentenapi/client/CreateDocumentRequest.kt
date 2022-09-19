@@ -24,16 +24,18 @@ import java.time.LocalDate
 class CreateDocumentRequest(
     val bronorganisatie: String,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val creatiedatum: LocalDate = LocalDate.now(),
+    val creatiedatum: LocalDate,
     val titel: String,
     val vertrouwelijkheidaanduiding: String? = null,
-    val auteur: String = "GZAC",
+    val auteur: String,
     val status: DocumentStatusType? = null,
     val taal: String,
     val bestandsnaam: String? = null,
     @JsonSerialize(using = Base64StreamSerializer::class)
     val inhoud: InputStream,
     val beschrijving: String? = null,
+    val ontvangstdatum: LocalDate? = null,
+    val verzenddatum: LocalDate? = null,
     val indicatieGebruiksrecht: Boolean? = false,
     val informatieobjecttype: String,
 )
