@@ -20,8 +20,12 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
+import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
+import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
@@ -31,7 +35,8 @@ import java.util.UUID
 internal class OpenZaakUrlProviderTest {
 
     val zaakInstanceLinkService = mock<ZaakInstanceLinkService>()
-    val openZaakUrlProvider = OpenZaakUrlProvider(zaakInstanceLinkService)
+    val zaakTypeLinkService = mock<ZaakTypeLinkService>()
+    val openZaakUrlProvider = OpenZaakUrlProvider(zaakInstanceLinkService, zaakTypeLinkService)
 
     @Test
     fun `should get zaak for document id`() {
@@ -48,5 +53,24 @@ internal class OpenZaakUrlProviderTest {
 
         assertEquals("http://some.url", zaakUrl)
         verify(zaakInstanceLinkService).getByDocumentId(documentId)
+    }
+
+    @Test
+    fun `should get zaak type url for document type`() {
+        val documentDefinitionName = "test"
+        whenever(zaakTypeLinkService.get(documentDefinitionName)).thenReturn(
+            ZaakTypeLink(
+                ZaakTypeLinkId.newId(UUID.randomUUID()),
+                "test",
+                URI("http://some.url"),
+                ServiceTaskHandlers(),
+                false
+            )
+        )
+
+        val zaakTypeUrl = openZaakUrlProvider.getZaaktypeUrl(documentDefinitionName)
+
+        assertEquals(URI("http://some.url"), zaakTypeUrl)
+        verify(zaakTypeLinkService).get(documentDefinitionName)
     }
 }

@@ -60,6 +60,7 @@ include(
     "value-resolver",
     "view-configurator",
     "web",
+    "zgw:catalogi-api",
     "zgw:documenten-api",
     "zgw:objecten-api",
     "zgw:objecttypen-api",

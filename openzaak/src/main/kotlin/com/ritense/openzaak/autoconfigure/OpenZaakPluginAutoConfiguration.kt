@@ -19,6 +19,7 @@ package com.ritense.openzaak.autoconfigure
 import com.ritense.openzaak.plugin.OpenZaakPluginFactory
 import com.ritense.openzaak.plugin.OpenZaakUrlProvider
 import com.ritense.openzaak.service.TokenGeneratorService
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
@@ -40,8 +41,9 @@ class OpenZaakPluginAutoConfiguration {
 
     @Bean
     fun openZaakUrlProvider(
-        zaakInstanceLinkService: ZaakInstanceLinkService
-    ): ZaakUrlProvider {
-        return OpenZaakUrlProvider(zaakInstanceLinkService)
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        zaakTypeLinkService: ZaakTypeLinkService
+    ): OpenZaakUrlProvider {
+        return OpenZaakUrlProvider(zaakInstanceLinkService, zaakTypeLinkService)
     }
 }
