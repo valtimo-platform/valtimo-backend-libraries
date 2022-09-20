@@ -23,12 +23,13 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
+import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zgw.Page
-import java.net.URI
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import java.net.URI
 import java.util.UUID
 
 @Plugin(
@@ -41,9 +42,11 @@ class ZakenApiPlugin(
     private val zaakUrlProvider: ZaakUrlProvider,
     private val resourceProvider: ResourceProvider,
     private val documentService: DocumentService,
+    private val storageService: TemporaryResourceStorageService,
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
+
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: ZakenApiAuthentication
 
@@ -58,7 +61,7 @@ class ZakenApiPlugin(
         @PluginActionProperty documentUrl: String,
         @PluginActionProperty titel: String?,
         @PluginActionProperty beschrijving: String?
-    ){
+    ) {
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaak(documentId)
 
@@ -69,6 +72,35 @@ class ZakenApiPlugin(
             beschrijving
         )
 
+        linkDocument(documentId, request, documentUrl)
+    }
+
+    @PluginAction(
+        key = "link-uploaded-document-to-zaak",
+        title = "Link Uploaded Documenten API document to Zaak",
+        description = "Stores a link to an uploaded document in the Documenten API with a Zaak",
+        activityTypes = [ActivityType.SERVICE_TASK]
+    )
+    fun linkUploadedDocumentToZaak(
+        execution: DelegateExecution
+    ) {
+        val documentUrl = execution.getVariable(DOCUMENT_URL_PROCESS_VAR) as String
+        val resourceId = execution.getVariable(RESOURCE_ID_PROCESS_VAR) as String
+        val metadata = storageService.getResourceMetadata(resourceId)
+
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaak(documentId)
+
+        val request = LinkDocumentRequest(
+            documentUrl,
+            zaakUrl,
+            metadata["title"] as String?,
+            metadata["description"] as String?,
+        )
+        linkDocument(documentId, request, documentUrl)
+    }
+
+    private fun linkDocument(documentId: UUID, request: LinkDocumentRequest, documentUrl: String) {
         client.linkDocument(authenticationPluginConfiguration, url, request)
         val resource = resourceProvider.getResource(documentUrl)
         documentService.assignResource(
@@ -91,12 +123,14 @@ class ZakenApiPlugin(
                 currentPage++
             )
             results.addAll(currentResults.results)
-        } while(currentResults?.next != null)
+        } while (currentResults?.next != null)
 
         return results
     }
 
     companion object {
         const val PLUGIN_KEY = "zakenapi"
+        const val RESOURCE_ID_PROCESS_VAR = "resourceId"
+        const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
     }
 }

@@ -18,6 +18,7 @@ package com.ritense.zakenapi
 
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
+import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.client.ZakenApiClient
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -43,13 +44,15 @@ class ZakenApiAutoConfiguration {
         urlProvider: ZaakUrlProvider,
         resourceProvider: ResourceProvider,
         documentService: DocumentService,
+        storageService: TemporaryResourceStorageService,
     ): ZakenApiPluginFactory {
         return ZakenApiPluginFactory(
             pluginService,
             zakenApiClient,
             urlProvider,
             resourceProvider,
-            documentService
+            documentService,
+            storageService,
         )
     }
 
