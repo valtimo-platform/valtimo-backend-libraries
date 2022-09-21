@@ -57,10 +57,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -351,7 +353,7 @@ class ProcessDocumentResourceTest extends BaseTest {
     void shouldGetDocumentDefinitionProcesses() throws Exception {
         String documentDefinitionName = "name";
         DocumentDefinitionProcess documentDefinitionProcess = new DocumentDefinitionProcess(
-            "processId",
+            "processDefinitionKey",
             "processName"
         );
         when(documentDefinitionProcessLinkService.getDocumentDefinitionProcess(documentDefinitionName))
@@ -361,7 +363,7 @@ class ProcessDocumentResourceTest extends BaseTest {
                 get("/api/process-document/demo/{name}/process", documentDefinitionName))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.processId").value("processId"))
+            .andExpect(jsonPath("$.processDefinitionKey").value("processDefinitionKey"))
             .andExpect(jsonPath("$.processName").value("processName"));
 
         verify(documentDefinitionProcessLinkService).getDocumentDefinitionProcess(documentDefinitionName);
@@ -371,10 +373,10 @@ class ProcessDocumentResourceTest extends BaseTest {
     void shouldPutDocumentDefinitionProcesses() throws Exception {
         String documentDefinitionName = "name";
         DocumentDefinitionProcessLinkResponse response = new DocumentDefinitionProcessLinkResponse(
-            "processId",
+            "processDefinitionKey",
             "processName"
         );
-        DocumentDefinitionProcessRequest request = new DocumentDefinitionProcessRequest("processId");
+        DocumentDefinitionProcessRequest request = new DocumentDefinitionProcessRequest("processDefinitionKey");
 
         when(documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(eq(documentDefinitionName), any()))
             .thenReturn(response);
@@ -386,7 +388,7 @@ class ProcessDocumentResourceTest extends BaseTest {
                     .characterEncoding(StandardCharsets.UTF_8.name()))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.processId").value("processId"))
+            .andExpect(jsonPath("$.processDefinitionKey").value("processDefinitionKey"))
             .andExpect(jsonPath("$.processName").value("processName"));
 
         verify(documentDefinitionProcessLinkService).saveDocumentDefinitionProcess(eq(documentDefinitionName), any());

@@ -17,9 +17,11 @@
 package com.ritense.processdocument.domain.impl;
 
 import com.ritense.valtimo.contract.domain.AbstractId;
-import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.Objects;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
@@ -29,40 +31,40 @@ public class DocumentDefinitionProcessLinkId
     @Column(name = "document_definition_name", nullable = false)
     private String documentDefinitionName;
 
-    @Column(name = "process_id", nullable = false)
-    private String processId;
+    @Column(name = "process_definition_key", nullable = false)
+    private String processDefinitionKey;
 
     public DocumentDefinitionProcessLinkId() {}
 
     private DocumentDefinitionProcessLinkId(
         final String documentDefinitionName,
-        final String processId) {
+        final String processDefinitionKey) {
         assertArgumentNotNull(documentDefinitionName, "The documentDefinitionName is required");
-        assertArgumentNotNull(processId, "The processId is required");
+        assertArgumentNotNull(processDefinitionKey, "The processDefinitionKey is required");
         this.documentDefinitionName = documentDefinitionName;
-        this.processId = processId;
+        this.processDefinitionKey = processDefinitionKey;
     }
 
     public static DocumentDefinitionProcessLinkId newId(
         String documentDefinitionName,
-        String processId
+        String processDefinitionKey
     ) {
-        return new DocumentDefinitionProcessLinkId(documentDefinitionName, processId);
+        return new DocumentDefinitionProcessLinkId(documentDefinitionName, processDefinitionKey);
     }
 
     public static DocumentDefinitionProcessLinkId existingId(
         String documentDefinitionName,
-        String processId
+        String processDefinitionKey
     ) {
-        return new DocumentDefinitionProcessLinkId(documentDefinitionName, processId).newIdentity();
+        return new DocumentDefinitionProcessLinkId(documentDefinitionName, processDefinitionKey).newIdentity();
     }
 
     public String documentDefinitionName() {
         return documentDefinitionName;
     }
 
-    public String processId() {
-        return processId;
+    public String processDefinitionKey() {
+        return processDefinitionKey;
     }
 
     @Override
@@ -75,11 +77,11 @@ public class DocumentDefinitionProcessLinkId
         }
         DocumentDefinitionProcessLinkId that = (DocumentDefinitionProcessLinkId) o;
         return documentDefinitionName.equals(that.documentDefinitionName) &&
-            processId.equals(that.processId);
+            processDefinitionKey.equals(that.processDefinitionKey);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(documentDefinitionName, processId);
+        return Objects.hash(documentDefinitionName, processDefinitionKey);
     }
 }
