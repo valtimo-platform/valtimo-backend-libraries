@@ -78,7 +78,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
-public class ProcessDocumentResourceTest extends BaseTest {
+class ProcessDocumentResourceTest extends BaseTest {
     private static final String PROCESS_DEFINITION_KEY = "definition-id";
     private static final String PROCESS_INSTANCE_ID = UUID.randomUUID().toString();
     private static final String DOCUMENT_DEFINITION_NAME = "house";
