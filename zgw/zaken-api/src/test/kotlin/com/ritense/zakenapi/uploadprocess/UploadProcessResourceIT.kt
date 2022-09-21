@@ -16,8 +16,8 @@
 
 package com.ritense.zakenapi.uploadprocess
 
-import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.zakenapi.BaseIntegrationTest
 import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY
 import org.junit.jupiter.api.BeforeEach
@@ -39,7 +39,7 @@ class UploadProcessResourceIT : BaseIntegrationTest() {
     lateinit var webApplicationContext: WebApplicationContext
 
     @Autowired
-    lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
+    lateinit var documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
 
     lateinit var mockMvc: MockMvc
 
@@ -60,12 +60,9 @@ class UploadProcessResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should respond with process-case-link when one has been configured`() {
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(
-                UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
-                CASE_DEFINITION_KEY,
-                true,
-            )
+        documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+            CASE_DEFINITION_KEY,
+            DocumentDefinitionProcessRequest(UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY)
         )
 
         mockMvc.perform(get("/api/uploadprocess/case/{caseDefinitionKey}/check-link", CASE_DEFINITION_KEY))

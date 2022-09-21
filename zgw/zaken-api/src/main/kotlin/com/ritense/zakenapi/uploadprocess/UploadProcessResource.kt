@@ -16,8 +16,7 @@
 
 package com.ritense.zakenapi.uploadprocess
 
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -28,22 +27,15 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/uploadprocess")
 class UploadProcessResource(
-    private val processDocumentAssociationService: ProcessDocumentAssociationService,
+    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {
 
     @GetMapping("/case/{caseDefinitionKey}/check-link")
     fun checkCaseProcessLink(
         @PathVariable caseDefinitionKey: String
     ): ResponseEntity<CheckLinkResponse> {
-        val processDocumentDefinitions = processDocumentAssociationService.findAllProcessDocumentDefinitions(
-            CamundaProcessDefinitionKey(
-                UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY
-            )
-        )
-
-        val processCaseLinkExists = processDocumentDefinitions.any {
-            caseDefinitionKey == it.processDocumentDefinitionId().documentDefinitionId().name()
-        }
+        val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcess(caseDefinitionKey)
+        val processCaseLinkExists = link != null && UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY == link.processDefinitionKey
         return ResponseEntity.ok(CheckLinkResponse(processCaseLinkExists))
     }
 }
