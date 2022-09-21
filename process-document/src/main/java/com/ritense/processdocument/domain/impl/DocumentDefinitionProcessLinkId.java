@@ -32,6 +32,8 @@ public class DocumentDefinitionProcessLinkId
     @Column(name = "process_id", nullable = false)
     private String processId;
 
+    public DocumentDefinitionProcessLinkId() {}
+
     private DocumentDefinitionProcessLinkId(
         final String documentDefinitionName,
         final String processId) {
