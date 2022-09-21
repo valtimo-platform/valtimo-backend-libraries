@@ -18,16 +18,16 @@ package com.ritense.processdocument.domain.impl.request;
 
 public class DocumentDefinitionProcessLinkResponse {
 
-    private final String processId;
+    private final String processDefinitionKey;
     private final String processName;
 
-    public DocumentDefinitionProcessLinkResponse(String processId, String processName) {
-        this.processId = processId;
+    public DocumentDefinitionProcessLinkResponse(String processDefinitionKey, String processName) {
+        this.processDefinitionKey = processDefinitionKey;
         this.processName = processName;
     }
 
-    public String getProcessId() {
-        return processId;
+    public String getProcessDefinitionKey() {
+        return processDefinitionKey;
     }
 
     public String getProcessName() {

@@ -6,7 +6,7 @@
             <column name="document_definition_name" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="process_id" type="VARCHAR(64)">
+            <column name="process_definition_key" type="VARCHAR(64)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
