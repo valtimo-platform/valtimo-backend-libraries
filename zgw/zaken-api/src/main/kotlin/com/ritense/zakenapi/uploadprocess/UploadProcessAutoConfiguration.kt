@@ -16,7 +16,7 @@
 
 package com.ritense.zakenapi.uploadprocess
 
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -42,9 +42,9 @@ class UploadProcessAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(UploadProcessResource::class)
     fun uploadProcessResource(
-        processDocumentAssociationService: ProcessDocumentAssociationService
+        documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
     ): UploadProcessResource {
-        return UploadProcessResource(processDocumentAssociationService)
+        return UploadProcessResource(documentDefinitionProcessLinkService)
     }
 
     @Order(360)
