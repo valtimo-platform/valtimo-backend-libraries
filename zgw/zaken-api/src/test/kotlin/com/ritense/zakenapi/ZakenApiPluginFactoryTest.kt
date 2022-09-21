@@ -11,6 +11,7 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
+import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.client.ZakenApiClient
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -27,13 +28,15 @@ internal class ZakenApiPluginFactoryTest {
         val zaakUrlProvider: ZaakUrlProvider = mock()
         val documentService: DocumentService = mock()
         val resourceProvider: ResourceProvider = mock()
+        val storageService: TemporaryResourceStorageService = mock()
 
         val factory = ZakenApiPluginFactory(
             pluginService,
             client,
             zaakUrlProvider,
             resourceProvider,
-            documentService
+            documentService,
+            storageService,
         )
         val zakenApiPluginProperties: String = """
             {

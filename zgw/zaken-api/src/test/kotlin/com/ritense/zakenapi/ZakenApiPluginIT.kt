@@ -157,6 +157,44 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         assertNotNull(documentService.get(processDocumentId.toString()))
     }
 
+    @Test
+    fun `should link uploaded document to zaak`() {
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
+
+        // Make a record in1 the database about a document that is matched to the open zaak
+        val resource = OpenZaakResource(
+            ResourceId.newId(UUID.randomUUID()),
+            URI.create(INFORMATIE_OBJECT_URL),
+            "name",
+            "ext",
+            1L,
+            LocalDateTime.now()
+        )
+        openZaakResourceRepository.save(resource)
+
+        // Start the process
+        val response = procesDocumentService.newDocumentAndStartProcess(request)
+        assertTrue(response is NewDocumentAndStartProcessResultSucceeded)
+
+        // Check the request that was sent to the open zaak api
+        val recordedRequest = server.takeRequest()
+        val requestString = recordedRequest.body.readUtf8()
+        val parsedOutput = Mapper.INSTANCE.get().readValue(requestString, Map::class.java)
+
+        assertEquals(4, parsedOutput.size)
+        assertEquals(INFORMATIE_OBJECT_URL, parsedOutput["informatieobject"])
+        assertEquals(ZAAK_URL, parsedOutput["zaak"])
+        assertEquals("titelVariableName", parsedOutput["titel"])
+        assertEquals("beschrijvingVariableName", parsedOutput["beschrijving"])
+
+        // Check to see if the document is correctly linked inside the valtimo database as well
+        assertNotNull(response.resultingDocument())
+        assertTrue(response.resultingDocument().isPresent)
+        val processDocumentId = response.resultingDocument().get().id().id
+        assertNotNull(documentService.get(processDocumentId.toString()))
+    }
+
     private fun setupMockZakenApiServer() {
         val dispatcher: Dispatcher = object: Dispatcher() {
             @Throws(InterruptedException::class)

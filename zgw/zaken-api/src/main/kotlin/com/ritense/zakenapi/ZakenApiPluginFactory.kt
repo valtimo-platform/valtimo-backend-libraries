@@ -19,6 +19,7 @@ package com.ritense.zakenapi
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
+import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.client.ZakenApiClient
 
 class ZakenApiPluginFactory(
@@ -27,9 +28,10 @@ class ZakenApiPluginFactory(
     private val zaakUrlProvider: ZaakUrlProvider,
     private val resourceProvider: ResourceProvider,
     private val documentService: DocumentService,
+    private val storageService: TemporaryResourceStorageService,
 ) : PluginFactory<ZakenApiPlugin>(pluginService) {
 
     override fun create(): ZakenApiPlugin {
-        return ZakenApiPlugin(client, zaakUrlProvider, resourceProvider, documentService)
+        return ZakenApiPlugin(client, zaakUrlProvider, resourceProvider, documentService, storageService)
     }
 }

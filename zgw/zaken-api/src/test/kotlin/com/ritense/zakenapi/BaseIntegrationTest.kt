@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi
 
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.authentication.UserManagementService
@@ -45,4 +46,7 @@ class BaseIntegrationTest {
 
     @MockBean
     lateinit var zaakUrlProvider: ZaakUrlProvider
+
+    @MockBean
+    lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
 }
