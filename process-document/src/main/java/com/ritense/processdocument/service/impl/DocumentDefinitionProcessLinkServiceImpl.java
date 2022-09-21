@@ -53,8 +53,17 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
     }
 
     @Override
-    public DocumentDefinitionProcessLinkResponse saveDocumentDefinitionProcess(String documentDefinitionName,
-                                                                               DocumentDefinitionProcessRequest request) {
+    public DocumentDefinitionProcessLinkResponse saveDocumentDefinitionProcess(
+        String documentDefinitionName,
+        DocumentDefinitionProcessRequest request) {
+
+        var currentLink = getDocumentDefinitionProcess(documentDefinitionName);
+
+        if (currentLink != null) {
+            throw new RuntimeException(
+                String.format("There is already a process stored for %s, can't link a second process", documentDefinitionName));
+        }
+
         var process = repositoryService.createProcessDefinitionQuery()
             .processDefinitionKey(request.getProcessDefinitionKey())
             .latestVersion()
