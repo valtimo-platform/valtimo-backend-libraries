@@ -16,15 +16,12 @@
 
 package com.ritense.processdocument.domain.impl.request;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DocumentDefinitionProcessRequest {
 
-    @JsonProperty
     private String processDefinitionKey;
 
-    @JsonCreator
     public DocumentDefinitionProcessRequest(
         @JsonProperty(value = "processDefinitionKey", required = true) String processDefinitionKey
     ) {

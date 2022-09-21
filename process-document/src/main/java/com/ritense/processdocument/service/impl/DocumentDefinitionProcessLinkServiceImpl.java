@@ -52,6 +52,8 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
     @Override
     public DocumentDefinitionProcessLinkResponse saveDocumentDefinitionProcess(String documentDefinitionName,
                                                                                DocumentDefinitionProcessRequest request) {
+        var process = repositoryService.getProcessDefinition(request.getProcessDefinitionKey());
+
         var link = new DocumentDefinitionProcessLink(
             DocumentDefinitionProcessLinkId.newId(
                 documentDefinitionName,
@@ -59,9 +61,7 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
             )
         );
 
-        var savedLink = documentDefinitionProcessLinkRepository.save(link);
-
-        var process = repositoryService.getProcessDefinition(savedLink.getId().processId());
+        documentDefinitionProcessLinkRepository.save(link);
 
         return new DocumentDefinitionProcessLinkResponse(
             process.getId(),
