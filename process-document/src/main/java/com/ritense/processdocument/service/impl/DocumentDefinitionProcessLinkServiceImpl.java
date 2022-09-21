@@ -24,7 +24,9 @@ import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcess
 import com.ritense.processdocument.repository.DocumentDefinitionProcessLinkRepository;
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
 import org.camunda.bpm.engine.RepositoryService;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinitionProcessLinkService {
 
     private final DocumentDefinitionProcessLinkRepository documentDefinitionProcessLinkRepository;
