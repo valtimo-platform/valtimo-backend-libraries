@@ -60,8 +60,9 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         var currentLink = getDocumentDefinitionProcess(documentDefinitionName);
 
         if (currentLink != null) {
-            throw new RuntimeException(
-                String.format("There is already a process stored for %s, can't link a second process", documentDefinitionName));
+            // If there is already a link set for this document definition then delete the current link
+            // before storing the new one
+            deleteDocumentDefinitionProcess(documentDefinitionName);
         }
 
         var process = repositoryService.createProcessDefinitionQuery()
