@@ -34,7 +34,9 @@ class CreateDocumentRequest(
     @JsonSerialize(using = Base64StreamSerializer::class)
     val inhoud: InputStream,
     val beschrijving: String? = null,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val ontvangstdatum: LocalDate? = null,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val verzenddatum: LocalDate? = null,
     val indicatieGebruiksrecht: Boolean? = false,
     val informatieobjecttype: String,
