@@ -59,11 +59,11 @@ public class DocumentDefinitionProcessLinkId
         return new DocumentDefinitionProcessLinkId(documentDefinitionName, processDefinitionKey).newIdentity();
     }
 
-    public String documentDefinitionName() {
+    public String getDocumentDefinitionName() {
         return documentDefinitionName;
     }
 
-    public String processDefinitionKey() {
+    public String getProcessDefinitionKey() {
         return processDefinitionKey;
     }
 

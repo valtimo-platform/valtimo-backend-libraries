@@ -61,10 +61,10 @@ class DocumentenApiPlugin(
     )
     fun storeTemporaryDocument(
         execution: DelegateExecution,
-        @PluginActionProperty fileName: String,
-        @PluginActionProperty confidentialityLevel: String,
-        @PluginActionProperty title: String,
-        @PluginActionProperty description: String,
+        @PluginActionProperty fileName: String?,
+        @PluginActionProperty confidentialityLevel: String?,
+        @PluginActionProperty title: String?,
+        @PluginActionProperty description: String?,
         @PluginActionProperty localDocumentLocation: String,
         @PluginActionProperty storedDocumentUrl: String,
         @PluginActionProperty informatieobjecttype: String,
@@ -78,7 +78,7 @@ class DocumentenApiPlugin(
         storeDocument(
             execution = execution,
             metadata = metadata,
-            title = title,
+            title = title ?: fileName ?: metadata[MetadataType.FILE_NAME.key] as String,
             confidentialityLevel = getConfidentialityLevel(confidentialityLevel),
             status = status,
             language = taal,

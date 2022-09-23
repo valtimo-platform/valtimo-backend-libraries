@@ -63,6 +63,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLinkType.DOCUMENT_UPLOAD;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -376,7 +377,10 @@ class ProcessDocumentResourceTest extends BaseTest {
             "processDefinitionKey",
             "processName"
         );
-        DocumentDefinitionProcessRequest request = new DocumentDefinitionProcessRequest("processDefinitionKey");
+        DocumentDefinitionProcessRequest request = new DocumentDefinitionProcessRequest(
+            "processDefinitionKey",
+            DOCUMENT_UPLOAD
+        );
 
         when(documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(eq(documentDefinitionName), any()))
             .thenReturn(response);

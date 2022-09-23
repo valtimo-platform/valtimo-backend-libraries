@@ -16,8 +16,8 @@
 
 package com.ritense.zakenapi.uploadprocess
 
+import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLinkType.DOCUMENT_UPLOAD
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
-import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -30,12 +30,13 @@ class UploadProcessResource(
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {
 
+    @Deprecated("Marked for removal since 9.22.0")
     @GetMapping("/case/{caseDefinitionKey}/check-link")
     fun checkCaseProcessLink(
         @PathVariable caseDefinitionKey: String
     ): ResponseEntity<CheckLinkResponse> {
-        val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcess(caseDefinitionKey)
-        val processCaseLinkExists = link != null && UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY == link.processDefinitionKey
-        return ResponseEntity.ok(CheckLinkResponse(processCaseLinkExists))
+        val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionKey)
+        val uploadDocumentProcessCaseLinkExists = link.isPresent && DOCUMENT_UPLOAD == link.get().type
+        return ResponseEntity.ok(CheckLinkResponse(uploadDocumentProcessCaseLinkExists))
     }
 }

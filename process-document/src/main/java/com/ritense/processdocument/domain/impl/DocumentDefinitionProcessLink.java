@@ -16,8 +16,11 @@
 
 package com.ritense.processdocument.domain.impl;
 
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 @Entity
@@ -27,13 +30,26 @@ public class DocumentDefinitionProcessLink {
     @EmbeddedId
     private DocumentDefinitionProcessLinkId id;
 
-    public DocumentDefinitionProcessLink(DocumentDefinitionProcessLinkId documentDefinitionProcessLinkId) {
+    @Column(name = "link_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private DocumentDefinitionProcessLinkType type;
+
+    public DocumentDefinitionProcessLink(
+        DocumentDefinitionProcessLinkId documentDefinitionProcessLinkId,
+        DocumentDefinitionProcessLinkType type
+    ) {
         this.id = documentDefinitionProcessLinkId;
+        this.type = type;
     }
 
-    public DocumentDefinitionProcessLink() {}
+    public DocumentDefinitionProcessLink() {
+    }
 
     public DocumentDefinitionProcessLinkId getId() {
         return id;
+    }
+
+    public DocumentDefinitionProcessLinkType getType() {
+        return type;
     }
 }
