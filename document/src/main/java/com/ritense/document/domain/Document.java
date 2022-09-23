@@ -43,6 +43,12 @@ public interface Document {
     DocumentDefinition.Id definitionId();
 
     @JsonProperty
+    String assigneeFirstName();
+
+    @JsonProperty
+    String assigneeLastName();
+
+    @JsonProperty
     DocumentContent content();
 
     @JsonProperty

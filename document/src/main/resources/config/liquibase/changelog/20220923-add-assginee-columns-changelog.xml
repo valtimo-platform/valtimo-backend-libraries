@@ -1,0 +1,12 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="Rick Veenstra" id="1">
+        <addColumn tableName="json_schema_document">
+            <column name="assignee_first_name" type="varchar(50)"></column>
+        </addColumn>
+        <addColumn tableName="json_schema_document">
+            <column name="assignee_last_name" type="varchar(80)"></column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

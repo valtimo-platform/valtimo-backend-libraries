@@ -99,6 +99,12 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Column(name = "sequence", columnDefinition = "BIGINT")
     private Long sequence;
 
+    @Column(name = "assignee_first_name", columnDefinition="varchar(50)")
+    private String assigneeFirstName;
+
+    @Column(name = "assignee_last_name", columnDefinition="varchar(80)")
+    private String assigneeLastName;
+
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "document_relations", columnDefinition = "json")
     private Set<JsonSchemaDocumentRelation> documentRelations = new HashSet<>();
@@ -316,6 +322,16 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Override
     public JsonSchemaDocumentDefinitionId definitionId() {
         return documentDefinitionId;
+    }
+
+    @Override
+    public String assigneeFirstName() {
+        return assigneeFirstName;
+    }
+
+    @Override
+    public String assigneeLastName() {
+        return assigneeLastName;
     }
 
     @Override
