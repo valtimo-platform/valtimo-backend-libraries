@@ -19,6 +19,7 @@ package com.ritense.resource.web.rest
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.resource.web.rest.response.ResourceDto
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
@@ -40,7 +41,7 @@ class TemporaryResourceStorageResource(
     fun uploadFileWithMetadata(
         @RequestParam("file") file: MultipartFile,
         @RequestParam metaData: Map<String, Any>,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<ResourceDto> {
 
         val mutableMetaData = metaData.toMutableMap()
         file.originalFilename?.let { mutableMetaData.putIfAbsent(MetadataType.FILE_NAME.key, it) }
@@ -50,6 +51,12 @@ class TemporaryResourceStorageResource(
         val resourceId = resourceService.store(file.inputStream, mutableMetaData)
         applicationEventPublisher.publishEvent(TemporaryResourceUploadedEvent(resourceId))
 
-        return ResponseEntity.noContent().build() // Don't respond with resourceId because the resourceId reveals the local file structure.
+        return ResponseEntity.ok(
+            ResourceDto(
+                resourceId,
+                mutableMetaData[MetadataType.FILE_NAME.key] as String?,
+                file.size
+            )
+        )
     }
 }

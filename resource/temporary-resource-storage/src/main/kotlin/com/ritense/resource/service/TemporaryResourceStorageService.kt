@@ -26,7 +26,9 @@ import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.inputStream
 import kotlin.io.path.notExists
+import kotlin.io.path.pathString
 import kotlin.io.path.readText
+import kotlin.io.path.relativeTo
 
 class TemporaryResourceStorageService {
 
@@ -39,11 +41,11 @@ class TemporaryResourceStorageService {
         val metaDataFile = Files.createTempFile(TEMP_DIR, "temporaryResourceMetadata", ".json")
         metaDataFile.toFile().writeText(Mapper.INSTANCE.get().writeValueAsString(mutableMetadata))
 
-        return metaDataFile.absolutePathString()
+        return metaDataFile.relativeTo(TEMP_DIR).pathString
     }
 
     fun deleteResource(id: String): Boolean {
-        val metaDataFile = Path(id)
+        val metaDataFile = Path(TEMP_DIR.pathString, id)
         if (metaDataFile.notExists()) {
             return false
         }
@@ -62,7 +64,7 @@ class TemporaryResourceStorageService {
     }
 
     fun getResourceMetadata(id: String): Map<String, Any> {
-        val metaDataFile = Path(id)
+        val metaDataFile = Path(TEMP_DIR.pathString, id)
         if (metaDataFile.notExists()) {
             throw IllegalArgumentException("No resource found with id '$id'")
         }

@@ -19,14 +19,21 @@ package com.ritense.zakenapi.uploadprocess
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
+import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.BaseIntegrationTest
+import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.RESOURCE_ID_PROCESS_VAR
+import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.UNIQUE_RESOURCE_IDS_PROCESS_VAR
+import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.HistoryService
+import org.camunda.bpm.engine.TaskService
+import org.camunda.bpm.engine.history.HistoricProcessInstance
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,6 +47,9 @@ class ResourceUploadedEventListenerIT : BaseIntegrationTest() {
     lateinit var documentService: JsonSchemaDocumentService
 
     @Autowired
+    lateinit var processDocumentService: ProcessDocumentService
+
+    @Autowired
     lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
 
     @Autowired
@@ -49,13 +59,23 @@ class ResourceUploadedEventListenerIT : BaseIntegrationTest() {
     lateinit var historyService: HistoryService
 
     @Autowired
+    lateinit var taskService: TaskService
+
+    @Autowired
     lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
 
     @BeforeEach
     fun beforeEach() {
         processDocumentAssociationService.createProcessDocumentDefinition(
             ProcessDocumentDefinitionRequest(
-                ResourceUploadedEventListener.UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
+                SINGLE_USER_TASK_PROCESS_DEFINITION_KEY,
+                DOCUMENT_DEFINITION_KEY,
+                true
+            )
+        )
+        processDocumentAssociationService.createProcessDocumentDefinition(
+            ProcessDocumentDefinitionRequest(
+                UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
                 DOCUMENT_DEFINITION_KEY,
                 true
             )
@@ -63,7 +83,25 @@ class ResourceUploadedEventListenerIT : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should start process after publishing TemporaryResourceUploadedEvent`() {
+    fun `should not start upload process when missing documentId or taskId`() {
+        val documentId = documentService.createDocument(
+            NewDocumentRequest(
+                DOCUMENT_DEFINITION_KEY,
+                Mapper.INSTANCE.get().createObjectNode()
+            )
+        ).resultingDocument().get().id!!.id.toString()
+        val resourceId = temporaryResourceStorageService.store("My file data".byteInputStream())
+
+        applicationEventPublisher.publishEvent(TemporaryResourceUploadedEvent(resourceId))
+
+        val documentUploadProcess = historyService.createHistoricProcessInstanceQuery()
+            .processInstanceBusinessKey(documentId)
+            .singleResult()
+        assertThat(documentUploadProcess).isNull()
+    }
+
+    @Test
+    fun `should start upload process after publishing TemporaryResourceUploadedEvent`() {
         val documentId = documentService.createDocument(
             NewDocumentRequest(
                 DOCUMENT_DEFINITION_KEY,
@@ -72,26 +110,66 @@ class ResourceUploadedEventListenerIT : BaseIntegrationTest() {
         ).resultingDocument().get().id!!.id.toString()
         val resourceId = temporaryResourceStorageService.store(
             "My file data".byteInputStream(),
-            mapOf(
-                MetadataType.DOCUMENT_ID.key to documentId,
-            ),
+            mapOf(MetadataType.DOCUMENT_ID.key to documentId)
         )
 
         applicationEventPublisher.publishEvent(TemporaryResourceUploadedEvent(resourceId))
 
-        val documentUploadProcess = historyService.createHistoricProcessInstanceQuery()
+        val documentUploadProcess = getHistoricProcessInstance(UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY, documentId)
+        val retrievedResourceId =
+            getHistoricVariable(documentUploadProcess.rootProcessInstanceId, RESOURCE_ID_PROCESS_VAR) as String
+        assertThat(documentUploadProcess.startTime).isNotNull
+        assertThat(retrievedResourceId).isEqualTo(resourceId)
+    }
+
+    @Test
+    fun `should start upload process after task complete`() {
+        val process = processDocumentService.newDocumentAndStartProcess(
+            NewDocumentAndStartProcessRequest(
+                SINGLE_USER_TASK_PROCESS_DEFINITION_KEY,
+                NewDocumentRequest(
+                    DOCUMENT_DEFINITION_KEY,
+                    Mapper.INSTANCE.get().createObjectNode()
+                )
+            )
+        )
+        val documentId = process.resultingDocument().get().id()!!.id.toString()
+        val processInstanceId = process.resultingProcessInstanceId().get().toString()
+        val taskId = taskService.createTaskQuery().processInstanceId(processInstanceId).singleResult().id
+        val resourceId = temporaryResourceStorageService.store(
+            "My file data".byteInputStream(),
+            mapOf(MetadataType.TASK_ID.key to taskId)
+        )
+        applicationEventPublisher.publishEvent(TemporaryResourceUploadedEvent(resourceId))
+
+        taskService.complete(taskId)
+
+        val retrievedResourceIds = getHistoricVariable(processInstanceId, UNIQUE_RESOURCE_IDS_PROCESS_VAR) as List<String>
+        assertThat(retrievedResourceIds).containsOnlyOnce(resourceId)
+        val documentUploadProcess = getHistoricProcessInstance(UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY, documentId)
+        assertThat(documentUploadProcess.startTime).isNotNull
+        val retrievedResourceId =
+            getHistoricVariable(documentUploadProcess.rootProcessInstanceId, RESOURCE_ID_PROCESS_VAR) as String
+        assertThat(retrievedResourceId).isEqualTo(resourceId)
+    }
+
+    private fun getHistoricProcessInstance(processDefinitionKey: String, documentId: String): HistoricProcessInstance {
+         return historyService.createHistoricProcessInstanceQuery()
+            .processDefinitionKey(processDefinitionKey)
             .processInstanceBusinessKey(documentId)
             .singleResult()
-        val retrievedResourcesId = historyService.createHistoricVariableInstanceQuery()
-            .processInstanceId(documentUploadProcess.rootProcessInstanceId)
-            .variableName(ResourceUploadedEventListener.RESOURCE_ID_PROCESS_VAR)
+    }
+
+    private fun <T> getHistoricVariable(processInstanceId: String, variableKey: String): T {
+        return historyService.createHistoricVariableInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .variableName(variableKey)
             .singleResult()
-            .value as String
-        assertThat(documentUploadProcess.startTime).isNotNull
-        assertThat(retrievedResourcesId).isEqualTo(resourceId)
+            .value as T
     }
 
     companion object {
         private const val DOCUMENT_DEFINITION_KEY = "profile"
+        private const val SINGLE_USER_TASK_PROCESS_DEFINITION_KEY = "single-user-task-process"
     }
 }
