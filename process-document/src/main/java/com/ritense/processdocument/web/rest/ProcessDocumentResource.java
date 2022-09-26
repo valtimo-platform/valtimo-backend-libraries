@@ -20,6 +20,7 @@ import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.domain.ProcessDocumentInstance;
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcess;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessLinkResponse;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
@@ -47,10 +48,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import javax.validation.Valid;
+
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -101,6 +104,15 @@ public class ProcessDocumentResource {
         @PathVariable(name = "document-definition-name") String documentDefinitionName
     ) {
         return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName));
+    }
+
+    @GetMapping("/definition/processinstance/{processInstanceId}")
+    public ResponseEntity<? extends ProcessDocumentDefinition> getProcessDocumentDefinition(
+        @PathVariable String processInstanceId
+    ) {
+        return processDocumentService.findProcessDocumentDefinition(new CamundaProcessInstanceId(processInstanceId))
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.badRequest().build());
     }
 
     @GetMapping(value = "/instance/document/{documentId}")
