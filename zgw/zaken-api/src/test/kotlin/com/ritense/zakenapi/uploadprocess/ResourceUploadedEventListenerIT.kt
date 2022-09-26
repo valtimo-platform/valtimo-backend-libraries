@@ -19,7 +19,6 @@ package com.ritense.zakenapi.uploadprocess
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
-import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLinkType
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
@@ -28,6 +27,7 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.BaseIntegrationTest
+import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.DOCUMENT_UPLOAD
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.HistoryService
 import org.junit.jupiter.api.BeforeEach
@@ -70,7 +70,7 @@ class ResourceUploadedEventListenerIT : BaseIntegrationTest() {
             DOCUMENT_DEFINITION_KEY,
             DocumentDefinitionProcessRequest(
                 UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
-                DocumentDefinitionProcessLinkType.DOCUMENT_UPLOAD
+                DOCUMENT_UPLOAD
             )
         )
     }

@@ -17,16 +17,15 @@
 package com.ritense.processdocument.domain.impl.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLinkType;
 
 public class DocumentDefinitionProcessRequest {
 
     private String processDefinitionKey;
-    private DocumentDefinitionProcessLinkType linkType;
+    private String linkType;
 
     public DocumentDefinitionProcessRequest(
         @JsonProperty(value = "processDefinitionKey", required = true) String processDefinitionKey,
-        @JsonProperty(value = "linkType") DocumentDefinitionProcessLinkType linkType
+        @JsonProperty(value = "linkType") String linkType
     ) {
         this.processDefinitionKey = processDefinitionKey;
         this.linkType = linkType;
@@ -40,11 +39,11 @@ public class DocumentDefinitionProcessRequest {
         this.processDefinitionKey = processDefinitionKey;
     }
 
-    public void setLinkType(DocumentDefinitionProcessLinkType linkType) {
+    public void setLinkType(String linkType) {
         this.linkType = linkType;
     }
 
-    public DocumentDefinitionProcessLinkType getLinkType() {
+    public String getLinkType() {
         return linkType;
     }
 }

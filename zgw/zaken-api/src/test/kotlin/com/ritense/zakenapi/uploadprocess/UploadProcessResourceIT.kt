@@ -16,10 +16,10 @@
 
 package com.ritense.zakenapi.uploadprocess
 
-import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLinkType
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.zakenapi.BaseIntegrationTest
+import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.DOCUMENT_UPLOAD
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -64,7 +64,7 @@ class UploadProcessResourceIT : BaseIntegrationTest() {
             CASE_DEFINITION_KEY,
             DocumentDefinitionProcessRequest(
                 UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
-                DocumentDefinitionProcessLinkType.DOCUMENT_UPLOAD
+                DOCUMENT_UPLOAD
             )
         )
 

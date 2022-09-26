@@ -15,7 +15,7 @@
 
     <changeSet author="Ritense" id="2">
         <addColumn tableName="document_definition_process_link">
-            <column name="link_type" type="VARCHAR(64)">
+            <column name="link_type" type="VARCHAR(64)" defaultValue="DOCUMENT_UPLOAD">
                 <constraints nullable="false"/>
             </column>
         </addColumn>

@@ -18,7 +18,6 @@ package com.ritense.zakenapi.uploadprocess
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
-import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLinkType.DOCUMENT_UPLOAD
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -71,5 +70,6 @@ class ResourceUploadedEventListener(
     companion object {
         val logger = KotlinLogging.logger {}
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
+        const val DOCUMENT_UPLOAD = "DOCUMENT_UPLOAD"
     }
 }
