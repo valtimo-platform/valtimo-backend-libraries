@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi.uploadprocess
 
+import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -33,13 +34,17 @@ class UploadProcessAutoConfiguration {
     @ConditionalOnMissingBean(ResourceUploadedEventListener::class)
     fun resourceUploadedEventListener(
         resourceService: TemporaryResourceStorageService,
+        documentService: DocumentService,
         processDocumentService: ProcessDocumentService,
+        documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
         runtimeService: RuntimeService,
         camundaTaskService: CamundaTaskService,
     ): ResourceUploadedEventListener {
         return ResourceUploadedEventListener(
             resourceService,
+            documentService,
             processDocumentService,
+            documentDefinitionProcessLinkService,
             runtimeService,
             camundaTaskService,
         )

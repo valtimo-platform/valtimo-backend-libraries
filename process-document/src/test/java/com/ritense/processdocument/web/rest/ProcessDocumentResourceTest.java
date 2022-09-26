@@ -376,7 +376,10 @@ class ProcessDocumentResourceTest extends BaseTest {
             "processDefinitionKey",
             "processName"
         );
-        DocumentDefinitionProcessRequest request = new DocumentDefinitionProcessRequest("processDefinitionKey");
+        DocumentDefinitionProcessRequest request = new DocumentDefinitionProcessRequest(
+            "processDefinitionKey",
+            "DOCUMENT_UPLOAD"
+        );
 
         when(documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(eq(documentDefinitionName), any()))
             .thenReturn(response);

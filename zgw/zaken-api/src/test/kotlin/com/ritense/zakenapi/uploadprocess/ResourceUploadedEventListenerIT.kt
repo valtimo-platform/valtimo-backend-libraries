@@ -19,14 +19,17 @@ package com.ritense.zakenapi.uploadprocess
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
+import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.BaseIntegrationTest
+import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.DOCUMENT_UPLOAD
 import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.RESOURCE_ID_PROCESS_VAR
 import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.UNIQUE_RESOURCE_IDS_PROCESS_VAR
 import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY
@@ -64,6 +67,9 @@ class ResourceUploadedEventListenerIT : BaseIntegrationTest() {
     @Autowired
     lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
 
+    @Autowired
+    lateinit var documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
+
     @BeforeEach
     fun beforeEach() {
         processDocumentAssociationService.createProcessDocumentDefinition(
@@ -78,6 +84,13 @@ class ResourceUploadedEventListenerIT : BaseIntegrationTest() {
                 UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
                 DOCUMENT_DEFINITION_KEY,
                 true
+            )
+        )
+        documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+            DOCUMENT_DEFINITION_KEY,
+            DocumentDefinitionProcessRequest(
+                UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
+                DOCUMENT_UPLOAD
             )
         )
     }
@@ -170,6 +183,7 @@ class ResourceUploadedEventListenerIT : BaseIntegrationTest() {
 
     companion object {
         private const val DOCUMENT_DEFINITION_KEY = "profile"
+        private const val UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY = "document-upload"
         private const val SINGLE_USER_TASK_PROCESS_DEFINITION_KEY = "single-user-task-process"
     }
 }
