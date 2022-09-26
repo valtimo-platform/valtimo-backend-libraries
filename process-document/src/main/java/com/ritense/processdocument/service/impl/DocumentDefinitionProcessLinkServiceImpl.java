@@ -26,6 +26,8 @@ import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Transactional
 public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinitionProcessLinkService {
 
@@ -44,7 +46,7 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
 
         if (link.isPresent()) {
             var processDefinition = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionKey(link.get().getId().processDefinitionKey())
+                .processDefinitionKey(link.get().getId().getProcessDefinitionKey())
                 .latestVersion()
                 .singleResult();
 
@@ -52,6 +54,11 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         }
 
         return null;
+    }
+
+    @Override
+    public Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName) {
+        return documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
     }
 
     @Override
@@ -76,7 +83,8 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
             DocumentDefinitionProcessLinkId.newId(
                 documentDefinitionName,
                 request.getProcessDefinitionKey()
-            )
+            ),
+            request.getLinkType()
         );
 
         documentDefinitionProcessLinkRepository.save(link);
