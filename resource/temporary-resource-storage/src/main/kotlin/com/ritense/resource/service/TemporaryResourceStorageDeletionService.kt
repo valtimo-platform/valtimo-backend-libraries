@@ -32,7 +32,7 @@ open class TemporaryResourceStorageDeletionService(
 ) {
 
     @Scheduled(
-        fixedRateString = "\${valtimo.temporaryResourceStorage.retentionInMinutes:5}",
+        fixedRateString = "\${valtimo.temporaryResourceStorage.retentionInMinutes:60}",
         timeUnit = TimeUnit.MINUTES
     )
     open fun deleteOldTemporaryResources() {

@@ -43,7 +43,7 @@ class TemporaryResourceStorageAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(TemporaryResourceStorageDeletionService::class)
     fun temporaryResourceStorageDeletionService(
-        @Value("\${valtimo.temporaryResourceStorage.retentionInMinutes:5}") retentionInMinutes: Long
+        @Value("\${valtimo.temporaryResourceStorage.retentionInMinutes:60}") retentionInMinutes: Long
     ): TemporaryResourceStorageDeletionService {
         return TemporaryResourceStorageDeletionService(retentionInMinutes)
     }
