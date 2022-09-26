@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.domain.impl;
 
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -27,13 +28,25 @@ public class DocumentDefinitionProcessLink {
     @EmbeddedId
     private DocumentDefinitionProcessLinkId id;
 
-    public DocumentDefinitionProcessLink(DocumentDefinitionProcessLinkId documentDefinitionProcessLinkId) {
+    @Column(name = "link_type", nullable = false)
+    private String type;
+
+    public DocumentDefinitionProcessLink(
+        DocumentDefinitionProcessLinkId documentDefinitionProcessLinkId,
+        String type
+    ) {
         this.id = documentDefinitionProcessLinkId;
+        this.type = type;
     }
 
-    public DocumentDefinitionProcessLink() {}
+    public DocumentDefinitionProcessLink() {
+    }
 
     public DocumentDefinitionProcessLinkId getId() {
         return id;
+    }
+
+    public String getType() {
+        return type;
     }
 }

@@ -21,11 +21,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class DocumentDefinitionProcessRequest {
 
     private String processDefinitionKey;
+    private String linkType;
 
     public DocumentDefinitionProcessRequest(
-        @JsonProperty(value = "processDefinitionKey", required = true) String processDefinitionKey
+        @JsonProperty(value = "processDefinitionKey", required = true) String processDefinitionKey,
+        @JsonProperty(value = "linkType") String linkType
     ) {
         this.processDefinitionKey = processDefinitionKey;
+        this.linkType = linkType;
     }
 
     public String getProcessDefinitionKey() {
@@ -34,5 +37,13 @@ public class DocumentDefinitionProcessRequest {
 
     public void setProcessDefinitionKey(String processDefinitionKey) {
         this.processDefinitionKey = processDefinitionKey;
+    }
+
+    public void setLinkType(String linkType) {
+        this.linkType = linkType;
+    }
+
+    public String getLinkType() {
+        return linkType;
     }
 }

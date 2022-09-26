@@ -17,12 +17,17 @@
 package com.ritense.processdocument.service;
 
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcess;
+import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLink;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessLinkResponse;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
+
+import java.util.Optional;
 
 public interface DocumentDefinitionProcessLinkService {
 
     DocumentDefinitionProcess getDocumentDefinitionProcess(String documentDefinitionName);
+
+    Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName);
 
     DocumentDefinitionProcessLinkResponse saveDocumentDefinitionProcess(String documentDefinitionName, DocumentDefinitionProcessRequest request);
 
