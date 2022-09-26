@@ -39,10 +39,10 @@ class TemporaryResourceStorageDeletionServiceIntegrationTest : BaseIntegrationTe
     lateinit var temporaryResourceStorageDeletionService: TemporaryResourceStorageDeletionService
 
     @Test
-    fun `should delete files older that 5 minutes`() {
+    fun `should delete files older that 60 minutes`() {
         val resourceId = temporaryResourceStorageService.store("My file data".byteInputStream())
         val attributes = Files.getFileAttributeView(Path(resourceId), BasicFileAttributeView::class.java)
-        val time = FileTime.from(Instant.now().minus(Duration.ofMinutes(5)))
+        val time = FileTime.from(Instant.now().minus(Duration.ofMinutes(60)))
         attributes.setTimes(time, time, time)
 
         temporaryResourceStorageDeletionService.deleteOldTemporaryResources()
