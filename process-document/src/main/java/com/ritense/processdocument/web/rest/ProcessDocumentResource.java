@@ -107,7 +107,7 @@ public class ProcessDocumentResource {
     }
 
     @GetMapping("/definition/processinstance/{processInstanceId}")
-    public ResponseEntity<? extends ProcessDocumentDefinition> getProcessDocumentDefinition(
+    public ResponseEntity<ProcessDocumentDefinition> getProcessDocumentDefinition(
         @PathVariable String processInstanceId
     ) {
         return processDocumentService.findProcessDocumentDefinition(new CamundaProcessInstanceId(processInstanceId))

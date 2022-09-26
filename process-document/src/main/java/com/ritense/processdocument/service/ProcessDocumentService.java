@@ -58,5 +58,5 @@ public interface ProcessDocumentService {
 
     Document getDocument(ProcessInstanceId processInstanceId, VariableScope variableScope);
 
-    Optional<? extends ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessInstanceId processInstanceId);
+    Optional<ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessInstanceId processInstanceId);
 }
