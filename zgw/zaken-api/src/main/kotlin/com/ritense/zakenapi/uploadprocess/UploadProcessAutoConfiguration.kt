@@ -31,22 +31,46 @@ import org.springframework.core.annotation.Order
 class UploadProcessAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(ResourceUploadedEventListener::class)
+    @ConditionalOnMissingBean(ResourceUploadedToDocumentEventListener::class)
     fun resourceUploadedEventListener(
         resourceService: TemporaryResourceStorageService,
+        uploadProcessService: UploadProcessService,
+    ): ResourceUploadedToDocumentEventListener {
+        return ResourceUploadedToDocumentEventListener(
+            resourceService,
+            uploadProcessService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ResourceUploadedToTaskEventListener::class)
+    fun resourceUploadedToTaskEventListener(
+        resourceService: TemporaryResourceStorageService,
+        processDocumentService: ProcessDocumentService,
+        runtimeService: RuntimeService,
+        camundaTaskService: CamundaTaskService,
+        uploadProcessService: UploadProcessService,
+    ): ResourceUploadedToTaskEventListener {
+        return ResourceUploadedToTaskEventListener(
+            resourceService,
+            processDocumentService,
+            runtimeService,
+            camundaTaskService,
+            uploadProcessService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(UploadProcessService::class)
+    fun uploadProcessService(
         documentService: DocumentService,
         processDocumentService: ProcessDocumentService,
         documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
-        runtimeService: RuntimeService,
-        camundaTaskService: CamundaTaskService,
-    ): ResourceUploadedEventListener {
-        return ResourceUploadedEventListener(
-            resourceService,
+    ): UploadProcessService {
+        return UploadProcessService(
             documentService,
             processDocumentService,
             documentDefinitionProcessLinkService,
-            runtimeService,
-            camundaTaskService,
         )
     }
 

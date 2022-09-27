@@ -29,10 +29,9 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.BaseIntegrationTest
-import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.DOCUMENT_UPLOAD
-import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.RESOURCE_ID_PROCESS_VAR
-import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.UNIQUE_RESOURCE_IDS_PROCESS_VAR
-import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY
+import com.ritense.zakenapi.uploadprocess.ResourceUploadedToTaskEventListener.Companion.UNIQUE_RESOURCE_IDS_PROCESS_VAR
+import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.DOCUMENT_UPLOAD
+import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.RESOURCE_ID_PROCESS_VAR
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.TaskService
@@ -44,7 +43,7 @@ import org.springframework.context.ApplicationEventPublisher
 import javax.transaction.Transactional
 
 @Transactional
-class ResourceUploadedEventListenerIT : BaseIntegrationTest() {
+class ResourceUploadedToDocumentEventListenerIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var documentService: JsonSchemaDocumentService
