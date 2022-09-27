@@ -26,7 +26,9 @@ import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Transactional
 public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinitionProcessLinkService {
@@ -41,24 +43,22 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
     }
 
     @Override
-    public DocumentDefinitionProcess getDocumentDefinitionProcess(String documentDefinitionName) {
-        var link= documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
+    public List<DocumentDefinitionProcess> getDocumentDefinitionProcess(String documentDefinitionName) {
+        var links = documentDefinitionProcessLinkRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
 
-        if (link.isPresent()) {
+        return links.stream().map(link -> {
             var processDefinition = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionKey(link.get().getId().getProcessDefinitionKey())
+                .processDefinitionKey(links.get(0).getId().getProcessDefinitionKey())
                 .latestVersion()
                 .singleResult();
 
             return new DocumentDefinitionProcess(processDefinition.getKey(), processDefinition.getName());
-        }
-
-        return null;
+        }).collect(Collectors.toList());
     }
 
     @Override
-    public Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName) {
-        return documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
+    public Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName, String type) {
+        return documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionNameAndType(documentDefinitionName, type);
     }
 
     @Override

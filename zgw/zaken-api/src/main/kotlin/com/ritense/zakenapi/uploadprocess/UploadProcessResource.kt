@@ -35,8 +35,7 @@ class UploadProcessResource(
     fun checkCaseProcessLink(
         @PathVariable caseDefinitionKey: String
     ): ResponseEntity<CheckLinkResponse> {
-        val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionKey)
-        val uploadDocumentProcessCaseLinkExists = link.isPresent && DOCUMENT_UPLOAD == link.get().type
-        return ResponseEntity.ok(CheckLinkResponse(uploadDocumentProcessCaseLinkExists))
+        val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionKey, DOCUMENT_UPLOAD)
+        return ResponseEntity.ok(CheckLinkResponse(link.isPresent))
     }
 }

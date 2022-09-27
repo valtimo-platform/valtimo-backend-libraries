@@ -30,28 +30,21 @@ class UploadProcessService(
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {
 
-    fun assertDocumentUploadLink(caseId: String): Boolean {
-        val caseDefinitionName = documentService.get(caseId).definitionId().name()
-        val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName)
-
-        return if (link.isPresent && DOCUMENT_UPLOAD == link.get().type) {
-            true
-        } else if (link.isPresent && DOCUMENT_UPLOAD != link.get().type) {
-            logger.error { "Wrong link-type found. Found ${link.get().type}, expected $DOCUMENT_UPLOAD" }
-            false
-        } else {
-            false
-        }
-    }
-
     fun startUploadResourceProcess(caseId: String, resourceId: String) {
+        val caseDefinitionName = documentService.get(caseId).definitionId().name()
+        val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, DOCUMENT_UPLOAD)
+        if (!link.isPresent) {
+            throw IllegalStateException("No upload-process linked to case: $caseDefinitionName")
+        }
+
         val result = processDocumentService.startProcessForDocument(
             StartProcessForDocumentRequest(
                 JsonSchemaDocumentId.existingId(UUID.fromString(caseId)),
-                UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
+                link.get().id.processDefinitionKey,
                 mapOf(RESOURCE_ID_PROCESS_VAR to resourceId)
             )
         )
+
         if (result.resultingDocument().isEmpty) {
             var logMessage = "Errors occurred during starting the document-upload process:"
             result.errors().forEach { logMessage += "\n - " + it.asString() }
@@ -63,7 +56,6 @@ class UploadProcessService(
         private val logger = KotlinLogging.logger {}
 
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
-        const val UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY = "document-upload"
         const val DOCUMENT_UPLOAD = "DOCUMENT_UPLOAD"
     }
 }

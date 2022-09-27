@@ -21,13 +21,14 @@ import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLink;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessLinkResponse;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface DocumentDefinitionProcessLinkService {
 
-    DocumentDefinitionProcess getDocumentDefinitionProcess(String documentDefinitionName);
+    List<DocumentDefinitionProcess> getDocumentDefinitionProcess(String documentDefinitionName);
 
-    Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName);
+    Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName, String type);
 
     DocumentDefinitionProcessLinkResponse saveDocumentDefinitionProcess(String documentDefinitionName, DocumentDefinitionProcessRequest request);
 

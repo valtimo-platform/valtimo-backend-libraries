@@ -47,10 +47,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import javax.validation.Valid;
+
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -149,7 +151,11 @@ public class ProcessDocumentResource {
         @PathVariable String documentDefinitionName
     ) {
         var result = documentDefinitionProcessLinkService.getDocumentDefinitionProcess(documentDefinitionName);
-        return ResponseEntity.ok(result);
+        if (result.isEmpty()) {
+            return ResponseEntity.ok(null);
+        } else {
+            return ResponseEntity.ok(result.get(0));
+        }
     }
 
     /**

@@ -19,12 +19,16 @@ package com.ritense.processdocument.repository;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLink;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLinkId;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 import java.util.Optional;
 
 public interface DocumentDefinitionProcessLinkRepository
     extends JpaRepository<DocumentDefinitionProcessLink, DocumentDefinitionProcessLinkId> {
 
-    Optional<DocumentDefinitionProcessLink> findByIdDocumentDefinitionName(String documentDefinitionName);
+    Optional<DocumentDefinitionProcessLink> findByIdDocumentDefinitionNameAndType(String documentDefinitionName, String type);
+
+    List<DocumentDefinitionProcessLink> findAllByIdDocumentDefinitionName(String documentDefinitionName);
 
     void deleteByIdDocumentDefinitionName(String documentDefinitionName);
 }

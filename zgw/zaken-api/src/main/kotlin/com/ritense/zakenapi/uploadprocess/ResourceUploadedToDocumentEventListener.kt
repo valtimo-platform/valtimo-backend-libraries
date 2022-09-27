@@ -34,7 +34,7 @@ class ResourceUploadedToDocumentEventListener(
         val metadata = resourceService.getResourceMetadata(event.resourceId)
         val caseId = metadata[MetadataType.DOCUMENT_ID.key] as String?
 
-        if (caseId != null && uploadProcessService.assertDocumentUploadLink(caseId)) {
+        if (caseId != null) {
             logger.debug { "Uploading resource to document: ${event.resourceId}" }
             uploadProcessService.startUploadResourceProcess(caseId, event.resourceId)
         }

@@ -54,33 +54,34 @@ open class ResourceUploadedToTaskEventListener(
     }
 
     override fun notify(delegateTask: DelegateTask) {
-        val resourceIds = delegateTask.getVariable(UNIQUE_RESOURCE_IDS_PROCESS_VAR) as List<String>?
+        val resourceIdKey = getResourceIdsProcessVarKey(delegateTask.id)
+        val resourceIds = delegateTask.getVariable(resourceIdKey) as List<String>?
         if (!resourceIds.isNullOrEmpty()) {
             val processInstanceId = CamundaProcessInstanceId(delegateTask.processInstanceId)
             val caseId = processDocumentService.getDocumentId(processInstanceId, delegateTask).id.toString()
             startUploadResourceProcesses(caseId, resourceIds)
+            delegateTask.setVariable(resourceIdKey, null)
         }
     }
 
     private fun addResourceIdToProcessVariables(taskId: String, resourceId: String) {
+        val resourceIdKey = getResourceIdsProcessVarKey(taskId)
         val executionId = camundaTaskService.findTaskById(taskId).executionId
-        val resourcesIds = runtimeService.getVariable(executionId, UNIQUE_RESOURCE_IDS_PROCESS_VAR) as List<String>?
+        val resourcesIds = runtimeService.getVariable(executionId, resourceIdKey) as List<String>?
         val newResourcesIds = resourcesIds?.toMutableList()?.add(resourceId) ?: mutableListOf(resourceId)
-        runtimeService.setVariable(executionId, UNIQUE_RESOURCE_IDS_PROCESS_VAR, newResourcesIds)
+        runtimeService.setVariable(executionId, resourceIdKey, newResourcesIds)
     }
 
     private fun startUploadResourceProcesses(caseId: String, resourceIds: List<String>) {
-        if (uploadProcessService.assertDocumentUploadLink(caseId)) {
-            logger.debug { "Uploading resources to document: ${resourceIds.size}" }
-            resourceIds.forEach { resourceId ->
-                uploadProcessService.startUploadResourceProcess(caseId, resourceId)
-            }
+        logger.debug { "Uploading resources to document: ${resourceIds.size}" }
+        resourceIds.forEach { resourceId ->
+            uploadProcessService.startUploadResourceProcess(caseId, resourceId)
         }
     }
 
+    private fun getResourceIdsProcessVarKey(taskId: String) = "resourceIds-$taskId"
+
     companion object {
         private val logger = KotlinLogging.logger {}
-
-        const val UNIQUE_RESOURCE_IDS_PROCESS_VAR = "resourceIds-082baa14-d0b2-4de2-80c4-d2b3565a57b9"
     }
 }
