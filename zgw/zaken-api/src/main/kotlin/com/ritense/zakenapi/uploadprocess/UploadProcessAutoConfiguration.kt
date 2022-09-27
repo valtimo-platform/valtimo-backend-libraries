@@ -31,6 +31,16 @@ import org.springframework.core.annotation.Order
 class UploadProcessAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(ResourceSubmittedToDocumentEventListener::class)
+    fun resourceSubmittedToDocumentEventListener(
+        uploadProcessService: UploadProcessService,
+    ): ResourceSubmittedToDocumentEventListener {
+        return ResourceSubmittedToDocumentEventListener(
+            uploadProcessService,
+        )
+    }
+
+    @Bean
     @ConditionalOnMissingBean(ResourceUploadedToDocumentEventListener::class)
     fun resourceUploadedEventListener(
         resourceService: TemporaryResourceStorageService,
