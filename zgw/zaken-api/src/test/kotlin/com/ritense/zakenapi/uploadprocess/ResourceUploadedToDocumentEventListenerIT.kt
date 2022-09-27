@@ -63,13 +63,6 @@ class ResourceUploadedToDocumentEventListenerIT : BaseIntegrationTest() {
     fun beforeEach() {
         processDocumentAssociationService.createProcessDocumentDefinition(
             ProcessDocumentDefinitionRequest(
-                SINGLE_USER_TASK_PROCESS_DEFINITION_KEY,
-                DOCUMENT_DEFINITION_KEY,
-                true
-            )
-        )
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(
                 UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
                 DOCUMENT_DEFINITION_KEY,
                 true
@@ -142,6 +135,5 @@ class ResourceUploadedToDocumentEventListenerIT : BaseIntegrationTest() {
     companion object {
         private const val DOCUMENT_DEFINITION_KEY = "profile"
         private const val UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY = "document-upload"
-        private const val SINGLE_USER_TASK_PROCESS_DEFINITION_KEY = "single-user-task-process"
     }
 }
