@@ -55,10 +55,10 @@ public class CamundaProcessService {
         this.historyService = historyService;
     }
 
-    public ProcessDefinition findProcessDefinitionById(String processDefintionId) {
+    public ProcessDefinition findProcessDefinitionById(String processDefinitionId) {
         return repositoryService
             .createProcessDefinitionQuery()
-            .processDefinitionId(processDefintionId)
+            .processDefinitionId(processDefinitionId)
             .singleResult();
     }
 
