@@ -20,6 +20,7 @@ import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.domain.ProcessDocumentInstance;
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcess;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessLinkResponse;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
@@ -103,6 +104,15 @@ public class ProcessDocumentResource {
         @PathVariable(name = "document-definition-name") String documentDefinitionName
     ) {
         return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName));
+    }
+
+    @GetMapping("/definition/processinstance/{processInstanceId}")
+    public ResponseEntity<ProcessDocumentDefinition> getProcessDocumentDefinition(
+        @PathVariable String processInstanceId
+    ) {
+        return processDocumentService.findProcessDocumentDefinition(new CamundaProcessInstanceId(processInstanceId))
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.badRequest().build());
     }
 
     @GetMapping(value = "/instance/document/{documentId}")
