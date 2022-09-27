@@ -21,6 +21,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
+import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
@@ -332,7 +333,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     }
 
     @Override
-    public Optional<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinition(ProcessInstanceId processInstanceId) {
+    public Optional<ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessInstanceId processInstanceId) {
         return camundaProcessService.findProcessInstanceById(processInstanceId.toString())
             .map(instance -> camundaProcessService.findProcessDefinitionById(instance.getProcessDefinitionId()))
             .map(definition -> new CamundaProcessDefinitionKey(definition.getKey()))
