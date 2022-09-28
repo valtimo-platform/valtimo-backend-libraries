@@ -26,7 +26,6 @@ import java.util.Optional;
 public interface DocumentDefinitionProcessLinkRepository
     extends JpaRepository<DocumentDefinitionProcessLink, DocumentDefinitionProcessLinkId> {
 
-    @Deprecated(forRemoval = true, since = "9.22.0")
     Optional<DocumentDefinitionProcessLink> findByIdDocumentDefinitionName(String documentDefinitionName);
 
     Optional<DocumentDefinitionProcessLink> findByIdDocumentDefinitionNameAndType(String documentDefinitionName, String type);

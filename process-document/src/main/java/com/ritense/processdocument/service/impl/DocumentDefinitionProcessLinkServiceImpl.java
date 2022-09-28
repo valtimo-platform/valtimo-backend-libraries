@@ -42,7 +42,6 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         this.repositoryService = repositoryService;
     }
 
-    @Deprecated(forRemoval = true, since = "9.22.0")
     @Override
     public DocumentDefinitionProcess getDocumentDefinitionProcess(String documentDefinitionName) {
         var link = documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
@@ -59,7 +58,6 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         return null;
     }
 
-    @Deprecated(forRemoval = true, since = "9.22.0")
     @Override
     public Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName) {
         return documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
