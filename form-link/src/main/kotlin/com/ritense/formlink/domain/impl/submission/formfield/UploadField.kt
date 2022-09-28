@@ -19,6 +19,7 @@ package com.ritense.formlink.domain.impl.submission.formfield
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.resource.domain.TemporaryResourceSubmittedEvent
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent
 import org.springframework.context.ApplicationEventPublisher
 import java.util.UUID
@@ -77,20 +78,47 @@ data class UploadField(
     private fun processResource() {
         val document = documentSupplier()
         if (document != null) {
-            value.forEach {
-                val resourceId = getResourceId(it)
-                logger.debug { "file $resourceId" }
-                applicationEventPublisher.publishEvent(
-                    DocumentRelatedFileSubmittedEvent(document.id()?.id, resourceId, document.definitionId().name())
-                )
+            value.forEach { resourceNode ->
+                val resourceId = getResourceId(resourceNode)
+                if (resourceId != null) {
+                    logger.debug { "file $resourceId" }
+                    applicationEventPublisher.publishEvent(
+                        DocumentRelatedFileSubmittedEvent(document.id()?.id, resourceId, document.definitionId().name())
+                    )
+                }
+
+                val tempResourceId = getTempResourceId(resourceNode)
+                if (tempResourceId != null) {
+                    logger.debug { "tempfile $tempResourceId" }
+                    applicationEventPublisher.publishEvent(
+                        TemporaryResourceSubmittedEvent(
+                            tempResourceId,
+                            document.id()!!.id,
+                            document.definitionId().name()
+                        )
+                    )
+                }
             }
             processed = true
         }
     }
 
     companion object {
-        private fun getResourceId(fileSchema: JsonNode): UUID {
-            return UUID.fromString(fileSchema.at("/data/resourceId").asText())
+        private fun getResourceId(resourceNode: JsonNode): UUID? {
+            return UUID.fromString(getFieldAsTextOrNull(resourceNode, "/data/resourceId"))
+        }
+
+        private fun getTempResourceId(resourceNode: JsonNode): String? {
+            return getFieldAsTextOrNull(resourceNode, "/id")
+        }
+
+        private fun getFieldAsTextOrNull(rootNode: JsonNode, path: String): String? {
+            val node = rootNode.at(path)
+            return if (node.isMissingNode) {
+                null
+            } else {
+                node.asText()
+            }
         }
     }
 

@@ -28,6 +28,7 @@ dependencies {
     implementation project(':process-document')
     implementation project(':form')
     implementation project(':resource')
+    implementation project(":resource:temporary-resource-storage")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
