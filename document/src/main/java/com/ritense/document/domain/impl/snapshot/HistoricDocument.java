@@ -68,8 +68,8 @@ public class HistoricDocument implements Document {
     @Column(name = "document_sequence", columnDefinition = "BIGINT")
     private Long sequence;
 
-    @Column(name = "document_assignee_email", columnDefinition = "VARCHAR(500)")
-    private String assigneeEmail;
+    @Column(name = "document_assignee_id", columnDefinition = "VARCHAR(64)")
+    private String assigneeId;
 
     @Column(name = "document_assignee_first_name", columnDefinition = "VARCHAR(50)")
     private String assigneeFirstName;
@@ -98,7 +98,7 @@ public class HistoricDocument implements Document {
         this.modifiedOn = document.modifiedOn().orElse(null);
         this.createdBy = document.createdBy();
         this.sequence = document.sequence();
-        this.assigneeEmail = document.assigneeEmail();
+        this.assigneeId = document.assigneeId();
         this.assigneeFirstName = document.assigneeFirstName();
         this.assigneeLastName = document.assigneeLastName();
         this.documentRelations = document.relations();
@@ -149,8 +149,8 @@ public class HistoricDocument implements Document {
     }
 
     @Override
-    public String assigneeEmail() {
-        return assigneeEmail;
+    public String assigneeId() {
+        return assigneeId;
     }
 
     @Override

@@ -101,8 +101,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Column(name = "sequence", columnDefinition = "BIGINT")
     private Long sequence;
 
-    @Column(name = "assignee_email", columnDefinition="varchar(500)")
-    private String assigneeEmail;
+    @Column(name = "assignee_id", columnDefinition="varchar(64)")
+    private String assigneeId;
 
     @Column(name = "assignee_first_name", columnDefinition="varchar(50)")
     private String assigneeFirstName;
@@ -304,8 +304,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         relatedFiles.forEach(file -> removeRelatedFileBy(file.getFileId()));
     }
 
-    public void setAssignee(String email, String firstName, String lastName) {
-        this.assigneeEmail = email;
+    public void setAssignee(String id, String firstName, String lastName) {
+        this.assigneeId = id;
         this.assigneeFirstName = firstName;
         this.assigneeLastName = lastName;
     }
@@ -336,8 +336,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     }
 
     @Override
-    public String assigneeEmail() {
-        return assigneeEmail;
+    public String assigneeId() {
+        return assigneeId;
     }
 
     @Override

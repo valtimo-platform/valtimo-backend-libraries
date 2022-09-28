@@ -4,7 +4,7 @@
 
     <changeSet author="Ritense" id="1">
         <addColumn tableName="json_schema_document">
-            <column name="assignee_email" type="VARCHAR(500)"/>
+            <column name="assignee_id" type="VARCHAR(64)"/>
         </addColumn>
         <addColumn tableName="json_schema_document">
             <column name="assignee_first_name" type="varchar(50)"/>

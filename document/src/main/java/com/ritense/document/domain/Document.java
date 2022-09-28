@@ -44,7 +44,7 @@ public interface Document {
     DocumentDefinition.Id definitionId();
 
     @JsonProperty
-    String assigneeEmail();
+    String assigneeId();
 
     @JsonProperty
     String assigneeFirstName();

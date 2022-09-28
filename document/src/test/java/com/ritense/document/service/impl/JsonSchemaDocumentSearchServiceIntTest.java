@@ -484,9 +484,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var documentOne = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
         var documentTwo = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
         var documentThree = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
-        documentOne.setAssignee("example1@ritense.com", "Beth", "Xander");
-        documentTwo.setAssignee("example2@ritense.com", "Anna", "Yablon");
-        documentThree.setAssignee("example3@ritense.com", "Beth", "Zabala");
+        documentOne.setAssignee("1111", "Beth", "Xander");
+        documentTwo.setAssignee("2222", "Anna", "Yablon");
+        documentThree.setAssignee("33", "Beth", "Zabala");
         documentRepository.saveAll(List.of(documentOne, documentTwo, documentThree));
 
         final Page<? extends Document> page = documentSearchService.search(
