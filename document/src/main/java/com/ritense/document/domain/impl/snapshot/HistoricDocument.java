@@ -27,15 +27,16 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
 import com.ritense.document.domain.relation.DocumentRelation;
 import org.hibernate.annotations.Type;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.Transient;
 
 @Embeddable
 public class HistoricDocument implements Document {
@@ -67,6 +68,9 @@ public class HistoricDocument implements Document {
     @Column(name = "document_sequence", columnDefinition = "BIGINT")
     private Long sequence;
 
+    @Column(name = "document_assignee_email", columnDefinition = "VARCHAR(500)")
+    private String assigneeEmail;
+
     @Column(name = "document_assignee_first_name", columnDefinition = "VARCHAR(50)")
     private String assigneeFirstName;
 
@@ -94,6 +98,7 @@ public class HistoricDocument implements Document {
         this.modifiedOn = document.modifiedOn().orElse(null);
         this.createdBy = document.createdBy();
         this.sequence = document.sequence();
+        this.assigneeEmail = document.assigneeEmail();
         this.assigneeFirstName = document.assigneeFirstName();
         this.assigneeLastName = document.assigneeLastName();
         this.documentRelations = document.relations();
@@ -141,6 +146,11 @@ public class HistoricDocument implements Document {
     @Override
     public Long sequence() {
         return sequence;
+    }
+
+    @Override
+    public String assigneeEmail() {
+        return assigneeEmail;
     }
 
     @Override

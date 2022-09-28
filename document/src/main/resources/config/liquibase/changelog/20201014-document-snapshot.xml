@@ -85,7 +85,10 @@
         </createTable>
     </changeSet>
 
-    <changeSet author="Rick Veenstra" id="1602750329017-6">
+    <changeSet author="Ritense" id="1602750329017-6">
+        <addColumn tableName="json_schema_document_snapshot">
+            <column name="document_assignee_email" type="VARCHAR(500)"/>
+        </addColumn>
         <addColumn tableName="json_schema_document_snapshot">
             <column name="document_assignee_first_name" type="VARCHAR(50)"/>
         </addColumn>

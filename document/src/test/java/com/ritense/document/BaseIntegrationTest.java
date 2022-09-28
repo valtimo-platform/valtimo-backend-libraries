@@ -18,6 +18,7 @@ package com.ritense.document;
 
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.repository.DocumentSnapshotRepository;
+import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentService;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import javax.inject.Inject;
 
 @SpringBootTest
@@ -43,6 +45,9 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @Inject
     protected DocumentService documentService;
+
+    @Inject
+    protected JsonSchemaDocumentRepository documentRepository;
 
     @Inject
     protected DocumentSearchService documentSearchService;
