@@ -373,7 +373,7 @@ class ProcessDocumentResourceTest extends BaseTest {
             "processName"
         );
         when(documentDefinitionProcessLinkService.getDocumentDefinitionProcess(documentDefinitionName))
-            .thenReturn(List.of(documentDefinitionProcess));
+            .thenReturn(documentDefinitionProcess);
 
         mockMvc.perform(
                 get("/api/process-document/demo/{name}/process", documentDefinitionName))

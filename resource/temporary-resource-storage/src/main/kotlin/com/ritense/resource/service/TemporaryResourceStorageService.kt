@@ -22,7 +22,7 @@ import com.ritense.valtimo.contract.json.Mapper
 import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.UUID
+import java.security.SecureRandom
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.inputStream
@@ -31,7 +31,9 @@ import kotlin.io.path.notExists
 import kotlin.io.path.pathString
 import kotlin.io.path.readText
 
-class TemporaryResourceStorageService {
+class TemporaryResourceStorageService(
+    private val random: SecureRandom = SecureRandom(),
+) {
 
     fun store(inputStream: InputStream, metadata: Map<String, Any> = emptyMap()): String {
         val dataFile = Files.createTempFile(TEMP_DIR, "temporaryResource", ".tmp")
@@ -39,10 +41,10 @@ class TemporaryResourceStorageService {
 
         val mutableMetadata = metadata.toMutableMap()
         mutableMetadata[MetadataType.FILE_PATH.key] = dataFile.absolutePathString()
-        val metaDataFile = Files.createTempFile(TEMP_DIR, "temporaryResourceMetadata", ".json")
+        val metaDataFile = Files.createTempFile(TEMP_DIR, "${random.nextLong().toULong()}-", ".json")
         metaDataFile.toFile().writeText(Mapper.INSTANCE.get().writeValueAsString(mutableMetadata))
 
-        return getResourceIdFromMetaDataFile(metaDataFile)
+        return metaDataFile.nameWithoutExtension
     }
 
     fun deleteResource(id: String): Boolean {
@@ -74,20 +76,7 @@ class TemporaryResourceStorageService {
     }
 
     internal fun getMetaDataFileFromResourceId(resourceId: String): Path {
-        val resourceUuid = UUID.fromString(resourceId)
-        if (resourceUuid.leastSignificantBits != resourceUuid.mostSignificantBits) {
-            throw IllegalArgumentException("Invalid resourceId: $resourceId")
-        }
-        val fileNumber = resourceUuid.leastSignificantBits.toULong()
-        return Path.of(TEMP_DIR.pathString, "temporaryResourceMetadata$fileNumber.json")
-    }
-
-    private fun getResourceIdFromMetaDataFile(tempFile: Path): String {
-        if (!tempFile.nameWithoutExtension.startsWith("temporaryResourceMetadata")) {
-            throw IllegalArgumentException("File is not a temporaryResourceMetadata file: $tempFile")
-        }
-        val fileNumber = tempFile.nameWithoutExtension.substring("temporaryResourceMetadata".length).toULong().toLong()
-        return UUID(fileNumber, fileNumber).toString()
+        return Path.of(TEMP_DIR.pathString, "$resourceId.json")
     }
 
     companion object {

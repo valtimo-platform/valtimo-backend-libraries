@@ -42,13 +42,36 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         this.repositoryService = repositoryService;
     }
 
+    @Deprecated(forRemoval = true, since = "9.22.0")
     @Override
-    public List<DocumentDefinitionProcess> getDocumentDefinitionProcess(String documentDefinitionName) {
+    public DocumentDefinitionProcess getDocumentDefinitionProcess(String documentDefinitionName) {
+        var link = documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
+
+        if (link.isPresent()) {
+            var processDefinition = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionKey(link.get().getId().getProcessDefinitionKey())
+                .latestVersion()
+                .singleResult();
+
+            return new DocumentDefinitionProcess(processDefinition.getKey(), processDefinition.getName());
+        }
+
+        return null;
+    }
+
+    @Deprecated(forRemoval = true, since = "9.22.0")
+    @Override
+    public Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName) {
+        return documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
+    }
+
+    @Override
+    public List<DocumentDefinitionProcess> getDocumentDefinitionProcessList(String documentDefinitionName) {
         var links = documentDefinitionProcessLinkRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
 
         return links.stream().map(link -> {
             var processDefinition = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionKey(links.get(0).getId().getProcessDefinitionKey())
+                .processDefinitionKey(link.getId().getProcessDefinitionKey())
                 .latestVersion()
                 .singleResult();
 
@@ -66,18 +89,28 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         String documentDefinitionName,
         DocumentDefinitionProcessRequest request) {
 
-        var currentLink = getDocumentDefinitionProcess(documentDefinitionName);
-
-        if (currentLink != null) {
-            // If there is already a link set for this document definition then delete the current link
-            // before storing the new one
-            deleteDocumentDefinitionProcess(documentDefinitionName);
-        }
-
         var processDefinition = repositoryService.createProcessDefinitionQuery()
             .processDefinitionKey(request.getProcessDefinitionKey())
             .latestVersion()
             .singleResult();
+
+        if (processDefinition == null) {
+            throw new IllegalArgumentException("Unknown process definition with key: " + request.getProcessDefinitionKey());
+        }
+
+        var currentLink = documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionNameAndType(documentDefinitionName, request.getLinkType());
+        if (currentLink.isPresent()) {
+            // If there is already a link set for this document definition then delete the current link
+            // before storing the new one
+            documentDefinitionProcessLinkRepository.deleteByIdDocumentDefinitionNameAndType(documentDefinitionName, request.getLinkType());
+        }
+
+        currentLink = getDocumentDefinitionProcessLink(documentDefinitionName, request.getProcessDefinitionKey());
+        if (currentLink.isPresent()) {
+            // If there is already a link set for this document definition then delete the current link
+            // before storing the new one
+            documentDefinitionProcessLinkRepository.deleteByIdDocumentDefinitionNameAndIdProcessDefinitionKey(documentDefinitionName, request.getProcessDefinitionKey());
+        }
 
         var link = new DocumentDefinitionProcessLink(
             DocumentDefinitionProcessLinkId.newId(
