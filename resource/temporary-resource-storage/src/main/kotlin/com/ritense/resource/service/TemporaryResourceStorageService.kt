@@ -22,13 +22,18 @@ import com.ritense.valtimo.contract.json.Mapper
 import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
+import java.security.SecureRandom
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.inputStream
+import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.notExists
+import kotlin.io.path.pathString
 import kotlin.io.path.readText
 
-class TemporaryResourceStorageService {
+class TemporaryResourceStorageService(
+    private val random: SecureRandom = SecureRandom(),
+) {
 
     fun store(inputStream: InputStream, metadata: Map<String, Any> = emptyMap()): String {
         val dataFile = Files.createTempFile(TEMP_DIR, "temporaryResource", ".tmp")
@@ -36,14 +41,14 @@ class TemporaryResourceStorageService {
 
         val mutableMetadata = metadata.toMutableMap()
         mutableMetadata[MetadataType.FILE_PATH.key] = dataFile.absolutePathString()
-        val metaDataFile = Files.createTempFile(TEMP_DIR, "temporaryResourceMetadata", ".json")
+        val metaDataFile = Files.createTempFile(TEMP_DIR, "${random.nextLong().toULong()}-", ".json")
         metaDataFile.toFile().writeText(Mapper.INSTANCE.get().writeValueAsString(mutableMetadata))
 
-        return metaDataFile.absolutePathString()
+        return metaDataFile.nameWithoutExtension
     }
 
     fun deleteResource(id: String): Boolean {
-        val metaDataFile = Path(id)
+        val metaDataFile = getMetaDataFileFromResourceId(id)
         if (metaDataFile.notExists()) {
             return false
         }
@@ -62,12 +67,16 @@ class TemporaryResourceStorageService {
     }
 
     fun getResourceMetadata(id: String): Map<String, Any> {
-        val metaDataFile = Path(id)
+        val metaDataFile = getMetaDataFileFromResourceId(id)
         if (metaDataFile.notExists()) {
             throw IllegalArgumentException("No resource found with id '$id'")
         }
         val typeRef = object : TypeReference<Map<String, Any>>() {}
         return Mapper.INSTANCE.get().readValue(metaDataFile.readText(), typeRef)
+    }
+
+    internal fun getMetaDataFileFromResourceId(resourceId: String): Path {
+        return Path.of(TEMP_DIR.pathString, "$resourceId.json")
     }
 
     companion object {

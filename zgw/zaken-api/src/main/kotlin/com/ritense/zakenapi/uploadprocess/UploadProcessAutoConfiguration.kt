@@ -29,15 +29,25 @@ import org.springframework.core.annotation.Order
 class UploadProcessAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(ResourceUploadedEventListener::class)
+    @ConditionalOnMissingBean(ResourceUploadedToDocumentEventListener::class)
     fun resourceUploadedEventListener(
         resourceService: TemporaryResourceStorageService,
+        uploadProcessService: UploadProcessService,
+    ): ResourceUploadedToDocumentEventListener {
+        return ResourceUploadedToDocumentEventListener(
+            resourceService,
+            uploadProcessService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(UploadProcessService::class)
+    fun uploadProcessService(
         documentService: DocumentService,
         processDocumentService: ProcessDocumentService,
         documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
-    ): ResourceUploadedEventListener {
-        return ResourceUploadedEventListener(
-            resourceService,
+    ): UploadProcessService {
+        return UploadProcessService(
             documentService,
             processDocumentService,
             documentDefinitionProcessLinkService,

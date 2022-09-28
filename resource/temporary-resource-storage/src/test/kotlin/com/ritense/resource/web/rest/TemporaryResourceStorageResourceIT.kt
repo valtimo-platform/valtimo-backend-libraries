@@ -73,7 +73,7 @@ internal class TemporaryResourceStorageResourceIT : BaseIntegrationTest() {
                 .contentType(MULTIPART_FORM_DATA_VALUE)
         )
             .andDo(print())
-            .andExpect(status().isNoContent)
+            .andExpect(status().isOk)
 
         val captor = argumentCaptor<PayloadApplicationEvent<TemporaryResourceUploadedEvent>>()
         verify(applicationEventMulticaster, atLeastOnce()).multicastEvent(captor.capture(), any())
