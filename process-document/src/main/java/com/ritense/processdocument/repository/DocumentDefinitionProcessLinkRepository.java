@@ -26,9 +26,16 @@ import java.util.Optional;
 public interface DocumentDefinitionProcessLinkRepository
     extends JpaRepository<DocumentDefinitionProcessLink, DocumentDefinitionProcessLinkId> {
 
+    Optional<DocumentDefinitionProcessLink> findByIdDocumentDefinitionName(String documentDefinitionName);
+
     Optional<DocumentDefinitionProcessLink> findByIdDocumentDefinitionNameAndType(String documentDefinitionName, String type);
+
+    Optional<DocumentDefinitionProcessLink> findByIdDocumentDefinitionNameAndIdProcessDefinitionKey(String documentDefinitionName, String processDefinitionKey);
 
     List<DocumentDefinitionProcessLink> findAllByIdDocumentDefinitionName(String documentDefinitionName);
 
     void deleteByIdDocumentDefinitionName(String documentDefinitionName);
+
+    void deleteByIdDocumentDefinitionNameAndType(String documentDefinitionName, String type);
+    void deleteByIdDocumentDefinitionNameAndIdProcessDefinitionKey(String documentDefinitionName, String processDefinitionKey);
 }

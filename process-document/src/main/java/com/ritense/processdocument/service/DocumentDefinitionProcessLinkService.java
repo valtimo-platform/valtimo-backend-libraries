@@ -26,7 +26,21 @@ import java.util.Optional;
 
 public interface DocumentDefinitionProcessLinkService {
 
-    List<DocumentDefinitionProcess> getDocumentDefinitionProcess(String documentDefinitionName);
+    /**
+     * @deprecated - This method will be removed in the future
+     * Use {@link #getDocumentDefinitionProcessList(String)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "9.22.0")
+    DocumentDefinitionProcess getDocumentDefinitionProcess(String documentDefinitionName);
+
+    /**
+     * @deprecated - This method will be removed in the future
+     * Use {@link #getDocumentDefinitionProcessLink(String, String)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "9.22.0")
+    Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName);
+
+    List<DocumentDefinitionProcess> getDocumentDefinitionProcessList(String documentDefinitionName);
 
     Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName, String type);
 

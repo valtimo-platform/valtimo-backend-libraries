@@ -161,11 +161,7 @@ public class ProcessDocumentResource {
         @PathVariable String documentDefinitionName
     ) {
         var result = documentDefinitionProcessLinkService.getDocumentDefinitionProcess(documentDefinitionName);
-        if (result.isEmpty()) {
-            return ResponseEntity.ok(null);
-        } else {
-            return ResponseEntity.ok(result.get(0));
-        }
+        return ResponseEntity.ok(result);
     }
 
     /**

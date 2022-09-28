@@ -27,6 +27,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
 import com.ritense.document.domain.relation.DocumentRelation;
 import org.hibernate.annotations.Type;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
@@ -67,6 +68,15 @@ public class HistoricDocument implements Document {
     @Column(name = "document_sequence", columnDefinition = "BIGINT")
     private Long sequence;
 
+    @Column(name = "document_assignee_id", columnDefinition = "VARCHAR(64)")
+    private String assigneeId;
+
+    @Column(name = "document_assignee_first_name", columnDefinition = "VARCHAR(50)")
+    private String assigneeFirstName;
+
+    @Column(name = "document_assignee_last_name", columnDefinition = "VARCHAR(80)")
+    private String assigneeLastName;
+
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "document_relations", columnDefinition = "json")
     private Set<? extends DocumentRelation> documentRelations = new HashSet<>();
@@ -88,25 +98,14 @@ public class HistoricDocument implements Document {
         this.modifiedOn = document.modifiedOn().orElse(null);
         this.createdBy = document.createdBy();
         this.sequence = document.sequence();
+        this.assigneeId = document.assigneeId();
+        this.assigneeFirstName = document.assigneeFirstName();
+        this.assigneeLastName = document.assigneeLastName();
         this.documentRelations = document.relations();
         this.relatedFiles = document.relatedFiles();
     }
 
-    public HistoricDocument(JsonSchemaDocumentId id, JsonDocumentContent content, JsonSchemaDocumentDefinitionId documentDefinitionId, DocumentDefinition documentDefinition, JsonSchemaDocumentVersion version, LocalDateTime createdOn, LocalDateTime modifiedOn, String createdBy, Long sequence, Set<? extends DocumentRelation> documentRelations, Set<? extends RelatedFile> relatedFiles) {
-        this.id = id;
-        this.content = content;
-        this.documentDefinitionId = documentDefinitionId;
-        this.documentDefinition = documentDefinition;
-        this.version = version;
-        this.createdOn = createdOn;
-        this.modifiedOn = modifiedOn;
-        this.createdBy = createdBy;
-        this.sequence = sequence;
-        this.documentRelations = documentRelations;
-        this.relatedFiles = relatedFiles;
-    }
-
-    private HistoricDocument() {
+    public HistoricDocument() {
     }
 
     @Override
@@ -147,6 +146,21 @@ public class HistoricDocument implements Document {
     @Override
     public Long sequence() {
         return sequence;
+    }
+
+    @Override
+    public String assigneeId() {
+        return assigneeId;
+    }
+
+    @Override
+    public String assigneeFirstName() {
+        return assigneeFirstName;
+    }
+
+    @Override
+    public String assigneeLastName() {
+        return assigneeLastName;
     }
 
     @Override
