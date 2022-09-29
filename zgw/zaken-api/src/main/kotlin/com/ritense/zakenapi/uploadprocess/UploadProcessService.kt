@@ -21,7 +21,6 @@ import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentService
-import mu.KotlinLogging
 import java.util.UUID
 
 class UploadProcessService(
@@ -46,15 +45,13 @@ class UploadProcessService(
         )
 
         if (result.resultingDocument().isEmpty) {
-            var logMessage = "Errors occurred during starting the document-upload process:"
-            result.errors().forEach { logMessage += "\n - " + it.asString() }
-            logger.error { logMessage }
+            var message = "Failed to upload resource. Found ${result.errors().size} errors:\n"
+            result.errors().forEach { message += it.asString() + "\n" }
+            throw RuntimeException(message)
         }
     }
 
     companion object {
-        private val logger = KotlinLogging.logger {}
-
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_UPLOAD = "DOCUMENT_UPLOAD"
     }
