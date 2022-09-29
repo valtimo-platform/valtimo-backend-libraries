@@ -105,7 +105,12 @@ data class UploadField(
 
     companion object {
         private fun getResourceId(resourceNode: JsonNode): UUID? {
-            return UUID.fromString(getFieldAsTextOrNull(resourceNode, "/data/resourceId"))
+            val resourceId = getFieldAsTextOrNull(resourceNode, "/data/resourceId")
+            return if (resourceId == null) {
+                null
+            } else {
+                UUID.fromString(resourceId)
+            }
         }
 
         private fun getTempResourceId(resourceNode: JsonNode): String? {
