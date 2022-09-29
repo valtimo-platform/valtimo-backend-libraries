@@ -53,4 +53,37 @@
         <sqlFile path="mysql/mysql_engine_7.16_to_7.17.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
+    <changeSet id="4" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_TASK_METER_LOG_TIME"/>
+            </not>
+        </preConditions>
+        <comment>postgres_engine_7.14_to_7.15.sql</comment>
+        <sqlFile path="postgresql/postgres_engine_7.14_to_7.15.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+            <not>
+                <tableExists tableName="ACT_RE_CAMFORMDEF"/>
+            </not>
+        </preConditions>
+        <comment>postgres_engine_7.15_to_7.16.sql</comment>
+        <sqlFile path="postgresql/postgres_engine_7.15_to_7.16.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="6" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+            <not>
+                <indexExists indexName="ACT_IDX_HI_VARINST_ACT_INST_ID"/>
+            </not>
+        </preConditions>
+        <comment>postgres_engine_7.16_to_7.17.sql</comment>
+        <sqlFile path="postgresql/postgres_engine_7.16_to_7.17.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
 </databaseChangeLog>
