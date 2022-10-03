@@ -47,5 +47,6 @@
     <include file="camunda/20201217-camunda-upgrade-7-14-0-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20211229-add-json-support-function.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220912-add-system-process.xml" relativeToChangelogFile="true"/>
+    <include file="camunda/20220928-camunda-upgrade-7-17-0-changelog.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
