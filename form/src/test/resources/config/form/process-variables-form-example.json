@@ -8,9 +8,34 @@
     },
     "components": [
         {
-            "label": "Naam",
+            "label": "Name",
             "key": "pv.firstName",
             "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "age",
+            "key": "pv.age",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Is retired?",
+            "optionsLabelPosition": "right",
+            "inline": false,
+            "tableView": false,
+            "values": [
+                {
+                    "label": "Yes",
+                    "value": true
+                },
+                {
+                    "label": "No",
+                    "value": false
+                }
+            ],
+            "key": "pv.isRetired",
+            "type": "radio",
             "input": true
         },
         {

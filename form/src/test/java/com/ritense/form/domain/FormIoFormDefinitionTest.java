@@ -23,24 +23,23 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.form.BaseTest;
+import com.ritense.valtimo.contract.form.DataResolvingContext;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.springframework.context.ApplicationContext;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-
-import com.ritense.valtimo.contract.form.DataResolvingContext;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationContext;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class FormIoFormDefinitionTest extends BaseTest {
 
@@ -54,19 +53,26 @@ public class FormIoFormDefinitionTest extends BaseTest {
         final var formDefinition = formDefinitionOf("process-variables-form-example");
         final List<String> processVarsNames = formDefinition.extractProcessVarNames();
 
-        assertThat(processVarsNames).hasSize(1);
+        assertThat(processVarsNames).hasSize(3);
         assertThat(processVarsNames).contains("firstName");
+        assertThat(processVarsNames).contains("age");
+        assertThat(processVarsNames).contains("isRetired");
     }
 
     @Test
     public void shouldPreFill() throws IOException {
         final var formDefinition = formDefinitionOf("process-variables-form-example");
 
-        var content = content(Map.of("pv", Map.of("firstName", "John")));
+        var content = content(Map.of("pv", Map.of(
+            "firstName", "John", "age",90, "isRetired",true
+        )));
 
         final var formDefinitionPreFilled = formDefinition.preFill(content);
 
-        assertThat(formDefinitionPreFilled.getFormDefinition().get("components").get(0).get("defaultValue").asText()).isEqualTo("John");
+        var preFilledFormComponents = formDefinitionPreFilled.getFormDefinition().get("components");
+        assertThat(preFilledFormComponents.get(0).get("defaultValue").asText()).isEqualTo("John");
+        assertThat(preFilledFormComponents.get(1).get("defaultValue").asInt()).isEqualTo(90);
+        assertThat(preFilledFormComponents.get(2).get("defaultValue").asBoolean()).isTrue();
     }
 
     @Test
@@ -101,11 +107,15 @@ public class FormIoFormDefinitionTest extends BaseTest {
         final ObjectNode formData = JsonNodeFactory.instance.objectNode();
         final ObjectNode processVarsData = JsonNodeFactory.instance.objectNode();
         processVarsData.put("firstName", "John");
+        processVarsData.put("age", 90);
+        processVarsData.put("isRetired", true);
         formData.set("pv", processVarsData);
 
         final Map<String, Object> stringObjectMap = formDefinition.extractProcessVars(formData);
 
         assertThat(stringObjectMap).contains(entry("firstName", "John"));
+        assertThat(stringObjectMap).contains(entry("age", 90));
+        assertThat(stringObjectMap).contains(entry("isRetired", true));
     }
 
     @Test
