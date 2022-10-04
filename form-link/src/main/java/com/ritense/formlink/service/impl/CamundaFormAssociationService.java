@@ -39,8 +39,9 @@ import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
-import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.contract.form.DataResolvingContext;
+import com.ritense.valtimo.contract.form.FormFieldDataResolver;
+import com.ritense.valtimo.contract.json.JsonPointerHelper;
 import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.transaction.annotation.Transactional;
@@ -404,19 +405,22 @@ public class CamundaFormAssociationService implements FormAssociationService {
                         final ObjectNode dataNode = JsonNodeFactory.instance.objectNode();
                         externalContentItems.forEach(contentItem -> {
                             if (contentItem.getSeparator().equals(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)) {
-                                String fieldname = externalFormFieldType + EXTERNAL_FORM_FIELD_TYPE_SEPARATOR + contentItem.getName();
-                                dataNode.set(fieldname, Mapper.INSTANCE.objectMapper()
+                                String fieldName = externalFormFieldType + EXTERNAL_FORM_FIELD_TYPE_SEPARATOR + contentItem.getName();
+                                dataNode.set(fieldName, Mapper.INSTANCE.objectMapper()
                                     .valueToTree(externalDataMap.get(contentItem.getName())));
                                 externalDataMap.remove(contentItem.getName());
                             }
                         });
                         formDefinition.preFill(dataNode);
 
-                        //support old notation prefix.some-expression
-                        formDefinition.preFillWith(
-                            externalFormFieldType,
-                            externalDataMap
-                        );
+                        // Support old notation prefix.field-a.field-b.field-c
+                        final ObjectNode dataNode2 = JsonNodeFactory.instance.objectNode();
+                        externalContentItems.forEach(externalContentItem -> JsonPointerHelper.appendJsonPointerTo(
+                            dataNode2,
+                            externalContentItem.getJsonPointer(),
+                            Mapper.INSTANCE.objectMapper().valueToTree(externalDataMap.get(externalContentItem.getName()))
+                        ));
+                        formDefinition.preFill(dataNode2);
                     }
                 )
             );

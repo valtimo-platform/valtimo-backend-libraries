@@ -294,6 +294,31 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
             .get("defaultValue").textValue()).isEqualTo("test-value-2");
     }
 
+    @Test
+    void aaa() throws IOException {
+        final var documentId = (Document.Id) JsonSchemaDocumentId.existingId(UUID.randomUUID());
+        final var formDefinition = formDefinitionOf("user-task-with-external-form-field-nested");
+        when(formDefinitionService.getFormDefinitionByName(any())).thenReturn(Optional.of(formDefinition));
+
+        final var documentContent = documentContent();
+        final var jsonDocumentContent = JsonDocumentContent.build(documentContent);
+        Optional<JsonSchemaDocument> documentOptional = Optional.of(createDocument(jsonDocumentContent));
+
+        Map<String, Object> formFieldData = new HashMap<>();
+        formFieldData.put("house.address.streetName", "Funenpark");
+
+        when(formFieldDataResolver.supports(eq("oz"))).thenReturn(true);
+        when(formFieldDataResolver.get(any(), any())).thenReturn(formFieldData);
+        when(documentService.findBy(any())).thenReturn(documentOptional);
+
+        Optional<JsonNode> form = camundaFormAssociationService
+            .getPreFilledFormDefinitionByFormKey("form-example", Optional.of(documentId));
+
+        assertThat(form).isPresent();
+        assertThat(findArrayEntry(form.get().get("components"), "key", "voornaam")
+            .get("defaultValue").textValue()).isEqualTo("Jan");
+    }
+
     private ObjectNode documentContent() {
         ObjectNode content = JsonNodeFactory.instance.objectNode();
         content.put("voornaam", "Jan");

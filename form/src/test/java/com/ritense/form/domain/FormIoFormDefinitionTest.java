@@ -23,18 +23,18 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.form.BaseTest;
+import com.ritense.valtimo.contract.form.DataResolvingContext;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-import com.ritense.valtimo.contract.form.DataResolvingContext;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -65,6 +65,26 @@ public class FormIoFormDefinitionTest extends BaseTest {
         var content = content(Map.of("pv", Map.of("firstName", "John")));
 
         final var formDefinitionPreFilled = formDefinition.preFill(content);
+
+        assertThat(formDefinitionPreFilled.getFormDefinition().get("components").get(0).get("defaultValue").asText()).isEqualTo("John");
+    }
+
+    @Test
+    public void shouldNotPreFillForMultiLevelKey() throws IOException {
+
+        //Given
+        Map<String, FormFieldDataResolver> resolvers = new HashMap<>();
+        resolvers.put("some-bean", new FormFieldDataResolverImpl("sensor"));
+        ApplicationContext context = mock(ApplicationContext.class);
+        new FormSpringContextHelper().setApplicationContext(context);
+        when(context.getBeansOfType(FormFieldDataResolver.class)).thenReturn(resolvers);
+
+        final var formDefinition = formDefinitionOf("process-variables-multi-level-key-form-example");
+
+        var content = content(Map.of("sensor", Map.of("person", Map.of("firstName", "John"))));
+
+        final var formDefinitionPreFilled = formDefinition.preFill(content);
+        var aaa = formDefinition.preFillWith("sensor", Map.of("sensor", Map.of("person", Map.of("firstName", "John"))));
 
         assertThat(formDefinitionPreFilled.getFormDefinition().get("components").get(0).get("defaultValue").asText()).isEqualTo("John");
     }
@@ -142,7 +162,6 @@ public class FormIoFormDefinitionTest extends BaseTest {
         var result = formDefinition.getDocumentMappedFields();
         assertThat(result).hasSize(12);
     }
-
 
     @Test
     public void shouldFindExternalFields() throws IOException {
