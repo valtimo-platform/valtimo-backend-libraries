@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.ritense.form.domain.event.FormRegisteredEvent;
+import com.ritense.form.domain.exception.FormDefinitionParsingException;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
@@ -141,8 +142,8 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     @Override
     public FormIoFormDefinition preFill(final JsonNode content) {
-        final JsonNode formDefinition = asJson();
-        final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinition);
+        final JsonNode formDefinitionNode = asJson();
+        final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionNode);
         inputFields.forEach(field -> fill(field, content));
         return this;
     }
@@ -157,16 +158,16 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     public List<String> extractProcessVarNames() {
         final List<String> processVarNames = new ArrayList<>();
-        final JsonNode formDefinition = asJson();
-        final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinition);
+        final JsonNode formDefinitionNode = asJson();
+        final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionNode);
         inputFields.forEach(field -> getProcessVar(field).ifPresent(contentItem -> processVarNames.add(contentItem.getName())));
         return Collections.unmodifiableList(processVarNames);
     }
 
     public Map<String, List<ExternalContentItem>> buildExternalFormFieldsMap() {
         var map = new HashMap<String, List<ExternalContentItem>>();
-        final JsonNode formDefinition = asJson();
-        final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinition);
+        final JsonNode formDefinitionNode = asJson();
+        final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionNode);
 
         inputFields.forEach(field -> getExternalFormField(field)
             .ifPresent(externalContentItem ->
@@ -180,8 +181,8 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     public Map<String, Object> extractProcessVars(JsonNode formData) {
         final Map<String, Object> processVarFormData = new HashMap<>();
-        final JsonNode formDefinition = asJson();
-        final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinition);
+        final JsonNode formDefinitionNode = asJson();
+        final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionNode);
         inputFields.forEach(field -> getProcessVar(field)
             .ifPresent(contentItem -> getValueBy(formData, contentItem.getJsonPointer())
                 .ifPresent(valueNode -> processVarFormData.put(contentItem.getName(), extractNodeValue(valueNode)))
@@ -214,7 +215,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             try {
                 this.workingCopy = Mapper.INSTANCE.get().readTree(formDefinition);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new FormDefinitionParsingException(e);
             }
         }
         return this.workingCopy;
@@ -226,8 +227,8 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             if (!key.isEmpty() && !key.startsWith(PROCESS_VAR_PREFIX)) {
                 String jsonPath = field.get(PROPERTY_KEY).asText().replace(".", "/");
                 jsonPath = "/" + jsonPath;
-                String name = jsonPath;
-                return buildJsonPointer(jsonPath).flatMap(jsonPointer -> Optional.of(new ContentItem(name, jsonPointer)));
+                String propertyName = jsonPath;
+                return buildJsonPointer(jsonPath).flatMap(jsonPointer -> Optional.of(new ContentItem(propertyName, jsonPointer)));
             } else {
                 return Optional.empty();
             }
@@ -307,9 +308,9 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     private Optional<ContentItem> getProcessVar(JsonNode field) {
         if (isProcessVar(field)) {
             String jsonPath = field.get(PROPERTY_KEY).asText().replace(".", "/");
-            String name = jsonPath.substring(PROCESS_VAR_PREFIX.length() + 1);//example pv.varName -> gets varName
+            String processVarName = jsonPath.substring(PROCESS_VAR_PREFIX.length() + 1);//example pv.varName -> gets varName
             jsonPath = "/" + jsonPath;
-            return buildJsonPointer(jsonPath).flatMap(jsonPointer -> Optional.of(new ContentItem(name, jsonPointer)));
+            return buildJsonPointer(jsonPath).flatMap(jsonPointer -> Optional.of(new ContentItem(processVarName, jsonPointer)));
         }
         return Optional.empty();
     }
