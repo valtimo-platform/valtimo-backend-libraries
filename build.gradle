@@ -121,7 +121,8 @@ subprojects { subproject ->
     }
 
     checkstyle {
-        config project.resources.text.fromUri("${ritenseCheckStyleLocation}")
+        //config project.resources.text.fromUri("${ritenseCheckStyleLocation}")
+        config project.resources.text.fromFile(rootProject.file("ritense_valtimo_only_checks.xml"))
         ignoreFailures = false
         showViolations = true
     }
