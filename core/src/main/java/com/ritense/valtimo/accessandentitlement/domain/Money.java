@@ -16,12 +16,12 @@
 
 package com.ritense.valtimo.accessandentitlement.domain;
 
-import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,7 +33,7 @@ import java.util.Objects;
 /**
  * Created by Ivar Koreman on 28-Feb-17.
  */
-public class Money implements UserType, Cloneable {
+public class Money implements UserType {
     private Currency currency;
     private BigDecimal amount;
 
@@ -80,8 +80,8 @@ public class Money implements UserType, Cloneable {
 
     public void setAmountInCents(long amountInCents) {
         amount = new BigDecimal(amountInCents)
-            .setScale(currency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_DOWN)
-            .divide(BigDecimal.valueOf(Math.pow(10, currency.getDefaultFractionDigits())), BigDecimal.ROUND_HALF_DOWN);
+            .setScale(currency.getDefaultFractionDigits(), RoundingMode.HALF_DOWN)
+            .divide(BigDecimal.valueOf(Math.pow(10, currency.getDefaultFractionDigits())), RoundingMode.HALF_DOWN);
     }
 
     public String getAmount() {
@@ -93,7 +93,7 @@ public class Money implements UserType, Cloneable {
         // http://www.opentaps.org/docs/index.php/How_to_Use_Java_BigDecimal:_A_Tutorial
 
         this.amount = new BigDecimal(amount)
-            .setScale(currency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_DOWN);
+            .setScale(currency.getDefaultFractionDigits(), RoundingMode.HALF_DOWN);
     }
 
     public BigDecimal getBigDecimalAmount() {
@@ -121,7 +121,7 @@ public class Money implements UserType, Cloneable {
     }
 
     @Override
-    public boolean equals(Object x, Object y) throws HibernateException {
+    public boolean equals(Object x, Object y) {
         if (!(x instanceof Money) || !(y instanceof Money)) {
             return false;
         }
@@ -145,17 +145,17 @@ public class Money implements UserType, Cloneable {
     }
 
     @Override
-    public int hashCode(Object x) throws HibernateException {
+    public int hashCode(Object x) {
         return x.hashCode();
     }
 
     @Override
-    public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException {
+    public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws SQLException {
         return new Money(rs.getBigDecimal(names[0]));
     }
 
     @Override
-    public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
+    public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session) throws SQLException {
         if (value == null) {
             st.setNull(index, Types.VARBINARY);
             return;
@@ -165,8 +165,8 @@ public class Money implements UserType, Cloneable {
     }
 
     @Override
-    public Object deepCopy(Object value) throws HibernateException {
-        if (value == null || !(value instanceof Money)) {
+    public Object deepCopy(Object value) {
+        if (!(value instanceof Money)) {
             return value;
         }
 
@@ -179,18 +179,18 @@ public class Money implements UserType, Cloneable {
     }
 
     @Override
-    public Serializable disassemble(Object value) throws HibernateException {
+    public Serializable disassemble(Object value) {
         return null;
     }
 
     @Override
-    public Object assemble(Serializable cached, Object owner) throws HibernateException {
+    public Object assemble(Serializable cached, Object owner) {
         return null;
     }
 
     @Override
-    public Object replace(Object original, Object target, Object owner) throws HibernateException {
-        if (original == null || !(original instanceof Money)) {
+    public Object replace(Object original, Object target, Object owner) {
+        if (!(original instanceof Money)) {
             return original;
         }
 

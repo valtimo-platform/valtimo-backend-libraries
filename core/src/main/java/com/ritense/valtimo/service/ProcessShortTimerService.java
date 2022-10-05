@@ -66,10 +66,10 @@ public class ProcessShortTimerService {
             throw new ProcessNotFoundException("Process not found for: " + processDefinitionId);
         }
         Document doc = createDocumentFrom(processModel);
-        doc = timerEventCycleSetOneMinuteOneCycle(doc);
-        doc = timerEventDurationSetOneMinute(doc);
-        doc = changeNameAndIdToTimerVersion(doc);
-        doc = changeBpmnPlaneElementName(doc);
+        timerEventCycleSetOneMinuteOneCycle(doc);
+        timerEventDurationSetOneMinute(doc);
+        changeNameAndIdToTimerVersion(doc);
+        changeBpmnPlaneElementName(doc);
         return doc;
     }
 

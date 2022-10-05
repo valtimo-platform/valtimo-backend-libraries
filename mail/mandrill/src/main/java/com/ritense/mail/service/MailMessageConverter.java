@@ -64,13 +64,12 @@ public class MailMessageConverter {
     }
 
     public MandrillMessage convert(TemplatedMailMessage templatedMailMessage) {
-        MandrillMessage mandrillMessageWithoutContent = convertBaseline(
+        return convertBaseline(
             templatedMailMessage.subject,
             templatedMailMessage.sender,
             templatedMailMessage.recipients,
             templatedMailMessage.attachments
         );
-        return mandrillMessageWithoutContent;
     }
 
     private MandrillMessage.Recipient convert(Recipient recipient) {

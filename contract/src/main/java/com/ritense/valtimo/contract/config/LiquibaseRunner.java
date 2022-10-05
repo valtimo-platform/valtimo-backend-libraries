@@ -61,13 +61,11 @@ public class LiquibaseRunner {
         } catch (LiquibaseException e) {
             throw new DatabaseException(e);
         } finally {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                    connection.close();
-                } catch (SQLException e) {
-                    logger.error("Error closing connection ", e);
-                }
+            try {
+                connection.rollback();
+                connection.close();
+            } catch (SQLException e) {
+                logger.error("Error closing connection ", e);
             }
         }
         logger.info("Finished running liquibase");
