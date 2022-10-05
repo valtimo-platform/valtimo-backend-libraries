@@ -27,6 +27,7 @@ import com.ritense.valtimo.contract.mail.model.value.RecipientCollection;
 import com.ritense.valtimo.contract.mail.model.value.Sender;
 import com.ritense.valtimo.contract.mail.model.value.Subject;
 import org.apache.commons.codec.binary.Base64;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -133,7 +134,7 @@ public class MailMessageConverter {
         if (sender.email.isPresent()) {
             mandrillMessage.setFromEmail(sender.email.get());
         } else if (mandrillProperties.getFromEmailAddress().isPresent()) {
-            mandrillMessage.setFromEmail(mandrillProperties.getFromEmailAddress().get());
+            mandrillMessage.setFromEmail(mandrillProperties.getFromEmailAddress().orElseThrow());
         } else {
             // From emailaddress will be used as defined on mandrillapp.com application within your specified template
         }
@@ -141,7 +142,7 @@ public class MailMessageConverter {
         if (sender.name.isPresent()) {
             mandrillMessage.setFromName(sender.name.get());
         } else if (mandrillProperties.getFromName().isPresent()) {
-            mandrillMessage.setFromName(mandrillProperties.getFromName().get());
+            mandrillMessage.setFromName(mandrillProperties.getFromName().orElseThrow());
         }
 
         /* RECIPIENTS */

@@ -19,6 +19,7 @@ package com.ritense.valtimo.accessandentitlement.domain;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
@@ -27,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Currency;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Created by Ivar Koreman on 28-Feb-17.
@@ -74,7 +76,7 @@ public class Money implements UserType, Cloneable {
     public void setAmountInCents(long amountInCents) {
         amount = new BigDecimal(amountInCents)
             .setScale(currency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_DOWN)
-            .divide(new BigDecimal(Math.pow(10, currency.getDefaultFractionDigits())), BigDecimal.ROUND_HALF_DOWN);
+            .divide(BigDecimal.valueOf(Math.pow(10, currency.getDefaultFractionDigits())), BigDecimal.ROUND_HALF_DOWN);
     }
 
     public String getAmount() {
@@ -104,6 +106,11 @@ public class Money implements UserType, Cloneable {
         money.amount = this.amount;
 
         return money;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(currency, amount);
     }
 
     @Override

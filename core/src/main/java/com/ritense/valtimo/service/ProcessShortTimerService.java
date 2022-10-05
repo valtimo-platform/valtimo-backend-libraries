@@ -28,9 +28,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -74,6 +77,12 @@ public class ProcessShortTimerService {
 
     private Document createDocumentFrom(InputStream processModel) throws DocumentParserException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        try{
+            dbFactory.setFeature(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+            dbFactory.setFeature(XMLInputFactory.SUPPORT_DTD, false);
+        } catch (ParserConfigurationException e) {
+            throw new IllegalStateException(e);
+        }
         dbFactory.setNamespaceAware(true);
         DocumentBuilder docBuilder;
         Document doc;
@@ -132,7 +141,10 @@ public class ProcessShortTimerService {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             Source xmlSource = new DOMSource(doc);
             Result outputTarget = new StreamResult(outputStream);
-            TransformerFactory.newInstance().newTransformer().transform(xmlSource, outputTarget);
+            TransformerFactory factory = TransformerFactory.newInstance();
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+            factory.newTransformer().transform(xmlSource, outputTarget);
             processModelTimers = new ByteArrayInputStream(outputStream.toByteArray());
         } catch (TransformerException ex) {
             throw new DocumentParserException("Not able to transform xmlSource");

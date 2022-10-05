@@ -27,6 +27,7 @@ import liquibase.resource.ClassLoaderResourceAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -73,8 +74,9 @@ public class LiquibaseRunner {
     }
 
     private void runChangeLog(Database database, String filePath) throws LiquibaseException {
-        Liquibase liquibase = new Liquibase(filePath, new ClassLoaderResourceAccessor(), database);
-        logger.info("Running liquibase master changelog: {}", liquibase.getChangeLogFile());
-        liquibase.update(context);
+        try (Liquibase liquibase = new Liquibase(filePath, new ClassLoaderResourceAccessor(), database)) {
+            logger.info("Running liquibase master changelog: {}", liquibase.getChangeLogFile());
+            liquibase.update(context);
+        }
     }
 }

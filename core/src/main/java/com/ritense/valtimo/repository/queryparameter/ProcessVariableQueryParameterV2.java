@@ -22,7 +22,9 @@ import com.ritense.valtimo.repository.queryparameter.type.EnumProcessVariableQue
 import com.ritense.valtimo.repository.queryparameter.type.FileUploadProcessVariableQueryParameterV2;
 import com.ritense.valtimo.repository.queryparameter.type.LongProcessVariableQueryParameterV2;
 import com.ritense.valtimo.repository.queryparameter.type.StringProcessVariableQueryParameterV2;
+
 import java.util.Objects;
+
 import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.ACTIVE_REF;
 import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.BUSINESS_KEY_REF;
 import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.PROCESS_ENDED_REF;
@@ -30,7 +32,7 @@ import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesCons
 import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.START_PROCESS_USER_REF;
 
 public abstract class ProcessVariableQueryParameterV2 implements IQueryParameter {
-    public String name;
+    private String name;
 
     public ProcessVariableQueryParameterV2(String name) {
         Objects.requireNonNull(name, "name cannot be null");
@@ -105,4 +107,7 @@ public abstract class ProcessVariableQueryParameterV2 implements IQueryParameter
         return this.name.equals(START_PROCESS_USER_REF);
     }
 
+    public String getName() {
+        return name;
+    }
 }

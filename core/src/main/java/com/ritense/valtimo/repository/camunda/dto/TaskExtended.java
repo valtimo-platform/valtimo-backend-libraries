@@ -22,7 +22,8 @@ public class TaskExtended extends org.camunda.bpm.engine.rest.dto.task.TaskDto {
 
     public final String businessKey;
     public final String processDefinitionKey;
-    public ValtimoUser valtimoAssignee;
+
+    private ValtimoUser valtimoAssignee;
 
     public TaskExtended(final String businessKey, final String processDefinitionKey) {
         super();
