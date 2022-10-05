@@ -54,9 +54,11 @@ public class Milestone {
     @ManyToOne
     private MilestoneSet milestoneSet;
 
+    @SuppressWarnings("squid:S2637")
     public Milestone(){
     }
 
+    @SuppressWarnings("squid:S2637")
     public Milestone(
             String title,
             String processDefinitionKey,
