@@ -61,6 +61,11 @@ public class Money implements UserType, Cloneable {
         this.currency = currency;
     }
 
+    public Money(Money money) {
+        this.currency = money.currency;
+        this.amount = money.amount;
+    }
+
     public Currency getCurrency() {
         return currency;
     }
@@ -97,15 +102,6 @@ public class Money implements UserType, Cloneable {
 
     public String getDisplayString() {
         return currency.getSymbol() + " " + amount.toString();
-    }
-
-    @Override
-    public Object clone() {
-        Money money = new Money();
-        money.currency = this.currency;
-        money.amount = this.amount;
-
-        return money;
     }
 
     @Override
@@ -174,7 +170,7 @@ public class Money implements UserType, Cloneable {
             return value;
         }
 
-        return ((Money) value).clone();
+        return new Money((Money) value);
     }
 
     @Override
@@ -198,6 +194,6 @@ public class Money implements UserType, Cloneable {
             return original;
         }
 
-        return ((Money) original).clone();
+        return new Money((Money) original);
     }
 }
