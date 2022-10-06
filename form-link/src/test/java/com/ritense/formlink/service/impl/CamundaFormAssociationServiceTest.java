@@ -295,7 +295,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
     }
 
     @Test
-    void aaa() throws IOException {
+    void shouldGetPrefilledFormDefinitionWithNestedExternalFormFieldData() throws IOException {
         final var documentId = (Document.Id) JsonSchemaDocumentId.existingId(UUID.randomUUID());
         final var formDefinition = formDefinitionOf("user-task-with-external-form-field-nested");
         when(formDefinitionService.getFormDefinitionByName(any())).thenReturn(Optional.of(formDefinition));
@@ -315,8 +315,12 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
             .getPreFilledFormDefinitionByFormKey("form-example", Optional.of(documentId));
 
         assertThat(form).isPresent();
-        assertThat(findArrayEntry(form.get().get("components"), "key", "voornaam")
-            .get("defaultValue").textValue()).isEqualTo("Jan");
+        assertThat(
+            findArrayEntry(
+                form.get().get("components"),
+                "key",
+                "oz.house.address.streetName").get("defaultValue").textValue()
+        ).isEqualTo("Funenpark");
     }
 
     private ObjectNode documentContent() {
