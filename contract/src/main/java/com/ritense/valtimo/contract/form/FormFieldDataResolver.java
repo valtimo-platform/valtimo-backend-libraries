@@ -16,8 +16,6 @@
 
 package com.ritense.valtimo.contract.form;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,10 +30,6 @@ public interface FormFieldDataResolver {
         return supports(ExternalFormFieldType.fromKey(externalFormFieldType));
     }
 
-    default boolean supports(DataResolvingContext dataResolvingContext) {
-        return false;
-    }
-
     @Deprecated(forRemoval = true, since = "9.21")
     default Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames) {
         throw new RuntimeException("The 'get' method should be implemented!");
@@ -46,10 +40,6 @@ public interface FormFieldDataResolver {
         String... varNames
     ) {
         return get(dataResolvingContext.getDocumentDefinitionName(), dataResolvingContext.getDocumentId(), varNames);
-    }
-
-    default JsonNode apply(JsonNode formField) {
-        return formField;
     }
 
 }
