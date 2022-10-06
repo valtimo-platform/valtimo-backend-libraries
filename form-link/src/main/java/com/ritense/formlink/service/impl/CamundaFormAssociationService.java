@@ -414,13 +414,13 @@ public class CamundaFormAssociationService implements FormAssociationService {
                         formDefinition.preFill(dataNode);
 
                         // Support old notation prefix.field-a.field-b.field-c
-                        final ObjectNode dataNode2 = JsonNodeFactory.instance.objectNode();
+                        final ObjectNode prefillDataNode = JsonNodeFactory.instance.objectNode();
                         externalContentItems.forEach(externalContentItem -> JsonPointerHelper.appendJsonPointerTo(
-                            dataNode2,
+                            prefillDataNode,
                             externalContentItem.getJsonPointer(),
                             Mapper.INSTANCE.objectMapper().valueToTree(externalDataMap.get(externalContentItem.getName()))
                         ));
-                        formDefinition.preFill(dataNode2);
+                        formDefinition.preFill(prefillDataNode);
                     }
                 )
             );
