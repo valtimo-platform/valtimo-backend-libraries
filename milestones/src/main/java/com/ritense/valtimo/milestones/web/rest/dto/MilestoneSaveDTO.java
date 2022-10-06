@@ -39,7 +39,9 @@ public class MilestoneSaveDTO {
     @NotNull
     private Long milestoneSet;
 
+    @SuppressWarnings("squid:S2637")
     public MilestoneSaveDTO() {
+        // Empty constructor that is used by Jackson to create the DTO
     }
 
     public Long getId() {

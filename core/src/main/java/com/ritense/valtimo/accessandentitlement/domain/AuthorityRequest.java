@@ -28,9 +28,6 @@ public class AuthorityRequest {
 
     private BigDecimal hourlyRate;
 
-    private AuthorityRequest() {
-    }
-
     /**
      * @deprecated - This method will be removed in 11.0.0
      * Use {@link #AuthorityRequest(String, BigDecimal)}  instead.

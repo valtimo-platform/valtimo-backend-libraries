@@ -18,6 +18,7 @@ package com.ritense.valtimo.milestones.domain;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Range;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -53,9 +54,11 @@ public class Milestone {
     @ManyToOne
     private MilestoneSet milestoneSet;
 
+    @SuppressWarnings("squid:S2637")
     public Milestone(){
     }
 
+    @SuppressWarnings("squid:S2637")
     public Milestone(
             String title,
             String processDefinitionKey,
@@ -117,12 +120,17 @@ public class Milestone {
 
     public void setColor(String color) {
         String colorHex = color.substring(1);
+        String newColorHex = "";
         if (colorHex.length() == 3) {
-            //noinspection ReplaceAllDot
-            colorHex = colorHex.replaceAll(".", "$0$0");
+            newColorHex += colorHex.charAt(0);
+            newColorHex += colorHex.charAt(0);
+            newColorHex += colorHex.charAt(1);
+            newColorHex += colorHex.charAt(1);
+            newColorHex += colorHex.charAt(2);
+            newColorHex += colorHex.charAt(2);
         }
 
-        this.color = Integer.parseInt(colorHex, 16);
+        this.color = Integer.parseInt(newColorHex, 16);
     }
 
     public MilestoneSet getMilestoneSet() {
