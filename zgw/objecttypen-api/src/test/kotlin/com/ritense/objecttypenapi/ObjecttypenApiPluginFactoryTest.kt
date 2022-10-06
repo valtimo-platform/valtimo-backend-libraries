@@ -18,6 +18,7 @@ package com.ritense.objecttypenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
@@ -39,6 +40,7 @@ internal class ObjecttypenApiPluginFactoryTest {
         val objecttypenApiClient = mock<ObjecttypenApiClient>()
         val authenticationMock = mock<ObjecttypenApiAuthentication>()
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authenticationMock)
+        whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
 
         val factory = ObjecttypenApiPluginFactory(pluginService, objecttypenApiClient)
 

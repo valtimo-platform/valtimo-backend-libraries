@@ -61,6 +61,10 @@ class PluginService(
     private val pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
 ) {
 
+    fun getObjectMapper(): ObjectMapper {
+        return objectMapper
+    }
+
     fun getPluginDefinitions(): List<PluginDefinition> {
         return pluginDefinitionRepository.findAll()
     }

@@ -17,6 +17,7 @@
 package com.ritense.valtimo.repository.queryparameter.type;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,7 +29,7 @@ class BooleanProcessVariableQueryParameterV2Test {
     @Test
     void booleanProcessVariableQueryParameter() {
         BooleanProcessVariableQueryParameterV2 booleanProcessVariableQueryParameter = booleanProcessVariableQueryParameterV2();
-        assertEquals(NAME, booleanProcessVariableQueryParameter.name);
+        assertEquals(NAME, booleanProcessVariableQueryParameter.getName());
         assertEquals(VALUE, booleanProcessVariableQueryParameter.getValue());
     }
 
