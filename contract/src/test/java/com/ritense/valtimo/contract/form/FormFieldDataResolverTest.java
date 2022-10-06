@@ -37,7 +37,6 @@ class FormFieldDataResolverTest {
         FormFieldDataResolver resolver = new FormFieldDataResolverImpl();
         assertFalse(resolver.supports("OZ"));
     }
-    // oz.name
 
     @Test
     public void supportsFailsWithNotExistingExternalFormFieldType() {
