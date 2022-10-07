@@ -13,4 +13,8 @@ public class TenantDomainService {
     public TenantDomain save(TenantDomain tenantDomain) {
         return tenantDomainRepository.save(tenantDomain);
     }
+
+    public TenantDomain findByDomain(String domain) {
+        return tenantDomainRepository.findByDomain(domain).orElse(null);
+    }
 }

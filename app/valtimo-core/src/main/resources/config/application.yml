@@ -78,35 +78,7 @@ spring:
             - org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat.TomcatMetricsAutoConfiguration
             # RabbitAutoConfiguration disabled because we're not using the top level context. See https://stackoverflow.com/a/44687645
             - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
-    cloud:
-        stream:
-            function:
-                definition: createExternalCaseConsumer;completeTaskConsumer;updatedExternalIdConsumer;externalDomainMessageSupplier
-            bindings:
-                createExternalCaseConsumer-in-0:
-                    destination: create-external-case
-                    binder: rabbit
-                    group: Q1
-                completeTaskConsumer-in-0:
-                    destination: complete-task
-                    binder: rabbit
-                    group: Q2
-                updatedExternalIdConsumer-in-0:
-                    destination: external-id-portal-case-updated
-                    binder: rabbit
-                    group: Q3
-            binders:
-                rabbit:
-                    type: rabbit
-                    environment:
-                        spring:
-                            rabbitmq:
-                                host: localhost
-                                port: 5672
-                                username: guest
-                                password: guest
-                                virtual-host: /
-            source: externalDomainMessageSupplier
+
 server:
     port: 8080
     compression:
@@ -125,6 +97,7 @@ mailing:
     sendRedirectedMailsTo:
 
 valtimo:
+    multitenant: true
     app:
         scheme: http
     #mandrill:
