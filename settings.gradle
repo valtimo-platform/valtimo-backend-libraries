@@ -46,6 +46,7 @@ include(
     "mail:mandrill",
     "mail:wordpress-mail",
     "milestones",
+    "multitenancy",
     "objects-api",
     "openzaak",
     "plugin",
@@ -66,3 +67,4 @@ include(
     "zgw:objecttypen-api",
     "zgw:zaken-api"
 )
+
