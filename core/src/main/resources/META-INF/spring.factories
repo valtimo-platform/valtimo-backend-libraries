@@ -13,4 +13,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.valtimo.autoconfigure.ProcessDataObjectAutoConfiguration, \
   com.ritense.valtimo.autoconfigure.AuthenticationAutoConfiguration, \
   com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration, \
-  com.ritense.valtimo.multitenancy.autoconfigure.MultitenancyAutoConfiguration
+  com.ritense.valtimo.multitenancy.autoconfigure.MultitenancyAutoConfiguration, \
+  com.ritense.valtimo.multitenancykeycloak.autoconfigure.MultitenancyKeycloakAutoConfiguration

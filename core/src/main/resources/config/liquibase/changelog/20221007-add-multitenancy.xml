@@ -31,4 +31,24 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet author="Ritense" id="2">
+        <createTable tableName="tenant_keycloak_config">
+            <column name="id" type="${uuidType}">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="tenant_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="keycloak_server_url" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="keycloak_realm" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="keycloak_m2m_client" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

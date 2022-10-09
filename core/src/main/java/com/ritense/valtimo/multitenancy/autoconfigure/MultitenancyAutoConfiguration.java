@@ -1,18 +1,14 @@
 package com.ritense.valtimo.multitenancy.autoconfigure;
 
-import com.ritense.valtimo.multitenancy.interceptor.MultitenancyFilter;
 import com.ritense.valtimo.multitenancy.repository.TenantDomainRepository;
 import com.ritense.valtimo.multitenancy.security.MultitenancyHttpSecurityConfigurer;
 import com.ritense.valtimo.multitenancy.service.TenantDomainService;
 import com.ritense.valtimo.multitenancy.web.rest.TenantDomainResource;
-import com.ritense.valtimo.security.jwt.JwtFilter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.valtimo.multitenancy.repository")
