@@ -33,6 +33,9 @@ public interface DocumentDefinition {
     @JsonProperty
     JsonNode schema();
 
+    @JsonProperty
+    String tenantId();
+
     DocumentContentValidationResult validate(DocumentContent documentContent);
 
     interface Id {

@@ -31,7 +31,9 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.service.result.error.DocumentDefinitionError;
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import com.ritense.valtimo.multitenancy.service.CurrentTenantService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -60,10 +62,13 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
     private final DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository;
 
-    public JsonSchemaDocumentDefinitionService(ResourceLoader resourceLoader, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository) {
+    private final ValtimoProperties valtimoProperties;
+
+    public JsonSchemaDocumentDefinitionService(ResourceLoader resourceLoader, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository, ValtimoProperties valtimoProperties) {
         this.resourceLoader = resourceLoader;
         this.documentDefinitionRepository = documentDefinitionRepository;
         this.documentDefinitionRoleRepository = documentDefinitionRoleRepository;
+        this.valtimoProperties = valtimoProperties;
     }
 
     @Override
@@ -171,7 +176,13 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                 }
             }
 
-            var documentDefinition = new JsonSchemaDocumentDefinition(documentDefinitionId, jsonSchema);
+            JsonSchemaDocumentDefinition documentDefinition;
+            if(valtimoProperties.getApp().getMultitenant()) {
+                String tenantId = CurrentTenantService.getCurrentTenant();
+                documentDefinition = new JsonSchemaDocumentDefinition(documentDefinitionId, jsonSchema, tenantId);
+            } else {
+                documentDefinition = new JsonSchemaDocumentDefinition(documentDefinitionId, jsonSchema);
+            }
 
             if (readOnly) {
                 documentDefinition.markReadOnly();

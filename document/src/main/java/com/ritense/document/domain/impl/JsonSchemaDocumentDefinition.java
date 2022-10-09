@@ -57,6 +57,9 @@ public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSche
     @Column(name = "read_only", columnDefinition = "BIT")
     private Boolean readOnly = false;
 
+    @Column(name = "tenant_id", columnDefinition = "VARCHAR(50)")
+    private String tenantId;
+
     public JsonSchemaDocumentDefinition(
         final JsonSchemaDocumentDefinitionId id,
         final JsonSchema schema
@@ -74,10 +77,31 @@ public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSche
         );
     }
 
+    public JsonSchemaDocumentDefinition(
+        final JsonSchemaDocumentDefinitionId id,
+        final JsonSchema schema,
+        final String tenantId
+    ) {
+        assertArgumentNotNull(id, "id is required");
+        assertArgumentNotNull(schema, "schema is required");
+        assertArgumentNotNull(schema, "tenantId is required");
+        assertMatchingSchemaIds(id, schema);
+        this.id = id;
+        this.schema = schema;
+        this.createdOn = LocalDateTime.now();
+        this.tenantId = tenantId;
+        registerEvent(
+            new JsonSchemaDocumentDefinitionDeployedEvent(
+                new JsonSchemaDocumentDefinition(this)
+            )
+        );
+    }
+
     private JsonSchemaDocumentDefinition(JsonSchemaDocumentDefinition another) {
         id = another.id();
         schema = another.schema;
         createdOn = another.createdOn();
+        tenantId = another.tenantId();
     }
 
     JsonSchemaDocumentDefinition() {
@@ -96,6 +120,11 @@ public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSche
     @Override
     public JsonNode schema() {
         return schema.asJson();
+    }
+
+    @Override
+    public String tenantId() {
+        return tenantId;
     }
 
     public JsonSchema getSchema() {
