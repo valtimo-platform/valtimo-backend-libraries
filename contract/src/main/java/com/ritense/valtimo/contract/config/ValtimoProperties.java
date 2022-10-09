@@ -72,6 +72,8 @@ public class ValtimoProperties {
         private String hostname;
         private String scheme;
 
+        private Boolean multitenant = false;
+
         public String getHostname() {
             return hostname;
         }
@@ -86,6 +88,14 @@ public class ValtimoProperties {
 
         public void setScheme(String scheme) {
             this.scheme = scheme;
+        }
+
+        public Boolean getMultitenant() {
+            return multitenant;
+        }
+
+        public void setMultitenant(Boolean multitenant) {
+            this.multitenant = multitenant;
         }
 
         public String getBaselUrl() {

@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.autoconfigure;
 
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.contract.security.config.AuthenticationSecurityConfigurer;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import com.ritense.valtimo.security.Http401UnauthorizedEntryPoint;
@@ -260,9 +261,14 @@ public class HttpSecurityAutoConfiguration {
     @ConditionalOnMissingBean(JwtHttpSecurityConfigurer.class)
     public JwtHttpSecurityConfigurer jwtHttpSecurityConfigurer(
         IdentityService identityService,
-        TokenAuthenticationService tokenAuthenticationService
+        TokenAuthenticationService tokenAuthenticationService,
+        ValtimoProperties valtimoProperties
     ) {
-        return new JwtHttpSecurityConfigurer(identityService, tokenAuthenticationService);
+        return new JwtHttpSecurityConfigurer(
+            identityService,
+            tokenAuthenticationService,
+            valtimoProperties
+        );
     }
 
     @Order(450)

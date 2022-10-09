@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.security.jwt;
 
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
 import org.camunda.bpm.engine.IdentityService;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
@@ -28,14 +29,17 @@ public class JwtSecurityConfigurerAdapter extends SecurityConfigurerAdapter<Defa
     private final IdentityService identityService;
     private final TokenAuthenticationService tokenAuthenticationService;
 
-    public JwtSecurityConfigurerAdapter(IdentityService identityService, TokenAuthenticationService tokenAuthenticationService) {
+    private final ValtimoProperties valtimoProperties;
+
+    public JwtSecurityConfigurerAdapter(IdentityService identityService, TokenAuthenticationService tokenAuthenticationService, ValtimoProperties valtimoProperties) {
         this.identityService = identityService;
         this.tokenAuthenticationService = tokenAuthenticationService;
+        this.valtimoProperties = valtimoProperties;
     }
 
     @Override
     public void configure(HttpSecurity http) {
-        JwtFilter customFilter = new JwtFilter(identityService, tokenAuthenticationService);
+        JwtFilter customFilter = new JwtFilter(identityService, tokenAuthenticationService, valtimoProperties);
         http.addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class);
     }
 

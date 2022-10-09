@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.security.jwt;
 
+import com.ritense.valtimo.contract.config.ValtimoProperties;
+import com.ritense.valtimo.multitenancy.service.CurrentTenantService;
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.camunda.bpm.engine.IdentityService;
@@ -32,6 +34,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.AUTHORIZATION_HEADER;
 
 /**
@@ -44,9 +48,12 @@ public class JwtFilter extends GenericFilterBean {
     private final IdentityService identityService;
     private final TokenAuthenticationService tokenAuthenticationService;
 
-    public JwtFilter(IdentityService identityService, TokenAuthenticationService tokenAuthenticationService) {
+    private final ValtimoProperties valtimoProperties;
+
+    public JwtFilter(IdentityService identityService, TokenAuthenticationService tokenAuthenticationService, ValtimoProperties valtimoProperties) {
         this.identityService = identityService;
         this.tokenAuthenticationService = tokenAuthenticationService;
+        this.valtimoProperties = valtimoProperties;
     }
 
     @Override
@@ -62,9 +69,16 @@ public class JwtFilter extends GenericFilterBean {
                     authenticatedUserId = authentication.getName();
                 }
             }
-            // user id should always be set or reset to null because the camunda implementation will remember the user id from a previous request.
-            identityService.setAuthenticatedUserId(authenticatedUserId);
+
+            if(valtimoProperties.getApp().getMultitenant()) {
+                List<String> tenantIds = List.of(CurrentTenantService.getCurrentTenant());
+                identityService.setAuthentication(authenticatedUserId, null, tenantIds);
+            } else {
+                identityService.setAuthenticatedUserId(authenticatedUserId);
+            }
+
             filterChain.doFilter(servletRequest, servletResponse);
+            // user id should always be set or reset to null because the camunda implementation will remember the user id from a previous request.
             identityService.clearAuthentication();
         } catch (ExpiredJwtException eje) {
             slf4jLogger.info("Security exception for user {} - {}", eje.getClaims().getSubject(), eje.getMessage());

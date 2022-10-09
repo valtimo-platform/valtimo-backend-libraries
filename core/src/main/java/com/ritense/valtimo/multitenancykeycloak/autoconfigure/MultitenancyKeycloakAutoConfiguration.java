@@ -51,7 +51,7 @@ public class MultitenancyKeycloakAutoConfiguration {
             new ReactorClientHttpConnector(
                 HttpClient.create().wiretap(
                     "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
+                    LogLevel.INFO,
                     AdvancedByteBufFormat.TEXTUAL
                 )
             )
@@ -60,7 +60,7 @@ public class MultitenancyKeycloakAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(MultitenancyKeycloakSecretKeyProvider.class)
-    @ConditionalOnProperty("valtimo.multitenant")
+    @ConditionalOnProperty("valtimo.app.multitenant")
     public MultitenancyKeycloakSecretKeyProvider multitenancyKeycloakSecretKeyProvider(
         TenantKeycloakConfigService tenantKeycloakConfigService,
         WebClient webClient
