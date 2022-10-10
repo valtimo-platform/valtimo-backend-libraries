@@ -25,6 +25,18 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.form.BaseTest;
 import com.ritense.valtimo.contract.form.DataResolvingContext;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.ritense.valtimo.contract.form.DataResolvingContext;
+import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -73,6 +85,47 @@ public class FormIoFormDefinitionTest extends BaseTest {
         assertThat(preFilledFormComponents.get(0).get("defaultValue").asText()).isEqualTo("John");
         assertThat(preFilledFormComponents.get(1).get("defaultValue").asInt()).isEqualTo(90);
         assertThat(preFilledFormComponents.get(2).get("defaultValue").asBoolean()).isTrue();
+    }
+
+    @Test
+    public void shouldPreFillForMultiLevelKey() throws IOException {
+        // Given
+        Map<String, FormFieldDataResolver> resolvers = new HashMap<>();
+        resolvers.put("some-bean", new FormFieldDataResolverImpl("externalPrefix"));
+        ApplicationContext context = mock(ApplicationContext.class);
+        new FormSpringContextHelper().setApplicationContext(context);
+        when(context.getBeansOfType(FormFieldDataResolver.class)).thenReturn(resolvers);
+        final var formDefinition = formDefinitionOf("process-variables-multi-level-key-form-example");
+
+        // When
+        final var jsonContent = content(Map.of("externalPrefix", Map.of("person", Map.of("firstName", "John"))));
+        final var formDefinitionPreFilled = formDefinition.preFill(jsonContent);
+
+        // Then
+        assertThat(
+            formDefinitionPreFilled.getFormDefinition().get("components").get(0).get("defaultValue").asText()
+        ).isEqualTo("John");
+    }
+
+    @Test
+    public void shouldPreFillForMultiLevelKeyWithPrefix() throws IOException {
+        // Given
+        Map<String, FormFieldDataResolver> resolvers = new HashMap<>();
+        resolvers.put("some-bean", new FormFieldDataResolverImpl("externalPrefix"));
+        ApplicationContext context = mock(ApplicationContext.class);
+        new FormSpringContextHelper().setApplicationContext(context);
+        when(context.getBeansOfType(FormFieldDataResolver.class)).thenReturn(resolvers);
+        final var formDefinition = formDefinitionOf("process-variables-multi-level-key-form-example");
+
+        // When
+        // Map<String, Object> content = Map.of("sensor", Map.of("person", Map.of("firstName", "John")));
+        Map<String, Object> content = Map.of("person", Map.of("firstName", "John"));
+        final var formDefinitionPreFilled = formDefinition.preFillWith("externalPrefix", content);
+
+        // Then
+        assertThat(
+            formDefinitionPreFilled.getFormDefinition().get("components").get(0).get("defaultValue").asText()
+        ).isEqualTo("John");
     }
 
     @Test
@@ -152,7 +205,6 @@ public class FormIoFormDefinitionTest extends BaseTest {
         var result = formDefinition.getDocumentMappedFields();
         assertThat(result).hasSize(12);
     }
-
 
     @Test
     public void shouldFindExternalFields() throws IOException {
