@@ -186,11 +186,6 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
             sequence,
             documentRelation
         );
-        document.setAssignee(
-            "test-assignee-id",
-            "John",
-            "Doe"
-        );
         return new CreateDocumentResultImpl(document);
     }
 

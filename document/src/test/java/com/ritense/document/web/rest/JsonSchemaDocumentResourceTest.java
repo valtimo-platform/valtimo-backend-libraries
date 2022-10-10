@@ -79,6 +79,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             documentSequenceGeneratorService,
             null
         );
+        document.setAssignee("test-assignee-id", "John", "Doe");
         document = result.resultingDocument().orElseThrow();
         document.addRelatedFile(relatedFile());
         List<JsonSchemaDocument> documents = List.of(document);
