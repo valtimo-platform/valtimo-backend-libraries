@@ -169,6 +169,8 @@ public class MilestoneInstance {
             newColorHex += colorHex.charAt(1);
             newColorHex += colorHex.charAt(2);
             newColorHex += colorHex.charAt(2);
+        } else {
+            newColorHex = colorHex;
         }
 
         this.color = Integer.parseInt(newColorHex, 16);
