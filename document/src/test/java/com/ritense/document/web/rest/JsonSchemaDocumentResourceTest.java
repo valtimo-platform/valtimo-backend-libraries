@@ -80,7 +80,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             null
         );
         document = result.resultingDocument().orElseThrow();
-        document.setAssignee("test-assignee-id", "John", "Doe");
+        document.setAssignee("test-assignee-id", "John Doe");
         document.addRelatedFile(relatedFile());
         List<JsonSchemaDocument> documents = List.of(document);
         Pageable unpaged = Pageable.unpaged();
@@ -121,8 +121,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             .andExpect(content().contentType(APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isNotEmpty())
             .andExpect(jsonPath("$.assigneeId").value("test-assignee-id"))
-            .andExpect(jsonPath("$.assigneeFirstName").value("John"))
-            .andExpect(jsonPath("$.assigneeLastName").value("Doe"));
+            .andExpect(jsonPath("$.assigneeFullName").value("John Doe"));
     }
 
     @Test
