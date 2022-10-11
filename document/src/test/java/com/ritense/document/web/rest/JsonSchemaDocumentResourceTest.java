@@ -79,8 +79,8 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             documentSequenceGeneratorService,
             null
         );
-        document.setAssignee("test-assignee-id", "John", "Doe");
         document = result.resultingDocument().orElseThrow();
+        document.setAssignee("test-assignee-id", "John", "Doe");
         document.addRelatedFile(relatedFile());
         List<JsonSchemaDocument> documents = List.of(document);
         Pageable unpaged = Pageable.unpaged();
