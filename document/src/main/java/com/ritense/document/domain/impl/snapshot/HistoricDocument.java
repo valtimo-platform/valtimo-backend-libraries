@@ -71,11 +71,8 @@ public class HistoricDocument implements Document {
     @Column(name = "document_assignee_id", columnDefinition = "VARCHAR(64)")
     private String assigneeId;
 
-    @Column(name = "document_assignee_first_name", columnDefinition = "VARCHAR(50)")
-    private String assigneeFirstName;
-
-    @Column(name = "document_assignee_last_name", columnDefinition = "VARCHAR(80)")
-    private String assigneeLastName;
+    @Column(name = "document_assignee_full_name", columnDefinition = "VARCHAR(255)")
+    private String assigneeFullName;
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "document_relations", columnDefinition = "json")
@@ -99,8 +96,7 @@ public class HistoricDocument implements Document {
         this.createdBy = document.createdBy();
         this.sequence = document.sequence();
         this.assigneeId = document.assigneeId();
-        this.assigneeFirstName = document.assigneeFirstName();
-        this.assigneeLastName = document.assigneeLastName();
+        this.assigneeFullName = document.assigneeFullName();
         this.documentRelations = document.relations();
         this.relatedFiles = document.relatedFiles();
     }
@@ -154,13 +150,8 @@ public class HistoricDocument implements Document {
     }
 
     @Override
-    public String assigneeFirstName() {
-        return assigneeFirstName;
-    }
-
-    @Override
-    public String assigneeLastName() {
-        return assigneeLastName;
+    public String assigneeFullName() {
+        return assigneeFullName;
     }
 
     @Override

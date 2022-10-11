@@ -97,4 +97,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="Ritense" id="1602750329017-7">
+        <addColumn tableName="json_schema_document_snapshot">
+            <column name="document_assignee_full_name" type="VARCHAR(255)"/>
+        </addColumn>
+        <dropColumn tableName="json_schema_document_snapshot" columnName="document_assignee_first_name"/>
+        <dropColumn tableName="json_schema_document_snapshot" columnName="document_assignee_last_name"/>
+    </changeSet>
+
 </databaseChangeLog>
