@@ -32,9 +32,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -49,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class JsonSchemaDocumentResourceTest extends BaseTest {
+class JsonSchemaDocumentResourceTest extends BaseTest {
 
     private JsonSchemaDocumentService documentService;
     private DocumentResource documentResource;
@@ -59,7 +61,7 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
     private DocumentDefinitionService documentDefinitionService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         documentService = mock(JsonSchemaDocumentService.class);
         documentDefinitionService = mock(DocumentDefinitionService.class);
@@ -78,6 +80,7 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
             null
         );
         document = result.resultingDocument().orElseThrow();
+        document.setAssignee("test-assignee-id", "John", "Doe");
         document.addRelatedFile(relatedFile());
         List<JsonSchemaDocument> documents = List.of(document);
         Pageable unpaged = Pageable.unpaged();
@@ -86,7 +89,7 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnOkWithDocument() throws Exception {
+    void shouldReturnOkWithDocument() throws Exception {
         when(documentService.findBy(any()))
             .thenReturn(Optional.of(document));
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
@@ -103,7 +106,27 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldModifyDocument() throws Exception {
+    void shouldReturnDocumentWithAssignee() throws Exception {
+        when(documentService.findBy(any()))
+            .thenReturn(Optional.of(document));
+        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
+            .thenReturn(true);
+
+        mockMvc.perform(get("/api/document/{id}", UUID.randomUUID().toString())
+                .accept(APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isNotEmpty())
+            .andExpect(jsonPath("$.assigneeId").value("test-assignee-id"))
+            .andExpect(jsonPath("$.assigneeFirstName").value("John"))
+            .andExpect(jsonPath("$.assigneeLastName").value("Doe"));
+    }
+
+    @Test
+    void shouldModifyDocument() throws Exception {
         final var json = "{\"firstName\": \"John\"}";
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(content);
@@ -131,7 +154,7 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldAddResourceForDocument() throws Exception {
+    void shouldAddResourceForDocument() throws Exception {
         final var json = "{\"firstName\": \"John\"}";
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(content);
@@ -153,7 +176,7 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldRemoveRelatedFile() throws Exception {
+    void shouldRemoveRelatedFile() throws Exception {
         final var json = "{\"firstName\": \"John\"}";
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(content);
