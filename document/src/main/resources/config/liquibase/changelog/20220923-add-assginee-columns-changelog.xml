@@ -14,4 +14,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="Ritense" id="2">
+        <addColumn tableName="json_schema_document">
+            <column name="assignee_full_name" type="VARCHAR(255)"/>
+        </addColumn>
+        <dropColumn tableName="json_schema_document" columnName="assignee_first_name"/>
+        <dropColumn tableName="json_schema_document" columnName="assignee_last_name"/>
+    </changeSet>
+
 </databaseChangeLog>

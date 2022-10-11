@@ -47,10 +47,7 @@ public interface Document {
     String assigneeId();
 
     @JsonProperty
-    String assigneeFirstName();
-
-    @JsonProperty
-    String assigneeLastName();
+    String assigneeFullName();
 
     @JsonProperty
     DocumentContent content();

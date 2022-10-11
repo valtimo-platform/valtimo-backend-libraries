@@ -480,25 +480,25 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = USER)
-    void searchShouldOrderAllDocumentsBasedOnAssigneeName() {
+    void searchShouldOrderAllDocumentsBasedOnAssigneeFullName() {
         var documentOne = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
         var documentTwo = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
         var documentThree = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
-        documentOne.setAssignee("1111", "Beth", "Xander");
-        documentTwo.setAssignee("2222", "Anna", "Yablon");
-        documentThree.setAssignee("33", "Beth", "Zabala");
+        documentOne.setAssignee("1111", "Beth Xander");
+        documentTwo.setAssignee("2222", "Anna Yablon");
+        documentThree.setAssignee("33", "Beth Zabala");
         documentRepository.saveAll(List.of(documentOne, documentTwo, documentThree));
 
         final Page<? extends Document> page = documentSearchService.search(
             new SearchRequest(),
-            PageRequest.of(0, 10, Sort.by(Direction.DESC, "assigneeFirstName", "assigneeLastName"))
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "assigneeFullName"))
         );
 
         assertThat(page).isNotNull();
         var content = page.getContent();
-        assertThat(content.get(0).assigneeFirstName() + " " + content.get(0).assigneeLastName()).isEqualTo("Beth Zabala");
-        assertThat(content.get(1).assigneeFirstName() + " " + content.get(1).assigneeLastName()).isEqualTo("Beth Xander");
-        assertThat(content.get(2).assigneeFirstName() + " " + content.get(2).assigneeLastName()).isEqualTo("Anna Yablon");
+        assertThat(content.get(0).assigneeFullName()).isEqualTo("Beth Zabala");
+        assertThat(content.get(1).assigneeFullName()).isEqualTo("Beth Xander");
+        assertThat(content.get(2).assigneeFullName()).isEqualTo("Anna Yablon");
     }
 
     private CreateDocumentResult createDocument(String content) {

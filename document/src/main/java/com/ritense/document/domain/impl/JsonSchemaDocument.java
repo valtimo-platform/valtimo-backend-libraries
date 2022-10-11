@@ -104,11 +104,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Column(name = "assignee_id", columnDefinition="varchar(64)")
     private String assigneeId;
 
-    @Column(name = "assignee_first_name", columnDefinition="varchar(50)")
-    private String assigneeFirstName;
-
-    @Column(name = "assignee_last_name", columnDefinition="varchar(80)")
-    private String assigneeLastName;
+    @Column(name = "assignee_full_name", columnDefinition="varchar(255)")
+    private String assigneeFullName;
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "document_relations", columnDefinition = "json")
@@ -304,10 +301,9 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         relatedFiles.forEach(file -> removeRelatedFileBy(file.getFileId()));
     }
 
-    public void setAssignee(String id, String firstName, String lastName) {
+    public void setAssignee(String id, String fullName) {
         this.assigneeId = id;
-        this.assigneeFirstName = firstName;
-        this.assigneeLastName = lastName;
+        this.assigneeFullName = fullName;
     }
 
     @Override
@@ -341,13 +337,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     }
 
     @Override
-    public String assigneeFirstName() {
-        return assigneeFirstName;
-    }
-
-    @Override
-    public String assigneeLastName() {
-        return assigneeLastName;
+    public String assigneeFullName() {
+        return assigneeFullName;
     }
 
     @Override

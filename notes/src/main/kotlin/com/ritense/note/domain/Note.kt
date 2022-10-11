@@ -36,11 +36,8 @@ class Note(
     @Column(name = "created_by_user_id", nullable = false, length = 255, updatable = false)
     val createdByUserId: String,
 
-    @Column(name = "created_by_user_first_name", nullable = false, length = 255, updatable = false)
-    val createdByUserFirstName: String,
-
-    @Column(name = "created_by_user_last_name", nullable = false, length = 255, updatable = false)
-    val createdByUserLastName: String,
+    @Column(name = "created_by_user_full_name", nullable = false, length = 255, updatable = false)
+    val createdByUserFullName: String,
 
     @Column(name = "created_date", columnDefinition = "DATETIME", nullable = false)
     val createdDate: LocalDateTime,
@@ -54,8 +51,7 @@ class Note(
     constructor(documentId: JsonSchemaDocumentId, user: ManageableUser, content: String) : this(
         UUID.randomUUID(),
         user.id,
-        user.firstName,
-        user.lastName,
+        user.fullName,
         LocalDateTime.now(),
         content,
         documentId.id,
