@@ -17,7 +17,7 @@
 package com.ritense.note.domain
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
-import com.ritense.valtimo.contract.utils.SecurityUtils
+import com.ritense.valtimo.contract.authentication.ManageableUser
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.persistence.Column
@@ -33,8 +33,14 @@ class Note(
     @Column(name = "id", nullable = false, updatable = false)
     val id: UUID,
 
-    @Column(name = "created_by", nullable = false, length = 255, updatable = false)
-    val createdBy: String,
+    @Column(name = "created_by_user_id", nullable = false, length = 255, updatable = false)
+    val createdByUserId: String,
+
+    @Column(name = "created_by_user_first_name", nullable = false, length = 255, updatable = false)
+    val createdByUserFirstName: String,
+
+    @Column(name = "created_by_user_last_name", nullable = false, length = 255, updatable = false)
+    val createdByUserLastName: String,
 
     @Column(name = "created_date", columnDefinition = "DATETIME", nullable = false)
     val createdDate: LocalDateTime,
@@ -45,9 +51,11 @@ class Note(
     @Column(name = "document_id", nullable = false)
     val documentId: UUID,
 ) {
-    constructor(documentId: JsonSchemaDocumentId, content: String) : this(
+    constructor(documentId: JsonSchemaDocumentId, user: ManageableUser, content: String) : this(
         UUID.randomUUID(),
-        SecurityUtils.getCurrentUserLogin(),
+        user.id,
+        user.firstName,
+        user.lastName,
         LocalDateTime.now(),
         content,
         documentId.id,

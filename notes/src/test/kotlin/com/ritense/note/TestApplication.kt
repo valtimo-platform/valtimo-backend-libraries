@@ -16,8 +16,11 @@
 
 package com.ritense.note
 
+import com.ritense.valtimo.contract.authentication.FakeUserRepository
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 
 @SpringBootApplication
 class TestApplication {
@@ -26,4 +29,11 @@ class TestApplication {
         runApplication<TestApplication>(*args)
     }
 
+    @TestConfiguration
+    class TestConfig {
+        @Bean
+        fun fakeUserRepository(): FakeUserRepository {
+            return FakeUserRepository()
+        }
+    }
 }

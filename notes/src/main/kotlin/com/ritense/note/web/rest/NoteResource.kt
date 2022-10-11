@@ -17,6 +17,7 @@
 package com.ritense.note.web.rest
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
+import com.ritense.document.service.DocumentService
 import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.dto.NoteCreateRequestDto
 import com.ritense.note.web.rest.dto.NoteResponseDto
@@ -33,6 +34,7 @@ import java.util.UUID
 @RequestMapping("/api/document/{documentId}/note", produces = [MediaType.APPLICATION_JSON_VALUE])
 class NoteResource(
     private val noteService: NoteService,
+    private val documentService: DocumentService,
 ) {
 
     @PostMapping
@@ -41,11 +43,15 @@ class NoteResource(
         @RequestBody noteDto: NoteCreateRequestDto
     ): ResponseEntity<NoteResponseDto> {
 
+        val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(documentId)
+
+        if (!documentService.currentUserCanAccessDocument(jsonSchemaDocumentId)) {
+            return ResponseEntity.badRequest().build()
+        }
         val note = noteService.createNote(
-            JsonSchemaDocumentId.existingId(documentId),
+            jsonSchemaDocumentId,
             noteDto.content,
         )
-
         return ResponseEntity.ok(NoteResponseDto(note))
     }
 }

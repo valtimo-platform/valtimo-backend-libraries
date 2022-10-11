@@ -18,21 +18,32 @@ package com.ritense.note.service
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.note.domain.Note
+import com.ritense.note.event.NoteCreatedEvent
 import com.ritense.note.repository.NoteRepository
+import com.ritense.valtimo.contract.authentication.CurrentUserService
+import com.ritense.valtimo.contract.utils.SecurityUtils
+import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 
 class NoteService(
     private val noteRepository: NoteRepository,
+    private val currentUserService: CurrentUserService,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
     fun createNote(
         documentId: JsonSchemaDocumentId,
         noteContent: String,
     ): Note {
-        return noteRepository.save(
-            Note(
-                documentId,
-                noteContent,
-            )
-        )
+        logger.debug { "Create note for document $documentId" }
+        SecurityUtils.getCurrentUserLogin()
+        val user = currentUserService.currentUser
+        val node = noteRepository.save(Note(documentId, user, noteContent))
+        applicationEventPublisher.publishEvent(NoteCreatedEvent(documentId.id, node.id))
+        return node
+    }
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 }

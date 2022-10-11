@@ -26,6 +26,7 @@ import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -58,4 +59,5 @@ public interface DocumentService {
 
     void removeDocuments(String documentDefinitionName);
 
+    boolean currentUserCanAccessDocument(Document.Id documentId);
 }
