@@ -23,8 +23,7 @@ import java.util.UUID
 data class NoteResponseDto(
     val id: UUID,
     val createdByUserId: String,
-    val createdByUserFirstName: String,
-    val createdByUserLastName: String,
+    val createdByUserFullName: String,
     val createdDate: LocalDateTime,
     val content: String,
     val documentId: UUID,
@@ -32,8 +31,7 @@ data class NoteResponseDto(
     constructor(note: Note) : this(
         note.id,
         note.createdByUserId,
-        note.createdByUserFirstName,
-        note.createdByUserLastName,
+        note.createdByUserFullName,
         note.createdDate,
         note.content,
         note.documentId,

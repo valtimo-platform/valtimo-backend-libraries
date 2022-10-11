@@ -26,10 +26,7 @@
             <column name="created_by_user_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="created_by_user_first_name" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_by_user_last_name" type="VARCHAR(255)">
+            <column name="created_by_user_full_name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="created_date" type="DATETIME(6)">
