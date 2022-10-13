@@ -21,12 +21,18 @@ import com.ritense.document.service.DocumentService
 import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.dto.NoteCreateRequestDto
 import com.ritense.note.web.rest.dto.NoteResponseDto
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
@@ -36,6 +42,26 @@ class NoteResource(
     private val noteService: NoteService,
     private val documentService: DocumentService,
 ) {
+    @GetMapping
+    fun getNotes(
+        @RequestParam(required = true) documentId: UUID,
+        @PageableDefault(
+            sort = ["createdDate"],
+            direction = Sort.Direction.DESC
+        ) pageable: Pageable = Pageable.unpaged()
+    ): ResponseEntity<Page<NoteResponseDto>> {
+        val notes = noteService.getNotes(
+            documentId, pageable
+        )
+
+        val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(documentId)
+
+        if (!documentService.currentUserCanAccessDocument(jsonSchemaDocumentId)) {
+            return ResponseEntity.badRequest().build()
+        }
+
+        return ResponseEntity.ok(notes.map { note -> NoteResponseDto(note) })
+    }
 
     @PostMapping
     fun createNote(
