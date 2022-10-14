@@ -30,12 +30,20 @@ public interface DocumentDefinitionRepository<T extends DocumentDefinition> exte
     JpaRepository<T, DocumentDefinition.Id> {
 
     Optional<T> findFirstByIdNameOrderByIdVersionDesc(String documentDefinitionName);
+    Optional<T> findFirstByIdNameAndTenantIdOrderByIdVersionDesc(String documentDefinitionName, String tenantId);
 
     List<T> findAllByIdName(String documentDefinitionName);
 
     Page<T> findAll(Pageable pageable);
 
+    Page<T> findAllByTenantId(Pageable pageable, String tenantId);
+
+    Optional<T> findById(DocumentDefinition.Id id);
+
+    Optional<T> findByIdAndTenantId(DocumentDefinition.Id id, String tenantId);
+
     Page<JsonSchemaDocumentDefinition> findAllForRoles(List<String> roles, Pageable pageable);
+    Page<JsonSchemaDocumentDefinition> findAllForRolesAndTenantId(List<String> roles, String tenantId, Pageable pageable);
 
     void deleteByIdName(String documentDefinitionName);
 }

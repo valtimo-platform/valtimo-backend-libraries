@@ -84,7 +84,6 @@ public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSche
     ) {
         assertArgumentNotNull(id, "id is required");
         assertArgumentNotNull(schema, "schema is required");
-        assertArgumentNotNull(schema, "tenantId is required");
         assertMatchingSchemaIds(id, schema);
         this.id = id;
         this.schema = schema;

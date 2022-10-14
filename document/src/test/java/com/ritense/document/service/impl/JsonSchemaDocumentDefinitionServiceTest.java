@@ -58,8 +58,8 @@ public class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         documentDefinitionService = spy(new JsonSchemaDocumentDefinitionService(
             resourceLoader,
             jsonSchemaDocumentDefinitionRepository,
-            jsonSchemaDocumentDefinitionRoleRepository
-        ));
+            jsonSchemaDocumentDefinitionRoleRepository,
+                valtimoProperties));
         definition = definitionOf("person");
     }
 

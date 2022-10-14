@@ -69,7 +69,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             documentRepository,
             documentDefinitionService,
             documentSequenceGeneratorService,
-            resourceService);
+            resourceService, valtimoProperties);
     }
 
     @Test

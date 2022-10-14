@@ -97,9 +97,9 @@ mailing:
     sendRedirectedMailsTo:
 
 valtimo:
-    multitenant: true
     app:
         scheme: http
+        multitenant: true
     #mandrill:
     #    apiKey: #external
     #    dateFormat: dd-MM-yyyy

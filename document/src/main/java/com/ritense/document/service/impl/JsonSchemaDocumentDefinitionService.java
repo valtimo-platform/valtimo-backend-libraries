@@ -64,7 +64,12 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     private final ValtimoProperties valtimoProperties;
 
-    public JsonSchemaDocumentDefinitionService(ResourceLoader resourceLoader, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository, ValtimoProperties valtimoProperties) {
+    public JsonSchemaDocumentDefinitionService(
+        ResourceLoader resourceLoader,
+        DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
+        DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository,
+        ValtimoProperties valtimoProperties
+    ) {
         this.resourceLoader = resourceLoader;
         this.documentDefinitionRepository = documentDefinitionRepository;
         this.documentDefinitionRoleRepository = documentDefinitionRoleRepository;
@@ -73,16 +78,18 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable) {
-        return documentDefinitionRepository.findAll(pageable);
+        return documentDefinitionRepository.findAllByTenantId(pageable, getTenantId());
     }
 
     @Override
     public Page<JsonSchemaDocumentDefinition> findForUser(boolean filteredOnRole, Pageable pageable) {
         List<String> roles = SecurityUtils.getCurrentUserRoles();
         if (!filteredOnRole && roles.contains(AuthoritiesConstants.ADMIN)) {
-            return documentDefinitionRepository.findAll(pageable);
+            return documentDefinitionRepository
+                .findAllByTenantId(pageable, getTenantId());
         } else {
-            return documentDefinitionRepository.findAllForRoles(roles, pageable);
+            return documentDefinitionRepository
+                .findAllForRolesAndTenantId(roles, getTenantId(), pageable);
         }
     }
 
@@ -95,12 +102,16 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public Optional<JsonSchemaDocumentDefinition> findBy(DocumentDefinition.Id id) {
-        return documentDefinitionRepository.findById(id);
+        return documentDefinitionRepository
+            .findByIdAndTenantId(id, getTenantId());
+
     }
 
     @Override
     public Optional<JsonSchemaDocumentDefinition> findLatestByName(String documentDefinitionName) {
-        return documentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(documentDefinitionName);
+        return documentDefinitionRepository
+            .findFirstByIdNameAndTenantIdOrderByIdVersionDesc(
+                documentDefinitionName, getTenantId());
     }
 
     @Override
@@ -177,12 +188,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
             }
 
             JsonSchemaDocumentDefinition documentDefinition;
-            if(valtimoProperties.getApp().getMultitenant()) {
-                String tenantId = CurrentTenantService.getCurrentTenant();
-                documentDefinition = new JsonSchemaDocumentDefinition(documentDefinitionId, jsonSchema, tenantId);
-            } else {
-                documentDefinition = new JsonSchemaDocumentDefinition(documentDefinitionId, jsonSchema);
-            }
+            documentDefinition = new JsonSchemaDocumentDefinition(documentDefinitionId, jsonSchema, getTenantId());
 
             if (readOnly) {
                 documentDefinition.markReadOnly();
@@ -249,6 +255,11 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     private Resource[] loadResources() throws IOException {
         return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH);
+    }
+
+    private String getTenantId() {
+        return valtimoProperties.getApp().getMultitenant() ?
+            CurrentTenantService.getCurrentTenant() : null;
     }
 
 }
