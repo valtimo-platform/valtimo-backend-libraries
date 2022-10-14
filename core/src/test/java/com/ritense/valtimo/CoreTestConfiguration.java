@@ -16,14 +16,8 @@
 
 package com.ritense.valtimo;
 
-import com.ritense.valtimo.contract.mail.MailSender;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import static org.mockito.Mockito.mock;
 
 @SpringBootApplication
 public class CoreTestConfiguration {
@@ -31,19 +25,4 @@ public class CoreTestConfiguration {
     public static void main(String[] args) {
         SpringApplication.run(CoreTestConfiguration.class, args);
     }
-
-    @TestConfiguration
-    public static class TestConfig {
-
-        @Bean
-        public FakeUserRepository fakeUserRepository() {
-            return new FakeUserRepository();
-        }
-
-        @Bean
-        public MailSender mailSender() {
-            return mock(MailSender.class);
-        }
-    }
-
 }

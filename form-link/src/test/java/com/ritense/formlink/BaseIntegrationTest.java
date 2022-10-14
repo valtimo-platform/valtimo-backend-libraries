@@ -16,57 +16,13 @@
 
 package com.ritense.formlink;
 
-import com.ritense.document.service.DocumentSnapshotService;
-import com.ritense.form.autodeployment.FormApplicationReadyEventListener;
-import com.ritense.form.repository.FormDefinitionRepository;
-import com.ritense.formlink.repository.ProcessFormAssociationRepository;
-import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.contract.mail.MailSender;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import javax.inject.Inject;
-import java.io.IOException;
 
 @SpringBootTest
 @Tag("integration")
 @ExtendWith(SpringExtension.class)
 public abstract class BaseIntegrationTest extends BaseTest {
-
-    @MockBean
-    protected UserManagementService userManagementService;
-
-    @MockBean
-    protected DocumentSnapshotService documentSnapshotService;
-
-    @SpyBean
-    public MailSender mailSender;
-
-    @Inject
-    public ProcessFormAssociationRepository processFormAssociationRepository;
-
-    @Inject
-    public FormDefinitionRepository formDefinitionRepository;
-
-    @MockBean
-    public FormApplicationReadyEventListener formApplicationReadyEventListener;
-
-    @BeforeAll
-    public static void beforeAll() {
-    }
-
-    @BeforeEach
-    public void beforeEach() throws IOException {
-    }
-
-    @AfterEach
-    public void afterEach() {
-    }
-
 }

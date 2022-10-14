@@ -20,8 +20,6 @@ import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.documentenapi.com.ritense.documentenapi.TestApplication
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
-import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -38,12 +36,6 @@ class BaseIntegrationTest {
 
     @SpyBean
     lateinit var pluginConfigurationRepository: PluginConfigurationRepository
-
-    @MockBean
-    lateinit var mailSender: MailSender
-
-    @MockBean
-    lateinit var userManagementService: UserManagementService
 
     @MockBean
     lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider

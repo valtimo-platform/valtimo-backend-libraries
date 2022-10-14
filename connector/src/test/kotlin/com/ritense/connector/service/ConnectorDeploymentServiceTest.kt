@@ -54,7 +54,7 @@ internal class ConnectorDeploymentServiceTest : BaseTest() {
         assertThat(connectorTypes).isNotNull
         assertThat(connectorTypes).hasSize(1)
 
-        assertThat(connectorTypes[0].name).isEqualTo("aTypeName")
+        assertThat(connectorTypes[0].name).isEqualTo("test-connector")
         assertThat(connectorTypes[0].className).isEqualTo("objectApiConnectorType")
         assertThat(connectorTypes[0].connectorProperties).isEqualTo(objectApiProperties)
         assertThat(connectorTypes[0].allowMultipleConnectorInstances).isEqualTo(true)

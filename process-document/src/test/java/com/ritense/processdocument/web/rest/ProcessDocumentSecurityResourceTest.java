@@ -16,14 +16,13 @@
 
 package com.ritense.processdocument.web.rest;
 
-import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.web.rest.SecuritySpecificEndpointIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.http.HttpMethod.DELETE;
@@ -32,9 +31,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 class ProcessDocumentSecurityResourceTest extends SecuritySpecificEndpointIntegrationTest {
-
-    @MockBean
-    private ResourceService resourceService;
 
     private static final String USER_EMAIL = "user@valtimo.nl";
 

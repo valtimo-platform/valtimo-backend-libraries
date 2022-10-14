@@ -24,6 +24,8 @@ test {
     useJUnitPlatform {
         excludeTags "security", "integration"
     }
+
+    jvmArgs "-Dspring.test.context.cache.maxSize=1"
 }
 
 tasks.register("integrationTesting", Test) {

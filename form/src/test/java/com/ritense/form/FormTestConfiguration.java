@@ -16,29 +16,15 @@
 
 package com.ritense.form;
 
-import com.ritense.resource.service.ResourceService;
-import com.ritense.valtimo.contract.mail.MailSender;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import static org.mockito.Mockito.mock;
 
 @SpringBootApplication
 public class FormTestConfiguration {
 
     public static void main(String[] args) {
         SpringApplication.run(FormTestConfiguration.class, args);
-    }
-
-    @Bean
-    public ResourceService resourceService() {
-        return mock(ResourceService.class);
-    }
-
-    @Bean
-    public MailSender mailSender() {
-        return mock(MailSender.class);
     }
 
     @TestConfiguration

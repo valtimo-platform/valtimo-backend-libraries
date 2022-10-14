@@ -55,7 +55,7 @@ class ConnectorServiceIntTest : BaseIntegrationTest() {
     lateinit var connectorTypeRepository: ConnectorTypeRepository
 
     @Inject
-    @Qualifier("test-connector")
+    @Qualifier("objectApiConnectorType")
     lateinit var connector: Connector
 
     lateinit var connectorTypeId: ConnectorTypeId
@@ -63,14 +63,8 @@ class ConnectorServiceIntTest : BaseIntegrationTest() {
 
     @BeforeAll
     fun setup() {
-        connectorTypeId = ConnectorTypeId(UUID.randomUUID())
-        connectorType = ConnectorType(
-            connectorTypeId,
-            "test-connector-name",
-            "test-connector",
-            object : ConnectorProperties {}
-        )
-        connectorTypeRepository.save(connectorType)
+        connectorType = connectorTypeRepository.findByName("test-connector")!!
+        connectorTypeId = connectorType.id
     }
 
     @Test

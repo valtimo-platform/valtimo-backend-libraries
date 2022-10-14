@@ -20,6 +20,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.service.impl.FormIoFormDefinitionService;
 import com.ritense.formlink.BaseIntegrationTest;
+import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.formlink.service.impl.CamundaFormAssociationService;
 import com.ritense.valtimo.contract.utils.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,6 +53,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Tag("integration")
 @Transactional
 public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegrationTest {
+
+    @Inject
+    public ProcessFormAssociationRepository processFormAssociationRepository;
 
     @Inject
     private FormAssociationManagementResource resource;

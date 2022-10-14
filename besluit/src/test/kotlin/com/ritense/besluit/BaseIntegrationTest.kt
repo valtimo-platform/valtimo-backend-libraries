@@ -29,8 +29,6 @@ import com.ritense.openzaak.domain.connector.OpenZaakConnector
 import com.ritense.openzaak.domain.connector.OpenZaakProperties
 import com.ritense.openzaak.service.impl.Mapper
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
-import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.mail.MailSender
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -66,9 +64,6 @@ class BaseIntegrationTest : BaseTest() {
     @Autowired
     lateinit var openZaakProperties: OpenZaakProperties
 
-    @MockBean
-    lateinit var userManagementService: UserManagementService
-
     @Autowired
     lateinit var connectorService: ConnectorService
 
@@ -77,9 +72,6 @@ class BaseIntegrationTest : BaseTest() {
 
     @Autowired
     lateinit var connectorTypeInstanceRepository: ConnectorTypeInstanceRepository
-
-    @MockBean
-    lateinit var mailSender: MailSender
 
     lateinit var server: MockWebServer
     protected var executedRequests: MutableList<RecordedRequest> = mutableListOf()

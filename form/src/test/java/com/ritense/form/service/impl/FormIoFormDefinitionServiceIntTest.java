@@ -20,16 +20,22 @@ import com.ritense.form.BaseIntegrationTest;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
-import java.util.Optional;
+import com.ritense.form.repository.FormDefinitionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import javax.inject.Inject;
 import javax.transaction.Transactional;
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 public class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
 
+    @Inject
+    public FormDefinitionRepository formDefinitionRepository;
     private FormIoFormDefinitionService formIoFormDefinitionService;
 
     @BeforeEach

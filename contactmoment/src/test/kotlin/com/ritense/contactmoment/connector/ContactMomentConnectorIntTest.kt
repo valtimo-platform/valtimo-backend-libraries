@@ -18,11 +18,9 @@ package com.ritense.contactmoment.connector
 
 import com.ritense.contactmoment.BaseContactMomentIntegrationTest
 import com.ritense.contactmoment.domain.Kanaal
-import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.mockito.Mockito.`when`
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 
 @AutoConfigureWebTestClient(timeout = "36000")
@@ -40,9 +38,6 @@ class ContactMomentConnectorIntTest : BaseContactMomentIntegrationTest() {
 
     @Test
     fun `should create contactmoment`() {
-        val medewerker = ValtimoUser()
-        medewerker.id = "test-id"
-        `when`(currentUserService.currentUser).thenReturn(medewerker)
 
         val contactMoment = (contactMomentConnector as ContactMomentConnector).createContactMoment(Kanaal.MAIL, "content-2")
 

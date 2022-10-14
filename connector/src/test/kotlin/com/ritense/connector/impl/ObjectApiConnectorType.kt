@@ -21,7 +21,7 @@ import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
 import mu.KotlinLogging
 
-@ConnectorType(name = "aTypeName")
+@ConnectorType(name = "test-connector")
 open class ObjectApiConnectorType(
     private var properties: ConnectorProperties,
     val dummyDependency: DummyDependency

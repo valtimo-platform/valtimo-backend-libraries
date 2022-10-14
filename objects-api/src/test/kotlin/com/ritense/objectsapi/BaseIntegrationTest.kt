@@ -24,9 +24,7 @@ import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.service.ObjectTypeConfig
 import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.objectsapi.service.ServerAuthSpecification
-import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
-import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
@@ -43,13 +41,7 @@ import java.util.UUID
 abstract class BaseIntegrationTest {
 
     @MockBean
-    lateinit var userManagementService: UserManagementService
-
-    @MockBean
     lateinit var burgerService: BurgerService
-
-    @MockBean
-    lateinit var mailSender: MailSender
 
     @Autowired
     lateinit var connectorService: ConnectorService

@@ -16,13 +16,9 @@
 
 package com.ritense.openzaak
 
-import com.ritense.resource.service.ResourceService
-import com.ritense.valtimo.contract.mail.MailSender
 import com.ritense.zakenapi.ZakenApiAutoConfiguration
-import org.mockito.Mockito
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.context.annotation.Bean
 
 @SpringBootApplication(
     exclude = [
@@ -30,16 +26,6 @@ import org.springframework.context.annotation.Bean
     ]
 )
 class OpenZaakTestConfiguration {
-
-    @Bean
-    fun resourceService(): ResourceService {
-        return Mockito.mock(ResourceService::class.java)
-    }
-
-    @Bean
-    fun mailSender(): MailSender {
-        return Mockito.mock(MailSender::class.java)
-    }
 
     fun main(args: Array<String>) {
         SpringApplication.run(OpenZaakTestConfiguration::class.java, *args)

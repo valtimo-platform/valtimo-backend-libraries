@@ -17,8 +17,6 @@
 package com.ritense.klant.service
 
 import com.ritense.klant.client.OpenKlantClientProperties
-import com.ritense.openzaak.service.ZaakInstanceLinkService
-import com.ritense.openzaak.service.ZaakRolService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -32,10 +30,4 @@ abstract class BaseIntegrationTest {
 
     @MockBean
     lateinit var openKlantClientProperties: OpenKlantClientProperties
-
-    @MockBean
-    lateinit var zaakRolService: ZaakRolService
-
-    @MockBean
-    lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
 }

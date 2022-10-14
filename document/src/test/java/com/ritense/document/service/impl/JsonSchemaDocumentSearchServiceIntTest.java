@@ -22,6 +22,10 @@ import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
+import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.DocumentSearchService;
+import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.result.CreateDocumentResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -32,6 +36,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +48,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Tag("integration")
 @Transactional
 class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
+
+
+    @Inject
+    private DocumentDefinitionService documentDefinitionService;
+
+    @Inject
+    private DocumentService documentService;
+
+    @Inject
+    private JsonSchemaDocumentRepository documentRepository;
+
+    @Inject
+    private DocumentSearchService documentSearchService;
 
     private JsonSchemaDocumentDefinition definition;
     private CreateDocumentResult originalDocument;
@@ -100,6 +118,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @SuppressWarnings({"squid:S5976", "java:S5976"})
     void searchShouldFindSearchMatch() {
         final List<SearchCriteria> searchCriteriaList = List.of(new SearchCriteria("$.street", "park"));
 

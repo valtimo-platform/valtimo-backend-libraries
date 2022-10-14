@@ -67,7 +67,8 @@ dependencies {
 
     testImplementation "com.squareup.okhttp3:mockwebserver:4.9.1"
     testImplementation "com.squareup.okhttp3:okhttp:4.9.1"
-    testImplementation project(':test-utils-common')
+    testImplementation project(":test-utils-common")
+    testImplementation project(":mail:local-mail")
     testImplementation "org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.14.0"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 

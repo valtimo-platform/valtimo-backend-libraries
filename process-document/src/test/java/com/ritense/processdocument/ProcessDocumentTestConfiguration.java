@@ -16,14 +16,10 @@
 
 package com.ritense.processdocument;
 
-import com.ritense.resource.service.ResourceService;
-import com.ritense.valtimo.contract.mail.MailSender;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import static org.mockito.Mockito.mock;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
@@ -32,14 +28,6 @@ public class ProcessDocumentTestConfiguration {
     public static void main(String[] args) {
         SpringApplication.run(ProcessDocumentTestConfiguration.class, args);
     }
-
-    @Bean
-    public ResourceService resourceService() {
-        return mock(ResourceService.class);
-    }
-
-    @Bean
-    public MailSender mailSender() { return mock(MailSender.class); }
 
     @TestConfiguration
     public static class TestConfig {

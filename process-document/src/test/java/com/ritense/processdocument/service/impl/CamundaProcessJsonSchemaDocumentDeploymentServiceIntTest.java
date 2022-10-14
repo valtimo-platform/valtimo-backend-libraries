@@ -17,10 +17,12 @@
 package com.ritense.processdocument.service.impl;
 
 import com.ritense.processdocument.BaseIntegrationTest;
+import com.ritense.valtimo.service.ContextService;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Pageable;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.stream.Collectors;
 
@@ -29,6 +31,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Tag("integration")
 @Transactional
 class CamundaProcessJsonSchemaDocumentDeploymentServiceIntTest extends BaseIntegrationTest {
+
+    @Inject
+    protected CamundaProcessJsonSchemaDocumentAssociationService camundaProcessJsonSchemaDocumentAssociationService;
+
+    @Inject
+    protected ContextService contextService;
 
     private static final String DOCUMENT_DEFINITION_NAME = "house";
     private static final String PROCESS_DEFINITION_KEY = "loan-process-demo";

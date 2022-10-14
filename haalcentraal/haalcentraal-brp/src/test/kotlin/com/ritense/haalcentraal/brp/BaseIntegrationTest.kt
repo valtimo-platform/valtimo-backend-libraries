@@ -23,8 +23,6 @@ import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorService
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpConnector
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
-import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.mail.MailSender
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -35,7 +33,6 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.util.UUID
 
@@ -58,12 +55,6 @@ class BaseIntegrationTest : BaseTest() {
 
     @Autowired
     lateinit var connectorDeploymentService: ConnectorDeploymentService
-
-    @MockBean
-    lateinit var userManagementService: UserManagementService
-
-    @MockBean
-    lateinit var mailSender: MailSender
 
     lateinit var server: MockWebServer
     protected var executedRequests: MutableList<RecordedRequest> = mutableListOf()

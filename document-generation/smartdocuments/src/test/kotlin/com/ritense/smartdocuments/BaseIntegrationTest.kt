@@ -16,16 +16,14 @@
 
 package com.ritense.smartdocuments
 
-import com.ritense.connector.autodeployment.ConnectorApplicationReadyEventListener
 import com.ritense.resource.service.ResourceService
+import com.ritense.smartdocuments.service.SmartDocumentGenerator
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
-import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.mail.MailSender
-import com.ritense.valtimo.service.CurrentUserService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
@@ -34,17 +32,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 abstract class BaseIntegrationTest : BaseTest() {
 
     @MockBean
-    lateinit var connectorApplicationReadyEventListener: ConnectorApplicationReadyEventListener
-
-    @MockBean
-    lateinit var userManagementService: UserManagementService
-
-    @MockBean
-    lateinit var currentUserService: CurrentUserService
-
-    @MockBean
     lateinit var resourceService: ResourceService
 
-    @MockBean
-    lateinit var mailSender: MailSender
+    @SpyBean
+    lateinit var smartDocumentGenerator: SmartDocumentGenerator
 }

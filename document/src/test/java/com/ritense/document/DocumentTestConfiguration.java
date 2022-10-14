@@ -16,14 +16,8 @@
 
 package com.ritense.document;
 
-import com.ritense.resource.service.ResourceService;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import static org.mockito.Mockito.mock;
 
 @SpringBootApplication
 public class DocumentTestConfiguration {
@@ -31,15 +25,4 @@ public class DocumentTestConfiguration {
     public static void main(String[] args) {
         SpringApplication.run(DocumentTestConfiguration.class, args);
     }
-
-    @Bean
-    public ResourceService resourceService() {
-        return mock(ResourceService.class);
-    }
-
-    @TestConfiguration
-    public static class TestConfig {
-        //Beans extra
-    }
-
 }

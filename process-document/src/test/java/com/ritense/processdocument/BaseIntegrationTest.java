@@ -16,59 +16,13 @@
 
 package com.ritense.processdocument;
 
-import com.ritense.audit.service.impl.AuditServiceImpl;
-import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
-import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
-import com.ritense.resource.service.ResourceService;
-import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.service.CamundaTaskService;
-import com.ritense.valtimo.service.ContextService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import javax.inject.Inject;
 
 @SpringBootTest
 @Tag("integration")
 @ExtendWith(SpringExtension.class)
-public abstract class BaseIntegrationTest extends BaseTest {
-
-    @MockBean
-    protected UserManagementService userManagementService;
-
-    @Inject
-    protected CamundaProcessJsonSchemaDocumentAssociationService camundaProcessJsonSchemaDocumentAssociationService;
-
-    @Inject
-    protected CamundaProcessJsonSchemaDocumentService camundaProcessJsonSchemaDocumentService;
-
-    @Inject
-    protected CamundaTaskService camundaTaskService;
-
-    @Inject
-    protected ContextService contextService;
-
-    @MockBean
-    protected AuditServiceImpl auditService;
-
-    @MockBean
-    protected ResourceService resourceService;
-
-    @BeforeAll
-    static void beforeAll() {
-    }
-
-    @BeforeEach
-    public void beforeEach() {
-    }
-
-    @AfterEach
-    public void afterEach() {
-    }
-
+public abstract class BaseIntegrationTest extends BaseTest{
 }

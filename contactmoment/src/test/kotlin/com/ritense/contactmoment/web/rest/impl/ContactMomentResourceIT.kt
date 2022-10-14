@@ -48,7 +48,6 @@ internal class ContactMomentResourceIT : BaseContactMomentIntegrationTest() {
     @Test
     @WithMockUser
     fun `post contactmoment saves contact moment`() {
-        mockUser(lastName = "Miller")
         val postBody = """
             {
                 "kanaal": "MAIL",

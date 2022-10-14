@@ -21,10 +21,10 @@ import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.transaction.annotation.Transactional
-import javax.inject.Inject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.transaction.annotation.Transactional
+import javax.inject.Inject
 
 @Transactional
 internal class ConnectorDeploymentServiceIntTest : BaseIntegrationTest() {
@@ -43,7 +43,7 @@ internal class ConnectorDeploymentServiceIntTest : BaseIntegrationTest() {
         assertThat(connectorTypes).isNotNull
         assertThat(connectorTypes).hasSize(1)
 
-        assertThat(connectorTypes[0].name).isEqualTo("aTypeName")
+        assertThat(connectorTypes[0].name).isEqualTo("test-connector")
         assertThat(connectorTypes[0].className).isEqualTo("objectApiConnectorType")
         assertThat(connectorTypes[0].connectorProperties).isInstanceOf(ConnectorProperties::class.java)
     }

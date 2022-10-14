@@ -36,7 +36,8 @@ dependencies {
     testImplementation project(':resource:openzaak-resource')
     testImplementation project(':openzaak')
     testImplementation project(':plugin-valtimo')
-    testImplementation project(':test-utils-common')
+    testImplementation project(":test-utils-common")
+    testImplementation project(":mail:local-mail")
 
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.jetbrains.kotlin:kotlin-test"

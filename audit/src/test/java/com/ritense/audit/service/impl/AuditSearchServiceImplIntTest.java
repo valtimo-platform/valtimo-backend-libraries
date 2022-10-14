@@ -19,16 +19,31 @@ package com.ritense.audit.service.impl;
 import com.ritense.audit.BaseIntegrationTest;
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.domain.event.TestEvent;
+import com.ritense.audit.repository.AuditRecordRepository;
+import com.ritense.audit.service.AuditEventProcessor;
+import com.ritense.audit.service.AuditSearchService;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AuditSearchServiceImplIntTest extends BaseIntegrationTest {
+
+    @Inject
+    private AuditRecordRepository auditRecordRepository;
+
+    @Inject
+    private AuditEventProcessor auditEventProcessor;
+
+    @Inject
+    private AuditSearchService auditSearchService;
 
     @BeforeEach
     public void setUp() {

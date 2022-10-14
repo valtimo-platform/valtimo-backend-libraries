@@ -16,61 +16,13 @@
 
 package com.ritense.document;
 
-import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
-import com.ritense.document.repository.DocumentSnapshotRepository;
-import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
-import com.ritense.document.service.DocumentDefinitionService;
-import com.ritense.document.service.DocumentSearchService;
-import com.ritense.document.service.DocumentService;
-import com.ritense.document.service.DocumentSnapshotService;
-import com.ritense.resource.service.ResourceService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import javax.inject.Inject;
 
 @SpringBootTest
 @Tag("integration")
 @ExtendWith(SpringExtension.class)
 public abstract class BaseIntegrationTest extends BaseTest {
-
-    @Inject
-    protected DocumentDefinitionService documentDefinitionService;
-
-    @Inject
-    protected DocumentService documentService;
-
-    @Inject
-    protected JsonSchemaDocumentRepository documentRepository;
-
-    @Inject
-    protected DocumentSearchService documentSearchService;
-
-    @Inject
-    protected DocumentSnapshotService documentSnapshotService;
-
-    @Inject
-    protected DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
-
-    @MockBean
-    public ResourceService resourceService;
-
-    @BeforeAll
-    static void beforeAll() {
-    }
-
-    @BeforeEach
-    public void beforeEach() {
-    }
-
-    @AfterEach
-    public void afterEach() {
-    }
-
 }

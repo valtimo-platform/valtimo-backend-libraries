@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
 import java.util.UUID
@@ -47,10 +46,6 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
 
     @Autowired
     lateinit var processDocumentService: ProcessDocumentService
-
-    @SpyBean
-    lateinit var smartDocumentGenerator: SmartDocumentGenerator
-
 
     private val PROCESS_DEFINITION_KEY = "document-generation"
     private val DOCUMENT_GENERATION_ARRAY = "document-generation-array"

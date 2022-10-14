@@ -21,6 +21,7 @@ import com.ritense.form.BaseIntegrationTest;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
+import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.valtimo.contract.utils.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,10 +30,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -45,6 +48,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
 
+    @Inject
+    public FormDefinitionRepository formDefinitionRepository;
     @Inject
     private FormManagementResource resource;
     private MockMvc mockMvc;

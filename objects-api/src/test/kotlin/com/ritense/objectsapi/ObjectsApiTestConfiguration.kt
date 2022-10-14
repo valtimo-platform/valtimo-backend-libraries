@@ -16,22 +16,12 @@
 
 package com.ritense.objectsapi
 
-import com.ritense.connector.autodeployment.ConnectorApplicationReadyEventListener
-import com.ritense.klant.autoconfiguration.KlantAutoConfiguration
-import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.test.mock.mockito.MockBean
 
-@SpringBootApplication(
-    scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class],
-    exclude = [KlantAutoConfiguration::class]
-)
+@SpringBootApplication
 class ObjectsApiTestConfiguration {
-
-    @MockBean
-    lateinit var connectorApplicationReadyEventListener: ConnectorApplicationReadyEventListener
 
     fun main(args: Array<String>) {
         SpringApplication.run(ObjectsApiTestConfiguration::class.java, *args)

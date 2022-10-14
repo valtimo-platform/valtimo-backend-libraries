@@ -30,7 +30,6 @@ import com.ritense.valtimo.contract.json.serializer.PageSerializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -60,7 +59,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class ProcessDocumentAuditResourceTest extends BaseTest {
 
-    @MockBean
     private ProcessDocumentAuditService processDocumentAuditService;
     private ProcessDocumentAuditResource processDocumentAuditResource;
     private MockMvc mockMvc;

@@ -16,13 +16,9 @@
 
 package com.ritense.contactmoment
 
-import com.ritense.connector.autodeployment.ConnectorApplicationReadyEventListener
-import com.ritense.klant.service.BurgerService
 import com.ritense.klant.service.KlantService
-import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.mail.MailSender
-import com.ritense.valtimo.service.CurrentUserService
 import okhttp3.mockwebserver.MockResponse
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
@@ -36,19 +32,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 abstract class BaseIntegrationTest : BaseTest() {
 
     @MockBean
-    lateinit var connectorApplicationReadyEventListener: ConnectorApplicationReadyEventListener
-
-    @MockBean
     lateinit var mailSender: MailSender
 
     @MockBean
-    lateinit var userManagementService: UserManagementService
-
-    @MockBean
     lateinit var klantService: KlantService
-
-    @MockBean
-    lateinit var currentUserService: CurrentUserService
 
     fun mockResponseFromFile(fileName: String): MockResponse {
         return MockResponse()

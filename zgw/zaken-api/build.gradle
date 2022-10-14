@@ -50,6 +50,7 @@ dependencies {
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
     testImplementation project(":test-utils-common")
+    testImplementation project(":mail:local-mail")
 
     jar {
         enabled = true

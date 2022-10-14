@@ -62,7 +62,9 @@ dependencies {
 
     testImplementation project(':resource')
     testImplementation project(':process-document')
-    testImplementation project(':test-utils-common')
+    testImplementation project(":test-utils-common")
+    testImplementation project(":mail:local-mail")
+    testImplementation project(":resource:local-resource")
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 

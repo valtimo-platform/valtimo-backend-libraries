@@ -26,7 +26,8 @@ dependencies {
     implementation project(":resource")
     implementation project(":web")
 
-    testImplementation project(':test-utils-common')
+    testImplementation project(":test-utils-common")
+    testImplementation project(":mail:local-mail")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

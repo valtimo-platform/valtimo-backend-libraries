@@ -48,7 +48,6 @@ import com.ritense.valtimo.contract.utils.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -85,12 +84,8 @@ class ProcessDocumentResourceTest extends BaseTest {
     private static final String PROCESS_INSTANCE_ID = UUID.randomUUID().toString();
     private static final String DOCUMENT_DEFINITION_NAME = "house";
 
-    @MockBean
     private CamundaProcessJsonSchemaDocumentService processDocumentService;
-
-    @MockBean
     private CamundaProcessJsonSchemaDocumentAssociationService processDocumentAssociationService;
-
     private DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService;
     private MockMvc mockMvc;
     private CamundaProcessJsonSchemaDocumentDefinition processDocumentDefinition;

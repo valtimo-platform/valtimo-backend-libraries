@@ -51,12 +51,15 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "com.vladmihalcea:hibernate-types-52:2.12.1"
 
-    testImplementation project(':test-utils-common')
+    testImplementation project(":core")
+    testImplementation project(":test-utils-common")
+    testImplementation project(":mail:local-mail")
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 

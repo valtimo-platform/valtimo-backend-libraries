@@ -84,7 +84,9 @@ dependencies {
     testImplementation project(':zgw:zaken-api')
     testImplementation project(':zgw:documenten-api')
     testImplementation project(':zgw:catalogi-api')
-    testImplementation project(':test-utils-common')
+    testImplementation project(":test-utils-common")
+    testImplementation project(":mail:local-mail")
+    testImplementation project(":resource:local-resource")
 
     jar {
         enabled = true

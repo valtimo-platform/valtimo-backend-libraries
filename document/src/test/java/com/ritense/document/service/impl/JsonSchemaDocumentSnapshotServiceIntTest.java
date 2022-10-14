@@ -23,21 +23,36 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
+import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.DocumentSnapshotService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
+
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Set;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")
 public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTest {
+
+    @Inject
+    private DocumentService documentService;
+
+    @Inject
+    private DocumentSnapshotService documentSnapshotService;
+
+    @Inject
+    private DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
 
     private JsonSchemaDocumentDefinition definition;
     private JsonSchemaDocument document;

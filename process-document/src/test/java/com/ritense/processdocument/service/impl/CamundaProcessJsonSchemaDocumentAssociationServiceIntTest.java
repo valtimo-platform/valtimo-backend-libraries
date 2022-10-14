@@ -30,8 +30,8 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskResult;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
+import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.RuntimeService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -39,6 +39,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.List;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -46,6 +47,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Tag("integration")
 @Transactional
 class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseIntegrationTest {
+
+    @Inject
+    protected CamundaProcessJsonSchemaDocumentAssociationService camundaProcessJsonSchemaDocumentAssociationService;
+
+    @Inject
+    protected CamundaProcessJsonSchemaDocumentService camundaProcessJsonSchemaDocumentService;
+
+    @Inject
+    protected CamundaTaskService camundaTaskService;
 
     private static final String DOCUMENT_DEFINITION_NAME = "house";
     private static final String PROCESS_DEFINITION_KEY = "loan-process-demo";

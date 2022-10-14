@@ -19,6 +19,7 @@ package com.ritense.document.service.impl;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -26,11 +27,13 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
+
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +42,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationTest {
 
+
+    @Inject
+    protected DocumentDefinitionService documentDefinitionService;
     @Inject
     private ResourceLoader resourceLoader;
 

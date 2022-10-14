@@ -22,12 +22,12 @@ import com.ritense.connector.impl.DummyDependency
 import com.ritense.connector.impl.ObjectApiConnectorType
 import com.ritense.connector.impl.ObjectApiProperties
 import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
-import org.springframework.beans.factory.config.BeanDefinition
+import org.mockito.Mockito.spy
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Scope
+import org.springframework.context.annotation.Primary
 
 @SpringBootApplication(scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class])
 class ConnectorTestConfiguration {
@@ -40,12 +40,12 @@ class ConnectorTestConfiguration {
     class TestConfig { //Beans extra
 
         @Bean
-        @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+        @Primary
         fun objectApiConnectorType(
             properties: ConnectorProperties,
             dummyDependency: DummyDependency
         ): Connector {
-            return ObjectApiConnectorType(properties, dummyDependency)
+            return spy(ObjectApiConnectorType(properties, dummyDependency))
         }
 
         @Bean
