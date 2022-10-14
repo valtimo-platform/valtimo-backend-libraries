@@ -124,9 +124,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     public ResponseEntity<Void> assignHandlerToDocument(
         @PathVariable(name = "documentId")UUID documentId,
         @RequestBody @Valid UpdateAssigneeRequest request) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("REST call /api/document/%s/assign", documentId));
-        }
+        logger.debug(String.format("REST call /api/document/%s/assign", documentId));
 
         try {
             documentService.assignUserToDocument(documentId, request.getAssigneeId());

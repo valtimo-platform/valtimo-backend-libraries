@@ -30,7 +30,7 @@ import com.ritense.document.domain.impl.request.DocumentRelationRequest;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.relation.DocumentRelation;
-import com.ritense.document.event.DocumentAssigneeChanged;
+import com.ritense.document.event.DocumentAssigneeChangedEvent;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
@@ -261,7 +261,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private void publishDocumentAssigneeChangedEvent(String assigneeFullName) {
         applicationEventPublisher.publishEvent(
-            new DocumentAssigneeChanged(
+            new DocumentAssigneeChangedEvent(
                 UUID.randomUUID(),
                 RequestHelper.getOrigin(),
                 LocalDateTime.now(),
