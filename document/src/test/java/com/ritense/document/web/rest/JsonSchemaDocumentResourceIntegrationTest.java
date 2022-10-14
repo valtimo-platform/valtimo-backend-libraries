@@ -5,34 +5,26 @@ import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.repository.DocumentRepository;
+import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@AutoConfigureMockMvc
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-public class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
+class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     private static final String USER_EMAIL = "user@valtimo.nl";
 
     private Document document;
-
-    @Autowired
+    private JsonSchemaDocumentResource jsonSchemaDocumentResource;
     private MockMvc mockMvc;
 
     @Autowired
@@ -49,22 +41,22 @@ public class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTe
             null
         );
         document = result.resultingDocument().orElseThrow();
-
         documentRepository.save(document);
+
+        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService, documentDefinitionService);
+        mockMvc = MockMvcBuilders
+            .standaloneSetup(jsonSchemaDocumentResource)
+            .build();
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void shouldAssignUserToCase() throws Exception {
         var user = mockUser("John", "Doe");
-
-
         when(userManagementService.findById(user.getId())).thenReturn(user);
 
         mockMvc.perform(
             post("/api/document/{documentId}/assign", document.id().getId().toString())
-                // TODO Waarom moet ik dit toevoegen om het werkende te krijgen (gebruiken we nooit in de applicatie?
-                .with(csrf())
                 .content(user.getId()))
             .andDo(print())
             .andExpect(status().isOk());
@@ -83,13 +75,13 @@ public class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTe
     }
 
     @Test
-    void shouldNotAssignInvalidUser() throws Exception {
+    @WithMockUser(username = USER_EMAIL, authorities = {USER})
+    void shouldNotAssignInvalidUserId() throws Exception {
         var user = mockUser("John", "Doe");
         when(userManagementService.findById(user.getId())).thenReturn(null);
 
         mockMvc.perform(
                 post("/api/document/{documentId}/assign", document.id().getId().toString())
-                    .with(csrf())
                     .content(user.getId()))
             .andDo(print())
             .andExpect(status().isBadRequest());

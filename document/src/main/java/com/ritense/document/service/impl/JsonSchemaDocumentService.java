@@ -239,6 +239,9 @@ public class JsonSchemaDocumentService implements DocumentService {
             JsonSchemaDocumentId.existingId(documentId));
 
         var assignee = userManagementService.findById(assigneeId);
+        if (assignee == null) {
+            throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
+        }
 
         document.setAssignee(assigneeId, assignee.getFullName());
         documentRepository.save(document);
