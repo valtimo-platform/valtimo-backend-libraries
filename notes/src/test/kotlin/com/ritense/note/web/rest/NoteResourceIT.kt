@@ -19,11 +19,13 @@ package com.ritense.note.web.rest
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.ritense.audit.service.AuditService
+import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.note.BaseIntegrationTest
+import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.dto.NoteCreateRequestDto
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
@@ -36,6 +38,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -51,6 +54,9 @@ internal class NoteResourceIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var documentService: DocumentService
+
+    @Autowired
+    lateinit var noteService: NoteService
 
     @Autowired
     lateinit var documentDefinitionService: DocumentDefinitionService
@@ -126,6 +132,28 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         )
             .andDo(print())
             .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @WithMockUser(TEST_USER)
+    fun `should get notes`() {
+        val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(documentId)
+
+        val testContent = "body test"
+
+        noteService.createNote(jsonSchemaDocumentId, testContent)
+
+        mockMvc.perform(
+            get("/api/document/{documentId}/note", documentId)
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content[0].id").isNotEmpty)
+            .andExpect(jsonPath("$.content[0].createdByUserId").value("anId"))
+            .andExpect(jsonPath("$.content[0].createdByUserFullName").value("aFirstName aLastName"))
+            .andExpect(jsonPath("$.content[0].createdDate").isNotEmpty)
+            .andExpect(jsonPath("$.content[0].content").value(testContent))
+            .andExpect(jsonPath("$.content[0].documentId").value(documentId.toString()))
     }
 
     companion object {
