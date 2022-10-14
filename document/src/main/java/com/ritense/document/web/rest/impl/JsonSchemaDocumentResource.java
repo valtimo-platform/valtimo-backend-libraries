@@ -37,8 +37,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import javax.validation.Valid;
 import java.util.UUID;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/api/document", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -112,6 +112,16 @@ public class JsonSchemaDocumentResource implements DocumentResource {
 
         documentService.removeRelatedFile(JsonSchemaDocumentId.existingId(documentId), resourceId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    @PostMapping(value = "/{documentId}/assign")
+    public ResponseEntity<Void> assignHandlerToDocument(
+        @PathVariable(name = "documentId")UUID documentId,
+        @RequestBody String assigneeId) {
+
+        documentService.assignUserToDocument(documentId, assigneeId);
+        return ResponseEntity.ok().build();
     }
 
     private boolean hasAccessToDocumentId(UUID documentId) {

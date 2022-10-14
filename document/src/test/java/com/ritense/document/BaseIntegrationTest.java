@@ -24,6 +24,9 @@ import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.authentication.ManageableUser;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +35,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
+import java.util.List;
+import java.util.UUID;
 import javax.inject.Inject;
 
 @SpringBootTest
@@ -61,6 +65,9 @@ public abstract class BaseIntegrationTest extends BaseTest {
     @MockBean
     public ResourceService resourceService;
 
+    @MockBean
+    protected UserManagementService userManagementService;
+
     @BeforeAll
     static void beforeAll() {
     }
@@ -73,4 +80,20 @@ public abstract class BaseIntegrationTest extends BaseTest {
     public void afterEach() {
     }
 
+    protected ManageableUser mockUser(String firstName, String lastName) {
+        return new ValtimoUser(
+            UUID.randomUUID().toString(),
+            "john.doe@valtimo.nl",
+            firstName + " " + lastName,
+            "john.doe@valtimo.nl",
+            firstName,
+            lastName,
+            null,
+            true,
+            null,
+            false,
+            true,
+            List.of("ROLE_USER")
+        );
+    }
 }

@@ -36,4 +36,5 @@ public interface DocumentResource {
 
     ResponseEntity<Void> removeRelatedFile(UUID documentId, UUID resourceId);
 
+    ResponseEntity<Void> assignHandlerToDocument(UUID documentId, String assigneeId);
 }

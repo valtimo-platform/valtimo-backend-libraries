@@ -35,7 +35,8 @@ public class DocumentHttpSecurityConfigurer implements HttpSecurityConfigurer {
                 .antMatchers(POST, "/api/document").hasAuthority(USER)
                 .antMatchers(PUT, "/api/document").hasAuthority(USER)
                 .antMatchers(POST, "/api/document/{document-id}/resource/{resource-id}").hasAuthority(USER)
-                .antMatchers(DELETE, "/api/document/{document-id}/resource/{resource-id}").hasAuthority(USER);
+                .antMatchers(DELETE, "/api/document/{document-id}/resource/{resource-id}").hasAuthority(USER)
+                .antMatchers(POST, "/api/document/{documentId}/assign").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }
