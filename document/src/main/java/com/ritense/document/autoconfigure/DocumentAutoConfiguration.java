@@ -69,14 +69,16 @@ public class DocumentAutoConfiguration {
         final JsonSchemaDocumentDefinitionService documentDefinitionService,
         final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
         final ResourceService resourceService,
-        final UserManagementService userManagementService
+        final UserManagementService userManagementService,
+        final ApplicationEventPublisher applicationEventPublisher
     ) {
         return new JsonSchemaDocumentService(
             documentRepository,
             documentDefinitionService,
             documentSequenceGeneratorService,
             resourceService,
-            userManagementService
+            userManagementService,
+            applicationEventPublisher
         );
     }
 

@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 import java.util.UUID;
@@ -67,6 +68,9 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @MockBean
     protected UserManagementService userManagementService;
+
+    @MockBean
+    public SimpleApplicationEventMulticaster applicationEventMulticaster;
 
     @BeforeAll
     static void beforeAll() {

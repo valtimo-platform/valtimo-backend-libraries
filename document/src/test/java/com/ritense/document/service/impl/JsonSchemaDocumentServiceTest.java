@@ -28,6 +28,7 @@ import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.resource.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.TestingAuthenticationToken;
@@ -68,13 +69,15 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         resourceService = mock(ResourceService.class);
         userManagementService = mock(UserManagementService.class);
         jsonSchemaDocument = mock(JsonSchemaDocument.class);
+        var applicationEventPublisher = mock(ApplicationEventPublisher.class);
 
         jsonSchemaDocumentService = new JsonSchemaDocumentService(
             documentRepository,
             documentDefinitionService,
             documentSequenceGeneratorService,
             resourceService,
-            userManagementService);
+            userManagementService,
+            applicationEventPublisher);
     }
 
     @Test

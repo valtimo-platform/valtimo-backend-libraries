@@ -25,6 +25,7 @@ import com.ritense.document.domain.impl.event.JsonSchemaDocumentModifiedEvent;
 import com.ritense.document.domain.impl.relation.JsonSchemaDocumentRelation;
 import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.domain.validation.DocumentContentValidationResult;
+import com.ritense.document.event.DocumentAssigneeChanged;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
@@ -38,16 +39,9 @@ import com.ritense.valtimo.contract.utils.RequestHelper;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
-
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +53,13 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 
@@ -122,7 +122,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         final String createdBy,
         final Long sequence,
         final JsonSchemaDocumentRelation documentRelation
-    ) {
+        ) {
         assertArgumentNotNull(id, "id is required");
         assertArgumentNotNull(content, "content is required");
         assertArgumentNotNull(documentDefinition, "documentDefinition is required");

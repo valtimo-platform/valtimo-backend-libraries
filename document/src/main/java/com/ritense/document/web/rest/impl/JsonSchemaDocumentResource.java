@@ -20,6 +20,7 @@ import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.result.CreateDocumentResult;
@@ -122,13 +123,13 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     @PostMapping(value = "/{documentId}/assign")
     public ResponseEntity<Void> assignHandlerToDocument(
         @PathVariable(name = "documentId")UUID documentId,
-        @RequestBody String assigneeId) {
+        @RequestBody @Valid UpdateAssigneeRequest request) {
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("REST call /api/document/%s/assign", documentId));
         }
 
         try {
-            documentService.assignUserToDocument(documentId, assigneeId);
+            documentService.assignUserToDocument(documentId, request.getAssigneeId());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             logger.error("Failed to assign a user to a document", e);
