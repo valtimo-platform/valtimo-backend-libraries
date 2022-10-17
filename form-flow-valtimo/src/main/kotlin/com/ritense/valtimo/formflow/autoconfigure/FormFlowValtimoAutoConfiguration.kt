@@ -16,16 +16,16 @@
 
 package com.ritense.valtimo.formflow.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.service.DocumentService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
-import com.ritense.formflow.service.FormFlowObjectMapper
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.domain.ProcessLinkTaskProvider
 import com.ritense.formlink.service.FormAssociationService
+import com.ritense.formlink.service.impl.CamundaFormAssociationService
 import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.handler.FormFlowCreateTaskEventHandler
-import com.ritense.formlink.service.impl.CamundaFormAssociationService
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.valtimo.formflow.security.ValtimoFormFlowHttpSecurityConfigurer
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
@@ -81,7 +81,7 @@ class FormFlowValtimoAutoConfiguration {
         formIoFormDefinitionService: FormIoFormDefinitionService,
         camundaFormAssociationService: CamundaFormAssociationService,
         documentService: DocumentService,
-        objectMapper: FormFlowObjectMapper
+        objectMapper: ObjectMapper
     ): FormFlowStepTypeFormHandler {
         return FormFlowStepTypeFormHandler(
             formIoFormDefinitionService,
