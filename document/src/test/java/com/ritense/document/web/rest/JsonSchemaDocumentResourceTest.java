@@ -23,6 +23,7 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
+import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.utils.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -194,6 +196,41 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             .andReturn();
 
         verify(documentService).removeRelatedFile(any(), any());
+    }
+
+    @Test
+    void shouldGetCandidateUsers() throws Exception {
+        final var json = "{\"firstName\": \"John\"}";
+        final var content = new JsonDocumentContent(json);
+        final var document = createDocument(content);
+
+        when(documentService.getCandidateUsers(document.id()))
+            .thenReturn(List.of(new NamedUser("1234", "John", "Doe")));
+        when(documentService.get(document.id().toString())).thenReturn(document);
+        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
+            .thenReturn(true);
+
+        mockMvc.perform(get("/api/document/{document-id}/candidate-user", document.id()).accept(APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].firstName").value("John"))
+            .andExpect(jsonPath("$[0].lastName").value("Doe"));
+    }
+
+    @Test
+    void shouldNotGetCandidateUsersWhenNoAccessToDocument() throws Exception {
+        final var json = "{\"firstName\": \"John\"}";
+        final var content = new JsonDocumentContent(json);
+        final var document = createDocument(content);
+
+        when(documentService.get(document.id().toString())).thenReturn(document);
+        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
+            .thenReturn(false);
+
+        mockMvc.perform(get("/api/document/{document-id}/candidate-user", document.id()).accept(APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isBadRequest());
     }
 
 }
