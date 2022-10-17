@@ -60,4 +60,6 @@ public interface DocumentService {
     void removeDocuments(String documentDefinitionName);
 
     boolean currentUserCanAccessDocument(Document.Id documentId);
+
+    void assignUserToDocument(UUID documentId, String assigneeId);
 }

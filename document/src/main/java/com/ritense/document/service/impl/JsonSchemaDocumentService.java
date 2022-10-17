@@ -30,23 +30,27 @@ import com.ritense.document.domain.impl.request.DocumentRelationRequest;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.relation.DocumentRelation;
+import com.ritense.document.event.DocumentAssigneeChangedEvent;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.service.DocumentService;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.audit.utils.AuditHelper;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.resource.Resource;
+import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
 public class JsonSchemaDocumentService implements DocumentService {
@@ -54,13 +58,24 @@ public class JsonSchemaDocumentService implements DocumentService {
     private final DocumentRepository documentRepository;
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
     private final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService;
+
+    private final UserManagementService userManagementService;
     private final ResourceService resourceService;
 
-    public JsonSchemaDocumentService(DocumentRepository documentRepository, JsonSchemaDocumentDefinitionService documentDefinitionService, JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService, ResourceService resourceService) {
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    public JsonSchemaDocumentService(DocumentRepository documentRepository,
+                                     JsonSchemaDocumentDefinitionService documentDefinitionService,
+                                     JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
+                                     ResourceService resourceService,
+                                     UserManagementService userManagementService,
+                                     ApplicationEventPublisher applicationEventPublisher) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
         this.documentSequenceGeneratorService = documentSequenceGeneratorService;
         this.resourceService = resourceService;
+        this.userManagementService = userManagementService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -225,5 +240,34 @@ public class JsonSchemaDocumentService implements DocumentService {
         return findBy(documentId).map(document ->
             documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name())
         ).orElse(false);
+    }
+
+    @Override
+    public void assignUserToDocument(UUID documentId, String assigneeId) {
+        JsonSchemaDocument document = getDocumentBy(
+            JsonSchemaDocumentId.existingId(documentId));
+
+        var assignee = userManagementService.findById(assigneeId);
+        if (assignee == null) {
+            throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
+        }
+
+        document.setAssignee(assigneeId, assignee.getFullName());
+        documentRepository.save(document);
+
+        // Publish an event to update the audit log
+        publishDocumentAssigneeChangedEvent(assignee.getFullName());
+    }
+
+    private void publishDocumentAssigneeChangedEvent(String assigneeFullName) {
+        applicationEventPublisher.publishEvent(
+            new DocumentAssigneeChangedEvent(
+                UUID.randomUUID(),
+                RequestHelper.getOrigin(),
+                LocalDateTime.now(),
+                AuditHelper.getActor(),
+                assigneeFullName
+            )
+        );
     }
 }

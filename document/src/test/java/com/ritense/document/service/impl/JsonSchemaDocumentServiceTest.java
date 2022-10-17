@@ -16,14 +16,6 @@
 
 package com.ritense.document.service.impl;
 
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -32,19 +24,29 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.resource.Resource;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class JsonSchemaDocumentServiceTest extends BaseTest {
 
@@ -53,6 +55,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
     private JsonSchemaDocumentDefinitionService documentDefinitionService;
     private JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService;
     private ResourceService resourceService;
+
+    private UserManagementService userManagementService;
     private JsonSchemaDocument jsonSchemaDocument;
 
     private final String documentDefinitionName = "name";
@@ -63,13 +67,17 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         documentDefinitionService = mock(JsonSchemaDocumentDefinitionService.class);
         documentSequenceGeneratorService = mock(JsonSchemaDocumentDefinitionSequenceGeneratorService.class);
         resourceService = mock(ResourceService.class);
+        userManagementService = mock(UserManagementService.class);
         jsonSchemaDocument = mock(JsonSchemaDocument.class);
+        var applicationEventPublisher = mock(ApplicationEventPublisher.class);
 
         jsonSchemaDocumentService = new JsonSchemaDocumentService(
             documentRepository,
             documentDefinitionService,
             documentSequenceGeneratorService,
-            resourceService);
+            resourceService,
+            userManagementService,
+            applicationEventPublisher);
     }
 
     @Test

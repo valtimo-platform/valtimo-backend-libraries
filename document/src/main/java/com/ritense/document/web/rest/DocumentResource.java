@@ -19,10 +19,11 @@ package com.ritense.document.web.rest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
-import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import java.util.UUID;
 
 public interface DocumentResource {
 
@@ -36,4 +37,5 @@ public interface DocumentResource {
 
     ResponseEntity<Void> removeRelatedFile(UUID documentId, UUID resourceId);
 
+    ResponseEntity<Void> assignHandlerToDocument(UUID documentId, UpdateAssigneeRequest request);
 }
