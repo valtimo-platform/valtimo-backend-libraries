@@ -27,9 +27,9 @@ import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.web.rest.DocumentResource;
+import com.ritense.valtimo.contract.authentication.NamedUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.ritense.valtimo.contract.authentication.ManageableUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +45,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/api/document", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -141,14 +140,14 @@ public class JsonSchemaDocumentResource implements DocumentResource {
 
     @Override
     @GetMapping("/{document-id}/candidate-user")
-    public ResponseEntity<List<ManageableUser>> getCandidateUsers(
+    public ResponseEntity<List<NamedUser>> getCandidateUsers(
         @PathVariable(name = "document-id") UUID documentId
     ) {
         if (!hasAccessToDocumentId(documentId)) {
             return ResponseEntity.badRequest().build();
         }
 
-        List<ManageableUser> users = documentService.getCandidateUsers(JsonSchemaDocumentId.existingId(documentId));
+        List<NamedUser> users = documentService.getCandidateUsers(JsonSchemaDocumentId.existingId(documentId));
         return ResponseEntity.ok(users);
     }
 

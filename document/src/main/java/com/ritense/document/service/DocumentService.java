@@ -24,7 +24,7 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
-import com.ritense.valtimo.contract.authentication.ManageableUser;
+import com.ritense.valtimo.contract.authentication.NamedUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -68,5 +68,5 @@ public interface DocumentService {
 
     Set<String> getDocumentRoles(Document.Id documentId);
 
-    List<ManageableUser> getCandidateUsers(Document.Id documentId);
+    List<NamedUser> getCandidateUsers(Document.Id documentId);
 }

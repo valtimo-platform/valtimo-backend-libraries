@@ -22,7 +22,7 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
-import com.ritense.valtimo.contract.authentication.ManageableUser;
+import com.ritense.valtimo.contract.authentication.NamedUser;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -42,6 +42,6 @@ public interface DocumentResource {
 
     ResponseEntity<Void> assignHandlerToDocument(UUID documentId, UpdateAssigneeRequest request);
 
-    ResponseEntity<List<ManageableUser>> getCandidateUsers(UUID documentId);
+    ResponseEntity<List<NamedUser>> getCandidateUsers(UUID documentId);
 
 }

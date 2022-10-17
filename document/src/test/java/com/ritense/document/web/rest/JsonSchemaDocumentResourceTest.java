@@ -23,7 +23,7 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
-import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
+import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.utils.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -205,7 +205,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         final var document = createDocument(content);
 
         when(documentService.getCandidateUsers(document.id()))
-            .thenReturn(List.of(new ValtimoUserBuilder().firstName("John").lastName("Doe").build()));
+            .thenReturn(List.of(new NamedUser("1234", "John", "Doe")));
         when(documentService.get(document.id().toString()))            .thenReturn(document);
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(true);

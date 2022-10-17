@@ -148,12 +148,12 @@ public class KeycloakUserManagementService implements UserManagementService {
         Set<String> allUserGroups = new HashSet<>(groupsCriteria.getRequiredUserGroups());
         groupsCriteria.getOrUserGroups().forEach(allUserGroups::addAll);
 
-        List<ManageableUser> allUsers = new ArrayList<>();
-        allUserGroups.stream()
+        List<String> userIds = new ArrayList<>();
+        List<ManageableUser> allUsers = allUserGroups.stream()
             .map(this::findByRole)
             .flatMap(Collection::stream)
-            .filter(user -> allUsers.stream().noneMatch(otherUser -> otherUser.getId().equals(user.getId())))
-            .forEach(allUsers::add);
+            .filter(user -> userIds.add(user.getId()))
+            .collect(Collectors.toList());
 
         return allUsers.stream()
             .filter(user -> user.getRoles().containsAll(groupsCriteria.getRequiredUserGroups()))
