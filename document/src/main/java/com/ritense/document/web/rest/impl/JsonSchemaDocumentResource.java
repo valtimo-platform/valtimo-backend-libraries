@@ -20,12 +20,15 @@ import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.web.rest.DocumentResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,10 +45,13 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/api/document", produces = MediaType.APPLICATION_JSON_VALUE)
 public class JsonSchemaDocumentResource implements DocumentResource {
+
+    private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentResource.class);
 
     private final DocumentService documentService;
     private final DocumentDefinitionService documentDefinitionService;
@@ -115,6 +121,22 @@ public class JsonSchemaDocumentResource implements DocumentResource {
 
         documentService.removeRelatedFile(JsonSchemaDocumentId.existingId(documentId), resourceId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    @PostMapping(value = "/{documentId}/assign")
+    public ResponseEntity<Void> assignHandlerToDocument(
+        @PathVariable(name = "documentId")UUID documentId,
+        @RequestBody @Valid UpdateAssigneeRequest request) {
+        logger.debug(String.format("REST call /api/document/%s/assign", documentId));
+
+        try {
+            documentService.assignUserToDocument(documentId, request.getAssigneeId());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Failed to assign a user to a document", e);
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @Override

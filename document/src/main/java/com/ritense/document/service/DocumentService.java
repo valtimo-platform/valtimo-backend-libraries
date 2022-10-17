@@ -64,6 +64,8 @@ public interface DocumentService {
 
     boolean currentUserCanAccessDocument(Document.Id documentId);
 
+    void assignUserToDocument(UUID documentId, String assigneeId);
+
     Set<String> getDocumentRoles(Document.Id documentId);
 
     List<ManageableUser> getCandidateUsers(Document.Id documentId);
