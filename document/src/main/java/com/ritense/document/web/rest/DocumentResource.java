@@ -21,8 +21,11 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
-import java.util.UUID;
+import com.ritense.valtimo.contract.authentication.ManageableUser;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+import java.util.UUID;
 
 public interface DocumentResource {
 
@@ -35,5 +38,7 @@ public interface DocumentResource {
     ResponseEntity<Void> assignResource(UUID documentId, UUID resourceId);
 
     ResponseEntity<Void> removeRelatedFile(UUID documentId, UUID resourceId);
+
+    ResponseEntity<List<ManageableUser>> getCandidateUsers(UUID documentId);
 
 }

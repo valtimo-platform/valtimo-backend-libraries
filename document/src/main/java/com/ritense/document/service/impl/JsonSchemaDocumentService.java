@@ -36,6 +36,9 @@ import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.service.DocumentService;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.authentication.ManageableUser;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.springframework.data.domain.Page;
@@ -45,6 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
@@ -55,12 +59,20 @@ public class JsonSchemaDocumentService implements DocumentService {
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
     private final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService;
     private final ResourceService resourceService;
+    private final UserManagementService userManagementService;
 
-    public JsonSchemaDocumentService(DocumentRepository documentRepository, JsonSchemaDocumentDefinitionService documentDefinitionService, JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService, ResourceService resourceService) {
+    public JsonSchemaDocumentService(
+        DocumentRepository documentRepository,
+        JsonSchemaDocumentDefinitionService documentDefinitionService,
+        JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
+        ResourceService resourceService,
+        UserManagementService userManagementService
+    ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
         this.documentSequenceGeneratorService = documentSequenceGeneratorService;
         this.resourceService = resourceService;
+        this.userManagementService = userManagementService;
     }
 
     @Override
@@ -225,5 +237,18 @@ public class JsonSchemaDocumentService implements DocumentService {
         return findBy(documentId).map(document ->
             documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name())
         ).orElse(false);
+    }
+
+    @Override
+    public Set<String> getDocumentRoles(Document.Id documentId) {
+        var document = get(documentId.toString());
+        return documentDefinitionService.getDocumentDefinitionRoles(document.definitionId().name());
+    }
+
+    @Override
+    public List<ManageableUser> getCandidateUsers(Document.Id documentId) {
+        var searchCriteria = new SearchByUserGroupsCriteria();
+        searchCriteria.addToOrUserGroups(getDocumentRoles(documentId));
+        return userManagementService.findByRoles(searchCriteria);
     }
 }

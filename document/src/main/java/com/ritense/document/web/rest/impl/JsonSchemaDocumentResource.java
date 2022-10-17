@@ -26,6 +26,7 @@ import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.web.rest.DocumentResource;
+import com.ritense.valtimo.contract.authentication.ManageableUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -112,6 +115,19 @@ public class JsonSchemaDocumentResource implements DocumentResource {
 
         documentService.removeRelatedFile(JsonSchemaDocumentId.existingId(documentId), resourceId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    @GetMapping("/{document-id}/candidate-user")
+    public ResponseEntity<List<ManageableUser>> getCandidateUsers(
+        @PathVariable(name = "document-id") UUID documentId
+    ) {
+        if (!hasAccessToDocumentId(documentId)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<ManageableUser> users = documentService.getCandidateUsers(JsonSchemaDocumentId.existingId(documentId));
+        return ResponseEntity.ok(users);
     }
 
     private boolean hasAccessToDocumentId(UUID documentId) {

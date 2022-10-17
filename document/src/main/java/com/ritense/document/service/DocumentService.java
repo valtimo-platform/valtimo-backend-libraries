@@ -24,11 +24,14 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
+import com.ritense.valtimo.contract.authentication.ManageableUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface DocumentService {
@@ -60,4 +63,8 @@ public interface DocumentService {
     void removeDocuments(String documentDefinitionName);
 
     boolean currentUserCanAccessDocument(Document.Id documentId);
+
+    Set<String> getDocumentRoles(Document.Id documentId);
+
+    List<ManageableUser> getCandidateUsers(Document.Id documentId);
 }
