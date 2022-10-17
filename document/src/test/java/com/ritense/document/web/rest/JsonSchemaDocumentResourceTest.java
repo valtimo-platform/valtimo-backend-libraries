@@ -206,19 +206,31 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
 
         when(documentService.getCandidateUsers(document.id()))
             .thenReturn(List.of(new NamedUser("1234", "John", "Doe")));
-        when(documentService.get(document.id().toString()))            .thenReturn(document);
+        when(documentService.get(document.id().toString())).thenReturn(document);
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(true);
 
-        mockMvc.perform(
-                get("/api/document/{document-id}/candidate-user", document.id())
-                    .accept(APPLICATION_JSON_VALUE)
-            )
+        mockMvc.perform(get("/api/document/{document-id}/candidate-user", document.id()).accept(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(1)))
             .andExpect(jsonPath("$[0].firstName").value("John"))
             .andExpect(jsonPath("$[0].lastName").value("Doe"));
+    }
+
+    @Test
+    void shouldNotGetCandidateUsersWhenNoAccessToDocument() throws Exception {
+        final var json = "{\"firstName\": \"John\"}";
+        final var content = new JsonDocumentContent(json);
+        final var document = createDocument(content);
+
+        when(documentService.get(document.id().toString())).thenReturn(document);
+        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
+            .thenReturn(false);
+
+        mockMvc.perform(get("/api/document/{document-id}/candidate-user", document.id()).accept(APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isBadRequest());
     }
 
 }
