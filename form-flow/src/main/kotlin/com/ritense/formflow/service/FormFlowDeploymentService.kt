@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
@@ -35,7 +36,7 @@ import java.nio.charset.StandardCharsets
 class FormFlowDeploymentService(
     private val resourceLoader: ResourceLoader,
     private val formFlowService: FormFlowService,
-    private val formFlowObjectMapper: FormFlowObjectMapper
+    private val objectMapper: ObjectMapper
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
@@ -48,7 +49,7 @@ class FormFlowDeploymentService(
                 }
             }
         } catch (e: Exception) {
-            throw RuntimeException("Error deploying Form Flow's", e)
+            throw RuntimeException("Error deploying Form Flows", e)
         }
     }
 
@@ -63,7 +64,7 @@ class FormFlowDeploymentService(
     fun deploy(formFlowKey: String, formFlowJson: String) {
         validate(formFlowJson)
 
-        val formFlowDefinitionConfig = formFlowObjectMapper.get().readValue(formFlowJson, FormFlowDefinition::class.java)
+        val formFlowDefinitionConfig = objectMapper.readValue(formFlowJson, FormFlowDefinition::class.java)
 
         validate(formFlowDefinitionConfig)
 

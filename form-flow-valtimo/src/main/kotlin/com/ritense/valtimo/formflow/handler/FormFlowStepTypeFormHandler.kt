@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow.handler
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.service.DocumentService
 import com.ritense.form.domain.FormDefinition
@@ -24,14 +25,13 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
-import com.ritense.formflow.service.FormFlowObjectMapper
 import com.ritense.formlink.service.impl.CamundaFormAssociationService
 
 class FormFlowStepTypeFormHandler(
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
     private val camundaFormAssociationService: CamundaFormAssociationService,
     private val documentService: DocumentService,
-    private val objectMapper: FormFlowObjectMapper
+    private val objectMapper: ObjectMapper
 ) : FormFlowStepTypeHandler {
 
     override fun getType() = "form"
@@ -52,7 +52,7 @@ class FormFlowStepTypeFormHandler(
     }
 
     private fun prefillWithSubmissionData(formDefinition: FormDefinition, stepInstance: FormFlowStepInstance) {
-        formDefinition.preFill(objectMapper.get().readTree(stepInstance.instance.getSubmissionDataContext()))
+        formDefinition.preFill(objectMapper.readTree(stepInstance.instance.getSubmissionDataContext()))
     }
 
     private fun prefillWithAdditionalData(
