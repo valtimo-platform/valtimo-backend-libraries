@@ -30,6 +30,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import javax.ws.rs.NotFoundException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -143,7 +145,22 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public List<ManageableUser> findByRoles(SearchByUserGroupsCriteria groupsCriteria) {
-        return null;
+        Set<String> allUserGroups = new HashSet<>(groupsCriteria.getRequiredUserGroups());
+        groupsCriteria.getOrUserGroups().forEach(allUserGroups::addAll);
+
+        List<String> userIds = new ArrayList<>();
+        List<ManageableUser> allUsers = allUserGroups.stream()
+            .map(this::findByRole)
+            .flatMap(Collection::stream)
+            .filter(user -> userIds.add(user.getId()))
+            .collect(Collectors.toList());
+
+        return allUsers.stream()
+            .filter(user -> user.getRoles().containsAll(groupsCriteria.getRequiredUserGroups()))
+            .filter(user -> groupsCriteria.getOrUserGroups().stream()
+                .map(userGroups -> user.getRoles().stream().anyMatch(userGroups::contains))
+                .reduce(true, (orUserGroup1, orUserGroup2) -> orUserGroup1 && orUserGroup2))
+            .collect(Collectors.toList());
     }
 
     private ManageableUser userRepresentationToManagableUser(UserRepresentation userRepresentation) {
