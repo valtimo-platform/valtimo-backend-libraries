@@ -54,9 +54,9 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation "org.testcontainers:jdbc"
-    testImplementation group: 'org.liquibase', name: 'liquibase-core', version: '4.3.3'
-    testImplementation group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.3.3'
-    testImplementation group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
+    testImplementation "org.liquibase:liquibase-core"
+    testImplementation "org.liquibase.ext:liquibase-hibernate5:4.16.1"
+    testImplementation "com.mattbertolini:liquibase-slf4j:4.1.0"
 
     testImplementation "org.springframework.security:spring-security-test"
 
