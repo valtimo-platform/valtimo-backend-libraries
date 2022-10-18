@@ -3,4 +3,4 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.processdocument.autoconfigure.ProcessDocumentAuditAutoConfiguration, \
   com.ritense.processdocument.autoconfigure.ProcessDocumentSecurityAutoConfiguration, \
   com.ritense.processdocument.autoconfigure.ProcessDocumentLiquibaseAutoConfiguration, \
-  com.ritense.processdocument.autoconfigure.ProcessDocumentAutoConfigurationK
+  com.ritense.processdocument.autoconfigure.ProcessDocumentKotlinAutoConfiguration
