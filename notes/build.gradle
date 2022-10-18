@@ -41,6 +41,7 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
 
     testImplementation "io.kotest:kotest-assertions-core:5.5.1"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
     jar {
         enabled = true

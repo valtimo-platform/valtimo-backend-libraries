@@ -20,7 +20,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.note.domain.Note
 import com.ritense.note.event.NoteCreatedEvent
 import com.ritense.note.repository.NoteRepository
-import com.ritense.valtimo.contract.authentication.CurrentUserService
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
@@ -30,7 +30,7 @@ import java.util.UUID
 
 class NoteService(
     private val noteRepository: NoteRepository,
-    private val currentUserService: CurrentUserService,
+    private val userManagementService: UserManagementService,
     private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
@@ -47,7 +47,7 @@ class NoteService(
     ): Note {
         logger.debug { "Create note for document $documentId" }
         SecurityUtils.getCurrentUserLogin()
-        val user = currentUserService.currentUser
+        val user = userManagementService.currentUser
         val node = noteRepository.save(Note(documentId, user, noteContent))
         applicationEventPublisher.publishEvent(NoteCreatedEvent(documentId.id, node.id))
         return node
