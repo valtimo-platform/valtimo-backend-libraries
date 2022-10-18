@@ -131,7 +131,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
                 .content(jacksonObjectMapper().writeValueAsString(note))
         )
             .andDo(print())
-            .andExpect(status().isBadRequest)
+            .andExpect(status().isForbidden)
     }
 
     @Test
