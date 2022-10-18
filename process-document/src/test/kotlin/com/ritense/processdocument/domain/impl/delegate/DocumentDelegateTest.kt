@@ -32,19 +32,19 @@ import org.junit.jupiter.api.Test
 import java.util.Optional
 import java.util.UUID
 
-internal class DocumentDelegateImplTest {
+internal class DocumentDelegateTest {
 
     lateinit var processDocumentService: ProcessDocumentService
     lateinit var userManagementService: UserManagementService
     lateinit var documentService: DocumentService
-    lateinit var documentDelegateImpl: DocumentDelegateImpl
+    lateinit var documentDelegate: DocumentDelegate
 
     @BeforeEach
     fun beforeEach() {
         processDocumentService = mock()
         userManagementService = mock()
         documentService = mock()
-        documentDelegateImpl = DocumentDelegateImpl(
+        documentDelegate = DocumentDelegate(
             processDocumentService,
             userManagementService,
             documentService,
@@ -64,7 +64,7 @@ internal class DocumentDelegateImplTest {
         whenever(userManagementService.findByEmail("john@example.com"))
             .thenReturn(Optional.of(ValtimoUserBuilder().id("anId").build()))
 
-        documentDelegateImpl.setAssignee(delegateExecutionFake, "john@example.com")
+        documentDelegate.setAssignee(delegateExecutionFake, "john@example.com")
 
         verify(documentService, times(1)).assignUserToDocument(UUID.fromString(documentId), "anId")
     }

@@ -23,7 +23,7 @@ import com.ritense.valtimo.contract.authentication.UserManagementService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 
-class DocumentDelegateImpl(
+class DocumentDelegate(
     val processDocumentService: ProcessDocumentService,
     val userManagementService: UserManagementService,
     val documentService: DocumentService,

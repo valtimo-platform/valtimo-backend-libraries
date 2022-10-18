@@ -17,7 +17,7 @@
 package com.ritense.processdocument.autoconfigure
 
 import com.ritense.document.service.DocumentService
-import com.ritense.processdocument.domain.impl.delegate.DocumentDelegateImpl
+import com.ritense.processdocument.domain.impl.delegate.DocumentDelegate
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -28,13 +28,13 @@ import org.springframework.context.annotation.Configuration
 class ProcessDocumentAutoConfigurationK {
 
     @Bean
-    @ConditionalOnMissingBean(DocumentDelegateImpl::class)
+    @ConditionalOnMissingBean(DocumentDelegate::class)
     fun documentDelegateImpl(
         processDocumentService: ProcessDocumentService,
         userManagementService: UserManagementService,
         documentService: DocumentService,
-    ): DocumentDelegateImpl {
-        return DocumentDelegateImpl(
+    ): DocumentDelegate {
+        return DocumentDelegate(
             processDocumentService,
             userManagementService,
             documentService,
