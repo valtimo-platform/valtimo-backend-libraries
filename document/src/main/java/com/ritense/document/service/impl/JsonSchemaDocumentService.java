@@ -31,6 +31,7 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.event.DocumentAssigneeChangedEvent;
+import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
@@ -263,6 +264,21 @@ public class JsonSchemaDocumentService implements DocumentService {
 
         // Publish an event to update the audit log
         publishDocumentAssigneeChangedEvent(assignee.getFullName());
+    }
+
+    @Override
+    public void unassignUserFromDocument(UUID documentId) {
+        JsonSchemaDocument document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId));
+        document.unassign();
+        documentRepository.save(document);
+        applicationEventPublisher.publishEvent(
+            new DocumentUnassignedEvent(
+                UUID.randomUUID(),
+                RequestHelper.getOrigin(),
+                LocalDateTime.now(),
+                AuditHelper.getActor()
+            )
+        );
     }
 
     private void publishDocumentAssigneeChangedEvent(String assigneeFullName) {

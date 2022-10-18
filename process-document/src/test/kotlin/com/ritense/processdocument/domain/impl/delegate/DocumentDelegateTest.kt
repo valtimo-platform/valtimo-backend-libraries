@@ -68,4 +68,20 @@ internal class DocumentDelegateTest {
 
         verify(documentService, times(1)).assignUserToDocument(UUID.fromString(documentId), "anId")
     }
+
+    @Test
+    fun `should unassign user from document`() {
+        val documentId = "11111111-1111-1111-1111-111111111111"
+        val processInstanceId = "00000000-0000-0000-0000-000000000000"
+        val delegateExecutionFake = DelegateExecutionFake("id")
+            .withProcessInstanceId(processInstanceId)
+            .withProcessBusinessKey(documentId)
+        whenever(
+            processDocumentService.getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
+        ).thenReturn(JsonSchemaDocumentId.existingId(UUID.fromString(documentId)))
+
+        documentDelegate.unassign(delegateExecutionFake)
+
+        verify(documentService, times(1)).unassignUserFromDocument(UUID.fromString(documentId))
+    }
 }

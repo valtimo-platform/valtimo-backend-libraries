@@ -21,6 +21,7 @@ import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.resource.service.ResourceService;
@@ -28,17 +29,20 @@ import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.resource.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -57,6 +61,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
     private ResourceService resourceService;
 
     private UserManagementService userManagementService;
+    private ApplicationEventPublisher applicationEventPublisher;
     private JsonSchemaDocument jsonSchemaDocument;
 
     private final String documentDefinitionName = "name";
@@ -68,8 +73,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         documentSequenceGeneratorService = mock(JsonSchemaDocumentDefinitionSequenceGeneratorService.class);
         resourceService = mock(ResourceService.class);
         userManagementService = mock(UserManagementService.class);
-        jsonSchemaDocument = mock(JsonSchemaDocument.class);
-        var applicationEventPublisher = mock(ApplicationEventPublisher.class);
+        applicationEventPublisher = mock(ApplicationEventPublisher.class);
 
         jsonSchemaDocumentService = new JsonSchemaDocumentService(
             documentRepository,
@@ -78,6 +82,9 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             resourceService,
             userManagementService,
             applicationEventPublisher);
+
+        var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");
+        jsonSchemaDocument = createDocument(definitionOf("person"), content).resultingDocument().orElseThrow();
     }
 
     @Test
@@ -175,5 +182,19 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         verify(documentRepository, times(0)).saveAll(eq(jsonSchemaDocuments.toList()));
         verify(documentRepository, times(0)).deleteAll(eq(jsonSchemaDocuments.toList()));
         verify(documentSequenceGeneratorService, times(0)).deleteSequenceRecordBy(eq(documentDefinitionName));
+    }
+
+    @Test
+    void shouldUnassignUserFromDocument() {
+        jsonSchemaDocument.setAssignee("my-id", "John Doe");
+        when(documentRepository.findById(jsonSchemaDocument.id())).thenReturn(Optional.of(jsonSchemaDocument));
+
+        jsonSchemaDocumentService.unassignUserFromDocument(jsonSchemaDocument.id().getId());
+
+        assertEquals(null, jsonSchemaDocument.assigneeId());
+        assertEquals(null, jsonSchemaDocument.assigneeFullName());
+        var captor = ArgumentCaptor.forClass(DocumentUnassignedEvent.class);
+        verify(applicationEventPublisher, times(1)).publishEvent(captor.capture());
+        assertEquals("Anonymous", captor.getValue().getUser());
     }
 }

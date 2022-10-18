@@ -29,7 +29,7 @@ class ProcessDocumentKotlinAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(DocumentDelegate::class)
-    fun documentDelegateImpl(
+    fun documentDelegate(
         processDocumentService: ProcessDocumentService,
         userManagementService: UserManagementService,
         documentService: DocumentService,

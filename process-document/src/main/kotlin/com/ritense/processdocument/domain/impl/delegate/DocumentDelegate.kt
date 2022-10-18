@@ -29,12 +29,21 @@ class DocumentDelegate(
     val documentService: DocumentService,
 ) {
 
-    fun setAssignee(execution: DelegateExecution, userEmail: String) {
+    fun setAssignee(execution: DelegateExecution, userEmail: String?) {
+        if (userEmail == null) {
+            return unassign(execution)
+        }
         logger.debug("Assigning user {} to document {}", userEmail, execution.processBusinessKey)
         val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
         val user = userManagementService.findByEmail(userEmail)
             .orElseThrow { IllegalArgumentException("No user found with email: $userEmail") }
         documentService.assignUserToDocument(documentId.id, user.id)
+    }
+
+    fun unassign(execution: DelegateExecution) {
+        logger.debug("Unassigning user from document {}", execution.processBusinessKey)
+        val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
+        documentService.unassignUserFromDocument(documentId.id)
     }
 
     companion object {
