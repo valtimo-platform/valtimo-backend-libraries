@@ -18,10 +18,8 @@ package com.ritense.formflow.domain.definition
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
-import com.ritense.formflow.domain.definition.configuration.FormFlowStepTypeConverter
 import org.hibernate.annotations.Type
 import javax.persistence.Column
-import javax.persistence.Convert
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 import javax.persistence.Table
@@ -50,7 +48,7 @@ data class FormFlowStep(
     @Column(name = "on_complete", columnDefinition = "JSON")
     val onComplete: List<String> = listOf(),
 
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "type", columnDefinition = "JSON", nullable = false)
-    @Convert(converter = FormFlowStepTypeConverter::class)
     val type: FormFlowStepType
 )
