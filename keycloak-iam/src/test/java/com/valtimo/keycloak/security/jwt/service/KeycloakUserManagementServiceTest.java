@@ -93,7 +93,7 @@ class KeycloakUserManagementServiceTest {
         var users = userManagementService.findByRoles(search);
 
         var userIds = users.stream().map(ManageableUser::getId).collect(Collectors.toList());
-        assertThat(userIds).containsOnlyOnce(jamesVance.getId(), johnDoe.getId(), ashaMiller.getId());
+        assertThat(userIds).containsExactly(ashaMiller.getId(), jamesVance.getId(), johnDoe.getId());
     }
 
     @Test
