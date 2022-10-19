@@ -155,7 +155,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
             documentService.unassignUserFromDocument(documentId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            logger.error("Failed to assign a user to a document", e);
+            logger.error("Failed to unassign a user to a document", e);
             return ResponseEntity.badRequest().build();
         }
     }
