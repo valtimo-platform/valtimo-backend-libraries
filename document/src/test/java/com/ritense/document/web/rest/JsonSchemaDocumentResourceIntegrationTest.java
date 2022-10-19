@@ -22,6 +22,7 @@ import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -60,6 +62,11 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         );
         document = result.resultingDocument().orElseThrow();
         documentRepository.save(document);
+
+        documentDefinitionService.putDocumentDefinitionRoles(
+            document.definitionId().name(),
+            Set.of(USER)
+        );
 
         jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService, documentDefinitionService);
         mockMvc = MockMvcBuilders
@@ -109,5 +116,28 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = USER_EMAIL, authorities = {USER})
+    void shouldUnassignUserFromCase() throws Exception {
+        var user = mockUser("John", "Doe");
+        when(userManagementService.findById(user.getId())).thenReturn(user);
+
+        mockMvc.perform(
+                post("/api/document/{documentId}/unassign", document.id().getId().toString())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        // Assert that the assignee is saved in the document
+        var result = documentRepository.findById(document.id());
+
+        assertTrue(result.isPresent());
+        assertTrue(result.get() instanceof JsonSchemaDocument);
+
+        var savedDocument = (JsonSchemaDocument) result.get();
+        assertNull(savedDocument.assigneeId());
+        assertNull(savedDocument.assigneeFullName());
     }
 }

@@ -42,6 +42,8 @@ public interface DocumentResource {
 
     ResponseEntity<Void> assignHandlerToDocument(UUID documentId, UpdateAssigneeRequest request);
 
+    ResponseEntity<Void> unassignHandlerFromDocument(UUID documentId);
+
     ResponseEntity<List<NamedUser>> getCandidateUsers(UUID documentId);
 
 }
