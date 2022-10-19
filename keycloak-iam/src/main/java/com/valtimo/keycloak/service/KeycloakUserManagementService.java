@@ -23,22 +23,20 @@ import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCrite
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.ws.rs.NotFoundException;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import javax.ws.rs.NotFoundException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
 public class KeycloakUserManagementService implements UserManagementService {
@@ -124,7 +122,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             roleUserMembers.addAll(keycloakService.realmRolesResource().get(authority).getRoleUserMembers());
             rolesFound = true;
         } catch (NotFoundException e) {
-            logger.debug("Could not find realm roles: {}", e.getMessage());
+            logger.debug("Could not find realm roles", e);
         }
 
         if (!clientName.isBlank()) {
@@ -132,12 +130,12 @@ public class KeycloakUserManagementService implements UserManagementService {
                 roleUserMembers.addAll(keycloakService.clientRolesResource().get(authority).getRoleUserMembers());
                 rolesFound = true;
             } catch (NotFoundException e) {
-                logger.debug("Could not find client roles: {}", e.getMessage());
+                logger.debug("Could not find client roles", e);
             }
         }
 
         if (!rolesFound) {
-            throw new NotFoundException("Role not Found");
+            logger.error("Role {} was not found in keycloak realm roles or client roles", authority);
         }
 
         return roleUserMembers.stream()
@@ -151,11 +149,10 @@ public class KeycloakUserManagementService implements UserManagementService {
         Set<String> allUserGroups = new HashSet<>(groupsCriteria.getRequiredUserGroups());
         groupsCriteria.getOrUserGroups().forEach(allUserGroups::addAll);
 
-        List<String> userIds = new ArrayList<>();
         List<ManageableUser> allUsers = allUserGroups.stream()
             .map(this::findByRole)
             .flatMap(Collection::stream)
-            .filter(user -> userIds.add(user.getId()))
+            .distinct()
             .collect(Collectors.toList());
 
         return allUsers.stream()
@@ -163,6 +160,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             .filter(user -> groupsCriteria.getOrUserGroups().stream()
                 .map(userGroups -> user.getRoles().stream().anyMatch(userGroups::contains))
                 .reduce(true, (orUserGroup1, orUserGroup2) -> orUserGroup1 && orUserGroup2))
+            .sorted(Comparator.comparing(ManageableUser::getFullName))
             .collect(Collectors.toList());
     }
 

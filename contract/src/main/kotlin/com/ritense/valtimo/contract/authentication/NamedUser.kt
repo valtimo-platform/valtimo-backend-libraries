@@ -18,8 +18,8 @@ package com.ritense.valtimo.contract.authentication
 
 data class NamedUser(
     val id: String,
-    val firstName: String,
-    val lastName: String,
+    val firstName: String?,
+    val lastName: String?,
 ) {
 
     companion object {
