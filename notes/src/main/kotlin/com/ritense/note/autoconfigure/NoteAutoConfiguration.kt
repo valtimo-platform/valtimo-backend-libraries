@@ -21,7 +21,7 @@ import com.ritense.note.repository.NoteRepository
 import com.ritense.note.security.config.NoteHttpSecurityConfigurer
 import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.NoteResource
-import com.ritense.valtimo.contract.authentication.CurrentUserService
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationEventPublisher
@@ -39,12 +39,12 @@ class NoteAutoConfiguration {
     @ConditionalOnMissingBean(NoteService::class)
     fun noteService(
         noteRepository: NoteRepository,
-        currentUserService: CurrentUserService,
+        userManagementService: UserManagementService,
         applicationEventPublisher: ApplicationEventPublisher,
     ): NoteService {
         return NoteService(
             noteRepository,
-            currentUserService,
+            userManagementService,
             applicationEventPublisher,
         )
     }

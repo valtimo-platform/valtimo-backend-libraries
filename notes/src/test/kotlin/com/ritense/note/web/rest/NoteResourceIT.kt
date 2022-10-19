@@ -18,6 +18,7 @@ package com.ritense.note.web.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.JsonPath
+import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.audit.service.AuditService
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.Mapper
@@ -29,6 +30,7 @@ import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.dto.NoteCreateRequestDto
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
+import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
@@ -77,6 +79,8 @@ internal class NoteResourceIT : BaseIntegrationTest() {
             NewDocumentRequest(PROFILE_DOCUMENT_DEFINITION_NAME, Mapper.INSTANCE.get().createObjectNode())
         ).resultingDocument().get().id()!!.id
         documentDefinitionService.putDocumentDefinitionRoles(PROFILE_DOCUMENT_DEFINITION_NAME, setOf(USER))
+        whenever(userManagementService.currentUser)
+            .thenReturn(ValtimoUserBuilder().id("anId").firstName("aFirstName").lastName("aLastName").build())
     }
 
     @Test
