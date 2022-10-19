@@ -130,7 +130,29 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         logger.debug(String.format("REST call /api/document/%s/assign", documentId));
 
         try {
+            if (!hasAccessToDocumentId(documentId)) {
+                return ResponseEntity.badRequest().build();
+            }
+
             documentService.assignUserToDocument(documentId, request.getAssigneeId());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Failed to assign a user to a document", e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Override
+    @PostMapping(value = "/{documentId}/unassign")
+    public ResponseEntity<Void> unassignHandlerFromDocument(@PathVariable(name = "documentId")UUID documentId) {
+        logger.debug(String.format("REST call /api/document/%s/unassign", documentId));
+
+        try {
+            if (!hasAccessToDocumentId(documentId)) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            documentService.unassignUserFromDocument(documentId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             logger.error("Failed to assign a user to a document", e);
