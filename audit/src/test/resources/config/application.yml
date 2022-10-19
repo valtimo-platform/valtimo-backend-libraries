@@ -12,7 +12,7 @@ spring:
         change-log: classpath:/config/liquibase/audit-master.xml
         contexts: unit-test
     jpa:
-        database-platform: org.hibernate.dialect.MySQL57Dialect
+        database-platform: org.hibernate.dialect.MySQL8Dialect
         database: mysql
         show_sql: true
         open-in-view: false

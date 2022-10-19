@@ -11,7 +11,7 @@ spring:
         enabled: true
         change-log: classpath:/config/liquibase/formlink-master.xml
     jpa:
-        database-platform: org.hibernate.dialect.MySQL57Dialect
+        database-platform: org.hibernate.dialect.MySQL8Dialect
         database: mysql
         show_sql: true
         open-in-view: false
