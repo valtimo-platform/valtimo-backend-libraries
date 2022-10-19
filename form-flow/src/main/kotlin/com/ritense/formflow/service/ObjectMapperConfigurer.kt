@@ -19,6 +19,7 @@ package com.ritense.formflow.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.ritense.formflow.domain.definition.configuration.step.StepTypeProperties
+import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 
@@ -29,6 +30,7 @@ class ObjectMapperConfigurer(
 
     @EventListener(ApplicationStartedEvent::class)
     fun configure() {
+        logger.debug { "Setup ObjectMapper for StepTypeProperties" }
         objectMapper
             .apply {
                 stepPropertiesTypes
@@ -37,5 +39,9 @@ class ObjectMapperConfigurer(
                         registerSubtypes(it)
                     }
             }
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }

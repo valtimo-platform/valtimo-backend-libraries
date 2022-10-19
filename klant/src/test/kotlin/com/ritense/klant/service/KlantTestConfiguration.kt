@@ -32,6 +32,7 @@ import com.ritense.openzaak.autoconfigure.OpenZaakSecurityAutoConfiguration
 import com.ritense.openzaak.catalogi.CatalogiAutoConfiguration
 import com.ritense.processdocument.autoconfigure.ProcessDocumentAuditAutoConfiguration
 import com.ritense.processdocument.autoconfigure.ProcessDocumentAutoConfiguration
+import com.ritense.processdocument.autoconfigure.ProcessDocumentKotlinAutoConfiguration
 import com.ritense.resource.autoconfigure.OpenZaakResourceAutoConfiguration
 import com.ritense.valtimo.autoconfigure.AccessAndEntitlementAutoConfiguration
 import com.ritense.valtimo.autoconfigure.AuthenticationAutoConfiguration
@@ -39,6 +40,7 @@ import com.ritense.valtimo.autoconfigure.CamundaAutoConfiguration
 import com.ritense.valtimo.autoconfigure.ChoiceFieldAutoConfiguration
 import com.ritense.valtimo.autoconfigure.ContextAutoConfiguration
 import com.ritense.valtimo.autoconfigure.EmailNotificationSettingsAutoConfiguration
+import com.ritense.valtimo.autoconfigure.HibernateJsonMapperConfiguration
 import com.ritense.valtimo.autoconfigure.HttpSecurityAutoConfiguration
 import com.ritense.valtimo.autoconfigure.LiquibaseAutoConfiguration
 import com.ritense.valtimo.autoconfigure.ProcessDataObjectAutoConfiguration
@@ -77,6 +79,7 @@ import org.springframework.boot.test.context.TestConfiguration
         DocumentRetryAutoConfiguration::class,
         EmailNotificationSettingsAutoConfiguration::class,
         HibernateJpaAutoConfiguration::class,
+        HibernateJsonMapperConfiguration::class,
         HttpSecurityAutoConfiguration::class,
         LiquibaseAutoConfiguration::class,
         LiquibaseRunnerAutoConfiguration::class,
@@ -86,6 +89,7 @@ import org.springframework.boot.test.context.TestConfiguration
         OpenZaakSecurityAutoConfiguration::class,
         ProcessDataObjectAutoConfiguration::class,
         ProcessDocumentAutoConfiguration::class,
+        ProcessDocumentKotlinAutoConfiguration::class,
         ProcessDocumentAuditAutoConfiguration::class,
         ValtimoAutoConfiguration::class,
         ValtimoMethodSecurityAutoConfiguration::class,
