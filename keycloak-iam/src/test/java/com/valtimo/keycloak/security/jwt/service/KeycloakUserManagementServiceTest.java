@@ -81,22 +81,22 @@ class KeycloakUserManagementServiceTest {
         var users = userManagementService.findByRoles(search);
 
         var userIds = users.stream().map(ManageableUser::getId).collect(Collectors.toList());
-        assertThat(userIds).containsOnly(johnDoe.getId());
+        assertThat(userIds).containsOnlyOnce(johnDoe.getId());
     }
 
     @Test
-    void shouldDoAndUserGroups() {
+    void shouldDoOrUserGroups() {
         var search = new SearchByUserGroupsCriteria();
         search.addToOrUserGroups(Set.of(USER, ADMIN));
 
         var users = userManagementService.findByRoles(search);
 
         var userIds = users.stream().map(ManageableUser::getId).collect(Collectors.toList());
-        assertThat(userIds).containsOnly(jamesVance.getId(), johnDoe.getId(), ashaMiller.getId());
+        assertThat(userIds).containsOnlyOnce(jamesVance.getId(), johnDoe.getId(), ashaMiller.getId());
     }
 
     @Test
-    void shouldDoOrUserGroups() {
+    void shouldDoAndUserGroups() {
         var search = new SearchByUserGroupsCriteria();
         search.addToOrUserGroups(Set.of(USER));
         search.addToOrUserGroups(Set.of(ADMIN));
@@ -104,7 +104,7 @@ class KeycloakUserManagementServiceTest {
         var users = userManagementService.findByRoles(search);
 
         var userIds = users.stream().map(ManageableUser::getId).collect(Collectors.toList());
-        assertThat(userIds).containsOnly(johnDoe.getId());
+        assertThat(userIds).containsOnlyOnce(johnDoe.getId());
     }
 
     private UserRepresentation newUser(String firstName, String lastName, List<String> roles) {

@@ -137,7 +137,7 @@ public class KeycloakUserManagementService implements UserManagementService {
         }
 
         if (!rolesFound) {
-            throw new NotFoundException("Role not Found");
+            throw new NotFoundException("Role not Found: "+authority);
         }
 
         return roleUserMembers.stream()
@@ -151,11 +151,10 @@ public class KeycloakUserManagementService implements UserManagementService {
         Set<String> allUserGroups = new HashSet<>(groupsCriteria.getRequiredUserGroups());
         groupsCriteria.getOrUserGroups().forEach(allUserGroups::addAll);
 
-        List<String> userIds = new ArrayList<>();
         List<ManageableUser> allUsers = allUserGroups.stream()
             .map(this::findByRole)
             .flatMap(Collection::stream)
-            .filter(user -> userIds.add(user.getId()))
+            .distinct()
             .collect(Collectors.toList());
 
         return allUsers.stream()
