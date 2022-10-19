@@ -16,18 +16,35 @@
 
 package com.ritense.document.event;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
-
+import com.ritense.valtimo.contract.audit.view.AuditView;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class DocumentUnassignedEvent extends AuditMetaData implements AuditEvent {
 
+    private UUID documentId;
+
+    @JsonCreator
     public DocumentUnassignedEvent(UUID id,
                                    String origin,
-                                   LocalDateTime occuredOn,
-                                   String user) {
-        super(id, origin, occuredOn, user);
+                                   LocalDateTime occurredOn,
+                                   String user,
+                                   UUID documentId) {
+        super(id, origin, occurredOn, user);
+        assertArgumentNotNull(documentId, "documentId is required");
+        this.documentId = documentId;
+    }
+
+    @Override
+    @JsonView(AuditView.Internal.class)
+    @JsonIgnore(false)
+    public UUID getDocumentId() {
+        return documentId;
     }
 }
