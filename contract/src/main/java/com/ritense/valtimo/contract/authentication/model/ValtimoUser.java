@@ -45,6 +45,11 @@ public class ValtimoUser implements Serializable, ManageableUser {
     public ValtimoUser() {
     }
 
+    /**
+     * @deprecated please use the {@link ValtimoUserBuilder} instead.
+     */
+    @Deprecated(since = "9.23.0", forRemoval = true)
+    @SuppressWarnings({"squid:S107", "java:S107"})
     public ValtimoUser(
         String id,
         String username,

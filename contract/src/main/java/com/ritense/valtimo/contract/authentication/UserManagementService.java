@@ -28,7 +28,7 @@ public interface UserManagementService {
 
     ManageableUser createUser(ManageableUser user);
 
-    ManageableUser updateUser(ManageableUser user) throws UserNotFoundException;
+    ManageableUser updateUser(ManageableUser user);
 
     void deleteUser(String userId);
 
