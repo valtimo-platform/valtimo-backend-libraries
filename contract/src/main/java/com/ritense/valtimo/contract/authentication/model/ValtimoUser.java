@@ -17,9 +17,12 @@
 package com.ritense.valtimo.contract.authentication.model;
 
 import com.ritense.valtimo.contract.authentication.ManageableUser;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 public class ValtimoUser implements Serializable, ManageableUser {
 
@@ -144,7 +147,15 @@ public class ValtimoUser implements Serializable, ManageableUser {
 
     @Override
     public String getFullName() {
-        return firstName + " " + lastName;
+        if (isEmpty(firstName) && isEmpty(lastName)) {
+            return null;
+        } else if (isEmpty(firstName)) {
+            return lastName;
+        } else  if (isEmpty(lastName)) {
+            return firstName;
+        } else {
+            return firstName + " " + lastName;
+        }
     }
 
     @Override

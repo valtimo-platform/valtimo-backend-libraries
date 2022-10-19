@@ -22,6 +22,7 @@ import com.ritense.valtimo.contract.authentication.UserNotFoundException;
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
+import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
@@ -37,6 +38,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
 public class KeycloakUserManagementService implements UserManagementService {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakUserManagementService.class);
@@ -161,6 +164,17 @@ public class KeycloakUserManagementService implements UserManagementService {
                 .map(userGroups -> user.getRoles().stream().anyMatch(userGroups::contains))
                 .reduce(true, (orUserGroup1, orUserGroup2) -> orUserGroup1 && orUserGroup2))
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public ManageableUser getCurrentUser() {
+        if (SecurityUtils.getCurrentUserAuthentication() != null) {
+            return findByEmail(SecurityUtils.getCurrentUserLogin()).orElseThrow(() ->
+                new IllegalStateException("No user found for email: ${currentUserService.currentUser.email}")
+            );
+        } else {
+            return new ValtimoUserBuilder().id(SYSTEM_ACCOUNT).lastName(SYSTEM_ACCOUNT).build();
+        }
     }
 
     private ManageableUser userRepresentationToManagableUser(UserRepresentation userRepresentation) {
