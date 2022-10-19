@@ -20,6 +20,7 @@ import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
 import com.valtimo.keycloak.service.KeycloakService;
 import com.valtimo.keycloak.service.KeycloakUserManagementService;
+import javax.ws.rs.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -105,6 +106,16 @@ class KeycloakUserManagementServiceTest {
 
         var userIds = users.stream().map(ManageableUser::getId).collect(Collectors.toList());
         assertThat(userIds).containsOnlyOnce(johnDoe.getId());
+    }
+
+    @Test
+    void findByRoleShouldReturnEmptyListWhenNotFoundExceptionIsThrown() {
+        when( keycloakService.realmRolesResource().get("some-role").getRoleUserMembers())
+            .thenThrow(new NotFoundException());
+
+        var users = userManagementService.findByRole("some-role");
+
+        assertThat(users).isEmpty();
     }
 
     private UserRepresentation newUser(String firstName, String lastName, List<String> roles) {

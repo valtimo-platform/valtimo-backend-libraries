@@ -124,7 +124,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             roleUserMembers.addAll(keycloakService.realmRolesResource().get(authority).getRoleUserMembers());
             rolesFound = true;
         } catch (NotFoundException e) {
-            logger.debug("Could not find realm roles: {}", e.getMessage());
+            logger.debug("Could not find realm roles", e);
         }
 
         if (!clientName.isBlank()) {
@@ -132,12 +132,12 @@ public class KeycloakUserManagementService implements UserManagementService {
                 roleUserMembers.addAll(keycloakService.clientRolesResource().get(authority).getRoleUserMembers());
                 rolesFound = true;
             } catch (NotFoundException e) {
-                logger.debug("Could not find client roles: {}", e.getMessage());
+                logger.debug("Could not find client roles", e);
             }
         }
 
         if (!rolesFound) {
-            throw new NotFoundException("Role not Found: "+authority);
+            logger.error("Role {} was not found in keycloak realm roles or client roles", authority);
         }
 
         return roleUserMembers.stream()
