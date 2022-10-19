@@ -69,7 +69,7 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-impl:0.11.2"
     implementation "io.jsonwebtoken:jjwt-jackson:0.11.2"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
-    implementation "org.liquibase.ext:liquibase-hibernate5:4.8.0"
+    implementation "org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
