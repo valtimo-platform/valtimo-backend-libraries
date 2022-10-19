@@ -17,8 +17,10 @@
 package com.ritense.valtimo.contract.authentication;
 
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -49,4 +51,8 @@ public interface UserManagementService {
     List<ManageableUser> findByRole(String authority);
 
     List<ManageableUser> findByRoles(SearchByUserGroupsCriteria groupsCriteria);
+
+    default ManageableUser getCurrentUser() {
+        throw new NotImplementedException("Failed to get current user because method is not implemented.");
+    }
 }
