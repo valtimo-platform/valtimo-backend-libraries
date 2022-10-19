@@ -22,6 +22,7 @@ import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentCreatedEvent;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentModifiedEvent;
 import com.ritense.document.event.DocumentAssigneeChangedEvent;
+import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.processdocument.event.BesluitAddedEvent;
 import com.ritense.processdocument.service.ProcessDocumentAuditService;
 import com.ritense.valtimo.camunda.processaudit.ProcessEndedEvent;
@@ -61,7 +62,8 @@ public class CamundaProcessJsonSchemaDocumentAuditService implements ProcessDocu
             DocumentRelatedFileAddedEvent.class,
             DocumentRelatedFileRemovedEvent.class,
             BesluitAddedEvent.class,
-            DocumentAssigneeChangedEvent.class
+            DocumentAssigneeChangedEvent.class,
+            DocumentUnassignedEvent.class
         );
         return auditService.findByEventAndDocumentId(eventTypes, UUID.fromString(id.toString()), pageable);
     }

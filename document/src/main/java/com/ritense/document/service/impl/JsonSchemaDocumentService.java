@@ -45,11 +45,12 @@ import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCrite
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -57,10 +58,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
 public class JsonSchemaDocumentService implements DocumentService {
+
+    private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentService.class);
 
     private final DocumentRepository documentRepository;
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
@@ -256,6 +258,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
         var assignee = userManagementService.findById(assigneeId);
         if (assignee == null) {
+            logger.debug("Cannot set assignee for the invalid user id " + assigneeId);
             throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
         }
 
@@ -263,7 +266,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         documentRepository.save(document);
 
         // Publish an event to update the audit log
-        publishDocumentAssigneeChangedEvent(assignee.getFullName());
+        publishDocumentAssigneeChangedEvent(documentId, assignee.getFullName());
     }
 
     @Override
@@ -276,18 +279,20 @@ public class JsonSchemaDocumentService implements DocumentService {
                 UUID.randomUUID(),
                 RequestHelper.getOrigin(),
                 LocalDateTime.now(),
-                AuditHelper.getActor()
+                AuditHelper.getActor(),
+                documentId
             )
         );
     }
 
-    private void publishDocumentAssigneeChangedEvent(String assigneeFullName) {
+    private void publishDocumentAssigneeChangedEvent(UUID documentId, String assigneeFullName) {
         applicationEventPublisher.publishEvent(
             new DocumentAssigneeChangedEvent(
                 UUID.randomUUID(),
                 RequestHelper.getOrigin(),
                 LocalDateTime.now(),
                 AuditHelper.getActor(),
+                documentId,
                 assigneeFullName
             )
         );
