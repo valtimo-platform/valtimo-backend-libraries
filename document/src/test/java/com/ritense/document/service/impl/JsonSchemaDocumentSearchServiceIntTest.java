@@ -481,6 +481,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = USER)
     void searchShouldOrderAllDocumentsBasedOnAssigneeFullName() {
+        documentRepository.deleteAll();
         var documentOne = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
         var documentTwo = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
         var documentThree = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
