@@ -55,8 +55,8 @@ dependencies {
 
     testImplementation "org.testcontainers:jdbc"
     testImplementation "org.liquibase:liquibase-core"
-    testImplementation "org.liquibase.ext:liquibase-hibernate5:4.16.1"
-    testImplementation "com.mattbertolini:liquibase-slf4j:4.1.0"
+    testImplementation "org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}"
+    testImplementation "com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}"
 
     testImplementation "org.springframework.security:spring-security-test"
 

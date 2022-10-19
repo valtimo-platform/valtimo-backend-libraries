@@ -56,8 +56,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
     implementation "org.liquibase:liquibase-core"
-    implementation "org.liquibase.ext:liquibase-hibernate5:4.16.1"
-    implementation "com.mattbertolini:liquibase-slf4j:4.1.0"
+    implementation "org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}"
+    implementation "com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}"
 
     implementation group: 'com.vladmihalcea', name: 'hibernate-types-52', version: '2.12.1'
 
