@@ -1,0 +1,18 @@
+710e2cb6 - Updated version to 9.22.0.RELEASE
+6d562964 - Updated version to 9.22.0.182.RC-SNAPSHOT
+a6543b92 - Fix Milestones (#332)
+6f5af4c7 - Merge branch 'main' into development
+dab07423 - Feature/fix objectmapper selection (#329)
+dbeb10a5 - Fix Sonar issues (#331)
+de59ec87 - Sonar issues (#328)
+cc33db72 - bug: FormIoFormDefinition::extractNodeValue incorrectly parsing valueNode types (#327)
+9062dbc1 - Added test to verify missing metadata still works. (#324)
+3e4f9426 - #37431 add activity-types (#323)
+ed1d13c0 - #37226 fix documenten-api-file upload (#321)
+ce2e61c6 - #37491 Throw error on failing document-upload process (#322)
+64e5cf63 - Feature/37226 on submitting form with references to file uploads, kick off document upload process (#320)
+06c06eaf - #37224 endpoint for uploading form files to local file storage (#318)
+8a49f916 - feature 37408 - Added assignee (#316)
+c3cfd906 - #37495 Include documentDefinitionName when retrieving tasks (#317)
+9a81226f - #37225 Extend lifetime of files in local file storage from 5 minutes to 60 minutes (#319)
+ef9938c3 - #36897 Document metadata (#315)
