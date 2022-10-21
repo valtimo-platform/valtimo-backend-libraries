@@ -57,6 +57,7 @@ include(
     "resource:local-resource",
     "resource:openzaak-resource",
     "resource:temporary-resource-storage",
+    "search-configuration",
     "test-utils-common",
     "value-resolver",
     "view-configurator",

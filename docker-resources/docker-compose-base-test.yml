@@ -47,3 +47,4 @@ services:
 #   url: jdbc:mysql://localhost:3324/documenten-api-test
 #   url: jdbc:mysql://localhost:3325/zaken-api-test
 #   url: jdbc:mysql://localhost:3326/notes-test
+#   url: jdbc:mysql://localhost:3327/search-configuration-test
