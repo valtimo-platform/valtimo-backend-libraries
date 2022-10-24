@@ -18,15 +18,18 @@ package com.ritense.document;
 
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.repository.DocumentSnapshotRepository;
+import com.ritense.document.repository.SearchFieldRepository;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentSnapshotService;
+import com.ritense.document.service.SearchFieldService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
+import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,6 +66,12 @@ public abstract class BaseIntegrationTest extends BaseTest {
     @Inject
     protected DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
 
+    @Inject
+    protected SearchFieldService searchFieldService;
+
+    @Inject
+    protected SearchFieldRepository searchFieldRepository;
+
     @MockBean
     public ResourceService resourceService;
 
@@ -85,19 +94,24 @@ public abstract class BaseIntegrationTest extends BaseTest {
     }
 
     protected ManageableUser mockUser(String firstName, String lastName) {
-        return new ValtimoUser(
-            UUID.randomUUID().toString(),
-            "john.doe@valtimo.nl",
-            firstName + " " + lastName,
-            "john.doe@valtimo.nl",
-            firstName,
-            lastName,
-            null,
-            true,
-            null,
-            false,
-            true,
-            List.of("ROLE_USER")
-        );
+        return new ValtimoUserBuilder()
+            .firstName(firstName)
+            .lastName(lastName)
+            .build();
+
+//        return new ValtimoUser(
+//            UUID.randomUUID().toString(),
+//            "john.doe@valtimo.nl",
+//            firstName + " " + lastName,
+//            "john.doe@valtimo.nl",
+//            firstName,
+//            lastName,
+//            null,
+//            true,
+//            null,
+//            false,
+//            true,
+//            List.of("ROLE_USER")
+//        );
     }
 }
