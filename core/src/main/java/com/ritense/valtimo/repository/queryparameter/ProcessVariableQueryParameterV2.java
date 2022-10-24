@@ -23,13 +23,14 @@ import com.ritense.valtimo.repository.queryparameter.type.FileUploadProcessVaria
 import com.ritense.valtimo.repository.queryparameter.type.LongProcessVariableQueryParameterV2;
 import com.ritense.valtimo.repository.queryparameter.type.StringProcessVariableQueryParameterV2;
 import java.util.Objects;
-import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.ACTIVE_REF;
-import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.BUSINESS_KEY_REF;
-import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.PROCESS_ENDED_REF;
-import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.PROCESS_STARTED_REF;
-import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.START_PROCESS_USER_REF;
 
 public abstract class ProcessVariableQueryParameterV2 implements IQueryParameter {
+    public static final String BUSINESS_KEY_REF = "businessKey";
+    public static final String PROCESS_STARTED_REF = "processStarted";
+    public static final String PROCESS_ENDED_REF = "processEnded";
+    public static final String ACTIVE_REF = "active";
+    public static final String START_PROCESS_USER_REF = "startUser";
+
     public String name;
 
     public ProcessVariableQueryParameterV2(String name) {

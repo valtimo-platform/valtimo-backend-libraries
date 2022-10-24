@@ -38,8 +38,6 @@ nbdist/
 /plugin-mail-mandrill/out/
 /process-document/out/
 /process-document/target/h2db/db/
-/view-configurator/out/
-/view-configurator/target/h2db/db/
 /openzaak/target/
 /openzaak/out/
 /app/openformulieren/private_media/*/
