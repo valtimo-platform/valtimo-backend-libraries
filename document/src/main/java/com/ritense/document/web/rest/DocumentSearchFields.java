@@ -19,7 +19,11 @@ package com.ritense.document.web.rest;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 public interface DocumentSearchFields {
 
     ResponseEntity<Void> addSearchField(String documentDefinitionName, SearchField searchField);
+
+    ResponseEntity<List<SearchField>> getSearchField(String documentDefinitionName);
 }

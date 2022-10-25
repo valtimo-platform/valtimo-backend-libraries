@@ -29,10 +29,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
@@ -81,5 +86,36 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         assertEquals(SearchFieldDatatype.TEXT, storedSearchField.getDatatype());
         assertEquals(SearchFieldFieldtype.SINGLE, storedSearchField.getFieldtype());
         assertEquals(SearchFieldMatchtype.EXACT, storedSearchField.getMatchtype());
+    }
+
+    @Test
+    void shouldRetrieveSearchFieldsByDocumentDefinitionName() throws Exception {
+        var searchField = new SearchField(
+            "someKey",
+            "/some/path",
+            SearchFieldDatatype.TEXT,
+            SearchFieldFieldtype.SINGLE,
+            SearchFieldMatchtype.EXACT
+        );
+
+        mockMvc.perform(
+                post("/api/v1/document-search/{documentDefinitionName}/fields",
+                    "test_document")
+                    .content(Mapper.INSTANCE.get().writeValueAsString(searchField))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        mockMvc.perform(
+                get("/api/v1/document-search/{documentDefinitionName}/fields",
+                    "test_document"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].key",is("someKey")))
+            .andExpect(jsonPath("$[0].path",is("/some/path")))
+            .andExpect(jsonPath("$[0].datatype",is(SearchFieldDatatype.TEXT.toString())))
+            .andExpect(jsonPath("$[0].fieldtype",is(SearchFieldFieldtype.SINGLE.toString())))
+            .andExpect(jsonPath("$[0].matchtype",is(SearchFieldMatchtype.EXACT.toString())));
     }
 }

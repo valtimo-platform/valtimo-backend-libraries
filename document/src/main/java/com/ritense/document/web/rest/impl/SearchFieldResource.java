@@ -21,15 +21,17 @@ import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.DocumentSearchFields;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.List;
 
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SearchFieldResource implements DocumentSearchFields {
 
-    private SearchFieldService searchFieldService;
+    private final SearchFieldService searchFieldService;
 
     public SearchFieldResource(final SearchFieldService searchFieldService) {
         this.searchFieldService = searchFieldService;
@@ -43,5 +45,12 @@ public class SearchFieldResource implements DocumentSearchFields {
 
         searchFieldService.addSearchField(documentDefinitionName, searchField);
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    @GetMapping("/v1/document-search/{documentDefinitionName}/fields")
+    public ResponseEntity<List<SearchField>> getSearchField(
+        @PathVariable String documentDefinitionName) {
+        return ResponseEntity.ok(searchFieldService.getSearchFields(documentDefinitionName));
     }
 }

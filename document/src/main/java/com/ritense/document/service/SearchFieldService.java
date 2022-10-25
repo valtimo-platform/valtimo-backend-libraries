@@ -20,9 +20,11 @@ import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
 import com.ritense.document.repository.SearchFieldRepository;
 
+import java.util.List;
+
 public class SearchFieldService {
 
-    private SearchFieldRepository searchFieldRepository;
+    private final SearchFieldRepository searchFieldRepository;
 
     public SearchFieldService(final SearchFieldRepository searchFieldRepository) {
         this.searchFieldRepository = searchFieldRepository;
@@ -32,5 +34,9 @@ public class SearchFieldService {
         SearchFieldId searchFieldId = SearchFieldId.newId(documentDefinitionName);
         searchField.setId(searchFieldId);
         searchFieldRepository.save(searchField);
+    }
+
+    public List<SearchField> getSearchFields(String documentDefinitionName) {
+        return searchFieldRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
     }
 }
