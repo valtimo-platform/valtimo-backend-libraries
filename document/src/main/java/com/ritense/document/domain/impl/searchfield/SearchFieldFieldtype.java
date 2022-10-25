@@ -16,9 +16,14 @@
 
 package com.ritense.document.domain.impl.searchfield;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public enum SearchFieldFieldtype {
+    @JsonProperty("multiple")
     MULTIPLE("multiple"),
+    @JsonProperty("range")
     RANGE("range"),
+    @JsonProperty("single")
     SINGLE("single");
 
     private final String name;

@@ -78,17 +78,14 @@ public class SearchField implements Persistable<SearchFieldId> {
         return path;
     }
 
-    @JsonValue
     public SearchFieldDatatype getDatatype() {
         return datatype;
     }
 
-    @JsonValue
     public SearchFieldFieldtype getFieldtype() {
         return fieldtype;
     }
 
-    @JsonValue
     public SearchFieldMatchtype getMatchtype() {
         return matchtype;
     }
