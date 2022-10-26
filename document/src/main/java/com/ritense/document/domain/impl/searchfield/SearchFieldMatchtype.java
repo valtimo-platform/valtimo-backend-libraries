@@ -16,15 +16,13 @@
 
 package com.ritense.document.domain.impl.searchfield;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum SearchFieldMatchtype {
-    @JsonProperty("like")
     LIKE("like"),
-    @JsonProperty("exact")
     EXACT("exact");
 
-    private final String name;
+    @JsonValue private final String name;
 
     SearchFieldMatchtype(String name) {
         this.name = name;

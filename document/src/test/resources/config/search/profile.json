@@ -1,0 +1,11 @@
+{
+    "searchFields": [
+        {
+            "key": "lastname",
+            "path": "/lastname",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "like"
+        }
+    ]
+}

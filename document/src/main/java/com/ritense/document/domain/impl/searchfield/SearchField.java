@@ -16,8 +16,8 @@
 
 package com.ritense.document.domain.impl.searchfield;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.data.domain.Persistable;
+
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;

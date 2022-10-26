@@ -1,0 +1,64 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://json-schema.org/draft-07/schema#",
+    "title": "Search configuration schema",
+    "description": "The schema for a search configuration",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "searchFields": {
+            "type": "array",
+            "description": "This array contains all the possible search fields in this configuration",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "The identifying human readable key of the field"
+                    },
+                    "path": {
+                        "type": "string",
+                        "description": "(Optional) path"
+                    },
+                    "dataType": {
+                        "type": "string",
+                        "enum": [
+                            "text",
+                            "number",
+                            "date",
+                            "datetime",
+                            "boolean"
+                        ],
+                        "description": "The data type of the form field"
+                    },
+                    "fieldType": {
+                        "type": "string",
+                        "enum": [
+                            "single",
+                            "multiple",
+                            "range"
+                        ],
+                        "description": "The field type of the form field"
+                    },
+                    "matchType": {
+                        "type": "string",
+                        "enum": [
+                            "exact",
+                            "like"
+                        ],
+                        "description": "The match type of the form field"
+                    }
+                },
+                "required": [
+                    "key",
+                    "dataType",
+                    "fieldType",
+                    "matchType"
+                ]
+            }
+        }
+    },
+    "required": [
+        "searchFields"
+    ]
+}

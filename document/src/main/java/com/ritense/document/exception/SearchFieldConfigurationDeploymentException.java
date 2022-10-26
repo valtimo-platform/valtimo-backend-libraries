@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.document.repository;
+package com.ritense.document.exception;
 
-import com.ritense.document.domain.impl.searchfield.SearchField;
-import com.ritense.document.domain.impl.searchfield.SearchFieldId;
-import org.springframework.data.jpa.repository.JpaRepository;
+public class SearchFieldConfigurationDeploymentException extends RuntimeException {
 
-import java.util.List;
-
-public interface SearchFieldRepository extends JpaRepository<SearchField, SearchFieldId> {
-
-    List<SearchField> findAllByIdDocumentDefinitionName(String documentDefinitionName);
-
-    boolean existsByIdDocumentDefinitionName(String documentDefinitionName);
+    public SearchFieldConfigurationDeploymentException(String searchFieldConfigurationName, Exception exception) {
+        super("Failed to deploy search configuration " + searchFieldConfigurationName, exception);
+    }
 }

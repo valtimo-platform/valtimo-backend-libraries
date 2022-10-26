@@ -16,12 +16,15 @@
 
 package com.ritense.document.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.repository.SearchFieldRepository;
+import com.ritense.document.service.SearchConfigurationDeploymentService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.impl.SearchFieldResource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 
 @Configuration
 public class SearchFieldAutoConfiguration {
@@ -40,5 +43,15 @@ public class SearchFieldAutoConfiguration {
         SearchFieldRepository searchFieldRepository
     ) {
         return new SearchFieldService(searchFieldRepository);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SearchConfigurationDeploymentService.class)
+    public SearchConfigurationDeploymentService searchConfigurationDeploymentService(
+        ResourceLoader resourceLoader,
+        SearchFieldService searchFieldService,
+        ObjectMapper objectMapper
+    ) {
+        return new SearchConfigurationDeploymentService(resourceLoader, searchFieldService, objectMapper);
     }
 }

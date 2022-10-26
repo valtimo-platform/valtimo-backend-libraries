@@ -1,0 +1,28 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Ritense" id="1">
+        <createTable tableName="search_field">
+            <column name="search_field_id" type="${uuidType}">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="document_definition_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="search_field_key" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="path" type="varchar(255)"/>
+            <column name="datatype" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fieldtype" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="matchtype" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
