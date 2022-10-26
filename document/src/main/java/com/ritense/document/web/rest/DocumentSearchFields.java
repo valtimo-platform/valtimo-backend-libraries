@@ -18,6 +18,8 @@ package com.ritense.document.web.rest;
 
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -26,4 +28,8 @@ public interface DocumentSearchFields {
     ResponseEntity<Void> addSearchField(String documentDefinitionName, SearchField searchField);
 
     ResponseEntity<List<SearchField>> getSearchField(String documentDefinitionName);
+
+    @PutMapping("/v1/document-search/{documentDefinitionName}/fields")
+    ResponseEntity<List<SearchField>> updateSearchField(
+            @RequestBody SearchField searchField);
 }

@@ -39,4 +39,8 @@ public class SearchFieldService {
     public List<SearchField> getSearchFields(String documentDefinitionName) {
         return searchFieldRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
     }
+
+    public void updateSearchFields(SearchField searchField) {
+        searchFieldRepository.save(searchField);
+    }
 }
