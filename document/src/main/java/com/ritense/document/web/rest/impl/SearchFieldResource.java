@@ -16,7 +16,7 @@
 
 package com.ritense.document.web.rest.impl;
 
-import com.ritense.document.domain.impl.searchfield.SearchField;
+import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.DocumentSearchFields;
 import org.springframework.http.MediaType;
@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
@@ -41,16 +42,28 @@ public class SearchFieldResource implements DocumentSearchFields {
     @PostMapping("/v1/document-search/{documentDefinitionName}/fields")
     public ResponseEntity<Void> addSearchField(
         @PathVariable String documentDefinitionName,
-        @RequestBody SearchField searchField) {
+        @RequestBody SearchFieldDto searchField) {
 
-        searchFieldService.addSearchField(documentDefinitionName, searchField);
+        searchFieldService.addSearchField(documentDefinitionName, SearchFieldMapper.toEntity(searchField));
         return ResponseEntity.ok().build();
     }
 
     @Override
     @GetMapping("/v1/document-search/{documentDefinitionName}/fields")
-    public ResponseEntity<List<SearchField>> getSearchField(
+    public ResponseEntity<List<SearchFieldDto>> getSearchField(
         @PathVariable String documentDefinitionName) {
-        return ResponseEntity.ok(searchFieldService.getSearchFields(documentDefinitionName));
+        return ResponseEntity.ok(SearchFieldMapper.toDtoList(searchFieldService.getSearchFields(documentDefinitionName)));
+    }
+
+    @Override
+    @PutMapping("/v1/document-search/{documentDefinitionName}/fields")
+    public ResponseEntity<Void> updateSearchField(
+            @PathVariable String documentDefinitionName,
+            @RequestBody SearchFieldDto searchFieldDto) {
+        if(searchFieldDto.getKey() == null || searchFieldDto.getKey().trim().isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+        searchFieldService.updateSearchFields(documentDefinitionName, searchFieldDto);
+        return ResponseEntity.ok().build();
     }
 }

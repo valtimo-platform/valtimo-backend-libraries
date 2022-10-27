@@ -17,10 +17,12 @@
 package com.ritense.document.service;
 
 import com.ritense.document.domain.impl.searchfield.SearchField;
+import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
 import com.ritense.document.repository.SearchFieldRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public class SearchFieldService {
 
@@ -38,6 +40,11 @@ public class SearchFieldService {
 
     public List<SearchField> getSearchFields(String documentDefinitionName) {
         return searchFieldRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
+    }
+
+    public void updateSearchFields(String documentDefinitionName,SearchFieldDto searchFieldDto) {
+        Optional<SearchField> fieldToUpdate = searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName,searchFieldDto.getKey());
+        fieldToUpdate.ifPresent(searchFieldRepository::save);
     }
 
     public void createSearchConfiguration(String documentDefinitionName, List<SearchField> searchFields) {
