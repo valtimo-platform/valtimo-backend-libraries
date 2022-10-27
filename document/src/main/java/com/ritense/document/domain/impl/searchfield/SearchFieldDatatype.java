@@ -16,21 +16,16 @@
 
 package com.ritense.document.domain.impl.searchfield;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum SearchFieldDatatype {
-    @JsonProperty("boolean")
     BOOLEAN("boolean"),
-    @JsonProperty("date")
     DATE("date"),
-    @JsonProperty("datetime")
     DATETIME("datetime"),
-    @JsonProperty("number")
     NUMBER("number"),
-    @JsonProperty("text")
     TEXT("text");
 
-    private final String name;
+    @JsonValue private final String name;
 
     SearchFieldDatatype(String name) {
         this.name = name;

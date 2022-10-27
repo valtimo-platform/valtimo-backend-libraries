@@ -47,4 +47,10 @@ public class SearchFieldService {
         Optional<SearchField> fieldToUpdate = searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName,searchFieldDto.getKey());
         fieldToUpdate.ifPresent(searchFieldRepository::save);
     }
+
+    public void createSearchConfiguration(String documentDefinitionName, List<SearchField> searchFields) {
+        if (!searchFieldRepository.existsByIdDocumentDefinitionName(documentDefinitionName)) {
+            searchFieldRepository.saveAll(searchFields);
+        }
+    }
 }
