@@ -39,4 +39,10 @@ public class SearchFieldService {
     public List<SearchField> getSearchFields(String documentDefinitionName) {
         return searchFieldRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
     }
+
+    public void createSearchConfiguration(String documentDefinitionName, List<SearchField> searchFields) {
+        if (!searchFieldRepository.existsByIdDocumentDefinitionName(documentDefinitionName)) {
+            searchFieldRepository.saveAll(searchFields);
+        }
+    }
 }
