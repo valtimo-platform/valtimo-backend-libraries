@@ -50,7 +50,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     private MockMvc mockMvc;
-
     private SearchFieldResource searchFieldResource;
     private static final String DOCUMENT_DEFINITION_NAME = "test_document";
     private static final SearchField SEARCH_FIELD = new SearchField(

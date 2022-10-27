@@ -52,7 +52,7 @@ public class SearchFieldResource implements DocumentSearchFields {
     @GetMapping("/v1/document-search/{documentDefinitionName}/fields")
     public ResponseEntity<List<SearchFieldDto>> getSearchField(
         @PathVariable String documentDefinitionName) {
-        return ResponseEntity.ok(searchFieldService.getSearchFields(documentDefinitionName));
+        return ResponseEntity.ok(SearchFieldMapper.toDtoList(searchFieldService.getSearchFields(documentDefinitionName)));
     }
 
     @Override
