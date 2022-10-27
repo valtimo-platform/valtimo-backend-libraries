@@ -21,6 +21,8 @@ import org.springframework.data.domain.Persistable;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 @Entity
@@ -30,12 +32,20 @@ public class SearchField implements Persistable<SearchFieldId> {
     @EmbeddedId
     private SearchFieldId id;
 
-    @Column(name = "search_field_key", columnDefinition = "varchar(255)")
+    @Column(name = "search_field_key", length = 255, nullable = false, updatable = false)
     private String key;
 
+    @Column(name = "path", length = 255, nullable = true, updatable = true)
     private String path;
+
+    @Column(name = "datatype", nullable = false, updatable = false)
     private SearchFieldDatatype datatype;
+
+    @Column(name = "fieldtype", nullable = false, updatable = false)
     private SearchFieldFieldtype fieldtype;
+
+    @Column(name = "matchtype", nullable = false, updatable = false)
+    @Enumerated(EnumType.STRING)
     private SearchFieldMatchtype matchtype;
 
     public SearchField(String key,
