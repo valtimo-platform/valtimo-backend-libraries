@@ -39,6 +39,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -159,5 +161,30 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldDeleteSearchField() throws Exception{
+        SearchFieldDto searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
+        mockMvc.perform(
+                        post("/api/v1/document-search/{documentDefinitionName}/fields",
+                                DOCUMENT_DEFINITION_NAME)
+                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk());
+        Optional<SearchField> searchField=searchFieldRepository.findByIdDocumentDefinitionNameAndKey(
+                DOCUMENT_DEFINITION_NAME, SEARCH_FIELD.getKey());
+        assertTrue(searchField.isPresent());
+        mockMvc.perform(
+                        delete("/api/v1/document-search/{documentDefinitionName}/fields",
+                                DOCUMENT_DEFINITION_NAME).queryParam("key",SEARCH_FIELD.getKey())
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        )
+                .andDo(print())
+                .andExpect(status().isNoContent());
+        searchField =searchFieldRepository.findByIdDocumentDefinitionNameAndKey(
+                DOCUMENT_DEFINITION_NAME, SEARCH_FIELD.getKey());
+        assertTrue(searchField.isEmpty());
     }
 }

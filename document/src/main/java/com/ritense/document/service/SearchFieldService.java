@@ -52,4 +52,9 @@ public class SearchFieldService {
             searchFieldRepository.saveAll(searchFields);
         }
     }
+
+    public void deleteSearchFields(String documentDefinitionName, String key) {
+        searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName,key).ifPresent(
+                searchFieldRepository::delete);
+    }
 }
