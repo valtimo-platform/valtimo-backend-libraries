@@ -67,7 +67,6 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "commons-io:commons-io:${commonsIoVersion}"
 
-    // testImplementation "io.netty:netty-resolver-dns-native-macos:4.1.72.Final:osx-aarch_64"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"

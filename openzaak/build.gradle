@@ -64,7 +64,7 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
-    implementation "com.vladmihalcea:hibernate-types-52:2.19.2"
+    implementation "com.vladmihalcea:hibernate-types-55:${hibernateTypesVersion}"
     implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
     implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
     implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"

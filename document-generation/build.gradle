@@ -23,8 +23,7 @@ dependencies {
 
     testImplementation "org.springframework.security:spring-security-test"
 
-    testImplementation "org.camunda.bpm.extension:camunda-bpm-assert:1.2"
-    testImplementation "org.camunda.bpm.extension:camunda-bpm-assert-scenario:0.2"
+    testImplementation "org.camunda.bpm.assert:camunda-bpm-assert:${camundaBpmAssertVersion}"
 }
 
 apply from: "gradle/publishing.gradle"

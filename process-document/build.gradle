@@ -58,7 +58,6 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
     implementation "org.hibernate:hibernate-core"
-    // implementation 'org.glassfish:javax.json:1.1.2'
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
