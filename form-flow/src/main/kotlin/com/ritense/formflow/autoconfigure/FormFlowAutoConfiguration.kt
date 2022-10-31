@@ -18,7 +18,6 @@ package com.ritense.formflow.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.handler.ApplicationReadyEventHandler
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
@@ -29,8 +28,8 @@ import com.ritense.formflow.repository.FormFlowInstanceRepository
 import com.ritense.formflow.repository.FormFlowStepInstanceRepository
 import com.ritense.formflow.repository.FormFlowStepRepository
 import com.ritense.formflow.service.FormFlowDeploymentService
-import com.ritense.formflow.service.FormFlowObjectMapper
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.formflow.service.ObjectMapperConfigurer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationContext
@@ -58,10 +57,10 @@ class FormFlowAutoConfiguration {
 
     @Bean
     fun formFlowObjectMapper(
-        objectMapper: ObjectMapper?,
-        stepPropertiesTypes: Collection<NamedType>?
-    ): FormFlowObjectMapper {
-        return FormFlowObjectMapper(objectMapper?: jacksonObjectMapper(), stepPropertiesTypes)
+        objectMapper: ObjectMapper,
+        stepPropertiesTypes: Collection<NamedType>
+    ): ObjectMapperConfigurer {
+        return ObjectMapperConfigurer(objectMapper, stepPropertiesTypes)
     }
 
     @Bean
@@ -101,12 +100,12 @@ class FormFlowAutoConfiguration {
     fun formFlowDeploymentService(
         resourceLoader: ResourceLoader,
         formFlowService: FormFlowService,
-        formFlowObjectMapper: FormFlowObjectMapper
+        objectMapper: ObjectMapper,
     ): FormFlowDeploymentService {
         return FormFlowDeploymentService(
             resourceLoader,
             formFlowService,
-            formFlowObjectMapper
+            objectMapper
         )
     }
 }

@@ -18,6 +18,7 @@ package com.ritense.catalogiapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -39,6 +40,7 @@ internal class CatalogiApiPluginFactoryTest {
         val catalogiApiClient = mock<CatalogiApiClient>()
         val authenticationMock = mock<CatalogiApiAuthentication>()
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authenticationMock)
+        whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
 
         val factory = CatalogiApiPluginFactory(
             pluginService,

@@ -46,6 +46,7 @@ import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -68,13 +69,17 @@ public class DocumentAutoConfiguration {
         final DocumentRepository documentRepository,
         final JsonSchemaDocumentDefinitionService documentDefinitionService,
         final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
-        final ResourceService resourceService
+        final ResourceService resourceService,
+        final UserManagementService userManagementService,
+        final ApplicationEventPublisher applicationEventPublisher
     ) {
         return new JsonSchemaDocumentService(
             documentRepository,
             documentDefinitionService,
             documentSequenceGeneratorService,
-            resourceService
+            resourceService,
+            userManagementService,
+            applicationEventPublisher
         );
     }
 

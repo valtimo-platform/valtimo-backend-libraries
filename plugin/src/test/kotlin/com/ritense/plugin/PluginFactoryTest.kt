@@ -18,6 +18,7 @@ package com.ritense.plugin
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -134,6 +135,7 @@ internal class PluginFactoryTest {
         val categoryPluginConfigurationId = PluginConfigurationId.newId()
         val pluginCategory = object : TestPluginCategory {}
         whenever(pluginService.createInstance(categoryPluginConfigurationId)).thenReturn(pluginCategory)
+        whenever((pluginService.getObjectMapper())).thenReturn(jacksonObjectMapper())
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",

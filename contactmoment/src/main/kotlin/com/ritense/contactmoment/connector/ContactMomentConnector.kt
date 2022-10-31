@@ -23,15 +23,12 @@ import com.ritense.contactmoment.client.ContactMomentClient
 import com.ritense.contactmoment.domain.ContactMoment
 import com.ritense.contactmoment.domain.Kanaal
 import com.ritense.contactmoment.domain.request.CreateContactMomentRequest
-import com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
-import com.ritense.valtimo.contract.utils.SecurityUtils
 import com.ritense.valtimo.service.CurrentUserService
+import kotlinx.coroutines.runBlocking
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.runBlocking
 
 @ConnectorType(name = "ContactMoment")
 class ContactMomentConnector(
@@ -55,7 +52,7 @@ class ContactMomentConnector(
      * @param kanaal The communication channel through which the CONTACT MOMENT is conducted.
      */
     fun createContactMoment(kanaal: Kanaal, text: String): ContactMoment {
-        val medewerker = getCurrentMedewerker()
+        val medewerker = userManagementService.currentUser
         val request = CreateContactMomentRequest(
             bronorganisatie = contactMomentProperties.rsin,
             registratiedatum = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
@@ -67,15 +64,6 @@ class ContactMomentConnector(
             )
         )
         return runBlocking { contactMomentClient.createContactMoment(request) }
-    }
-
-    private fun getCurrentMedewerker(): ManageableUser {
-        return if (SecurityUtils.getCurrentUserAuthentication() != null) {
-            userManagementService.findByEmail(currentUserService.currentUser.email)
-                .orElseThrow { IllegalStateException("No user found for email: ${currentUserService.currentUser.email}") }
-        } else {
-            ValtimoUserBuilder().id(SYSTEM_ACCOUNT).lastName(SYSTEM_ACCOUNT).build()
-        }
     }
 
     private fun getMedewerkerIdentificatie(user: ManageableUser): String {

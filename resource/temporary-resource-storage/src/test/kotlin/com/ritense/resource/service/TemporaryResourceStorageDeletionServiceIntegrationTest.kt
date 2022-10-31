@@ -27,7 +27,6 @@ import java.nio.file.attribute.BasicFileAttributeView
 import java.nio.file.attribute.FileTime
 import java.time.Duration
 import java.time.Instant
-import kotlin.io.path.Path
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TemporaryResourceStorageDeletionServiceIntegrationTest : BaseIntegrationTest() {
@@ -41,7 +40,8 @@ class TemporaryResourceStorageDeletionServiceIntegrationTest : BaseIntegrationTe
     @Test
     fun `should delete files older that 60 minutes`() {
         val resourceId = temporaryResourceStorageService.store("My file data".byteInputStream())
-        val attributes = Files.getFileAttributeView(Path(resourceId), BasicFileAttributeView::class.java)
+        val resourceFile = temporaryResourceStorageService.getMetaDataFileFromResourceId(resourceId)
+        val attributes = Files.getFileAttributeView(resourceFile, BasicFileAttributeView::class.java)
         val time = FileTime.from(Instant.now().minus(Duration.ofMinutes(60)))
         attributes.setTimes(time, time, time)
 

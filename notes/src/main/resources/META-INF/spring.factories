@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.ritense.note.autoconfigure.NoteAutoConfiguration, \
+  com.ritense.note.autoconfigure.NoteLiquibaseAutoConfiguration

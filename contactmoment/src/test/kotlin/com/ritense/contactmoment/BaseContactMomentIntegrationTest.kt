@@ -76,8 +76,7 @@ class BaseContactMomentIntegrationTest : BaseIntegrationTest() {
         user.id = id
         user.email = email
         user.lastName = lastName
-        whenever(currentUserService.currentUser).thenReturn(user)
-        whenever(userManagementService.findByEmail(email)).thenReturn(Optional.of(user))
+        whenever(userManagementService.currentUser).thenReturn(user)
         return user
     }
 

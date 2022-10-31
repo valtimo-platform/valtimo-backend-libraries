@@ -123,6 +123,30 @@ internal class PluginConfigurationResourceTest {
             .andExpect(jsonPath("$").isEmpty)
     }
 
+    @Test
+    fun `should filter on plugins for rare activityType`() {
+        whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
+
+        mockMvc.perform(get("/api/plugin/configuration?activityType=bpmn:IntermediateLinkCatch")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$").isArray)
+            .andExpect(jsonPath("$").isEmpty)
+    }
+
+    @Test
+    fun `should respond with 400 bad request when filtering on non existing activityType`() {
+        whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
+
+        mockMvc.perform(get("/api/plugin/configuration?activityType=bpmn:ActivityTypeDoesntExist")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isBadRequest)
+    }
+
     private fun ResultActions.assertConfigurationListOutput() {
         this.andExpect(status().is2xxSuccessful)
             .andExpect(

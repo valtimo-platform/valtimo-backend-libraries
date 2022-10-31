@@ -35,9 +35,11 @@ import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationEventPublisher
 import java.io.InputStream
 import java.net.URI
+import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 internal class DocumentenApiPluginTest {
 
@@ -131,6 +133,7 @@ internal class DocumentenApiPluginTest {
             .thenReturn(mapOf("title" to "title",
                 "confidentialityLevel" to "zaakvertrouwelijk",
                 "status" to "in_bewerking",
+                "author" to "author",
                 "language" to "taal",
                 "filename" to "test.ext",
                 "description" to "description",
@@ -154,8 +157,66 @@ internal class DocumentenApiPluginTest {
         val request = apiRequestCaptor.firstValue
         assertEquals("123456789", request.bronorganisatie)
         assertNotNull(request.creatiedatum)
+        assertEquals(LocalDate.of(2022, 9, 16), request.verzenddatum)
+        assertEquals(LocalDate.of(2022, 9, 15), request.ontvangstdatum)
         assertEquals("title", request.titel)
+        assertEquals("author", request.auteur)
         assertEquals("description", request.beschrijving)
+        assertEquals("test.ext", request.bestandsnaam)
+        assertEquals("taal", request.taal)
+        assertEquals(fileStream, request.inhoud)
+        assertEquals("type", request.informatieobjecttype)
+        assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
+        assertEquals(false, request.indicatieGebruiksrecht)
+        assertEquals(ConfidentialityLevel.ZAAKVERTROUWELIJK.key, request.vertrouwelijkheidaanduiding)
+    }
+
+    @Test
+    fun `should call client to store file after document upload with minimal properties`() {
+        val client: DocumentenApiClient = mock()
+        val storageService: TemporaryResourceStorageService = mock()
+        val applicationEventPublisher: ApplicationEventPublisher= mock()
+        val authenticationMock = mock<DocumentenApiAuthentication>()
+        val executionMock = mock<DelegateExecution>()
+        val fileStream = mock<InputStream>()
+        val result = CreateDocumentResult(
+            "returnedUrl",
+            "returnedAuthor",
+            "returnedFileName",
+            1L,
+            LocalDateTime.now()
+        )
+
+        whenever(executionMock.getVariable(RESOURCE_ID_PROCESS_VAR))
+            .thenReturn("localDocumentLocation")
+        whenever(storageService.getResourceContentAsInputStream("localDocumentLocation"))
+            .thenReturn(fileStream)
+        whenever(storageService.getResourceMetadata("localDocumentLocation"))
+            .thenReturn(mapOf("title" to "title",
+                "status" to "in_bewerking",
+                "language" to "taal",
+                "filename" to "test.ext",
+                "informatieobjecttype" to "type"))
+        whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
+
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher)
+        plugin.url = URI("http://some-url")
+        plugin.bronorganisatie = "123456789"
+        plugin.authenticationPluginConfiguration = authenticationMock
+
+        plugin.storeUploadedDocument(executionMock)
+
+        val apiRequestCaptor = argumentCaptor<CreateDocumentRequest>()
+        verify(client).storeDocument(any(), any(), apiRequestCaptor.capture())
+        verify(executionMock).setVariable(DOCUMENT_URL_PROCESS_VAR, "returnedUrl")
+
+        val request = apiRequestCaptor.firstValue
+        assertEquals("123456789", request.bronorganisatie)
+        assertNotNull(request.creatiedatum)
+        assertNull(request.verzenddatum)
+        assertNull(request.ontvangstdatum)
+        assertEquals("title", request.titel)
+        assertNull(request.beschrijving)
         assertEquals("GZAC", request.auteur)
         assertEquals("test.ext", request.bestandsnaam)
         assertEquals("taal", request.taal)
@@ -163,6 +224,7 @@ internal class DocumentenApiPluginTest {
         assertEquals("type", request.informatieobjecttype)
         assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
         assertEquals(false, request.indicatieGebruiksrecht)
+        assertNull(request.vertrouwelijkheidaanduiding)
     }
 
 }

@@ -17,6 +17,7 @@
 package com.ritense.valtimo.repository.queryparameter.type;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,7 +30,7 @@ class DateProcessVariableQueryParameterV2Test {
     @Test
     void dateProcessVariableQueryParameter() {
         DateProcessVariableQueryParameterV2 dateProcessVariableQueryParameter = dateProcessVariableQueryParameterV2();
-        assertEquals(NAME, dateProcessVariableQueryParameter.name);
+        assertEquals(NAME, dateProcessVariableQueryParameter.getName());
         assertEquals(FROM, dateProcessVariableQueryParameter.from);
         assertEquals(TO, dateProcessVariableQueryParameter.to);
     }

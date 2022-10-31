@@ -40,6 +40,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
+
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,13 +59,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 
@@ -99,6 +101,12 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Column(name = "sequence", columnDefinition = "BIGINT")
     private Long sequence;
 
+    @Column(name = "assignee_id", columnDefinition="varchar(64)")
+    private String assigneeId;
+
+    @Column(name = "assignee_full_name", columnDefinition="varchar(255)")
+    private String assigneeFullName;
+
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "document_relations", columnDefinition = "json")
     private Set<JsonSchemaDocumentRelation> documentRelations = new HashSet<>();
@@ -114,7 +122,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         final String createdBy,
         final Long sequence,
         final JsonSchemaDocumentRelation documentRelation
-    ) {
+        ) {
         assertArgumentNotNull(id, "id is required");
         assertArgumentNotNull(content, "content is required");
         assertArgumentNotNull(documentDefinition, "documentDefinition is required");
@@ -293,6 +301,16 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         relatedFiles.forEach(file -> removeRelatedFileBy(file.getFileId()));
     }
 
+    public void setAssignee(String id, String fullName) {
+        this.assigneeId = id;
+        this.assigneeFullName = fullName;
+    }
+
+    public void unassign() {
+        this.assigneeId = null;
+        this.assigneeFullName = null;
+    }
+
     @Override
     public JsonSchemaDocumentId id() {
         return id;
@@ -316,6 +334,16 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Override
     public JsonSchemaDocumentDefinitionId definitionId() {
         return documentDefinitionId;
+    }
+
+    @Override
+    public String assigneeId() {
+        return assigneeId;
+    }
+
+    @Override
+    public String assigneeFullName() {
+        return assigneeFullName;
     }
 
     @Override

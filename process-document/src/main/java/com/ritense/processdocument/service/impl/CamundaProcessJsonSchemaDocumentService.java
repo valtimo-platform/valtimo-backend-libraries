@@ -88,6 +88,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     }
 
     @Override
+    @Transactional
     public DocumentFunctionResult dispatch(Request request) {
         if (request instanceof NewDocumentAndStartProcessRequest) {
             return newDocumentAndStartProcess((NewDocumentAndStartProcessRequest) request);
@@ -246,7 +247,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             if (modifyDocumentResult.resultingDocument().isEmpty()) {
                 return new ModifyDocumentAndStartProcessResultFailed(modifyDocumentResult.errors());
             }
-            final var document = modifyDocumentResult.resultingDocument().get();
+            final var document = modifyDocumentResult.resultingDocument().orElseThrow();
 
             //Part 2 process start
             final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(document.definitionId());

@@ -42,15 +42,6 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
-
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
-
-    testImplementation "org.jetbrains.kotlin:kotlin-test"
-    testImplementation "org.junit.jupiter:junit-jupiter"
-    testImplementation "org.springframework.boot:spring-boot-starter-test"
-
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
     implementation "org.liquibase:liquibase-core"
@@ -74,9 +65,12 @@ dependencies {
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation project(path: ":core", configuration: 'testOutput')
     testImplementation project(':test-utils-common')
     testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.mockito:mockito-core"
 
     jar {
         enabled = true

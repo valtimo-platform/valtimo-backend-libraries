@@ -24,7 +24,8 @@ public class UserContextDTO implements Serializable {
     @NotNull
     private Long contextId;
 
-    public UserContextDTO() {
+    public UserContextDTO(Long contextId) {
+        this.contextId = contextId;
     }
 
     public void setContextId(Long contextId) {

@@ -18,6 +18,7 @@ package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -44,6 +45,7 @@ internal class DocumentenApiPluginFactoryTest {
         val authentication = mock<DocumentenApiAuthentication>()
 
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authentication)
+        whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
 
         val propertyString = """
           {

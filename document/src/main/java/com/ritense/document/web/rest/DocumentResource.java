@@ -19,10 +19,14 @@ package com.ritense.document.web.rest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
-import java.util.UUID;
+import com.ritense.valtimo.contract.authentication.NamedUser;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+import java.util.UUID;
 
 public interface DocumentResource {
 
@@ -35,5 +39,11 @@ public interface DocumentResource {
     ResponseEntity<Void> assignResource(UUID documentId, UUID resourceId);
 
     ResponseEntity<Void> removeRelatedFile(UUID documentId, UUID resourceId);
+
+    ResponseEntity<Void> assignHandlerToDocument(UUID documentId, UpdateAssigneeRequest request);
+
+    ResponseEntity<Void> unassignHandlerFromDocument(UUID documentId);
+
+    ResponseEntity<List<NamedUser>> getCandidateUsers(UUID documentId);
 
 }

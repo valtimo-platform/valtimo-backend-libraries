@@ -94,10 +94,23 @@ public class ValtimoUserBuilder {
     }
 
     public ValtimoUser createValtimoUser() {
-        return new ValtimoUser(id, userName, name, email, firstName, lastName, phoneNo, isEmailVerified, langKey, blocked, activated, roles);
+        return build();
     }
 
     public ValtimoUser build() {
-        return new ValtimoUser(id, userName, name, email, firstName, lastName, phoneNo, isEmailVerified, langKey, blocked, activated, roles);
+        var user = new ValtimoUser();
+        user.setId(id);
+        user.setUsername(userName);
+        user.setName(name);
+        user.setEmail(email);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPhoneNo(phoneNo);
+        user.setEmailVerified(isEmailVerified);
+        user.setLangKey(langKey);
+        user.setBlocked(blocked);
+        user.setActivated(activated);
+        user.setRoles(roles);
+        return user;
     }
 }

@@ -18,6 +18,7 @@ package com.ritense.objectenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -39,6 +40,7 @@ internal class ObjectenApiPluginFactoryTest {
         val objectenApiClient = mock<ObjectenApiClient>()
         val authenticationMock = mock<ObjectenApiAuthentication>()
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authenticationMock)
+        whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
 
         val factory = ObjectenApiPluginFactory(
             pluginService,
