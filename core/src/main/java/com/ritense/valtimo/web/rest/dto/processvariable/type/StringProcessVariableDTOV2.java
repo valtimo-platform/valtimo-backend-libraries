@@ -17,10 +17,11 @@
 package com.ritense.valtimo.web.rest.dto.processvariable.type;
 
 import com.ritense.valtimo.web.rest.dto.processvariable.ProcessVariableDTOV2;
+
 import java.util.Objects;
 
 public class StringProcessVariableDTOV2 extends ProcessVariableDTOV2 {
-    public String value;
+    private String value;
 
     public StringProcessVariableDTOV2() {
     }

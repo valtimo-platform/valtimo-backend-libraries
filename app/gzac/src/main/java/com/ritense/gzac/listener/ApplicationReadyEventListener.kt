@@ -57,19 +57,17 @@ class ApplicationReadyEventListener(
     fun createConnectors() {
         val connectorTypes = connectorService.getConnectorTypes()
 
-        connectorService.getConnectorTypes().forEach {
-            try {
-                createHaalCentraalBrpConnector(connectorTypes.findId("HaalCentraalBrp"))
-                createOpenZaakConnector(connectorTypes.findId("OpenZaak"))
-                createOpenNotificatiesConnector(connectorTypes.findId("OpenNotificatie"))
-                createContactMomentConnector(connectorTypes.findId("ContactMoment"))
-                createObjectApiConnectors(connectorTypes.findId("ObjectsApi"))
-                createProductAanvraagConnector(connectorTypes.findId("ProductAanvragen"))
-                createTaakConnector(connectorTypes.findId("Taak"))
-                createBesluitConnector(connectorTypes.findId("Besluit"))
-            } catch (ex: Exception) {
-                logger.error { ex }
-            }
+        try {
+            createHaalCentraalBrpConnector(connectorTypes.findId("HaalCentraalBrp"))
+            createOpenZaakConnector(connectorTypes.findId("OpenZaak"))
+            createOpenNotificatiesConnector(connectorTypes.findId("OpenNotificatie"))
+            createContactMomentConnector(connectorTypes.findId("ContactMoment"))
+            createObjectApiConnectors(connectorTypes.findId("ObjectsApi"))
+            createProductAanvraagConnector(connectorTypes.findId("ProductAanvragen"))
+            createTaakConnector(connectorTypes.findId("Taak"))
+            createBesluitConnector(connectorTypes.findId("Besluiten"))
+        } catch (ex: Exception) {
+            logger.error { ex }
         }
     }
 
@@ -147,16 +145,15 @@ class ApplicationReadyEventListener(
                 )
             )
         )
-        val configResult = objectSyncService.createObjectSyncConfig(
-            request = CreateObjectSyncConfigRequest(
-                connectorInstanceId = result.connectorTypeInstance()!!.id.id,
-                enabled = true,
-                documentDefinitionName = "leningen",
-                objectTypeId = UUID.fromString("3a82fb7f-fc9b-4104-9804-993f639d6d0d")
+        if (result.errors().isEmpty()) {
+            val configResult = objectSyncService.createObjectSyncConfig(
+                request = CreateObjectSyncConfigRequest(
+                    connectorInstanceId = result.connectorTypeInstance()!!.id.id,
+                    enabled = true,
+                    documentDefinitionName = "leningen",
+                    objectTypeId = UUID.fromString("3a82fb7f-fc9b-4104-9804-993f639d6d0d")
+                )
             )
-        )
-        if (configResult.errors().isNotEmpty()) {
-            configResult.errors()
         }
     }
 

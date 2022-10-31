@@ -17,6 +17,7 @@
 package com.ritense.valtimo.repository.queryparameter.type;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,7 +29,7 @@ class LongProcessVariableQueryParameterV2Test {
     @Test
     void longProcessVariableQueryParameter() {
         LongProcessVariableQueryParameterV2 longProcessVariableQueryParameter = longProcessVariableQueryParameterV2();
-        assertEquals(NAME, longProcessVariableQueryParameter.name);
+        assertEquals(NAME, longProcessVariableQueryParameter.getName());
         assertEquals(VALUE, longProcessVariableQueryParameter.value);
     }
 

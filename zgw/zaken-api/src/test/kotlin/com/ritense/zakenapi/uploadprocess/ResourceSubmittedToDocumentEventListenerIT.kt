@@ -24,12 +24,14 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.resource.domain.MetadataType
-import com.ritense.resource.domain.TemporaryResourceUploadedEvent
+import com.ritense.resource.domain.TemporaryResourceSubmittedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.BaseIntegrationTest
-import com.ritense.zakenapi.uploadprocess.ResourceUploadedEventListener.Companion.DOCUMENT_UPLOAD
+import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.DOCUMENT_UPLOAD
+import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.RESOURCE_ID_PROCESS_VAR
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.HistoryService
+import org.camunda.bpm.engine.history.HistoricProcessInstance
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,7 +39,7 @@ import org.springframework.context.ApplicationEventPublisher
 import javax.transaction.Transactional
 
 @Transactional
-class ResourceUploadedEventListenerIT : BaseIntegrationTest() {
+class ResourceSubmittedToDocumentEventListenerIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var documentService: JsonSchemaDocumentService
@@ -76,32 +78,47 @@ class ResourceUploadedEventListenerIT : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should start process after publishing TemporaryResourceUploadedEvent`() {
+    fun `should start upload process after publishing TemporaryResourceUploadedEvent`() {
         val documentId = documentService.createDocument(
             NewDocumentRequest(
                 DOCUMENT_DEFINITION_KEY,
                 Mapper.INSTANCE.get().createObjectNode()
             )
-        ).resultingDocument().get().id!!.id.toString()
+        ).resultingDocument().get().id!!.id
         val resourceId = temporaryResourceStorageService.store(
             "My file data".byteInputStream(),
-            mapOf(
-                MetadataType.DOCUMENT_ID.key to documentId,
-            ),
+            mapOf(MetadataType.DOCUMENT_ID.key to documentId.toString())
         )
 
-        applicationEventPublisher.publishEvent(TemporaryResourceUploadedEvent(resourceId))
+        applicationEventPublisher.publishEvent(
+            TemporaryResourceSubmittedEvent(
+                resourceId,
+                documentId,
+                DOCUMENT_DEFINITION_KEY
+            )
+        )
 
-        val documentUploadProcess = historyService.createHistoricProcessInstanceQuery()
+        val documentUploadProcess =
+            getHistoricProcessInstance(UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY, documentId.toString())
+        val retrievedResourceId =
+            getHistoricVariable(documentUploadProcess.rootProcessInstanceId, RESOURCE_ID_PROCESS_VAR) as String
+        assertThat(documentUploadProcess.startTime).isNotNull
+        assertThat(retrievedResourceId).isEqualTo(resourceId)
+    }
+
+    private fun getHistoricProcessInstance(processDefinitionKey: String, documentId: String): HistoricProcessInstance {
+        return historyService.createHistoricProcessInstanceQuery()
+            .processDefinitionKey(processDefinitionKey)
             .processInstanceBusinessKey(documentId)
             .singleResult()
-        val retrievedResourcesId = historyService.createHistoricVariableInstanceQuery()
-            .processInstanceId(documentUploadProcess.rootProcessInstanceId)
-            .variableName(ResourceUploadedEventListener.RESOURCE_ID_PROCESS_VAR)
+    }
+
+    private fun <T> getHistoricVariable(processInstanceId: String, variableKey: String): T {
+        return historyService.createHistoricVariableInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .variableName(variableKey)
             .singleResult()
-            .value as String
-        assertThat(documentUploadProcess.startTime).isNotNull
-        assertThat(retrievedResourcesId).isEqualTo(resourceId)
+            .value as T
     }
 
     companion object {

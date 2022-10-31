@@ -31,7 +31,7 @@ public abstract class ProcessVariableQueryParameterV2 implements IQueryParameter
     public static final String ACTIVE_REF = "active";
     public static final String START_PROCESS_USER_REF = "startUser";
 
-    public String name;
+    private String name;
 
     public ProcessVariableQueryParameterV2(String name) {
         Objects.requireNonNull(name, "name cannot be null");
@@ -106,4 +106,7 @@ public abstract class ProcessVariableQueryParameterV2 implements IQueryParameter
         return this.name.equals(START_PROCESS_USER_REF);
     }
 
+    public String getName() {
+        return name;
+    }
 }

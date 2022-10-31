@@ -19,6 +19,7 @@ package com.ritense.document.security.config;
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
@@ -35,7 +36,10 @@ public class DocumentHttpSecurityConfigurer implements HttpSecurityConfigurer {
                 .antMatchers(POST, "/api/document").hasAuthority(USER)
                 .antMatchers(PUT, "/api/document").hasAuthority(USER)
                 .antMatchers(POST, "/api/document/{document-id}/resource/{resource-id}").hasAuthority(USER)
-                .antMatchers(DELETE, "/api/document/{document-id}/resource/{resource-id}").hasAuthority(USER);
+                .antMatchers(DELETE, "/api/document/{document-id}/resource/{resource-id}").hasAuthority(USER)
+                .antMatchers(POST, "/api/document/{documentId}/assign").hasAuthority(USER)
+                .antMatchers(POST, "/api/document/{documentId}/unassign").hasAuthority(USER)
+                .antMatchers(GET, "/api/document/{document-id}/candidate-user").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

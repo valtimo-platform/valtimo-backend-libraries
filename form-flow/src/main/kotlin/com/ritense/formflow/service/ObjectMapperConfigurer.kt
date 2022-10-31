@@ -18,26 +18,30 @@ package com.ritense.formflow.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.ritense.formflow.domain.definition.configuration.step.StepTypeProperties
+import mu.KotlinLogging
+import org.springframework.boot.context.event.ApplicationStartedEvent
+import org.springframework.context.event.EventListener
 
-class FormFlowObjectMapper(
-    objectMapper:ObjectMapper = jacksonObjectMapper(),
-    stepPropertiesTypes: Collection<NamedType>? = null
+class ObjectMapperConfigurer(
+    private val objectMapper: ObjectMapper,
+    private val stepPropertiesTypes: Collection<NamedType>
 ) {
 
-    private val mapper = objectMapper.copy()
-        .registerKotlinModule()
-        .apply {
-            stepPropertiesTypes
-                ?.filter { StepTypeProperties::class.java.isAssignableFrom(it.type) }
-                ?.forEach {
-                    registerSubtypes(it)
-                }
-        }
+    @EventListener(ApplicationStartedEvent::class)
+    fun configure() {
+        logger.debug { "Setup ObjectMapper for StepTypeProperties" }
+        objectMapper
+            .apply {
+                stepPropertiesTypes
+                    .filter { StepTypeProperties::class.java.isAssignableFrom(it.type) }
+                    .forEach {
+                        registerSubtypes(it)
+                    }
+            }
+    }
 
-    fun get(): ObjectMapper {
-        return mapper
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }

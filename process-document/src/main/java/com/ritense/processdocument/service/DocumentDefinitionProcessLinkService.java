@@ -21,13 +21,28 @@ import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLink;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessLinkResponse;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface DocumentDefinitionProcessLinkService {
 
+    /**
+     * @deprecated - This method will be removed in the future
+     * Use {@link #getDocumentDefinitionProcessList(String)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "9.22.0")
     DocumentDefinitionProcess getDocumentDefinitionProcess(String documentDefinitionName);
 
+    /**
+     * @deprecated - This method will be removed in the future
+     * Use {@link #getDocumentDefinitionProcessLink(String, String)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "9.22.0")
     Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName);
+
+    List<DocumentDefinitionProcess> getDocumentDefinitionProcessList(String documentDefinitionName);
+
+    Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName, String type);
 
     DocumentDefinitionProcessLinkResponse saveDocumentDefinitionProcess(String documentDefinitionName, DocumentDefinitionProcessRequest request);
 

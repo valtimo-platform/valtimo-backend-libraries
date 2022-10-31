@@ -46,6 +46,7 @@ include(
     "mail:mandrill",
     "mail:wordpress-mail",
     "milestones",
+    "notes",
     "objects-api",
     "openzaak",
     "plugin",

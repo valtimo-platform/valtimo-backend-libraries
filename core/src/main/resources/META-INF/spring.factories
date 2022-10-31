@@ -11,4 +11,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.valtimo.autoconfigure.ContextAutoConfiguration, \
   com.ritense.valtimo.autoconfigure.ChoiceFieldAutoConfiguration, \
   com.ritense.valtimo.autoconfigure.AuthenticationAutoConfiguration, \
+  com.ritense.valtimo.autoconfigure.HibernateJsonMapperConfiguration, \
   com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration

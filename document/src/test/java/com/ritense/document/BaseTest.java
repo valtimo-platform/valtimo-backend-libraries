@@ -58,6 +58,12 @@ public abstract class BaseTest {
         return new JsonSchemaDocumentDefinition(documentDefinitionId, schema);
     }
 
+    protected JsonSchemaDocument createDocument() {
+        final var json = "{\"firstName\": \"John\"}";
+        final var content = new JsonDocumentContent(json);
+        return createDocument(content);
+    }
+
     protected JsonSchemaDocument createDocument(JsonDocumentContent content) {
         return JsonSchemaDocument
             .create(definition(), content, USERNAME, documentSequenceGeneratorService, null)

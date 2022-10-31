@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -105,15 +106,7 @@ public class ReportingResource {
         @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
         @RequestParam(value = "processFilter", required = false) String processKey
     ) {
-        //query
-        HistoricActivityInstanceQuery query = historyService.createHistoricActivityInstanceQuery().finished().activityType("userTask");
-        if (fromDate != null) {
-            query.startedAfter(fromLocalDateToDate(fromDate));
-        }
-        if (toDate != null) {
-            query.startedBefore(fromLocalDateToDate(toDate));
-        }
-        List<HistoricActivityInstance> historicTaskInstances = query.orderByActivityName().asc().list();
+        List<HistoricActivityInstance> historicTaskInstances = getFinishedHistoricTaskInstances(fromDate, toDate);
         //getting data into map
         List<String> categories = new ArrayList<>();
         List<Long> data = new ArrayList<>();
@@ -127,20 +120,17 @@ public class ReportingResource {
                 if (!categories.contains(hti.getActivityName())) {
                     // not first time? we already have something to add
                     if (!categories.isEmpty()) {
-                        data.add(time > 0 ? getHours(time, count) : 0);
+                        data.add(getHours(time, count));
                         count = 0;
                         time = 0;
                     }
                     categories.add(hti.getActivityName());
-                    count++;
-                    time += hti.getDurationInMillis();
-                } else {
-                    count++;
-                    time += hti.getDurationInMillis();
                 }
+                count++;
+                time += hti.getDurationInMillis();
                 // if is the last
                 if (hti.getId().equals(historicTaskInstances.get(historicTaskInstances.size() - 1).getId())) {
-                    data.add(time > 0 ? getHours(time, count) : 0);
+                    data.add(getHours(time, count));
                 }
             }
         }
@@ -182,10 +172,9 @@ public class ReportingResource {
                 }
             }
         }
-        for (Object o : chartMap.entrySet()) {
-            Map.Entry pair = (Map.Entry) o;
-            data.add((Long) pair.getValue());
-            categories.add((String) pair.getKey());
+        for (Map.Entry<String, Long> pair : chartMap.entrySet()) {
+            data.add(pair.getValue());
+            categories.add(pair.getKey());
         }
         ChartInstanceSeries instanceSeries = new ChartInstanceSeries("byPersonLabel", data);
         Map<String, ChartInstanceSeries> series = new HashMap<>();
@@ -203,43 +192,30 @@ public class ReportingResource {
     }
 
     @GetMapping(value = "/unfinishedTasksPerType")
-    public ResponseEntity unfinishedTasksPerType(
+    public ResponseEntity<ChartInstance> unfinishedTasksPerType(
         @RequestParam(value = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
         @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
         @RequestParam(value = "processFilter", required = false) String processDefinitionKey
     ) {
-        ArrayList categories = new ArrayList<>();
+        ArrayList<String> categories = new ArrayList<>();
         List<Long> data = new ArrayList<>();
 
-        HistoricActivityInstanceQuery historicActivityInstanceQuery = historyService.createHistoricActivityInstanceQuery()
-            .unfinished()
-            .activityType("userTask");
+        List<HistoricActivityInstance> historicTaskInstances = getUnfinishedHistoricTaskInstances(fromDate, toDate);
 
-        if (fromDate != null) {
-            historicActivityInstanceQuery.startedAfter(fromLocalDateToDate(fromDate));
-        }
-        if (toDate != null) {
-            historicActivityInstanceQuery.startedBefore(fromLocalDateToDate(toDate));
-        }
-
-        List<HistoricActivityInstance> historicTaskInstances = historicActivityInstanceQuery.orderByActivityName().asc().list();
-
-        Integer count = 0;
+        int count = 0;
         for (HistoricActivityInstance historicActivityInstance : historicTaskInstances) {
             if (processDefinitionKey == null || historicActivityInstance.getProcessDefinitionKey().equals(processDefinitionKey)) {
                 if (!categories.contains(historicActivityInstance.getActivityName())) {
                     if (!categories.isEmpty()) {
-                        data.add(Long.valueOf(count));
+                        data.add((long) count);
                         count = 0;
                     }
                     categories.add(historicActivityInstance.getActivityName());
-                    count++;
-                } else {
-                    count++;
                 }
+                count++;
 
                 if (historicActivityInstance.getId().equals(historicTaskInstances.get(historicTaskInstances.size() - 1).getId())) {
-                    data.add(Long.valueOf(count));
+                    data.add((long) count);
                 }
             }
         }
@@ -251,7 +227,7 @@ public class ReportingResource {
     }
 
     @GetMapping(value = "/finishedAndUnfinishedInstances")
-    public ResponseEntity finishedAndUnfinishedInstances(
+    public ResponseEntity<ChartInstance> finishedAndUnfinishedInstances(
         @RequestParam(value = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
         @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
         @RequestParam(value = "processFilter", required = false) String processDefinitionKey
@@ -270,8 +246,8 @@ public class ReportingResource {
         }
 
         if (toDate != null) {
-            historicProcessInstanceQueryFinished.finishedBefore(fromLocalDateToDate(fromDate));
-            historicProcessInstanceQueryUnfinished.finishedBefore(fromLocalDateToDate(fromDate));
+            historicProcessInstanceQueryFinished.finishedBefore(fromLocalDateToDate(toDate));
+            historicProcessInstanceQueryUnfinished.finishedBefore(fromLocalDateToDate(toDate));
         }
 
         Long unfinishedInstances = historicProcessInstanceQueryUnfinished.unfinished().count();
@@ -285,7 +261,7 @@ public class ReportingResource {
         Map<String, ChartInstanceSeries> series = new HashMap<>();
         series.put(instanceSeries.getName(), instanceSeries);
 
-        ArrayList categories = new ArrayList<>();
+        ArrayList<String> categories = new ArrayList<>();
         return new ResponseEntity<>(new ChartInstance(categories, series), HttpStatus.OK);
     }
 
@@ -296,7 +272,32 @@ public class ReportingResource {
     }
 
     public Long getHours(Long time, Integer count) {
-        return time / count / 1000 / 60 / 60;
+        return time > 0 ? time / count / 1000 / 60 / 60 : 0;
     }
 
+    private List<HistoricActivityInstance> getFinishedHistoricTaskInstances(LocalDate fromDate, LocalDate toDate) {
+        HistoricActivityInstanceQuery query = historyService.createHistoricActivityInstanceQuery().finished().activityType(ACTIVITY_USER_TASK);
+        if (fromDate != null) {
+            query.startedAfter(fromLocalDateToDate(fromDate));
+        }
+        if (toDate != null) {
+            query.startedBefore(fromLocalDateToDate(toDate));
+        }
+        return query.orderByActivityName().asc().list();
+    }
+
+    private List<HistoricActivityInstance> getUnfinishedHistoricTaskInstances(LocalDate fromDate, LocalDate toDate){
+        HistoricActivityInstanceQuery historicActivityInstanceQuery = historyService.createHistoricActivityInstanceQuery()
+            .unfinished()
+            .activityType(ACTIVITY_USER_TASK);
+
+        if (fromDate != null) {
+            historicActivityInstanceQuery.startedAfter(fromLocalDateToDate(fromDate));
+        }
+        if (toDate != null) {
+            historicActivityInstanceQuery.startedBefore(fromLocalDateToDate(toDate));
+        }
+
+        return historicActivityInstanceQuery.orderByActivityName().asc().list();
+    }
 }

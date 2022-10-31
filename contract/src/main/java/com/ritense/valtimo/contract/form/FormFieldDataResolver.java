@@ -41,4 +41,5 @@ public interface FormFieldDataResolver {
     ) {
         return get(dataResolvingContext.getDocumentDefinitionName(), dataResolvingContext.getDocumentId(), varNames);
     }
+
 }
