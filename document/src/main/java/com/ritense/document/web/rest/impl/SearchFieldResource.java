@@ -44,8 +44,8 @@ public class SearchFieldResource implements DocumentSearchFields {
     @Override
     @PostMapping("/v1/document-search/{documentDefinitionName}/fields")
     public ResponseEntity<Void> addSearchField(
-        @PathVariable String documentDefinitionName,
-        @RequestBody SearchFieldDto searchField) {
+            @PathVariable String documentDefinitionName,
+            @RequestBody SearchFieldDto searchField) {
 
         searchFieldService.addSearchField(documentDefinitionName, SearchFieldMapper.toEntity(searchField));
         return ResponseEntity.ok().build();
@@ -54,8 +54,9 @@ public class SearchFieldResource implements DocumentSearchFields {
     @Override
     @GetMapping("/v1/document-search/{documentDefinitionName}/fields")
     public ResponseEntity<List<SearchFieldDto>> getSearchField(
-        @PathVariable String documentDefinitionName) {
-        return ResponseEntity.ok(SearchFieldMapper.toDtoList(searchFieldService.getSearchFields(documentDefinitionName)));
+            @PathVariable String documentDefinitionName) {
+        return ResponseEntity.ok(SearchFieldMapper
+                .toDtoList(searchFieldService.getSearchFields(documentDefinitionName)));
     }
 
     @Override
@@ -63,7 +64,7 @@ public class SearchFieldResource implements DocumentSearchFields {
     public ResponseEntity<Void> updateSearchField(
             @PathVariable String documentDefinitionName,
             @RequestBody SearchFieldDto searchFieldDto) {
-        if(searchFieldDto.getKey() == null || searchFieldDto.getKey().trim().isEmpty()){
+        if (searchFieldDto.getKey() == null || searchFieldDto.getKey().trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
         searchFieldService.updateSearchFields(documentDefinitionName, searchFieldDto);
@@ -75,7 +76,7 @@ public class SearchFieldResource implements DocumentSearchFields {
     public ResponseEntity<Void> deleteSearchField(
             @PathVariable String documentDefinitionName,
             @RequestParam String key) {
-        if(documentDefinitionName == null || documentDefinitionName.trim().isEmpty() || key == null || key.trim().isEmpty()){
+        if (documentDefinitionName == null || documentDefinitionName.trim().isEmpty() || key == null || key.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
         searchFieldService.deleteSearchField(documentDefinitionName, key);
