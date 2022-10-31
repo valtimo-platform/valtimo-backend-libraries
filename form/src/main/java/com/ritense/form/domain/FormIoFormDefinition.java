@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "form_io_form_definition")
@@ -63,6 +64,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String PROCESS_VAR_PREFIX = "pv";
     public static final String EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ":";
     public static final String LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ".";
+    public static final String DISABLED_KEY = "disabled";
 
     @Id
     @Column(name = "id", updatable = false)
@@ -169,7 +171,10 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         final JsonNode formDefinitionNode = asJson();
         final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionNode);
 
-        inputFields.forEach(field -> getExternalFormField(field)
+        var enabledFields = inputFields.stream().filter(field -> !isDisabledField(field))
+            .collect(Collectors.toList());
+
+        enabledFields.forEach(field -> getExternalFormField(field)
             .ifPresent(externalContentItem ->
                 map.computeIfAbsent(
                     externalContentItem.externalFormFieldType.toLowerCase(), externalFormFieldType -> new ArrayList<>()
@@ -267,6 +272,10 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         this.formDefinition = formDefinition;
     }
 
+    private static boolean isDisabledField(JsonNode fieldNode) {
+        return fieldNode.has(DISABLED_KEY) && fieldNode.get(DISABLED_KEY).asBoolean();
+    }
+
     private void fill(ObjectNode field, JsonNode content) {
         assertArgumentNotNull(field, "field is required");
         assertArgumentNotNull(content, "content is required");
@@ -328,6 +337,9 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         }
         String key = field.get(PROPERTY_KEY).asText().toUpperCase();
         if (getExternalFormFieldType(field).isPresent()) {
+            return false;
+        }
+        if (field.has(DISABLED_KEY) && field.get(DISABLED_KEY).asBoolean()) {
             return false;
         }
         return !key.isEmpty() && !key.startsWith(PROCESS_VAR_PREFIX.toUpperCase());

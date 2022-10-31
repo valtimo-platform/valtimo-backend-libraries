@@ -94,7 +94,7 @@ public class FormIoFormLoaderServiceTest extends BaseTest {
         final Optional<JsonNode> formDefinition = formLoaderService
             .getFormDefinitionByNamePreFilled(formDefinitionId, jsonSchemaDocument.orElseThrow().id());
         assertThat(formDefinition).isPresent();
-        assertThat(formDefinition.get().get("components").get(2).get("components").get(0).get("components").get(0).get("defaultValue").asText())
+        assertThat(formDefinition.get().get("components").get(3).get("components").get(0).get("components").get(0).get("defaultValue").asText())
             .isEqualTo("John");
     }
 

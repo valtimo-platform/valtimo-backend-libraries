@@ -196,7 +196,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
         JsonNode definition = formDefinition.getFormDefinition();
         List<ObjectNode> components = FormIoFormDefinition.getInputFields(definition);
 
-        assertThat(components).hasSize(6);
+        assertThat(components).hasSize(7);
     }
 
     @Test
@@ -204,6 +204,15 @@ public class FormIoFormDefinitionTest extends BaseTest {
         final var formDefinition = formDefinitionOf("form-example-nested-components");
         var result = formDefinition.getDocumentMappedFields();
         assertThat(result).hasSize(12);
+    }
+
+    @Test
+    public void shouldRemoveDisabledFieldFromDocumentMappedFields() throws IOException {
+        final var formDefinition = formDefinitionOf("form-example-nested-components");
+        var result = formDefinition.getDocumentMappedFields();
+        for (ObjectNode node : result) {
+            assertThat(node.toString().contains("\"disabled\":true")).isFalse();
+        }
     }
 
     @Test
