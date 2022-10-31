@@ -42,8 +42,9 @@ public class SearchFieldService {
         return searchFieldRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
     }
 
-    public void updateSearchFields(String documentDefinitionName,SearchFieldDto searchFieldDto) {
-        Optional<SearchField> fieldToUpdate = searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName,searchFieldDto.getKey());
+    public void updateSearchFields(String documentDefinitionName, SearchFieldDto searchFieldDto) {
+        Optional<SearchField> fieldToUpdate = searchFieldRepository
+                .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchFieldDto.getKey());
         fieldToUpdate.ifPresent(searchFieldRepository::save);
     }
 
@@ -51,5 +52,10 @@ public class SearchFieldService {
         if (!searchFieldRepository.existsByIdDocumentDefinitionName(documentDefinitionName)) {
             searchFieldRepository.saveAll(searchFields);
         }
+    }
+
+    public void deleteSearchField(String documentDefinitionName, String key) {
+        searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName, key).ifPresent(
+                searchFieldRepository::delete);
     }
 }
