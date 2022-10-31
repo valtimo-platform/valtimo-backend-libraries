@@ -41,7 +41,6 @@ import com.ritense.valtimo.autoconfigure.ContextAutoConfiguration
 import com.ritense.valtimo.autoconfigure.EmailNotificationSettingsAutoConfiguration
 import com.ritense.valtimo.autoconfigure.HttpSecurityAutoConfiguration
 import com.ritense.valtimo.autoconfigure.LiquibaseAutoConfiguration
-import com.ritense.valtimo.autoconfigure.ProcessDataObjectAutoConfiguration
 import com.ritense.valtimo.autoconfigure.ValtimoAutoConfiguration
 import com.ritense.valtimo.autoconfigure.ValtimoMethodSecurityAutoConfiguration
 import com.ritense.valtimo.autoconfigure.ValtimoMybatisAutoConfiguration
@@ -84,7 +83,6 @@ import org.springframework.boot.test.context.TestConfiguration
         OpenZaakLiquibaseAutoConfiguration::class,
         OpenZaakResourceAutoConfiguration::class,
         OpenZaakSecurityAutoConfiguration::class,
-        ProcessDataObjectAutoConfiguration::class,
         ProcessDocumentAutoConfiguration::class,
         ProcessDocumentAuditAutoConfiguration::class,
         ValtimoAutoConfiguration::class,

@@ -37,7 +37,6 @@
     <include file="changelog/20170621-auditevents-changed-value-column-datatype.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20170808_contexts_changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20171127-aditional_roles.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/initial-process-data-object.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180219-authorities-fix.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180801-auditevents-added-column-action.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180824-auditevents-added-column-unique_id.xml" relativeToChangelogFile="true"/>
