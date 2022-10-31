@@ -18,10 +18,10 @@ package com.ritense.valtimo.camunda.task.service;
 
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
-import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake;
-import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake;
 import java.util.List;
 import java.util.Map;
+import org.camunda.community.mockito.delegate.DelegateExecutionFake;
+import org.camunda.community.mockito.delegate.DelegateTaskFake;
 
 public class NotificationTestHelper {
 

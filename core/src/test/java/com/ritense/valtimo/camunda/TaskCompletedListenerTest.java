@@ -17,15 +17,15 @@
 package com.ritense.valtimo.camunda;
 
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
+import java.util.Date;
 import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.camunda.bpm.engine.variable.VariableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
-import java.util.Date;
-import static org.camunda.bpm.extension.mockito.CamundaMockito.delegateExecutionFake;
-import static org.camunda.bpm.extension.mockito.CamundaMockito.delegateTaskFake;
+import static org.camunda.community.mockito.CamundaMockito.delegateExecutionFake;
+import static org.camunda.community.mockito.CamundaMockito.delegateTaskFake;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

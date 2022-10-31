@@ -18,7 +18,6 @@
 
 package com.ritense.openzaak.service
 
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.openzaak.BaseTest
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
@@ -32,6 +31,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.whenever
 import java.net.URI
 import java.util.Optional
 import java.util.UUID

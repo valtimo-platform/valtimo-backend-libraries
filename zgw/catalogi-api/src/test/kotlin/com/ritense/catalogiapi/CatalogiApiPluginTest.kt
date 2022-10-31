@@ -16,8 +16,6 @@
 
 package com.ritense.catalogiapi
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
@@ -25,6 +23,8 @@ import com.ritense.zakenapi.client.CatalogiApiClient
 import com.ritense.zgw.Page
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.net.URI
 import kotlin.test.assertEquals
 
