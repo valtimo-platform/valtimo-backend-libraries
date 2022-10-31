@@ -53,7 +53,7 @@ public class SearchFieldService {
         }
     }
 
-    public void deleteSearchFields(String documentDefinitionName, String key) {
+    public void deleteSearchField(String documentDefinitionName, String key) {
         searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName,key).ifPresent(
                 searchFieldRepository::delete);
     }

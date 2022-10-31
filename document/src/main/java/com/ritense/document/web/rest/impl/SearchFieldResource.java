@@ -78,7 +78,7 @@ public class SearchFieldResource implements DocumentSearchFields {
         if(documentDefinitionName == null || documentDefinitionName.trim().isEmpty() || key == null || key.trim().isEmpty()){
             return ResponseEntity.badRequest().build();
         }
-        searchFieldService.deleteSearchFields(documentDefinitionName, key);
+        searchFieldService.deleteSearchField(documentDefinitionName, key);
         return ResponseEntity.noContent().build();
     }
 }
