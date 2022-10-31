@@ -339,7 +339,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         if (getExternalFormFieldType(field).isPresent()) {
             return false;
         }
-        if (field.has(DISABLED_KEY) && field.get(DISABLED_KEY).asBoolean()) {
+        if (isDisabledField(field)) {
             return false;
         }
         return !key.isEmpty() && !key.startsWith(PROCESS_VAR_PREFIX.toUpperCase());
