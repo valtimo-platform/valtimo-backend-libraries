@@ -33,7 +33,7 @@ public class DocumentSearchHttpSecurityConfigurer implements HttpSecurityConfigu
             http.authorizeRequests()
                 .antMatchers(POST, "/api/document-search").hasAuthority(USER)
                 .antMatchers(POST, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(USER)
                 .antMatchers(PUT, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
