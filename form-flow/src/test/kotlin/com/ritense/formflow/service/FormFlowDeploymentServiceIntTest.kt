@@ -47,6 +47,31 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
         assertThat(inkomensLoket.steps).hasSize(7)
     }
 
+    @Test
+    fun `should deploy Form Flow when nextStep is provided`() {
+        formFlowDeploymentService.deploy(
+            "testOnOpenExpression", """
+            {
+                "startStep": "woonplaats",
+                "steps": [
+                    {
+                        "key": "woonplaats",
+                        "nextStep": {
+                            "step": "leeftijd"
+                        },
+                        "type": {
+                            "name": "form",
+                            "properties": {
+                                "definition": "my-form-definition"
+                            }
+                        }
+                    }
+                ]
+            }
+        """.trimIndent()
+        )
+    }
+
 
     @Test
     fun `should not deploy same Form Flow twice`() {
