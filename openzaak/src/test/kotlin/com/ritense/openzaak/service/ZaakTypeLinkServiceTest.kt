@@ -16,8 +16,6 @@
 
 package com.ritense.openzaak.service
 
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
@@ -34,6 +32,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
 import java.net.URI
 import java.util.Optional
 import java.util.UUID

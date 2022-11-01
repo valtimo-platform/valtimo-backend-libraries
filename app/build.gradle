@@ -10,11 +10,3 @@ repositories {
     mavenCentral()
     mavenLocal()
 }
-
-dependencyManagement {
-    imports {
-        mavenBom "software.amazon.awssdk:bom:2.15.62"
-        mavenBom "com.fasterxml.jackson:jackson-bom:2.12.5"
-        mavenBom "org.junit:junit-bom:5.7.2"
-    }
-}

@@ -9,12 +9,12 @@ plugins {
     id "org.jetbrains.kotlin.plugin.jpa" version "${kotlinVersion}"
     id "org.jetbrains.kotlin.plugin.allopen" version "${kotlinVersion}"
     id "org.jetbrains.dokka" version "${kotlinVersion}"
-    id "com.github.ben-manes.versions" version "0.20.0"
-    id "org.sonarqube" version "2.7"
+    id "com.github.ben-manes.versions" version "${versionsPluginVersion}"
+    id "org.sonarqube" version "${sonarqubePluginVersion}"
     id "checkstyle"
     id "jacoco"
-    id "com.avast.gradle.docker-compose" version "0.14.9"
-    id "com.github.jk1.dependency-license-report" version "2.1"
+    id "com.avast.gradle.docker-compose" version "${dockerComposePluginVersion}"
+    id "com.github.jk1.dependency-license-report" version "${dependencyLicenseReportVersion}"
 }
 
 /*
@@ -66,10 +66,9 @@ allprojects {
 
     dependencyManagement {
         imports {
-            mavenBom "software.amazon.awssdk:bom:2.15.62"
-            mavenBom "org.testcontainers:testcontainers-bom:1.15.1"
-            mavenBom "com.fasterxml.jackson:jackson-bom:2.13.3"
-            mavenBom "org.junit:junit-bom:5.7.2"
+            mavenBom "software.amazon.awssdk:bom:${awssdkVersion}"
+            mavenBom "com.fasterxml.jackson:jackson-bom:${jacksonVersion}"
+            mavenBom "org.junit:junit-bom:${junitVersion}"
         }
     }
 

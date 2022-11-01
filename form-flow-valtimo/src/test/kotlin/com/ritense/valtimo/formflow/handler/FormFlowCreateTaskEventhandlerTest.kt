@@ -1,10 +1,5 @@
 package com.ritense.valtimo.formflow.handler
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.document.service.DocumentService
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.instance.FormFlowInstance
@@ -12,23 +7,16 @@ import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.domain.FormAssociation
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
 import com.ritense.formlink.service.FormAssociationService
-import com.ritense.valtimo.formflow.handler.FormFlowCreateTaskEventHandler
-import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.TaskService
-import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
-import org.camunda.bpm.engine.impl.cmd.CompleteTaskCmd
-import org.camunda.bpm.engine.impl.cmd.CreateTaskCmd
-import org.camunda.bpm.engine.impl.interceptor.CommandExecutor
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity
-import org.camunda.bpm.engine.repository.ProcessDefinition
-import org.camunda.bpm.engine.runtime.ProcessInstance
-import org.camunda.bpm.engine.task.Task
-import org.camunda.community.mockito.QueryMocks
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.lang.reflect.Field
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.util.Optional
 
 class FormFlowCreateTaskEventhandlerTest {
