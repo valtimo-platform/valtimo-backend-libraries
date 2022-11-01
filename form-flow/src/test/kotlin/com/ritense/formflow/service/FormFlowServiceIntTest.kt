@@ -35,6 +35,24 @@ internal class FormFlowServiceIntTest: BaseIntegrationTest() {
         assertEquals(1, formFlowService.findInstances(mutableMapOf("taskId" to "123")).size)
     }
 
+//    TODO: Make this working for MySQL
+//    @Test
+//    fun `finds 1 formFlowInstance for 1 complex additionalProperty`() {
+//        val definition = formFlowService.findLatestDefinitionByKey("inkomens_loket")!!
+//        val henk = formFlowService.save(definition.createInstance(mutableMapOf("taskId" to mutableMapOf("actualTaskId" to "123"))))
+//        formFlowService.save(definition.createInstance(mutableMapOf("taskId" to mutableMapOf("actualTaskId" to "1234"))))
+//        assertEquals(1, formFlowService.findInstances(mutableMapOf("taskId" to mutableMapOf("actualTaskId" to "123"))).size)
+//    }
+
+//    TODO: Implement this as a feature
+//    @Test
+//    fun `finds 1 formFlowInstance for 1 complex additionalProperty with complex path`() {
+//        val definition = formFlowService.findLatestDefinitionByKey("inkomens_loket")!!
+//        formFlowService.save(definition.createInstance(mutableMapOf("taskId" to mutableMapOf("actualTaskId" to "123"))))
+//        formFlowService.save(definition.createInstance(mutableMapOf("taskId" to mutableMapOf("actualTaskId" to "1234"))))
+//        assertEquals(1, formFlowService.findInstances(mutableMapOf("taskId.actualTaskId" to "123")).size)
+//    }
+
     @Test
     fun `finds 0 formFlowInstances for 1 additionalProperty`() {
         val definition = formFlowService.findLatestDefinitionByKey("inkomens_loket")!!
