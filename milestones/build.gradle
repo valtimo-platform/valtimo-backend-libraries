@@ -59,7 +59,7 @@ dependencies {
     implementation "org.springframework:spring-jdbc"
 
     // Mapstruct
-    implementation "org.mapstruct:mapstruct-jdk8:${mapstructVersion}"
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
     // Hibernate
