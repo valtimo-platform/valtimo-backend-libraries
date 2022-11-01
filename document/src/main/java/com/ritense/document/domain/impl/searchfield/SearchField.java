@@ -38,13 +38,15 @@ public class SearchField implements Persistable<SearchFieldId> {
     @Column(name = "path", length = 255, nullable = true, updatable = true)
     private String path;
 
-    @Column(name = "datatype", nullable = false, updatable = false)
+    @Column(name = "datatype", nullable = false, updatable = true)
+    @Enumerated(EnumType.STRING)
     private SearchFieldDatatype datatype;
 
-    @Column(name = "fieldtype", nullable = false, updatable = false)
+    @Column(name = "fieldtype", nullable = false, updatable = true)
+    @Enumerated(EnumType.STRING)
     private SearchFieldFieldtype fieldtype;
 
-    @Column(name = "matchtype", nullable = false, updatable = false)
+    @Column(name = "matchtype", nullable = false, updatable = true)
     @Enumerated(EnumType.STRING)
     private SearchFieldMatchtype matchtype;
 
@@ -88,16 +90,32 @@ public class SearchField implements Persistable<SearchFieldId> {
         return path;
     }
 
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     public SearchFieldDatatype getDatatype() {
         return datatype;
+    }
+
+    public void setDatatype(SearchFieldDatatype datatype) {
+        this.datatype = datatype;
     }
 
     public SearchFieldFieldtype getFieldtype() {
         return fieldtype;
     }
 
+    public void setFieldtype(SearchFieldFieldtype fieldtype) {
+        this.fieldtype = fieldtype;
+    }
+
     public SearchFieldMatchtype getMatchtype() {
         return matchtype;
+    }
+
+    public void setMatchtype(SearchFieldMatchtype matchtype) {
+        this.matchtype = matchtype;
     }
 }
 
