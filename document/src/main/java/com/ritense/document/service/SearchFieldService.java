@@ -45,7 +45,15 @@ public class SearchFieldService {
     public void updateSearchFields(String documentDefinitionName, SearchFieldDto searchFieldDto) {
         Optional<SearchField> fieldToUpdate = searchFieldRepository
                 .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchFieldDto.getKey());
-        fieldToUpdate.ifPresent(searchFieldRepository::save);
+        if (fieldToUpdate.isEmpty()) {
+            throw new IllegalArgumentException("No search field found for document '" + documentDefinitionName + "' and key '" + searchFieldDto.getKey() + "'.");
+        }
+        fieldToUpdate.ifPresent(searchField -> {
+            searchField.setPath(searchFieldDto.getPath());
+            searchField.setDatatype(searchFieldDto.getDatatype());
+            searchField.setFieldtype(searchFieldDto.getFieldtype());
+            searchField.setMatchtype(searchFieldDto.getMatchtype());
+        });
     }
 
     public void createSearchConfiguration(String documentDefinitionName, List<SearchField> searchFields) {
