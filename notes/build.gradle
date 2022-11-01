@@ -40,6 +40,7 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
 
+    testImplementation "io.kotest:kotest-assertions-core:${kotestVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {

@@ -18,7 +18,6 @@ package com.ritense.note.web.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.JsonPath
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.audit.service.AuditService
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.Mapper
@@ -35,6 +34,7 @@ import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
