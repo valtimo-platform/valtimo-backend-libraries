@@ -44,7 +44,6 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
     implementation "org.springframework:spring-tx"
-    implementation "io.swagger.core.v3:swagger-jaxrs2:${swaggerJaxrs2Version}"
 
     api "com.google.guava:guava:${guavaVersion}"
 
