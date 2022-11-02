@@ -33,6 +33,11 @@ public class SearchFieldService {
     }
 
     public void addSearchField(String documentDefinitionName, SearchField searchField) {
+        Optional<SearchField> optSearchField = searchFieldRepository
+            .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchField.getKey());
+        if (optSearchField.isPresent()) {
+            throw new IllegalArgumentException("Search field already exists for document '" + documentDefinitionName + "' and key '" + searchField.getKey() + "'.");
+        }
         SearchFieldId searchFieldId = SearchFieldId.newId(documentDefinitionName);
         searchField.setId(searchFieldId);
         searchFieldRepository.save(searchField);
