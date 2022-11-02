@@ -46,7 +46,12 @@ public class SearchFieldResource implements DocumentSearchFields {
     public ResponseEntity<Void> addSearchField(
             @PathVariable String documentDefinitionName,
             @RequestBody SearchFieldDto searchField) {
-
+        if (documentDefinitionName == null
+                || documentDefinitionName.trim().isEmpty()
+                || searchField.getKey() == null
+                || searchField.getKey().trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
         searchFieldService.addSearchField(documentDefinitionName, SearchFieldMapper.toEntity(searchField));
         return ResponseEntity.ok().build();
     }

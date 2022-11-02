@@ -21,8 +21,11 @@ import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
 import com.ritense.document.repository.SearchFieldRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SearchFieldService {
 
@@ -34,7 +37,7 @@ public class SearchFieldService {
 
     public void addSearchField(String documentDefinitionName, SearchField searchField) {
         Optional<SearchField> optSearchField = searchFieldRepository
-            .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchField.getKey());
+                .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchField.getKey());
         if (optSearchField.isPresent()) {
             throw new IllegalArgumentException("Search field already exists for document '" + documentDefinitionName + "' and key '" + searchField.getKey() + "'.");
         }
@@ -63,7 +66,14 @@ public class SearchFieldService {
     }
 
     public void createSearchConfiguration(String documentDefinitionName, List<SearchField> searchFields) {
-        if (!searchFieldRepository.existsByIdDocumentDefinitionName(documentDefinitionName)) {
+        if (!searchFieldRepository.existsByIdDocumentDefinitionName(documentDefinitionName) &&
+                searchFields.stream()
+                        .filter((searchField ->
+                                Collections.frequency(searchFields.stream()
+                                        .flatMap(field -> Stream.of(field.getKey()))
+                                        .collect(Collectors.toList()), searchField.getKey()
+                                ) > 1))
+                        .distinct().findAny().isEmpty()) {
             searchFieldRepository.saveAll(searchFields);
         }
     }
