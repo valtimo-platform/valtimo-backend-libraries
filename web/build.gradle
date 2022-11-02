@@ -48,9 +48,10 @@ dependencies {
 
     api "com.google.guava:guava:${guavaVersion}"
 
-    implementation("io.springfox:springfox-swagger2:${springfoxSwaggerVersion}") {
-        exclude module: 'mapstruct'
-    }
+    implementation "org.springdoc:springdoc-openapi-webmvc-core:${springDocVersion}"
+    implementation "org.springdoc:springdoc-openapi-kotlin:${springDocVersion}"
+    implementation "org.springdoc:springdoc-openapi-security:${springDocVersion}"
+
     api "org.zalando:problem-spring-web:${problemSpringWebVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"

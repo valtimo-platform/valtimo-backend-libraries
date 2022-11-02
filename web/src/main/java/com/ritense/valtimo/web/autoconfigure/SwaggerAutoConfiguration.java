@@ -17,6 +17,10 @@
 package com.ritense.valtimo.web.autoconfigure;
 
 import com.ritense.valtimo.web.config.SwaggerProperties;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -24,17 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.StopWatch;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-import java.util.ArrayList;
-import java.util.Date;
-import static springfox.documentation.builders.PathSelectors.regex;
 
 /**
  * Springfox Swagger configuration.
@@ -45,10 +39,8 @@ import static springfox.documentation.builders.PathSelectors.regex;
 @Configuration
 @EnableConfigurationProperties(value = {SwaggerProperties.class})
 @ConditionalOnProperty(value = {"valtimo.swagger.enabled"})
-@EnableSwagger2
 public class SwaggerAutoConfiguration {
 
-    public static final String DEFAULT_INCLUDE_PATTERN = "/api/.*";
     private static final Logger logger = LoggerFactory.getLogger(SwaggerAutoConfiguration.class);
 
     /**
@@ -58,43 +50,35 @@ public class SwaggerAutoConfiguration {
      * @return the Swagger Springfox configuration
      */
     @Bean
-    @ConditionalOnMissingBean(name = "swaggerSpringfoxDocket")
-    public Docket swaggerSpringfoxDocket(SwaggerProperties swaggerProperties) {
+    @ConditionalOnMissingBean(name = "valtimoOpenAPI")
+    public OpenAPI valtimoOpenAPI(SwaggerProperties swaggerProperties) {
         logger.debug("Starting Swagger");
         StopWatch watch = new StopWatch();
         watch.start();
-        Contact contact = new Contact(
-            swaggerProperties.getContactName(),
-            swaggerProperties.getContactUrl(),
-            swaggerProperties.getContactEmail()
-        );
 
-        ApiInfo apiInfo = new ApiInfo(
-            swaggerProperties.getTitle(),
-            swaggerProperties.getDescription(),
-            swaggerProperties.getVersion(),
-            swaggerProperties.getTermsOfServiceUrl(),
-            contact,
-            swaggerProperties.getLicense(),
-            swaggerProperties.getLicenseUrl(),
-            new ArrayList<>()
-        );
+        Contact contact = new Contact()
+            .name(swaggerProperties.getContactName())
+            .url(swaggerProperties.getContactUrl())
+            .email(swaggerProperties.getContactEmail());
 
-        Docket docket = new Docket(DocumentationType.SWAGGER_2)
-            .apiInfo(apiInfo)
-            .forCodeGeneration(true)
-            .genericModelSubstitutes(ResponseEntity.class)
-            .ignoredParameterTypes(Pageable.class)
-            .ignoredParameterTypes(java.sql.Date.class)
-            .directModelSubstitute(java.time.LocalDate.class, java.sql.Date.class)
-            .directModelSubstitute(java.time.ZonedDateTime.class, Date.class)
-            .directModelSubstitute(java.time.LocalDateTime.class, Date.class)
-            .select()
-            .paths(regex(DEFAULT_INCLUDE_PATTERN))
-            .build();
+        License license = new License()
+            .name(swaggerProperties.getLicense())
+            .url(swaggerProperties.getLicenseUrl());
+
+        OpenAPI openAPI = new OpenAPI()
+            .info(
+                new Info()
+                    .title(swaggerProperties.getTitle())
+                    .description(swaggerProperties.getDescription())
+                    .version(swaggerProperties.getVersion())
+                    .contact(contact)
+                    .license(license)
+                    .termsOfService(swaggerProperties.getTermsOfServiceUrl())
+            );
+
         watch.stop();
         logger.debug("Started Swagger in {} ms", watch.getTotalTimeMillis());
-        return docket;
+        return openAPI;
     }
 
 }

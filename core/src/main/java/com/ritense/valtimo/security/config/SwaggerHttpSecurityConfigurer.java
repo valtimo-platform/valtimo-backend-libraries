@@ -28,8 +28,8 @@ public class SwaggerHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/v2/api-docs").hasAuthority(ADMIN)
-                .antMatchers("/v2/api-docs/**").hasAuthority(ADMIN);
+                .antMatchers(GET, "/v3/api-docs").hasAuthority(ADMIN)
+                .antMatchers("/v3/api-docs/**").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }
