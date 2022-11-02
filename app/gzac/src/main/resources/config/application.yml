@@ -236,10 +236,3 @@ external:
             bezwaar:
                 caseKey: bezwaar
                 processDefinitionKey: bezwaar
-
-
-#For sorting endpoints alphabetically
-springdoc :
-    swagger-ui:
-        operationsSorter: alpha
-        tagsSorter: alpha
