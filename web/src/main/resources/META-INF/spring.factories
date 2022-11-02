@@ -1,5 +1,5 @@
 # AutoConfigurations
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.valtimo.web.autoconfigure.WebAutoConfiguration,\
-  com.ritense.valtimo.web.autoconfigure.SwaggerAutoConfiguration
+  com.ritense.valtimo.web.autoconfigure.OpenApiAutoConfiguration
 

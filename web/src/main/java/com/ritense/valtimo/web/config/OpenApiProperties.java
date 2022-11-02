@@ -18,8 +18,8 @@ package com.ritense.valtimo.web.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "valtimo.swagger", ignoreUnknownFields = false)
-public class SwaggerProperties {
+@ConfigurationProperties(prefix = "valtimo.openapi", ignoreUnknownFields = false)
+public class OpenApiProperties {
 
     private String title = "Valtimo Implementation API";
 
