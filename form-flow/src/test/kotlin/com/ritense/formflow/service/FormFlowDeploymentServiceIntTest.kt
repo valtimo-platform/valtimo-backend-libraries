@@ -56,9 +56,7 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
                 "steps": [
                     {
                         "key": "woonplaats",
-                        "nextStep": {
-                            "step": "leeftijd"
-                        },
+                        "nextStep": "leeftijd",
                         "type": {
                             "name": "form",
                             "properties": {
