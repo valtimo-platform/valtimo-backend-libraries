@@ -53,6 +53,7 @@ public class SearchFieldService {
             searchField.setDatatype(searchFieldDto.getDatatype());
             searchField.setFieldtype(searchFieldDto.getFieldtype());
             searchField.setMatchtype(searchFieldDto.getMatchtype());
+            searchFieldRepository.save(searchField);
         });
     }
 
