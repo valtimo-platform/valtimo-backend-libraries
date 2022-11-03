@@ -24,6 +24,7 @@ include(
     "connector",
     "contactmoment",
     "contract",
+    "tenancy",
     "core",
     "document",
     "document-export",
