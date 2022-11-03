@@ -13,16 +13,17 @@ import javax.persistence.MappedSuperclass
 @MappedSuperclass
 @FilterDef(
     name = AbstractTenantAwareAggregateRoot.TENANT_FILTER_NAME,
-    parameters = [ParamDef(name = AbstractTenantAwareAggregateRoot.TENANT_PARAMETER_NAME, type = "int")],
-    defaultCondition = AbstractTenantAwareAggregateRoot.TENANT_COLUMN + " = :" + AbstractTenantAwareAggregateRoot.TENANT_PARAMETER_NAME
+    defaultCondition = AbstractTenantAwareAggregateRoot.TENANT_COLUMN + " = :" + AbstractTenantAwareAggregateRoot.TENANT_PARAMETER_NAME,
+    parameters = [ParamDef(name = AbstractTenantAwareAggregateRoot.TENANT_PARAMETER_NAME, type = "string")]
 )
 @Filter(name = AbstractTenantAwareAggregateRoot.TENANT_FILTER_NAME)
-@EntityListeners(TenantAwareListener::class)
+@EntityListeners(
+    TenantAwareListener::class
+)
 open class AbstractTenantAwareAggregateRoot<A : AbstractTenantAwareAggregateRoot<A>?> :
     AbstractAggregateRoot<A>(), TenantAware {
-
     @JsonIgnore
-    @Column(name = "tenant_id", columnDefinition = "VARCHAR(256)", nullable = false)
+    @Column(name = TENANT_COLUMN, columnDefinition = "VARCHAR(256)", nullable = false)
     override var tenantId: String? = null
 
     companion object {
