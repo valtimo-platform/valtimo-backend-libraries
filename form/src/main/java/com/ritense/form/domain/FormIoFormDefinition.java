@@ -24,20 +24,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.ritense.form.autoconfigure.FormAutoConfiguration;
 import com.ritense.form.domain.event.FormRegisteredEvent;
 import com.ritense.form.domain.exception.FormDefinitionParsingException;
-import org.hibernate.annotations.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.AbstractAggregateRoot;
-import org.springframework.data.domain.Persistable;
-import org.springframework.web.util.HtmlUtils;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,8 +36,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import org.hibernate.annotations.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.AbstractAggregateRoot;
+import org.springframework.data.domain.Persistable;
+import org.springframework.web.util.HtmlUtils;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
@@ -171,12 +169,11 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public Map<String, List<ExternalContentItem>> buildExternalFormFieldsMap() {
         var map = new HashMap<String, List<ExternalContentItem>>();
         final JsonNode formDefinitionNode = asJson();
-        final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionNode);
-
-        var enabledFields = inputFields.stream().filter(field -> !isDisabledField(field))
-            .collect(Collectors.toList());
-
-        enabledFields.forEach(field -> getExternalFormField(field)
+        FormIoFormDefinition
+            .getInputFields(formDefinitionNode)
+            .stream()
+            .filter(field -> !shouldIgnoreField(field))
+            .forEach(field -> getExternalFormField(field)
             .ifPresent(externalContentItem ->
                 map.computeIfAbsent(
                     externalContentItem.externalFormFieldType.toLowerCase(), externalFormFieldType -> new ArrayList<>()
@@ -274,8 +271,10 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         this.formDefinition = formDefinition;
     }
 
-    private static boolean isDisabledField(JsonNode fieldNode) {
-        return fieldNode.has(DISABLED_KEY) && fieldNode.get(DISABLED_KEY).asBoolean();
+    private boolean shouldIgnoreField(JsonNode fieldNode) {
+        return FormAutoConfiguration.isIgnoreDisabledFields()
+            && fieldNode.has(DISABLED_KEY)
+            && fieldNode.get(DISABLED_KEY).asBoolean();
     }
 
     private void fill(ObjectNode field, JsonNode content) {
@@ -341,7 +340,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         if (getExternalFormFieldType(field).isPresent()) {
             return false;
         }
-        if (isDisabledField(field)) {
+        if (shouldIgnoreField(field)) {
             return false;
         }
         return !key.isEmpty() && !key.startsWith(PROCESS_VAR_PREFIX.toUpperCase());

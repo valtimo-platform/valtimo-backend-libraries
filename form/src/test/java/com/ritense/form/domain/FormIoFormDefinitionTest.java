@@ -23,35 +23,23 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.form.BaseTest;
+import com.ritense.form.autoconfigure.FormAutoConfiguration;
 import com.ritense.valtimo.contract.form.DataResolvingContext;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationContext;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.ritense.valtimo.contract.form.DataResolvingContext;
-import com.ritense.valtimo.contract.form.FormFieldDataResolver;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import org.springframework.context.ApplicationContext;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class FormIoFormDefinitionTest extends BaseTest {
 
@@ -203,16 +191,27 @@ public class FormIoFormDefinitionTest extends BaseTest {
     public void shouldGetDocumentMappedFields() throws IOException {
         final var formDefinition = formDefinitionOf("form-example-nested-components");
         var result = formDefinition.getDocumentMappedFields();
-        assertThat(result).hasSize(12);
+        assertThat(result).hasSize(13);
     }
 
     @Test
-    public void shouldRemoveDisabledFieldFromDocumentMappedFields() throws IOException {
+    public void shouldRemoveDisabledFieldFromDocumentMappedFieldsWhenFlagIsEnabled() throws IOException {
+        new FormAutoConfiguration(true);
         final var formDefinition = formDefinitionOf("form-example-nested-components");
         var result = formDefinition.getDocumentMappedFields();
         for (ObjectNode node : result) {
             assertThat(node.toString().contains("\"disabled\":true")).isFalse();
         }
+    }
+
+    @Test
+    public void shouldNotRemoveDisabledFieldFromDocumentMappedFieldsWhenFlagIsDisabled() throws IOException {
+        new FormAutoConfiguration(false);
+        final var formDefinition = formDefinitionOf("form-example-nested-components");
+        var result = formDefinition.getDocumentMappedFields();
+        var disabledField = result.stream().filter(node -> node.get("key").asText().equals("disabledField")).findFirst();
+        assertTrue(disabledField.isPresent());
+        assertTrue(disabledField.get().get("disabled").asBoolean());
     }
 
     @Test

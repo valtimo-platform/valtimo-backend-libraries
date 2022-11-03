@@ -30,6 +30,7 @@ import com.ritense.form.web.rest.FormManagementResource;
 import com.ritense.form.web.rest.impl.FormIoFormFileResource;
 import com.ritense.form.web.rest.impl.FormIoFormManagementResource;
 import com.ritense.resource.service.ResourceService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
@@ -42,6 +43,15 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "com.ritense.form.repository")
 @EntityScan("com.ritense.form.domain")
 public class FormAutoConfiguration {
+    private static boolean ignoreDisabledFields = false;
+
+    public FormAutoConfiguration(@Value("${valtimo.form.ignoreDisabledFields:false}") boolean ignoreDisabledFields) {
+        FormAutoConfiguration.ignoreDisabledFields = ignoreDisabledFields;
+    }
+
+    public static boolean isIgnoreDisabledFields() {
+        return ignoreDisabledFields;
+    }
 
     @Bean
     @ConditionalOnMissingBean(FormLoaderService.class)
