@@ -28,15 +28,24 @@ import com.ritense.processdocument.domain.impl.listener.StartEventListenerImpl;
 import com.ritense.processdocument.domain.impl.listener.UndeployDocumentDefinitionEventListener;
 import com.ritense.processdocument.domain.listener.StartEventFromCallActivityListener;
 import com.ritense.processdocument.domain.listener.StartEventListener;
+import com.ritense.processdocument.repository.DocumentDefinitionProcessLinkRepository;
 import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
+import com.ritense.processdocument.resolver.DocumentValueResolverFactory;
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
+import com.ritense.processdocument.service.ProcessDocumentDeploymentService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
+import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentDeploymentService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
+import com.ritense.processdocument.service.impl.DocumentDefinitionProcessLinkServiceImpl;
 import com.ritense.processdocument.web.rest.ProcessDocumentResource;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
+import com.ritense.valtimo.service.ContextService;
+import com.ritense.valueresolver.ValueResolverFactory;
+import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,6 +53,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
@@ -77,14 +87,16 @@ public class ProcessDocumentAutoConfiguration {
         ProcessDocumentInstanceRepository processDocumentInstanceRepository,
         DocumentDefinitionRepository documentDefinitionRepository,
         DocumentDefinitionService documentDefinitionService,
-        CamundaProcessService camundaProcessService
+        CamundaProcessService camundaProcessService,
+        RuntimeService runtimeService
     ) {
         return new CamundaProcessJsonSchemaDocumentAssociationService(
             processDocumentDefinitionRepository,
             processDocumentInstanceRepository,
             documentDefinitionRepository,
             documentDefinitionService,
-            camundaProcessService
+            camundaProcessService,
+            runtimeService
         );
     }
 
@@ -144,9 +156,46 @@ public class ProcessDocumentAutoConfiguration {
     @ConditionalOnMissingBean(ProcessDocumentResource.class)
     public ProcessDocumentResource processDocumentResource(
         ProcessDocumentService processDocumentService,
-        ProcessDocumentAssociationService processDocumentAssociationService
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService
     ) {
-        return new ProcessDocumentResource(processDocumentService, processDocumentAssociationService);
+        return new ProcessDocumentResource(processDocumentService, processDocumentAssociationService, documentDefinitionProcessLinkService);
     }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDocumentDeploymentService.class)
+    public ProcessDocumentDeploymentService processDocumentDeploymentService(
+            ResourceLoader resourceLoader,
+            ProcessDocumentAssociationService processDocumentAssociationService,
+            ContextService contextService,
+            DocumentDefinitionService documentDefinitionService
+    ) {
+        return new CamundaProcessJsonSchemaDocumentDeploymentService(
+                resourceLoader,
+                processDocumentAssociationService,
+                contextService,
+                documentDefinitionService
+        );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentValueResolverFactory.class)
+    public ValueResolverFactory documentValueResolver(
+        ProcessDocumentService processDocumentService,
+        DocumentService documentService)  {
+        return new DocumentValueResolverFactory(processDocumentService, documentService);
+    }
+
+
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentDefinitionProcessLinkService.class)
+    public DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService(
+        DocumentDefinitionProcessLinkRepository documentDefinitionProcessLinkRepository,
+        RepositoryService repositoryService
+    )  {
+        return new DocumentDefinitionProcessLinkServiceImpl(documentDefinitionProcessLinkRepository, repositoryService);
+    }
+
 
 }

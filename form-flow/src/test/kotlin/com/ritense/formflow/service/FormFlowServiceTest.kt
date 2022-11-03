@@ -21,15 +21,19 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.ritense.formflow.BaseTest
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
+import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
+import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.expression.ExpressionProcessor
 import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessor
+import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import org.junit.jupiter.api.BeforeEach
@@ -39,19 +43,23 @@ import org.mockito.Mockito.anyString
 import org.mockito.Mockito.mock
 import org.springframework.context.ApplicationContext
 
-internal class FormFlowServiceTest {
+internal class FormFlowServiceTest : BaseTest() {
 
     lateinit var formFlowService: FormFlowService
     lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
+    lateinit var formFlowAdditionalPropertiesSearchRepository: FormFlowAdditionalPropertiesSearchRepository
     lateinit var expressionProcessor: ExpressionProcessor
 
     @BeforeEach
     fun beforeAll() {
         val formFlowDefinitionRepository = mock(FormFlowDefinitionRepository::class.java)
         formFlowInstanceRepository = mock(FormFlowInstanceRepository::class.java)
+        formFlowAdditionalPropertiesSearchRepository = mock(FormFlowAdditionalPropertiesSearchRepository::class.java)
         formFlowService = FormFlowService(
             formFlowDefinitionRepository,
-            formFlowInstanceRepository
+            formFlowInstanceRepository,
+            formFlowAdditionalPropertiesSearchRepository,
+            emptyList()
         )
 
         val expressionProcessorFactory = mock(ExpressionProcessorFactory::class.java)
@@ -64,8 +72,7 @@ internal class FormFlowServiceTest {
     fun `should handle multiple onOpen expressions when opening a form flow instance`() {
         val instance = createAndOpenFormFlowInstance(
             onOpen = listOf(
-                "\${'Hello '+'World!'}",
-                "\${3 / 1}"
+                "\${'Hello '+'World!'}", "\${3 / 1}"
             )
         )
 
@@ -77,8 +84,7 @@ internal class FormFlowServiceTest {
     fun `should handle multiple onComplete expressions when completing a form flow instance`() {
         val instance = createAndOpenFormFlowInstance(
             onComplete = listOf(
-                "\${'Hello '+'World!'}",
-                "\${3 / 1}"
+                "\${'Hello '+'World!'}", "\${3 / 1}"
             )
         )
 
@@ -86,12 +92,31 @@ internal class FormFlowServiceTest {
         verify(expressionProcessor, times(2)).process<Any>(anyString(), isNull())
     }
 
-    private fun createAndOpenFormFlowInstance(onOpen: List<String>? = null, onComplete: List<String>? = null): FormFlowInstance {
+    @Test
+    fun `should handle multiple onBack expressions when going back`() {
+        val instance = createAndOpenFormFlowInstance(
+            onBack = listOf(
+                "\${'Hello '+'World!'}", "\${3 / 1}"
+            )
+        )
+
+        instance.getCurrentStep().back()
+        verify(expressionProcessor, times(2)).process<Any>(anyString(), isNull())
+
+    }
+
+    private fun createAndOpenFormFlowInstance(
+        onBack: List<String>? = null,
+        onOpen: List<String>? = null,
+        onComplete: List<String>? = null
+    ): FormFlowInstance {
         val step = FormFlowStep(
             FormFlowStepId("start-step"),
-            ArrayList(),
-            onOpen?.toMutableList(),
-            onComplete?.toMutableList()
+            listOf(),
+            onBack?: listOf(),
+            onOpen?: listOf(),
+            onComplete?:listOf(),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val definition = FormFlowDefinition(
             FormFlowDefinitionId("test", 1L), "start-step", setOf(step)

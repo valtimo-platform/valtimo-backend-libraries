@@ -34,6 +34,8 @@ public interface FormDefinitionService {
 
     Optional<? extends FormDefinition> getFormDefinitionByName(String name);
 
+    Optional<? extends FormDefinition> getFormDefinitionByNameIgnoringCase(String name);
+
     FormDefinition createFormDefinition(CreateFormDefinitionRequest request);
 
     FormDefinition modifyFormDefinition(ModifyFormDefinitionRequest request);

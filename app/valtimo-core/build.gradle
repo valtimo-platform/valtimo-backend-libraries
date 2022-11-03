@@ -8,6 +8,7 @@ dependencies {
     implementation(project(":audit"))
     implementation(project(":document"))
     implementation(project(":process-document"))
+    implementation(project(":plugin"))
     implementation(project(":form"))
     implementation(project(":form-flow-valtimo"))
     implementation(project(":form-link"))
@@ -38,6 +39,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
     implementation "io.github.microutils:kotlin-logging:2.0.4"
+
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.7'
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"

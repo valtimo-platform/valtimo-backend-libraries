@@ -16,42 +16,61 @@
 
 package com.ritense.formflow.autoconfigure
 
-import com.ritense.formflow.expression.ExpressionProcessorFactory
-import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
-import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
+import com.ritense.formflow.handler.ApplicationReadyEventHandler
+import com.ritense.formflow.handler.FormFlowStepTypeHandler
+import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import com.ritense.formflow.repository.FormFlowStepInstanceRepository
 import com.ritense.formflow.repository.FormFlowStepRepository
+import com.ritense.formflow.repository.MySqlFormFlowAdditionalPropertiesSearchRepository
+import com.ritense.formflow.repository.PostgresFormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.formflow.service.ObjectMapperConfigurer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import javax.persistence.EntityManager
 
 @Configuration
-@EnableJpaRepositories(basePackageClasses = [
-    FormFlowDefinitionRepository::class,
-    FormFlowStepRepository::class,
-    FormFlowInstanceRepository::class,
-    FormFlowStepInstanceRepository::class])
+@EnableJpaRepositories(
+    basePackageClasses = [
+        FormFlowDefinitionRepository::class,
+        FormFlowStepRepository::class,
+        FormFlowInstanceRepository::class,
+        FormFlowStepInstanceRepository::class]
+)
 @EntityScan(basePackages = ["com.ritense.formflow.domain"])
 class FormFlowAutoConfiguration {
 
-    // TODO: Is this really the right way? If someone else now adds a different ExpressionProcessorFactory, this will
-    //  not automatically be picked up. Not only that, how do we differentiate between multiple
-    //  ExpressionProcessorFactories? Maybe make use of configuration?
     @Bean
-    @ConditionalOnMissingBean(ExpressionProcessorFactory::class)
-    fun expressionProcessorFactory(applicationContext: ApplicationContext): ExpressionProcessorFactory {
-        val expressionProcessorFactory = SpelExpressionProcessorFactory()
+    fun formStepPropertiesType(): NamedType {
+        return NamedType(FormStepTypeProperties::class.java, "form")
+    }
 
-        ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory, applicationContext)
-        return expressionProcessorFactory
+    @Bean
+    fun formFlowObjectMapper(
+        objectMapper: ObjectMapper,
+        stepPropertiesTypes: Collection<NamedType>
+    ): ObjectMapperConfigurer {
+        return ObjectMapperConfigurer(objectMapper, stepPropertiesTypes)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ApplicationReadyEventHandler::class)
+    fun applicationReadyEventHandler(
+        applicationContext: ApplicationContext
+    ): ApplicationReadyEventHandler {
+        return ApplicationReadyEventHandler(applicationContext)
     }
 
     @Bean
@@ -59,9 +78,32 @@ class FormFlowAutoConfiguration {
     fun formFlowService(
         formFlowDefinitionRepository: FormFlowDefinitionRepository,
         formFlowInstanceRepository: FormFlowInstanceRepository,
-        expressionProcessorFactory: ExpressionProcessorFactory
+        formFlowAdditionalPropertiesSearchRepository: FormFlowAdditionalPropertiesSearchRepository,
+        formFlowStepTypeHandlers: List<FormFlowStepTypeHandler>
     ): FormFlowService {
-        return FormFlowService(formFlowDefinitionRepository, formFlowInstanceRepository)
+        return FormFlowService(
+            formFlowDefinitionRepository,
+            formFlowInstanceRepository,
+            formFlowAdditionalPropertiesSearchRepository,
+            formFlowStepTypeHandlers
+        )
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "valtimo", name = ["database"], havingValue = "postgres")
+    fun postgresFormFlowAdditionalPropertiesSearchRepository(
+        entityManager: EntityManager,
+        objectMapper: ObjectMapper
+    ): FormFlowAdditionalPropertiesSearchRepository {
+        return PostgresFormFlowAdditionalPropertiesSearchRepository(entityManager, objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "valtimo", name = ["database"], havingValue = "mysql", matchIfMissing = true)
+    fun mysqlFormFlowAdditionalPropertiesSearchRepository(
+        entityManager: EntityManager
+    ): FormFlowAdditionalPropertiesSearchRepository {
+        return MySqlFormFlowAdditionalPropertiesSearchRepository(entityManager)
     }
 
     @Bean
@@ -69,8 +111,12 @@ class FormFlowAutoConfiguration {
     fun formFlowDeploymentService(
         resourceLoader: ResourceLoader,
         formFlowService: FormFlowService,
-        expressionProcessorFactory: ExpressionProcessorFactory
+        objectMapper: ObjectMapper,
     ): FormFlowDeploymentService {
-        return FormFlowDeploymentService(resourceLoader, formFlowService, expressionProcessorFactory)
+        return FormFlowDeploymentService(
+            resourceLoader,
+            formFlowService,
+            objectMapper
+        )
     }
 }

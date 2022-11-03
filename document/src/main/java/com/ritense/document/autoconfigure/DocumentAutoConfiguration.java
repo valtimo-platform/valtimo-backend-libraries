@@ -16,7 +16,7 @@
 
 package com.ritense.document.autoconfigure;
 
-import com.ritense.document.config.SpringContextHelper;
+import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerImpl;
@@ -46,6 +46,8 @@ import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
@@ -53,6 +55,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
 import javax.persistence.EntityManager;
 
 @Configuration
@@ -66,13 +69,17 @@ public class DocumentAutoConfiguration {
         final DocumentRepository documentRepository,
         final JsonSchemaDocumentDefinitionService documentDefinitionService,
         final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
-        final ResourceService resourceService
+        final ResourceService resourceService,
+        final UserManagementService userManagementService,
+        final ApplicationEventPublisher applicationEventPublisher
     ) {
         return new JsonSchemaDocumentService(
             documentRepository,
             documentDefinitionService,
             documentSequenceGeneratorService,
-            resourceService
+            resourceService,
+            userManagementService,
+            applicationEventPublisher
         );
     }
 
@@ -115,9 +122,10 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentSearchService.class)
     public JsonSchemaDocumentSearchService documentSearchService(
-        final EntityManager entityManager
+        final EntityManager entityManager,
+        final QueryDialectHelper queryDialectHelper
     ) {
-        return new JsonSchemaDocumentSearchService(entityManager);
+        return new JsonSchemaDocumentSearchService(entityManager, queryDialectHelper);
     }
 
     @Bean
@@ -180,8 +188,8 @@ public class DocumentAutoConfiguration {
     }
 
     @Bean("documentSpringContextHelper")
-    @ConditionalOnMissingBean(SpringContextHelper.class)
-    public SpringContextHelper springContextHelper() {
-        return new SpringContextHelper();
+    @ConditionalOnMissingBean(DocumentSpringContextHelper.class)
+    public DocumentSpringContextHelper documentSpringContextHelper() {
+        return new DocumentSpringContextHelper();
     }
 }

@@ -30,10 +30,13 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskResult;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
+import org.camunda.bpm.engine.RuntimeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
+
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.List;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
@@ -42,21 +45,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Tag("integration")
 @Transactional
-public class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseIntegrationTest {
+class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseIntegrationTest {
 
     private static final String DOCUMENT_DEFINITION_NAME = "house";
     private static final String PROCESS_DEFINITION_KEY = "loan-process-demo";
 
-    @BeforeEach
-    public void setUp() {
-        final var processDocumentRequest = new ProcessDocumentDefinitionRequest(
-            PROCESS_DEFINITION_KEY,
-            DOCUMENT_DEFINITION_NAME,
-            true,
-            true
-        );
-        camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(processDocumentRequest);
-    }
+    @Inject
+    private RuntimeService runtimeService;
 
     @Test
     public void findProcessDocumentDefinition() {
@@ -124,6 +119,12 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends B
             newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id().toString()
         );
 
+        final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstancesBeforeComplete = camundaProcessJsonSchemaDocumentAssociationService
+            .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id());
+
+        assertThat(processDocumentInstancesBeforeComplete).hasSize(1);
+        assertThat(processDocumentInstancesBeforeComplete.get(0).isActive()).isEqualTo(true);
+
         final Document document = newDocumentAndStartProcessResult.resultingDocument().orElseThrow();
 
         final JsonNode jsonDataUpdate = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
@@ -143,6 +144,8 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends B
         final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstances = camundaProcessJsonSchemaDocumentAssociationService
             .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id());
         assertThat(processDocumentInstances).hasSize(2);
+        assertThat(processDocumentInstances.get(0).isActive()).isEqualTo(false);
+        assertThat(processDocumentInstances.get(1).isActive()).isEqualTo(false);
     }
 
     @Test

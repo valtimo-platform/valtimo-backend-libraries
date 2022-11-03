@@ -28,6 +28,7 @@ dependencies {
     implementation project(':process-document')
     implementation project(':form')
     implementation project(':resource')
+    implementation project(":resource:temporary-resource-storage")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -45,6 +46,8 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
     implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+
+    implementation "org.liquibase.ext:liquibase-hibernate5:4.8.0"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
@@ -64,6 +67,7 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation project(path: ":core", configuration: 'testOutput')
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation project(':test-utils-common')
     testImplementation "io.jsonwebtoken:jjwt-api:0.11.2"
     testImplementation "io.jsonwebtoken:jjwt-impl:0.11.2"
     testImplementation "io.jsonwebtoken:jjwt-jackson:0.11.2"

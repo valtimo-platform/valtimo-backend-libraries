@@ -15,12 +15,12 @@ import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
 import com.ritense.objectsapi.service.ObjectTypeConfig
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.service.ObjectsApiProperties
-import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -84,6 +84,7 @@ internal class TaakObjectListenerTest {
                         kvk = "kvk",
                         verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
                         formulierId = "some-form",
+                        formulierUrl = "some-url",
                         status = TaakObjectStatus.ingediend
                     )
                 )
@@ -225,6 +226,7 @@ internal class TaakObjectListenerTest {
                         kvk = "kvk",
                         verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
                         formulierId = "some-form",
+                        formulierUrl = "some-url",
                         status = TaakObjectStatus.ingediend
                     )
                 )

@@ -42,3 +42,5 @@ spring-actuator:
 valtimo:
     connector-encryption:
         secret: "0123456789101112"
+    plugin:
+        encryption-secret: "abcdefghijklmnop"

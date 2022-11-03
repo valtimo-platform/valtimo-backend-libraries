@@ -26,6 +26,8 @@ import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.model.zaak.Eigenschap
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
+import com.ritense.valtimo.contract.form.DataResolvingContext
+import com.ritense.valtimo.contract.json.Mapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -44,7 +46,7 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
 
     lateinit var openZaakFormFieldDataResolver: OpenZaakFormFieldDataResolver
 
-    val zaakType = URI.create("http://example.com")
+    val zaakType = URI.create("https://example.com")
 
     @BeforeEach
     fun setUp() {
@@ -62,10 +64,10 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
 
         val zaakInstanceLink = ZaakInstanceLink(
             ZaakInstanceLinkId.newId(UUID.randomUUID()),
-            URI.create("http://zaak.instanceUrl.nl"),
+            URI.create("https://zaak.instanceUrl.nl"),
             UUID.randomUUID(),
             document.id!!.id,
-            URI.create("http://zaak.TypeUrl.nl")
+            URI.create("https://zaak.TypeUrl.nl")
         )
 
         whenever(zaakInstanceLinkService.getByDocumentId(document.id!!.id)).thenReturn(zaakInstanceLink)
@@ -85,14 +87,28 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
 
     @Test
     fun `should not contain eigenschap with unknown key`() {
-        val resultMap = openZaakFormFieldDataResolver.get("house", document.id!!.id, "unknownVarName")
+        val resultMap = openZaakFormFieldDataResolver.get(
+            DataResolvingContext(
+                "house",
+                document.id!!.id,
+                Mapper.INSTANCE.get().createObjectNode()
+            ),
+            "unknownVarName"
+        )
         assertThat(resultMap).isNotNull
         assertThat(resultMap).doesNotContainKey("unknownVarName")
     }
 
     @Test
     fun `should get open zaak eigenschappen value`() {
-        val resultMap = openZaakFormFieldDataResolver.get("house", document.id!!.id, "varNaam")
+        val resultMap = openZaakFormFieldDataResolver.get(
+            DataResolvingContext(
+                "house",
+                document.id!!.id,
+                Mapper.INSTANCE.get().createObjectNode()
+            ),
+            "varNaam"
+        )
         assertThat(resultMap).isNotNull
         assertThat(resultMap).containsEntry("varNaam", "varWaarde")
     }
@@ -100,13 +116,13 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
     private fun httpZaakCreated() {
         val responseEntity = ResponseEntity(
             Zaak(
-                URI.create("http://example.com"),
+                URI.create("https://example.com"),
                 UUID.fromString("91e750e1-53ab-4922-9979-6a2dacd009cf"),
                 "",
                 "",
                 "",
                 "",
-                URI.create("http://example.com"),
+                URI.create("https://example.com"),
                 "",
                 "",
                 "",
@@ -115,7 +131,7 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
                 "",
                 "",
                 "",
-                listOf(URI.create("http://example.com")),
+                listOf(URI.create("https://example.com")),
                 "",
                 "",
                 "",
@@ -123,18 +139,18 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
                 Zaak.Zaakgeometrie("", listOf(1)),
                 Zaak.Verlenging("",""),
                 Zaak.Opschorting(true,""),
-                URI.create("http://example.com"),
-                URI.create("http://example.com"),
-                listOf(URI.create("http://example.com")),
-                listOf(Zaak.RelevanteAndereZaken(URI.create("http://example.com"),"")),
-                listOf(URI.create("http://example.com")),
-                URI.create("http://example.com"),
+                URI.create("https://example.com"),
+                URI.create("https://example.com"),
+                listOf(URI.create("https://example.com")),
+                listOf(Zaak.RelevanteAndereZaken(URI.create("https://example.com"),"")),
+                listOf(URI.create("https://example.com")),
+                URI.create("https://example.com"),
                 "",
                 listOf(Zaak.Kenmerken("","")),
                 "",
                 "",
                 "",
-                URI.create("http://example.com"),
+                URI.create("https://example.com"),
                 ""
             ),
             httpHeaders(),
@@ -151,10 +167,10 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
     private fun httpGetZaakEigenschappen() {
         val responseEntity = ResponseEntity(
             listOf(Eigenschap(
-                URI.create("http://example.com"),
+                URI.create("https://example.com"),
                 UUID.randomUUID(),
-                URI.create("http://example.com"),
-                URI.create("http://example.com"),
+                URI.create("https://example.com"),
+                URI.create("https://example.com"),
                 "varNaam",
                 "varWaarde"
             )),

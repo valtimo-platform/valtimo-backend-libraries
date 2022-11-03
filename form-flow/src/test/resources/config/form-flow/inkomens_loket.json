@@ -3,21 +3,37 @@
     "steps": [
         {
             "key": "woonplaats",
-            "onOpen": ["${'Hello '+'World!'}", "${4*3}", "${formFlowBeanTestHelper.returnTrue()}"],
+            "onOpen": [
+                "${'Hello '+'World!'}",
+                "${4*3}",
+                "${formFlowBeanTestHelper.returnTrue()}",
+                "${formFlowBeanTestHelper.parseContext(step.submissionData)}"
+            ],
+            "onComplete": [
+                "${formFlowBeanTestHelper.parseAdditionalProperties(additionalProperties)}"
+            ],
             "nextSteps": [
                 {
-                    "condition": "${submissionData.woonplaats.inUtrecht == true}",
+                    "condition": "${step.submissionData.woonplaats.inUtrecht == true}",
                     "step": "leeftijd"
                 },
                 {
                     "condition": null,
                     "step": "end"
                 }
-            ]
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         },
-
         {
             "key": "leeftijd",
+            "onBack": [
+                "${formFlowBeanTestHelper.parseAdditionalProperties(additionalProperties)}"
+            ],
             "nextSteps": [
                 {
                     "condition": "${submissionData.leeftijd.isOuderDan21 == true && submissionData.leeftijd.isJongerDanAOW == true}",
@@ -26,17 +42,41 @@
                 {
                     "step": "end"
                 }
-            ]
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         },
-
         {
             "key": "gezinssituatie",
-            "nextStep": "thuiswonende-kinderen"
+            "nextSteps": [
+                {
+                    "step": "thuiswonende-kinderen"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         },
-
         {
             "key": "thuiswonende-kinderen",
-            "nextStep": "inkomen"
+            "nextSteps": [
+                {
+                    "step": "inkomen"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         },
         {
             "key": "inkomen",
@@ -48,15 +88,36 @@
                 {
                     "step": "end"
                 }
-            ]
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         },
-
         {
             "key": "vermogen",
-            "nextStep": "end"
+            "nextSteps": [
+                {
+                    "step": "end"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         },
         {
-            "key": "end"
+            "key": "end",
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
         }
     ]
 }

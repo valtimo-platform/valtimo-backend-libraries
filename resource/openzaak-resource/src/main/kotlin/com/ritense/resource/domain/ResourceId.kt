@@ -25,7 +25,7 @@ import javax.persistence.Embeddable
 @Embeddable
 data class ResourceId(
 
-    @Column(name = "id", columnDefinition = "BINARY(16)", updatable = false)
+    @Column(name = "id", updatable = false)
     @JsonValue
     val id: UUID
 

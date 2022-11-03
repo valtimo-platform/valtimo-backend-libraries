@@ -22,6 +22,7 @@ import com.ritense.document.service.DocumentService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent;
 import com.ritense.valtimo.contract.listener.DocumentRelatedFileEventListener;
+import com.ritense.valtimo.contract.utils.SecurityUtils;
 
 public class DocumentRelatedFileSubmittedEventListenerImpl implements DocumentRelatedFileEventListener {
 
@@ -38,7 +39,7 @@ public class DocumentRelatedFileSubmittedEventListenerImpl implements DocumentRe
         var resource = resourceService.getResource(event.getResourceId());
         documentService.assignRelatedFile(
             JsonSchemaDocumentId.existingId(event.getDocumentId()),
-            JsonSchemaRelatedFile.from(resource)
+            JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin())
         );
     }
 }

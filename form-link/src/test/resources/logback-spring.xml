@@ -21,5 +21,6 @@
 
     <logger name="org.hibernate.sql" level="DEBUG"/>
     <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+    <logger name="org.springframework.jdbc.core" level="TRACE"/>
 
 </configuration>

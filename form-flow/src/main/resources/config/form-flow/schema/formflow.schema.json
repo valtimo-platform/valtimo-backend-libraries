@@ -20,6 +20,23 @@
                         "type": "string",
                         "description": "The identifying human readable key of the step"
                     },
+                    "type": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "This defines the type of the step, for instance: 'form'"
+                            },
+                            "properties": {
+                                "type": "object",
+                                "description": "This object holds additional properties for the specified type"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "properties"
+                        ]
+                    },
                     "onOpen": {
                         "type": "array",
                         "description": "An array of expressions which are executed in order when opening the step",
@@ -58,10 +75,6 @@
                                 "step"
                             ]
                         }
-                    },
-                    "nextStep:": {
-                        "type": "string",
-                        "description": "The key of the next step in the flow. When multiple steps should be available you should use the property 'nextSteps'"
                     }
                 },
                 "required": [

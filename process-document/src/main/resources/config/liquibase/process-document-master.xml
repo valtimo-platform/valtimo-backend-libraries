@@ -20,11 +20,18 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
+    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
+    <property name="uuidType" value="uuid" dbms="postgresql"/>
+
+    <property name="jsonType" value="JSON" dbms="mysql"/>
+    <property name="jsonType" value="JSONB" dbms="postgresql"/>
+
     <include file="changelog/20190731-create-process-document-domain-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20191213-add-column-can-initialize-document-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200115-add-process-name-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200119-rename-id-column-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20201008-update-document-definition-id.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20210506-add-column-startable-by-user-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20220920-create-link-process-changelog.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

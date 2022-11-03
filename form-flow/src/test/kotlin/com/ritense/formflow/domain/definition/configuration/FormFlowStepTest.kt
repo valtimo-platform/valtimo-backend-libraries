@@ -22,6 +22,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.formflow.domain.definition.FormFlowStepId
+import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -36,16 +37,16 @@ internal class FormFlowStepTest {
         whenever(mockStep.contentEquals(otherMock)).thenReturn(true)
 
         val thisStep = FormFlowStep(
-            "step-key",
-            mutableListOf(
+            key = "step-key",
+            nextSteps = listOf(
                 mockStep
-            )
+            ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherStep = FormFlowStepEntity(
             FormFlowStepId("step-key"),
-            mutableListOf(
+            listOf(
                 otherMock
-            )
+            ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
 
         assertTrue(thisStep.contentEquals(otherStep))
@@ -66,17 +67,17 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            nextSteps = listOf(
                 mockStep1,
                 mockStep2
-            )
+            ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherStep = FormFlowStepEntity(
             FormFlowStepId("step-key"),
-            mutableListOf(
+            listOf(
                 otherMock1,
                 otherMock2
-            )
+            ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
 
         assertTrue(thisStep.contentEquals(otherStep))
@@ -92,16 +93,16 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            nextSteps = mutableListOf(
                 mockStep1,
                 mockStep2
-            )
+            ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherStep = FormFlowStepEntity(
             FormFlowStepId("step-key"),
             mutableListOf(
                 mock()
-            )
+            ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
 
         assertFalse(thisStep.contentEquals(otherStep))
@@ -114,16 +115,16 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            nextSteps = mutableListOf(
                 mockStep
-            )
+            ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherStep = FormFlowStepEntity(
             FormFlowStepId("step-key"),
             mutableListOf(
                 mock(),
                 mock()
-            )
+            ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
 
         assertFalse(thisStep.contentEquals(otherStep))
@@ -144,17 +145,17 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            nextSteps = mutableListOf(
                 mockStep1,
                 mockStep2
-            )
+            ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherStep = FormFlowStepEntity(
             FormFlowStepId("step-key"),
             mutableListOf(
                 otherMock1,
                 otherMock2
-            )
+            ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
 
         assertFalse(thisStep.contentEquals(otherStep))
@@ -167,15 +168,57 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            nextSteps = mutableListOf(
                 mockStep
-            )
+            ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherStep = FormFlowStepEntity(
             FormFlowStepId("other-key"),
             mutableListOf(
                 mock()
-            )
+            ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+        )
+
+        assertFalse(thisStep.contentEquals(otherStep))
+    }
+
+    @Test
+    fun `contentEquals should return true when type names are the same`() {
+        val thisStep = FormFlowStep(
+            key = "step-key",
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+        )
+        val otherStep = FormFlowStepEntity(
+            id = FormFlowStepId("step-key"),
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+        )
+
+        assertTrue(thisStep.contentEquals(otherStep))
+    }
+
+    @Test
+    fun `contentEquals should return false when type names are not the same`() {
+        val thisStep = FormFlowStep(
+            key = "step-key",
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+        )
+        val otherStep = FormFlowStepEntity(
+            id = FormFlowStepId("step-key"),
+            type = FormFlowStepType("form-other", FormStepTypeProperties("my-form-definition"))
+        )
+
+        assertFalse(thisStep.contentEquals(otherStep))
+    }
+
+    @Test
+    fun `contentEquals should return false when type properties are not the same`() {
+        val thisStep = FormFlowStep(
+            key = "step-key",
+            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+        )
+        val otherStep = FormFlowStepEntity(
+            id = FormFlowStepId("step-key"),
+            type = FormFlowStepType("formio", FormStepTypeProperties("my-other-form-definition"))
         )
 
         assertFalse(thisStep.contentEquals(otherStep))

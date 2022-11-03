@@ -20,6 +20,12 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
+    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
+    <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
+
+    <property name="jsonType" value="JSON" dbms="mysql"/>
+    <property name="jsonType" value="JSONB" dbms="postgresql"/>
+
     <include file="changelog/20190712-create-document-domain-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20190815-document-dates-added-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20190916-document-created-by-added-changelog.xml" relativeToChangelogFile="true"/>
@@ -31,5 +37,7 @@
     <include file="changelog/20201014-document-snapshot.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20210202-add-readonly-column.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220215-create-document-definition-role-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20220923-add-assginee-columns-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20221021-add-search-field-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

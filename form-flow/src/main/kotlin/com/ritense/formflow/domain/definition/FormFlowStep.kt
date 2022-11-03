@@ -17,8 +17,8 @@
 package com.ritense.formflow.domain.definition
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import org.hibernate.annotations.Type
-import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
@@ -34,31 +34,21 @@ data class FormFlowStep(
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "next_steps", columnDefinition = "JSON")
-    val nextSteps: MutableList<FormFlowNextStep>? = ArrayList(),
+    val nextSteps: List<FormFlowNextStep> = listOf(),
+
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "on_back", columnDefinition = "JSON")
+    val onBack: List<String> = listOf(),
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "on_open", columnDefinition = "JSON")
-    val onOpen: MutableList<String>? = ArrayList(),
+    val onOpen: List<String> = listOf(),
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "on_complete", columnDefinition = "JSON")
-    val onComplete: MutableList<String>? = ArrayList()
-) {
+    val onComplete: List<String> = listOf(),
 
-    override fun hashCode(): Int {
-        return Objects.hash(id, nextSteps, onOpen)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as FormFlowStep
-
-        if (id != other.id) return false
-        if (nextSteps != other.nextSteps) return false
-        if (onOpen != other.onOpen) return false
-
-        return true
-    }
-}
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "type", columnDefinition = "JSON", nullable = false)
+    val type: FormFlowStepType
+)

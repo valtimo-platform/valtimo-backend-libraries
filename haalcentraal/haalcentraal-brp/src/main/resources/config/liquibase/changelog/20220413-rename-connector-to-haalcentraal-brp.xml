@@ -20,6 +20,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="Ritense" id="1">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <update tableName="connector_type">
             <column name="name" value="HaalCentraalBrp" type="VARCHAR(512)"/>
             <where>name = 'HaalCentraal'</where>
@@ -27,6 +30,9 @@
     </changeSet>
 
     <changeSet author="Ritense" id="2">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <update tableName="connector_type">
             <column name="connector_properties" type="${jsonType}" valueComputed="REPLACE(connector_properties, 'com.ritense.haalcentraal.connector.HaalCentraalBRPProperties', 'com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties')" />
             <where>connector_properties LIKE '%HaalCentraalBRPProperties%'</where>
@@ -34,6 +40,9 @@
     </changeSet>
 
     <changeSet author="Ritense" id="3">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <update tableName="connector_instance">
             <column name="connector_properties" type="${jsonType}" valueComputed="REPLACE(connector_properties, 'com.ritense.haalcentraal.connector.HaalCentraalBRPProperties', 'com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties')" />
             <where>connector_properties LIKE '%HaalCentraalBRPProperties%'</where>

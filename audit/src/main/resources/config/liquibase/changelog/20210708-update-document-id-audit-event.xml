@@ -18,6 +18,9 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
     <changeSet author="julia de lozanne" id="1">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <sql>
             UPDATE audit_record
             SET audit_event = JSON_SET(audit_event, '$.documentId', document_id)
@@ -32,6 +35,9 @@
         </sql>
     </changeSet>
     <changeSet author="Ivo Zaal" id="2">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <sql>
             UPDATE audit_record
             SET audit_event = JSON_SET(audit_event, '$.documentId',

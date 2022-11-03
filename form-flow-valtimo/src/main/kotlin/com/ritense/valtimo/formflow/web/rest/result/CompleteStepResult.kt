@@ -16,15 +16,9 @@
 
 package com.ritense.valtimo.formflow.web.rest.result
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.ritense.formflow.domain.instance.FormFlowInstanceId
-import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
+import java.util.UUID
 
 class CompleteStepResult(
-    @JsonProperty
-    val formFlowInstanceId: FormFlowInstanceId,
-    @JsonProperty
-    val currentStepId: FormFlowStepInstanceId?,
-    @JsonProperty
-    val currentStepKey: String?
+    val id: UUID,
+    val step: FormFlowStepResult?
 )

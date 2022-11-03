@@ -43,6 +43,7 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
+import org.camunda.bpm.engine.RuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -61,13 +62,15 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
     private final DocumentDefinitionService documentDefinitionService;
     private final CamundaProcessService camundaProcessService;
+    private final RuntimeService runtimeService;
 
-    public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaProcessService camundaProcessService) {
+    public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaProcessService camundaProcessService, RuntimeService runtimeService) {
         this.processDocumentDefinitionRepository = processDocumentDefinitionRepository;
         this.processDocumentInstanceRepository = processDocumentInstanceRepository;
         this.documentDefinitionRepository = documentDefinitionRepository;
         this.documentDefinitionService = documentDefinitionService;
         this.camundaProcessService = camundaProcessService;
+        this.runtimeService = runtimeService;
     }
 
     @Override
@@ -112,7 +115,14 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstances(Document.Id documentId) {
-        return processDocumentInstanceRepository.findAllByDocumentId(documentId);
+        var processes = processDocumentInstanceRepository.findAllByDocumentId(documentId);
+        for (var process : processes) {
+            var camundaProcess = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(process.getId().processInstanceId().toString())
+                    .singleResult();
+            process.setActive(camundaProcess != null && !camundaProcess.isEnded());
+        }
+        return processes;
     }
 
     @Override

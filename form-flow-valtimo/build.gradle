@@ -44,19 +44,27 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
+    implementation "org.json:json:20201115"
+
     implementation "io.github.microutils:kotlin-logging:2.0.4"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:6.17.0"
 
     implementation project(':contract')
     implementation project(':core')
+    implementation project(':form')
+    implementation project(':form-link')
+    implementation project(':document')
+
+    testImplementation project(':resource')
+    testImplementation project(':process-document')
+    testImplementation project(':test-utils-common')
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
-
-    testImplementation project(':form-flow')
 
     jar {
         enabled = true

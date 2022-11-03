@@ -18,14 +18,12 @@ package com.ritense.objectsapi.taak
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ValueNode
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile
 import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
-import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
@@ -34,6 +32,7 @@ import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.camunda.bpm.engine.task.Task
@@ -109,13 +108,16 @@ class TaakObjectListener(
         }
         val documentenUris = mutableListOf<URI>()
         for (documentPathNode in documentPathsNode) {
-            val documentUrlNode = taakObjectData.at(JsonPointer.valueOf(documentPathNode.textValue())) as ValueNode
+            val documentUrlNode = taakObjectData.at(JsonPointer.valueOf(documentPathNode.textValue()))
             if (!documentUrlNode.isMissingNode && !documentUrlNode.isNull) {
-                if (!documentUrlNode.isTextual) {
-                    throw RuntimeException("Invalid URL in '/verzonden_data/documenten'. ${documentUrlNode.toPrettyString()}")
-                }
                 try {
-                    documentenUris.add(URI(documentUrlNode.textValue()))
+                    if (documentUrlNode.isTextual) {
+                        documentenUris.add(URI(documentUrlNode.textValue()))
+                    } else if (documentUrlNode.isArray) {
+                        documentUrlNode.forEach { documentenUris.add(URI(it.textValue())) }
+                    } else {
+                        throw RuntimeException("Invalid URL in '/verzonden_data/documenten'. ${documentUrlNode.toPrettyString()}")
+                    }
                 } catch (e: MalformedURLException) {
                     throw RuntimeException("Malformed URL in: '/verzonden_data/documenten'", e)
                 }
@@ -137,7 +139,7 @@ class TaakObjectListener(
         resolvedValues: Map<String, Any>
     ) {
         if (resolvedValues.isNotEmpty()) {
-            valueResolverService.handleValues(processInstanceId, variableScope, resolvedValues)
+            valueResolverService.handleValues(processInstanceId.toString(), variableScope, resolvedValues)
         }
     }
 

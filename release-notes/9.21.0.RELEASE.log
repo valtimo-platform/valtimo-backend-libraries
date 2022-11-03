@@ -1,0 +1,19 @@
+13ca650 - Updated version to 9.21.0.RELEASE
+e16b04b - Updated version to 9.21.0.173.RC-SNAPSHOT
+93cc0ed - Merge branch 'main' into development
+1ef2d77 - Added date format for dates in document api request (#314)
+fbff311 - #37204 fix check-link endpoint (#313)
+8242b7e - Feature/37204 upload process to case definition (#312)
+2661c60 - #37209 Link uploaded document to zaak through Zaken API plugin (#311)
+00650c6 - Feature/37286 catalogi api (#309)
+e25b185 - #37207 Plugin action store-uploaded-document (#307)
+bce92dd - #37205 Endpoint to check whether an upload process has been linked to a case definition (#310)
+f9235f3 - #37201 Start BPMN upload process after upload (#308)
+5899b4f - Include formDefinition in FormFieldDataResolver.get method (#305)
+d8db32f - #37108 system processes (#302)
+28e8af5 - Feature/37202 system process upload document (#306)
+34da6e4 - feature 37202 - Upload document process (#303)
+cd01e34 - Fix Haalcentraal bean stackoverflow (#304)
+1a0825f - #36899 Fill in Document metadata on process link (#300)
+6e17ca2 - added isActive to CamundaProcessJsonSchemaDocumentInstance (#287)
+b22f48c - #36897 Create new endpoint to store uploaded file in temporary storage (#301)

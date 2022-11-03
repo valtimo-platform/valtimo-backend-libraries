@@ -27,6 +27,7 @@ dependencies {
     implementation project(':document')
     implementation project(':audit')
     implementation project(':resource')
+    implementation project(':value-resolver')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -48,7 +49,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation 'io.github.microutils:kotlin-logging:2.1.23'
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
@@ -62,9 +63,14 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation project(path: ":core", configuration: 'testOutput')
+    testImplementation project(':test-utils-common')
 
-    testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.13.0")
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation 'org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.16.0'
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
     jar {
         enabled = true

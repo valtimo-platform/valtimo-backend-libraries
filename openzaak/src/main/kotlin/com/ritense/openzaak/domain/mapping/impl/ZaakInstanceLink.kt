@@ -40,11 +40,11 @@ data class ZaakInstanceLink(
     @Column(name = "zaak_instance_url", columnDefinition = "VARCHAR(512)", nullable = false)
     val zaakInstanceUrl: URI,
 
-    @Column(name = "zaak_instance_id", columnDefinition = "BINARY(16)", nullable = false)
+    @Column(name = "zaak_instance_id", nullable = false)
     val zaakInstanceId: UUID,
 
 
-    @Column(name = "document_id", columnDefinition = "BINARY(16)", nullable = false)
+    @Column(name = "document_id", nullable = false)
     val documentId: UUID,
 
     @Convert(converter = UriAttributeConverter::class)

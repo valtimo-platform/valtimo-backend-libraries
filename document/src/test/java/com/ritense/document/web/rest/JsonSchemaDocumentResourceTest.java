@@ -23,6 +23,7 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
+import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.utils.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,9 +33,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -49,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class JsonSchemaDocumentResourceTest extends BaseTest {
+class JsonSchemaDocumentResourceTest extends BaseTest {
 
     private JsonSchemaDocumentService documentService;
     private DocumentResource documentResource;
@@ -59,7 +63,7 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
     private DocumentDefinitionService documentDefinitionService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         documentService = mock(JsonSchemaDocumentService.class);
         documentDefinitionService = mock(DocumentDefinitionService.class);
@@ -78,6 +82,7 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
             null
         );
         document = result.resultingDocument().orElseThrow();
+        document.setAssignee("test-assignee-id", "John Doe");
         document.addRelatedFile(relatedFile());
         List<JsonSchemaDocument> documents = List.of(document);
         Pageable unpaged = Pageable.unpaged();
@@ -86,7 +91,7 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnOkWithDocument() throws Exception {
+    void shouldReturnOkWithDocument() throws Exception {
         when(documentService.findBy(any()))
             .thenReturn(Optional.of(document));
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
@@ -103,7 +108,26 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldModifyDocument() throws Exception {
+    void shouldReturnDocumentWithAssignee() throws Exception {
+        when(documentService.findBy(any()))
+            .thenReturn(Optional.of(document));
+        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
+            .thenReturn(true);
+
+        mockMvc.perform(get("/api/document/{id}", UUID.randomUUID().toString())
+                .accept(APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isNotEmpty())
+            .andExpect(jsonPath("$.assigneeId").value("test-assignee-id"))
+            .andExpect(jsonPath("$.assigneeFullName").value("John Doe"));
+    }
+
+    @Test
+    void shouldModifyDocument() throws Exception {
         final var json = "{\"firstName\": \"John\"}";
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(content);
@@ -131,7 +155,7 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldAddResourceForDocument() throws Exception {
+    void shouldAddResourceForDocument() throws Exception {
         final var json = "{\"firstName\": \"John\"}";
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(content);
@@ -153,7 +177,7 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldRemoveRelatedFile() throws Exception {
+    void shouldRemoveRelatedFile() throws Exception {
         final var json = "{\"firstName\": \"John\"}";
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(content);
@@ -172,6 +196,41 @@ public class JsonSchemaDocumentResourceTest extends BaseTest {
             .andReturn();
 
         verify(documentService).removeRelatedFile(any(), any());
+    }
+
+    @Test
+    void shouldGetCandidateUsers() throws Exception {
+        final var json = "{\"firstName\": \"John\"}";
+        final var content = new JsonDocumentContent(json);
+        final var document = createDocument(content);
+
+        when(documentService.getCandidateUsers(document.id()))
+            .thenReturn(List.of(new NamedUser("1234", "John", "Doe")));
+        when(documentService.get(document.id().toString())).thenReturn(document);
+        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
+            .thenReturn(true);
+
+        mockMvc.perform(get("/api/document/{document-id}/candidate-user", document.id()).accept(APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].firstName").value("John"))
+            .andExpect(jsonPath("$[0].lastName").value("Doe"));
+    }
+
+    @Test
+    void shouldNotGetCandidateUsersWhenNoAccessToDocument() throws Exception {
+        final var json = "{\"firstName\": \"John\"}";
+        final var content = new JsonDocumentContent(json);
+        final var document = createDocument(content);
+
+        when(documentService.get(document.id().toString())).thenReturn(document);
+        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
+            .thenReturn(false);
+
+        mockMvc.perform(get("/api/document/{document-id}/candidate-user", document.id()).accept(APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isBadRequest());
     }
 
 }

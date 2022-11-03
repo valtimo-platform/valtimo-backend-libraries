@@ -38,7 +38,6 @@ import java.util.UUID
 class ApplicationReadyEventListener(
     private val connectorService: ConnectorService,
     private val objectSyncService: ObjectSyncService,
-    private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val zaakTypeLinkService: ZaakTypeLinkService,
     private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
     private val documentDefinitionService: DocumentDefinitionService,
@@ -51,7 +50,6 @@ class ApplicationReadyEventListener(
 
     @EventListener(DocumentDefinitionDeployedEvent::class)
     fun handleDocumentDefinitionDeployed(event: DocumentDefinitionDeployedEvent) {
-        linkProcess(event)
         connectZaakType(event)
         setDocumentDefinitionRole(event)
     }
@@ -59,19 +57,17 @@ class ApplicationReadyEventListener(
     fun createConnectors() {
         val connectorTypes = connectorService.getConnectorTypes()
 
-        connectorService.getConnectorTypes().forEach {
-            try {
-                createHaalCentraalBrpConnector(connectorTypes.findId("HaalCentraalBrp"))
-                createOpenZaakConnector(connectorTypes.findId("OpenZaak"))
-                createOpenNotificatiesConnector(connectorTypes.findId("OpenNotificatie"))
-                createContactMomentConnector(connectorTypes.findId("ContactMoment"))
-                createObjectApiConnectors(connectorTypes.findId("ObjectsApi"))
-                createProductAanvraagConnector(connectorTypes.findId("ProductAanvragen"))
-                createTaakConnector(connectorTypes.findId("Taak"))
-                createBesluitConnector(connectorTypes.findId("Besluit"))
-            } catch (ex: Exception) {
-                logger.error { ex }
-            }
+        try {
+            createHaalCentraalBrpConnector(connectorTypes.findId("HaalCentraalBrp"))
+            createOpenZaakConnector(connectorTypes.findId("OpenZaak"))
+            createOpenNotificatiesConnector(connectorTypes.findId("OpenNotificatie"))
+            createContactMomentConnector(connectorTypes.findId("ContactMoment"))
+            createObjectApiConnectors(connectorTypes.findId("ObjectsApi"))
+            createProductAanvraagConnector(connectorTypes.findId("ProductAanvragen"))
+            createTaakConnector(connectorTypes.findId("Taak"))
+            createBesluitConnector(connectorTypes.findId("Besluiten"))
+        } catch (ex: Exception) {
+            logger.error { ex }
         }
     }
 
@@ -102,7 +98,8 @@ class ApplicationReadyEventListener(
                     "http://localhost:8001",
                     "valtimo_client",
                     "e09b8bc5-5831-4618-ab28-41411304309d",
-                    Rsin("051845623")
+                    Rsin("051845623"),
+                    "http://localhost:4200/catalogi/api/v1/catalogussen/8225508a-6840-413e-acc9-6422af120db1"
                 )
             )
         )
@@ -148,16 +145,15 @@ class ApplicationReadyEventListener(
                 )
             )
         )
-        val configResult = objectSyncService.createObjectSyncConfig(
-            request = CreateObjectSyncConfigRequest(
-                connectorInstanceId = result.connectorTypeInstance()!!.id.id,
-                enabled = true,
-                documentDefinitionName = "leningen",
-                objectTypeId = UUID.fromString("3a82fb7f-fc9b-4104-9804-993f639d6d0d")
+        if (result.errors().isEmpty()) {
+            val configResult = objectSyncService.createObjectSyncConfig(
+                request = CreateObjectSyncConfigRequest(
+                    connectorInstanceId = result.connectorTypeInstance()!!.id.id,
+                    enabled = true,
+                    documentDefinitionName = "leningen",
+                    objectTypeId = UUID.fromString("3a82fb7f-fc9b-4104-9804-993f639d6d0d")
+                )
             )
-        )
-        if (configResult.errors().isNotEmpty()) {
-            configResult.errors()
         }
     }
 
@@ -261,18 +257,6 @@ class ApplicationReadyEventListener(
                 Rsin("051845623")
             )
         )
-    }
-
-    fun linkProcess(event: DocumentDefinitionDeployedEvent) {
-        if (event.documentDefinition().id().name().equals("leningen")) {
-            val linkRequest = ProcessDocumentDefinitionRequest(
-                "lening-aanvragen",
-                "leningen",
-                true,
-                false
-            )
-            processDocumentAssociationService.createProcessDocumentDefinition(linkRequest)
-        }
     }
 
     fun connectZaakType(event: DocumentDefinitionDeployedEvent) {

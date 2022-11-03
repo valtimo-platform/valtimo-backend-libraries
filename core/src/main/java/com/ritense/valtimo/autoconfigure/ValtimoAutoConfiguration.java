@@ -18,6 +18,7 @@ package com.ritense.valtimo.autoconfigure;
 
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.ProcessApplicationStartedEventListener;
+import com.ritense.valtimo.camunda.ProcessDefinitionPropertyListener;
 import com.ritense.valtimo.camunda.TaskCompletedListener;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
 import com.ritense.valtimo.config.CustomDateTimeProvider;
@@ -29,6 +30,7 @@ import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.helper.ActivityHelper;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
+import com.ritense.valtimo.processdefinition.repository.ProcessDefinitionPropertiesRepository;
 import com.ritense.valtimo.repository.CamundaReportingRepository;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
 import com.ritense.valtimo.repository.CamundaTaskRepository;
@@ -40,14 +42,17 @@ import com.ritense.valtimo.service.BpmnModelService;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
+import com.ritense.valtimo.service.ProcessPropertyService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
 import com.ritense.valtimo.web.rest.AccountResource;
+import com.ritense.valtimo.web.rest.PingResource;
 import com.ritense.valtimo.web.rest.ProcessInstanceResource;
 import com.ritense.valtimo.web.rest.ProcessResource;
 import com.ritense.valtimo.web.rest.PublicProcessResource;
 import com.ritense.valtimo.web.rest.ReportingResource;
 import com.ritense.valtimo.web.rest.TaskResource;
 import com.ritense.valtimo.web.rest.UserResource;
+import com.ritense.valtimo.web.rest.VersionResource;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.camunda.bpm.engine.FormService;
@@ -59,11 +64,14 @@ import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
@@ -72,6 +80,8 @@ import java.util.Optional;
 @EnableConfigurationProperties(value = {ValtimoProperties.class})
 @EnableJpaAuditing(dateTimeProviderRef = "customDateTimeProvider")
 @EnableCamundaEventBus
+@EnableJpaRepositories(basePackageClasses = ProcessDefinitionPropertiesRepository.class)
+@EntityScan("com.ritense.valtimo.domain.processdefinition")
 public class ValtimoAutoConfiguration {
 
     @Bean
@@ -278,7 +288,8 @@ public class ValtimoAutoConfiguration {
         final CamundaTaskService camundaTaskService,
         final CamundaProcessService camundaProcessService,
         final ProcessShortTimerService processShortTimerService,
-        final CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository
+        final CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository,
+        final ProcessPropertyService processPropertyService
     ) {
         return new ProcessResource(
             taskService,
@@ -288,7 +299,8 @@ public class ValtimoAutoConfiguration {
             camundaTaskService,
             camundaProcessService,
             processShortTimerService,
-            camundaSearchProcessInstanceRepository
+            camundaSearchProcessInstanceRepository,
+            processPropertyService
         );
     }
 
@@ -311,11 +323,46 @@ public class ValtimoAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(VersionResource.class)
+    public VersionResource versionResource() {
+        return new VersionResource();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PingResource.class)
+    public PingResource pingResource() {
+        return new PingResource();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(ValtimoApplicationReadyEventListener.class)
     public ValtimoApplicationReadyEventListener valtimoApplicationReadyEventListener(
         @Value("${timezone:}") Optional<String> timeZone
     ) {
         return new ValtimoApplicationReadyEventListener(timeZone);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionPropertyListener.class)
+    public ProcessDefinitionPropertyListener processDefinitionPropertyListener(
+        final ProcessDefinitionPropertiesRepository processDefinitionPropertiesRepository,
+        final RepositoryService repositoryService
+    ) {
+        return new ProcessDefinitionPropertyListener(processDefinitionPropertiesRepository, repositoryService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessPropertyService.class)
+    public ProcessPropertyService processPropertyService(
+        final ProcessDefinitionPropertiesRepository processDefinitionPropertiesRepository,
+        final ValtimoProperties valtimoProperties,
+        final RepositoryService repositoryService
+    ) {
+        return new ProcessPropertyService(
+            processDefinitionPropertiesRepository,
+            valtimoProperties,
+            repositoryService
+        );
     }
 
 }

@@ -29,7 +29,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 @Embeddable
 public class JsonSchemaDocumentId extends AbstractId<JsonSchemaDocumentId> implements Document.Id {
 
-    @Column(name = "json_schema_document_id", columnDefinition = "BINARY(16)", updatable = false)
+    @Column(name = "json_schema_document_id", updatable = false)
     private UUID id;
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)

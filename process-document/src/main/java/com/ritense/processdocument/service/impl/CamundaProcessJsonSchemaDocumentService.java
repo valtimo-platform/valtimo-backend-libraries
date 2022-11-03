@@ -21,9 +21,11 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
+import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
+import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
@@ -56,12 +58,14 @@ import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.delegate.BaseDelegateExecution;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.camunda.bpm.engine.delegate.VariableScope;
 import org.camunda.bpm.engine.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -84,6 +88,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     }
 
     @Override
+    @Transactional
     public DocumentFunctionResult dispatch(Request request) {
         if (request instanceof NewDocumentAndStartProcessRequest) {
             return newDocumentAndStartProcess((NewDocumentAndStartProcessRequest) request);
@@ -242,7 +247,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             if (modifyDocumentResult.resultingDocument().isEmpty()) {
                 return new ModifyDocumentAndStartProcessResultFailed(modifyDocumentResult.errors());
             }
-            final var document = modifyDocumentResult.resultingDocument().get();
+            final var document = modifyDocumentResult.resultingDocument().orElseThrow();
 
             //Part 2 process start
             final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(document.definitionId());
@@ -307,6 +312,10 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         }
     }
 
+    public Document getDocument(DelegateExecution execution) {
+        return getDocument(ProcessInstanceId.fromExecution(execution, CamundaProcessInstanceId.class), execution);
+    }
+
     public JsonSchemaDocumentId getDocumentId(ProcessInstanceId processInstanceId, VariableScope variableScope) {
         var processDocumentInstance = processDocumentAssociationService.findProcessDocumentInstance(processInstanceId).orElse(null);
         if (processDocumentInstance != null) {
@@ -322,6 +331,15 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
 
     public Document getDocument(ProcessInstanceId processInstanceId, VariableScope variableScope) {
         return documentService.get(getDocumentId(processInstanceId, variableScope).toString());
+    }
+
+    @Override
+    public Optional<ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessInstanceId processInstanceId) {
+        return camundaProcessService.findProcessInstanceById(processInstanceId.toString())
+            .map(instance -> camundaProcessService.findProcessDefinitionById(instance.getProcessDefinitionId()))
+            .map(definition -> new CamundaProcessDefinitionKey(definition.getKey()))
+            .map(processDocumentAssociationService::findProcessDocumentDefinition)
+            .map(optional -> (CamundaProcessJsonSchemaDocumentDefinition) optional.orElse(null));
     }
 
     private String getBusinessKey(ProcessInstanceId processInstanceId, VariableScope variableScope) {

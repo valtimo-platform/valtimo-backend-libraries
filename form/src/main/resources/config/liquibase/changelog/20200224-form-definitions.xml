@@ -19,10 +19,10 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
-    <property name="uuidType" value="uuid" dbms="h2"/>
-
     <changeSet id="1" author="Ivar Koreman">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createTable tableName="form_io_form_definition">
             <column name="id" type="${uuidType}">
                 <constraints primaryKey="true" />
@@ -31,6 +31,19 @@
                 <constraints unique="true" />
             </column>
             <column name="form_definition" type="JSON" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <createTable tableName="form_io_form_definition">
+            <column name="id" type="${uuidType}">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="name" type="VARCHAR(255)" />
+            <column name="form_definition" type="${jsonType}" />
         </createTable>
     </changeSet>
 

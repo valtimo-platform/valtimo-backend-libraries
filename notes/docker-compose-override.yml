@@ -1,0 +1,7 @@
+version: '3.9'
+services:
+  db:
+    ports:
+      - "3326:3306"
+    environment:
+      - MYSQL_DATABASE=notes-test

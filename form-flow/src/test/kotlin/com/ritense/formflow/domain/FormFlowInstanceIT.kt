@@ -20,6 +20,7 @@ import com.ritense.formflow.BaseIntegrationTest
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
+import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -60,18 +61,16 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
             formFlowDefinition = formFlowDefinition!!
         )
         formFlowInstanceRepository.saveAndFlush(formFlowInstance)
-        formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, "{\"data\": \"data\"}")
+        formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, JSONObject("{\"data\":\"data\"}"))
         formFlowInstanceRepository.saveAndFlush(formFlowInstance)
 
         val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
         assertEquals(2, storedInstance.getHistory().size)
         val firstStep = storedInstance.getHistory()[0]
-        assertEquals(firstStep.submissionData, "{\"data\": \"data\"}")
+        assertEquals(firstStep.submissionData, "{\"data\":\"data\"}")
         val secondStep = storedInstance.getHistory()[1]
         assertNull(secondStep.submissionData)
     }
-
-
 
     @Test
     fun `complete goes through the entire flow`() {
@@ -84,14 +83,14 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
         formFlowInstanceRepository.saveAndFlush(formFlowInstance)
         while (formFlowInstance.currentFormFlowStepInstanceId != null) {
             formFlowInstance.getCurrentStep().open()
-            formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, "{\"data\": \"data\"}")
+            formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, JSONObject("{\"data\":\"data\"}"))
             formFlowInstanceRepository.saveAndFlush(formFlowInstance)
         }
 
         val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
         assertEquals(7, storedInstance.getHistory().size)
         storedInstance.getHistory().forEach{
-            assertEquals(it.submissionData, "{\"data\": \"data\"}")
+            assertEquals(it.submissionData, "{\"data\":\"data\"}")
         }
     }
 }

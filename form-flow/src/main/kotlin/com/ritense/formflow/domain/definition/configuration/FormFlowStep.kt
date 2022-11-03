@@ -16,45 +16,52 @@
 
 package com.ritense.formflow.domain.definition.configuration
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 
-class FormFlowStep(
+data class FormFlowStep(
     val key: String,
-    val nextSteps: MutableList<FormFlowNextStep>? = ArrayList(),
-    val onOpen: MutableList<String>? = ArrayList(),
-    val onComplete: MutableList<String>? = ArrayList()
+    val nextStep: String? = null,
+    val nextSteps: List<FormFlowNextStep> = listOf(),
+    val onBack: List<String> = listOf(),
+    val onOpen: List<String> = listOf(),
+    val onComplete: List<String> = listOf(),
+    val type: FormFlowStepType
 ) {
-
-    @JsonProperty("nextStep")
-    fun nextStep(nextStep: String) {
-        nextSteps!!.add(FormFlowNextStep(step = nextStep))
-    }
 
     fun contentEquals(other: FormFlowStepEntity): Boolean {
         if (key != other.id.key) return false
-        if (nextSteps!!.size != other.nextSteps!!.size) return false
-        if (onOpen != other.onOpen) return false
-        if (onComplete != other.onComplete) return false
-        for (otherNextStep in other.nextSteps!!) {
-            var hasMatch = false
-            for (nextStep in nextSteps) {
-                if (nextStep.contentEquals(otherNextStep)) {
-                    hasMatch = true
-                    break
-                }
+
+        if (nextSteps.size != other.nextSteps.size) return false
+        if (nextSteps.any { nextStep ->
+            other.nextSteps.none { otherNextStep ->
+                nextStep.contentEquals(otherNextStep)
             }
-            if (!hasMatch) return false
-        }
+        }) return false
+
+        if (onBack != other.onBack.toList()) return false
+        if (onOpen != other.onOpen.toList()) return false
+        if (onComplete != other.onComplete.toList()) return false
+        if (type != other.type) return false
 
         return true
     }
 
     fun toDefinition(): FormFlowStepEntity {
-        val nextSteps = this.nextSteps?.map {
-            it.toDefinition()
-        }?.toMutableList()
-        return FormFlowStepEntity(FormFlowStepId.create(key), nextSteps, onOpen ?: ArrayList(), onComplete ?: ArrayList())
+        val nextSteps =
+            if (this.nextStep != null)
+                listOf(FormFlowNextStep(step = this.nextStep).toDefinition())
+            else
+                this.nextSteps.map(FormFlowNextStep::toDefinition)
+
+
+        return FormFlowStepEntity(
+            FormFlowStepId.create(key),
+            nextSteps,
+            onBack,
+            onOpen,
+            onComplete,
+            type
+        )
     }
 }

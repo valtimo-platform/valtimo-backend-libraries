@@ -20,25 +20,20 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.formlink.domain.ProcessFormAssociation;
 import com.ritense.valtimo.contract.domain.AbstractId;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
-@Embeddable
 public class CamundaProcessFormAssociationId extends AbstractId<CamundaProcessFormAssociationId>
     implements ProcessFormAssociation.Id {
 
-    @Column(name = "process_form_association_id", columnDefinition = "BINARY(16)")
     private UUID id;
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     private CamundaProcessFormAssociationId(UUID id) {
         assertArgumentNotNull(id, "id is required");
         this.id = id;
-    }
-
-    private CamundaProcessFormAssociationId() {
     }
 
     public static CamundaProcessFormAssociationId existingId(UUID id) {

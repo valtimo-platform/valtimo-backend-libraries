@@ -18,6 +18,7 @@ package com.ritense.formlink.autoconfigure;
 
 import com.ritense.formlink.security.config.FormAssociationHttpSecurityConfigurer;
 import com.ritense.formlink.security.config.FormAssociationManagementHttpSecurityConfigurer;
+import com.ritense.formlink.security.config.ProcessLinkHttpSecurityConfigurer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +39,13 @@ public class FormLinkSecurityAutoConfiguration {
     @ConditionalOnMissingBean(FormAssociationManagementHttpSecurityConfigurer.class)
     public FormAssociationManagementHttpSecurityConfigurer formAssociationManagementHttpSecurityConfigurer() {
         return new FormAssociationManagementHttpSecurityConfigurer();
+    }
+
+    @Order(276)
+    @Bean
+    @ConditionalOnMissingBean(ProcessLinkHttpSecurityConfigurer.class)
+    public ProcessLinkHttpSecurityConfigurer processLinkHttpSecurityConfigurer() {
+        return new ProcessLinkHttpSecurityConfigurer();
     }
 
 }

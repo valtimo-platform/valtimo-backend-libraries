@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.ritense.zakenapi.ZakenApiAutoConfiguration, \
+  com.ritense.zakenapi.uploadprocess.UploadProcessAutoConfiguration

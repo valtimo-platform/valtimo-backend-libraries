@@ -23,6 +23,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.form.domain.FormIoFormDefinition;
+import com.ritense.form.domain.FormSpringContextHelper;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociationId;
@@ -36,14 +37,20 @@ import com.ritense.formlink.domain.request.ModifyFormAssociationRequest;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
+import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import org.apache.commons.io.IOUtils;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationContext;
+
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,6 +64,15 @@ public abstract class BaseTest {
         MockitoAnnotations.openMocks(this);
         documentSequenceGeneratorService = mock(DocumentSequenceGeneratorService.class);
         when(documentSequenceGeneratorService.next(any())).thenReturn(1L);
+    }
+
+    protected static void mockSpringContextHelper() {
+        var applicationContext = mock(ApplicationContext.class);
+        var formFieldDataResolver = mock(FormFieldDataResolver.class);
+        when(formFieldDataResolver.supports(eq("oz"))).thenReturn(true);
+        when(applicationContext.getBeansOfType(FormFieldDataResolver.class)).thenReturn(Map.of("Test", formFieldDataResolver));
+        var springContextHelper = new FormSpringContextHelper();
+        springContextHelper.setApplicationContext(applicationContext);
     }
 
     protected CamundaProcessFormAssociation processFormAssociation(UUID id, UUID formId) {
@@ -105,6 +121,21 @@ public abstract class BaseTest {
                 FormAssociationType.USER_TASK,
                 formId,
                 null,
+                null,
+                null
+            )
+        );
+    }
+
+    protected CreateFormAssociationRequest createFormFlowUserTaskFormAssociationRequest(String formFlowId) {
+        return new CreateFormAssociationRequest(
+            PROCESS_DEFINITION_KEY,
+            new FormLinkRequest(
+                "userTaskId",
+                FormAssociationType.USER_TASK,
+                null,
+                formFlowId,
+                null,
                 null
             )
         );
@@ -117,6 +148,7 @@ public abstract class BaseTest {
                 "startEventId",
                 FormAssociationType.START_EVENT,
                 formId,
+                null,
                 null,
                 null
             )
@@ -131,6 +163,7 @@ public abstract class BaseTest {
                 "userTaskId",
                 FormAssociationType.USER_TASK,
                 formId,
+                null,
                 null,
                 null
             )

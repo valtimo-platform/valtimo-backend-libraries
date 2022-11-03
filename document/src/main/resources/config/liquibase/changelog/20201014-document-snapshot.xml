@@ -20,6 +20,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="klaasschuijtemaker (generated)" id="1602750329017-4">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createTable tableName="json_schema_document_snapshot">
             <column name="json_schema_document_snapshot_id" type="BINARY(16)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="json_schema_document_snapshotPK"/>
@@ -47,6 +50,59 @@
             <column name="document_relations" type="JSON"/>
             <column name="document_related_files" type="JSON"/>
         </createTable>
+    </changeSet>
+
+    <changeSet author="klaasschuijtemaker (generated)" id="1602750329017-5">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <createTable tableName="json_schema_document_snapshot">
+            <column name="json_schema_document_snapshot_id" type="${uuidType}">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="json_schema_document_snapshotPK"/>
+            </column>
+            <column name="json_schema_document_snapshot_created_on" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="json_schema_document_snapshot_created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="json_schema_document_id" type="${uuidType}"/>
+            <column name="json_document_content" type="${jsonType}"/>
+            <column name="document_definition_name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_definition_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_created_on" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_modified_on" type="TIMESTAMP"/>
+            <column name="document_created_by" type="VARCHAR(255)"/>
+            <column name="document_sequence" type="BIGINT"/>
+            <column name="document_relations" type="${jsonType}"/>
+            <column name="document_related_files" type="${jsonType}"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Ritense" id="1602750329017-6">
+        <addColumn tableName="json_schema_document_snapshot">
+            <column name="document_assignee_id" type="VARCHAR(64)"/>
+        </addColumn>
+        <addColumn tableName="json_schema_document_snapshot">
+            <column name="document_assignee_first_name" type="VARCHAR(50)"/>
+        </addColumn>
+        <addColumn tableName="json_schema_document_snapshot">
+            <column name="document_assignee_last_name" type="VARCHAR(80)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="Ritense" id="1602750329017-7">
+        <addColumn tableName="json_schema_document_snapshot">
+            <column name="document_assignee_full_name" type="VARCHAR(255)"/>
+        </addColumn>
+        <dropColumn tableName="json_schema_document_snapshot" columnName="document_assignee_first_name"/>
+        <dropColumn tableName="json_schema_document_snapshot" columnName="document_assignee_last_name"/>
     </changeSet>
 
 </databaseChangeLog>

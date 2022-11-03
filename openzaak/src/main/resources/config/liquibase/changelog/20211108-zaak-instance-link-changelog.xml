@@ -24,6 +24,9 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
 
     <changeSet id="1" author="Rick Veenstra">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <createTable tableName="zaak_instance_link">
             <column name="zaak_instance_link_id" type="BINARY(16)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="zaak_instance_linkPK"/>
@@ -44,15 +47,22 @@
     </changeSet>
 
     <changeSet id="2" author="Rick Veenstra" failOnError="true">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <customChange class="com.ritense.openzaak.liquibase.changelog.ChangeLog20211126"/>
     </changeSet>
 
     <changeSet id="3" author="Rick Veenstra">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <dropColumn tableName="zaak_type_link" columnName="zaak_instance_links"/>
     </changeSet>
 
     <changeSet id="4" author="Ritense">
         <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
             <not>
                 <sqlCheck expectedResult="0">
                     SELECT COUNT(1)
@@ -65,7 +75,33 @@
     </changeSet>
 
     <changeSet id="5" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
         <addNotNullConstraint tableName="zaak_instance_link" columnDataType="VARCHAR(512)" columnName="zaak_type_url"/>
+    </changeSet>
+
+    <changeSet id="6" author="Ivo Zaal">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <createTable tableName="zaak_instance_link">
+            <column name="zaak_instance_link_id" type="${uuidType}">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="zaak_instance_linkPK"/>
+            </column>
+            <column name="zaak_instance_url" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zaak_instance_id" type="${uuidType}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_id" type="${uuidType}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zaak_type_url" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 
 </databaseChangeLog>

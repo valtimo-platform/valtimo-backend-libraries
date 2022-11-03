@@ -28,11 +28,14 @@ class DocumentRelatedFileAddedEventListener(
     @EventListener(DocumentRelatedFileAddedEvent::class)
     fun handle(event: DocumentRelatedFileAddedEvent) {
         if (event.documentId != null) {
+            if( event.metadata != null && !(event.metadata.getValue("createInformatieObject") as Boolean)) {
+                return
+            }
+
             val resource = openZaakService.getResource(event.fileId)
             documentenService.createObjectInformatieObject(
                 resource.informatieObjectUrl,
-                event.documentId,
-            )
+                event.documentId)
         }
     }
 }

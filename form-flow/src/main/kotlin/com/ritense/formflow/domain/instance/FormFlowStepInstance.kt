@@ -18,7 +18,7 @@ package com.ritense.formflow.domain.instance
 
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
-import java.io.Serializable
+import org.hibernate.annotations.Type
 import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
@@ -40,6 +40,7 @@ data class FormFlowStepInstance(
     val stepKey: String,
     @Column(name = "form_flow_step_instance_order", updatable = false, nullable = false)
     val order: Int,
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "submission_data")
     var submissionData: String? = null
 ) {
@@ -47,6 +48,9 @@ data class FormFlowStepInstance(
     val definition: FormFlowStep
         get() = instance.formFlowDefinition.getStepByKey(stepKey)
 
+    fun back() {
+        processExpressions(FormFlowStep::onBack)
+    }
     fun open() {
         processExpressions(FormFlowStep::onOpen)
     }
@@ -68,16 +72,14 @@ data class FormFlowStepInstance(
         }
     }
 
-    private fun createVarMap(): Map<String, Map<String, Serializable>> {
+    private fun createVarMap(): Map<String, Any> {
         return mapOf(
             "step" to mapOf(
                 "id" to id,
-                "key" to stepKey
+                "key" to stepKey,
+                "submissionData" to instance.getSubmissionDataContext()
             ),
-            "flowInstance" to mapOf(
-                "id" to instance.id,
-                "definition_id" to instance.formFlowDefinition.id
-            )
+            "additionalProperties" to instance.getAdditionalProperties()
         )
     }
 

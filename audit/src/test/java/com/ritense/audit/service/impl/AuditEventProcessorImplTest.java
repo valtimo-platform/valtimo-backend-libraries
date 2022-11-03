@@ -16,11 +16,18 @@
 
 package com.ritense.audit.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import com.ritense.audit.AbstractTestHelper;
 import com.ritense.audit.exception.AuditRuntimeException;
-import com.ritense.audit.repository.impl.AuditRecordImplRepository;
+import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.audit.service.AuditEventProcessor;
 import com.ritense.valtimo.contract.audit.AuditEvent;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
@@ -33,11 +40,11 @@ import static org.mockito.Mockito.verify;
 public class AuditEventProcessorImplTest extends AbstractTestHelper {
 
     private AuditEventProcessor auditEventProcessor;
-    private AuditRecordImplRepository auditRecordRepository;
+    private AuditRecordRepository auditRecordRepository;
 
     @BeforeEach
     public void setUp() {
-        auditRecordRepository = mock(AuditRecordImplRepository.class);
+        auditRecordRepository = mock(AuditRecordRepository.class);
         auditEventProcessor = new AuditEventProcessorImpl(auditRecordRepository);
     }
 

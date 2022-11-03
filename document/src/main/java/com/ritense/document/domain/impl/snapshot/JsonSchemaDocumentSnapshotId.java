@@ -18,6 +18,7 @@ package com.ritense.document.domain.impl.snapshot;
 
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.valtimo.contract.domain.AbstractId;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
@@ -27,13 +28,10 @@ import java.util.UUID;
 @Embeddable
 public class JsonSchemaDocumentSnapshotId extends AbstractId<JsonSchemaDocumentSnapshotId> implements DocumentSnapshot.Id {
 
-    @Column(name = "json_schema_document_snapshot_id", columnDefinition = "BINARY(16)", unique = true, nullable = false, updatable = false)
+    @Column(name = "json_schema_document_snapshot_id", unique = true, nullable = false, updatable = false)
     private UUID id;
 
     private JsonSchemaDocumentSnapshotId(@NotNull UUID id) {
-        if (id == null) {
-            throw new NullPointerException(("id is marked non-null but is null"));
-        }
         this.id = id;
     }
 

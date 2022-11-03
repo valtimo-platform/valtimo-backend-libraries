@@ -21,17 +21,21 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.resource.service.ResourceService
+import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.smartdocuments.connector.SmartDocumentsConnector
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
+import com.ritense.smartdocuments.security.config.SmartDocumentsHttpSecurityConfigurer
 import com.ritense.smartdocuments.service.CamundaSmartDocumentGenerator
 import com.ritense.smartdocuments.service.SmartDocumentGenerator
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
+import org.springframework.core.annotation.Order
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
@@ -74,9 +78,16 @@ class SmartDocumentsAutoConfiguration {
     @ConditionalOnMissingBean(SmartDocumentsClient::class)
     fun smartDocumentsClient(
         smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
-        smartDocumentsWebClientBuilder: WebClient.Builder
+        smartDocumentsWebClientBuilder: WebClient.Builder,
+        @Value("\${valtimo.smartdocuments.max-file-size-mb:10}") maxFileSize: Int,
+        temporaryResourceStorageService: TemporaryResourceStorageService,
     ): SmartDocumentsClient {
-        return SmartDocumentsClient(smartDocumentsConnectorProperties, smartDocumentsWebClientBuilder)
+        return SmartDocumentsClient(
+            smartDocumentsConnectorProperties,
+            smartDocumentsWebClientBuilder,
+            maxFileSize,
+            temporaryResourceStorageService
+        )
     }
 
     @Bean
@@ -112,5 +123,12 @@ class SmartDocumentsAutoConfiguration {
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     fun smartDocumentsConnectorProperties(): SmartDocumentsConnectorProperties {
         return SmartDocumentsConnectorProperties()
+    }
+
+    @Order(480)
+    @Bean
+    @ConditionalOnMissingBean(SmartDocumentsHttpSecurityConfigurer::class)
+    fun smartDocumentsHttpSecurityConfigurer(): SmartDocumentsHttpSecurityConfigurer {
+        return SmartDocumentsHttpSecurityConfigurer()
     }
 }

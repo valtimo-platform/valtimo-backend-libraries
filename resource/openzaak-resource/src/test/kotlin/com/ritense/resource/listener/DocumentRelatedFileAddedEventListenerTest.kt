@@ -48,7 +48,8 @@ internal class DocumentRelatedFileAddedEventListenerTest {
             "user",
             documentId,
             fileId,
-            "filename.txt"
+            "filename.txt",
+            null
         )
 
         val resource = OpenZaakResource(

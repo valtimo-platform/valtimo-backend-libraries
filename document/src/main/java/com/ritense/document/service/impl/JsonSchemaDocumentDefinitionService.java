@@ -218,6 +218,8 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
             || getDocumentDefinitionRoles(documentDefinitionName).stream().anyMatch(roles::contains);
     }
 
+
+
     @Override
     public Set<String> getDocumentDefinitionRoles(String documentDefinitionName) {
         return documentDefinitionRoleRepository.findAllByIdDocumentDefinitionName(documentDefinitionName)

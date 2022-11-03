@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.service
 
+import com.fasterxml.jackson.databind.exc.InvalidTypeIdException
 import com.ritense.formflow.BaseIntegrationTest
 import com.ritense.formflow.expression.ExpressionParseException
 import org.assertj.core.api.Assertions.assertThat
@@ -47,6 +48,30 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    fun `should deploy Form Flow when nextStep is provided`() {
+        formFlowDeploymentService.deploy(
+            "testOnOpenExpression", """
+            {
+                "startStep": "woonplaats",
+                "steps": [
+                    {
+                        "key": "woonplaats",
+                        "nextStep": "leeftijd",
+                        "type": {
+                            "name": "form",
+                            "properties": {
+                                "definition": "my-form-definition"
+                            }
+                        }
+                    }
+                ]
+            }
+        """.trimIndent()
+        )
+    }
+
+
+    @Test
     fun `should not deploy same Form Flow twice`() {
         formFlowDeploymentService.deployAll()
         formFlowDeploymentService.deployAll()
@@ -71,14 +96,51 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
     fun `should fail to deploy Form Flow when error in onOpenExpression`() {
         assertThrows<ExpressionParseException> {
             formFlowDeploymentService.deploy(
-                "test", """
+                "testOnOpenExpression", """
                 {
                     "startStep": "woonplaats",
                     "steps": [
                         {
                             "key": "woonplaats",
                             "onOpen": ["${'$'}{'Hello +'world!'}"],
-                            "nextStep": "leeftijd"
+                            "nextSteps": [
+                                {
+                                    "step": "leeftijd"
+                                }
+                            ],
+                            "type": {
+                                "name": "form",
+                                "properties": {
+                                    "definition": "my-form-definition"
+                                }
+                            }
+                        }
+                    ]
+                }
+            """.trimIndent()
+            )
+        }
+    }
+
+    @Test
+    fun `should fail to deploy Form Flow on unknown properties type`() {
+        assertThrows<InvalidTypeIdException> {
+            formFlowDeploymentService.deploy(
+                "testPropertiesType", """
+                {
+                    "startStep": "woonplaats",
+                    "steps": [
+                        {
+                            "key": "woonplaats",
+                            "nextSteps": [
+                                {
+                                    "step": "leeftijd"
+                                }
+                            ],
+                            "type": {
+                                "name": "unknown",
+                                "properties": {}
+                            }
                         }
                     ]
                 }

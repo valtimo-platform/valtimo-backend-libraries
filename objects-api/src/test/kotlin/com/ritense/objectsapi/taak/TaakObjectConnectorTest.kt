@@ -30,8 +30,8 @@ import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.openzaak.provider.KvkProvider
-import com.ritense.objectsapi.taak.resolve.ValueResolverService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.valueresolver.ValueResolverService
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
@@ -78,13 +78,15 @@ internal class TaakObjectConnectorTest {
         whenever(connectorService.loadByName(any())).thenReturn(objectsApiConnector)
         whenever(objectsApiConnector.getProperties()).thenReturn(ObjectsApiProperties())
         doReturn(mock<com.ritense.objectsapi.domain.Object>()).whenever(objectsApiConnector).createObject(any())
-        val task = mockDelegateTask("taak:my-var", "pv:my-process-var")
+        val task = mockDelegateTask("my-task-name", "taak:my-var", "pv:my-process-var")
 
-        whenever(valueResolverService.resolveValues(
-            eq(CamundaProcessInstanceId(task.processInstanceId)),
-            eq(task),
-            eq(listOf("pv:my-process-var"))
-        )).thenReturn(mapOf("pv:my-process-var" to "somevalue"))
+        whenever(
+            valueResolverService.resolveValues(
+                eq(task.processInstanceId),
+                eq(task),
+                eq(listOf("pv:my-process-var"))
+            )
+        ).thenReturn(mapOf("pv:my-process-var" to "somevalue"))
 
         taakObjectConnector.createTask(task, "my-form-id")
 
@@ -95,7 +97,40 @@ internal class TaakObjectConnectorTest {
             mapOf(
                 "bsn" to "my-bsn",
                 "data" to mapOf("my-var" to "somevalue"),
-                "formulier_id" to "my-form-id"
+                "formulier_id" to "my-form-id",
+                "title" to "my-task-name"
+            )
+        )
+    }
+
+    @Test
+    fun `should create task object with formulier_url property`() {
+        val objectsApiConnector = mock<ObjectsApiConnector>()
+        whenever(bsnProvider.getBurgerServiceNummer(any())).thenReturn("my-bsn")
+        whenever(connectorService.loadByName(any())).thenReturn(objectsApiConnector)
+        whenever(objectsApiConnector.getProperties()).thenReturn(ObjectsApiProperties())
+        doReturn(mock<com.ritense.objectsapi.domain.Object>()).whenever(objectsApiConnector).createObject(any())
+        val task = mockDelegateTask("my-task-name", "taak:my-var", "pv:my-process-var")
+
+        whenever(
+            valueResolverService.resolveValues(
+                eq(task.processInstanceId),
+                eq(task),
+                eq(listOf("pv:my-process-var"))
+            )
+        ).thenReturn(mapOf("pv:my-process-var" to "somevalue"))
+
+        taakObjectConnector.createTaskWithFormUrl(task, "http://localhost:8000/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777")
+
+        val captor = argumentCaptor<CreateObjectRequest>()
+        verify(objectsApiConnector).createObject(captor.capture())
+        val capturedObjectRequest = captor.firstValue
+        Assertions.assertThat(capturedObjectRequest.record.data).containsAllEntriesOf(
+            mapOf(
+                "bsn" to "my-bsn",
+                "data" to mapOf("my-var" to "somevalue"),
+                "formulier_url" to "http://localhost:8000/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777",
+                "title" to "my-task-name"
             )
         )
     }
@@ -107,7 +142,7 @@ internal class TaakObjectConnectorTest {
         whenever(connectorService.loadByName(any())).thenReturn(objectsApiConnector)
         whenever(objectsApiConnector.getProperties()).thenReturn(ObjectsApiProperties())
         doReturn(mock<com.ritense.objectsapi.domain.Object>()).whenever(objectsApiConnector).createObject(any())
-        val task = mockDelegateTask("my-var", "doc:/my-doc-prop")
+        val task = mockDelegateTask("my-task-name", "my-var", "doc:/my-doc-prop")
 
         taakObjectConnector.createTask(task, "my-form-id")
 
@@ -120,7 +155,7 @@ internal class TaakObjectConnectorTest {
         )
     }
 
-    private fun mockDelegateTask(propertyName: String, propertyValue: String): DelegateTask {
+    private fun mockDelegateTask(taskName: String, propertyName: String, propertyValue: String): DelegateTask {
         val camundaProperty = mock<CamundaProperty>()
         whenever(camundaProperty.camundaName).thenReturn(propertyName)
         whenever(camundaProperty.camundaValue).thenReturn(propertyValue)
@@ -130,6 +165,7 @@ internal class TaakObjectConnectorTest {
 
         val delegateTask = Mockito.mock(DelegateTask::class.java, Mockito.RETURNS_DEEP_STUBS)
         whenever(delegateTask.id).thenReturn(UUID.randomUUID().toString())
+        whenever(delegateTask.name).thenReturn(taskName)
         whenever(delegateTask.bpmnModelElementInstance.extensionElements.elements).thenReturn(listOf(camundaProperties))
         whenever(delegateTask.processInstanceId).thenReturn(UUID.randomUUID().toString())
 
