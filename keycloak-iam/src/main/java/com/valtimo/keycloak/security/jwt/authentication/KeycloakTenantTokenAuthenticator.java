@@ -16,6 +16,9 @@
 
 package com.valtimo.keycloak.security.jwt.authentication;
 
+import com.ritense.tenancy.TenantResolver;
+import com.ritense.tenancy.jpa.TenantAwareListener;
+import com.ritense.tenancy.web.DelegatingTenantAuthenticationToken;
 import com.ritense.valtimo.contract.security.jwt.TokenAuthenticator;
 import io.jsonwebtoken.Claims;
 import org.slf4j.Logger;
@@ -33,8 +36,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.*;
 import static java.util.Objects.requireNonNull;
 
 public class KeycloakTenantTokenAuthenticator extends TokenAuthenticator {
@@ -76,6 +78,7 @@ public class KeycloakTenantTokenAuthenticator extends TokenAuthenticator {
 
         final String email = getEmail(claims);
         final List<String> roles = getRoles(claims);
+        final String tenantId = getTenantId(claims);
 
         if (email != null && roles != null && !roles.isEmpty()) {
             final Set<? extends GrantedAuthority> authorities = roles.stream()
@@ -83,9 +86,19 @@ public class KeycloakTenantTokenAuthenticator extends TokenAuthenticator {
                 .collect(Collectors.toSet());
 
             final User principal = new User(email, "", authorities);
-            return new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
+            return new DelegatingTenantAuthenticationToken(
+                new UsernamePasswordAuthenticationToken(principal, jwt, authorities),
+                tenantId
+            );
         }
         return null;
+    }
+
+    private String getTenantId(Claims claims) {
+        if (claims.containsKey(TENANT_KEY)) {
+            return claims.get(TENANT_KEY, String.class);
+        }
+        return TenantResolver.DEFAULT_TENANT_ID;
     }
 
     private String getEmail(Claims claims) {

@@ -16,7 +16,7 @@
 
 package com.ritense.document.autoconfigure;
 
-import com.ritense.document.config.DocumentSpringContextHelper;
+import  com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerImpl;
@@ -46,6 +46,7 @@ import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.tenancy.jpa.AbstractTenantAwareAggregateRoot;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -60,7 +61,12 @@ import javax.persistence.EntityManager;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.document.repository")
-@EntityScan("com.ritense.document.domain")
+@EntityScan(
+    value = {"com.ritense.document.domain"},
+    basePackageClasses = {
+        AbstractTenantAwareAggregateRoot.class
+    }
+)
 public class DocumentAutoConfiguration {
 
     @Bean

@@ -18,13 +18,12 @@ import javax.persistence.MappedSuperclass
 )
 @Filter(name = AbstractTenantAwareAggregateRoot.TENANT_FILTER_NAME)
 @EntityListeners(TenantAwareListener::class)
-open class AbstractTenantAwareAggregateRoot<A : AbstractTenantAwareAggregateRoot<A>?>(
+open class AbstractTenantAwareAggregateRoot<A : AbstractTenantAwareAggregateRoot<A>?> :
+    AbstractAggregateRoot<A>(), TenantAware {
+
     @JsonIgnore
     @Column(name = "tenant_id", columnDefinition = "VARCHAR(256)", nullable = false)
     override var tenantId: String? = null
-) :
-    AbstractAggregateRoot<A>(), TenantAware {
-
 
     companion object {
         const val TENANT_FILTER_NAME = "tenantFilter"
