@@ -16,11 +16,13 @@
 
 package com.ritense.document.domain.impl.searchfield;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.data.domain.Persistable;
+
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 @Entity
@@ -30,12 +32,22 @@ public class SearchField implements Persistable<SearchFieldId> {
     @EmbeddedId
     private SearchFieldId id;
 
-    @Column(name = "search_field_key", columnDefinition = "varchar(255)")
+    @Column(name = "search_field_key", length = 255, nullable = false, updatable = false)
     private String key;
 
+    @Column(name = "path", length = 255, nullable = true, updatable = true)
     private String path;
+
+    @Column(name = "datatype", nullable = false, updatable = true)
+    @Enumerated(EnumType.STRING)
     private SearchFieldDatatype datatype;
+
+    @Column(name = "fieldtype", nullable = false, updatable = true)
+    @Enumerated(EnumType.STRING)
     private SearchFieldFieldtype fieldtype;
+
+    @Column(name = "matchtype", nullable = false, updatable = true)
+    @Enumerated(EnumType.STRING)
     private SearchFieldMatchtype matchtype;
 
     public SearchField(String key,
@@ -78,16 +90,32 @@ public class SearchField implements Persistable<SearchFieldId> {
         return path;
     }
 
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     public SearchFieldDatatype getDatatype() {
         return datatype;
+    }
+
+    public void setDatatype(SearchFieldDatatype datatype) {
+        this.datatype = datatype;
     }
 
     public SearchFieldFieldtype getFieldtype() {
         return fieldtype;
     }
 
+    public void setFieldtype(SearchFieldFieldtype fieldtype) {
+        this.fieldtype = fieldtype;
+    }
+
     public SearchFieldMatchtype getMatchtype() {
         return matchtype;
+    }
+
+    public void setMatchtype(SearchFieldMatchtype matchtype) {
+        this.matchtype = matchtype;
     }
 }
 

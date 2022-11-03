@@ -26,9 +26,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.ritense.form.domain.event.FormRegisteredEvent;
 import com.ritense.form.domain.exception.FormDefinitionParsingException;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,12 +49,17 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
+
 @Entity
 @Table(name = "form_io_form_definition")
 public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefinition>
     implements FormDefinition, Persistable<UUID> {
 
     private static final Logger logger = LoggerFactory.getLogger(FormIoFormDefinition.class);
+    public static final String JSON_PATH_DELIMITER = "/";
     public static final String PROPERTY_KEY = "key";
     public static final String COMPONENTS_KEY = "components";
     public static final String DEFAULT_VALUE_FIELD = "defaultValue";
@@ -81,13 +83,13 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     private Boolean readOnly = false;
 
     @Transient
-    private transient JsonNode workingCopy = null;
+    private JsonNode workingCopy = null;
 
     @Transient
-    private transient boolean isNew = false;
+    private boolean isNew = false;
 
     @Transient
-    private transient boolean isWriting = false;
+    private boolean isWriting = false;
 
     public FormIoFormDefinition(
         final UUID id,
@@ -231,7 +233,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             String key = field.get(PROPERTY_KEY).asText();
             if (!key.isEmpty() && !key.startsWith(PROCESS_VAR_PREFIX)) {
                 String jsonPath = field.get(PROPERTY_KEY).asText().replace(".", "/");
-                jsonPath = "/" + jsonPath;
+                jsonPath = JSON_PATH_DELIMITER + jsonPath;
                 String propertyName = jsonPath;
                 return buildJsonPointer(jsonPath).flatMap(jsonPointer -> Optional.of(new ContentItem(propertyName, jsonPointer)));
             } else {
@@ -318,7 +320,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         if (isProcessVar(field)) {
             String jsonPath = field.get(PROPERTY_KEY).asText().replace(".", "/");
             String processVarName = jsonPath.substring(PROCESS_VAR_PREFIX.length() + 1);//example pv.varName -> gets varName
-            jsonPath = "/" + jsonPath;
+            jsonPath = JSON_PATH_DELIMITER + jsonPath;
             return buildJsonPointer(jsonPath).flatMap(jsonPointer -> Optional.of(new ContentItem(processVarName, jsonPointer)));
         }
         return Optional.empty();
@@ -353,13 +355,13 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             String separator;
 
             if (fieldKey.contains(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)) {
-                jsonPath = "/" + fieldKey
+                jsonPath = JSON_PATH_DELIMITER + fieldKey
                     .replace("/", "~1")
                     .replace(".", "/");
                 separator = EXTERNAL_FORM_FIELD_TYPE_SEPARATOR;
             } else {
                 //support for legacy dot separator (pv.varName)
-                jsonPath = "/" + fieldKey.replace(LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR, "/");
+                jsonPath = JSON_PATH_DELIMITER + fieldKey.replace(LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR, "/");
                 separator = LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR;
             }
 

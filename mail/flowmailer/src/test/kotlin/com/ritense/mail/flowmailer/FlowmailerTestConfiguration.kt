@@ -19,11 +19,7 @@ package com.ritense.mail.flowmailer
 import com.ritense.connector.autoconfigure.ConnectorAutoConfiguration
 import com.ritense.connector.autoconfigure.ConnectorLiquibaseAutoConfiguration
 import com.ritense.connector.autoconfigure.ConnectorSecurityAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentLiquibaseAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentRetryAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentSecurityAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentSnapshotAutoConfiguration
+import com.ritense.document.autoconfigure.*
 import com.ritense.mail.autoconfigure.MailAutoConfiguration
 import com.ritense.mail.autoconfigure.MailLiquibaseAutoConfiguration
 import com.ritense.resource.service.ResourceService
@@ -49,6 +45,7 @@ import org.springframework.context.annotation.Bean
     DocumentSnapshotAutoConfiguration::class,
     DocumentLiquibaseAutoConfiguration::class,
     DocumentSecurityAutoConfiguration::class,
+    SearchFieldAutoConfiguration::class,
     DocumentRetryAutoConfiguration::class
 ])
 class FlowmailerTestConfiguration {

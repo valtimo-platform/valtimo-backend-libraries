@@ -21,6 +21,7 @@ import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 
 data class FormFlowStep(
     val key: String,
+    val nextStep: String? = null,
     val nextSteps: List<FormFlowNextStep> = listOf(),
     val onBack: List<String> = listOf(),
     val onOpen: List<String> = listOf(),
@@ -47,8 +48,12 @@ data class FormFlowStep(
     }
 
     fun toDefinition(): FormFlowStepEntity {
-        val nextSteps = this.nextSteps
-            .map(FormFlowNextStep::toDefinition)
+        val nextSteps =
+            if (this.nextStep != null)
+                listOf(FormFlowNextStep(step = this.nextStep).toDefinition())
+            else
+                this.nextSteps.map(FormFlowNextStep::toDefinition)
+
 
         return FormFlowStepEntity(
             FormFlowStepId.create(key),

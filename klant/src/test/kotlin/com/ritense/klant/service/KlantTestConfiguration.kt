@@ -21,11 +21,7 @@ import com.ritense.besluit.autoconfigure.BesluitAutoConfiguration
 import com.ritense.connector.autoconfigure.ConnectorAutoConfiguration
 import com.ritense.connector.autoconfigure.ConnectorLiquibaseAutoConfiguration
 import com.ritense.connector.autoconfigure.ConnectorSecurityAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentLiquibaseAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentRetryAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentSecurityAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentSnapshotAutoConfiguration
+import com.ritense.document.autoconfigure.*
 import com.ritense.openzaak.autoconfigure.OpenZaakAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakLiquibaseAutoConfiguration
 import com.ritense.openzaak.autoconfigure.OpenZaakSecurityAutoConfiguration
@@ -34,19 +30,7 @@ import com.ritense.processdocument.autoconfigure.ProcessDocumentAuditAutoConfigu
 import com.ritense.processdocument.autoconfigure.ProcessDocumentAutoConfiguration
 import com.ritense.processdocument.autoconfigure.ProcessDocumentKotlinAutoConfiguration
 import com.ritense.resource.autoconfigure.OpenZaakResourceAutoConfiguration
-import com.ritense.valtimo.autoconfigure.AccessAndEntitlementAutoConfiguration
-import com.ritense.valtimo.autoconfigure.AuthenticationAutoConfiguration
-import com.ritense.valtimo.autoconfigure.CamundaAutoConfiguration
-import com.ritense.valtimo.autoconfigure.ChoiceFieldAutoConfiguration
-import com.ritense.valtimo.autoconfigure.ContextAutoConfiguration
-import com.ritense.valtimo.autoconfigure.EmailNotificationSettingsAutoConfiguration
-import com.ritense.valtimo.autoconfigure.HibernateJsonMapperConfiguration
-import com.ritense.valtimo.autoconfigure.HttpSecurityAutoConfiguration
-import com.ritense.valtimo.autoconfigure.LiquibaseAutoConfiguration
-import com.ritense.valtimo.autoconfigure.ProcessDataObjectAutoConfiguration
-import com.ritense.valtimo.autoconfigure.ValtimoAutoConfiguration
-import com.ritense.valtimo.autoconfigure.ValtimoMethodSecurityAutoConfiguration
-import com.ritense.valtimo.autoconfigure.ValtimoMybatisAutoConfiguration
+import com.ritense.valtimo.autoconfigure.*
 import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration
 import org.springframework.boot.SpringApplication
@@ -91,6 +75,7 @@ import org.springframework.boot.test.context.TestConfiguration
         ProcessDocumentAutoConfiguration::class,
         ProcessDocumentKotlinAutoConfiguration::class,
         ProcessDocumentAuditAutoConfiguration::class,
+        SearchFieldAutoConfiguration::class,
         ValtimoAutoConfiguration::class,
         ValtimoMethodSecurityAutoConfiguration::class,
         ValtimoMybatisAutoConfiguration::class
