@@ -17,8 +17,8 @@
 package com.ritense.klant.service
 
 import com.ritense.klant.client.OpenKlantClientProperties
-import com.ritense.openzaak.service.ZaakInstanceLinkService
-import com.ritense.openzaak.service.ZaakRolService
+import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -34,8 +34,8 @@ abstract class BaseIntegrationTest {
     lateinit var openKlantClientProperties: OpenKlantClientProperties
 
     @MockBean
-    lateinit var zaakRolService: ZaakRolService
+    lateinit var userManagementService: UserManagementService
 
     @MockBean
-    lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
+    lateinit var mailSender: MailSender
 }
