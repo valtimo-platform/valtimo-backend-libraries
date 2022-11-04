@@ -35,7 +35,7 @@ public class AuditRetentionServiceImpl implements AuditRetentionService {
     @Override
     @Scheduled(cron = "${scheduling.job.cron.cleanupAuditEvents:-}")
     @SchedulerLock(
-        name = "AuditRetentionService_cleanup", lockAtLeastFor = "PT4S", lockAtMostFor = "PT6S"
+        name = "AuditRetentionService_cleanup", lockAtLeastFor = "PT4S", lockAtMostFor = "PT60M"
     )
     public void cleanup() {
         auditService.deleteAllBefore(now().minusDays(retention));

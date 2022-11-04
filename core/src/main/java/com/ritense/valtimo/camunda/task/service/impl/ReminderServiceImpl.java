@@ -51,7 +51,7 @@ public class ReminderServiceImpl implements ReminderService {
     @Override
     @Scheduled(cron = "${scheduling.job.cron.taskNotificationReminder:-}")
     @SchedulerLock(
-        name = "ReminderServiceImpl_notifyUsersWithOpenTasks", lockAtLeastFor = "PT4S", lockAtMostFor = "PT6S"
+        name = "ReminderServiceImpl_notifyUsersWithOpenTasks", lockAtLeastFor = "PT4S", lockAtMostFor = "PT60M"
     )
     public void notifyUsersWithOpenTasks() {
         final List<String> users = userToNotifyToday();
