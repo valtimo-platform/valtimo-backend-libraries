@@ -17,6 +17,14 @@
             "protected": true
         },
         {
+            "label": "Disabled Field",
+            "tableView": true,
+            "key": "disabledField",
+            "type": "textfield",
+            "input": true,
+            "disabled": true
+        },
+        {
             "label": "Columns",
             "columns": [
                 {
