@@ -9,10 +9,11 @@ import com.ritense.exact.service.response.ExactExchangeResponse
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
+import java.time.LocalDateTime
 import mu.KotlinLogging
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.web.reactive.function.client.WebClient
-import java.time.LocalDateTime
 
 class ExactService(
     private val redirectUrl: String,
@@ -22,6 +23,7 @@ class ExactService(
 ) {
 
     @Scheduled(cron = "\${exact.checkRefreshTokensCron:-}")
+    @SchedulerLock(name = "AuditRetentionService_cleanup", lockAtLeastFor = "PT4S", lockAtMostFor = "PT60M")
     fun refreshRefreshTokens() {
         logger.info { "Starting Exact refresh token check"}
         pluginService
