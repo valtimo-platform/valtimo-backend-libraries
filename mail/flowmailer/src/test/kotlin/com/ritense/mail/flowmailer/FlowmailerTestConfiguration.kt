@@ -16,41 +16,14 @@
 
 package com.ritense.mail.flowmailer
 
-import com.ritense.connector.autoconfigure.ConnectorAutoConfiguration
-import com.ritense.connector.autoconfigure.ConnectorLiquibaseAutoConfiguration
-import com.ritense.connector.autoconfigure.ConnectorSecurityAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentLiquibaseAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentRetryAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentSecurityAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentSnapshotAutoConfiguration
-import com.ritense.mail.autoconfigure.MailAutoConfiguration
-import com.ritense.mail.autoconfigure.MailLiquibaseAutoConfiguration
 import com.ritense.resource.service.ResourceService
 import org.mockito.Mockito
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 
-@SpringBootApplication(exclude = [
-    DataSourceAutoConfiguration::class,
-    DataSourceTransactionManagerAutoConfiguration::class,
-    HibernateJpaAutoConfiguration::class,
-    MailAutoConfiguration::class,
-    MailLiquibaseAutoConfiguration::class,
-    ConnectorAutoConfiguration::class,
-    ConnectorLiquibaseAutoConfiguration::class,
-    ConnectorSecurityAutoConfiguration::class,
-    DocumentAutoConfiguration::class,
-    DocumentSnapshotAutoConfiguration::class,
-    DocumentLiquibaseAutoConfiguration::class,
-    DocumentSecurityAutoConfiguration::class,
-    DocumentRetryAutoConfiguration::class
-])
+@SpringBootApplication
 class FlowmailerTestConfiguration {
 
     @Bean
