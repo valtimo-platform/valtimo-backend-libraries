@@ -16,6 +16,9 @@
 
 package com.ritense.valtimo.security.jwt;
 
+import com.ritense.tenancy.TenantResolver;
+import com.ritense.tenancy.web.DelegatingTenantAuthenticationToken;
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.camunda.bpm.engine.IdentityService;
@@ -32,6 +35,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.AUTHORIZATION_HEADER;
 
 /**
@@ -44,27 +49,40 @@ public class JwtFilter extends GenericFilterBean {
     private final IdentityService identityService;
     private final TokenAuthenticationService tokenAuthenticationService;
 
-    public JwtFilter(IdentityService identityService, TokenAuthenticationService tokenAuthenticationService) {
+    private final ValtimoProperties valtimoProperties;
+
+    public JwtFilter(
+        IdentityService identityService,
+        TokenAuthenticationService tokenAuthenticationService,
+        ValtimoProperties valtimoProperties
+    ) {
         this.identityService = identityService;
         this.tokenAuthenticationService = tokenAuthenticationService;
+        this.valtimoProperties = valtimoProperties;
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         try {
             String authenticatedUserId = null;
+            Authentication authentication = null;
             HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
             String jwt = resolveToken(httpServletRequest);
             if (StringUtils.hasText(jwt)) {
                 if (this.tokenAuthenticationService.validateToken(jwt)) {
-                    Authentication authentication = this.tokenAuthenticationService.getAuthentication(jwt);
+                    authentication = this.tokenAuthenticationService.getAuthentication(jwt);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     authenticatedUserId = authentication.getName();
                 }
             }
-            // user id should always be set or reset to null because the camunda implementation will remember the user id from a previous request.
-            identityService.setAuthenticatedUserId(authenticatedUserId);
+            if (valtimoProperties.getApp().getEnableTenancy()) {
+                String tenantId = TenantResolver.INSTANCE.getTenantId();
+                identityService.setAuthentication(authenticatedUserId, null, List.of(tenantId));
+            } else {
+                identityService.setAuthenticatedUserId(authenticatedUserId);
+            }
             filterChain.doFilter(servletRequest, servletResponse);
+            // user (authentication) should always be set or reset to null because the camunda implementation will remember the user id from a previous request.
             identityService.clearAuthentication();
         } catch (ExpiredJwtException eje) {
             slf4jLogger.info("Security exception for user {} - {}", eje.getClaims().getSubject(), eje.getMessage());

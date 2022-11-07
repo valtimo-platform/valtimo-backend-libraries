@@ -16,6 +16,9 @@
 
 package com.valtimo.keycloak.security.jwt.authentication;
 
+import com.ritense.tenancy.TenantResolver;
+import com.ritense.tenancy.web.DelegatingTenantAuthenticationToken;
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.contract.security.jwt.TokenAuthenticator;
 import io.jsonwebtoken.Claims;
 import org.slf4j.Logger;
@@ -31,8 +34,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.*;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.TENANT_KEY;
 import static java.util.Objects.requireNonNull;
 
 public class KeycloakTokenAuthenticator extends TokenAuthenticator {
@@ -40,10 +43,12 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakTokenAuthenticator.class);
     public final static String REALM_ACCESS = "realm_access";
     public final static String RESOURCE_ACCESS = "resource_access";
+    private final ValtimoProperties valtimoProperties;
     private final String clientName;
 
-    public KeycloakTokenAuthenticator(String keycloakClient) {
+    public KeycloakTokenAuthenticator(String keycloakClient, ValtimoProperties valtimoProperties) {
         this.clientName = keycloakClient;
+        this.valtimoProperties = valtimoProperties;
     }
 
     @Override
@@ -81,9 +86,23 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
                 .collect(Collectors.toSet());
 
             final User principal = new User(email, "", authorities);
-            return new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
+            if (valtimoProperties.getApp().getEnableTenancy()) {
+                authentication = new DelegatingTenantAuthenticationToken(
+                    authentication,
+                    getTenantId(claims)
+                );
+            }
+            return authentication;
         }
         return null;
+    }
+
+    private String getTenantId(Claims claims) {
+        if (claims.containsKey(TENANT_KEY)) {
+            return claims.get(TENANT_KEY, String.class);
+        }
+        return TenantResolver.DEFAULT_TENANT_ID;
     }
 
     private String getEmail(Claims claims) {

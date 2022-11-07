@@ -16,6 +16,7 @@
 
 package com.valtimo.keycloak.security.jwt.authentication;
 
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
 import com.ritense.valtimo.security.jwt.provider.SecretKeyResolver;
 import com.valtimo.keycloak.security.jwt.provider.KeycloakSecretKeyProvider;
@@ -42,6 +43,7 @@ import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuth
 import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.RESOURCE_ACCESS;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class KeycloakTokenAuthenticatorTest {
 
@@ -54,7 +56,7 @@ public class KeycloakTokenAuthenticatorTest {
     @BeforeEach
     public void before() {
         keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256);
-        keycloakTokenAuthenticator = new KeycloakTokenAuthenticator("test-client-resource");
+        keycloakTokenAuthenticator = new KeycloakTokenAuthenticator("test-client-resource", mock(ValtimoProperties.class));
         keycloakSecretKeyProvider = new KeycloakSecretKeyProvider(encodeBase64String(keyPair.getPublic().getEncoded()));
         secretKeyResolver = new SecretKeyResolver(List.of(keycloakSecretKeyProvider));
         tokenAuthenticationService = new TokenAuthenticationService(

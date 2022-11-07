@@ -19,7 +19,7 @@ object TenantResolver {
         var tenantId: String? = null
         // resolve from auth
         try {
-            tenantId = (SecurityContextHolder.getContext().authentication as DelegatingTenantAuthenticationToken).tenantId
+            tenantId = (SecurityContextHolder.getContext().authentication as DelegatingTenantAuthenticationToken?)?.tenantId
         } catch (t: Throwable) {
             t.printStackTrace()
         }
