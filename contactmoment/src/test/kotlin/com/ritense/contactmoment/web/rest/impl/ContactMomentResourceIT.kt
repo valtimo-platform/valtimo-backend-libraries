@@ -57,7 +57,7 @@ internal class ContactMomentResourceIT : BaseContactMomentIntegrationTest() {
         """.trimIndent()
 
         mockMvc.perform(
-            post("/api/contactmoment")
+            post("/api/v1/contactmoment")
                 .content(postBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -76,7 +76,7 @@ internal class ContactMomentResourceIT : BaseContactMomentIntegrationTest() {
     fun `get kanalen responds with all kanalen`() {
 
         mockMvc.perform(
-            get("/api/contactmoment/kanaal")
+            get("/api/v1/contactmoment/kanaal")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(MockMvcResultHandlers.print())

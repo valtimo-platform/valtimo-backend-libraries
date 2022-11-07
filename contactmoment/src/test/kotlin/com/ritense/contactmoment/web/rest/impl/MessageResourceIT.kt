@@ -72,7 +72,7 @@ internal class MessageResourceIT: BaseContactMomentIntegrationTest() {
         )
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/document/${documentId}/message")
+            MockMvcRequestBuilders.post("/api/v1/document/${documentId}/message")
                 .content(postBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
