@@ -37,7 +37,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/api/form-association", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CamundaFormAssociationResource implements FormAssociationResource {
 
     private final FormAssociationService formAssociationService;
@@ -52,7 +52,7 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
     }
 
     @Override
-    @GetMapping(value = "/form-definition", params = {"processDefinitionKey", "formLinkId"})
+    @GetMapping(value = "/v1/form-association/form-definition", params = {"processDefinitionKey", "formLinkId"})
     public ResponseEntity<JsonNode> getPreFilledFormDefinition(
         @RequestParam String processDefinitionKey,
         @RequestParam String formLinkId,
@@ -68,7 +68,7 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
     }
 
     @Override
-    @GetMapping(value = "/form-definition", params = {"processDefinitionKey"})
+    @GetMapping(value = "/v1/form-association/form-definition", params = {"processDefinitionKey"})
     public ResponseEntity<JsonNode> getStartEventFormDefinitionByProcessDefinitionKey(
         @RequestParam String processDefinitionKey
     ) {
@@ -78,7 +78,7 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
     }
 
     @Override
-    @GetMapping(value = "/form-definition/{formKey}")
+    @GetMapping(value = "/v1/form-association/form-definition/{formKey}")
     public ResponseEntity<JsonNode> getFormDefinitionByFormKey(
         @PathVariable String formKey,
         @RequestParam(required = false) Optional<UUID> documentId
@@ -89,7 +89,7 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
     }
 
     @Override
-    @PostMapping(value = "/form-definition/submission")
+    @PostMapping(value = "/v1/form-association/form-definition/submission")
     @PreAuthorize("#taskInstanceId.present == false or hasPermission(#taskInstanceId.orElseThrow(), 'taskAccess')")
     public ResponseEntity<FormSubmissionResult> handleSubmission(
         @RequestParam String processDefinitionKey,

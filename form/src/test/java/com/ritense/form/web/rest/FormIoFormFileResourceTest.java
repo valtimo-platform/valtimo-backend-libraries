@@ -56,7 +56,7 @@ public class FormIoFormFileResourceTest extends BaseTest {
     public void shouldReturn302FoundGettingFile() throws Exception {
         when(resourceService.getResourceUrl(anyString())).thenReturn(new URL("http://www.nu.nl"));
 
-        mockMvc.perform(get("/api/form-file").param("form", "aKeyValue")
+        mockMvc.perform(get("/api/v1/form-file").param("form", "aKeyValue")
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
         )

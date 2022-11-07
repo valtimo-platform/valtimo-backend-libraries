@@ -38,7 +38,7 @@ public class FormIoFormFileResource implements FormFileResource {
     }
 
     @Override
-    @PostMapping(value = "/form-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/v1/form-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<? extends Resource> uploadFile(
         @RequestParam("name") String fileName,
         @RequestParam("file") MultipartFile file
@@ -48,7 +48,7 @@ public class FormIoFormFileResource implements FormFileResource {
     }
 
     @Override
-    @PostMapping(value = "/form-file/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/v1/form-file/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<? extends Resource> uploadOpenZaakFile(
         @RequestParam("documentDefinitionName") String documentDefinitionName,
         @RequestParam("name") String fileName,
@@ -59,7 +59,7 @@ public class FormIoFormFileResource implements FormFileResource {
     }
 
     @Override
-    @GetMapping(value = "/form-file")
+    @GetMapping(value = "/v1/form-file")
     public RedirectView getFile(@RequestParam("form") String fileName) {
         return new RedirectView(
             resourceService
@@ -69,7 +69,7 @@ public class FormIoFormFileResource implements FormFileResource {
     }
 
     @Override
-    @DeleteMapping(value = "/form-file")
+    @DeleteMapping(value = "/v1/form-file")
     public ResponseEntity<Void> deleteFile(@RequestParam("form") String fileName) {
         //TODO needs update of s3 object with tag archive instead of direct deletion
         resourceService.removeResource(stripInitialSlashFromPath(fileName));
