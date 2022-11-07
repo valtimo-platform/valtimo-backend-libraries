@@ -60,7 +60,7 @@ internal class BesluitResourceIntTest : BaseIntegrationTest() {
             )
         )
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/besluittype"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/besluittype"))
             .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
