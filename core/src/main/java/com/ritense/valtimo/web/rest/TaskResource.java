@@ -47,7 +47,7 @@ import java.beans.PropertyEditorSupport;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TaskResource extends AbstractTaskResource {
 
     public TaskResource(
@@ -65,7 +65,7 @@ public class TaskResource extends AbstractTaskResource {
         Pageable pageable
     ) throws Exception {
         var page = camundaTaskService.findTasksFiltered(filter, pageable);
-        var headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/task");
+        var headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/task");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 

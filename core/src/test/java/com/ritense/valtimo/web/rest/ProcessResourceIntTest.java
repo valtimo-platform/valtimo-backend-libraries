@@ -49,7 +49,7 @@ class ProcessResourceIntTest extends BaseIntegrationTest {
 
     @Test
     void shouldGetProcessDefinitions() throws Exception {
-        mockMvc.perform(get("/api/process/definition")
+        mockMvc.perform(get("/api/v1/process/definition")
                 .accept(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
@@ -66,7 +66,7 @@ class ProcessResourceIntTest extends BaseIntegrationTest {
             .latestVersion()
             .singleResult();
 
-        mockMvc.perform(get("/api/process/definition/{processDefinitionId}/xml", processDefinition.getId())
+        mockMvc.perform(get("/api/v1/process/definition/{processDefinitionId}/xml", processDefinition.getId())
                 .accept(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
@@ -83,7 +83,9 @@ class ProcessResourceIntTest extends BaseIntegrationTest {
             .latestVersion()
             .singleResult();
 
-        mockMvc.perform(post("/api/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/migrate", processDefinition.getId(), processDefinition.getId())
+        mockMvc.perform(
+            post("/api/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/migrate",
+                processDefinition.getId(), processDefinition.getId())
                 .accept(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isForbidden());

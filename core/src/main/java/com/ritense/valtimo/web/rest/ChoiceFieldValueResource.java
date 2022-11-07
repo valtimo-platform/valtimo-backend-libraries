@@ -44,7 +44,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ChoiceFieldValueResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ChoiceFieldValueResource.class);
@@ -70,7 +70,7 @@ public class ChoiceFieldValueResource {
         ChoiceField choiceField = choiceFieldRepository.findByKeyName(choiceFieldName);
         choiceFieldValue.setChoiceField(choiceField);
         ChoiceFieldValue result = choiceFieldValueService.save(choiceFieldValue);
-        return ResponseEntity.created(new URI("/api/choice-field-values/" + result.getId()))
+        return ResponseEntity.created(new URI("/api/v1/choice-field-values/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert("choiceFieldValue", result.getName()))
             .body(result);
     }
@@ -96,7 +96,7 @@ public class ChoiceFieldValueResource {
     public ResponseEntity<List<ChoiceFieldValue>> getAllChoiceFieldValues(Pageable pageable) {
         logger.debug("REST request to get a page of ChoiceFieldValues");
         final Page<ChoiceFieldValue> page = choiceFieldValueService.findAll(pageable);
-        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/choice-field-values");
+        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/choice-field-values");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
@@ -132,7 +132,7 @@ public class ChoiceFieldValueResource {
     ) {
         logger.debug("REST request to get ChoiceField : {}", choiceFieldName);
         final Page<ChoiceFieldValue> page = choiceFieldValueService.findAllByChoiceFieldKeyName(pageable, choiceFieldName);
-        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/choice-field-values");
+        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/choice-field-values");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 

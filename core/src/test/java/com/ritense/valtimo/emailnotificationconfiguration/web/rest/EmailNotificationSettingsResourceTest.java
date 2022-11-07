@@ -67,7 +67,7 @@ class EmailNotificationSettingsResourceTest {
         when(emailNotificationService.getSettingsFor(anyString())).thenReturn(
             Optional.empty()
         );
-        mockMvc.perform(get("/api/email-notification-settings")
+        mockMvc.perform(get("/api/v1/email-notification-settings")
             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isNoContent());
@@ -78,7 +78,7 @@ class EmailNotificationSettingsResourceTest {
         when(emailNotificationService.getSettingsFor(any())).thenReturn(
             disabledEmailNotificationSettings()
         );
-        mockMvc.perform(get("/api/email-notification-settings")
+        mockMvc.perform(get("/api/v1/email-notification-settings")
             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
@@ -92,7 +92,7 @@ class EmailNotificationSettingsResourceTest {
 
         when(emailNotificationService.process(any(), any())).thenReturn(settings);
 
-        mockMvc.perform(put("/api/email-notification-settings")
+        mockMvc.perform(put("/api/v1/email-notification-settings")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(jsonString().getBytes(StandardCharsets.UTF_8)))
             .andDo(print())

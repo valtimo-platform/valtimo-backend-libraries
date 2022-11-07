@@ -32,25 +32,25 @@ class ProcessSecurityResourceTest extends SecuritySpecificEndpointIntegrationTes
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void migrateProcessInstancesByProcessDefinitionIdsAsAdmin() throws Exception {
-        assertHttpStatus(POST, "/api/process/definition/sourceProcessDefinitionId/targetProcessDefinitionId/migrate", INTERNAL_SERVER_ERROR);
+        assertHttpStatus(POST, "/api/v1/process/definition/sourceProcessDefinitionId/targetProcessDefinitionId/migrate", INTERNAL_SERVER_ERROR);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void migrateProcessInstancesByProcessDefinitionIdsAsUser() throws Exception {
-        assertHttpStatus(POST, "/api/process/definition/sourceProcessDefinitionId/targetProcessDefinitionId/migrate", FORBIDDEN);
+        assertHttpStatus(POST, "/api/v1/process/definition/sourceProcessDefinitionId/targetProcessDefinitionId/migrate", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void deleteAsAdmin() throws Exception {
-        assertHttpStatus(POST, "/api/process/processInstanceId/delete", BAD_REQUEST);
+        assertHttpStatus(POST, "/api/v1/process/processInstanceId/delete", BAD_REQUEST);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void deleteAsUser() throws Exception {
-        assertHttpStatus(POST, "/api/process/processInstanceId/delete", FORBIDDEN);
+        assertHttpStatus(POST, "/api/v1/process/processInstanceId/delete", FORBIDDEN);
     }
 
 }

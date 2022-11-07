@@ -32,7 +32,7 @@ import javax.validation.Valid;
 
 @ConditionalOnBean(UserManagementService.class)
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AccountResource {
 
     private final CurrentUserService currentUserService;

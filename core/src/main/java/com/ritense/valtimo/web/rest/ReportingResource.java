@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/api/reporting", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/reporting", produces = MediaType.APPLICATION_JSON_VALUE)
 @Transactional
 public class ReportingResource {
 

@@ -48,7 +48,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ContextResource {
 
     private final ContextService contextService;
@@ -76,7 +76,7 @@ public class ContextResource {
     @GetMapping(value = "/contexts")
     public ResponseEntity<List<Context>> getContexts(Pageable pageable) {
         final Page<Context> page = contextService.findAll(pageable);
-        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/contexts");
+        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/contexts");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
@@ -110,7 +110,7 @@ public class ContextResource {
                 .body(null);
         }
         Context result = contextService.save(context);
-        return ResponseEntity.created(new URI("/api/contexts/" + result.getId()))
+        return ResponseEntity.created(new URI("/api/v1/contexts/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert("context", result.getName()))
             .body(result);
     }

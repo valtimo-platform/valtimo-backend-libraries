@@ -43,7 +43,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserResource {
 
     private static final Logger logger = LoggerFactory.getLogger(UserResource.class);
@@ -57,7 +57,7 @@ public class UserResource {
     public ResponseEntity<ManageableUser> createUser(@RequestBody ValtimoUser valtimoUser) throws URISyntaxException {
         logger.debug("Request to save ValtimoUser : {}", valtimoUser);
         final ManageableUser user = userManagementService.createUser(valtimoUser);
-        final URI uri = new URI("/api/users/" + UriUtils.encode(user.getId(), StandardCharsets.UTF_8));
+        final URI uri = new URI("/api/v1/users/" + UriUtils.encode(user.getId(), StandardCharsets.UTF_8));
         final HttpHeaders headers = HeaderUtil.createAlert("userManagement.created", user.getEmail());
         return ResponseEntity.created(uri).headers(headers).body(user);
     }

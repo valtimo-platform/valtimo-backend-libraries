@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ChoiceFieldResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ChoiceFieldResource.class);
@@ -63,7 +63,7 @@ public class ChoiceFieldResource {
                 .body(null);
         }
         ChoiceField result = choiceFieldService.save(choiceField);
-        return ResponseEntity.created(new URI("/api/choice-fields/" + result.getId()))
+        return ResponseEntity.created(new URI("/api/v1/choice-fields/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert("choiceField", result.getKeyName()))
             .body(result);
     }
@@ -84,7 +84,7 @@ public class ChoiceFieldResource {
     public ResponseEntity<List<ChoiceField>> getAllChoiceFields(Pageable pageable) {
         logger.debug("REST request to get a page of ChoiceFields");
         Page<ChoiceField> page = choiceFieldService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/choice-fields");
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/choice-fields");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 

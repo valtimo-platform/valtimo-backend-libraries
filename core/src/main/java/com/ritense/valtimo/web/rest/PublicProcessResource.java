@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/api/public", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/public", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PublicProcessResource {
 
     private final FormService formService;
