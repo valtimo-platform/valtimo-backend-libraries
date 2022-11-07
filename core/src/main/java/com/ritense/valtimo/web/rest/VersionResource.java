@@ -24,10 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class VersionResource {
 
-    @GetMapping(value = "/valtimo/version")
+    @GetMapping(value = "/v1/valtimo/version")
     public ResponseEntity<Map<String, String>> getValtimoVersion() {
         String title = "";
         if (this.getClass().getPackage().getImplementationTitle() != null) {

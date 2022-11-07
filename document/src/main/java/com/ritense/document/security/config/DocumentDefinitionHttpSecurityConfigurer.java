@@ -32,12 +32,12 @@ public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityCon
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/document-definition").hasAuthority(USER)
-                .antMatchers(GET, "/api/document-definition/{name}").hasAuthority(USER)
-                .antMatchers(POST, "/api/document-definition").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/document-definition/{name}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/document-definition/{name}/roles").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/document-definition/{name}/roles").hasAuthority(ADMIN);
+                .antMatchers(GET, "/api/v1/document-definition").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/document-definition/{name}").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/document-definition").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/document-definition/{name}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/document-definition/{name}/roles").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/document-definition/{name}/roles").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/api/document", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class JsonSchemaDocumentResource implements DocumentResource {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentResource.class);
@@ -64,7 +64,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/v1/document/{id}")
     public ResponseEntity<? extends Document> getDocument(@PathVariable(name = "id") UUID id) {
         return documentService.findBy(JsonSchemaDocumentId.existingId(id))
             .filter(it -> hasAccessToDefinitionName(it.definitionId().name()))
@@ -73,7 +73,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/document", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CreateDocumentResult> createNewDocument(
         @RequestBody @Valid NewDocumentRequest request
     ) {
@@ -84,7 +84,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/v1/document", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ModifyDocumentResult> modifyDocumentContent(
         @RequestBody @Valid ModifyDocumentRequest request
     ) {
@@ -95,7 +95,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @PostMapping(value = "/{document-id}/resource/{resource-id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/document/{document-id}/resource/{resource-id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> assignResource(
         @PathVariable(name = "document-id") UUID documentId,
         @PathVariable(name = "resource-id") UUID resourceId
@@ -109,7 +109,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @DeleteMapping(value = "/{document-id}/resource/{resource-id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/v1/document/{document-id}/resource/{resource-id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> removeRelatedFile(
         @PathVariable(name = "document-id") UUID documentId,
         @PathVariable(name = "resource-id") UUID resourceId
@@ -123,11 +123,11 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @PostMapping(value = "/{documentId}/assign")
+    @PostMapping(value = "/v1/document/{documentId}/assign")
     public ResponseEntity<Void> assignHandlerToDocument(
         @PathVariable(name = "documentId")UUID documentId,
         @RequestBody @Valid UpdateAssigneeRequest request) {
-        logger.debug(String.format("REST call /api/document/%s/assign", documentId));
+        logger.debug(String.format("REST call /api/v1/document/%s/assign", documentId));
 
         try {
             if (!hasAccessToDocumentId(documentId)) {
@@ -143,9 +143,9 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @PostMapping(value = "/{documentId}/unassign")
+    @PostMapping(value = "/v1/document/{documentId}/unassign")
     public ResponseEntity<Void> unassignHandlerFromDocument(@PathVariable(name = "documentId")UUID documentId) {
-        logger.debug(String.format("REST call /api/document/%s/unassign", documentId));
+        logger.debug(String.format("REST call /api/v1/document/%s/unassign", documentId));
 
         try {
             if (!hasAccessToDocumentId(documentId)) {
@@ -161,7 +161,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @GetMapping("/{document-id}/candidate-user")
+    @GetMapping("/v1/document/{document-id}/candidate-user")
     public ResponseEntity<List<NamedUser>> getCandidateUsers(
         @PathVariable(name = "document-id") UUID documentId
     ) {

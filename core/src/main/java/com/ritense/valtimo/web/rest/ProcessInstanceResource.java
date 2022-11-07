@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProcessInstanceResource {
 
     private final CamundaProcessService camundaProcessService;
@@ -37,7 +37,7 @@ public class ProcessInstanceResource {
         this.camundaProcessService = camundaProcessService;
     }
 
-    @PostMapping(value = "/process-instance/{id}/variables")
+    @PostMapping(value = "/v1/process-instance/{id}/variables")
     public ResponseEntity<Map<String, Object>> getProcessInstanceVariables(
         @PathVariable String id,
         @RequestBody List<String> variableNames

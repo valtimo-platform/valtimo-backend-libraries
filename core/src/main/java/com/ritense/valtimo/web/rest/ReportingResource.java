@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/api/v1/reporting", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 @Transactional
 public class ReportingResource {
 
@@ -63,7 +63,7 @@ public class ReportingResource {
         this.camundaReportingRepository = camundaReportingRepository;
     }
 
-    @GetMapping(value = "/instancecount")
+    @GetMapping(value = "/v1/reporting/instancecount")
     public ResponseEntity<InstanceCountChart> instanceCount(
         @RequestParam(value = "processFilter", required = false) String processId
     ) {
@@ -71,7 +71,7 @@ public class ReportingResource {
         return new ResponseEntity<>(instanceCounts, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/instancesstatistics")
+    @GetMapping(value = "/v1/reporting/instancesstatistics")
     public ResponseEntity<List<ProcessInstanceStatisticsDTO>> instanceStatistics(
         @RequestParam(value = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
         @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
@@ -100,7 +100,7 @@ public class ReportingResource {
         return new ResponseEntity<>(processInstanceStatisticsList, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/tasksAverage")
+    @GetMapping(value = "/v1/reporting/tasksAverage")
     public ResponseEntity<ChartInstance> tasksHistory(
         @RequestParam(value = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
         @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
@@ -141,7 +141,7 @@ public class ReportingResource {
         return new ResponseEntity<>(new ChartInstance(categories, series), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/tasksPerPerson")
+    @GetMapping(value = "/v1/reporting/tasksPerPerson")
     public ResponseEntity<ChartInstance> tasksPerPerson(
         @RequestParam(value = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
         @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
@@ -182,7 +182,7 @@ public class ReportingResource {
         return new ResponseEntity<>(new ChartInstance(categories, series), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/pendingTasksByRole")
+    @GetMapping(value = "/v1/reporting/pendingTasksByRole")
     public ResponseEntity<ChartInstance> pendingTasksByRole(
         @RequestParam(value = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
         @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
@@ -191,7 +191,7 @@ public class ReportingResource {
         return new ResponseEntity<>(camundaReportingRepository.getTasksPerRole(processId, fromDate, toDate), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/unfinishedTasksPerType")
+    @GetMapping(value = "/v1/reporting/unfinishedTasksPerType")
     public ResponseEntity<ChartInstance> unfinishedTasksPerType(
         @RequestParam(value = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
         @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
@@ -226,7 +226,7 @@ public class ReportingResource {
         return new ResponseEntity<>(new ChartInstance(categories, series), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/finishedAndUnfinishedInstances")
+    @GetMapping(value = "/v1/reporting/finishedAndUnfinishedInstances")
     public ResponseEntity<ChartInstance> finishedAndUnfinishedInstances(
         @RequestParam(value = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
         @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,

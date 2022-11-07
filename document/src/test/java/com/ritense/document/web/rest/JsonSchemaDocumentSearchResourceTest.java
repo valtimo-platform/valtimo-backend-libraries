@@ -99,7 +99,7 @@ public class JsonSchemaDocumentSearchResourceTest extends BaseTest {
         searchRequest.setOtherFilters(values);
 
         mockMvc.perform(
-            post("/api/document-search", "definition")
+            post("/api/v1/document-search", "definition")
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(TestUtil.convertObjectToJsonBytes(searchRequest))
@@ -115,7 +115,7 @@ public class JsonSchemaDocumentSearchResourceTest extends BaseTest {
         when(documentSearchService.search(any(), any())).thenReturn(new PageImpl(List.of(document), Pageable.unpaged(), 1));
 
         mockMvc.perform(
-            post("/api/document-search", "definition")
+            post("/api/v1/document-search", "definition")
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content("{}")

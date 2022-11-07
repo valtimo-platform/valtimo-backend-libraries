@@ -42,7 +42,7 @@ public class JsonSchemaDocumentSearchResource implements DocumentSearchResource 
     }
 
     @Override
-    @PostMapping(value = "/document-search")
+    @PostMapping(value = "/v1/document-search")
     public ResponseEntity<Page<? extends Document>> search(
         @RequestBody SearchRequest searchRequest,
         @PageableDefault(sort = {"createdOn"}, direction = DESC) Pageable pageable
