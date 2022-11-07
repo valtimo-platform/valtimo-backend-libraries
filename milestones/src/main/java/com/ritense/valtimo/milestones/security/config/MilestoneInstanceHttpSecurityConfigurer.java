@@ -28,8 +28,8 @@ public class MilestoneInstanceHttpSecurityConfigurer implements HttpSecurityConf
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/milestone-instances").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/milestones/{processDefinitionId}/flownodes").hasAuthority(ADMIN);
+                .antMatchers(GET, "/api/v1/milestone-instances").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/milestones/{processDefinitionId}/flownodes").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -33,19 +33,16 @@ public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfig
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/process-document/definition").hasAuthority(USER)
-                .antMatchers(POST, "/api/process-document/definition").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/process-document/definition").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/process-document/definition/document/{document-definition-name}").hasAuthority(USER)
-                .antMatchers(GET, "/api/process-document/definition/processinstance/{process-instance-id}").hasAuthority(USER)
-                .antMatchers(GET, "/api/process-document/instance/document/{document-id}").hasAuthority(USER)
-                .antMatchers(GET, "/api/process-document/instance/document/{document-id}/audit").hasAuthority(USER)
-                .antMatchers(POST, "/api/process-document/operation/new-document-and-start-process").hasAuthority(USER)
-                .antMatchers(POST, "/api/process-document/operation/modify-document-and-complete-task").hasAuthority(USER)
-                .antMatchers(POST, "/api/process-document/operation/modify-document-and-start-process").hasAuthority(USER)
-                .antMatchers(GET, "/api/process-document/demo/{documentDefinitionName}/process").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/process-document/demo/{documentDefinitionName}/process").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/process-document/demo/{documentDefinitionName}/process").hasAuthority(ADMIN);
+                .antMatchers(GET, "/api/v1/process-document/definition").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/process-document/definition").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/process-document/definition").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/process-document/definition/document/{document-definition-name}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/process-document/definition/processinstance/{process-instance-id}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/process-document/instance/document/{document-id}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/process-document/instance/document/{document-id}/audit").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/process-document/operation/new-document-and-start-process").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/process-document/operation/modify-document-and-complete-task").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/process-document/operation/modify-document-and-start-process").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

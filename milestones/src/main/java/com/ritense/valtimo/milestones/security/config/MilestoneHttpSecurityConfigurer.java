@@ -31,10 +31,10 @@ public class MilestoneHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/milestones/{id}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/milestones").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/milestones").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/milestones/{id}").hasAuthority(ADMIN);
+                .antMatchers(GET, "/api/v1/milestones/{id}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/milestones").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/milestones").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/milestones/{id}").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

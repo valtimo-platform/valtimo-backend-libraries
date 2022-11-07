@@ -41,7 +41,7 @@ public class ProcessDocumentAuditResource {
         this.processDocumentAuditService = processDocumentAuditService;
     }
 
-    @GetMapping(value = "/process-document/instance/document/{documentId}/audit")
+    @GetMapping(value = "/v1/process-document/instance/document/{documentId}/audit")
     @JsonView(AuditView.Public.class)
     public ResponseEntity<Page<AuditRecord>> getAuditLog(
         @PathVariable UUID documentId,

@@ -42,13 +42,13 @@ public class WebhookResource {
         this.webhookService = webhookService;
     }
 
-    @GetMapping(value = "/mandrill/webhook")
+    @GetMapping(value = "/v1/mandrill/webhook")
     public ResponseEntity<Void> exists() {
         // Exists for Mandrill's check whether or not the endpoint exists.
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/mandrill/webhook", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "/v1/mandrill/webhook", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Void> mandrillWebhook(
         @RequestHeader(value = "X-Mandrill-Signature") String authenticationKey,
         @RequestBody MultiValueMap<String, String> body

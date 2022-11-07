@@ -55,7 +55,7 @@ public class MilestoneResource {
         this.milestoneMapper = milestoneMapper;
     }
 
-    @GetMapping("/milestones/{id}")
+    @GetMapping("/v1/milestones/{id}")
     public ResponseEntity<MilestoneDTO> getMilestone(@PathVariable Long id) {
         logger.debug("REST request to get Milestone : {}", id);
         Optional<Milestone> milestone = milestoneRepository.findById(id);
@@ -65,14 +65,14 @@ public class MilestoneResource {
             .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/milestones")
+    @GetMapping("/v1/milestones")
     public ResponseEntity<List<MilestoneDTO>> listMilestones() {
         logger.debug("REST request to get all milestones");
         List<MilestoneDTO> milestoneDTOList = milestoneService.listMilestones();
         return ResponseEntity.ok(milestoneDTOList);
     }
 
-    @PostMapping("/milestones")
+    @PostMapping("/v1/milestones")
     public ResponseEntity<MilestoneDTO> saveMilestone(@Valid @RequestBody MilestoneSaveDTO milestoneSaveDTO) throws Exception {
         logger.debug("REST request to save Milestone : {}", milestoneSaveDTO);
         MilestoneDTO savedMilestoneDTO;
@@ -86,7 +86,7 @@ public class MilestoneResource {
             .body(savedMilestoneDTO);
     }
 
-    @DeleteMapping("/milestones/{id}")
+    @DeleteMapping("/v1/milestones/{id}")
     public ResponseEntity<Void> deleteMilestone(@PathVariable Long id) throws IllegalStateException {
         logger.debug("REST request to delete Milestone : {}", id);
         milestoneService.delete(id);
