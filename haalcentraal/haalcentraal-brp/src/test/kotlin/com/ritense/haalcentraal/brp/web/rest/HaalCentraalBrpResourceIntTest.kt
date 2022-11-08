@@ -53,7 +53,7 @@ class HaalCentraalBrpResourceIntTest : BaseIntegrationTest() {
             }
         """.trimIndent()
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/haalcentraal/personen")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/haalcentraal/personen")
             .content(request)
             .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -76,7 +76,7 @@ class HaalCentraalBrpResourceIntTest : BaseIntegrationTest() {
             }
         """.trimIndent()
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/haalcentraal/personen")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/haalcentraal/personen")
             .content(request)
             .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -98,7 +98,7 @@ class HaalCentraalBrpResourceIntTest : BaseIntegrationTest() {
             }
         """.trimIndent()
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/haalcentraal/personen")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/haalcentraal/personen")
             .content(request)
             .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())

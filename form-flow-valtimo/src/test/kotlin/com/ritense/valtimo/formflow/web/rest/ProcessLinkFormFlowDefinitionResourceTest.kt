@@ -59,7 +59,7 @@ internal class ProcessLinkFormFlowDefinitionResourceTest {
         mockMvc
             .perform(
                 MockMvcRequestBuilders
-                    .get("/api/process-link/form-flow-definition")
+                    .get("/api/v1/process-link/form-flow-definition")
                     .accept(MediaType.APPLICATION_JSON_VALUE)
             ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$").isNotEmpty)
@@ -84,7 +84,7 @@ internal class ProcessLinkFormFlowDefinitionResourceTest {
         mockMvc
             .perform(
                 MockMvcRequestBuilders
-                    .get("/api/process-link/form-flow-definition")
+                    .get("/api/v1/process-link/form-flow-definition")
                     .accept(MediaType.APPLICATION_JSON_VALUE)
             ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$").isNotEmpty)
@@ -108,7 +108,7 @@ internal class ProcessLinkFormFlowDefinitionResourceTest {
         mockMvc
             .perform(
                 MockMvcRequestBuilders
-                    .get("/api/process-link/form-flow-definition")
+                    .get("/api/v1/process-link/form-flow-definition")
                     .accept(MediaType.APPLICATION_JSON_VALUE)
             ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$").isNotEmpty)
