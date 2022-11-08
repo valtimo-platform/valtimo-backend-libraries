@@ -44,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
+    private static final String USERNAME = "john@ritense.com";
     private JsonSchemaDocumentDefinition definition;
     private CreateDocumentResult originalDocument;
 
@@ -81,7 +82,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldNotFindSearchMatch() {
         final List<SearchCriteria> searchCriteriaList = List.of(new SearchCriteria("$.street", "random"));
 
@@ -99,7 +100,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldFindSearchMatch() {
         final List<SearchCriteria> searchCriteriaList = List.of(new SearchCriteria("$.street", "park"));
 
@@ -134,7 +135,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldFindMultipleSearchMatches() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.street", "park"),
@@ -155,7 +156,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldFindCaseInsensitive() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.street", "funenpark")
@@ -175,7 +176,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldSearchThroughAllDocumentDefinitionVersions() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.place", "Amsterdam")
@@ -195,7 +196,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldFindDocumentByMultipleCriteria() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.street", "Kalver"),
@@ -216,7 +217,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldNotFindDocumentIfNotAllCriteriaMatch() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.street", "Kalver"),
@@ -237,7 +238,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldFindDocumentByGlobalSearchFilter() {
 
         SearchRequest searchRequest = new SearchRequest();
@@ -254,7 +255,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldFindDocumentBySequence() {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setDocumentDefinitionName(definition.id().name());
@@ -270,11 +271,11 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldFindDocumentByCreatedBy() {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setDocumentDefinitionName(definition.id().name());
-        searchRequest.setCreatedBy("john@ritense.com");
+        searchRequest.setCreatedBy(USERNAME);
 
         final Page<? extends Document> page = documentSearchService.search(
             searchRequest,
@@ -286,7 +287,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldReturnPageableData() {
 
         createDocument("{\"street\": \"Czaar Peterstraat\", \"number\": 7}");
@@ -311,7 +312,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldReturnFullPages() {
 
         createDocument("{\"street\": \"Czaar Peterstraat 1\"}");
@@ -340,7 +341,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldOrderAllDocumentsByContentProperty() {
 
         createDocument("{\"street\": \"Alexanderkade\"}");
@@ -368,7 +369,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldOrderAllDocumentsDescendingByContentProperty() {
 
         createDocument("{\"street\": \"Alexanderkade\"}");
@@ -396,7 +397,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldOrderAllDocumentsByMultipleProperties() {
 
         createDocument("{\"street\": \"Alexanderkade\", \"number\": 7}");
@@ -429,7 +430,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldOrderAllDocumentsByOtherField() {
 
         CreateDocumentResult documentOne = createDocument("{\"street\": \"Alexanderkade\"}");
@@ -454,7 +455,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldOrderAllDocumentsWithoutCapitals() {
 
         CreateDocumentResult documentOne = createDocument("{\"street\": \"abc\",\"place\": \"test\"}");
@@ -479,7 +480,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldOrderAllDocumentsBasedOnAssigneeFullName() {
         documentRepository.deleteAll();
         var documentOne = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
@@ -500,6 +501,49 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         assertThat(content.get(0).assigneeFullName()).isEqualTo("Beth Zabala");
         assertThat(content.get(1).assigneeFullName()).isEqualTo("Beth Xander");
         assertThat(content.get(2).assigneeFullName()).isEqualTo("Anna Yablon");
+    }
+
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchWithSearchFields() {
+        documentRepository.deleteAll();
+
+        CreateDocumentResult documentOne = createDocument("{\"street\": \"Alexanderkade\"}");
+        CreateDocumentResult documentTwo = createDocument("{\"street\": \"Alexanderkade\"}");
+
+        final List<SearchCriteria> searchCriteriaList = List.of(
+            new SearchCriteria("$.street", "kade")
+        );
+
+        // TODO
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldNotUserSearchFieldWhenGlobalSearchFilterIsProvided() {
+        documentRepository.deleteAll();
+
+        CreateDocumentResult documentOne = createDocument("{\"street\": \"Alexanderkade\"}");
+        CreateDocumentResult documentTwo = createDocument("{\"street\": \"Alexanderkade\"}");
+
+        var searchRequest = new SearchRequest();
+        searchRequest.setDocumentDefinitionName(definition.id().name());
+        searchRequest.setGlobalSearchFilter("globalFilter");
+        searchRequest.setOtherFilters(List.of(
+                new SearchCriteria("$.street", "kade")
+            )
+        );
+
+        final Page<? extends Document> page = documentSearchService.search(
+            new SearchRequest(),
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "assigneeFullName"))
+        );
+
+        assertThat(page).isNotNull();
+        var content = page.getContent();
+
+        assertThat(content.size()).isEqualTo(0);
     }
 
     private CreateDocumentResult createDocument(String content) {
