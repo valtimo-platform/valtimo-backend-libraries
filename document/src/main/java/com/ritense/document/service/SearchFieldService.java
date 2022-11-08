@@ -65,9 +65,8 @@ public class SearchFieldService {
         });
     }
 
-    public void createSearchConfiguration(String documentDefinitionName, List<SearchField> searchFields) {
-        if (!searchFieldRepository.existsByIdDocumentDefinitionName(documentDefinitionName) &&
-                searchFields.stream()
+    public void createSearchConfiguration(List<SearchField> searchFields) {
+        if (searchFields.stream()
                         .filter((searchField ->
                                 Collections.frequency(searchFields.stream()
                                         .flatMap(field -> Stream.of(field.getKey()))
