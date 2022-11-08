@@ -17,7 +17,6 @@
 package com.ritense.valtimo.security.jwt;
 
 import com.ritense.tenancy.TenantResolver;
-import com.ritense.tenancy.web.DelegatingTenantAuthenticationToken;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -28,6 +27,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -77,6 +77,9 @@ public class JwtFilter extends GenericFilterBean {
             }
             if (valtimoProperties.getApp().getEnableTenancy()) {
                 String tenantId = TenantResolver.INSTANCE.getTenantId();
+                if (tenantId == null) {
+                    throw new IllegalStateException("Tenant id missing");
+                }
                 identityService.setAuthentication(authenticatedUserId, null, List.of(tenantId));
             } else {
                 identityService.setAuthenticatedUserId(authenticatedUserId);
