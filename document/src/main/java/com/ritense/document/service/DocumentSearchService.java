@@ -17,6 +17,8 @@
 package com.ritense.document.service;
 
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.search.SearchRequest2;
+import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.service.impl.SearchRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +29,10 @@ public interface DocumentSearchService {
         SearchRequest searchRequest,
         Pageable pageable
     );
+
+    <T extends Document> Page<T> search(String documentDefinitionName, SearchWithConfigRequest searchWithConfigRequest, Pageable pageable);
+
+    <T extends Document> Page<T> search(String documentDefinitionName, SearchRequest2 searchRequest, Pageable pageable);
 
     default Page<? extends Document> searchWithoutAuthorization(
         SearchRequest searchRequest,

@@ -23,7 +23,9 @@ import javax.persistence.criteria.Predicate;
 
 public interface QueryDialectHelper {
 
-    Expression<?> getJsonValueExpression(CriteriaBuilder cb, Path column, String path);
+    Expression<String> getJsonValueExpression(CriteriaBuilder cb, Path column, String path);
+
+    <T> Expression<T> getJsonValueExpression(CriteriaBuilder cb, Path column, String path, Class<T> type);
 
     Predicate getJsonValueExistsExpression(CriteriaBuilder cb, Path column, String value);
 
