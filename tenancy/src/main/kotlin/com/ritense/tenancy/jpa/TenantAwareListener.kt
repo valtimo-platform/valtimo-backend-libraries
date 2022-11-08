@@ -14,7 +14,9 @@ class TenantAwareListener {
     @PrePersist
     fun setTenant(entity: Any) {
         ifTenantEntity(entity) { item: TenantAware ->
-            item.tenantId = TenantResolver.getTenantId() ?: throw IllegalStateException("Tenant id missing")
+            if (item.tenantId == null) {
+                item.tenantId = TenantResolver.getTenantId() ?: throw IllegalStateException("Tenant id missing")
+            }
         }
     }
 
