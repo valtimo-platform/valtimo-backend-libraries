@@ -10,7 +10,7 @@ object TenantResolver {
      * @return Tenant id as string
      */
     fun getTenantId(): String? {
-        return (SecurityContextHolder.getContext().authentication as DelegatingTenantAuthenticationToken?)?.tenantId
+        return (SecurityContextHolder.getContext().authentication as? DelegatingTenantAuthenticationToken)?.tenantId
     }
 
 }
