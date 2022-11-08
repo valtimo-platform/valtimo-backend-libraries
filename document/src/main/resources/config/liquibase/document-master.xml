@@ -39,5 +39,6 @@
     <include file="changelog/20220215-create-document-definition-role-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220923-add-assginee-columns-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20221021-add-search-field-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20221108-add-tenant-id.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
