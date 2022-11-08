@@ -28,8 +28,8 @@ class NoteHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(POST, "/api/document/{document-id}/note").hasAuthority(USER)
-                .antMatchers(GET, "/api/document/{document-id}/note").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/document/{document-id}/note").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/document/{document-id}/note").hasAuthority(USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
