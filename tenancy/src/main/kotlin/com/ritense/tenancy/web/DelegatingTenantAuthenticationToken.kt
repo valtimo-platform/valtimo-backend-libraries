@@ -29,7 +29,6 @@ class DelegatingTenantAuthenticationToken(
         return delegate.isAuthenticated
     }
 
-    @Throws(IllegalArgumentException::class)
     override fun setAuthenticated(isAuthenticated: Boolean) {
         delegate.isAuthenticated = isAuthenticated
     }
@@ -41,4 +40,5 @@ class DelegatingTenantAuthenticationToken(
     override fun implies(subject: Subject): Boolean {
         return delegate.implies(subject)
     }
+
 }
