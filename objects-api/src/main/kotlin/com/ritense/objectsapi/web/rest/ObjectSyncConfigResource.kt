@@ -36,27 +36,27 @@ import java.util.UUID
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(value = ["/api/object/sync"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 interface ObjectSyncConfigResource {
 
-    @GetMapping(value = ["/config/{id}"])
+    @GetMapping(value = ["/v1/object/sync/config/{id}"])
     fun getConfig(@PathVariable(name = "id") id: UUID): ResponseEntity<ObjectSyncConfig>
 
-    @GetMapping(value = ["/config"])
+    @GetMapping(value = ["/v1/object/sync/config"])
     fun getConfigs(
         @RequestParam("documentDefinitionName") documentDefinitionName: String
     ): ResponseEntity<List<ObjectSyncConfig>>
 
-    @PostMapping(value = ["/config"])
+    @PostMapping(value = ["/v1/object/sync/config"])
     fun create(
         @Valid @RequestBody request: CreateObjectSyncConfigRequest
     ): ResponseEntity<CreateObjectSyncConfigResult>
 
-    @PutMapping(value = ["/config"])
+    @PutMapping(value = ["/v1/object/sync/config"])
     fun modify(
         @Valid @RequestBody request: ModifyObjectSyncConfigRequest
     ): ResponseEntity<ModifyObjectSyncConfigResult>
 
-    @DeleteMapping(value = ["/config/{id}"])
+    @DeleteMapping(value = ["/v1/object/sync/config/{id}"])
     fun remove(@PathVariable(name = "id") id: UUID): ResponseEntity<Void>
 }

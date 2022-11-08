@@ -53,7 +53,7 @@ internal class InformatieObjectTypeResourceTest {
         whenever(zaakService.getInformatieobjecttypes(eq(catalogus)))
             .thenReturn(listOf(informatieObjectType))
 
-        mockMvc.perform(get("/api/openzaak/informatie-object-typen/{catalogus}", catalogus)
+        mockMvc.perform(get("/api/v1/openzaak/informatie-object-typen/{catalogus}", catalogus)
             .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(MockMvcResultHandlers.print())

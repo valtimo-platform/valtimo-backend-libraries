@@ -25,11 +25,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/public"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 interface PublicResource {
 
     @GetMapping(
-        value = ["/task/{taskDefinitionId}/resource/pre-signed-url/{fileName}"],
+        value = ["/v1/public/task/{taskDefinitionId}/resource/pre-signed-url/{fileName}"],
         produces = ["text/plain;charset=UTF-8"]
     )
     fun generatePreSignedUrlForFileName(
@@ -37,7 +37,7 @@ interface PublicResource {
         @PathVariable(name = "fileName") fileName: String
     ): ResponseEntity<String>
 
-    @GetMapping(value = ["/task/{taskDefinitionId}/resource/{resourceId}"])
+    @GetMapping(value = ["/v1/public/task/{taskDefinitionId}/resource/{resourceId}"])
     fun get(
         @PathVariable(name = "taskDefinitionId") taskDefinitionId: String,
         @PathVariable(name = "resourceId") resourceId: String

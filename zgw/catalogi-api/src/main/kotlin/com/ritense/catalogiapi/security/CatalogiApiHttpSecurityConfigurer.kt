@@ -27,7 +27,7 @@ class CatalogiApiHttpSecurityConfigurer: HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/documentdefinition/{documentDefinitionName}/zaaktype/documenttype").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype").hasAuthority(USER)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

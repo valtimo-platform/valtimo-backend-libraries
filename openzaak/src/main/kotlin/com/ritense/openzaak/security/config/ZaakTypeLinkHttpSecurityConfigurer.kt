@@ -30,14 +30,14 @@ class ZaakTypeLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/openzaak/link").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/openzaak/link").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/openzaak/link/{id}/service-handler/{processDefinitionKey}/{serviceTaskId}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/openzaak/link/process/{processDefinitionKey}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/openzaak/link").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/openzaak/link").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/openzaak/link/{id}/service-handler/{processDefinitionKey}/{serviceTaskId}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/openzaak/link/process/{processDefinitionKey}").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

@@ -55,7 +55,7 @@ internal class PluginDefinitionResourceTest {
         val plugin2 = PluginDefinition("key2", "title2", "description2", "className2")
         whenever(pluginService.getPluginDefinitions()).thenReturn(listOf(plugin, plugin2))
 
-        mockMvc.perform(get("/api/plugin/definition")
+        mockMvc.perform(get("/api/v1/plugin/definition")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -91,7 +91,7 @@ internal class PluginDefinitionResourceTest {
         )
         whenever(pluginService.getPluginDefinitionActions("test", null)).thenReturn(actions)
 
-        mockMvc.perform(get("/api/plugin/definition/test/action")
+        mockMvc.perform(get("/api/v1/plugin/definition/test/action")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)

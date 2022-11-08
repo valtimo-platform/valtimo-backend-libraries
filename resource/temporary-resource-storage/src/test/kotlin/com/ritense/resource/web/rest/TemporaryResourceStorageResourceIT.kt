@@ -67,7 +67,7 @@ internal class TemporaryResourceStorageResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            multipart("/api/resource/temp")
+            multipart("/api/v1/resource/temp")
                 .file(file)
                 .param("author", "Klaveren")
                 .contentType(MULTIPART_FORM_DATA_VALUE)

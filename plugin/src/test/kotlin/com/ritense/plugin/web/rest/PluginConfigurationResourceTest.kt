@@ -78,7 +78,7 @@ internal class PluginConfigurationResourceTest {
         val pluginConfiguration2 = PluginConfiguration(PluginConfigurationId.newId(), "title2", properties2, plugin2)
         whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf(pluginConfiguration, pluginConfiguration2))
 
-        mockMvc.perform(get("/api/plugin/configuration")
+        mockMvc.perform(get("/api/v1/plugin/configuration")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -101,7 +101,7 @@ internal class PluginConfigurationResourceTest {
             .getPluginConfigurations(any()))
             .thenReturn(listOf(pluginConfiguration, pluginConfiguration2))
 
-        mockMvc.perform(get("/api/plugin/configuration?category=some-category")
+        mockMvc.perform(get("/api/v1/plugin/configuration?category=some-category")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -114,7 +114,7 @@ internal class PluginConfigurationResourceTest {
     fun `should filter on plugins for activityType`() {
         whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
 
-        mockMvc.perform(get("/api/plugin/configuration?activityType=bpmn:ServiceTask")
+        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ServiceTask")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -127,7 +127,7 @@ internal class PluginConfigurationResourceTest {
     fun `should filter on plugins for rare activityType`() {
         whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
 
-        mockMvc.perform(get("/api/plugin/configuration?activityType=bpmn:IntermediateLinkCatch")
+        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:IntermediateLinkCatch")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -140,7 +140,7 @@ internal class PluginConfigurationResourceTest {
     fun `should respond with 400 bad request when filtering on non existing activityType`() {
         whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
 
-        mockMvc.perform(get("/api/plugin/configuration?activityType=bpmn:ActivityTypeDoesntExist")
+        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ActivityTypeDoesntExist")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -204,7 +204,7 @@ internal class PluginConfigurationResourceTest {
         )
 
         mockMvc.perform(
-            post("/api/plugin/configuration")
+            post("/api/v1/plugin/configuration")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(Mapper.INSTANCE.get().writeValueAsString(pluginConfiguratieDto))
@@ -250,7 +250,7 @@ internal class PluginConfigurationResourceTest {
         )
 
         mockMvc.perform(
-            put("/api/plugin/configuration/$pluginConfigurationId")
+            put("/api/v1/plugin/configuration/$pluginConfigurationId")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(Mapper.INSTANCE.get().writeValueAsString(pluginConfiguratieDto))
@@ -285,7 +285,7 @@ internal class PluginConfigurationResourceTest {
         val pluginConfigurationId = UUID.randomUUID()
 
         mockMvc.perform(
-            delete("/api/plugin/configuration/$pluginConfigurationId")
+            delete("/api/v1/plugin/configuration/$pluginConfigurationId")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)

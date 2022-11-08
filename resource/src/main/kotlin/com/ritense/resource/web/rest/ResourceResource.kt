@@ -32,16 +32,16 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 interface ResourceResource {
 
-    @GetMapping(value = ["/resource/{resourceId}"])
+    @GetMapping(value = ["/v1/resource/{resourceId}"])
     fun get(@PathVariable(name = "resourceId") resourceId: String): ResponseEntity<ObjectUrlDTO>
 
-    @GetMapping(value = ["/resource/{resourceId}/download"])
+    @GetMapping(value = ["/v1/resource/{resourceId}/download"])
     fun getContent(@PathVariable(name = "resourceId") resourceId: String): ResponseEntity<ByteArray>
 
-    @PutMapping(value = ["/resource"], consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(value = ["/v1/resource"], consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun register(@RequestBody resourceDTO: ResourceDTO): ResponseEntity<ResourceDTO>
 
-    @DeleteMapping(value = ["/resource/{resourceId}"])
+    @DeleteMapping(value = ["/v1/resource/{resourceId}"])
     fun delete(@PathVariable(name = "resourceId") resourceId: String): ResponseEntity<Void>
 
 }

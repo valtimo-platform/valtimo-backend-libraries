@@ -99,7 +99,7 @@ internal class OpenZaakServiceTest {
         assertEquals("extension", returnedResource.extension)
         assertEquals(321L, returnedResource.sizeInBytes)
         assertEquals(LocalDateTime.of(2000, 1, 1, 0, 0, 0), returnedResource.createdOn)
-        assertEquals(URL("http://some.base.url/api/resource/${resourceId}/download"), objectUrlDTO.url)
+        assertEquals(URL("http://some.base.url/api/v1/resource/${resourceId}/download"), objectUrlDTO.url)
     }
 
     @Test
@@ -129,7 +129,7 @@ internal class OpenZaakServiceTest {
         assertEquals(321L, returnedResource.sizeInBytes)
         assertEquals(LocalDateTime.of(2000, 1, 1, 0, 0, 0), returnedResource.createdOn)
 
-        assertEquals(URL("http://some.base.url/api/resource/${resourceId}/download"), objectContentDTO.url)
+        assertEquals(URL("http://some.base.url/api/v1/resource/${resourceId}/download"), objectContentDTO.url)
 
         assertTrue(Arrays.equals("bytes".toByteArray(), objectContentDTO.content))
     }

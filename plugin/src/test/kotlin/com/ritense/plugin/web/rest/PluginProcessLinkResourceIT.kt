@@ -92,7 +92,7 @@ internal class PluginProcessLinkResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            post("/api/process-link")
+            post("/api/v1/process-link")
                 .content(ObjectMapper().writeValueAsString(createDto))
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -108,7 +108,7 @@ internal class PluginProcessLinkResourceIT : BaseIntegrationTest() {
         createProcessLink()
 
         mockMvc.perform(
-            get("/api/process-link")
+            get("/api/v1/process-link")
                 .param("processDefinitionId", PROCESS_DEF_ID)
                 .param("activityId", ACTIVITY_ID)
                 .characterEncoding(StandardCharsets.UTF_8.name())
@@ -135,7 +135,7 @@ internal class PluginProcessLinkResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            put("/api/process-link")
+            put("/api/v1/process-link")
                 .content(ObjectMapper().writeValueAsString(updateDto))
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -25,13 +25,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/uploadprocess")
+@RequestMapping("/api")
 class UploadProcessResource(
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {
 
     @Deprecated("Marked for removal since 9.22.0")
-    @GetMapping("/case/{caseDefinitionKey}/check-link")
+    @GetMapping("/v1/uploadprocess/case/{caseDefinitionKey}/check-link")
     fun checkCaseProcessLink(
         @PathVariable caseDefinitionKey: String
     ): ResponseEntity<CheckLinkResponse> {
