@@ -37,13 +37,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.*;
 import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.REALM_ACCESS;
 import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.RESOURCE_ACCESS;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 public class KeycloakTokenAuthenticatorTest {
 
@@ -56,7 +55,9 @@ public class KeycloakTokenAuthenticatorTest {
     @BeforeEach
     public void before() {
         keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256);
-        keycloakTokenAuthenticator = new KeycloakTokenAuthenticator("test-client-resource", mock(ValtimoProperties.class));
+        ValtimoProperties valtimoProps = mock(ValtimoProperties.class, RETURNS_DEEP_STUBS);
+        when(valtimoProps.getApp().getEnableTenancy()).thenReturn(true);
+        keycloakTokenAuthenticator = new KeycloakTokenAuthenticator("test-client-resource", valtimoProps);
         keycloakSecretKeyProvider = new KeycloakSecretKeyProvider(encodeBase64String(keyPair.getPublic().getEncoded()));
         secretKeyResolver = new SecretKeyResolver(List.of(keycloakSecretKeyProvider));
         tokenAuthenticationService = new TokenAuthenticationService(
@@ -87,7 +88,7 @@ public class KeycloakTokenAuthenticatorTest {
         Authentication authentication = tokenAuthenticationService.getAuthentication(jwt);
 
         assertThat(authentication).isNotNull();
-        assertThat(authentication).isInstanceOf(UsernamePasswordAuthenticationToken.class);
+        assertThat(authentication).isInstanceOf(Authentication.class);
     }
 
     @Test
@@ -100,7 +101,7 @@ public class KeycloakTokenAuthenticatorTest {
         Authentication authentication = tokenAuthenticationService.getAuthentication(jwt);
 
         assertThat(authentication).isNotNull();
-        assertThat(authentication).isInstanceOf(UsernamePasswordAuthenticationToken.class);
+        assertThat(authentication).isInstanceOf(Authentication.class);
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         List<? extends GrantedAuthority> userAuthorities = authorities.stream()
             .filter(authority -> authority.getAuthority().equals(USER)).collect(Collectors.toList());
@@ -142,6 +143,7 @@ public class KeycloakTokenAuthenticatorTest {
         final Claims claims = new DefaultClaims();
         claims.put(REALM_ACCESS, role);
         claims.put(EMAIL_KEY, "test@test.com");
+        claims.put(TENANT_KEY, "1");
         return claims;
     }
 
