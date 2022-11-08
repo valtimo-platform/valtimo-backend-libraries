@@ -102,7 +102,7 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
         if (claims.containsKey(TENANT_KEY)) {
             return claims.get(TENANT_KEY, String.class);
         }
-        return TenantResolver.DEFAULT_TENANT_ID;
+        throw new IllegalStateException("Unknown tenant");
     }
 
     private String getEmail(Claims claims) {
