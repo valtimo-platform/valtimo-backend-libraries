@@ -4,8 +4,10 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import javax.security.auth.Subject
 
-class DelegatingTenantAuthenticationToken(private val delegate: Authentication, var tenantId: String) :
-    Authentication {
+class DelegatingTenantAuthenticationToken(
+    private val delegate: Authentication,
+    var tenantId: String
+) : Authentication {
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority>? {
         return delegate.authorities

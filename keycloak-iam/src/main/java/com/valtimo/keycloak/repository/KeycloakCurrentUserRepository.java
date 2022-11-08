@@ -16,6 +16,7 @@
 
 package com.valtimo.keycloak.repository;
 
+import com.ritense.tenancy.web.DelegatingTenantAuthenticationToken;
 import com.ritense.valtimo.contract.authentication.CurrentUserRepository;
 import com.ritense.valtimo.contract.authentication.model.Profile;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
@@ -50,7 +51,8 @@ public class KeycloakCurrentUserRepository implements CurrentUserRepository {
 
     @Override
     public boolean supports(Class<? extends Authentication> authentication) {
-        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+        return DelegatingTenantAuthenticationToken.class.isAssignableFrom(authentication) ||
+            UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
 }
