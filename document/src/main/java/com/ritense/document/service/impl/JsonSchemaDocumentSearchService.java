@@ -275,7 +275,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             case TO:
                 return cb.lessThanOrEqualTo((Expression) jsonValue, (Comparable) searchCriteria.getRangeTo());
             case BETWEEN:
-                return cb.between(((Expression<String>) jsonValue), cb.literal((Comparable) searchCriteria.getRangeFrom()), cb.literal((Comparable) searchCriteria.getRangeTo()));
+                return cb.between(((Expression) jsonValue), cb.literal((Comparable) searchCriteria.getRangeFrom()), cb.literal((Comparable) searchCriteria.getRangeTo()));
         }
 
         throw new NotImplementedException("Searching for data type '" + dataType + "' with search type '" + searchCriteria.getSearchType() + "' hasn't been implemented.");

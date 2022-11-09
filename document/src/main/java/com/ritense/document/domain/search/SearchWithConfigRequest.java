@@ -1,7 +1,6 @@
 package com.ritense.document.domain.search;
 
 import java.util.List;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 
 public class SearchWithConfigRequest {
@@ -10,12 +9,65 @@ public class SearchWithConfigRequest {
     private SearchOperator searchOperator = SearchOperator.OR;
     private List<SearchWithConfigFilter> otherFilters;
 
+    public SearchWithConfigRequest() {}
+
+    public SearchWithConfigRequest(
+        String createdBy,
+        Long sequence,
+        SearchOperator searchOperator,
+        List<SearchWithConfigFilter> otherFilters
+    ) {
+        this.createdBy = createdBy;
+        this.sequence = sequence;
+        this.searchOperator = searchOperator;
+        this.otherFilters = otherFilters;
+    }
+
+    public SearchRequest2 toSearchRequest(List<SearchRequest2.SearchCriteria2> otherFilters) {
+        return new SearchRequest2(createdBy, sequence, searchOperator, otherFilters);
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Long getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Long sequence) {
+        this.sequence = sequence;
+    }
+
+    public SearchOperator getSearchOperator() {
+        return searchOperator;
+    }
+
+    public void setSearchOperator(SearchOperator searchOperator) {
+        this.searchOperator = searchOperator;
+    }
+
+    public List<SearchWithConfigFilter> getOtherFilters() {
+        return otherFilters;
+    }
+
+    public void setOtherFilters(List<SearchWithConfigFilter> otherFilters) {
+        this.otherFilters = otherFilters;
+    }
+
     public static class SearchWithConfigFilter {
 
         private String key;
         private Object rangeFrom;
         private Object rangeTo;
         private List<Object> values;
+
+        public SearchWithConfigFilter() {
+        }
 
         public SearchWithConfigFilter(String key, Object rangeFrom, Object rangeTo, List<Object> values) {
             assertArgumentNotEmpty(key, "key is required");
@@ -56,37 +108,5 @@ public class SearchWithConfigRequest {
         public void setValues(List<Object> values) {
             this.values = values;
         }
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Long getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(Long sequence) {
-        this.sequence = sequence;
-    }
-
-    public SearchOperator getSearchOperator() {
-        return searchOperator;
-    }
-
-    public void setSearchOperator(SearchOperator searchOperator) {
-        this.searchOperator = searchOperator;
-    }
-
-    public List<SearchWithConfigFilter> getOtherFilters() {
-        return otherFilters;
-    }
-
-    public void setOtherFilters(List<SearchWithConfigFilter> otherFilters) {
-        this.otherFilters = otherFilters;
     }
 }

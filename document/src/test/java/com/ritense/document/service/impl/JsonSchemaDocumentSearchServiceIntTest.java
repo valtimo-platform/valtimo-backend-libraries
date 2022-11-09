@@ -16,12 +16,15 @@
 
 package com.ritense.document.service.impl;
 
+import com.fasterxml.jackson.core.JsonPointer;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.domain.search.DatabaseSearchType;
+import com.ritense.document.domain.search.SearchRequest2;
 import com.ritense.document.service.result.CreateDocumentResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -31,14 +34,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.test.context.support.WithMockUser;
-
-import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
-
+import javax.transaction.Transactional;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Tag("integration")
 @Transactional
@@ -506,44 +510,139 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = USERNAME, authorities = USER)
-    void shouldSearchWithSearchFields() {
+    void shouldSearchWithSearchRequestAndValues() {
         documentRepository.deleteAll();
 
-        CreateDocumentResult documentOne = createDocument("{\"street\": \"Alexanderkade\"}");
-        CreateDocumentResult documentTwo = createDocument("{\"street\": \"Alexanderkade\"}");
+        var documentOne = (JsonSchemaDocument) createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
+        var documentTwo = (JsonSchemaDocument) createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
 
-        final List<SearchCriteria> searchCriteriaList = List.of(
-            new SearchCriteria("$.street", "kade")
-        );
+        documentRepository.saveAll(List.of(documentOne, documentTwo));
 
-        // TODO
+        var searchRequest = new SearchRequest2();
+        var searchCriteria = new SearchRequest2.SearchCriteria2();
+        searchCriteria.setSearchType(DatabaseSearchType.LIKE);
+        searchCriteria.setPath("$.street");
+        searchCriteria.setValues(List.of("kade"));
+        searchRequest.setOtherFilters(List.of(searchCriteria));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "$.street")));
+
+        assertThat(result).isNotNull();
+        assertEquals(2, result.getContent().size());
     }
 
     @Test
     @WithMockUser(username = USERNAME, authorities = USER)
-    void shouldNotUserSearchFieldWhenGlobalSearchFilterIsProvided() {
-        documentRepository.deleteAll();
+    void shouldSearchWithSearchRequestAndBetweenRangedValues() throws InterruptedException {
+        documentRepository.deleteAllInBatch();
 
-        CreateDocumentResult documentOne = createDocument("{\"street\": \"Alexanderkade\"}");
-        CreateDocumentResult documentTwo = createDocument("{\"street\": \"Alexanderkade\"}");
+        createDocument("{\"housenumber\": 1}").resultingDocument().get();
+        createDocument("{\"housenumber\": 2}").resultingDocument().get();
+        createDocument("{\"housenumber\": 3}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest();
-        searchRequest.setDocumentDefinitionName(definition.id().name());
-        searchRequest.setGlobalSearchFilter("globalFilter");
-        searchRequest.setOtherFilters(List.of(
-                new SearchCriteria("$.street", "kade")
-            )
-        );
+        var searchRequest = new SearchRequest2();
+        var searchCriteria = new SearchRequest2.SearchCriteria2();
+        searchCriteria.setRangeFrom(1);
+        searchCriteria.setRangeTo(2);
+        searchCriteria.setSearchType(DatabaseSearchType.BETWEEN);
+        searchCriteria.setPath("$.housenumber");
+        searchRequest.setOtherFilters(List.of(searchCriteria));
 
-        final Page<? extends Document> page = documentSearchService.search(
-            new SearchRequest(),
-            PageRequest.of(0, 10, Sort.by(Direction.DESC, "assigneeFullName"))
-        );
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.housenumber")));
 
-        assertThat(page).isNotNull();
-        var content = page.getContent();
+        assertThat(result).isNotNull();
+        var content = result.getContent();
+        assertEquals(2, content.size());
 
-        assertThat(content.size()).isEqualTo(0);
+        assertEquals(1, content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
+        assertEquals(2, content.get(1).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
+    }
+
+    @Test
+    void shouldSearchWithSearchRequestAndFromRangedValue() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"housenumber\": 1}").resultingDocument().get();
+        createDocument("{\"housenumber\": 2}").resultingDocument().get();
+        createDocument("{\"housenumber\": 3}").resultingDocument().get();
+
+        var searchRequest = new SearchRequest2();
+        var searchCriteria = new SearchRequest2.SearchCriteria2();
+        searchCriteria.setRangeFrom(2);
+        searchCriteria.setSearchType(DatabaseSearchType.FROM);
+        searchCriteria.setPath("$.housenumber");
+        searchRequest.setOtherFilters(List.of(searchCriteria));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.housenumber")));
+
+        assertThat(result).isNotNull();
+        var content = result.getContent();
+        assertEquals(2, content.size());
+
+        assertEquals(2, content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
+        assertEquals(3, content.get(1).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
+    }
+
+    @Test
+    void shouldFailOnFromSearchWithoutRangeFrom() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"housenumber\": 1}").resultingDocument().get();
+        createDocument("{\"housenumber\": 2}").resultingDocument().get();
+        createDocument("{\"housenumber\": 3}").resultingDocument().get();
+
+        var searchRequest = new SearchRequest2();
+        var searchCriteria = new SearchRequest2.SearchCriteria2();
+        searchCriteria.setRangeTo(2);
+        searchCriteria.setSearchType(DatabaseSearchType.FROM);
+        searchCriteria.setPath("$.housenumber");
+        searchRequest.setOtherFilters(List.of(searchCriteria));
+
+        assertThrows(Exception.class, () -> {
+         var result =   documentSearchService.search(
+                definition.id().name(),
+                searchRequest,
+                PageRequest.of(0, 10)
+            );
+        });
+    }
+
+    @Test
+    void shouldSearchWithSearchRequestAndRangedDateValues() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"movedAt\": \"2022-01-01\"}").resultingDocument().get();
+        createDocument("{\"movedAt\": \"2022-02-01\"}").resultingDocument().get();
+        createDocument("{\"movedAt\": \"2022-03-01\"}").resultingDocument().get();
+
+        var searchRequest = new SearchRequest2();
+        var searchCriteria = new SearchRequest2.SearchCriteria2();
+        searchCriteria.setRangeFrom(LocalDate.of(2022, 01, 01));
+        searchCriteria.setRangeTo(LocalDate.of(2022, 02, 01));
+        searchCriteria.setSearchType(DatabaseSearchType.BETWEEN);
+        searchCriteria.setPath("$.movedAt");
+        searchRequest.setOtherFilters(List.of(searchCriteria));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.movedAt")));
+
+        assertThat(result).isNotNull();
+        var content = result.getContent();
+        assertEquals(2, content.size());
+
+        assertEquals("2022-01-01", content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAt")).get().asText());
+        assertEquals("2022-02-01", content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAt")).get().asText());
     }
 
     private CreateDocumentResult createDocument(String content) {

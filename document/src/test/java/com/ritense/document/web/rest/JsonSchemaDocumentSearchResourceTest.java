@@ -20,6 +20,8 @@ import com.ritense.document.BaseTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.Mapper;
+import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSearchService;
@@ -41,14 +43,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class JsonSchemaDocumentSearchResourceTest extends BaseTest {
+class JsonSchemaDocumentSearchResourceTest extends BaseTest {
 
     private DocumentSearchService documentSearchService;
     private DocumentSequenceGeneratorService documentSequenceGeneratorService;
@@ -87,7 +88,7 @@ public class JsonSchemaDocumentSearchResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnOkWithSearchCriteria() throws Exception {
+    void shouldReturnOkWithSearchCriteria() throws Exception {
         when(documentSearchService.search(any(), any())).thenReturn(Page.empty());
 
         List<SearchCriteria> values = Arrays.asList(
@@ -111,7 +112,7 @@ public class JsonSchemaDocumentSearchResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnPagedRecordPageWithoutSearchParams() throws Exception {
+    void shouldReturnPagedRecordPageWithoutSearchParams() throws Exception {
         when(documentSearchService.search(any(), any())).thenReturn(new PageImpl(List.of(document), Pageable.unpaged(), 1));
 
         mockMvc.perform(
@@ -124,6 +125,34 @@ public class JsonSchemaDocumentSearchResourceTest extends BaseTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
+    }
+
+    @Test
+    void shouldSearchWithConfigValue() throws Exception {
+        var filter = new SearchWithConfigRequest.SearchWithConfigFilter(
+            "key",
+            null,
+            null,
+            List.of("value"));
+        var request = new SearchWithConfigRequest();
+        request.setOtherFilters(List.of(filter));
+
+        when(documentSearchService.search(any(), any(SearchWithConfigRequest.class), any()))
+            .thenReturn((Page<Document>) documentPage);
+
+        var jsonRequest = Mapper.INSTANCE.get().writeValueAsString(request);
+
+        mockMvc.perform(
+            post("/api/v1/document-definition/name/search")
+                .accept(APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(jsonRequest))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isNotEmpty())
+            .andExpect(jsonPath("$.content").isArray())
+            .andExpect(jsonPath("$.content.length()").value(1))
+            .andExpect(jsonPath("$.content[0].content.firstName").value("John"));
     }
 
 }

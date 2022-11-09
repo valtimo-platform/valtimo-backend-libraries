@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
@@ -56,7 +55,7 @@ public class JsonSchemaDocumentSearchResource implements DocumentSearchResource 
     }
 
     @Override
-    @PostMapping(value = "/v1/document-definition/{name}/search")
+    @PostMapping(value = "/v1/document-definition/{name}/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public <T extends Document> ResponseEntity<Page<T>> search(
         @PathVariable(name = "name") String documentDefinitionName,
         @RequestBody SearchWithConfigRequest searchRequest,
