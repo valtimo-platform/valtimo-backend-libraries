@@ -17,15 +17,17 @@
 package com.ritense.document;
 
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+
 import static org.mockito.Mockito.mock;
 
 @SpringBootApplication
+@EnableConfigurationProperties(value = {ValtimoProperties.class})
 public class DocumentTestConfiguration {
 
     public static void main(String[] args) {
