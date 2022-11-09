@@ -57,7 +57,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -295,9 +294,7 @@ public class CamundaTaskService {
 
         // Tenancy filter
         if (valtimoProperties.getApp().getEnableTenancy()) {
-            String tenantId = TenantResolver.getTenantId();
-            Objects.requireNonNull(tenantId, "tenantId cannot be null");
-            parameters.put("tenantId", tenantId);
+            parameters.put("tenantId", TenantResolver.getTenantId());
         }
 
         return parameters;

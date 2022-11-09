@@ -6,7 +6,7 @@ import javax.security.auth.Subject
 
 class DelegatingTenantAuthenticationToken(
     private val delegate: Authentication,
-    var tenantId: String
+    val tenantId: String
 ) : Authentication {
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority>? {

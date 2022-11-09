@@ -76,10 +76,7 @@ public class JwtFilter extends GenericFilterBean {
                 }
             }
             if (valtimoProperties.getApp().getEnableTenancy()) {
-                String tenantId = TenantResolver.INSTANCE.getTenantId();
-                if (tenantId == null) {
-                    throw new IllegalStateException("Tenant id missing");
-                }
+                String tenantId = TenantResolver.getTenantId();
                 identityService.setAuthentication(authenticatedUserId, null, List.of(tenantId));
             } else {
                 identityService.setAuthenticatedUserId(authenticatedUserId);

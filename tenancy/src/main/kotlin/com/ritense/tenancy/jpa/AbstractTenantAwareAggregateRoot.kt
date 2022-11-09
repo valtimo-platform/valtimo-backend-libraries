@@ -2,6 +2,7 @@ package com.ritense.tenancy.jpa
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.ritense.tenancy.TenantAware
+import com.ritense.tenancy.TenantResolver.DEFAULT_TENANT_ID
 import com.ritense.tenancy.jpa.AbstractTenantAwareAggregateRoot.Companion.TENANT_COLUMN
 import com.ritense.tenancy.jpa.AbstractTenantAwareAggregateRoot.Companion.TENANT_FILTER_NAME
 import com.ritense.tenancy.jpa.AbstractTenantAwareAggregateRoot.Companion.TENANT_PARAMETER_NAME
@@ -26,7 +27,7 @@ open class AbstractTenantAwareAggregateRoot<T : AbstractTenantAwareAggregateRoot
 
     @JsonIgnore
     @Column(name = TENANT_COLUMN, columnDefinition = "VARCHAR(256)", nullable = false)
-    override var tenantId: String? = null
+    override var tenantId: String = DEFAULT_TENANT_ID
 
     companion object {
         const val TENANT_FILTER_NAME = "tenantFilter"
