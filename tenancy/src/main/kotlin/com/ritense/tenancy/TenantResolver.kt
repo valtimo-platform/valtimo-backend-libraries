@@ -18,7 +18,9 @@ object TenantResolver {
         return if (valtimoProperties.app.enableTenancy != true) {
             DEFAULT_TENANT_ID
         } else {
-            (SecurityContextHolder.getContext().authentication as DelegatingTenantAuthenticationToken).tenantId
+            (SecurityContextHolder
+                .getContext()
+                .authentication as? DelegatingTenantAuthenticationToken)?.tenantId ?: DEFAULT_TENANT_ID
         }
     }
 
