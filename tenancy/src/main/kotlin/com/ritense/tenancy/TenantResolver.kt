@@ -14,7 +14,7 @@ object TenantResolver {
      * @return Tenant id as string
      */
     @JvmStatic
-    fun getTenantId(valtimoProperties: ValtimoProperties = TenantSpringContextHelper.getValtimoProperties()): String {
+    fun getTenantId(valtimoProperties: ValtimoProperties): String {
         return if (valtimoProperties.app.enableTenancy != true) {
             DEFAULT_TENANT_ID
         } else {
@@ -22,6 +22,11 @@ object TenantResolver {
                 .getContext()
                 .authentication as? DelegatingTenantAuthenticationToken)?.tenantId ?: DEFAULT_TENANT_ID
         }
+    }
+
+    @JvmStatic
+    fun getTenantId(): String {
+        return getTenantId(TenantSpringContextHelper.getValtimoProperties())
     }
 
 }
