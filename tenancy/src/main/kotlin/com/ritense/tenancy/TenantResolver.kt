@@ -5,6 +5,13 @@ import com.ritense.tenancy.web.DelegatingTenantAuthenticationToken
 import com.ritense.valtimo.contract.config.ValtimoProperties
 import org.springframework.security.core.context.SecurityContextHolder
 
+/*
+ This Class has some issues:
+ - Fixme: During the startup phase of a Spring App the context can be null thus getTenantId is not able to
+    getValtimoProperties. Solved now by providing this via arguments and having 1 overload version.
+ - Fixme: SecurityContextHolder.getContext().authentication can be null. Like in above issue when the app is still
+    starting.
+ */
 object TenantResolver {
 
     const val DEFAULT_TENANT_ID = ""
