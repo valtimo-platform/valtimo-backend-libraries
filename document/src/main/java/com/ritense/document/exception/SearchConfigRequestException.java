@@ -22,7 +22,6 @@ public class SearchConfigRequestException extends RuntimeException {
 
     public SearchConfigRequestException(SearchField searchField, String type, String message) {
         throw new IllegalArgumentException("Configured to search for " + type + " but " + message + ". For SearchField '" + searchField.getKey() + "'.");
-
     }
 
 }

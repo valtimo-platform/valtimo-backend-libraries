@@ -45,7 +45,7 @@ spring:
         enabled: false
     jpa:
         database-platform: org.hibernate.dialect.MySQL57Dialect
-        show_sql: false
+        show_sql: true
         open-in-view: false
         properties:
             hibernate:
@@ -111,6 +111,8 @@ logging:
     level:
         org.springframework.beans: DEBUG
         reactor.netty.http.client.HttpClient: DEBUG
+        org.hibernate.SQL: DEBUG
+        org.hibernate.type: TRACE
 
 server:
     port: 8080

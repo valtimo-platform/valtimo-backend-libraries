@@ -21,6 +21,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.domain.search.SearchRequest2;
+import com.ritense.document.domain.search.SearchRequestMapper;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.SearchFieldService;
@@ -45,8 +46,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
-import java.time.chrono.ChronoLocalDate;
-import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -86,10 +85,10 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             .collect(toMap(SearchField::getKey, searchField -> searchField));
 
         var searchCriteria = searchWithConfigRequest.getOtherFilters().stream()
-            .map(otherFilter -> otherFilter.toSearchCriteria(searchFieldMap.get(otherFilter.getKey())))
+            .map(otherFilter -> SearchRequestMapper.toSearchCriteria2(otherFilter, searchFieldMap.get(otherFilter.getKey())))
             .collect(toList());
 
-        var searchRequest2 = searchWithConfigRequest.toSearchRequest(searchCriteria);
+        var searchRequest2 = SearchRequestMapper.toSearchRequest2(searchWithConfigRequest, searchCriteria);
 
         return search(documentDefinitionName, searchRequest2, pageable);
     }
@@ -263,45 +262,6 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                     return cb.like(cb.lower((Expression<String>) jsonValue), "%" + searchCriteria.getValues().get(0).toString().trim().toLowerCase() + "%");
                 case EXACT:
                     return cb.equal(cb.lower((Expression<String>) jsonValue), searchCriteria.getValues().get(0).toString().trim().toLowerCase());
-                case FROM:
-                    return cb.greaterThanOrEqualTo(cb.literal((String) searchCriteria.getRangeFrom()), (Expression<String>) jsonValue);
-                case TO:
-                    return cb.lessThanOrEqualTo(cb.literal((String) searchCriteria.getRangeTo()), (Expression<String>) jsonValue);
-                case BETWEEN:
-                    return cb.between((Expression<String>) jsonValue, (String) searchCriteria.getRangeFrom(), (String) searchCriteria.getRangeTo());
-            }
-        }
-
-        if (Integer.class.equals(dataType)) {
-            switch (searchCriteria.getSearchType()) {
-                case FROM:
-                    return cb.greaterThanOrEqualTo(cb.literal((Integer) searchCriteria.getRangeFrom()), (Expression<Integer>) jsonValue);
-                case TO:
-                    return cb.lessThanOrEqualTo(cb.literal((Integer) searchCriteria.getRangeTo()), (Expression<Integer>) jsonValue);
-                case BETWEEN:
-                    return cb.between((Expression<Integer>) jsonValue, (Integer) searchCriteria.getRangeFrom(), (Integer) searchCriteria.getRangeTo());
-            }
-        }
-
-        if (ChronoLocalDate.class.equals(dataType)) {
-            switch (searchCriteria.getSearchType()) {
-                case FROM:
-                    return cb.greaterThanOrEqualTo(cb.literal((ChronoLocalDate) searchCriteria.getRangeFrom()), (Expression<ChronoLocalDate>) jsonValue);
-                case TO:
-                    return cb.lessThanOrEqualTo(cb.literal((ChronoLocalDate) searchCriteria.getRangeTo()), (Expression<ChronoLocalDate>) jsonValue);
-                case BETWEEN:
-                    return cb.between((Expression<ChronoLocalDate>) jsonValue, (ChronoLocalDate) searchCriteria.getRangeFrom(), (ChronoLocalDate) searchCriteria.getRangeTo());
-            }
-        }
-
-        if (ChronoLocalDateTime.class.equals(dataType)) {
-            switch (searchCriteria.getSearchType()) {
-                case FROM:
-                    return cb.greaterThanOrEqualTo(cb.literal((ChronoLocalDateTime) searchCriteria.getRangeFrom()), (Expression<ChronoLocalDateTime>) jsonValue);
-                case TO:
-                    return cb.lessThanOrEqualTo(cb.literal((ChronoLocalDateTime) searchCriteria.getRangeTo()), (Expression<ChronoLocalDateTime>) jsonValue);
-                case BETWEEN:
-                    return cb.between((Expression<ChronoLocalDateTime>) jsonValue, (ChronoLocalDateTime) searchCriteria.getRangeFrom(), (ChronoLocalDateTime) searchCriteria.getRangeTo());
             }
         }
 
@@ -310,6 +270,12 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 return cb.equal(jsonValue, searchCriteria.getValues().get(0));
             case IN:
                 return cb.literal(jsonValue).in(searchCriteria.getValues());
+            case FROM:
+                return cb.greaterThanOrEqualTo((Expression) jsonValue, (Comparable) searchCriteria.getRangeFrom());
+            case TO:
+                return cb.lessThanOrEqualTo((Expression) jsonValue, (Comparable) searchCriteria.getRangeTo());
+            case BETWEEN:
+                return cb.between(((Expression<String>) jsonValue), cb.literal((Comparable) searchCriteria.getRangeFrom()), cb.literal((Comparable) searchCriteria.getRangeTo()));
         }
 
         throw new NotImplementedException("Searching for data type '" + dataType + "' with search type '" + searchCriteria.getSearchType() + "' hasn't been implemented.");

@@ -19,52 +19,23 @@ package com.ritense.document.domain.search;
 import java.util.List;
 
 public class SearchRequest2 {
-    private final String createdBy;
-    private final Long sequence;
-    private final SearchOperator searchOperator;
-    private final List<SearchCriteria2> otherFilters;
+    private String createdBy;
+    private Long sequence;
+    private SearchOperator searchOperator;
+    private List<SearchCriteria2> otherFilters;
 
-    public SearchRequest2(String createdBy, Long sequence, SearchOperator searchOperator, List<SearchCriteria2> otherFilters) {
-        this.createdBy = createdBy;
-        this.sequence = sequence;
-        this.searchOperator = searchOperator;
-        this.otherFilters = otherFilters;
+    public SearchRequest2() {
     }
 
     public static class SearchCriteria2 {
 
-        private final String path;
-        private final DatabaseSearchType searchType;
-        private final Object rangeFrom;
-        private final Object rangeTo;
-        private final List<Object> values;
+        private String path;
+        private DatabaseSearchType searchType;
+        private Object rangeFrom;
+        private Object rangeTo;
+        private List<Object> values;
 
-        public SearchCriteria2(String path, DatabaseSearchType searchType, Object rangeFrom, Object rangeTo, List<Object> values) {
-            this.path = path;
-            this.searchType = searchType;
-            this.rangeFrom = rangeFrom;
-            this.rangeTo = rangeTo;
-            this.values = values;
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        public DatabaseSearchType getSearchType() {
-            return searchType;
-        }
-
-        public Object getRangeFrom() {
-            return rangeFrom;
-        }
-
-        public Object getRangeTo() {
-            return rangeTo;
-        }
-
-        public List<Object> getValues() {
-            return values;
+        public SearchCriteria2() {
         }
 
         public Class<?> getDataType() {
@@ -78,21 +49,77 @@ public class SearchRequest2 {
                 return String.class;
             }
         }
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public DatabaseSearchType getSearchType() {
+            return searchType;
+        }
+
+        public void setSearchType(DatabaseSearchType searchType) {
+            this.searchType = searchType;
+        }
+
+        public Object getRangeFrom() {
+            return rangeFrom;
+        }
+
+        public void setRangeFrom(Object rangeFrom) {
+            this.rangeFrom = rangeFrom;
+        }
+
+        public Object getRangeTo() {
+            return rangeTo;
+        }
+
+        public void setRangeTo(Object rangeTo) {
+            this.rangeTo = rangeTo;
+        }
+
+        public List<Object> getValues() {
+            return values;
+        }
+
+        public void setValues(List<Object> values) {
+            this.values = values;
+        }
     }
 
     public String getCreatedBy() {
         return createdBy;
     }
 
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
     public Long getSequence() {
         return sequence;
+    }
+
+    public void setSequence(Long sequence) {
+        this.sequence = sequence;
     }
 
     public SearchOperator getSearchOperator() {
         return searchOperator;
     }
 
+    public void setSearchOperator(SearchOperator searchOperator) {
+        this.searchOperator = searchOperator;
+    }
+
     public List<SearchCriteria2> getOtherFilters() {
         return otherFilters;
+    }
+
+    public void setOtherFilters(List<SearchCriteria2> otherFilters) {
+        this.otherFilters = otherFilters;
     }
 }
