@@ -50,7 +50,11 @@ public class JwtHttpSecurityConfigurer implements HttpSecurityConfigurer {
     }
 
     private JwtSecurityConfigurerAdapter jwtSecurityConfigurerAdapter() {
-        return new JwtSecurityConfigurerAdapter(identityService, tokenAuthenticationService, valtimoProperties);
+        return new JwtSecurityConfigurerAdapter(
+            identityService,
+            tokenAuthenticationService,
+            valtimoProperties
+        );
     }
 
 }

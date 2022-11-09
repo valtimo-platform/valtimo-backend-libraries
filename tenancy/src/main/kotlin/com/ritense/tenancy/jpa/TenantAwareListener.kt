@@ -15,7 +15,11 @@ class TenantAwareListener {
     fun setTenant(entity: Any) {
         ifTenantEntity(entity) { item: TenantAware ->
             if (item.tenantId == null) {
-                item.tenantId = TenantResolver.getTenantId() ?: throw IllegalStateException("Tenant id missing")
+                val tenantId = TenantResolver.getTenantId()
+                requireNotNull(tenantId) {
+                    "Tenant id missing"
+                }
+                item.tenantId = tenantId
             }
         }
     }
@@ -23,7 +27,10 @@ class TenantAwareListener {
     @PreRemove
     fun preRemove(entity: Any) {
         ifTenantEntity(entity) { item: TenantAware ->
-            val tenantId = TenantResolver.getTenantId() ?: throw IllegalStateException("Tenant id missing")
+            val tenantId = TenantResolver.getTenantId()
+            requireNotNull(tenantId) {
+                "Tenant id missing"
+            }
             if (tenantId != item.tenantId) {
                 throw EntityNotFoundException()
             }

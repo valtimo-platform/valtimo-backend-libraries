@@ -9,6 +9,7 @@ object TenantResolver {
      * Resolve tenant-id from auth
      * @return Tenant id as string
      */
+    @JvmStatic
     fun getTenantId(): String? {
         return (SecurityContextHolder.getContext().authentication as? DelegatingTenantAuthenticationToken)?.tenantId
     }

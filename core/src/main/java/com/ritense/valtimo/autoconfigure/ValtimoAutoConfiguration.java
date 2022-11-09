@@ -166,7 +166,8 @@ public class ValtimoAutoConfiguration {
         final Optional<ResourceService> resourceServiceOptional,
         final ApplicationEventPublisher applicationEventPublisher,
         final RuntimeService runtimeService,
-        final UserManagementService userManagementService
+        final UserManagementService userManagementService,
+        final ValtimoProperties valtimoProperties
     ) {
         return new CamundaTaskService(
             taskService,
@@ -178,7 +179,8 @@ public class ValtimoAutoConfiguration {
             resourceServiceOptional,
             applicationEventPublisher,
             runtimeService,
-            userManagementService
+            userManagementService,
+            valtimoProperties
         );
     }
 

@@ -297,6 +297,12 @@
         <if test="key != null">
           AND       DEF.KEY_ = #{key, jdbcType=VARCHAR}
         </if>
+        <if test="tenantId != null">
+            AND PI.TENANT_ID_ = #{tenantId, jdbcType=VARCHAR}
+        </if>
+        <if test="tenantId == null">
+            AND PI.TENANT_ID_ IS NULL
+        </if>
         GROUP BY    DEF.NAME_
         ,           ${truncDatepart1}PI.START_TIME_${truncDatepart2}
     </select>
@@ -321,6 +327,12 @@
         </if>
         <if test="begin != null &amp;&amp; end != null">
           AND ACT_HI_TASKINST.START_TIME_ BETWEEN #{begin, jdbcType=TIMESTAMP} AND #{end, jdbcType=TIMESTAMP}
+        </if>
+        <if test="tenantId != null">
+            AND ACT_HI_TASKINST.TENANT_ID_ = #{tenantId, jdbcType=VARCHAR}
+        </if>
+        <if test="tenantId == null">
+            AND ACT_HI_TASKINST.TENANT_ID_ IS NULL
         </if>
         GROUP BY  ACT_RU_IDENTITYLINK.GROUP_ID_
     </select>

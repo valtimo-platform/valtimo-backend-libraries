@@ -17,9 +17,11 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.resource.service.ResourceService;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
@@ -48,15 +50,18 @@ import org.camunda.bpm.engine.task.Task;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toSet;
 
@@ -73,6 +78,7 @@ public class CamundaTaskService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RuntimeService runtimeService;
     private final UserManagementService userManagementService;
+    private final ValtimoProperties valtimoProperties;
 
     public CamundaTaskService(
         TaskService taskService,
@@ -84,7 +90,8 @@ public class CamundaTaskService {
         Optional<ResourceService> optionalResourceService,
         ApplicationEventPublisher applicationEventPublisher,
         RuntimeService runtimeService,
-        UserManagementService userManagementService
+        UserManagementService userManagementService,
+        ValtimoProperties valtimoProperties
     ) {
         this.taskService = taskService;
         this.formService = formService;
@@ -96,6 +103,7 @@ public class CamundaTaskService {
         this.applicationEventPublisher = applicationEventPublisher;
         this.runtimeService = runtimeService;
         this.userManagementService = userManagementService;
+        this.valtimoProperties = valtimoProperties;
     }
 
     public Task findTaskById(String taskId) {
@@ -261,9 +269,9 @@ public class CamundaTaskService {
     }
 
     private Map<String, Object> buildTaskFilterParameters(TaskFilter taskFilter) throws IllegalAccessException {
-        Map<String, Object> parameters = new HashMap<>();
-        String currentUserLogin = SecurityUtils.getCurrentUserLogin();
-        List<String> userRoles = SecurityUtils.getCurrentUserRoles();
+        final Map<String, Object> parameters = new HashMap<>();
+        final String currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        final List<String> userRoles = SecurityUtils.getCurrentUserRoles();
 
         if (taskFilter == TaskFilter.MINE) {
             if (currentUserLogin == null) {
@@ -284,6 +292,14 @@ public class CamundaTaskService {
             "processDefinitionKeys",
             context.getProcesses().stream().map(ContextProcess::getProcessDefinitionKey).collect(toSet())
         );
+
+        // Tenancy filter
+        if (valtimoProperties.getApp().getEnableTenancy()) {
+            String tenantId = TenantResolver.getTenantId();
+            Objects.requireNonNull(tenantId, "tenantId cannot be null");
+            parameters.put("tenantId", tenantId);
+        }
+
         return parameters;
     }
 
