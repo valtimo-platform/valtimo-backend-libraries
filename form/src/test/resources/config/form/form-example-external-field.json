@@ -26,6 +26,13 @@
             "input": true
         },
         {
+            "label": "Naam",
+            "key": "test:field",
+            "type": "textfield",
+            "disabled": true,
+            "input": true
+        },
+        {
             "type": "button",
             "label": "Submit",
             "key": "submit",

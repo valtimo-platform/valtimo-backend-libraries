@@ -128,7 +128,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotExtractProcessVars() throws IOException {
+    public void shouldNotExtractProcessVarsWhenSubmissionIsEmpty() throws IOException {
         final var formDefinition = formDefinitionOf("process-variables-form-example");
 
         final ObjectNode formData = JsonNodeFactory.instance.objectNode();
@@ -142,7 +142,29 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldExtractProcessVars() throws IOException {
+    public void shouldExtractProcessVarsWithoutDisabledFieldsWhenFlagIsSet() throws IOException {
+        new FormAutoConfiguration(true);
+
+        final var formDefinition = formDefinitionOf("process-variables-form-example");
+
+        final ObjectNode formData = JsonNodeFactory.instance.objectNode();
+        final ObjectNode processVarsData = JsonNodeFactory.instance.objectNode();
+        processVarsData.put("firstName", "John");
+        processVarsData.put("age", 90);
+        processVarsData.put("isRetired", true);
+        formData.set("pv", processVarsData);
+
+        final Map<String, Object> stringObjectMap = formDefinition.extractProcessVars(formData);
+
+        assertThat(stringObjectMap).contains(entry("firstName", "John"));
+        assertThat(stringObjectMap).contains(entry("age", 90));
+        assertThat(stringObjectMap).doesNotContain(entry("isRetired", true));
+    }
+
+    @Test
+    public void shouldExtractProcessVarsWithDisabledFieldsWhenFlagIsNotSet() throws IOException {
+        new FormAutoConfiguration(false);
+
         final var formDefinition = formDefinitionOf("process-variables-form-example");
 
         final ObjectNode formData = JsonNodeFactory.instance.objectNode();
@@ -195,10 +217,20 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldRemoveDisabledFieldFromDocumentMappedFieldsWhenFlagIsEnabled() throws IOException {
+    public void shouldNotRemoveDisabledFieldFromDocumentMappedFieldsWhenFlagIsEnabled() throws IOException {
         new FormAutoConfiguration(true);
         final var formDefinition = formDefinitionOf("form-example-nested-components");
         var result = formDefinition.getDocumentMappedFields();
+        var disabledField = result.stream().filter(node -> node.get("key").asText().equals("disabledField")).findFirst();
+        assertTrue(disabledField.isPresent());
+        assertTrue(disabledField.get().get("disabled").asBoolean());
+    }
+
+    @Test
+    public void shouldRemoveDisabledFieldFromDocumentMappedFieldsForSubmissionWhenFlagIsEnabled() throws IOException {
+        new FormAutoConfiguration(true);
+        final var formDefinition = formDefinitionOf("form-example-nested-components");
+        var result = formDefinition.getDocumentMappedFieldsForSubmission();
         for (ObjectNode node : result) {
             assertThat(node.toString().contains("\"disabled\":true")).isFalse();
         }
@@ -215,7 +247,19 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldFindExternalFields() throws IOException {
+    public void shouldNotRemoveDisabledFieldFromDocumentMappedFieldsForSubmissionWhenFlagIsDisabled() throws IOException {
+        new FormAutoConfiguration(false);
+        final var formDefinition = formDefinitionOf("form-example-nested-components");
+        var result = formDefinition.getDocumentMappedFieldsForSubmission();
+        var disabledField = result.stream().filter(node -> node.get("key").asText().equals("disabledField")).findFirst();
+        assertTrue(disabledField.isPresent());
+        assertTrue(disabledField.get().get("disabled").asBoolean());
+    }
+
+    @Test
+    public void shouldFindExternalFieldsWithFlagDisabled() throws IOException {
+        new FormAutoConfiguration(false);
+
         final var formDefinition = formDefinitionOf("form-example-external-field");
 
         Map<String, FormFieldDataResolver> resolvers = new HashMap<>();
@@ -228,6 +272,70 @@ public class FormIoFormDefinitionTest extends BaseTest {
         Map<String, List<FormIoFormDefinition.ExternalContentItem>> externalContent
             = formDefinition.buildExternalFormFieldsMap();
 
+        assertExampleExternalField(externalContent, true);
+    }
+
+    @Test
+    public void shouldFindExternalFieldsWithFlagEnabled() throws IOException {
+        new FormAutoConfiguration(true);
+
+        final var formDefinition = formDefinitionOf("form-example-external-field");
+
+        Map<String, FormFieldDataResolver> resolvers = new HashMap<>();
+        resolvers.put("some-bean", new FormFieldDataResolverImpl("test"));
+        resolvers.put("some-other-bean", new FormFieldDataResolverImpl("other"));
+        ApplicationContext context = mock(ApplicationContext.class);
+        new FormSpringContextHelper().setApplicationContext(context);
+        when(context.getBeansOfType(FormFieldDataResolver.class)).thenReturn(resolvers);
+
+        Map<String, List<FormIoFormDefinition.ExternalContentItem>> externalContent
+            = formDefinition.buildExternalFormFieldsMap();
+
+        assertExampleExternalField(externalContent, true);
+    }
+
+    @Test
+    public void shouldFindExternalFieldsForSubmissionWithFlagEnabled() throws IOException {
+        new FormAutoConfiguration(true);
+
+        final var formDefinition = formDefinitionOf("form-example-external-field");
+
+        Map<String, FormFieldDataResolver> resolvers = new HashMap<>();
+        resolvers.put("some-bean", new FormFieldDataResolverImpl("test"));
+        resolvers.put("some-other-bean", new FormFieldDataResolverImpl("other"));
+        ApplicationContext context = mock(ApplicationContext.class);
+        new FormSpringContextHelper().setApplicationContext(context);
+        when(context.getBeansOfType(FormFieldDataResolver.class)).thenReturn(resolvers);
+
+        Map<String, List<FormIoFormDefinition.ExternalContentItem>> externalContent
+            = formDefinition.buildExternalFormFieldsMapForSubmission();
+
+        assertExampleExternalField(externalContent, false);
+    }
+
+    @Test
+    public void shouldFindExternalFieldsForSubmissionWithFlagDisabled() throws IOException {
+        new FormAutoConfiguration(false);
+
+        final var formDefinition = formDefinitionOf("form-example-external-field");
+
+        Map<String, FormFieldDataResolver> resolvers = new HashMap<>();
+        resolvers.put("some-bean", new FormFieldDataResolverImpl("test"));
+        resolvers.put("some-other-bean", new FormFieldDataResolverImpl("other"));
+        ApplicationContext context = mock(ApplicationContext.class);
+        new FormSpringContextHelper().setApplicationContext(context);
+        when(context.getBeansOfType(FormFieldDataResolver.class)).thenReturn(resolvers);
+
+        Map<String, List<FormIoFormDefinition.ExternalContentItem>> externalContent
+            = formDefinition.buildExternalFormFieldsMapForSubmission();
+
+        assertExampleExternalField(externalContent, true);
+    }
+
+    private void assertExampleExternalField(
+        Map<String, List<FormIoFormDefinition.ExternalContentItem>> externalContent,
+        boolean shouldIncludeDisabledFields
+    ) {
         assertTrue(externalContent.containsKey("other"));
         List<FormIoFormDefinition.ExternalContentItem> otherItems = externalContent.get("other");
         assertEquals(1, otherItems.size());
@@ -236,7 +344,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
         assertEquals(JsonPointer.valueOf("/other:field"), otherItems.get(0).getJsonPointer());
 
         List<FormIoFormDefinition.ExternalContentItem> testItems = externalContent.get("test");
-        assertEquals(2, testItems.size());
+        assertEquals(shouldIncludeDisabledFields ? 3 : 2, testItems.size());
 
         assertEquals(":", testItems.get(0).getSeparator());
         assertEquals("lastName", testItems.get(0).getName());
@@ -245,6 +353,12 @@ public class FormIoFormDefinitionTest extends BaseTest {
         assertEquals(".", testItems.get(1).getSeparator());
         assertEquals("firstName", testItems.get(1).getName());
         assertEquals(JsonPointer.valueOf("/test/firstName"), testItems.get(1).getJsonPointer());
+
+        if (shouldIncludeDisabledFields) {
+            assertEquals(":", testItems.get(2).getSeparator());
+            assertEquals("field", testItems.get(2).getName());
+            assertEquals(JsonPointer.valueOf("/test:field"), testItems.get(2).getJsonPointer());
+        }
     }
 
     public JsonNode content(Object content) throws JsonProcessingException {
