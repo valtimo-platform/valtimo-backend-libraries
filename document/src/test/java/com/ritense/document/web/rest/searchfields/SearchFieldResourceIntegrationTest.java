@@ -76,10 +76,12 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldStoreSearchField() throws Exception {
+        var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
+
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
-                                .content(Mapper.INSTANCE.get().writeValueAsString(SEARCH_FIELD))
+                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -101,10 +103,11 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldRetrieveSearchFieldsByDocumentDefinitionName() throws Exception {
+        var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
-                                .content(Mapper.INSTANCE.get().writeValueAsString(SEARCH_FIELD))
+                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -116,9 +119,9 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].key", is("someKey")))
                 .andExpect(jsonPath("$[0].path", is("/some/path")))
-                .andExpect(jsonPath("$[0].datatype", is(SearchFieldDatatype.TEXT.toString())))
-                .andExpect(jsonPath("$[0].fieldtype", is(SearchFieldFieldtype.SINGLE.toString())))
-                .andExpect(jsonPath("$[0].matchtype", is(SearchFieldMatchtype.EXACT.toString())));
+                .andExpect(jsonPath("$[0].dataType", is(SearchFieldDatatype.TEXT.toString())))
+                .andExpect(jsonPath("$[0].fieldType", is(SearchFieldFieldtype.SINGLE.toString())))
+                .andExpect(jsonPath("$[0].matchType", is(SearchFieldMatchtype.EXACT.toString())));
     }
 
     @Test
@@ -148,7 +151,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         assertEquals(searchFieldToUpdate.getKey(), searchFieldUpdated.orElseGet(SearchField::new).getKey());
         assertEquals(searchFieldToUpdate.getPath(), searchFieldUpdated.orElseGet(SearchField::new).getPath());
         assertEquals(searchFieldToUpdate.getDataType(), searchFieldUpdated.orElseGet(SearchField::new).getDatatype());
-        assertEquals(searchFieldToUpdate.getFieldType(), SearchFieldFieldtype.RANGE);
+        assertEquals(SearchFieldFieldtype.RANGE, searchFieldToUpdate.getFieldType());
         assertEquals(searchFieldToUpdate.getMatchType(), searchFieldUpdated.orElseGet(SearchField::new).getMatchtype());
     }
 
