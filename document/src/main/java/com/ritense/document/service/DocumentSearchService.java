@@ -30,9 +30,9 @@ public interface DocumentSearchService {
         Pageable pageable
     );
 
-    <T extends Document> Page<T> search(String documentDefinitionName, SearchWithConfigRequest searchWithConfigRequest, Pageable pageable);
+    Page<? extends Document> search(String documentDefinitionName, SearchWithConfigRequest searchWithConfigRequest, Pageable pageable);
 
-    <T extends Document> Page<T> search(String documentDefinitionName, SearchRequest2 searchRequest, Pageable pageable);
+    Page<? extends Document> search(String documentDefinitionName, SearchRequest2 searchRequest, Pageable pageable);
 
     default Page<? extends Document> searchWithoutAuthorization(
         SearchRequest searchRequest,

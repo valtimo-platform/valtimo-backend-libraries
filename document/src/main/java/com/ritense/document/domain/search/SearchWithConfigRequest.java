@@ -1,15 +1,34 @@
+/*
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.document.domain.search;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 
 public class SearchWithConfigRequest {
     private String createdBy;
     private Long sequence;
     private SearchOperator searchOperator = SearchOperator.OR;
-    private List<SearchWithConfigFilter> otherFilters;
+    private List<SearchWithConfigFilter> otherFilters = List.of();
 
-    public SearchWithConfigRequest() {}
+    public SearchWithConfigRequest() {
+    }
 
     public SearchWithConfigRequest(
         String createdBy,
@@ -21,10 +40,6 @@ public class SearchWithConfigRequest {
         this.sequence = sequence;
         this.searchOperator = searchOperator;
         this.otherFilters = otherFilters;
-    }
-
-    public SearchRequest2 toSearchRequest(List<SearchRequest2.SearchCriteria2> otherFilters) {
-        return new SearchRequest2(createdBy, sequence, searchOperator, otherFilters);
     }
 
     public String getCreatedBy() {
@@ -62,19 +77,19 @@ public class SearchWithConfigRequest {
     public static class SearchWithConfigFilter {
 
         private String key;
-        private Object rangeFrom;
-        private Object rangeTo;
-        private List<Object> values;
+        private SearchRequestObject rangeFrom = SearchRequestObject.ofNull();
+        private SearchRequestObject rangeTo = SearchRequestObject.ofNull();
+        private List<SearchRequestObject> values = List.of();
 
         public SearchWithConfigFilter() {
         }
 
-        public SearchWithConfigFilter(String key, Object rangeFrom, Object rangeTo, List<Object> values) {
+        public <T extends Comparable<? super T>> SearchWithConfigFilter(String key, T rangeFrom, T rangeTo, List<Object> values) {
             assertArgumentNotEmpty(key, "key is required");
             this.key = key;
-            this.rangeFrom = rangeFrom;
-            this.rangeTo = rangeTo;
-            this.values = values;
+            this.rangeFrom = SearchRequestObject.ofComparable(rangeFrom);
+            this.rangeTo = SearchRequestObject.ofComparable(rangeTo);
+            this.values = SearchRequestObject.ofList(values);
         }
 
         public String getKey() {
@@ -85,28 +100,42 @@ public class SearchWithConfigRequest {
             this.key = key;
         }
 
-        public Object getRangeFrom() {
+        public <T extends Comparable<? super T>> T getRangeFrom() {
+            return rangeFrom.getComparableValue();
+        }
+
+        public SearchRequestObject getRangeFromSearchRequestObject() {
             return rangeFrom;
         }
 
         public void setRangeFrom(Object rangeFrom) {
-            this.rangeFrom = rangeFrom;
+            this.rangeFrom = SearchRequestObject.ofComparable(rangeFrom);
         }
 
-        public Object getRangeTo() {
+        public <T extends Comparable<? super T>> T getRangeTo() {
+            return rangeTo.getComparableValue();
+        }
+
+        public SearchRequestObject getRangeToSearchRequestObject() {
             return rangeTo;
         }
 
         public void setRangeTo(Object rangeTo) {
-            this.rangeTo = rangeTo;
+            this.rangeTo = SearchRequestObject.ofComparable(rangeTo);
         }
 
-        public List<Object> getValues() {
+        public <T> List<T> getValues() {
+            return values.stream()
+                .map(SearchRequestObject::<T>getValue)
+                .collect(Collectors.toList());
+        }
+
+        public List<SearchRequestObject> getSearchRequestObjects() {
             return values;
         }
 
         public void setValues(List<Object> values) {
-            this.values = values;
+            this.values = SearchRequestObject.ofList(values);
         }
     }
 }

@@ -23,7 +23,7 @@ import javax.persistence.criteria.Predicate;
 
 public class MysqlQueryDialectHelper implements QueryDialectHelper {
 
-    private static final String LOWER_CASE_FUNTION = "lower";
+    private static final String LOWER_CASE_FUNCTION = "lower";
 
     @Override
     public Expression<String> getJsonValueExpression(CriteriaBuilder cb, Path column, String path) {
@@ -46,9 +46,9 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
             cb.function(
                 "JSON_SEARCH",
                 String.class,
-                cb.function(LOWER_CASE_FUNTION, String.class, column),
+                cb.function(LOWER_CASE_FUNCTION, String.class, column),
                 cb.literal("all"),
-                cb.function(LOWER_CASE_FUNTION, String.class, cb.literal("%" + value.trim() + "%"))
+                cb.function(LOWER_CASE_FUNCTION, String.class, cb.literal("%" + value.trim() + "%"))
             )
         );
     }
@@ -60,11 +60,11 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
             cb.function(
                 "JSON_SEARCH",
                 String.class,
-                cb.function(LOWER_CASE_FUNTION, String.class, column),
+                cb.function(LOWER_CASE_FUNCTION, String.class, column),
                 cb.literal("all"),
-                cb.function(LOWER_CASE_FUNTION, String.class, cb.literal("%" + value.trim() + "%")),
+                cb.function(LOWER_CASE_FUNCTION, String.class, cb.literal("%" + value.trim() + "%")),
                 cb.nullLiteral(String.class),
-                cb.function(LOWER_CASE_FUNTION, String.class, cb.literal(path))
+                cb.function(LOWER_CASE_FUNCTION, String.class, cb.literal(path))
             )
         );
     }

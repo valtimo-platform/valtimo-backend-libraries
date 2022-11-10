@@ -18,10 +18,12 @@ package com.ritense.document.exception;
 
 import com.ritense.document.domain.impl.searchfield.SearchField;
 
-public class SearchConfigRequestException extends RuntimeException {
+import javax.validation.ValidationException;
+
+public class SearchConfigRequestException extends ValidationException {
 
     public SearchConfigRequestException(SearchField searchField, String type, String message) {
-        throw new IllegalArgumentException("Configured to search for " + type + " but " + message + ". For SearchField '" + searchField.getKey() + "'.");
+        super("Configured to search for " + type + " but " + message + ". For SearchField '" + searchField.getKey() + "'.");
     }
 
 }

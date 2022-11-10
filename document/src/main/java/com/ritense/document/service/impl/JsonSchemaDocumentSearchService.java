@@ -35,6 +35,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -46,7 +47,15 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -108,6 +117,10 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
             if (searchRequest.getSequence() != null) {
                 predicates.add(cb.equal(documentRoot.get("sequence"), searchRequest.getSequence()));
+            }
+
+            if (SecurityContextHolder.getContext().getAuthentication() != null) {
+                addUserRolePredicate(cb, query, documentRoot, predicates);
             }
 
             addJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
@@ -252,33 +265,125 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         return queryDialectHelper.getJsonValueExistsExpression(cb, root.get("content").get("content"), value);
     }
 
-    private Predicate findJsonValue(CriteriaBuilder cb, Root<JsonSchemaDocument> root, SearchRequest2.SearchCriteria2 searchCriteria) {
-        var dataType = searchCriteria.getDataType();
-        var jsonValue = queryDialectHelper.getJsonValueExpression(cb, root.get("content").get("content"), searchCriteria.getPath(), dataType);
-
-        if (String.class.isAssignableFrom(dataType)) {
-            switch (searchCriteria.getSearchType()) {
-                case LIKE:
-                    return cb.like(cb.lower((Expression<String>) jsonValue), "%" + searchCriteria.getValues().get(0).toString().trim().toLowerCase() + "%");
-                case EXACT:
-                    return cb.equal(cb.lower((Expression<String>) jsonValue), searchCriteria.getValues().get(0).toString().trim().toLowerCase());
-            }
+    private <T extends Comparable<? super T>> Predicate findJsonValue(CriteriaBuilder cb, Root<JsonSchemaDocument> root, SearchRequest2.SearchCriteria2 searchCriteria) {
+        var jsonValue = queryDialectHelper.getJsonValueExpression(
+            cb,
+            root.get("content").get("content"),
+            searchCriteria.getPath(),
+            searchCriteria.<T>getDataType()
+        );
+        List<T> values;
+        if (searchCriteria.getValues() == null) {
+            values = List.of();
+        } else {
+            values = searchCriteria.getValues();
         }
+        var rangeFrom = searchCriteria.<T>getRangeFrom();
+        var rangeTo = searchCriteria.<T>getRangeTo();
 
         switch (searchCriteria.getSearchType()) {
-            case EXACT:
-                return cb.equal(jsonValue, searchCriteria.getValues().get(0));
-            case IN:
-                return cb.literal(jsonValue).in(searchCriteria.getValues());
-            case FROM:
-                return cb.greaterThanOrEqualTo((Expression) jsonValue, (Comparable) searchCriteria.getRangeFrom());
-            case TO:
-                return cb.lessThanOrEqualTo((Expression) jsonValue, (Comparable) searchCriteria.getRangeTo());
+            case LIKE:
+                return cb.or(searchLike(cb, jsonValue, values));
+            case EQUAL:
+                return cb.or(searchEqual(cb, jsonValue, values));
+            case GREATER_THAN_OR_EQUAL_TO:
+                return searchGreaterThanOrEqualTo(cb, jsonValue, rangeFrom);
+            case LESS_THAN_OR_EQUAL_TO:
+                return searchLessThanOrEqualTo(cb, jsonValue, rangeTo);
             case BETWEEN:
-                return cb.between(((Expression) jsonValue), cb.literal((Comparable) searchCriteria.getRangeFrom()), cb.literal((Comparable) searchCriteria.getRangeTo()));
+                return searchBetween(cb, jsonValue, rangeFrom, rangeTo);
+            case IN:
+                return searchIn(cb, jsonValue, values);
+            default:
+                throw new NotImplementedException("Searching for search type '" + searchCriteria.getSearchType() + "' hasn't been implemented.");
         }
+    }
 
-        throw new NotImplementedException("Searching for data type '" + dataType + "' with search type '" + searchCriteria.getSearchType() + "' hasn't been implemented.");
+    @SuppressWarnings("unchecked")
+    private <T> Predicate[] searchEqual(CriteriaBuilder cb, Expression<T> jsonValue, List<T> values) {
+        if (!values.isEmpty() && values.stream().allMatch(String.class::isInstance)) {
+            var jsonValueLower = cb.lower((Expression<String>) jsonValue);
+            return values.stream()
+                .map(value -> value.toString().trim().toLowerCase())
+                .map(stringValue -> cb.equal(jsonValueLower, stringValue))
+                .toArray(Predicate[]::new);
+        } else {
+            return values.stream()
+                .map(value -> cb.equal(jsonValue, value))
+                .toArray(Predicate[]::new);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Predicate[] searchLike(CriteriaBuilder cb, Expression<T> jsonValue, List<T> values) {
+        if (values.isEmpty()) {
+            throw new IllegalArgumentException("Failed to do LIKE search. Reason: no values found");
+        } else if (values.stream().noneMatch(String.class::isInstance)) {
+            throw new IllegalArgumentException("Failed to do LIKE search. Reason: values '" + Arrays.toString(values.toArray()) + "' aren't of type 'String'");
+        } else {
+            var jsonValueLower = cb.lower((Expression<String>) jsonValue);
+            return values.stream()
+                .map(value -> value.toString().trim().toLowerCase())
+                .map(stringValue -> cb.like(jsonValueLower, "%" + stringValue + "%"))
+                .toArray(Predicate[]::new);
+        }
+    }
+
+    private <T> Predicate searchIn(CriteriaBuilder cb, Expression<T> jsonValue, List<T> values) {
+        return cb.literal(jsonValue).in(values);
+    }
+
+    private <T extends Comparable<? super T>> Predicate searchGreaterThanOrEqualTo(CriteriaBuilder cb, Expression<T> jsonValue, T rangeFrom) {
+        if (rangeFrom instanceof TemporalAccessor) {
+            var jsonValueTimestamp = toTimestampExpression(cb, jsonValue);
+            return cb.greaterThanOrEqualTo(jsonValueTimestamp, toJavaUtilDate(rangeFrom));
+        } else {
+            return cb.greaterThanOrEqualTo(jsonValue, cb.literal(rangeFrom));
+        }
+    }
+
+    private <T extends Comparable<? super T>> Predicate searchLessThanOrEqualTo(CriteriaBuilder cb, Expression<T> jsonValue, T rangeTo) {
+        if (rangeTo instanceof TemporalAccessor) {
+            var jsonValueTimestamp = toTimestampExpression(cb, jsonValue);
+            return cb.lessThanOrEqualTo(jsonValueTimestamp, toJavaUtilDate(rangeTo));
+        } else {
+            return cb.lessThanOrEqualTo(jsonValue, cb.literal(rangeTo));
+        }
+    }
+
+    private <T extends Comparable<? super T>> Predicate searchBetween(CriteriaBuilder cb, Expression<T> jsonValue, T rangeFrom, T rangeTo) {
+        if (rangeFrom instanceof TemporalAccessor) {
+            var jsonValueTimestamp = toTimestampExpression(cb, jsonValue);
+            return cb.between(jsonValueTimestamp, toJavaUtilDate(rangeFrom), toJavaUtilDate(rangeTo));
+        } else {
+            return cb.between(jsonValue, cb.literal(rangeFrom), cb.literal(rangeTo));
+        }
+    }
+
+    /**
+     * Note: The CriteriaBuilder only works with java.util.Date
+     */
+    private Expression<java.util.Date> toTimestampExpression(CriteriaBuilder cb, Expression<?> value) {
+        return cb.function("TIMESTAMP", java.util.Date.class, value);
+    }
+
+    /**
+     * Note: The CriteriaBuilder only works with java.util.Date
+     */
+    private static java.util.Date toJavaUtilDate(Object value) {
+        if (value instanceof Instant) {
+            return java.util.Date.from((Instant) value);
+        } else if (value instanceof LocalDate) {
+            return toJavaUtilDate(((LocalDate) value).atStartOfDay());
+        } else if (value instanceof LocalDateTime) {
+            return toJavaUtilDate(((LocalDateTime) value).toInstant(ZoneOffset.UTC));
+        } else if (value instanceof OffsetDateTime) {
+            return toJavaUtilDate(((OffsetDateTime) value).toInstant());
+        } else if (value instanceof ZonedDateTime) {
+            return toJavaUtilDate(((ZonedDateTime) value).toInstant());
+        } else {
+            throw new NotImplementedException("Failed to cast '" + value + "' to java.util.Date");
+        }
     }
 
     private List<Order> getOrderBy(CriteriaBuilder cb, Root<JsonSchemaDocument> root, Sort sort) {

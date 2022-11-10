@@ -17,6 +17,7 @@
 package com.ritense.document.web.rest.impl;
 
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.search.SearchRequestValidator;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.impl.SearchRequest;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
@@ -56,11 +58,12 @@ public class JsonSchemaDocumentSearchResource implements DocumentSearchResource 
 
     @Override
     @PostMapping(value = "/v1/document-definition/{name}/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public <T extends Document> ResponseEntity<Page<T>> search(
+    public ResponseEntity<Page<? extends Document>> search(
         @PathVariable(name = "name") String documentDefinitionName,
         @RequestBody SearchWithConfigRequest searchRequest,
         @PageableDefault(sort = {"createdOn"}, direction = DESC) Pageable pageable
     ) {
+        SearchRequestValidator.validate(searchRequest);
         return ResponseEntity.ok(
             documentSearchService.search(documentDefinitionName, searchRequest, pageable)
         );

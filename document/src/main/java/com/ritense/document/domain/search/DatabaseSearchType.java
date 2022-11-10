@@ -18,9 +18,9 @@ package com.ritense.document.domain.search;
 
 public enum DatabaseSearchType {
     LIKE,
-    EXACT,
-    FROM, // inclusive, so >=
-    TO, // inclusive, so <=
-    BETWEEN, // inclusive, so from >= value <= to
+    EQUAL,
+    GREATER_THAN_OR_EQUAL_TO,
+    LESS_THAN_OR_EQUAL_TO,
+    BETWEEN,
     IN
 }

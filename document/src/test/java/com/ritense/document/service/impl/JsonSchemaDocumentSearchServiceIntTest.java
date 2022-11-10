@@ -34,10 +34,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.test.context.support.WithMockUser;
+
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
-import javax.transaction.Transactional;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -575,7 +577,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var searchRequest = new SearchRequest2();
         var searchCriteria = new SearchRequest2.SearchCriteria2();
         searchCriteria.setRangeFrom(2);
-        searchCriteria.setSearchType(DatabaseSearchType.FROM);
+        searchCriteria.setSearchType(DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO);
         searchCriteria.setPath("$.housenumber");
         searchRequest.setOtherFilters(List.of(searchCriteria));
 
@@ -603,7 +605,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var searchRequest = new SearchRequest2();
         var searchCriteria = new SearchRequest2.SearchCriteria2();
         searchCriteria.setRangeTo(2);
-        searchCriteria.setSearchType(DatabaseSearchType.FROM);
+        searchCriteria.setSearchType(DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO);
         searchCriteria.setPath("$.housenumber");
         searchRequest.setOtherFilters(List.of(searchCriteria));
 
