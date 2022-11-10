@@ -109,7 +109,7 @@ public class CamundaTaskService {
         Task task;
         try {
             task = taskService.createTaskQuery().taskId(taskId).initializeFormKeys().singleResult();
-        } catch (ProcessEngineException e) {
+        } catch (ProcessEngineException ex) {
             throw new IllegalStateException(String.format("Found more than one task for id %s", taskId));
         }
         if (task == null) {
