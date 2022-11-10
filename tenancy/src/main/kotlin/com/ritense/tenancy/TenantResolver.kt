@@ -1,6 +1,5 @@
 package com.ritense.tenancy;
 
-import com.ritense.tenancy.config.TenantSpringContextHelper
 import com.ritense.tenancy.web.DelegatingTenantAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 
@@ -13,14 +12,9 @@ object TenantResolver {
      * @return Tenant id as string
      */
     @JvmStatic
-    fun getTenantId(): String {
-        return if (TenantSpringContextHelper.getValtimoProperties().app.enableTenancy != true) {
-            DEFAULT_TENANT_ID
-        } else {
-            (SecurityContextHolder
-                .getContext()
-                .authentication as? DelegatingTenantAuthenticationToken)?.tenantId ?: DEFAULT_TENANT_ID
-        }
-    }
+    fun getTenantId() =
+        (SecurityContextHolder
+            .getContext()
+            .authentication as? DelegatingTenantAuthenticationToken)?.tenantId ?: DEFAULT_TENANT_ID
 
 }
