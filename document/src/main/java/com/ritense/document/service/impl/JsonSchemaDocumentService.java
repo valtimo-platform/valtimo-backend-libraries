@@ -51,6 +51,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
 public class JsonSchemaDocumentService implements DocumentService {
@@ -73,12 +75,14 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public JsonSchemaDocumentService(DocumentRepository documentRepository,
-                                     JsonSchemaDocumentDefinitionService documentDefinitionService,
-                                     JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
-                                     ResourceService resourceService,
-                                     UserManagementService userManagementService,
-                                     ApplicationEventPublisher applicationEventPublisher) {
+    public JsonSchemaDocumentService(
+        DocumentRepository documentRepository,
+        JsonSchemaDocumentDefinitionService documentDefinitionService,
+        JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
+        ResourceService resourceService,
+        UserManagementService userManagementService,
+        ApplicationEventPublisher applicationEventPublisher
+    ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
         this.documentSequenceGeneratorService = documentSequenceGeneratorService;
