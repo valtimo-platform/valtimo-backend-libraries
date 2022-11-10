@@ -50,7 +50,11 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
     public boolean supports(Claims claims) {
         try {
             final String email = getEmail(claims);
-            if (email == null || email.isBlank()) {
+            if (email == null) {
+                logger.info("Support failed: email must be present");
+                return false;
+            }
+            if (email.isBlank()) {
                 logger.info("Support failed: email is blank");
                 return false;
             }
