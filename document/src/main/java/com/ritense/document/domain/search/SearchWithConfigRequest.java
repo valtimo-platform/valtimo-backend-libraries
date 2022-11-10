@@ -16,10 +16,10 @@
 
 package com.ritense.document.domain.search;
 
-import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import javax.validation.constraints.NotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 
 public class SearchWithConfigRequest {
@@ -106,6 +106,7 @@ public class SearchWithConfigRequest {
             return rangeFrom.getComparableValue();
         }
 
+        @JsonIgnore
         public SearchRequestValue getRangeFromSearchRequestValue() {
             return rangeFrom;
         }
@@ -118,6 +119,7 @@ public class SearchWithConfigRequest {
             return rangeTo.getComparableValue();
         }
 
+        @JsonIgnore
         public SearchRequestValue getRangeToSearchRequestValue() {
             return rangeTo;
         }
@@ -132,6 +134,7 @@ public class SearchWithConfigRequest {
                 .collect(Collectors.toList());
         }
 
+        @JsonIgnore
         public List<SearchRequestValue> getSearchRequestValues() {
             return values;
         }

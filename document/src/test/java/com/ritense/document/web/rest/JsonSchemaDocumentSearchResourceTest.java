@@ -35,10 +35,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 import java.util.List;
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -129,17 +132,15 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
     }
 
     @Test
+    @WithMockUser(username = "john.doe@ritense.com", authorities = USER)
     void shouldSearchWithConfigValue() throws Exception {
-        var filter = new SearchWithConfigRequest.SearchWithConfigFilter(
-            "key",
-            null,
-            null,
-            List.of("value"));
+        var filter = new SearchWithConfigRequest.SearchWithConfigFilter();
+        filter.setKey("key");
+        filter.setValues(List.of("value1", "value2"));
         var request = new SearchWithConfigRequest();
         request.setOtherFilters(List.of(filter));
 
-        doReturn((Page<Document>)documentPage)
-            .when(documentSearchService.search(any(), any(SearchWithConfigRequest.class), any()));
+        doReturn(documentPage).when(documentSearchService).search(any(), any(SearchWithConfigRequest.class), any());
 
         var jsonRequest = Mapper.INSTANCE.get().writeValueAsString(request);
 
