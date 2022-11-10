@@ -19,10 +19,16 @@
             "type": "string",
             "maxLength": 100
         },
-        "movedAt": {
+        "movedAtDate": {
             "description": "the move date",
             "type": "string",
             "format": "date"
+        },
+        "movedAtDateTime": {
+            "description": "the move date and time",
+            "type": "string",
+            "format": "datetime"
+
         }
     }
 }

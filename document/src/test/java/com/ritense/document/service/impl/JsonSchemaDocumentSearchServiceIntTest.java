@@ -34,12 +34,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.test.context.support.WithMockUser;
-
-import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-
+import javax.transaction.Transactional;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -601,6 +600,35 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchWithSearchRequestAndToRangedValue() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"housenumber\": 1}").resultingDocument().get();
+        createDocument("{\"housenumber\": 2}").resultingDocument().get();
+        createDocument("{\"housenumber\": 3}").resultingDocument().get();
+
+        var searchRequest = new SearchRequest2();
+        var searchCriteria = new SearchRequest2.SearchCriteria2();
+        searchCriteria.setRangeTo(1);
+        searchCriteria.setSearchType(DatabaseSearchType.LESS_THAN_OR_EQUAL_TO);
+        searchCriteria.setPath("$.housenumber");
+        searchRequest.setOtherFilters(List.of(searchCriteria));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.housenumber")));
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+
+        var content = result.getContent();
+        assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).isPresent());
+        assertEquals(1, content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
     void shouldFailOnFromSearchWithoutRangeFrom() {
         documentRepository.deleteAllInBatch();
 
@@ -615,7 +643,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         searchCriteria.setPath("$.housenumber");
         searchRequest.setOtherFilters(List.of(searchCriteria));
 
-        assertThrows(Exception.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             documentSearchService.search(
                 definition.id().name(),
                 searchRequest,
@@ -628,16 +656,16 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndRangedDateValues() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"movedAt\": \"2022-01-01\"}").resultingDocument().get();
-        createDocument("{\"movedAt\": \"2022-02-01\"}").resultingDocument().get();
-        createDocument("{\"movedAt\": \"2022-03-01\"}").resultingDocument().get();
+        createDocument("{\"movedAtDate\": \"2022-01-01\"}").resultingDocument().get();
+        createDocument("{\"movedAtDate\": \"2022-02-01\"}").resultingDocument().get();
+        createDocument("{\"movedAtDate\": \"2022-03-01\"}").resultingDocument().get();
 
         var searchRequest = new SearchRequest2();
         var searchCriteria = new SearchRequest2.SearchCriteria2();
         searchCriteria.setRangeFrom(LocalDate.of(2022, 01, 01));
         searchCriteria.setRangeTo(LocalDate.of(2022, 02, 01));
         searchCriteria.setSearchType(DatabaseSearchType.BETWEEN);
-        searchCriteria.setPath("$.movedAt");
+        searchCriteria.setPath("$.movedAtDate");
         searchRequest.setOtherFilters(List.of(searchCriteria));
 
         var result = documentSearchService.search(
@@ -649,10 +677,42 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         assertThat(result.getTotalElements()).isEqualTo(2);
 
         var content = result.getContent();
-        assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAt")).isPresent());
-        assertTrue(content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAt")).isPresent());
-        assertEquals("2022-01-01", content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAt")).get().asText());
-        assertEquals("2022-02-01", content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAt")).get().asText());
+        assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).isPresent());
+        assertTrue(content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).isPresent());
+        assertEquals("2022-01-01", content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).get().asText());
+        assertEquals("2022-02-01", content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).get().asText());
+    }
+
+    @Test
+    void shouldSearchWithSearchRequestAndFromDateTimeValues() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:00:00\"}").resultingDocument().get();
+        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:10:00\"}").resultingDocument().get();
+        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:20:00\"}").resultingDocument().get();
+
+        var searchRequest = new SearchRequest2();
+        var searchCriteria = new SearchRequest2.SearchCriteria2();
+        searchCriteria.setRangeFrom(LocalDateTime.of(2022, 01, 01, 12, 10));
+        searchCriteria.setSearchType(DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO);
+        searchCriteria.setPath("$.movedAtDateTime");
+        searchRequest.setOtherFilters(List.of(searchCriteria));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.movedAtDateTime")));
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(2);
+
+        var content = result.getContent();
+        assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).isPresent());
+        assertTrue(content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).isPresent());
+        assertEquals("2022-01-01T12:10:00",
+                     content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText());
+        assertEquals("2022-01-01T12:20:00",
+                     content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText());
     }
 
     private CreateDocumentResult createDocument(String content) {
@@ -665,5 +725,4 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             )
         );
     }
-
 }
