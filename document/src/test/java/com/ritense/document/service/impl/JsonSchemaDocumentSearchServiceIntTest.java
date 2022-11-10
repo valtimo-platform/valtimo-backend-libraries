@@ -45,6 +45,7 @@ import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.U
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("integration")
 @Transactional
@@ -488,7 +489,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldOrderAllDocumentsBasedOnAssigneeFullName() {
-        documentRepository.deleteAll();
+        documentRepository.deleteAllInBatch();
         var documentOne = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
         var documentTwo = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
         var documentThree = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
@@ -503,6 +504,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         );
 
         assertThat(page).isNotNull();
+        assertThat(page.getTotalElements()).isEqualTo(3);
         var content = page.getContent();
         assertThat(content.get(0).assigneeFullName()).isEqualTo("Beth Zabala");
         assertThat(content.get(1).assigneeFullName()).isEqualTo("Beth Xander");
@@ -512,13 +514,11 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = USERNAME, authorities = USER)
-    void shouldSearchWithSearchRequestAndValues() {
-        documentRepository.deleteAll();
+    void shouldSearchWithSearchRequestAndLikeText() {
+        documentRepository.deleteAllInBatch();
 
-        var documentOne = (JsonSchemaDocument) createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
-        var documentTwo = (JsonSchemaDocument) createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
-
-        documentRepository.saveAll(List.of(documentOne, documentTwo));
+        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
 
         var searchRequest = new SearchRequest2();
         var searchCriteria = new SearchRequest2.SearchCriteria2();
@@ -533,7 +533,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             PageRequest.of(0, 10, Sort.by(Direction.DESC, "$.street")));
 
         assertThat(result).isNotNull();
-        assertEquals(2, result.getContent().size());
+        assertThat(result.getTotalElements()).isEqualTo(2);
     }
 
     @Test
@@ -559,14 +559,17 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.housenumber")));
 
         assertThat(result).isNotNull();
-        var content = result.getContent();
-        assertEquals(2, content.size());
+        assertThat(result.getTotalElements()).isEqualTo(2);
 
+        var content = result.getContent();
+        assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).isPresent());
+        assertTrue(content.get(1).content().getValueBy(JsonPointer.valueOf("/housenumber")).isPresent());
         assertEquals(1, content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
         assertEquals(2, content.get(1).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
     }
 
     @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
     void shouldSearchWithSearchRequestAndFromRangedValue() {
         documentRepository.deleteAllInBatch();
 
@@ -587,14 +590,17 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.housenumber")));
 
         assertThat(result).isNotNull();
-        var content = result.getContent();
-        assertEquals(2, content.size());
+        assertThat(result.getTotalElements()).isEqualTo(2);
 
+        var content = result.getContent();
+        assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).isPresent());
+        assertTrue(content.get(1).content().getValueBy(JsonPointer.valueOf("/housenumber")).isPresent());
         assertEquals(2, content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
         assertEquals(3, content.get(1).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
     }
 
     @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
     void shouldFailOnFromSearchWithoutRangeFrom() {
         documentRepository.deleteAllInBatch();
 
@@ -610,7 +616,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         searchRequest.setOtherFilters(List.of(searchCriteria));
 
         assertThrows(Exception.class, () -> {
-         var result =   documentSearchService.search(
+            documentSearchService.search(
                 definition.id().name(),
                 searchRequest,
                 PageRequest.of(0, 10)
@@ -640,9 +646,11 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.movedAt")));
 
         assertThat(result).isNotNull();
-        var content = result.getContent();
-        assertEquals(2, content.size());
+        assertThat(result.getTotalElements()).isEqualTo(2);
 
+        var content = result.getContent();
+        assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAt")).isPresent());
+        assertTrue(content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAt")).isPresent());
         assertEquals("2022-01-01", content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAt")).get().asText());
         assertEquals("2022-02-01", content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAt")).get().asText());
     }

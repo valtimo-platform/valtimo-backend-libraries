@@ -37,11 +37,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.util.Arrays;
 import java.util.List;
-
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -139,8 +138,8 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
         var request = new SearchWithConfigRequest();
         request.setOtherFilters(List.of(filter));
 
-        when(documentSearchService.search(any(), any(SearchWithConfigRequest.class), any()))
-            .thenReturn((Page<Document>) documentPage);
+        doReturn((Page<Document>)documentPage)
+            .when(documentSearchService.search(any(), any(SearchWithConfigRequest.class), any()));
 
         var jsonRequest = Mapper.INSTANCE.get().writeValueAsString(request);
 
