@@ -35,12 +35,12 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping(value = ["/api/process-link"])
+@RequestMapping(value = ["/api"])
 class PluginProcessLinkResource(
     private var pluginService: PluginService
 ) {
 
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(value = ["/v1/process-link"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getProcessLinks(
         @RequestParam("processDefinitionId") processDefinitionId: String,
         @RequestParam("activityId") activityId: String
@@ -50,7 +50,7 @@ class PluginProcessLinkResource(
         return ResponseEntity.ok(list)
     }
 
-    @PostMapping
+    @PostMapping("/v1/process-link")
     fun createProcessLink(
         @RequestBody processLink: PluginProcessLinkCreateDto
     ): ResponseEntity<Unit> {
@@ -59,7 +59,7 @@ class PluginProcessLinkResource(
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
-    @PutMapping
+    @PutMapping("/v1/process-link")
     fun updateProcessLink(
         @RequestBody processLink: PluginProcessLinkUpdateDto
     ): ResponseEntity<Unit> {
@@ -68,7 +68,7 @@ class PluginProcessLinkResource(
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
-    @DeleteMapping("/{processLinkId}")
+    @DeleteMapping("/v1/process-link/{processLinkId}")
     fun deleteProcessLink(
         @PathVariable(name = "processLinkId") processLinkId: UUID
     ): ResponseEntity<Unit> {

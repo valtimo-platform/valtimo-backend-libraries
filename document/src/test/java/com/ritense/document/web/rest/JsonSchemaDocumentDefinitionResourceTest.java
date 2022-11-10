@@ -92,7 +92,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     public void shouldReturnPagedRecordPage() throws Exception {
         when(documentDefinitionService.findForUser(anyBoolean(), any())).thenReturn(definitionPage);
 
-        mockMvc.perform(get("/api/document-definition"))
+        mockMvc.perform(get("/api/v1/document-definition"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -104,7 +104,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         String definitionName = definition.getId().name();
         when(documentDefinitionService.findLatestByName(anyString())).thenReturn(Optional.of(definition));
         when(documentDefinitionService.getDocumentDefinitionRoles(eq(definitionName))).thenReturn(Set.of(SOME_ROLE));
-        mockMvc.perform(get("/api/document-definition/{name}", definitionName))
+        mockMvc.perform(get("/api/v1/document-definition/{name}", definitionName))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -139,7 +139,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         when(documentDefinitionService.deploy(anyString()))
             .thenReturn(new DeployDocumentDefinitionResultSucceeded(definition));
 
-        mockMvc.perform(post("/api/document-definition")
+        mockMvc.perform(post("/api/v1/document-definition")
             .content(objectMapper.writeValueAsString(documentDefinitionCreateRequest))
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -179,7 +179,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         when(documentDefinitionService.deploy(anyString()))
             .thenReturn(new DeployDocumentDefinitionResultFailed(List.of(() -> "This schema was already deployed")));
 
-        mockMvc.perform(post("/api/document-definition")
+        mockMvc.perform(post("/api/v1/document-definition")
             .content(objectMapper.writeValueAsString(documentDefinitionCreateRequest))
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -199,7 +199,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
             new UndeployDocumentDefinitionResultSucceeded(definitionName)
         );
 
-        mockMvc.perform(delete("/api/document-definition/{name}", definitionName)
+        mockMvc.perform(delete("/api/v1/document-definition/{name}", definitionName)
             .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())
@@ -216,7 +216,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
             new UndeployDocumentDefinitionResultFailed(List.of())
         );
 
-        mockMvc.perform(delete("/api/document-definition/{name}", definitionName)
+        mockMvc.perform(delete("/api/v1/document-definition/{name}", definitionName)
             .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())

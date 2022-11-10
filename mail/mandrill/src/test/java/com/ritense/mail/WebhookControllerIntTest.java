@@ -65,7 +65,7 @@ public class WebhookControllerIntTest {
         when(webhookService.isRequestValid(anyString(), any(MultiValueMap.class))).thenReturn(true);
         doNothing().when(webhookService).handleMandrillEvents(isA(MandrillWebhookRequest.class));
 
-        mockMvc.perform(post("/api/mandrill/webhook")
+        mockMvc.perform(post("/api/v1/mandrill/webhook")
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .header("X-Mandrill-Signature", "something")
             .content(String.format("mandrill_events=%s", UriUtils.encode(getWebhookJsonAsString(), "UTF-8"))))
@@ -78,7 +78,7 @@ public class WebhookControllerIntTest {
         when(webhookService.isRequestValid(anyString(), any(MultiValueMap.class))).thenReturn(false);
         doNothing().when(webhookService).handleMandrillEvents(isA(MandrillWebhookRequest.class));
 
-        mockMvc.perform(post("/api/mandrill/webhook")
+        mockMvc.perform(post("/api/v1/mandrill/webhook")
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .header("X-Mandrill-Signature", "something")
             .content(String.format("mandrill_events=%s", UriUtils.encode(getWebhookJsonAsString(), "UTF-8"))))

@@ -34,37 +34,37 @@ class ContextSecurityResourceTest extends SecuritySpecificEndpointIntegrationTes
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = ADMIN)
     void updateContextAsAdmin() throws Exception {
-        assertHttpStatus(PUT, "/api/contexts", BAD_REQUEST);
+        assertHttpStatus(PUT, "/api/v1/contexts", BAD_REQUEST);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = USER)
     void updateContextAsUser() throws Exception {
-        assertHttpStatus(PUT, "/api/contexts", FORBIDDEN);
+        assertHttpStatus(PUT, "/api/v1/contexts", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = ADMIN)
     void createContextAsAdmin() throws Exception {
-        assertHttpStatus(POST, "/api/contexts", BAD_REQUEST);
+        assertHttpStatus(POST, "/api/v1/contexts", BAD_REQUEST);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = USER)
     void createContextAsUser() throws Exception {
-        assertHttpStatus(POST, "/api/contexts", FORBIDDEN);
+        assertHttpStatus(POST, "/api/v1/contexts", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = ADMIN)
     void deleteChoiceFieldAsAdmin() throws Exception {
-        assertHttpStatus(DELETE, "/api/contexts/1", OK);
+        assertHttpStatus(DELETE, "/api/v1/contexts/1", OK);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void deleteChoiceFieldAsUser() throws Exception {
-        assertHttpStatus(DELETE, "/api/contexts/1", FORBIDDEN);
+        assertHttpStatus(DELETE, "/api/v1/contexts/1", FORBIDDEN);
     }
 
 }

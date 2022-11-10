@@ -63,7 +63,7 @@ class ResultaatResourceTest : BaseTest() {
                 listOf(resultaatType())
             ))
 
-        mvc.perform(MockMvcRequestBuilders.post("/api/openzaak/resultaat")
+        mvc.perform(MockMvcRequestBuilders.post("/api/v1/openzaak/resultaat")
             .content("""{"zaaktype": "http://example.com"}""")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(APPLICATION_JSON_VALUE)

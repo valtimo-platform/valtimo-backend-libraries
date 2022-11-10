@@ -66,7 +66,7 @@ internal class CatalogiResourceTest {
 
         mockMvc
             .perform(
-                MockMvcRequestBuilders.get("/api/documentdefinition/$documentDefinitionName/zaaktype/documenttype")
+                MockMvcRequestBuilders.get("/api/v1/documentdefinition/$documentDefinitionName/zaaktype/documenttype")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)

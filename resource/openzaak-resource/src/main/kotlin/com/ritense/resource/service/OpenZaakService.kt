@@ -170,6 +170,6 @@ class OpenZaakService(
 
     private fun getDownloadUrl(resource: OpenZaakResource): URL {
         val currentRequestUrl = URL(request.requestURL.toString())
-        return URL(currentRequestUrl, "/api/resource/${resource.resourceId.id}/download")
+        return URL(currentRequestUrl, "/api/v1/resource/${resource.resourceId.id}/download")
     }
 }

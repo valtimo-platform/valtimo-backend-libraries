@@ -41,37 +41,37 @@ import java.util.UUID
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(value = ["/api/connector"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 interface ConnectorResource {
 
-    @GetMapping(value = ["/type"])
+    @GetMapping(value = ["/v1/connector/type"])
     fun getTypes(): ResponseEntity<List<ConnectorType>>
 
-    @GetMapping(value = ["/instance"], params = ["instanceId"])
+    @GetMapping(value = ["/v1/connector/instance"], params = ["instanceId"])
     fun getConnectorInstance(@RequestParam(name = "instanceId") instanceId: UUID): ResponseEntity<ConnectorInstance>
 
-    @GetMapping(value = ["/instance"])
+    @GetMapping(value = ["/v1/connector/instance"])
     fun getInstances(
         @RequestParam(required = false) typeName: String?,
         @PageableDefault(sort = ["name"], direction = Sort.Direction.DESC) pageable: Pageable = Pageable.unpaged()
     ): ResponseEntity<Page<ConnectorInstance>>
 
-    @GetMapping(value = ["/instance/{typeId}"])
+    @GetMapping(value = ["/v1/connector/instance/{typeId}"])
     fun getInstancesByType(
         @PathVariable(name = "typeId") typeId: UUID,
         @PageableDefault(sort = ["name"], direction = Sort.Direction.DESC) pageable: Pageable = Pageable.unpaged()
     ): ResponseEntity<Page<ConnectorInstance>>
 
-    @PostMapping(value = ["/instance"])
+    @PostMapping(value = ["/v1/connector/instance"])
     fun create(
         @Valid @RequestBody request: CreateConnectorInstanceRequest
     ): ResponseEntity<CreateConnectorInstanceResult>
 
-    @PutMapping(value = ["/instance"])
+    @PutMapping(value = ["/v1/connector/instance"])
     fun modify(
         @Valid @RequestBody request: ModifyConnectorInstanceRequest
     ): ResponseEntity<ModifyConnectorInstanceResult>
 
-    @DeleteMapping(value = ["/instance/{instanceId}"])
+    @DeleteMapping(value = ["/v1/connector/instance/{instanceId}"])
     fun remove(@PathVariable(name = "instanceId") instanceId: UUID): ResponseEntity<Void>
 }

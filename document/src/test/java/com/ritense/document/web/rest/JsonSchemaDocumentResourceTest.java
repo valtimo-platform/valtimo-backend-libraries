@@ -97,7 +97,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(true);
 
-        mockMvc.perform(get("/api/document/{id}", UUID.randomUUID().toString())
+        mockMvc.perform(get("/api/v1/document/{id}", UUID.randomUUID().toString())
             .accept(APPLICATION_JSON_VALUE)
             .contentType(APPLICATION_JSON_VALUE)
         )
@@ -114,7 +114,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(true);
 
-        mockMvc.perform(get("/api/document/{id}", UUID.randomUUID().toString())
+        mockMvc.perform(get("/api/v1/document/{id}", UUID.randomUUID().toString())
                 .accept(APPLICATION_JSON_VALUE)
                 .contentType(APPLICATION_JSON_VALUE)
             )
@@ -145,7 +145,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         );
 
         mockMvc.perform(
-            put("/api/document")
+            put("/api/v1/document")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(TestUtil.convertObjectToJsonBytes(modifyRequest))
         )
@@ -166,7 +166,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             .thenReturn(true);
 
         mockMvc.perform(
-            post("/api/document/{document-id}/resource/{resource-id}", document.id(), UUID.randomUUID())
+            post("/api/v1/document/{document-id}/resource/{resource-id}", document.id(), UUID.randomUUID())
                 .contentType(APPLICATION_JSON_VALUE)
         )
             .andDo(print())
@@ -188,7 +188,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             .thenReturn(true);
 
         mockMvc.perform(
-            delete("/api/document/{document-id}/resource/{resource-id}", document.id(), UUID.randomUUID())
+            delete("/api/v1/document/{document-id}/resource/{resource-id}", document.id(), UUID.randomUUID())
                 .contentType(APPLICATION_JSON_VALUE)
         )
             .andDo(print())
@@ -210,7 +210,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(true);
 
-        mockMvc.perform(get("/api/document/{document-id}/candidate-user", document.id()).accept(APPLICATION_JSON_VALUE))
+        mockMvc.perform(get("/api/v1/document/{document-id}/candidate-user", document.id()).accept(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(1)))
@@ -228,7 +228,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(false);
 
-        mockMvc.perform(get("/api/document/{document-id}/candidate-user", document.id()).accept(APPLICATION_JSON_VALUE))
+        mockMvc.perform(get("/api/v1/document/{document-id}/candidate-user", document.id()).accept(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isBadRequest());
     }

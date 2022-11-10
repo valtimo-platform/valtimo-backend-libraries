@@ -43,7 +43,7 @@
             },
             "key": "bijlagen",
             "type": "file",
-            "url": "/api/form-file",
+            "url": "/api/v1/form-file",
             "input": true,
             "multiple": true
         },

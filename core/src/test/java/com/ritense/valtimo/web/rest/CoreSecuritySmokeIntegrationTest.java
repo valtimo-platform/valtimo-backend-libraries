@@ -26,9 +26,9 @@ public class CoreSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTe
     protected Set<String> getIgnoredPathPatterns() {
         return new HashSet<>(
             Arrays.asList(
-                "/api/public/process/definition/{processDefinitionKey}/start-form",
-                "/api/ping",
-                "/api/mandrill/webhook"
+                "/api/v1/public/process/definition/{processDefinitionKey}/start-form",
+                "/api/v1/ping",
+                "/api/v1/mandrill/webhook"
             )
         );
     }

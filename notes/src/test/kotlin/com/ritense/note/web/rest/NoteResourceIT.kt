@@ -89,7 +89,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         val note = NoteCreateRequestDto(content = "Test note")
 
         mockMvc.perform(
-            post("/api/document/{documentId}/note", documentId)
+            post("/api/v1/document/{documentId}/note", documentId)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(note))
         )
@@ -109,7 +109,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         val note = NoteCreateRequestDto(content = "Test note")
 
         val responseBody = mockMvc.perform(
-            post("/api/document/{documentId}/note", documentId.toString())
+            post("/api/v1/document/{documentId}/note", documentId.toString())
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(note))
         )
@@ -130,7 +130,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         val note = NoteCreateRequestDto(content = "Test note")
 
         mockMvc.perform(
-            post("/api/document/{documentId}/note", documentId.toString())
+            post("/api/v1/document/{documentId}/note", documentId.toString())
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(note))
         )
@@ -148,7 +148,8 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         noteService.createNote(jsonSchemaDocumentId, testContent)
 
         mockMvc.perform(
-            get("/api/document/{documentId}/note", documentId)
+            get("/api/v1" +
+                "/document/{documentId}/note", documentId)
         )
             .andDo(print())
             .andExpect(status().isOk)

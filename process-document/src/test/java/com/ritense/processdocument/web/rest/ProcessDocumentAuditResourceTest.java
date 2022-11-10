@@ -85,7 +85,7 @@ public class ProcessDocumentAuditResourceTest extends BaseTest {
             .thenReturn(new PageImpl<>(List.of(auditRecord)));
 
         mockMvc.perform(
-                get("/api/process-document/instance/document/{documentId}/audit", UUID.randomUUID().toString())
+                get("/api/v1/process-document/instance/document/{documentId}/audit", UUID.randomUUID().toString())
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .accept(APPLICATION_JSON_VALUE)
                     .contentType(APPLICATION_JSON_VALUE))

@@ -128,7 +128,7 @@ public class ProcessResource extends AbstractProcessResource {
         this.processPropertyService = processPropertyService;
     }
 
-    @GetMapping(value = "/process/definition")
+    @GetMapping(value = "/v1/process/definition")
     public ResponseEntity<List<ProcessDefinitionWithPropertiesDto>> getProcessDefinitions() {
         final List<ProcessDefinitionWithPropertiesDto> definitions = camundaProcessService
             .getDeployedDefinitions()
@@ -141,7 +141,7 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(definitions);
     }
 
-    @GetMapping(value = "/process/definition/{processDefinitionKey}")
+    @GetMapping(value = "/v1/process/definition/{processDefinitionKey}")
     public ResponseEntity<ProcessDefinitionDto> getProcessDefinition(@PathVariable String processDefinitionKey) {
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
             .processDefinitionKey(processDefinitionKey)
@@ -152,7 +152,7 @@ public class ProcessResource extends AbstractProcessResource {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping(value = "/process/definition/{processDefinitionKey}/versions")
+    @GetMapping(value = "/v1/process/definition/{processDefinitionKey}/versions")
     public ResponseEntity<List<ProcessDefinitionDto>> getProcessDefinitionVersions(
         @PathVariable String processDefinitionKey
     ) {
@@ -167,7 +167,7 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping(value = "/process/definition/{processDefinitionId}/xml")
+    @GetMapping(value = "/v1/process/definition/{processDefinitionId}/xml")
     public ResponseEntity<ProcessDefinitionDiagramWithPropertyDto> getProcessDefinitionXml(
         @PathVariable String processDefinitionId
     ) {
@@ -187,7 +187,7 @@ public class ProcessResource extends AbstractProcessResource {
         }
     }
 
-    @GetMapping(value = "/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/flownodes")
+    @GetMapping(value = "/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/flownodes")
     public ResponseEntity<FlowNodeMigrationDTO> getFlowNodes(
         @PathVariable String sourceProcessDefinitionId, @PathVariable String targetProcessDefinitionId
     ) {
@@ -201,7 +201,7 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(flowNodeMigrationDTO);
     }
 
-    @GetMapping(value = "/process/definition/{processDefinitionKey}/heatmap/count")
+    @GetMapping(value = "/v1/process/definition/{processDefinitionKey}/heatmap/count")
     public ResponseEntity<Map<String, HeatmapTaskCountDTO>> getProcessDefinitionHeatmap(
         @PathVariable String processDefinitionKey,
         @RequestParam Integer version,
@@ -259,7 +259,7 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(activeTasksCount);
     }
 
-    @GetMapping(value = "/process/definition/{processDefinitionKey}/heatmap/duration")
+    @GetMapping(value = "/v1/process/definition/{processDefinitionKey}/heatmap/duration")
     public ResponseEntity<Map<String, HeatmapTaskAverageDurationDTO>> getProcessDefinitionDurationBasedHeatmap(
         @PathVariable String processDefinitionKey,
         @RequestParam Integer version,
@@ -331,7 +331,7 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(allTasksAverageDuration);
     }
 
-    @PostMapping(value = "/process/definition/{processDefinitionKey}/{businessKey}/start", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/process/definition/{processDefinitionKey}/{businessKey}/start", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProcessInstanceDto> startProcessInstance(
         @PathVariable String processDefinitionKey,
         @PathVariable String businessKey,
@@ -342,7 +342,7 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(processInstanceWithDefinition.getProcessInstanceDto());
     }
 
-    @GetMapping(value = "/process/{processInstanceId}")
+    @GetMapping(value = "/v1/process/{processInstanceId}")
     public ResponseEntity<HistoricProcessInstanceDto> getProcessInstance(@PathVariable String processInstanceId) {
         HistoricProcessInstance historicProcessInstance = getHistoricProcessInstance(processInstanceId);
         return Optional.ofNullable(historicProcessInstance)
@@ -351,7 +351,7 @@ public class ProcessResource extends AbstractProcessResource {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping(value = "/process/{processInstanceId}/history")
+    @GetMapping(value = "/v1/process/{processInstanceId}/history")
     public ResponseEntity<List<HistoricActivityInstanceDto>> getProcessInstanceHistory(
         @PathVariable String processInstanceId
     ) {
@@ -371,7 +371,7 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping(value = "/process/{processInstanceId}/log")
+    @GetMapping(value = "/v1/process/{processInstanceId}/log")
     public ResponseEntity<List<UserOperationLogEntryDto>> getProcessInstanceOperationLog(
         @PathVariable String processInstanceId
     ) {
@@ -384,7 +384,7 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping(value = "/process/{processInstanceId}/tasks")
+    @GetMapping(value = "/v1/process/{processInstanceId}/tasks")
     public ResponseEntity<List<TaskInstanceWithIdentityLink>> getProcessInstanceTasks(
         @PathVariable String processInstanceId
     ) {
@@ -394,7 +394,7 @@ public class ProcessResource extends AbstractProcessResource {
             .orElse(ResponseEntity.noContent().build());
     }
 
-    @GetMapping(value = "/process/{processInstanceId}/activetask")
+    @GetMapping(value = "/v1/process/{processInstanceId}/activetask")
     public ResponseEntity<TaskDto> getProcessInstanceActiveTask(@PathVariable String processInstanceId) {
         Task task = taskService.createTaskQuery()
             .active()
@@ -406,7 +406,7 @@ public class ProcessResource extends AbstractProcessResource {
             .orElse(ResponseEntity.noContent().build());
     }
 
-    @GetMapping(value = "/process/{processInstanceId}/xml")
+    @GetMapping(value = "/v1/process/{processInstanceId}/xml")
     public ResponseEntity<ProcessInstanceDiagramDto> getProcessInstanceXml(@PathVariable String processInstanceId) {
         HistoricProcessInstance processInstance = getHistoricProcessInstance(processInstanceId);
         try {
@@ -426,7 +426,7 @@ public class ProcessResource extends AbstractProcessResource {
         }
     }
 
-    @GetMapping(value = "/process/{processInstanceId}/activities")
+    @GetMapping(value = "/v1/process/{processInstanceId}/activities")
     public ResponseEntity<ActivityInstanceDto> getProcessInstanceActivity(@PathVariable String processInstanceId) {
         final var activityInstance = runtimeService.getActivityInstance(processInstanceId);
         return Optional
@@ -435,14 +435,14 @@ public class ProcessResource extends AbstractProcessResource {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping(value = "/process/{processInstanceId}/comments")
+    @GetMapping(value = "/v1/process/{processInstanceId}/comments")
     public ResponseEntity<List<Comment>> getProcessInstanceComments(@PathVariable String processInstanceId) {
         List<Comment> processInstanceComments = taskService.getProcessInstanceComments(processInstanceId);
         processInstanceComments.sort((Comment c1, Comment c2) -> c2.getTime().compareTo(c1.getTime()));
         return ResponseEntity.ok(processInstanceComments);
     }
 
-    @PostMapping(value = "/v2/process/{processDefinitionName}/search")
+    @PostMapping(value = "/v1/process/{processDefinitionName}/search")
     public ResponseEntity<List<ProcessInstance>> searchProcessInstancesV2(
         @PathVariable String processDefinitionName,
         @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO,
@@ -454,11 +454,11 @@ public class ProcessResource extends AbstractProcessResource {
             pageable
         );
         final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(
-            page, "/v2/process/{processDefinitionName}/search");
+            page, "/v1/process/{processDefinitionName}/search");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    @PostMapping(value = "/v2/process/{processDefinitionName}/count")
+    @PostMapping(value = "/v1/process/{processDefinitionName}/count")
     public ResponseEntity<ResultCount> searchProcessInstanceCountV2(
         @PathVariable String processDefinitionName,
         @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO
@@ -470,7 +470,7 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(new ResultCount(count));
     }
 
-    @PostMapping(value = "/v2/process/definition/{processDefinitionId}/count")
+    @PostMapping(value = "/v1/process/definition/{processDefinitionId}/count")
     public ResponseEntity<ResultCount> getProcessInstanceCountForProcessDefinitionIdV2(
         @PathVariable String processDefinitionId,
         @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO
@@ -480,7 +480,7 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(new ResultCount(count));
     }
 
-    @PostMapping(value = "process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/migrate")
+    @PostMapping(value = "/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/migrate")
     @ResponseBody
     @Transactional
     public ResponseEntity<BatchDto> migrateProcessInstancesByProcessDefinitionIds(
@@ -509,19 +509,19 @@ public class ProcessResource extends AbstractProcessResource {
         return new ResponseEntity<>(BatchDto.fromBatch(migrationBatch), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/process/{processInstanceId}/comment")
+    @PostMapping(value = "/v1/process/{processInstanceId}/comment")
     public ResponseEntity<Void> createComment(@PathVariable String processInstanceId, @RequestBody CommentDto comment) {
         taskService.createComment(null, processInstanceId, comment.getText());
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/process/{processInstanceId}/delete")
+    @PostMapping(value = "/v1/process/{processInstanceId}/delete")
     public ResponseEntity<Void> delete(@PathVariable String processInstanceId, @RequestBody String reason) {
         camundaProcessService.deleteProcessInstanceById(processInstanceId, reason);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping(value = "/process/definition/{processDefinitionId}/xml/timer")
+    @PutMapping(value = "/v1/process/definition/{processDefinitionId}/xml/timer")
     public ResponseEntity<Void> modifyProcessDefinitionIntoShortTimerVersionAndDeploy(
         @PathVariable String processDefinitionId
     ) throws ProcessNotFoundException, DocumentParserException {

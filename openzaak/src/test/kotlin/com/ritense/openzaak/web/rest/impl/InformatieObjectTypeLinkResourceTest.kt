@@ -71,7 +71,7 @@ internal class InformatieObjectTypeLinkResourceTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders.get(
-                "/api/openzaak/informatie-object-type-link/{documentDefinitionName}",
+                "/api/v1/openzaak/informatie-object-type-link/{documentDefinitionName}",
                 documentDefinitionName
             )
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -91,7 +91,7 @@ internal class InformatieObjectTypeLinkResourceTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders.get(
-                "/api/openzaak/informatie-object-type-link/{documentDefinitionName}",
+                "/api/v1/openzaak/informatie-object-type-link/{documentDefinitionName}",
                 documentDefinitionName
             )
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -119,7 +119,7 @@ internal class InformatieObjectTypeLinkResourceTest {
             .thenReturn(CreateInformatieObjectTypeLinkResultSucceeded(informatieObjectTypeLink))
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/openzaak/informatie-object-type-link")
+            MockMvcRequestBuilders.post("/api/v1/openzaak/informatie-object-type-link")
                 .content(Mapper.INSTANCE.get().writeValueAsString(createInformatieObjectTypeRequest))
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -146,7 +146,7 @@ internal class InformatieObjectTypeLinkResourceTest {
             .thenReturn(CreateInformatieObjectTypeLinkResultFailed(listOf(OperationError.FromException(RuntimeException("message")))))
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/openzaak/informatie-object-type-link")
+            MockMvcRequestBuilders.post("/api/v1/openzaak/informatie-object-type-link")
                 .content(Mapper.INSTANCE.get().writeValueAsString(createInformatieObjectTypeRequest))
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

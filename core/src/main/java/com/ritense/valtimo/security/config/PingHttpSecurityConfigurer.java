@@ -27,7 +27,7 @@ public class PingHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/ping").permitAll();
+                .antMatchers(GET, "/api/v1/ping").permitAll();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

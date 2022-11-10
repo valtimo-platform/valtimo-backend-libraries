@@ -92,7 +92,7 @@ internal class PluginProcessLinkResourceTest {
         whenever(pluginService.getProcessLinks(any(), any())).thenReturn(processLinks)
 
         mockMvc.perform(
-            get("/api/process-link?processDefinitionId=$processDefinitionId&activityId=$activityId")
+            get("/api/v1/process-link?processDefinitionId=$processDefinitionId&activityId=$activityId")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
@@ -128,7 +128,7 @@ internal class PluginProcessLinkResourceTest {
         )
 
         mockMvc.perform(
-            post("/api/process-link")
+            post("/api/v1/process-link")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(Mapper.INSTANCE.get().writeValueAsString(pluginProcessLinkDto))
@@ -152,7 +152,7 @@ internal class PluginProcessLinkResourceTest {
         )
 
         mockMvc.perform(
-            put("/api/process-link")
+            put("/api/v1/process-link")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(Mapper.INSTANCE.get().writeValueAsString(pluginProcessLinkDto))
@@ -168,7 +168,7 @@ internal class PluginProcessLinkResourceTest {
     fun `should delete plugin process link`() {
         val pluginProcessLinkId = UUID.randomUUID()
 
-        mockMvc.perform(delete("/api/process-link/{processLinkId}", pluginProcessLinkId))
+        mockMvc.perform(delete("/api/v1/process-link/{processLinkId}", pluginProcessLinkId))
             .andDo(print())
             .andExpect(status().isNoContent)
 

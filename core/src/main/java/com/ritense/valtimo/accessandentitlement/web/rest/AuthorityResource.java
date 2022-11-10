@@ -42,7 +42,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class AuthorityResource {
 
     private static final String AUTHORITY = "authority";
@@ -59,7 +59,7 @@ public class AuthorityResource {
     ) throws URISyntaxException {
         logger.debug("REST request to create Authority : {}", authorityRequest);
         final Authority authority = authorityService.createAuthority(authorityRequest);
-        return ResponseEntity.created(new URI("/api/authorities/" + authority.getName()))
+        return ResponseEntity.created(new URI("/api/v1/authorities/" + authority.getName()))
             .headers(HeaderUtil.createEntityCreationAlert(AUTHORITY, authority.getName()))
             .body(authority);
     }

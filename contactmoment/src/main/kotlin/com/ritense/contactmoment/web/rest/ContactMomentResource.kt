@@ -29,16 +29,16 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/contactmoment"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 interface ContactMomentResource {
 
-    @GetMapping
+    @GetMapping(value = ["/v1/contactmoment"])
     fun getContactMomenten(): ResponseEntity<List<ContactMoment>>
 
-    @PostMapping
+    @PostMapping(value = ["/v1/contactmoment"])
     fun createContactMomenten(@Valid @RequestBody request: CreateContactMomentRequest): ResponseEntity<ContactMoment>
 
-    @GetMapping("/kanaal")
+    @GetMapping("/v1/contactmoment/kanaal")
     fun getKanalen(): ResponseEntity<Array<Kanaal>>
 
 }
