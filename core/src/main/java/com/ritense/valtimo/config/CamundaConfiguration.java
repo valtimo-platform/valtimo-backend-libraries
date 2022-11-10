@@ -65,6 +65,7 @@ public class CamundaConfiguration implements CamundaProcessEngineConfiguration {
 
         //Override default
         processEngineConfiguration.setSchemaOperationsCommand(schemaOperationsCommand);
+        processEngineConfiguration.setTenantIdProvider(new CustomTenantIdProvider());
     }
 
     @Override
