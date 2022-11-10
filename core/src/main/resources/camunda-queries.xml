@@ -269,6 +269,12 @@
             </foreach>
             )
         </if>
+        <if test="parameter.tenantId != null">
+            AND RES.TENANT_ID_ = #{parameter.tenantId, jdbcType=VARCHAR}
+        </if>
+        <if test="parameter.tenantId == null">
+            AND RES.TENANT_ID_ IS NULL
+        </if>
         <!-- If the processDefinitionKeys is set but empty, return nothing. -->
         <if test="parameter.processDefinitionKeys != null &amp;&amp; parameter.processDefinitionKeys.size() == 0">
             AND 0 = 1
@@ -296,12 +302,6 @@
         WHERE       PI.START_TIME_ >= #{dateFrom, jdbcType=TIMESTAMP}
         <if test="key != null">
           AND       DEF.KEY_ = #{key, jdbcType=VARCHAR}
-        </if>
-        <if test="tenantId != null">
-            AND PI.TENANT_ID_ = #{tenantId, jdbcType=VARCHAR}
-        </if>
-        <if test="tenantId == null">
-            AND PI.TENANT_ID_ IS NULL
         </if>
         GROUP BY    DEF.NAME_
         ,           ${truncDatepart1}PI.START_TIME_${truncDatepart2}
