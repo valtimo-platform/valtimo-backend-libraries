@@ -58,9 +58,9 @@ public class SearchFieldService {
         }
         fieldToUpdate.ifPresent(searchField -> {
             searchField.setPath(searchFieldDto.getPath());
-            searchField.setDatatype(searchFieldDto.getDatatype());
-            searchField.setFieldtype(searchFieldDto.getFieldtype());
-            searchField.setMatchtype(searchFieldDto.getMatchtype());
+            searchField.setDatatype(searchFieldDto.getDataType());
+            searchField.setFieldtype(searchFieldDto.getFieldType());
+            searchField.setMatchtype(searchFieldDto.getMatchType());
             searchFieldRepository.save(searchField);
         });
     }

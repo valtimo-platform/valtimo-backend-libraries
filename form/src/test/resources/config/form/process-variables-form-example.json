@@ -36,6 +36,7 @@
             ],
             "key": "pv.isRetired",
             "type": "radio",
+            "disabled": true,
             "input": true
         },
         {
