@@ -16,6 +16,7 @@
 
 package com.ritense.document.domain.search;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,10 +77,11 @@ public class SearchWithConfigRequest {
 
     public static class SearchWithConfigFilter {
 
+        @NotNull
         private String key;
-        private SearchRequestObject rangeFrom = SearchRequestObject.ofNull();
-        private SearchRequestObject rangeTo = SearchRequestObject.ofNull();
-        private List<SearchRequestObject> values = List.of();
+        private SearchRequestValue rangeFrom = SearchRequestValue.ofNull();
+        private SearchRequestValue rangeTo = SearchRequestValue.ofNull();
+        private List<SearchRequestValue> values = List.of();
 
         public SearchWithConfigFilter() {
         }
@@ -87,9 +89,9 @@ public class SearchWithConfigRequest {
         public <T extends Comparable<? super T>> SearchWithConfigFilter(String key, T rangeFrom, T rangeTo, List<Object> values) {
             assertArgumentNotEmpty(key, "key is required");
             this.key = key;
-            this.rangeFrom = SearchRequestObject.ofComparable(rangeFrom);
-            this.rangeTo = SearchRequestObject.ofComparable(rangeTo);
-            this.values = SearchRequestObject.ofList(values);
+            this.rangeFrom = SearchRequestValue.ofComparable(rangeFrom);
+            this.rangeTo = SearchRequestValue.ofComparable(rangeTo);
+            this.values = SearchRequestValue.ofList(values);
         }
 
         public String getKey() {
@@ -104,38 +106,38 @@ public class SearchWithConfigRequest {
             return rangeFrom.getComparableValue();
         }
 
-        public SearchRequestObject getRangeFromSearchRequestObject() {
+        public SearchRequestValue getRangeFromSearchRequestValue() {
             return rangeFrom;
         }
 
         public void setRangeFrom(Object rangeFrom) {
-            this.rangeFrom = SearchRequestObject.ofComparable(rangeFrom);
+            this.rangeFrom = SearchRequestValue.ofComparable(rangeFrom);
         }
 
         public <T extends Comparable<? super T>> T getRangeTo() {
             return rangeTo.getComparableValue();
         }
 
-        public SearchRequestObject getRangeToSearchRequestObject() {
+        public SearchRequestValue getRangeToSearchRequestValue() {
             return rangeTo;
         }
 
         public void setRangeTo(Object rangeTo) {
-            this.rangeTo = SearchRequestObject.ofComparable(rangeTo);
+            this.rangeTo = SearchRequestValue.ofComparable(rangeTo);
         }
 
         public <T> List<T> getValues() {
             return values.stream()
-                .map(SearchRequestObject::<T>getValue)
+                .map(SearchRequestValue::<T>getValue)
                 .collect(Collectors.toList());
         }
 
-        public List<SearchRequestObject> getSearchRequestObjects() {
+        public List<SearchRequestValue> getSearchRequestValues() {
             return values;
         }
 
         public void setValues(List<Object> values) {
-            this.values = SearchRequestObject.ofList(values);
+            this.values = SearchRequestValue.ofList(values);
         }
     }
 }

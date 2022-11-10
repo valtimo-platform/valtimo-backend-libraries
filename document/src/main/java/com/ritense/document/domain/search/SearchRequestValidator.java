@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1. (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-1
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.document.domain.search;
 
 import com.ritense.document.domain.impl.searchfield.SearchField;
@@ -39,6 +55,15 @@ public class SearchRequestValidator {
     );
 
     public static void validate(SearchWithConfigRequest searchRequest) {
+        if (searchRequest.getOtherFilters() != null) {
+            if (searchRequest.getSearchOperator() == null) {
+                throw new ValidationException("SearchOperator not present");
+            }
+            searchRequest.getOtherFilters().forEach(SearchRequestValidator::validate);
+        }
+    }
+
+    public static void validate(SearchRequest2 searchRequest) {
         if (searchRequest.getOtherFilters() != null) {
             if (searchRequest.getSearchOperator() == null) {
                 throw new ValidationException("SearchOperator not present");
@@ -204,7 +229,7 @@ public class SearchRequestValidator {
                     }
                 }
                 if (!hasDateFormat) {
-                    throw new ValidationException("Search value '" + Arrays.toString(allValues.toArray()) + "' doesn't have a date format");
+                    throw new ValidationException("Search value '" + Arrays.toString(allValues.toArray()) + "' doesn't have the correct date/datetime format");
                 }
             }
         }
@@ -221,5 +246,4 @@ public class SearchRequestValidator {
     private static boolean hasType(List<?> allValues, Class<?> type) {
         return allValues.stream().allMatch(type::isInstance);
     }
-
 }

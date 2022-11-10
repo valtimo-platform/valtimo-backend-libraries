@@ -70,12 +70,12 @@ public class SearchRequestMapper {
     public static SearchRequest2.SearchCriteria2 toSearchCriteria2(SearchWithConfigRequest.SearchWithConfigFilter searchFilter, SearchField searchField) {
         SearchRequestValidator.validate(searchFilter, searchField);
 
-        var rangeFrom = mapWhenTemporalField(searchFilter.getRangeFromSearchRequestObject());
-        var rangeTo = mapWhenTemporalField(searchFilter.getRangeToSearchRequestObject());
+        var rangeFrom = mapWhenTemporalField(searchFilter.getRangeFromSearchRequestValue());
+        var rangeTo = mapWhenTemporalField(searchFilter.getRangeToSearchRequestValue());
 
-        List<SearchRequestObject> searchRequestObjects = null;
-        if (searchFilter.getSearchRequestObjects() != null) {
-            searchRequestObjects = searchFilter.getSearchRequestObjects().stream()
+        List<SearchRequestValue> searchRequestValues = null;
+        if (searchFilter.getSearchRequestValues() != null) {
+            searchRequestValues = searchFilter.getSearchRequestValues().stream()
                 .map(SearchRequestMapper::mapWhenTemporalField)
                 .collect(Collectors.toList());
         }
@@ -85,19 +85,19 @@ public class SearchRequestMapper {
         searchCriteria2.setSearchType(findDatabaseSearchType(searchFilter, searchField));
         searchCriteria2.setRangeFrom(rangeFrom.getComparableValue());
         searchCriteria2.setRangeTo(rangeTo.getComparableValue());
-        searchCriteria2.setSearchRequestObjects(searchRequestObjects);
+        searchCriteria2.setSearchRequestValues(searchRequestValues);
         SearchRequestValidator.validate(searchCriteria2);
         return searchCriteria2;
     }
 
-    private static SearchRequestObject mapWhenTemporalField(SearchRequestObject field) {
+    private static SearchRequestValue mapWhenTemporalField(SearchRequestValue field) {
         if (field == null) {
-            return SearchRequestObject.ofNull();
+            return SearchRequestValue.ofNull();
         } else if (field.isString()) {
             for (var pair : TEMPORAL_MAP) {
                 var temporal = parseTemporal(pair.getFirst(), field.getValueAsString(), pair.getSecond());
                 if (temporal.isPresent()) {
-                    return SearchRequestObject.ofTemporal(temporal.get());
+                    return SearchRequestValue.ofTemporal(temporal.get());
                 }
             }
             return field;

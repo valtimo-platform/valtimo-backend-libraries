@@ -22,6 +22,7 @@ import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.domain.search.SearchRequest2;
 import com.ritense.document.domain.search.SearchRequestMapper;
+import com.ritense.document.domain.search.SearchRequestValidator;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.SearchFieldService;
@@ -104,6 +105,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     @Override
     public Page<JsonSchemaDocument> search(String documentDefinitionName, SearchRequest2 searchRequest, Pageable pageable) {
+        SearchRequestValidator.validate(searchRequest);
         return search((cb, query, documentRoot) -> {
             final List<Predicate> predicates = new ArrayList<>();
 
@@ -272,20 +274,14 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             searchCriteria.getPath(),
             searchCriteria.<T>getDataType()
         );
-        List<T> values;
-        if (searchCriteria.getValues() == null) {
-            values = List.of();
-        } else {
-            values = searchCriteria.getValues();
-        }
         var rangeFrom = searchCriteria.<T>getRangeFrom();
         var rangeTo = searchCriteria.<T>getRangeTo();
 
         switch (searchCriteria.getSearchType()) {
             case LIKE:
-                return cb.or(searchLike(cb, jsonValue, values));
+                return cb.or(searchLike(cb, jsonValue, searchCriteria.getValues()));
             case EQUAL:
-                return cb.or(searchEqual(cb, jsonValue, values));
+                return cb.or(searchEqual(cb, jsonValue, searchCriteria.getValues()));
             case GREATER_THAN_OR_EQUAL_TO:
                 return searchGreaterThanOrEqualTo(cb, jsonValue, rangeFrom);
             case LESS_THAN_OR_EQUAL_TO:
@@ -293,7 +289,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             case BETWEEN:
                 return searchBetween(cb, jsonValue, rangeFrom, rangeTo);
             case IN:
-                return searchIn(cb, jsonValue, values);
+                return searchIn(cb, jsonValue, searchCriteria.getValues());
             default:
                 throw new NotImplementedException("Searching for search type '" + searchCriteria.getSearchType() + "' hasn't been implemented.");
         }
@@ -333,54 +329,72 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         return cb.literal(jsonValue).in(values);
     }
 
-    private <T extends Comparable<? super T>> Predicate searchGreaterThanOrEqualTo(CriteriaBuilder cb, Expression<T> jsonValue, T rangeFrom) {
+    private <T extends Comparable<? super T>> Predicate searchGreaterThanOrEqualTo(CriteriaBuilder cb, Expression<T> documentValue, T rangeFrom) {
         if (rangeFrom instanceof TemporalAccessor) {
-            var jsonValueTimestamp = toTimestampExpression(cb, jsonValue);
-            return cb.greaterThanOrEqualTo(jsonValueTimestamp, toJavaUtilDate(rangeFrom));
+            var documentValueTimestamp = toJavaUtilDateExpression(cb, documentValue, (TemporalAccessor) rangeFrom);
+            return cb.greaterThanOrEqualTo(documentValueTimestamp, toJavaUtilDate(rangeFrom));
         } else {
-            return cb.greaterThanOrEqualTo(jsonValue, cb.literal(rangeFrom));
+            return cb.greaterThanOrEqualTo(documentValue, cb.literal(rangeFrom));
         }
     }
 
-    private <T extends Comparable<? super T>> Predicate searchLessThanOrEqualTo(CriteriaBuilder cb, Expression<T> jsonValue, T rangeTo) {
+    private <T extends Comparable<? super T>> Predicate searchLessThanOrEqualTo(CriteriaBuilder cb, Expression<T> documentValue, T rangeTo) {
         if (rangeTo instanceof TemporalAccessor) {
-            var jsonValueTimestamp = toTimestampExpression(cb, jsonValue);
-            return cb.lessThanOrEqualTo(jsonValueTimestamp, toJavaUtilDate(rangeTo));
+            var documentValueTimestamp = toJavaUtilDateExpression(cb, documentValue, (TemporalAccessor) rangeTo);
+            return cb.lessThanOrEqualTo(documentValueTimestamp, toJavaUtilDate(rangeTo));
         } else {
-            return cb.lessThanOrEqualTo(jsonValue, cb.literal(rangeTo));
+            return cb.lessThanOrEqualTo(documentValue, cb.literal(rangeTo));
         }
     }
 
-    private <T extends Comparable<? super T>> Predicate searchBetween(CriteriaBuilder cb, Expression<T> jsonValue, T rangeFrom, T rangeTo) {
+    private <T extends Comparable<? super T>> Predicate searchBetween(CriteriaBuilder cb, Expression<T> documentValue, T rangeFrom, T rangeTo) {
         if (rangeFrom instanceof TemporalAccessor) {
-            var jsonValueTimestamp = toTimestampExpression(cb, jsonValue);
-            return cb.between(jsonValueTimestamp, toJavaUtilDate(rangeFrom), toJavaUtilDate(rangeTo));
+            var documentValueTimestamp = toJavaUtilDateExpression(cb, documentValue, (TemporalAccessor) rangeFrom);
+            return cb.between(documentValueTimestamp, toJavaUtilDate(rangeFrom), toJavaUtilDate(rangeTo));
         } else {
-            return cb.between(jsonValue, cb.literal(rangeFrom), cb.literal(rangeTo));
+            return cb.between(documentValue, cb.literal(rangeFrom), cb.literal(rangeTo));
+        }
+    }
+
+    private static Expression<java.util.Date> toJavaUtilDateExpression(CriteriaBuilder cb, Expression<?> expression, TemporalAccessor temporal) {
+        if (temporal instanceof LocalDate) {
+            return toDateExpression(cb, expression);
+        } else if (temporal instanceof Instant || temporal instanceof LocalDateTime
+            || temporal instanceof OffsetDateTime || temporal instanceof ZonedDateTime) {
+            return toTimestampExpression(cb, expression);
+        } else {
+            throw new NotImplementedException("Unsupported temporal type: '" + temporal.getClass() + "' of value '" + temporal + "'");
         }
     }
 
     /**
-     * Note: The CriteriaBuilder only works with java.util.Date
+     * Note: The CriteriaBuilder only supports with java.sql.Timestamp and java.sql.Date. Both types extend java.util.Date
      */
-    private Expression<java.util.Date> toTimestampExpression(CriteriaBuilder cb, Expression<?> value) {
+    private static Expression<java.util.Date> toDateExpression(CriteriaBuilder cb, Expression<?> value) {
+        return cb.function("DATE", java.util.Date.class, value);
+    }
+
+    /**
+     * Note: The CriteriaBuilder only supports with java.sql.Timestamp and java.sql.Date. Both types extend java.util.Date
+     */
+    private static Expression<java.util.Date> toTimestampExpression(CriteriaBuilder cb, Expression<?> value) {
         return cb.function("TIMESTAMP", java.util.Date.class, value);
     }
 
     /**
-     * Note: The CriteriaBuilder only works with java.util.Date
+     * Note: The CriteriaBuilder only supports with java.sql.Timestamp and java.sql.Date. Both types extend java.util.Date
      */
     private static java.util.Date toJavaUtilDate(Object value) {
-        if (value instanceof Instant) {
-            return java.util.Date.from((Instant) value);
-        } else if (value instanceof LocalDate) {
-            return toJavaUtilDate(((LocalDate) value).atStartOfDay());
+        if (value instanceof LocalDate) {
+            return java.sql.Date.valueOf((LocalDate) value);
+        } else if (value instanceof Instant) {
+            return java.sql.Timestamp.from((Instant) value);
         } else if (value instanceof LocalDateTime) {
-            return toJavaUtilDate(((LocalDateTime) value).toInstant(ZoneOffset.UTC));
+            return java.sql.Timestamp.from(((LocalDateTime) value).toInstant(ZoneOffset.UTC));
         } else if (value instanceof OffsetDateTime) {
-            return toJavaUtilDate(((OffsetDateTime) value).toInstant());
+            return java.sql.Timestamp.from(((OffsetDateTime) value).toInstant());
         } else if (value instanceof ZonedDateTime) {
-            return toJavaUtilDate(((ZonedDateTime) value).toInstant());
+            return java.sql.Timestamp.from(((ZonedDateTime) value).toInstant());
         } else {
             throw new NotImplementedException("Failed to cast '" + value + "' to java.util.Date");
         }

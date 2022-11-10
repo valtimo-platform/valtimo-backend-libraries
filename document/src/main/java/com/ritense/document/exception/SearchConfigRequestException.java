@@ -25,5 +25,4 @@ public class SearchConfigRequestException extends ValidationException {
     public SearchConfigRequestException(SearchField searchField, String type, String message) {
         super("Configured to search for " + type + " but " + message + ". For SearchField '" + searchField.getKey() + "'.");
     }
-
 }

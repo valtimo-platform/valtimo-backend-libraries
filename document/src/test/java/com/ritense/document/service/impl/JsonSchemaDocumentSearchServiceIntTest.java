@@ -34,11 +34,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.test.context.support.WithMockUser;
+
+import javax.transaction.Transactional;
+import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import javax.transaction.Transactional;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -643,7 +646,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         searchCriteria.setPath("$.housenumber");
         searchRequest.setOtherFilters(List.of(searchCriteria));
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ValidationException.class, () -> {
             documentSearchService.search(
                 definition.id().name(),
                 searchRequest,
@@ -671,7 +674,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.movedAt")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.movedAtDate")));
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);

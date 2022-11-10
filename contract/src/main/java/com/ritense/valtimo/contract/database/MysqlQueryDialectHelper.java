@@ -27,16 +27,25 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
 
     @Override
     public Expression<String> getJsonValueExpression(CriteriaBuilder cb, Path column, String path) {
-        return getJsonValueExpression(cb, column, path, String.class);
+        return cb.function(LOWER_CASE_FUNCTION, String.class,
+            cb.function(
+                "JSON_EXTRACT",
+                String.class,
+                column,
+                cb.literal(path)
+            )
+        );
     }
 
     @Override
     public <T> Expression<T> getJsonValueExpression(CriteriaBuilder cb, Path column, String path, Class<T> type) {
-        return cb.function(
-            "JSON_EXTRACT",
-            type,
-            column,
-            cb.literal(path)
+        return cb.function("JSON_UNQUOTE", type,
+            cb.function(
+                "JSON_EXTRACT",
+                type,
+                column,
+                cb.literal(path)
+            )
         );
     }
 

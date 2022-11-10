@@ -26,40 +26,43 @@ import java.util.stream.Collectors;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentFalse;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 
-public class SearchRequestObject {
+/**
+ *
+ */
+public class SearchRequestValue {
 
     @JsonValue
     private Object value;
 
-    private SearchRequestObject() {
+    private SearchRequestValue() {
     }
 
-    public static SearchRequestObject of(Object value) {
-        assertArgumentFalse(value instanceof SearchRequestObject, "Value mustn't be of type 'SearchRequestObject'");
-        var object = new SearchRequestObject();
+    public static SearchRequestValue of(Object value) {
+        assertArgumentFalse(value instanceof SearchRequestValue, "Value mustn't be of type 'SearchRequestValue'");
+        var object = new SearchRequestValue();
         object.setValue(value);
         return object;
     }
 
 
-    public static SearchRequestObject ofNull() {
+    public static SearchRequestValue ofNull() {
         return of(null);
     }
 
-    public static SearchRequestObject ofComparable(Object value) {
+    public static SearchRequestValue ofComparable(Object value) {
         assertArgumentTrue(value == null || value instanceof Comparable, "Value '" + value + "' isn't of type Comparable");
         return of(value);
     }
 
-    public static SearchRequestObject ofTemporal(Temporal value) {
+    public static SearchRequestValue ofTemporal(Temporal value) {
         return ofComparable(value);
     }
 
-    public static List<SearchRequestObject> ofList(Collection<Object> values) {
+    public static List<SearchRequestValue> ofList(Collection<Object> values) {
         if (values == null) {
             return List.of();
         } else {
-            return values.stream().map(SearchRequestObject::of).collect(Collectors.toList());
+            return values.stream().map(SearchRequestValue::of).collect(Collectors.toList());
         }
     }
 

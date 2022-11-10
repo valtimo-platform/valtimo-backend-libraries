@@ -16,6 +16,7 @@
 
 package com.ritense.document.domain.search;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,7 +78,8 @@ public class SearchRequest2 {
     }
 
     public SearchRequest2 addOtherFilters(SearchCriteria2 otherFilter) {
-        this.otherFilters.add(otherFilter);
+        this.otherFilters = new ArrayList<>(otherFilters);
+        otherFilters.add(otherFilter);
         return this;
     }
 
@@ -85,9 +87,9 @@ public class SearchRequest2 {
 
         private String path;
         private DatabaseSearchType searchType = DatabaseSearchType.EQUAL;
-        private SearchRequestObject rangeFrom = SearchRequestObject.ofNull();
-        private SearchRequestObject rangeTo = SearchRequestObject.ofNull();
-        private List<SearchRequestObject> values = List.of();
+        private SearchRequestValue rangeFrom = SearchRequestValue.ofNull();
+        private SearchRequestValue rangeTo = SearchRequestValue.ofNull();
+        private List<SearchRequestValue> values = List.of();
 
         public SearchCriteria2() {
             // Jackson needs the empty constructor
@@ -136,7 +138,7 @@ public class SearchRequest2 {
         }
 
         public void setRangeFrom(Object rangeFrom) {
-            this.rangeFrom = SearchRequestObject.ofComparable(rangeFrom);
+            this.rangeFrom = SearchRequestValue.ofComparable(rangeFrom);
         }
 
         public SearchCriteria2 rangeFrom(Object rangeFrom) {
@@ -149,7 +151,7 @@ public class SearchRequest2 {
         }
 
         public void setRangeTo(Object rangeTo) {
-            this.rangeTo = SearchRequestObject.ofComparable(rangeTo);
+            this.rangeTo = SearchRequestValue.ofComparable(rangeTo);
         }
 
         public <T extends Comparable<? super T>> SearchCriteria2 rangeTo(T rangeTo) {
@@ -159,20 +161,21 @@ public class SearchRequest2 {
 
         public <T> List<T> getValues() {
             return values.stream()
-                .map(SearchRequestObject::<T>getValue)
+                .map(SearchRequestValue::<T>getValue)
                 .collect(Collectors.toList());
         }
 
         public void setValues(List<Object> values) {
-            this.values = SearchRequestObject.ofList(values);
+            this.values = SearchRequestValue.ofList(values);
         }
 
-        public void setSearchRequestObjects(List<SearchRequestObject> searchRequestObjects) {
-            this.values = searchRequestObjects;
+        public void setSearchRequestValues(List<SearchRequestValue> searchRequestValues) {
+            this.values = searchRequestValues;
         }
 
         public SearchCriteria2 addValue(Object value) {
-            this.values.add(SearchRequestObject.of(value));
+            this.values = new ArrayList<>(values);
+            values.add(SearchRequestValue.of(value));
             return this;
         }
     }

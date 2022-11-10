@@ -30,7 +30,7 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
 
     @Override
     public Expression<String> getJsonValueExpression(CriteriaBuilder cb, Path column, String path) {
-        return getJsonValueExpression(cb, column, path, String.class);
+        return getValueForPath(cb, column, path, String.class);
     }
 
     @Override
