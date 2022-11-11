@@ -18,33 +18,33 @@ package com.ritense.document.domain.impl.searchfield;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum SearchFieldFieldtype {
+public enum SearchFieldFieldType {
     MULTIPLE("multiple"),
     RANGE("range"),
     SINGLE("single");
 
     @JsonValue private final String name;
 
-    SearchFieldFieldtype(String name) {
+    SearchFieldFieldType(String name) {
         this.name = name;
     }
 
-    public static SearchFieldFieldtype fromString(String text) {
-        for (SearchFieldFieldtype fieldtype : SearchFieldFieldtype.values()) {
-            if (fieldtype.name.equalsIgnoreCase(text)) {
-                return fieldtype;
+    public static SearchFieldFieldType fromString(String text) {
+        for (SearchFieldFieldType fieldType : SearchFieldFieldType.values()) {
+            if (fieldType.name.equalsIgnoreCase(text)) {
+                return fieldType;
             }
         }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldFieldtype from string %s", text));
+        throw new IllegalStateException(String.format("Cannot create SearchFieldFieldType from string %s", text));
     }
 
-    public static SearchFieldFieldtype fromKey(String key) {
-        for (SearchFieldFieldtype fieldtype : SearchFieldFieldtype.values()) {
-            if (fieldtype.name().equalsIgnoreCase(key)) {
-                return fieldtype;
+    public static SearchFieldFieldType fromKey(String key) {
+        for (SearchFieldFieldType fieldType : SearchFieldFieldType.values()) {
+            if (fieldType.name().equalsIgnoreCase(key)) {
+                return fieldType;
             }
         }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldFieldtype from string %s", key));
+        throw new IllegalStateException(String.format("Cannot create SearchFieldFieldType from string %s", key));
     }
 
     @Override

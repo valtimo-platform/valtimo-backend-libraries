@@ -18,35 +18,32 @@ package com.ritense.document.domain.impl.searchfield;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum SearchFieldDatatype {
-    BOOLEAN("boolean"),
-    DATE("date"),
-    DATETIME("datetime"),
-    NUMBER("number"),
-    TEXT("text");
+public enum SearchFieldMatchType {
+    LIKE("like"),
+    EXACT("exact");
 
     @JsonValue private final String name;
 
-    SearchFieldDatatype(String name) {
+    SearchFieldMatchType(String name) {
         this.name = name;
     }
 
-    public static SearchFieldDatatype fromString(String text) {
-        for (SearchFieldDatatype datatype : SearchFieldDatatype.values()) {
-            if (datatype.name.equalsIgnoreCase(text)) {
-                return datatype;
+    public static SearchFieldMatchType fromString(String text) {
+        for (SearchFieldMatchType matchType : SearchFieldMatchType.values()) {
+            if (matchType.name.equalsIgnoreCase(text)) {
+                return matchType;
             }
         }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldDatatype from string %s", text));
+        throw new IllegalStateException(String.format("Cannot create SearchFieldMatchType from string %s", text));
     }
 
-    public static SearchFieldDatatype fromKey(String key) {
-        for (SearchFieldDatatype datatype : SearchFieldDatatype.values()) {
-            if (datatype.name().equalsIgnoreCase(key)) {
-                return datatype;
+    public static SearchFieldMatchType fromKey(String key) {
+        for (SearchFieldMatchType matchType : SearchFieldMatchType.values()) {
+            if (matchType.name().equalsIgnoreCase(key)) {
+                return matchType;
             }
         }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldDatatype from string %s", key));
+        throw new IllegalStateException(String.format("Cannot create SearchFieldMatchType from string %s", key));
     }
 
     @Override

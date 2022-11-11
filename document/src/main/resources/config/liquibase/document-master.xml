@@ -26,6 +26,9 @@
     <property name="jsonType" value="JSON" dbms="mysql"/>
     <property name="jsonType" value="JSONB" dbms="postgresql"/>
 
+    <property name="intType" value="int" dbms="mysql"/>
+    <property name="intType" value="integer" dbms="postgresql"/>
+
     <include file="changelog/20190712-create-document-domain-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20190815-document-dates-added-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20190916-document-created-by-added-changelog.xml" relativeToChangelogFile="true"/>

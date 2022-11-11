@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class SearchFieldService {
@@ -47,22 +48,14 @@ public class SearchFieldService {
     }
 
     public List<SearchField> getSearchFields(String documentDefinitionName) {
-        return searchFieldRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
+        return searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder(documentDefinitionName);
     }
 
-    public void updateSearchFields(String documentDefinitionName, SearchFieldDto searchFieldDto) {
-        Optional<SearchField> fieldToUpdate = searchFieldRepository
-                .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchFieldDto.getKey());
-        if (fieldToUpdate.isEmpty()) {
-            throw new IllegalArgumentException("No search field found for document '" + documentDefinitionName + "' and key '" + searchFieldDto.getKey() + "'.");
-        }
-        fieldToUpdate.ifPresent(searchField -> {
-            searchField.setPath(searchFieldDto.getPath());
-            searchField.setDatatype(searchFieldDto.getDataType());
-            searchField.setFieldtype(searchFieldDto.getFieldType());
-            searchField.setMatchtype(searchFieldDto.getMatchType());
-            searchFieldRepository.save(searchField);
-        });
+    public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
+        var searchFields = IntStream.range(0, searchFieldDtos.size())
+            .mapToObj(index -> toOrderedSearchField(documentDefinitionName, searchFieldDtos.get(index), index))
+            .collect(Collectors.toList());
+        searchFieldRepository.saveAll(searchFields);
     }
 
     public void createSearchConfiguration(List<SearchField> searchFields) {
@@ -80,5 +73,20 @@ public class SearchFieldService {
     public void deleteSearchField(String documentDefinitionName, String key) {
         searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName, key).ifPresent(
                 searchFieldRepository::delete);
+    }
+
+    private SearchField toOrderedSearchField(String documentDefinitionName, SearchFieldDto searchFieldDto, int order) {
+        Optional<SearchField> fieldToUpdate = searchFieldRepository
+            .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchFieldDto.getKey());
+        if (fieldToUpdate.isEmpty()) {
+            throw new IllegalArgumentException("No search field found for document '" + documentDefinitionName + "' and key '" + searchFieldDto.getKey() + "'.");
+        }
+        var searchField = fieldToUpdate.get();
+        searchField.setPath(searchFieldDto.getPath());
+        searchField.setDataType(searchFieldDto.getDataType());
+        searchField.setFieldType(searchFieldDto.getFieldType());
+        searchField.setMatchType(searchFieldDto.getMatchType());
+        searchField.setOrder(order);
+        return searchField;
     }
 }
