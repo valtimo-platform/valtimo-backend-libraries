@@ -21,20 +21,20 @@ public class SearchFieldDto {
 
     private String key;
     private String path;
-    private SearchFieldDatatype datatype;
-    private SearchFieldFieldtype fieldtype;
-    private SearchFieldMatchtype matchtype;
+    private SearchFieldDatatype dataType;
+    private SearchFieldFieldtype fieldType;
+    private SearchFieldMatchtype matchType;
 
     public SearchFieldDto(String key,
                           String path,
-                          SearchFieldDatatype datatype,
-                          SearchFieldFieldtype fieldtype,
-                          SearchFieldMatchtype matchtype) {
+                          SearchFieldDatatype dataType,
+                          SearchFieldFieldtype fieldType,
+                          SearchFieldMatchtype matchType) {
         this.key = key;
         this.path = path;
-        this.datatype = datatype;
-        this.fieldtype = fieldtype;
-        this.matchtype = matchtype;
+        this.dataType = dataType;
+        this.fieldType = fieldType;
+        this.matchType = matchType;
     }
 
     public SearchFieldDto() {}
@@ -47,16 +47,16 @@ public class SearchFieldDto {
         return path;
     }
 
-    public SearchFieldDatatype getDatatype() {
-        return datatype;
+    public SearchFieldDatatype getDataType() {
+        return dataType;
     }
 
-    public SearchFieldFieldtype getFieldtype() {
-        return fieldtype;
+    public SearchFieldFieldtype getFieldType() {
+        return fieldType;
     }
 
-    public SearchFieldMatchtype getMatchtype() {
-        return matchtype;
+    public SearchFieldMatchtype getMatchType() {
+        return matchType;
     }
 
     public void setKey(String key) {
@@ -67,16 +67,16 @@ public class SearchFieldDto {
         this.path = path;
     }
 
-    public void setDatatype(SearchFieldDatatype datatype) {
-        this.datatype = datatype;
+    public void setDataType(SearchFieldDatatype dataType) {
+        this.dataType = dataType;
     }
 
-    public void setFieldtype(SearchFieldFieldtype fieldtype) {
-        this.fieldtype = fieldtype;
+    public void setFieldType(SearchFieldFieldtype fieldType) {
+        this.fieldType = fieldType;
     }
 
-    public void setMatchtype(SearchFieldMatchtype matchtype) {
-        this.matchtype = matchtype;
+    public void setMatchType(SearchFieldMatchtype matchType) {
+        this.matchType = matchType;
     }
 }
 
