@@ -68,6 +68,15 @@ import static java.util.stream.Collectors.toMap;
 
 @Transactional
 public class JsonSchemaDocumentSearchService implements DocumentSearchService {
+    
+    private static final String DOCUMENT_DEFINITION_ID = "documentDefinitionId";
+    private static final String DOCUMENT_DEFINITION_NAME = "documentDefinitionName";
+    private static final String ID = "id";
+    private static final String ROLE = "role";
+    private static final String NAME = "name";
+    private static final String CREATED_BY = "createdBy";
+    private static final String SEQUENCE = "sequence";
+    private static final String CONTENT = "content";
 
     private final EntityManager entityManager;
 
@@ -110,19 +119,19 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             final List<Predicate> predicates = new ArrayList<>();
 
             if (!StringUtils.isEmpty(documentDefinitionName)) {
-                predicates.add(cb.equal(documentRoot.get("documentDefinitionId").get("name"), documentDefinitionName));
+                predicates.add(cb.equal(documentRoot.get(DOCUMENT_DEFINITION_ID).get(NAME), documentDefinitionName));
             }
 
             if (!StringUtils.isEmpty(searchRequest.getCreatedBy())) {
-                predicates.add(cb.equal(documentRoot.get("createdBy"), searchRequest.getCreatedBy()));
+                predicates.add(cb.equal(documentRoot.get(CREATED_BY), searchRequest.getCreatedBy()));
             }
 
             if (searchRequest.getSequence() != null) {
-                predicates.add(cb.equal(documentRoot.get("sequence"), searchRequest.getSequence()));
+                predicates.add(cb.equal(documentRoot.get(SEQUENCE), searchRequest.getSequence()));
             }
 
             if (SecurityContextHolder.getContext().getAuthentication() != null) {
-                addUserRolePredicate(cb, query, documentRoot, predicates);
+                addUserRolePredicate(query, documentRoot, predicates);
             }
 
             addJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
@@ -164,7 +173,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         addNonJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
         addJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
         if (withAuthorization) {
-            addUserRolePredicate(cb, query, documentRoot, predicates);
+            addUserRolePredicate(query, documentRoot, predicates);
         }
 
 
@@ -175,16 +184,16 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                                            SearchRequest searchRequest, List<Predicate> predicates) {
 
         if (!StringUtils.isEmpty(searchRequest.getDocumentDefinitionName())) {
-            predicates.add(cb.equal(root.get("documentDefinitionId").get("name"),
+            predicates.add(cb.equal(root.get(DOCUMENT_DEFINITION_ID).get(NAME),
                 searchRequest.getDocumentDefinitionName()));
         }
 
         if (!StringUtils.isEmpty(searchRequest.getCreatedBy())) {
-            predicates.add(cb.equal(root.get("createdBy"), searchRequest.getCreatedBy()));
+            predicates.add(cb.equal(root.get(CREATED_BY), searchRequest.getCreatedBy()));
         }
 
         if (searchRequest.getSequence() != null) {
-            predicates.add(cb.equal(root.get("sequence"), searchRequest.getSequence()));
+            predicates.add(cb.equal(root.get(SEQUENCE), searchRequest.getSequence()));
         }
 
         if (!StringUtils.isEmpty(searchRequest.getGlobalSearchFilter())) {
@@ -243,34 +252,33 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         }
     }
 
-    private void addUserRolePredicate(CriteriaBuilder cb,
-                                      CriteriaQuery<?> query,
+    private void addUserRolePredicate(CriteriaQuery<?> query,
                                       Root<JsonSchemaDocument> documentRoot,
                                       List<Predicate> predicates) {
         List<String> roles = SecurityUtils.getCurrentUserRoles();
 
         Subquery<String> sub = query.subquery(String.class);
         Root<JsonSchemaDocumentDefinitionRole> subRoot = sub.from(JsonSchemaDocumentDefinitionRole.class);
-        sub.select(subRoot.get("id").get("documentDefinitionName"));
-        sub.where(subRoot.get("id").get("role").in(roles));
+        sub.select(subRoot.get(ID).get(DOCUMENT_DEFINITION_NAME));
+        sub.where(subRoot.get(ID).get(ROLE).in(roles));
 
         predicates.add(
-            documentRoot.get("documentDefinitionId").get("name").in(sub)
+            documentRoot.get(DOCUMENT_DEFINITION_ID).get(NAME).in(sub)
         );
     }
 
     private Predicate findJsonPathValue(CriteriaBuilder cb, Root<JsonSchemaDocument> root, String path, String value) {
-        return queryDialectHelper.getJsonValueExistsInPathExpression(cb, root.get("content").get("content"), path, value);
+        return queryDialectHelper.getJsonValueExistsInPathExpression(cb, root.get(CONTENT).get(CONTENT), path, value);
     }
 
     private Predicate findJsonValue(CriteriaBuilder cb, Root<JsonSchemaDocument> root, String value) {
-        return queryDialectHelper.getJsonValueExistsExpression(cb, root.get("content").get("content"), value);
+        return queryDialectHelper.getJsonValueExistsExpression(cb, root.get(CONTENT).get(CONTENT), value);
     }
 
     private <T extends Comparable<? super T>> Predicate findJsonValue(CriteriaBuilder cb, Root<JsonSchemaDocument> root, SearchRequest2.SearchCriteria2 searchCriteria) {
         var jsonValue = queryDialectHelper.getJsonValueExpression(
             cb,
-            root.get("content").get("content"),
+            root.get(CONTENT).get(CONTENT),
             searchCriteria.getPath(),
             searchCriteria.<T>getDataType()
         );
@@ -405,7 +413,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             .map(order -> {
                 if (order.getProperty().startsWith("$.")) {
                     return new OrderImpl(
-                        queryDialectHelper.getJsonValueExpression(cb, root.get("content"), order.getProperty()),
+                        queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT), order.getProperty()),
                         order.getDirection().isAscending());
                 } else {
                     return new OrderImpl(

@@ -25,15 +25,19 @@ import org.springframework.data.domain.Pageable;
 
 public interface DocumentSearchService {
 
+    @SuppressWarnings({"squid:S1452","java:S1452"})
     Page<? extends Document> search(
         SearchRequest searchRequest,
         Pageable pageable
     );
 
+    @SuppressWarnings({"squid:S1452","java:S1452"})
     Page<? extends Document> search(String documentDefinitionName, SearchWithConfigRequest searchWithConfigRequest, Pageable pageable);
 
+    @SuppressWarnings({"squid:S1452","java:S1452"})
     Page<? extends Document> search(String documentDefinitionName, SearchRequest2 searchRequest, Pageable pageable);
 
+    @SuppressWarnings({"squid:S1452","java:S1452"})
     default Page<? extends Document> searchWithoutAuthorization(
         SearchRequest searchRequest,
         Pageable pageable
