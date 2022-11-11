@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -167,19 +169,26 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     public Map<String, List<ExternalContentItem>> buildExternalFormFieldsMap() {
+        return buildExternalFormFieldsMapFiltered(Optional.empty());
+    }
+
+    public Map<String, List<ExternalContentItem>> buildExternalFormFieldsMapForSubmission() {
+        return buildExternalFormFieldsMapFiltered(Optional.of(field -> !shouldIgnoreField(field)));
+    }
+
+    private Map<String, List<ExternalContentItem>> buildExternalFormFieldsMapFiltered(Optional<Predicate<ObjectNode>> predicate) {
         var map = new HashMap<String, List<ExternalContentItem>>();
         final JsonNode formDefinitionNode = asJson();
-        FormIoFormDefinition
-            .getInputFields(formDefinitionNode)
+        FormIoFormDefinition.getInputFields(formDefinitionNode)
             .stream()
-            .filter(field -> !shouldIgnoreField(field))
+            .filter(field -> predicate.isEmpty() || predicate.get().test(field))
             .forEach(field -> getExternalFormField(field)
-            .ifPresent(externalContentItem ->
-                map.computeIfAbsent(
-                    externalContentItem.externalFormFieldType.toLowerCase(), externalFormFieldType -> new ArrayList<>()
-                ).add(externalContentItem)
-            )
-        );
+                .ifPresent(externalContentItem ->
+                    map.computeIfAbsent(
+                        externalContentItem.externalFormFieldType.toLowerCase(), externalFormFieldType -> new ArrayList<>()
+                    ).add(externalContentItem)
+                )
+            );
         return map;
     }
 
@@ -187,7 +196,10 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         final Map<String, Object> processVarFormData = new HashMap<>();
         final JsonNode formDefinitionNode = asJson();
         final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionNode);
-        inputFields.forEach(field -> getProcessVar(field)
+        inputFields
+            .stream()
+            .filter(field -> !shouldIgnoreField(field))
+            .forEach(field -> getProcessVar(field)
             .ifPresent(contentItem -> getValueBy(formData, contentItem.getJsonPointer())
                 .ifPresent(valueNode -> processVarFormData.put(contentItem.getName(), extractNodeValue(valueNode)))
             ));
@@ -241,11 +253,21 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     public List<ObjectNode> getDocumentMappedFields() {
+        return getDocumentMappedFieldsFiltered(Optional.empty());
+    }
+
+    public List<ObjectNode> getDocumentMappedFieldsForSubmission() {
+        return getDocumentMappedFieldsFiltered(Optional.of(field -> !shouldIgnoreField(field)));
+    }
+
+    private List<ObjectNode> getDocumentMappedFieldsFiltered(Optional<Predicate<JsonNode>> predicate) {
         final List<ObjectNode> inputFields = new LinkedList<>();
         List<ArrayNode> components = getComponents(this.asJson());
         components.forEach(componentsNode -> componentsNode.forEach(fieldNode -> {
-            if ((isDocumentContentVar(fieldNode))) {
-                inputFields.add((ObjectNode) fieldNode);
+            if (predicate.isEmpty() || predicate.get().test(fieldNode)) {
+                if ((isDocumentContentVar(fieldNode))) {
+                    inputFields.add((ObjectNode) fieldNode);
+                }
             }
         }));
         return Collections.unmodifiableList(inputFields);
@@ -338,9 +360,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         }
         String key = field.get(PROPERTY_KEY).asText().toUpperCase();
         if (getExternalFormFieldType(field).isPresent()) {
-            return false;
-        }
-        if (shouldIgnoreField(field)) {
             return false;
         }
         return !key.isEmpty() && !key.startsWith(PROCESS_VAR_PREFIX.toUpperCase());

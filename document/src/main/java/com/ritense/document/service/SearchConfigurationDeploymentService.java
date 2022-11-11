@@ -17,6 +17,7 @@
 package com.ritense.document.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.SearchConfigurationDto;
 import com.ritense.document.exception.SearchConfigurationDeploymentException;
 import com.ritense.document.exception.SearchFieldConfigurationDeploymentException;
@@ -35,6 +36,7 @@ import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 
 @Transactional
@@ -73,7 +75,13 @@ public class SearchConfigurationDeploymentService {
         var searchConfiguration = objectMapper.readValue(searchConfigurationJson, SearchConfigurationDto.class);
 
         try {
-            searchFieldService.createSearchConfiguration(documentDefinitionName, searchConfiguration.toEntity(documentDefinitionName));
+            List<SearchField> databaseSearchFields =  searchFieldService.getSearchFields(documentDefinitionName);
+            List<SearchField> searchConfigurationFields  = searchConfiguration.toEntity(documentDefinitionName);
+            databaseSearchFields.forEach(databaseSearchField ->
+                searchConfigurationFields
+                        .removeIf(
+                                searchConfigurationField -> databaseSearchField.getKey().equals(searchConfigurationField.getKey())));
+            searchFieldService.createSearchConfiguration(searchConfigurationFields);
             logger.info("Deployed search configuration for document - {}", documentDefinitionName);
         } catch (Exception e) {
             throw new SearchFieldConfigurationDeploymentException(documentDefinitionName, e);

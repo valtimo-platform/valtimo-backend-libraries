@@ -70,7 +70,7 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
                 SearchFieldFieldtype.SINGLE,
                 SearchFieldMatchtype.LIKE
         ));
-        searchFieldService.createSearchConfiguration("aDefinitionName", searchFields);
+        searchFieldService.createSearchConfiguration(searchFields);
         searchFields = searchFieldService.getSearchFields("aDefinitionName");
         assertThat(searchFields.isEmpty()).isTrue();
     }
