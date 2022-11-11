@@ -25,28 +25,15 @@ public enum SearchFieldDataType {
     NUMBER("number"),
     TEXT("text");
 
-    @JsonValue private final String name;
+    @JsonValue
+    private final String name;
 
     SearchFieldDataType(String name) {
         this.name = name;
     }
 
     public static SearchFieldDataType fromString(String text) {
-        for (SearchFieldDataType dataType : SearchFieldDataType.values()) {
-            if (dataType.name.equalsIgnoreCase(text)) {
-                return dataType;
-            }
-        }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldDataType from string %s", text));
-    }
-
-    public static SearchFieldDataType fromKey(String key) {
-        for (SearchFieldDataType dataType : SearchFieldDataType.values()) {
-            if (dataType.name().equalsIgnoreCase(key)) {
-                return dataType;
-            }
-        }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldDataType from string %s", key));
+        return SearchFieldDataType.valueOf(text.toUpperCase());
     }
 
     @Override

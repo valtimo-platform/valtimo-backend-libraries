@@ -23,28 +23,15 @@ public enum SearchFieldFieldType {
     RANGE("range"),
     SINGLE("single");
 
-    @JsonValue private final String name;
+    @JsonValue
+    private final String name;
 
     SearchFieldFieldType(String name) {
         this.name = name;
     }
 
     public static SearchFieldFieldType fromString(String text) {
-        for (SearchFieldFieldType fieldType : SearchFieldFieldType.values()) {
-            if (fieldType.name.equalsIgnoreCase(text)) {
-                return fieldType;
-            }
-        }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldFieldType from string %s", text));
-    }
-
-    public static SearchFieldFieldType fromKey(String key) {
-        for (SearchFieldFieldType fieldType : SearchFieldFieldType.values()) {
-            if (fieldType.name().equalsIgnoreCase(key)) {
-                return fieldType;
-            }
-        }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldFieldType from string %s", key));
+        return SearchFieldFieldType.valueOf(text.toUpperCase());
     }
 
     @Override

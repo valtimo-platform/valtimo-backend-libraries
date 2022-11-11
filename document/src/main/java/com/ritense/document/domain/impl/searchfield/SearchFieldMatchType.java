@@ -22,28 +22,15 @@ public enum SearchFieldMatchType {
     LIKE("like"),
     EXACT("exact");
 
-    @JsonValue private final String name;
+    @JsonValue
+    private final String name;
 
     SearchFieldMatchType(String name) {
         this.name = name;
     }
 
     public static SearchFieldMatchType fromString(String text) {
-        for (SearchFieldMatchType matchType : SearchFieldMatchType.values()) {
-            if (matchType.name.equalsIgnoreCase(text)) {
-                return matchType;
-            }
-        }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldMatchType from string %s", text));
-    }
-
-    public static SearchFieldMatchType fromKey(String key) {
-        for (SearchFieldMatchType matchType : SearchFieldMatchType.values()) {
-            if (matchType.name().equalsIgnoreCase(key)) {
-                return matchType;
-            }
-        }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldMatchType from string %s", key));
+        return SearchFieldMatchType.valueOf(text.toUpperCase());
     }
 
     @Override
