@@ -153,7 +153,7 @@ public class ValtimoUser implements Serializable, ManageableUser {
     @Override
     public String getFullName() {
         if (isEmpty(firstName) && isEmpty(lastName)) {
-            return null;
+            return "";
         } else if (isEmpty(firstName)) {
             return lastName;
         } else  if (isEmpty(lastName)) {
