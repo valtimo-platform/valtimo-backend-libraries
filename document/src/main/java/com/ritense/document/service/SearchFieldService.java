@@ -87,6 +87,7 @@ public class SearchFieldService {
         searchField.setFieldType(searchFieldDto.getFieldType());
         searchField.setMatchType(searchFieldDto.getMatchType());
         searchField.setOrder(order);
+        searchField.setTitle(searchFieldDto.getTitle());
         return searchField;
     }
 }

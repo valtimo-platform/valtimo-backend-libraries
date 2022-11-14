@@ -179,8 +179,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldReturnChangeOrderingWhenUpdateSearchFields() throws Exception {
         var searchFields = List.of(
-            new SearchFieldDto("lastName", "doc:customer.lastName", TEXT, SINGLE, LIKE),
-            new SearchFieldDto("firstName", "doc:customer.firstName", TEXT, SINGLE, LIKE)
+            new SearchFieldDto("lastName", "doc:customer.lastName", TEXT, SINGLE, LIKE,null),
+            new SearchFieldDto("firstName", "doc:customer.firstName", TEXT, SINGLE, LIKE,null)
         );
         mockMvc.perform(
                 put("/api/v1/document-search/{documentDefinitionName}/fields",
