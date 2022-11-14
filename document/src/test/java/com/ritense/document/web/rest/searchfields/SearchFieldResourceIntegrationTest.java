@@ -154,9 +154,9 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         assertEquals(searchFieldId.getId(), Objects.requireNonNull(searchFieldUpdated.orElseGet(SearchField::new).getId()).getId());
         assertEquals(searchFieldToUpdate.getKey(), searchFieldUpdated.orElseGet(SearchField::new).getKey());
         assertEquals(searchFieldToUpdate.getPath(), searchFieldUpdated.orElseGet(SearchField::new).getPath());
-        assertEquals(searchFieldToUpdate.getDataType(), searchFieldUpdated.orElseGet(SearchField::new).getDatatype());
-        assertEquals(SearchFieldFieldtype.RANGE, searchFieldToUpdate.getFieldType());
-        assertEquals(searchFieldToUpdate.getMatchType(), searchFieldUpdated.orElseGet(SearchField::new).getMatchtype());
+        assertEquals(searchFieldToUpdate.getDataType(), searchFieldUpdated.orElseGet(SearchField::new).getDataType());
+        assertEquals(SearchFieldFieldType.RANGE, searchFieldToUpdate.getFieldType());
+        assertEquals(searchFieldToUpdate.getMatchType(), searchFieldUpdated.orElseGet(SearchField::new).getMatchType());
     }
 
     @Test
