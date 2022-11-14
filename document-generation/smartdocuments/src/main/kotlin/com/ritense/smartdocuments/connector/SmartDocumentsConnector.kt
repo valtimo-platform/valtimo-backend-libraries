@@ -60,7 +60,13 @@ class SmartDocumentsConnector(
                 )
             )
         )
-        val pdfResponse = filesResponse.file.first { it.outputFormat.equals(format.toString(), ignoreCase = true) }
+        val pdfResponse =
+            try {
+                filesResponse.file.first { it.outputFormat.equals(format.toString(), ignoreCase = true) }
+            } catch (e: Exception) {
+                throw NoSuchElementException("Output format of the generated document doesn't match the given document format option '$format'")
+            }
+
         return GeneratedSmartDocument(
             pdfResponse.filename,
             FilenameUtils.getExtension(pdfResponse.filename),
