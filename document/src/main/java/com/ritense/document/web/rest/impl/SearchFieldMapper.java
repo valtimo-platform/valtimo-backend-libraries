@@ -36,10 +36,10 @@ public class SearchFieldMapper {
     }
 
     public static SearchFieldDto toDto(SearchField searchField) {
-        return new SearchFieldDto(searchField.getKey(), searchField.getPath(),searchField.getDatatype(),searchField.getFieldtype(),searchField.getMatchtype());
+        return new SearchFieldDto(searchField.getKey(), searchField.getPath(),searchField.getDatatype(),searchField.getFieldtype(),searchField.getMatchtype(), searchField.getTitle());
     }
 
     public static SearchField toEntity(SearchFieldDto searchField) {
-        return new SearchField(searchField.getKey(), searchField.getPath(), searchField.getDataType(), searchField.getFieldType(), searchField.getMatchType());
+        return new SearchField(searchField.getKey(), searchField.getPath(), searchField.getDataType(), searchField.getFieldType(), searchField.getMatchType(), searchField.getTitle());
     }
 }

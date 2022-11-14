@@ -61,14 +61,16 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
                 "/some/path",
                 SearchFieldDatatype.TEXT,
                 SearchFieldFieldtype.SINGLE,
-                SearchFieldMatchtype.EXACT
+                SearchFieldMatchtype.EXACT,
+                null
         ));
         searchFields.add(new SearchField(
                 "someKey",
                 "/some/path",
                 SearchFieldDatatype.TEXT,
                 SearchFieldFieldtype.SINGLE,
-                SearchFieldMatchtype.LIKE
+                SearchFieldMatchtype.LIKE,
+                null
         ));
         searchFieldService.createSearchConfiguration(searchFields);
         searchFields = searchFieldService.getSearchFields("aDefinitionName");
@@ -81,7 +83,8 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
                 "somePath",
                 SearchFieldDatatype.TEXT,
                 SearchFieldFieldtype.SINGLE,
-                SearchFieldMatchtype.LIKE);
+                SearchFieldMatchtype.LIKE,
+                null);
         searchFieldService.addSearchField("aDefinitionName", searchField);
         assertThrows(IllegalArgumentException.class,
                 () -> searchFieldService.addSearchField("aDefinitionName", searchField));

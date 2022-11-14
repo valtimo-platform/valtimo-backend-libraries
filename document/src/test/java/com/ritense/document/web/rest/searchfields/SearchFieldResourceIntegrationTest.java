@@ -61,7 +61,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
             "/some/path",
             SearchFieldDatatype.TEXT,
             SearchFieldFieldtype.SINGLE,
-            SearchFieldMatchtype.EXACT
+            SearchFieldMatchtype.EXACT,
+            "aTitle"
     );
 
     @BeforeEach()
@@ -121,7 +122,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$[0].path", is("/some/path")))
                 .andExpect(jsonPath("$[0].dataType", is(SearchFieldDatatype.TEXT.toString())))
                 .andExpect(jsonPath("$[0].fieldType", is(SearchFieldFieldtype.SINGLE.toString())))
-                .andExpect(jsonPath("$[0].matchType", is(SearchFieldMatchtype.EXACT.toString())));
+                .andExpect(jsonPath("$[0].matchType", is(SearchFieldMatchtype.EXACT.toString())))
+                .andExpect(jsonPath("$[0].title", is("aTitle")));
     }
 
     @Test
@@ -133,7 +135,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 SEARCH_FIELD.getPath(),
                 SEARCH_FIELD.getDatatype(),
                 SearchFieldFieldtype.RANGE, //This is the change
-                SEARCH_FIELD.getMatchtype());
+                SEARCH_FIELD.getMatchtype(),
+                "someTitle");
 
         mockMvc.perform(
                         put("/api/v1/document-search/{documentDefinitionName}/fields",
@@ -153,6 +156,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         assertEquals(searchFieldToUpdate.getDataType(), searchFieldUpdated.orElseGet(SearchField::new).getDatatype());
         assertEquals(SearchFieldFieldtype.RANGE, searchFieldToUpdate.getFieldType());
         assertEquals(searchFieldToUpdate.getMatchType(), searchFieldUpdated.orElseGet(SearchField::new).getMatchtype());
+        assertEquals(searchFieldToUpdate.getTitle(), searchFieldUpdated.orElseGet(SearchField::new).getTitle());
     }
 
     @Test

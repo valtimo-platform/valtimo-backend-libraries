@@ -50,16 +50,21 @@ public class SearchField implements Persistable<SearchFieldId> {
     @Enumerated(EnumType.STRING)
     private SearchFieldMatchtype matchtype;
 
+    @Column(name = "title")
+    private String title;
+
     public SearchField(String key,
                        String path,
                        SearchFieldDatatype datatype,
                        SearchFieldFieldtype fieldtype,
-                       SearchFieldMatchtype matchtype) {
+                       SearchFieldMatchtype matchtype,
+                       String title) {
         this.key = key;
         this.path = path;
         this.datatype = datatype;
         this.fieldtype = fieldtype;
         this.matchtype = matchtype;
+        this.title = title;
     }
 
     public SearchField() {}
@@ -116,6 +121,14 @@ public class SearchField implements Persistable<SearchFieldId> {
 
     public void setMatchtype(SearchFieldMatchtype matchtype) {
         this.matchtype = matchtype;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
 
