@@ -21,16 +21,16 @@ public class SearchFieldDto {
 
     private String key;
     private String path;
-    private SearchFieldDatatype dataType;
-    private SearchFieldFieldtype fieldType;
-    private SearchFieldMatchtype matchType;
+    private SearchFieldDataType dataType;
+    private SearchFieldFieldType fieldType;
+    private SearchFieldMatchType matchType;
     private String title;
 
     public SearchFieldDto(String key,
                           String path,
-                          SearchFieldDatatype dataType,
-                          SearchFieldFieldtype fieldType,
-                          SearchFieldMatchtype matchType,
+                          SearchFieldDataType dataType,
+                          SearchFieldFieldType fieldType,
+                          SearchFieldMatchType matchType,
                           String title) {
         this.key = key;
         this.path = path;
@@ -40,8 +40,7 @@ public class SearchFieldDto {
         this.title = title;
     }
 
-    public SearchFieldDto() {
-    }
+    public SearchFieldDto() {}
 
     public String getKey() {
         return key;
@@ -51,15 +50,15 @@ public class SearchFieldDto {
         return path;
     }
 
-    public SearchFieldDatatype getDataType() {
+    public SearchFieldDataType getDataType() {
         return dataType;
     }
 
-    public SearchFieldFieldtype getFieldType() {
+    public SearchFieldFieldType getFieldType() {
         return fieldType;
     }
 
-    public SearchFieldMatchtype getMatchType() {
+    public SearchFieldMatchType getMatchType() {
         return matchType;
     }
 
@@ -71,15 +70,15 @@ public class SearchFieldDto {
         this.path = path;
     }
 
-    public void setDataType(SearchFieldDatatype dataType) {
+    public void setDataType(SearchFieldDataType dataType) {
         this.dataType = dataType;
     }
 
-    public void setFieldType(SearchFieldFieldtype fieldType) {
+    public void setFieldType(SearchFieldFieldType fieldType) {
         this.fieldType = fieldType;
     }
 
-    public void setMatchType(SearchFieldMatchtype matchType) {
+    public void setMatchType(SearchFieldMatchType matchType) {
         this.matchType = matchType;
     }
 

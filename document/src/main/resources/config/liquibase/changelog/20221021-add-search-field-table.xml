@@ -25,4 +25,17 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet author="Ritense" id="2">
+        <dropNotNullConstraint tableName="search_field" columnName="matchtype" columnDataType="varchar(20)"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="3">
+        <addColumn tableName="search_field">
+            <column name="search_field_order" type="${intType}" defaultValue="-1">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
