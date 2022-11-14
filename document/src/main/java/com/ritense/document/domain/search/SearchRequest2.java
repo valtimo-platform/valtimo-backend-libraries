@@ -21,39 +21,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SearchRequest2 {
-    private String createdBy;
-    private Long sequence;
     private SearchOperator searchOperator = SearchOperator.OR;
     private List<SearchCriteria2> otherFilters = List.of();
 
     public SearchRequest2() {
         // Jackson needs the empty constructor
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public SearchRequest2 createdBy(String createdBy) {
-        setCreatedBy(createdBy);
-        return this;
-    }
-
-    public Long getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(Long sequence) {
-        this.sequence = sequence;
-    }
-
-    public SearchRequest2 sequence(Long sequence) {
-        setSequence(sequence);
-        return this;
     }
 
     public SearchOperator getSearchOperator() {

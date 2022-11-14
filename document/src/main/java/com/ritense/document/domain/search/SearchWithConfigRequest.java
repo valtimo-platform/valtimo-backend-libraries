@@ -17,14 +17,13 @@
 package com.ritense.document.domain.search;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 
 public class SearchWithConfigRequest {
-    private String createdBy;
-    private Long sequence;
     private SearchOperator searchOperator = SearchOperator.OR;
     private List<SearchWithConfigFilter> otherFilters = List.of();
 
@@ -32,31 +31,11 @@ public class SearchWithConfigRequest {
     }
 
     public SearchWithConfigRequest(
-        String createdBy,
-        Long sequence,
         SearchOperator searchOperator,
         List<SearchWithConfigFilter> otherFilters
     ) {
-        this.createdBy = createdBy;
-        this.sequence = sequence;
         this.searchOperator = searchOperator;
         this.otherFilters = otherFilters;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Long getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(Long sequence) {
-        this.sequence = sequence;
     }
 
     public SearchOperator getSearchOperator() {
@@ -77,7 +56,6 @@ public class SearchWithConfigRequest {
 
     public static class SearchWithConfigFilter {
 
-        @NotNull
         private String key;
         private SearchRequestValue rangeFrom = SearchRequestValue.ofNull();
         private SearchRequestValue rangeTo = SearchRequestValue.ofNull();

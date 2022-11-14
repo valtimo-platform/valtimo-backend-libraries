@@ -23,7 +23,6 @@ import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
-import com.ritense.document.domain.search.DatabaseSearchType;
 import com.ritense.document.domain.search.SearchRequest2;
 import com.ritense.document.service.result.CreateDocumentResult;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +30,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -42,6 +42,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import static com.ritense.document.domain.search.DatabaseSearchType.BETWEEN;
+import static com.ritense.document.domain.search.DatabaseSearchType.EQUAL;
+import static com.ritense.document.domain.search.DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO;
+import static com.ritense.document.domain.search.DatabaseSearchType.LESS_THAN_OR_EQUAL_TO;
+import static com.ritense.document.domain.search.DatabaseSearchType.LIKE;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -522,17 +527,16 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
         createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2();
-        var searchCriteria = new SearchRequest2.SearchCriteria2();
-        searchCriteria.setSearchType(DatabaseSearchType.LIKE);
-        searchCriteria.setPath("$.street");
-        searchCriteria.setValues(List.of("kade"));
-        searchRequest.setOtherFilters(List.of(searchCriteria));
+        var searchRequest = new SearchRequest2()
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .addValue("kade")
+                .searchType(LIKE)
+                .path("doc:street"));
 
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.DESC, "$.street")));
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street")));
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -540,25 +544,24 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = USERNAME, authorities = USER)
-    void shouldSearchWithSearchRequestAndBetweenRangedValues() throws InterruptedException {
+    void shouldSearchWithSearchRequestAndBetweenRangedValues() {
         documentRepository.deleteAllInBatch();
 
         createDocument("{\"housenumber\": 1}").resultingDocument().get();
         createDocument("{\"housenumber\": 2}").resultingDocument().get();
         createDocument("{\"housenumber\": 3}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2();
-        var searchCriteria = new SearchRequest2.SearchCriteria2();
-        searchCriteria.setRangeFrom(1);
-        searchCriteria.setRangeTo(2);
-        searchCriteria.setSearchType(DatabaseSearchType.BETWEEN);
-        searchCriteria.setPath("$.housenumber");
-        searchRequest.setOtherFilters(List.of(searchCriteria));
+        var searchRequest = new SearchRequest2()
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .rangeFrom(1)
+                .rangeTo(2)
+                .searchType(BETWEEN)
+                .path("doc:housenumber"));
 
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.housenumber")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:housenumber")));
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -579,17 +582,16 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"housenumber\": 2}").resultingDocument().get();
         createDocument("{\"housenumber\": 3}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2();
-        var searchCriteria = new SearchRequest2.SearchCriteria2();
-        searchCriteria.setRangeFrom(2);
-        searchCriteria.setSearchType(DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO);
-        searchCriteria.setPath("$.housenumber");
-        searchRequest.setOtherFilters(List.of(searchCriteria));
+        var searchRequest = new SearchRequest2()
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .rangeFrom(2)
+                .searchType(GREATER_THAN_OR_EQUAL_TO)
+                .path("doc:housenumber"));
 
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.housenumber")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:housenumber")));
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -610,17 +612,16 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"housenumber\": 2}").resultingDocument().get();
         createDocument("{\"housenumber\": 3}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2();
-        var searchCriteria = new SearchRequest2.SearchCriteria2();
-        searchCriteria.setRangeTo(1);
-        searchCriteria.setSearchType(DatabaseSearchType.LESS_THAN_OR_EQUAL_TO);
-        searchCriteria.setPath("$.housenumber");
-        searchRequest.setOtherFilters(List.of(searchCriteria));
+        var searchRequest = new SearchRequest2()
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .rangeTo(1)
+                .searchType(LESS_THAN_OR_EQUAL_TO)
+                .path("doc:housenumber"));
 
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.housenumber")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:housenumber")));
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(1);
@@ -639,23 +640,21 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"housenumber\": 2}").resultingDocument().get();
         createDocument("{\"housenumber\": 3}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2();
-        var searchCriteria = new SearchRequest2.SearchCriteria2();
-        searchCriteria.setRangeTo(2);
-        searchCriteria.setSearchType(DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO);
-        searchCriteria.setPath("$.housenumber");
-        searchRequest.setOtherFilters(List.of(searchCriteria));
+        var searchRequest = new SearchRequest2()
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .rangeTo(2)
+                .searchType(GREATER_THAN_OR_EQUAL_TO)
+                .path("doc:housenumber"));
 
-        assertThrows(ValidationException.class, () -> {
-            documentSearchService.search(
-                definition.id().name(),
-                searchRequest,
-                PageRequest.of(0, 10)
-            );
-        });
+        assertThrows(ValidationException.class, () -> documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10)
+        ));
     }
 
     @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
     void shouldSearchWithSearchRequestAndRangedDateValues() {
         documentRepository.deleteAllInBatch();
 
@@ -663,18 +662,17 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"movedAtDate\": \"2022-02-01\"}").resultingDocument().get();
         createDocument("{\"movedAtDate\": \"2022-03-01\"}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2();
-        var searchCriteria = new SearchRequest2.SearchCriteria2();
-        searchCriteria.setRangeFrom(LocalDate.of(2022, 01, 01));
-        searchCriteria.setRangeTo(LocalDate.of(2022, 02, 01));
-        searchCriteria.setSearchType(DatabaseSearchType.BETWEEN);
-        searchCriteria.setPath("$.movedAtDate");
-        searchRequest.setOtherFilters(List.of(searchCriteria));
+        var searchRequest = new SearchRequest2()
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .rangeFrom(LocalDate.parse("2022-01-01"))
+                .rangeTo(LocalDate.parse("2022-02-01"))
+                .searchType(BETWEEN)
+                .path("doc:movedAtDate"));
 
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.movedAtDate")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:movedAtDate")));
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -687,6 +685,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
     void shouldSearchWithSearchRequestAndFromDateTimeValues() {
         documentRepository.deleteAllInBatch();
 
@@ -694,17 +693,16 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"movedAtDateTime\": \"2022-01-01T12:10:00\"}").resultingDocument().get();
         createDocument("{\"movedAtDateTime\": \"2022-01-01T12:20:00\"}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2();
-        var searchCriteria = new SearchRequest2.SearchCriteria2();
-        searchCriteria.setRangeFrom(LocalDateTime.of(2022, 01, 01, 12, 10));
-        searchCriteria.setSearchType(DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO);
-        searchCriteria.setPath("$.movedAtDateTime");
-        searchRequest.setOtherFilters(List.of(searchCriteria));
+        var searchRequest = new SearchRequest2()
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .rangeFrom(LocalDateTime.parse("2022-01-01T12:10:00"))
+                .searchType(GREATER_THAN_OR_EQUAL_TO)
+                .path("doc:movedAtDateTime"));
 
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "$.movedAtDateTime")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:movedAtDateTime")));
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -716,6 +714,54 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
                      content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText());
         assertEquals("2022-01-01T12:20:00",
                      content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText());
+    }
+
+    @Test
+    @WithMockUser(username = "example@ritense.com", authorities = USER)
+    void shouldSearchWithSearchRequestAndCreatedBy() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{}");
+
+        var searchRequest = new SearchRequest2()
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .addValue("example@ritense.com")
+                .searchType(EQUAL)
+                .path("case:createdBy"));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            Pageable.unpaged());
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+
+        var content = result.getContent();
+        assertEquals("example@ritense.com", content.get(0).createdBy());
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchWithSearchRequestAndOrderBySequence() {
+        documentRepository.deleteAllInBatch();
+
+        var document1 = createDocument("{}").resultingDocument().get();
+        var document2 = createDocument("{}").resultingDocument().get();
+        var document3 = createDocument("{}").resultingDocument().get();
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            new SearchRequest2(),
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "case:sequence")));
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(3);
+
+        var content = result.getContent();
+        assertEquals(document3.sequence(), content.get(0).sequence());
+        assertEquals(document2.sequence(), content.get(1).sequence());
+        assertEquals(document1.sequence(), content.get(2).sequence());
     }
 
     private CreateDocumentResult createDocument(String content) {

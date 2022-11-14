@@ -60,8 +60,6 @@ public class SearchRequestMapper {
 
     public static SearchRequest2 toSearchRequest2(SearchWithConfigRequest searchRequest, List<SearchRequest2.SearchCriteria2> otherFilters) {
         var searchRequest2 = new SearchRequest2();
-        searchRequest2.setCreatedBy(searchRequest.getCreatedBy());
-        searchRequest2.setSequence(searchRequest.getSequence());
         searchRequest2.setSearchOperator(searchRequest.getSearchOperator());
         searchRequest2.setOtherFilters(otherFilters);
         return searchRequest2;
