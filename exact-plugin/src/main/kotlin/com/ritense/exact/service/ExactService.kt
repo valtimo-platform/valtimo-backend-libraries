@@ -13,17 +13,21 @@ import java.time.LocalDateTime
 import mu.KotlinLogging
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation.REQUIRES_NEW
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClient
 
+@Transactional
 class ExactService(
-    private val redirectUrl: String,
-    private val exactClient: WebClient,
-    private val pluginService: PluginService,
-    private val objectMapper: ObjectMapper
+    val redirectUrl: String,
+    val exactClient: WebClient,
+    val pluginService: PluginService,
+    val objectMapper: ObjectMapper
 ) {
 
     @Scheduled(cron = "\${exact.checkRefreshTokensCron:-}")
-    @SchedulerLock(name = "AuditRetentionService_cleanup", lockAtLeastFor = "PT4S", lockAtMostFor = "PT60M")
+    @SchedulerLock(name = "ExactService_refreshTokenCron", lockAtLeastFor = "PT4S", lockAtMostFor = "PT60M")
     fun refreshRefreshTokens() {
         logger.info { "Starting Exact refresh token check"}
         pluginService
@@ -49,6 +53,7 @@ class ExactService(
             }
     }
 
+    @Transactional(propagation = REQUIRES_NEW)
     fun refreshAccessTokens(pluginConfiguration: PluginConfiguration): String {
         val expiresOn = objectMapper.treeToValue(
             pluginConfiguration.properties?.get("accessTokenExpiresOn"),
