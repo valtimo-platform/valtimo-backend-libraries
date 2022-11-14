@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.klant.service
+package com.ritense.valtimo.security.jwt.exception;
 
-import org.springframework.boot.SpringApplication
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.test.context.TestConfiguration
+public class TokenAuthenticatorNotFoundException extends RuntimeException{
 
-@SpringBootApplication
-class KlantTestConfiguration {
-
-    fun main(args: Array<String>) {
-        SpringApplication.run(KlantTestConfiguration::class.java, *args)
-    }
-
-    @TestConfiguration
-    class TestConfig { //Beans extra
+    public TokenAuthenticatorNotFoundException(String message) {
+        super(message);
     }
 }

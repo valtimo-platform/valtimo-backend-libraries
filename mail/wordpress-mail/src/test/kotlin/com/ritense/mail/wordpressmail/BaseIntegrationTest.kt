@@ -16,13 +16,9 @@
 
 package com.ritense.mail.wordpressmail
 
-import com.nhaarman.mockitokotlin2.whenever
-import com.ritense.connector.service.ConnectorService
-import com.ritense.mail.wordpressmail.connector.WordpressMailConnector
-import org.junit.jupiter.api.BeforeEach
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -33,14 +29,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 abstract class BaseIntegrationTest {
 
     @MockBean
-    lateinit var connectorService: ConnectorService
+    lateinit var userManagementService: UserManagementService
 
-    @Mock
-    lateinit var wordpressMailConnector: WordpressMailConnector
-
-    @BeforeEach
-    fun beforeEach() {
-        whenever(connectorService.loadByClassName(WordpressMailConnector::class.java))
-            .thenReturn(wordpressMailConnector)
-    }
 }

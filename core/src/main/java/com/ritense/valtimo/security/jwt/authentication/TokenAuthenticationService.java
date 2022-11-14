@@ -17,6 +17,7 @@
 package com.ritense.valtimo.security.jwt.authentication;
 
 import com.ritense.valtimo.contract.security.jwt.TokenAuthenticator;
+import com.ritense.valtimo.security.jwt.exception.TokenAuthenticatorNotFoundException;
 import com.ritense.valtimo.security.jwt.provider.SecretKeyResolver;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
@@ -44,7 +45,10 @@ public class TokenAuthenticationService {
             .filter(tokenAuthenticator -> tokenAuthenticator.supports(claims))
             .findFirst()
             .map(tokenAuthenticator -> tokenAuthenticator.authenticate(jwt, claims))
-            .orElse(null);
+            .orElseThrow(() -> {
+                String errorMessage = "No suitable token authenticator found";
+                logger.info(errorMessage);
+                return new TokenAuthenticatorNotFoundException(errorMessage);});
     }
 
     public boolean validateToken(final String jwt) {

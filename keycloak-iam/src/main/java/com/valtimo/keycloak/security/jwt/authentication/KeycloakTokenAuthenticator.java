@@ -55,19 +55,23 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
     public boolean supports(Claims claims) {
         try {
             final String email = getEmail(claims);
+            if (email == null) {
+                logger.info("Support failed: email must be present");
+                return false;
+            }
             if (email.isBlank()) {
-                logger.debug("Support failed: email is blank");
+                logger.info("Support failed: email is blank");
                 return false;
             }
             final List<String> roles = getRoles(claims);
             boolean hasUserRole = roles.contains(USER);
             if (!hasUserRole) {
-                logger.debug("Support failed: missing USER_ROLE");
+                logger.info("Support failed: missing USER_ROLE");
                 return false;
             }
             return true;
         } catch (Exception e) {
-            logger.debug("Support failed with exception", e);
+            logger.info("Support failed with exception", e);
             return false;
         }
     }

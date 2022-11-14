@@ -58,16 +58,15 @@ public class SearchFieldService {
         }
         fieldToUpdate.ifPresent(searchField -> {
             searchField.setPath(searchFieldDto.getPath());
-            searchField.setDatatype(searchFieldDto.getDatatype());
-            searchField.setFieldtype(searchFieldDto.getFieldtype());
-            searchField.setMatchtype(searchFieldDto.getMatchtype());
+            searchField.setDatatype(searchFieldDto.getDataType());
+            searchField.setFieldtype(searchFieldDto.getFieldType());
+            searchField.setMatchtype(searchFieldDto.getMatchType());
             searchFieldRepository.save(searchField);
         });
     }
 
-    public void createSearchConfiguration(String documentDefinitionName, List<SearchField> searchFields) {
-        if (!searchFieldRepository.existsByIdDocumentDefinitionName(documentDefinitionName) &&
-                searchFields.stream()
+    public void createSearchConfiguration(List<SearchField> searchFields) {
+        if (searchFields.stream()
                         .filter((searchField ->
                                 Collections.frequency(searchFields.stream()
                                         .flatMap(field -> Stream.of(field.getKey()))

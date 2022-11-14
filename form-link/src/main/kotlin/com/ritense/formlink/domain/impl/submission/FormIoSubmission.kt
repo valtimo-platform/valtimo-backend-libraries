@@ -113,7 +113,7 @@ data class FormIoSubmission(
     }
 
     private fun initDocumentDefinitionFieldReferences() {
-        formDefinition.documentMappedFields.forEach(Consumer { objectNode: ObjectNode ->
+        formDefinition.documentMappedFieldsForSubmission.forEach(Consumer { objectNode: ObjectNode ->
             val formField = FormField.getFormField(formData, objectNode, { document }, applicationEventPublisher)
             if (formField != null) {
                 documentFieldReferences.add(
@@ -148,7 +148,7 @@ data class FormIoSubmission(
     }
 
     private fun buildExternalFormData() {
-        externalFormData = formDefinition.buildExternalFormFieldsMap().map { entry ->
+        externalFormData = formDefinition.buildExternalFormFieldsMapForSubmission().map { entry ->
             entry.key to entry.value.map {
                 it.name to FormField.getValue(formData, it.jsonPointer)
             }.toMap()
