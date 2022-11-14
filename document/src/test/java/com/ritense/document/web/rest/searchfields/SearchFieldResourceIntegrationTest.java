@@ -22,7 +22,6 @@ import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import com.ritense.document.domain.impl.searchfield.SearchFieldFieldType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
-import com.ritense.document.domain.impl.searchfield.SearchFieldMatchType;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.impl.SearchFieldMapper;
 import com.ritense.document.web.rest.impl.SearchFieldResource;
@@ -39,6 +38,7 @@ import java.util.Optional;
 
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TEXT;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.EXACT;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.LIKE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -64,7 +64,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
             "doc:some.path",
             TEXT,
             SINGLE,
-            SearchFieldMatchType.EXACT,
+            EXACT,
             0
     );
 
@@ -80,10 +80,12 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldStoreSearchField() throws Exception {
+        var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
+
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
-                                .content(Mapper.INSTANCE.get().writeValueAsString(SEARCH_FIELD))
+                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -100,15 +102,16 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         assertEquals("doc:some.path", storedSearchField.getPath());
         assertEquals(TEXT, storedSearchField.getDataType());
         assertEquals(SINGLE, storedSearchField.getFieldType());
-        assertEquals(SearchFieldMatchType.EXACT, storedSearchField.getMatchType());
+        assertEquals(EXACT, storedSearchField.getMatchType());
     }
 
     @Test
     void shouldRetrieveSearchFieldsByDocumentDefinitionName() throws Exception {
+        var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
-                                .content(Mapper.INSTANCE.get().writeValueAsString(SEARCH_FIELD))
+                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -122,7 +125,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$[0].path", is("doc:some.path")))
                 .andExpect(jsonPath("$[0].dataType", is(TEXT.toString())))
                 .andExpect(jsonPath("$[0].fieldType", is(SINGLE.toString())))
-                .andExpect(jsonPath("$[0].matchType", is(SearchFieldMatchType.EXACT.toString())));
+                .andExpect(jsonPath("$[0].matchType", is(EXACT.toString())));
     }
 
     @Test
@@ -151,9 +154,9 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         assertEquals(searchFieldId.getId(), Objects.requireNonNull(searchFieldUpdated.orElseGet(SearchField::new).getId()).getId());
         assertEquals(searchFieldToUpdate.getKey(), searchFieldUpdated.orElseGet(SearchField::new).getKey());
         assertEquals(searchFieldToUpdate.getPath(), searchFieldUpdated.orElseGet(SearchField::new).getPath());
-        assertEquals(searchFieldToUpdate.getDataType(), searchFieldUpdated.orElseGet(SearchField::new).getDataType());
-        assertEquals(SearchFieldFieldType.RANGE, searchFieldToUpdate.getFieldType());
-        assertEquals(searchFieldToUpdate.getMatchType(), searchFieldUpdated.orElseGet(SearchField::new).getMatchType());
+        assertEquals(searchFieldToUpdate.getDataType(), searchFieldUpdated.orElseGet(SearchField::new).getDatatype());
+        assertEquals(SearchFieldFieldtype.RANGE, searchFieldToUpdate.getFieldType());
+        assertEquals(searchFieldToUpdate.getMatchType(), searchFieldUpdated.orElseGet(SearchField::new).getMatchtype());
     }
 
     @Test
