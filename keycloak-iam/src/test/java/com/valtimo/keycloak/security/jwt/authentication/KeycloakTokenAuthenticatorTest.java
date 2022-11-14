@@ -133,13 +133,13 @@ public class KeycloakTokenAuthenticatorTest {
 
     private Claims keycloakClaimWithRealmAndResourceRoles(Claims role) {
         Claims claims = claimsWithUnknownRealmAccessRoles();
-        Map<String, Map<String, List<String>>> resourceclient = new HashMap<>();
+        Map<String, Map<String, List<String>>> resourceClient = new HashMap<>();
         Map<String, List<String>> resourceClientRoles = new HashMap<>();
 
         resourceClientRoles.put("roles", List.of(USER));
-        resourceclient.put("test-client-resource", resourceClientRoles);
+        resourceClient.put("test-client-resource", resourceClientRoles);
 
-        claims.put(RESOURCE_ACCESS, resourceclient);
+        claims.put(RESOURCE_ACCESS, resourceClient);
 
         return claims;
     }
