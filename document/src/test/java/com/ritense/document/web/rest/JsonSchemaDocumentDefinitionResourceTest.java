@@ -139,7 +139,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
         when(documentDefinitionService.findForUser(anyBoolean(), pageCaptor.capture())).thenReturn(definitionPage);
 
-        mockMvc.perform(get("/api/document-definition?sort=readOnly,ASC&sort=id.name,DESC"))
+        mockMvc.perform(get("/api/document-definition?sort=readOnly,ASC&sort=id.name,DESC&sort=other,ASC"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -148,8 +148,11 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         Pageable page = pageCaptor.getValue();
         assertEquals("document_definition_name", page.getSort().getOrderFor("document_definition_name").getProperty());
         assertEquals(Sort.Direction.DESC, page.getSort().getOrderFor("document_definition_name").getDirection());
-        assertEquals("readOnly", page.getSort().getOrderFor("readOnly").getProperty());
-        assertEquals(Sort.Direction.ASC, page.getSort().getOrderFor("readOnly").getDirection());
+        assertEquals("read_only", page.getSort().getOrderFor("read_only").getProperty());
+        assertEquals(Sort.Direction.ASC, page.getSort().getOrderFor("read_only").getDirection());
+        //also include 1 property that is not in the mapping
+        assertEquals("other", page.getSort().getOrderFor("other").getProperty());
+        assertEquals(Sort.Direction.ASC, page.getSort().getOrderFor("other").getDirection());
     }
 
     @Test
