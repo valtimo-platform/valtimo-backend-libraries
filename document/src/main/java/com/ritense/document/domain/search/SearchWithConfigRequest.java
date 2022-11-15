@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 
 public class SearchWithConfigRequest {
-    private SearchOperator searchOperator = SearchOperator.OR;
+    private SearchOperator searchOperator = SearchOperator.AND;
     private List<SearchWithConfigFilter> otherFilters = List.of();
 
     public SearchWithConfigRequest() {

@@ -17,6 +17,7 @@
 package com.ritense.document.domain.search;
 
 import com.ritense.document.domain.impl.searchfield.SearchField;
+import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.exception.SearchConfigRequestException;
 
 import javax.validation.ValidationException;
@@ -27,12 +28,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldtype.MULTIPLE;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldtype.RANGE;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldtype.SINGLE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.DATE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.DATETIME;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TIME;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTIPLE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.RANGE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 import static java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME;
@@ -52,6 +57,10 @@ public class SearchRequestValidator {
     private static final List<DateTimeFormatter> DATE_FORMATTERS = List.of(
         ISO_LOCAL_DATE,
         ISO_OFFSET_DATE
+    );
+
+    private static final List<DateTimeFormatter> TIME_FORMATTERS = List.of(
+        ISO_LOCAL_TIME
     );
 
     public static void validate(SearchWithConfigRequest searchRequest) {
@@ -96,6 +105,9 @@ public class SearchRequestValidator {
     }
 
     public static void validate(SearchWithConfigRequest.SearchWithConfigFilter searchFilter, SearchField searchField) {
+        if (searchField == null) {
+            throw new ValidationException("No search field configuration found with key '" + searchFilter.getKey() + "'");
+        }
         validateSearchFieldType(searchFilter, searchField);
         validateDataType(searchFilter, searchField);
     }
@@ -167,18 +179,18 @@ public class SearchRequestValidator {
     }
 
     private static void validateSearchFieldType(SearchWithConfigRequest.SearchWithConfigFilter searchFilter, SearchField searchField) {
-        if ((searchField.getFieldtype() == MULTIPLE || searchField.getFieldtype() == SINGLE)
+        if ((searchField.getFieldType() == MULTIPLE || searchField.getFieldType() == SINGLE)
             && (searchFilter.getRangeFrom() != null || searchFilter.getRangeTo() != null)) {
-            throw new SearchConfigRequestException(searchField, searchField.getFieldtype().toString(), "range parameters were found");
+            throw new SearchConfigRequestException(searchField, searchField.getFieldType().toString(), "range parameters were found");
         }
-        if (searchField.getFieldtype() == SINGLE && searchFilter.getValues().isEmpty()) {
-            throw new SearchConfigRequestException(searchField, searchField.getFieldtype().toString(), "no value was found");
+        if (searchField.getFieldType() == SINGLE && searchFilter.getValues().isEmpty()) {
+            throw new SearchConfigRequestException(searchField, searchField.getFieldType().toString(), "no value was found");
         }
-        if (searchField.getFieldtype() == SINGLE && searchFilter.getValues().size() >= 2) {
-            throw new SearchConfigRequestException(searchField, searchField.getFieldtype().toString(), "multiple values were found");
+        if (searchField.getFieldType() == SINGLE && searchFilter.getValues().size() >= 2) {
+            throw new SearchConfigRequestException(searchField, searchField.getFieldType().toString(), "multiple values were found");
         }
-        if (searchField.getFieldtype() == RANGE && !searchFilter.getValues().isEmpty()) {
-            throw new SearchConfigRequestException(searchField, searchField.getFieldtype().toString(), "individual values were found");
+        if (searchField.getFieldType() == RANGE && !searchFilter.getValues().isEmpty()) {
+            throw new SearchConfigRequestException(searchField, searchField.getFieldType().toString(), "individual values were found");
         }
     }
 
@@ -194,17 +206,21 @@ public class SearchRequestValidator {
             allValues.add(searchFilter.getRangeTo());
         }
 
-        switch (searchField.getDatatype()) {
+        switch (searchField.getDataType()) {
             case BOOLEAN:
                 validateDataType(searchField, allValues, Boolean.class);
                 break;
             case DATE:
                 validateDataType(searchField, allValues, String.class, TemporalAccessor.class);
-                validateDateTimeFormatIfString(allValues, DATE_FORMATTERS);
+                validateDateTimeFormatIfString(allValues, DATE_FORMATTERS, DATE);
                 break;
             case DATETIME:
                 validateDataType(searchField, allValues, String.class, TemporalAccessor.class);
-                validateDateTimeFormatIfString(allValues, DATE_TIME_FORMATTERS);
+                validateDateTimeFormatIfString(allValues, DATE_TIME_FORMATTERS, DATETIME);
+                break;
+            case TIME:
+                validateDataType(searchField, allValues, String.class, TemporalAccessor.class);
+                validateDateTimeFormatIfString(allValues, TIME_FORMATTERS, TIME);
                 break;
             case NUMBER:
                 validateDataType(searchField, allValues, Number.class);
@@ -215,7 +231,7 @@ public class SearchRequestValidator {
         }
     }
 
-    private static void validateDateTimeFormatIfString(List<?> allValues, List<DateTimeFormatter> dateTimeFormatters) {
+    private static void validateDateTimeFormatIfString(List<?> allValues, List<DateTimeFormatter> dateTimeFormatters, SearchFieldDataType dataType) {
         if (hasType(allValues, String.class)) {
             for (var value : allValues) {
                 boolean hasDateFormat = false;
@@ -229,7 +245,7 @@ public class SearchRequestValidator {
                     }
                 }
                 if (!hasDateFormat) {
-                    throw new ValidationException("Search value '" + Arrays.toString(allValues.toArray()) + "' doesn't have the correct date/datetime format");
+                    throw new ValidationException("Search values '" + Arrays.toString(allValues.toArray()) + "' don't have the correct '" + dataType + "' format");
                 }
             }
         }
@@ -238,7 +254,7 @@ public class SearchRequestValidator {
 
     private static void validateDataType(SearchField searchField, List<?> allValues, Class<?>... types) {
         if (Arrays.stream(types).noneMatch(type -> hasType(allValues, type))) {
-            throw new SearchConfigRequestException(searchField, searchField.getDatatype().toString(), "values '" + Arrays.toString(allValues.toArray()) + "' was not of type " + Arrays.toString(types));
+            throw new SearchConfigRequestException(searchField, searchField.getDataType().toString(), "values '" + Arrays.toString(allValues.toArray()) + "' was not of type " + Arrays.toString(types));
         }
     }
 

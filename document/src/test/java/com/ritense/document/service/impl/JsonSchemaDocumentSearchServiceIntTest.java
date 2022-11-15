@@ -38,7 +38,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -695,7 +695,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         var searchRequest = new SearchRequest2()
             .addOtherFilters(new SearchRequest2.SearchCriteria2()
-                .rangeFrom(LocalDateTime.parse("2022-01-01T12:10:00"))
+                .rangeFrom(ZonedDateTime.parse("2022-01-01T12:10:00Z"))
                 .searchType(GREATER_THAN_OR_EQUAL_TO)
                 .path("doc:movedAtDateTime"));
 
@@ -711,9 +711,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).isPresent());
         assertTrue(content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).isPresent());
         assertEquals("2022-01-01T12:10:00",
-                     content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText());
+            content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText());
         assertEquals("2022-01-01T12:20:00",
-                     content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText());
+            content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText());
     }
 
     @Test

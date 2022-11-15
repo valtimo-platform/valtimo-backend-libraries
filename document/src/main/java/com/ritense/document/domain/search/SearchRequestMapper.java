@@ -23,6 +23,7 @@ import org.springframework.data.util.Pair;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,13 +34,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldtype.MULTIPLE;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldtype.RANGE;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchtype.EXACT;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchtype.LIKE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTIPLE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.RANGE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.EXACT;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.LIKE;
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 import static java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME;
@@ -52,7 +54,8 @@ public class SearchRequestMapper {
         Pair.of(ISO_LOCAL_DATE_TIME, LocalDateTime::from),
         Pair.of(ISO_OFFSET_DATE, OffsetDateTime::from),
         Pair.of(ISO_OFFSET_DATE_TIME, OffsetDateTime::from),
-        Pair.of(ISO_ZONED_DATE_TIME, ZonedDateTime::from)
+        Pair.of(ISO_ZONED_DATE_TIME, ZonedDateTime::from),
+        Pair.of(ISO_LOCAL_TIME, LocalTime::from)
     );
 
     private SearchRequestMapper() {
@@ -113,9 +116,9 @@ public class SearchRequestMapper {
     }
 
     private static DatabaseSearchType findDatabaseSearchType(SearchWithConfigRequest.SearchWithConfigFilter searchFilter, SearchField searchField) {
-        if (searchField.getFieldtype() == MULTIPLE) {
+        if (searchField.getFieldType() == MULTIPLE) {
             return DatabaseSearchType.IN;
-        } else if (searchField.getFieldtype() == RANGE) {
+        } else if (searchField.getFieldType() == RANGE) {
             if (searchFilter.getRangeFrom() != null && searchFilter.getRangeTo() != null) {
                 return DatabaseSearchType.BETWEEN;
             } else if (searchFilter.getRangeFrom() != null) {
@@ -123,14 +126,14 @@ public class SearchRequestMapper {
             } else if (searchFilter.getRangeTo() != null) {
                 return DatabaseSearchType.LESS_THAN_OR_EQUAL_TO;
             } else {
-                throw new SearchConfigRequestException(searchField, searchField.getFieldtype().toString(), "range parameters were not found");
+                throw new SearchConfigRequestException(searchField, searchField.getFieldType().toString(), "range parameters were not found");
             }
-        } else if (searchField.getMatchtype() == LIKE) {
+        } else if (searchField.getMatchType() == LIKE) {
             return DatabaseSearchType.LIKE;
-        } else if (searchField.getMatchtype() == EXACT) {
+        } else if (searchField.getMatchType() == EXACT) {
             return DatabaseSearchType.EQUAL;
         } else {
-            throw new IllegalStateException("Unknown match type: " + searchField.getMatchtype());
+            throw new IllegalStateException("Unknown match type: " + searchField.getMatchType());
         }
     }
 

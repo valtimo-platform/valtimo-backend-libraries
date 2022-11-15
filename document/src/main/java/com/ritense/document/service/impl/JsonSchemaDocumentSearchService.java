@@ -50,8 +50,8 @@ import javax.transaction.Transactional;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ import static java.util.stream.Collectors.toMap;
 
 @Transactional
 public class JsonSchemaDocumentSearchService implements DocumentSearchService {
-    
+
     private static final String DOCUMENT_DEFINITION_ID = "documentDefinitionId";
     private static final String DOCUMENT_DEFINITION_NAME = "documentDefinitionName";
     private static final String ID = "id";
@@ -403,7 +403,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     /**
-     * Note: The CriteriaBuilder only supports with java.sql.Timestamp and java.sql.Date. Both types extend java.util.Date
+     * Note: The CriteriaBuilder only supports with java.sql.Timestamp/Date/Time. These types extend java.util.Date
      */
     private static Expression<java.util.Date> toJavaUtilDateExpression(CriteriaBuilder cb, Expression<?> expression, TemporalAccessor temporal) {
         if (temporal instanceof LocalDate) {
@@ -413,13 +413,15 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             || temporal instanceof OffsetDateTime
             || temporal instanceof ZonedDateTime) {
             return cb.function("TIMESTAMP", java.util.Date.class, expression);
+        } else if (temporal instanceof LocalTime) {
+            return cb.function("TIME", java.util.Date.class, expression);
         } else {
             throw new NotImplementedException("Unsupported temporal type: '" + temporal.getClass() + "' of value '" + temporal + "'");
         }
     }
 
     /**
-     * Note: The CriteriaBuilder only supports with java.sql.Timestamp and java.sql.Date. Both types extend java.util.Date
+     * Note: The CriteriaBuilder only supports with java.sql.Timestamp/Date/Time. These types extend java.util.Date
      */
     private static java.util.Date toJavaUtilDate(Object value) {
         if (value instanceof LocalDate) {
@@ -427,11 +429,13 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         } else if (value instanceof Instant) {
             return java.sql.Timestamp.from((Instant) value);
         } else if (value instanceof LocalDateTime) {
-            return java.sql.Timestamp.from(((LocalDateTime) value).toInstant(ZoneOffset.UTC));
+            return java.sql.Timestamp.valueOf((LocalDateTime) value);
         } else if (value instanceof OffsetDateTime) {
             return java.sql.Timestamp.from(((OffsetDateTime) value).toInstant());
         } else if (value instanceof ZonedDateTime) {
             return java.sql.Timestamp.from(((ZonedDateTime) value).toInstant());
+        } else if (value instanceof LocalTime) {
+            return java.sql.Time.valueOf((LocalTime) value);
         } else {
             throw new NotImplementedException("Failed to cast '" + value + "' to java.util.Date");
         }

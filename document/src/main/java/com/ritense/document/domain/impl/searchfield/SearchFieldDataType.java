@@ -22,6 +22,7 @@ public enum SearchFieldDataType {
     BOOLEAN("boolean"),
     DATE("date"),
     DATETIME("datetime"),
+    TIME("time"),
     NUMBER("number"),
     TEXT("text");
 
