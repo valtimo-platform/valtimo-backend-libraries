@@ -1,6 +1,7 @@
 {
     "searchFields": [
         {
+            "title": "First Name",
             "key": "firstName",
             "path": "doc:firstName",
             "dataType": "text",
@@ -8,6 +9,7 @@
             "matchType": "like"
         },
         {
+            "title": "Last Name",
             "key": "lastName",
             "path": "doc:lastName",
             "dataType": "text",

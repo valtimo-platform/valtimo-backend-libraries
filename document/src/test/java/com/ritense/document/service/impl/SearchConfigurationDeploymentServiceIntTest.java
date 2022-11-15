@@ -52,6 +52,7 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
         assertThat(searchFields.get(0).getDataType()).isEqualTo(TEXT);
         assertThat(searchFields.get(0).getFieldType()).isEqualTo(SINGLE);
         assertThat(searchFields.get(0).getMatchType()).isEqualTo(LIKE);
+        assertThat(searchFields.get(0).getTitle()).isEqualTo("First Name");
         assertThat(searchFields.get(0).getOrder()).isZero();
         assertThat(searchFields.get(1).getId().getDocumentDefinitionName()).isEqualTo("profile");
         assertThat(searchFields.get(1).getKey()).isEqualTo("lastName");
@@ -59,6 +60,8 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
         assertThat(searchFields.get(1).getDataType()).isEqualTo(TEXT);
         assertThat(searchFields.get(1).getFieldType()).isEqualTo(SINGLE);
         assertThat(searchFields.get(1).getMatchType()).isEqualTo(LIKE);
+        assertThat(searchFields.get(1).getTitle()).isEqualTo("Last Name");
+
         assertThat(searchFields.get(1).getOrder()).isOne();
     }
 
