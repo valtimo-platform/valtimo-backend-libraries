@@ -23,6 +23,7 @@ import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.domain.search.SearchRequest2;
 import com.ritense.document.service.result.CreateDocumentResult;
 import org.junit.jupiter.api.BeforeEach;
@@ -544,6 +545,58 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchWithSearchRequestAndLikeTextInListOfMultipleValues() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
+
+        var searchRequest = new SearchRequest2()
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .addValue("kade")
+                .addValue("park")
+                .searchType(LIKE)
+                .path("doc:street"));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street")));
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchWithSearchRequestAndTextInListOfMultipleValues() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
+
+        var searchRequest = new SearchRequest2()
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .addValue("Funenpark")
+                .addValue("Alexanderkade")
+                .addValue("straat") // should not find this one since it's EQUAL not LIKE
+                .searchType(EQUAL)
+                .path("doc:street"));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street")));
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(2);
+    }
+
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
     void shouldSearchWithSearchRequestAndBetweenRangedValues() {
         documentRepository.deleteAllInBatch();
 
@@ -762,6 +815,63 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         assertEquals(document3.sequence(), content.get(0).sequence());
         assertEquals(document2.sequence(), content.get(1).sequence());
         assertEquals(document1.sequence(), content.get(2).sequence());
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchWithSearchRequestWithMultipleFieldsUsingAnd() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
+
+        var searchRequest = new SearchRequest2()
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .addValue("Funenpark")
+                .searchType(EQUAL)
+                .path("doc:street"))
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .addValue(LocalDate.of(2017, 6, 1))
+                .searchType(EQUAL)
+                .path("doc:registrationDate"));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street")));
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchWithSearchRequestWithMultipleFieldsUsingOr() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
+
+        var searchRequest = new SearchRequest2()
+            .searchOperator(SearchOperator.OR)
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .addValue("Funenpark")
+                .searchType(EQUAL)
+                .path("doc:street"))
+            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+                .addValue(LocalDate.of(2017, 6, 1))
+                .searchType(EQUAL)
+                .path("doc:registrationDate"));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street")));
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(3);
     }
 
     private CreateDocumentResult createDocument(String content) {
