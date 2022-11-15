@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SearchRequest2 {
-    private SearchOperator searchOperator = SearchOperator.OR;
+    private SearchOperator searchOperator = SearchOperator.AND;
     private List<SearchCriteria2> otherFilters = List.of();
 
     public SearchRequest2() {

@@ -826,6 +826,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
         createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
 
+        // relying on default SearchOperator being AND
         var searchRequest = new SearchRequest2()
             .addOtherFilters(new SearchRequest2.SearchCriteria2()
                 .addValue("Funenpark")
