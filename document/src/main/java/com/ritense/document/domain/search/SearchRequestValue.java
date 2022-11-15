@@ -26,9 +26,6 @@ import java.util.stream.Collectors;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentFalse;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 
-/**
- *
- */
 public class SearchRequestValue {
 
     @JsonValue

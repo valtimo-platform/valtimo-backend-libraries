@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SearchRequest2 {
+public class AdvancedSearchRequest {
     private SearchOperator searchOperator = SearchOperator.AND;
-    private List<SearchCriteria2> otherFilters = List.of();
+    private List<OtherFilter> otherFilters = List.of();
 
-    public SearchRequest2() {
+    public AdvancedSearchRequest() {
         // Jackson needs the empty constructor
     }
 
@@ -36,26 +36,26 @@ public class SearchRequest2 {
         this.searchOperator = searchOperator;
     }
 
-    public SearchRequest2 searchOperator(SearchOperator searchOperator) {
+    public AdvancedSearchRequest searchOperator(SearchOperator searchOperator) {
         setSearchOperator(searchOperator);
         return this;
     }
 
-    public List<SearchCriteria2> getOtherFilters() {
+    public List<OtherFilter> getOtherFilters() {
         return otherFilters;
     }
 
-    public void setOtherFilters(List<SearchCriteria2> otherFilters) {
+    public void setOtherFilters(List<OtherFilter> otherFilters) {
         this.otherFilters = otherFilters;
     }
 
-    public SearchRequest2 addOtherFilters(SearchCriteria2 otherFilter) {
+    public AdvancedSearchRequest addOtherFilters(OtherFilter otherFilter) {
         this.otherFilters = new ArrayList<>(otherFilters);
         otherFilters.add(otherFilter);
         return this;
     }
 
-    public static class SearchCriteria2 {
+    public static class OtherFilter {
 
         private String path;
         private DatabaseSearchType searchType = DatabaseSearchType.EQUAL;
@@ -63,7 +63,7 @@ public class SearchRequest2 {
         private SearchRequestValue rangeTo = SearchRequestValue.ofNull();
         private List<SearchRequestValue> values = List.of();
 
-        public SearchCriteria2() {
+        public OtherFilter() {
             // Jackson needs the empty constructor
         }
 
@@ -87,7 +87,7 @@ public class SearchRequest2 {
             this.path = path;
         }
 
-        public SearchCriteria2 path(String path) {
+        public OtherFilter path(String path) {
             setPath(path);
             return this;
         }
@@ -100,7 +100,7 @@ public class SearchRequest2 {
             this.searchType = searchType;
         }
 
-        public SearchCriteria2 searchType(DatabaseSearchType searchType) {
+        public OtherFilter searchType(DatabaseSearchType searchType) {
             setSearchType(searchType);
             return this;
         }
@@ -113,7 +113,7 @@ public class SearchRequest2 {
             this.rangeFrom = SearchRequestValue.ofComparable(rangeFrom);
         }
 
-        public SearchCriteria2 rangeFrom(Object rangeFrom) {
+        public OtherFilter rangeFrom(Object rangeFrom) {
             setRangeFrom(rangeFrom);
             return this;
         }
@@ -126,7 +126,7 @@ public class SearchRequest2 {
             this.rangeTo = SearchRequestValue.ofComparable(rangeTo);
         }
 
-        public <T extends Comparable<? super T>> SearchCriteria2 rangeTo(T rangeTo) {
+        public <T extends Comparable<? super T>> OtherFilter rangeTo(T rangeTo) {
             setRangeTo(rangeTo);
             return this;
         }
@@ -145,7 +145,7 @@ public class SearchRequest2 {
             this.values = searchRequestValues;
         }
 
-        public SearchCriteria2 addValue(Object value) {
+        public OtherFilter addValue(Object value) {
             this.values = new ArrayList<>(values);
             values.add(SearchRequestValue.of(value));
             return this;

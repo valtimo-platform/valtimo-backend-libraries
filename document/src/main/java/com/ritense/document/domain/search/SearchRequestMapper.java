@@ -61,14 +61,14 @@ public class SearchRequestMapper {
     private SearchRequestMapper() {
     }
 
-    public static SearchRequest2 toSearchRequest2(SearchWithConfigRequest searchRequest, List<SearchRequest2.SearchCriteria2> otherFilters) {
-        var searchRequest2 = new SearchRequest2();
-        searchRequest2.setSearchOperator(searchRequest.getSearchOperator());
-        searchRequest2.setOtherFilters(otherFilters);
-        return searchRequest2;
+    public static AdvancedSearchRequest toAdvancedSearchRequest(SearchWithConfigRequest searchRequest, List<AdvancedSearchRequest.OtherFilter> otherFilters) {
+        var advancedSearchRequest = new AdvancedSearchRequest();
+        advancedSearchRequest.setSearchOperator(searchRequest.getSearchOperator());
+        advancedSearchRequest.setOtherFilters(otherFilters);
+        return advancedSearchRequest;
     }
 
-    public static SearchRequest2.SearchCriteria2 toSearchCriteria2(SearchWithConfigRequest.SearchWithConfigFilter searchFilter, SearchField searchField) {
+    public static AdvancedSearchRequest.OtherFilter toOtherFilter(SearchWithConfigRequest.SearchWithConfigFilter searchFilter, SearchField searchField) {
         SearchRequestValidator.validate(searchFilter, searchField);
 
         var rangeFrom = mapWhenTemporalField(searchFilter.getRangeFromSearchRequestValue());
@@ -81,14 +81,14 @@ public class SearchRequestMapper {
                 .collect(Collectors.toList());
         }
 
-        var searchCriteria2 = new SearchRequest2.SearchCriteria2();
-        searchCriteria2.setPath(searchField.getPath());
-        searchCriteria2.setSearchType(findDatabaseSearchType(searchFilter, searchField));
-        searchCriteria2.setRangeFrom(rangeFrom.getComparableValue());
-        searchCriteria2.setRangeTo(rangeTo.getComparableValue());
-        searchCriteria2.setSearchRequestValues(searchRequestValues);
-        SearchRequestValidator.validate(searchCriteria2);
-        return searchCriteria2;
+        var otherFilter = new AdvancedSearchRequest.OtherFilter();
+        otherFilter.setPath(searchField.getPath());
+        otherFilter.setSearchType(findDatabaseSearchType(searchFilter, searchField));
+        otherFilter.setRangeFrom(rangeFrom.getComparableValue());
+        otherFilter.setRangeTo(rangeTo.getComparableValue());
+        otherFilter.setSearchRequestValues(searchRequestValues);
+        SearchRequestValidator.validate(otherFilter);
+        return otherFilter;
     }
 
     private static SearchRequestValue mapWhenTemporalField(SearchRequestValue field) {

@@ -72,7 +72,7 @@ public class SearchRequestValidator {
         }
     }
 
-    public static void validate(SearchRequest2 searchRequest) {
+    public static void validate(AdvancedSearchRequest searchRequest) {
         if (searchRequest.getOtherFilters() != null) {
             if (searchRequest.getSearchOperator() == null) {
                 throw new ValidationException("SearchOperator not present");
@@ -81,7 +81,7 @@ public class SearchRequestValidator {
         }
     }
 
-    public static void validate(SearchRequest2.SearchCriteria2 searchCriteria) {
+    public static void validate(AdvancedSearchRequest.OtherFilter searchCriteria) {
         switch (searchCriteria.getSearchType()) {
             case LIKE:
                 validateLike(searchCriteria.getValues(), searchCriteria.getRangeFrom(), searchCriteria.getRangeTo());

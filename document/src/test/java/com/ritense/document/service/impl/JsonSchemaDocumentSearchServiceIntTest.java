@@ -23,8 +23,8 @@ import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.domain.search.AdvancedSearchRequest;
 import com.ritense.document.domain.search.SearchOperator;
-import com.ritense.document.domain.search.SearchRequest2;
 import com.ritense.document.service.result.CreateDocumentResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -528,8 +528,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
         createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2()
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue("kade")
                 .searchType(LIKE)
                 .path("doc:street"));
@@ -552,8 +552,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
         createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2()
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue("kade")
                 .addValue("park")
                 .searchType(LIKE)
@@ -577,8 +577,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
         createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2()
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue("Funenpark")
                 .addValue("Alexanderkade")
                 .addValue("straat") // should not find this one since it's EQUAL not LIKE
@@ -604,8 +604,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"housenumber\": 2}").resultingDocument().get();
         createDocument("{\"housenumber\": 3}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2()
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .rangeFrom(1)
                 .rangeTo(2)
                 .searchType(BETWEEN)
@@ -635,8 +635,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"housenumber\": 2}").resultingDocument().get();
         createDocument("{\"housenumber\": 3}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2()
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .rangeFrom(2)
                 .searchType(GREATER_THAN_OR_EQUAL_TO)
                 .path("doc:housenumber"));
@@ -665,8 +665,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"housenumber\": 2}").resultingDocument().get();
         createDocument("{\"housenumber\": 3}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2()
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .rangeTo(1)
                 .searchType(LESS_THAN_OR_EQUAL_TO)
                 .path("doc:housenumber"));
@@ -693,8 +693,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"housenumber\": 2}").resultingDocument().get();
         createDocument("{\"housenumber\": 3}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2()
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .rangeTo(2)
                 .searchType(GREATER_THAN_OR_EQUAL_TO)
                 .path("doc:housenumber"));
@@ -715,8 +715,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"movedAtDate\": \"2022-02-01\"}").resultingDocument().get();
         createDocument("{\"movedAtDate\": \"2022-03-01\"}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2()
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .rangeFrom(LocalDate.parse("2022-01-01"))
                 .rangeTo(LocalDate.parse("2022-02-01"))
                 .searchType(BETWEEN)
@@ -746,8 +746,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"movedAtDateTime\": \"2022-01-01T12:10:00\"}").resultingDocument().get();
         createDocument("{\"movedAtDateTime\": \"2022-01-01T12:20:00\"}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2()
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .rangeFrom(ZonedDateTime.parse("2022-01-01T12:10:00Z"))
                 .searchType(GREATER_THAN_OR_EQUAL_TO)
                 .path("doc:movedAtDateTime"));
@@ -776,8 +776,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         createDocument("{}");
 
-        var searchRequest = new SearchRequest2()
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue("example@ritense.com")
                 .searchType(EQUAL)
                 .path("case:createdBy"));
@@ -805,7 +805,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         var result = documentSearchService.search(
             definition.id().name(),
-            new SearchRequest2(),
+            new AdvancedSearchRequest(),
             PageRequest.of(0, 10, Sort.by(Direction.DESC, "case:sequence")));
 
         assertThat(result).isNotNull();
@@ -827,12 +827,12 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
 
         // relying on default SearchOperator being AND
-        var searchRequest = new SearchRequest2()
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue("Funenpark")
                 .searchType(EQUAL)
                 .path("doc:street"))
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue(LocalDate.of(2017, 6, 1))
                 .searchType(EQUAL)
                 .path("doc:registrationDate"));
@@ -855,13 +855,13 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
         createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
 
-        var searchRequest = new SearchRequest2()
+        var searchRequest = new AdvancedSearchRequest()
             .searchOperator(SearchOperator.OR)
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue("Funenpark")
                 .searchType(EQUAL)
                 .path("doc:street"))
-            .addOtherFilters(new SearchRequest2.SearchCriteria2()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue(LocalDate.of(2017, 6, 1))
                 .searchType(EQUAL)
                 .path("doc:registrationDate"));

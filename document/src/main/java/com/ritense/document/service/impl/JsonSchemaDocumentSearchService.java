@@ -19,8 +19,8 @@ package com.ritense.document.service.impl;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.searchfield.SearchField;
+import com.ritense.document.domain.search.AdvancedSearchRequest;
 import com.ritense.document.domain.search.SearchOperator;
-import com.ritense.document.domain.search.SearchRequest2;
 import com.ritense.document.domain.search.SearchRequestMapper;
 import com.ritense.document.domain.search.SearchRequestValidator;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
@@ -108,19 +108,19 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             .collect(toMap(SearchField::getKey, searchField -> searchField));
 
         var searchCriteria = searchWithConfigRequest.getOtherFilters().stream()
-            .map(otherFilter -> SearchRequestMapper.toSearchCriteria2(otherFilter, searchFieldMap.get(otherFilter.getKey())))
+            .map(otherFilter -> SearchRequestMapper.toOtherFilter(otherFilter, searchFieldMap.get(otherFilter.getKey())))
             .collect(toList());
 
-        var searchRequest2 = SearchRequestMapper.toSearchRequest2(searchWithConfigRequest, searchCriteria);
+        var advancedSearchRequest = SearchRequestMapper.toAdvancedSearchRequest(searchWithConfigRequest, searchCriteria);
 
-        return search(documentDefinitionName, searchRequest2, pageable);
+        return search(documentDefinitionName, advancedSearchRequest, pageable);
     }
 
     @Override
-    public Page<JsonSchemaDocument> search(String documentDefinitionName, SearchRequest2 searchRequest2, Pageable pageable) {
-        SearchRequestValidator.validate(searchRequest2);
+    public Page<JsonSchemaDocument> search(String documentDefinitionName, AdvancedSearchRequest advancedSearchRequest, Pageable pageable) {
+        SearchRequestValidator.validate(advancedSearchRequest);
         return search(
-            (cb, query, documentRoot) -> buildQueryWhere(documentDefinitionName, searchRequest2, cb, query, documentRoot),
+            (cb, query, documentRoot) -> buildQueryWhere(documentDefinitionName, advancedSearchRequest, cb, query, documentRoot),
             pageable
         );
     }
@@ -172,7 +172,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private void buildQueryWhere(
         String documentDefinitionName,
-        SearchRequest2 searchRequest,
+        AdvancedSearchRequest searchRequest,
         CriteriaBuilder cb,
         CriteriaQuery<?> query,
         Root<JsonSchemaDocument> documentRoot
@@ -247,7 +247,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private Predicate getOtherFilersPredicate(
         CriteriaBuilder cb,
         Root<JsonSchemaDocument> root,
-        SearchRequest2 searchRequest
+        AdvancedSearchRequest searchRequest
     ) {
         var jsonPredicates = searchRequest.getOtherFilters().stream()
             .map(currentCriteria -> buildQueryForSearchCriteria(cb, root, currentCriteria))
@@ -287,7 +287,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private <T extends Comparable<? super T>> Predicate buildQueryForSearchCriteria(
         CriteriaBuilder cb,
         Root<JsonSchemaDocument> root,
-        SearchRequest2.SearchCriteria2 searchCriteria
+        AdvancedSearchRequest.OtherFilter searchCriteria
     ) {
         Expression<T> value;
         if (searchCriteria.getPath().startsWith(DOC_PREFIX)) {
@@ -322,7 +322,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private <T extends Comparable<? super T>> Expression<T> getValueExpressionForDocPrefix(
         CriteriaBuilder cb,
         Root<JsonSchemaDocument> documentRoot,
-        SearchRequest2.SearchCriteria2 searchCriteria
+        AdvancedSearchRequest.OtherFilter searchCriteria
     ) {
         var jsonPath = "$." + searchCriteria.getPath().substring(DOC_PREFIX.length());
         return queryDialectHelper.getJsonValueExpression(
@@ -335,7 +335,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private <T extends Comparable<? super T>> Expression<T> getValueExpressionForCasePrefix(
         Root<JsonSchemaDocument> documentRoot,
-        SearchRequest2.SearchCriteria2 searchCriteria
+        AdvancedSearchRequest.OtherFilter searchCriteria
     ) {
         var documentColumnName = searchCriteria.getPath().substring(CASE_PREFIX.length());
         return documentRoot.get(documentColumnName);
@@ -451,7 +451,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 if (order.getProperty().startsWith(DOC_PREFIX)) {
                     var jsonPath = "$." + order.getProperty().substring(DOC_PREFIX.length());
                     return new OrderImpl(
-                        queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), jsonPath),
+                        queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), jsonPath, String.class),
                         order.getDirection().isAscending()
                     );
                 } else if (order.getProperty().startsWith(CASE_PREFIX)) {
@@ -461,8 +461,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                     );
                 } else if (order.getProperty().startsWith("$.")) {
                     return new OrderImpl(
-                        queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), order.getProperty()),
-                        order.getDirection().isAscending()
+                        cb.lower(queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), order.getProperty(), String.class)),                        order.getDirection().isAscending()
                     );
                 } else {
                     return new OrderImpl(
