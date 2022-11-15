@@ -61,8 +61,6 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
         assertThat(searchFields.get(1).getFieldType()).isEqualTo(SINGLE);
         assertThat(searchFields.get(1).getMatchType()).isEqualTo(LIKE);
         assertThat(searchFields.get(1).getTitle()).isEqualTo("Last Name");
-
-
         assertThat(searchFields.get(1).getOrder()).isOne();
     }
 
