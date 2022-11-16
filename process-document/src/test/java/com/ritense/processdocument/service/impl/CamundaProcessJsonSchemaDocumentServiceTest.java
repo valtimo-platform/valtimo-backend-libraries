@@ -16,13 +16,6 @@
 
 package com.ritense.processdocument.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
@@ -39,16 +32,26 @@ import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
+import org.camunda.bpm.engine.repository.ProcessDefinition;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.junit.jupiter.api.Test;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.junit.jupiter.api.Test;
 
-public class CamundaProcessJsonSchemaDocumentServiceTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+class CamundaProcessJsonSchemaDocumentServiceTest {
 
     private final DocumentService documentService = mock(DocumentService.class);
     private final DocumentDefinitionService documentDefinitionService = mock(DocumentDefinitionService.class);
@@ -65,7 +68,7 @@ public class CamundaProcessJsonSchemaDocumentServiceTest {
     );
 
     @Test
-    public void startProcessForDocument_shouldReturnErrorWhenDocumentNotFound() {
+    void startProcessForDocument_shouldReturnErrorWhenDocumentNotFound() {
         when(documentService.findBy(any())).thenReturn(Optional.empty());
 
         JsonSchemaDocumentId id = JsonSchemaDocumentId.existingId(UUID.randomUUID());
@@ -83,7 +86,7 @@ public class CamundaProcessJsonSchemaDocumentServiceTest {
     }
 
     @Test
-    public void startProcessForDocument_shouldReturnErrorWhenNoDocumentDefinitionLinkIsFound() {
+    void startProcessForDocument_shouldNotReturnErrorWhenNoDocumentDefinitionLinkIsFound() {
         Document document = mock(Document.class);
         JsonSchemaDocumentDefinitionId documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId("testdef", 1L);
         FunctionResult processDocumentDefinitionResult = mock(FunctionResult.class);
@@ -103,12 +106,12 @@ public class CamundaProcessJsonSchemaDocumentServiceTest {
 
         StartProcessForDocumentResult result = processDocumentService.startProcessForDocument(request);
 
-        assertTrue(result instanceof StartProcessForDocumentResultFailed);
-        assertEquals("error-text", result.errors().get(0).asString());
+        assertFalse(result instanceof StartProcessForDocumentResultFailed);
+        assertTrue(result.errors().isEmpty());
     }
 
     @Test
-    public void startProcessForDocument_shouldReturnErrorWhenRuntimeExceptionOccurred() {
+    void startProcessForDocument_shouldReturnErrorWhenRuntimeExceptionOccurred() {
         when(documentService.findBy(any())).thenThrow(new RuntimeException("error"));
 
         JsonSchemaDocumentId id = JsonSchemaDocumentId.existingId(UUID.randomUUID());
@@ -126,7 +129,7 @@ public class CamundaProcessJsonSchemaDocumentServiceTest {
     }
 
     @Test
-    public void startProcessForDocument_shouldReturnSuccessWhenProcessWasStarted() {
+    void startProcessForDocument_shouldReturnSuccessWhenProcessWasStarted() {
         JsonSchemaDocumentDefinitionId documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId("testdef", 1L);
         FunctionResult processDocumentDefinitionResult = mock(FunctionResult.class);
 
