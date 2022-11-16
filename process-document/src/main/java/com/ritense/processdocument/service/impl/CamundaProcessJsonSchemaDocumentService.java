@@ -17,7 +17,6 @@
 package com.ritense.processdocument.service.impl;
 
 import com.ritense.document.domain.Document;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
@@ -26,7 +25,6 @@ import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
-import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest;
@@ -110,18 +108,6 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         try {
             final var processDefinitionKey = new CamundaProcessDefinitionKey(request.processDefinitionKey());
             final var newDocumentRequest = request.newDocumentRequest();
-            final var documentDefinitionId = documentDefinitionService.findIdByName(
-                newDocumentRequest.documentDefinitionName()
-            );
-            final var processDocumentDefinitionId = CamundaProcessJsonSchemaDocumentDefinitionId.existingId(
-                processDefinitionKey,
-                documentDefinitionId
-            );
-            final var processDocumentDefinitionResult = processDocumentAssociationService.getProcessDocumentDefinitionResult(processDocumentDefinitionId);
-
-            if (!processDocumentDefinitionResult.hasResult()) {
-                return new NewDocumentAndStartProcessResultFailed(processDocumentDefinitionResult.errors());
-            }
 
             final var newDocumentResult = documentService.createDocument(newDocumentRequest);
 
@@ -194,22 +180,8 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         final NewDocumentForRunningProcessRequest request
     ) {
         try {
-            final var processDefinitionKey = new CamundaProcessDefinitionKey(request.processDefinitionKey());
             final var processInstanceId = new CamundaProcessInstanceId(request.processInstanceId());
             final var newDocumentRequest = request.newDocumentRequest();
-            final var documentDefinitionId = documentDefinitionService.findIdByName(
-                newDocumentRequest.documentDefinitionName()
-            );
-
-            final var processDocumentDefinitionId = CamundaProcessJsonSchemaDocumentDefinitionId.newId(
-                processDefinitionKey,
-                documentDefinitionId
-            );
-            final var processDocumentDefinitionResult = processDocumentAssociationService.getProcessDocumentDefinitionResult(processDocumentDefinitionId);
-
-            if (!processDocumentDefinitionResult.hasResult()) {
-                return new NewDocumentForRunningProcessResultFailed(processDocumentDefinitionResult.errors());
-            }
 
             final var newDocumentResult = documentService.createDocument(newDocumentRequest);
 
@@ -250,15 +222,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             final var document = modifyDocumentResult.resultingDocument().orElseThrow();
 
             //Part 2 process start
-            final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(document.definitionId());
             final var processDefinitionKey = new CamundaProcessDefinitionKey(request.processDefinitionKey());
-            final var processDocumentDefinitionId = CamundaProcessJsonSchemaDocumentDefinitionId.existingId(processDefinitionKey, documentDefinitionId);
-            final var processDocumentDefinitionResult = processDocumentAssociationService.getProcessDocumentDefinitionResult(processDocumentDefinitionId);
-
-            if (!processDocumentDefinitionResult.hasResult()) {
-                return new ModifyDocumentAndStartProcessResultFailed(processDocumentDefinitionResult.errors());
-            }
-
             final var processInstanceWithDefinition = startProcess(document, processDefinitionKey.toString(), request.getProcessVars());
             final var camundaProcessInstanceId = new CamundaProcessInstanceId(
                 processInstanceWithDefinition.getProcessInstanceDto().getId()
@@ -287,15 +251,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             Document document = optionalDocument.get();
 
             //Part 2 process start
-            final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(document.definitionId());
             final var processDefinitionKey = new CamundaProcessDefinitionKey(request.getProcessDefinitionKey());
-            final var processDocumentDefinitionId = CamundaProcessJsonSchemaDocumentDefinitionId.existingId(processDefinitionKey, documentDefinitionId);
-            final var processDocumentDefinitionResult = processDocumentAssociationService.getProcessDocumentDefinitionResult(processDocumentDefinitionId);
-
-            if (!processDocumentDefinitionResult.hasResult()) {
-                return new StartProcessForDocumentResultFailed(processDocumentDefinitionResult.errors());
-            }
-
             final var processInstanceWithDefinition = startProcess(document, processDefinitionKey.toString(), request.getProcessVars());
             final var camundaProcessInstanceId = new CamundaProcessInstanceId(
                 processInstanceWithDefinition.getProcessInstanceDto().getId()
