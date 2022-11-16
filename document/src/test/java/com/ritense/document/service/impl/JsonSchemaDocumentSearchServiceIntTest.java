@@ -819,6 +819,29 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchForCreatedOnCasePropertyWithLocalDateClass() {
+        documentRepository.deleteAllInBatch();
+
+        var document = createDocument("{}").resultingDocument().get();
+
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
+                .addValue(document.createdOn().toLocalDate())
+                .searchType(EQUAL)
+                .path("case:createdOn"));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            Pageable.unpaged()
+        );
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
     void shouldSearchWithSearchRequestWithMultipleFieldsUsingAnd() {
         documentRepository.deleteAllInBatch();
 
