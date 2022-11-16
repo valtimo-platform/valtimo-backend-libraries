@@ -53,21 +53,27 @@ public class SearchField implements Persistable<SearchFieldId> {
     @Column(name = "search_field_order", nullable = false, updatable = true)
     private int order;
 
+    @Column(name = "title")
+    private String title;
+
     public SearchField(String key,
                        String path,
                        SearchFieldDataType dataType,
                        SearchFieldFieldType fieldType,
                        SearchFieldMatchType matchType,
-                       int order) {
+                       int order,
+                       String title) {
         this.key = key;
         this.path = path;
         this.dataType = dataType;
         this.fieldType = fieldType;
         this.matchType = matchType;
         this.order = order;
+        this.title = title;
     }
 
-    public SearchField() {}
+    public SearchField() {
+    }
 
     @Override
     public SearchFieldId getId() {
@@ -76,7 +82,7 @@ public class SearchField implements Persistable<SearchFieldId> {
 
     @Override
     public boolean isNew() {
-        if ( id == null ) {
+        if (id == null) {
             return false;
         }
 
@@ -129,6 +135,14 @@ public class SearchField implements Persistable<SearchFieldId> {
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
 

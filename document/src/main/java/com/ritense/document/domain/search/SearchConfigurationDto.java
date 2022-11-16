@@ -40,13 +40,14 @@ public class SearchConfigurationDto {
         private SearchFieldDataType dataType;
         private SearchFieldFieldType fieldType;
         private SearchFieldMatchType matchType;
+        private String title;
 
         public SearchConfigurationFieldJson() {
             // Empty constructor needed for Jackson
         }
 
         public SearchField toEntity(String documentDefinitionName, int order) {
-            var searchField = new SearchField(key, path, dataType, fieldType, matchType, order);
+            var searchField = new SearchField(key, path, dataType, fieldType, matchType, order, title);
             searchField.setId(SearchFieldId.newId(documentDefinitionName));
             return searchField;
         }
@@ -89,6 +90,15 @@ public class SearchConfigurationDto {
 
         public void setMatchType(SearchFieldMatchType matchType) {
             this.matchType = matchType;
+        }
+
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
         }
     }
 

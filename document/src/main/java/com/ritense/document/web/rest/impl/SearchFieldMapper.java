@@ -28,24 +28,30 @@ public class SearchFieldMapper {
 
     }
 
-    public static List<SearchFieldDto> toDtoList(List<SearchField> entities){
+    public static List<SearchFieldDto> toDtoList(List<SearchField> entities) {
         List<SearchFieldDto> result = new ArrayList<>();
         entities.forEach(entity -> result.add(SearchFieldMapper.toDto(entity)));
         return result;
     }
 
     public static SearchFieldDto toDto(SearchField searchField) {
-        return new SearchFieldDto(searchField.getKey(), searchField.getPath(),searchField.getDataType(),searchField.getFieldType(),searchField.getMatchType());
+        return new SearchFieldDto(searchField.getKey(),
+                searchField.getPath(),
+                searchField.getDataType(),
+                searchField.getFieldType(),
+                searchField.getMatchType(),
+                searchField.getTitle());
     }
 
     public static SearchField toEntity(SearchFieldDto searchField, int order) {
         return new SearchField(
-            searchField.getKey(),
-            searchField.getPath(),
-            searchField.getDataType(),
-            searchField.getFieldType(),
-            searchField.getMatchType(),
-            order
+                searchField.getKey(),
+                searchField.getPath(),
+                searchField.getDataType(),
+                searchField.getFieldType(),
+                searchField.getMatchType(),
+                order,
+                searchField.getTitle()
         );
     }
 }

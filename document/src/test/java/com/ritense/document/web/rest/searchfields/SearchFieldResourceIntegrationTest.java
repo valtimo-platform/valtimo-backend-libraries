@@ -65,7 +65,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
             TEXT,
             SINGLE,
             EXACT,
-            0
+            0,
+            "aTitle"
     );
 
     @BeforeEach()
@@ -125,7 +126,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$[0].path", is("doc:some.path")))
                 .andExpect(jsonPath("$[0].dataType", is(TEXT.toString())))
                 .andExpect(jsonPath("$[0].fieldType", is(SINGLE.toString())))
-                .andExpect(jsonPath("$[0].matchType", is(EXACT.toString())));
+                .andExpect(jsonPath("$[0].matchType", is(EXACT.toString())))
+                .andExpect(jsonPath("$[0].title", is("aTitle")));;
     }
 
     @Test
@@ -137,7 +139,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 SEARCH_FIELD.getPath(),
                 SEARCH_FIELD.getDataType(),
                 SearchFieldFieldType.RANGE, //This is the change
-                SEARCH_FIELD.getMatchType());
+                SEARCH_FIELD.getMatchType(),
+                "someTitle");
 
         mockMvc.perform(
                         put("/api/v1/document-search/{documentDefinitionName}/fields",
@@ -157,6 +160,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         assertEquals(searchFieldToUpdate.getDataType(), searchFieldUpdated.orElseGet(SearchField::new).getDataType());
         assertEquals(SearchFieldFieldType.RANGE, searchFieldToUpdate.getFieldType());
         assertEquals(searchFieldToUpdate.getMatchType(), searchFieldUpdated.orElseGet(SearchField::new).getMatchType());
+        assertEquals(searchFieldToUpdate.getTitle(), searchFieldUpdated.orElseGet(SearchField::new).getTitle());
     }
 
     @Test
@@ -175,8 +179,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldReturnChangeOrderingWhenUpdateSearchFields() throws Exception {
         var searchFields = List.of(
-            new SearchFieldDto("lastName", "doc:customer.lastName", TEXT, SINGLE, LIKE),
-            new SearchFieldDto("firstName", "doc:customer.firstName", TEXT, SINGLE, LIKE)
+                new SearchFieldDto("lastName", "doc:customer.lastName", TEXT, SINGLE, LIKE,null),
+                new SearchFieldDto("firstName", "doc:customer.firstName", TEXT, SINGLE, LIKE,null)
         );
         mockMvc.perform(
                 put("/api/v1/document-search/{documentDefinitionName}/fields",

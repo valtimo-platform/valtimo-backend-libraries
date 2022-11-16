@@ -24,17 +24,20 @@ public class SearchFieldDto {
     private SearchFieldDataType dataType;
     private SearchFieldFieldType fieldType;
     private SearchFieldMatchType matchType;
+    private String title;
 
     public SearchFieldDto(String key,
                           String path,
                           SearchFieldDataType dataType,
                           SearchFieldFieldType fieldType,
-                          SearchFieldMatchType matchType) {
+                          SearchFieldMatchType matchType,
+                          String title) {
         this.key = key;
         this.path = path;
         this.dataType = dataType;
         this.fieldType = fieldType;
         this.matchType = matchType;
+        this.title = title;
     }
 
     public SearchFieldDto() {}
@@ -77,6 +80,14 @@ public class SearchFieldDto {
 
     public void setMatchType(SearchFieldMatchType matchType) {
         this.matchType = matchType;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
 
