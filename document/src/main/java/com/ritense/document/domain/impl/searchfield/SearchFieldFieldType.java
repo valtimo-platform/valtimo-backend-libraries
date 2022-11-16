@@ -18,33 +18,20 @@ package com.ritense.document.domain.impl.searchfield;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum SearchFieldFieldtype {
+public enum SearchFieldFieldType {
     MULTIPLE("multiple"),
     RANGE("range"),
     SINGLE("single");
 
-    @JsonValue private final String name;
+    @JsonValue
+    private final String name;
 
-    SearchFieldFieldtype(String name) {
+    SearchFieldFieldType(String name) {
         this.name = name;
     }
 
-    public static SearchFieldFieldtype fromString(String text) {
-        for (SearchFieldFieldtype fieldtype : SearchFieldFieldtype.values()) {
-            if (fieldtype.name.equalsIgnoreCase(text)) {
-                return fieldtype;
-            }
-        }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldFieldtype from string %s", text));
-    }
-
-    public static SearchFieldFieldtype fromKey(String key) {
-        for (SearchFieldFieldtype fieldtype : SearchFieldFieldtype.values()) {
-            if (fieldtype.name().equalsIgnoreCase(key)) {
-                return fieldtype;
-            }
-        }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldFieldtype from string %s", key));
+    public static SearchFieldFieldType fromString(String text) {
+        return SearchFieldFieldType.valueOf(text.toUpperCase());
     }
 
     @Override

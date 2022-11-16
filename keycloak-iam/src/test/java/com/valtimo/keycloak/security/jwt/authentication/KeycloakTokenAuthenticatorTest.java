@@ -17,6 +17,7 @@
 package com.valtimo.keycloak.security.jwt.authentication;
 
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
+import com.ritense.valtimo.security.jwt.exception.TokenAuthenticatorNotFoundException;
 import com.ritense.valtimo.security.jwt.provider.SecretKeyResolver;
 import com.valtimo.keycloak.security.jwt.provider.KeycloakSecretKeyProvider;
 import io.jsonwebtoken.Claims;
@@ -30,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -70,9 +73,10 @@ public class KeycloakTokenAuthenticatorTest {
             .signWith(keyPair.getPrivate())
             .compact();
 
-        Authentication authentication = tokenAuthenticationService.getAuthentication(jwt);
+        var exception = Assertions.assertThrows(TokenAuthenticatorNotFoundException.class, () ->
+            tokenAuthenticationService.getAuthentication(jwt));
 
-        assertThat(authentication).isNull();
+        assertThat(exception.getMessage()).contains("No suitable token authenticator found");
     }
 
     @Test

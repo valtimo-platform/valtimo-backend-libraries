@@ -6,7 +6,7 @@ import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
-class DefaultFormFlowAdditionalPropertiesSearchRepository(
+class MySqlFormFlowAdditionalPropertiesSearchRepository(
     private val entityManager: EntityManager
 ): FormFlowAdditionalPropertiesSearchRepository {
 

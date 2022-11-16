@@ -37,8 +37,8 @@ internal class FormFlowStepTest {
         whenever(mockStep.contentEquals(otherMock)).thenReturn(true)
 
         val thisStep = FormFlowStep(
-            "step-key",
-            listOf(
+            key = "step-key",
+            nextSteps = listOf(
                 mockStep
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
@@ -67,7 +67,7 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            listOf(
+            nextSteps = listOf(
                 mockStep1,
                 mockStep2
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
@@ -93,7 +93,7 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            nextSteps = mutableListOf(
                 mockStep1,
                 mockStep2
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
@@ -115,7 +115,7 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            nextSteps = mutableListOf(
                 mockStep
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
@@ -145,7 +145,7 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            nextSteps = mutableListOf(
                 mockStep1,
                 mockStep2
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
@@ -168,7 +168,7 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            nextSteps = mutableListOf(
                 mockStep
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )

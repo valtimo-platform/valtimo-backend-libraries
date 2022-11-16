@@ -46,3 +46,8 @@ valtimo:
     versioning.enabled: true
     plugin:
         encryption-secret: "abcdefghijklmnop"
+
+logging:
+    level:
+        org.hibernate.SQL: DEBUG
+        org.hibernate.type: TRACE

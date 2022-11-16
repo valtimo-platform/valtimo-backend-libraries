@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+dockerCompose {
+    projectName = "flowmailer"
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
+    useComposeFiles.addAll("../../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+}
+
 dependencies {
     api project(":mail")
     implementation project(":connector")
@@ -53,6 +60,8 @@ dependencies {
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
+    testImplementation project(":core")
+    testImplementation project(":test-utils-common")
     testImplementation project(":mail")
     testImplementation project(':resource')
     testImplementation "org.springframework.security:spring-security-test"

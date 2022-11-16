@@ -28,19 +28,22 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceed
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -97,6 +100,59 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
+    }
+
+    @Test
+    public void shouldReturnPagedRecordPageWithOldSortByNameProperty() throws Exception {
+        ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
+        when(documentDefinitionService.findForUser(anyBoolean(), pageCaptor.capture())).thenReturn(definitionPage);
+
+        mockMvc.perform(get("/api/document-definition?sort=id.name,DESC"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isNotEmpty());
+
+        Pageable page = pageCaptor.getValue();
+        assertEquals("document_definition_name", page.getSort().getOrderFor("document_definition_name").getProperty());
+        assertEquals(Sort.Direction.DESC, page.getSort().getOrderFor("document_definition_name").getDirection());
+    }
+
+    @Test
+    public void shouldReturnPagedRecordPageWithOldSortByVersionProperty() throws Exception {
+        ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
+        when(documentDefinitionService.findForUser(anyBoolean(), pageCaptor.capture())).thenReturn(definitionPage);
+
+        mockMvc.perform(get("/api/document-definition?sort=id.version,DESC"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isNotEmpty());
+
+        Pageable page = pageCaptor.getValue();
+        assertEquals("document_definition_version", page.getSort().getOrderFor("document_definition_version").getProperty());
+        assertEquals(Sort.Direction.DESC, page.getSort().getOrderFor("document_definition_version").getDirection());
+    }
+
+    @Test
+    public void shouldReturnPagedRecordPageWithMultipleOrderProperties() throws Exception {
+        ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
+        when(documentDefinitionService.findForUser(anyBoolean(), pageCaptor.capture())).thenReturn(definitionPage);
+
+        mockMvc.perform(get("/api/document-definition?sort=readOnly,ASC&sort=id.name,DESC&sort=other,ASC"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isNotEmpty());
+
+        Pageable page = pageCaptor.getValue();
+        assertEquals("document_definition_name", page.getSort().getOrderFor("document_definition_name").getProperty());
+        assertEquals(Sort.Direction.DESC, page.getSort().getOrderFor("document_definition_name").getDirection());
+        assertEquals("read_only", page.getSort().getOrderFor("read_only").getProperty());
+        assertEquals(Sort.Direction.ASC, page.getSort().getOrderFor("read_only").getDirection());
+        //also include 1 property that is not in the mapping
+        assertEquals("other", page.getSort().getOrderFor("other").getProperty());
+        assertEquals(Sort.Direction.ASC, page.getSort().getOrderFor("other").getDirection());
     }
 
     @Test

@@ -23,7 +23,13 @@ import javax.persistence.criteria.Predicate;
 
 public interface QueryDialectHelper {
 
-    Expression<?> getJsonValueExpression(CriteriaBuilder cb, Path column, String path);
+    /**
+     * @deprecated Use {@link #getJsonValueExpression(CriteriaBuilder, Path, String, Class)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "9.25.0")
+    Expression<String> getJsonValueExpression(CriteriaBuilder cb, Path column, String path);
+
+    <T> Expression<T> getJsonValueExpression(CriteriaBuilder cb, Path column, String path, Class<T> type);
 
     Predicate getJsonValueExistsExpression(CriteriaBuilder cb, Path column, String value);
 

@@ -21,8 +21,12 @@ import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
 import com.ritense.document.repository.SearchFieldRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class SearchFieldService {
 
@@ -33,23 +37,35 @@ public class SearchFieldService {
     }
 
     public void addSearchField(String documentDefinitionName, SearchField searchField) {
+        Optional<SearchField> optSearchField = searchFieldRepository
+                .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchField.getKey());
+        if (optSearchField.isPresent()) {
+            throw new IllegalArgumentException("Search field already exists for document '" + documentDefinitionName + "' and key '" + searchField.getKey() + "'.");
+        }
         SearchFieldId searchFieldId = SearchFieldId.newId(documentDefinitionName);
         searchField.setId(searchFieldId);
         searchFieldRepository.save(searchField);
     }
 
     public List<SearchField> getSearchFields(String documentDefinitionName) {
-        return searchFieldRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
+        return searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder(documentDefinitionName);
     }
 
-    public void updateSearchFields(String documentDefinitionName, SearchFieldDto searchFieldDto) {
-        Optional<SearchField> fieldToUpdate = searchFieldRepository
-                .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchFieldDto.getKey());
-        fieldToUpdate.ifPresent(searchFieldRepository::save);
+    public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
+        var searchFields = IntStream.range(0, searchFieldDtos.size())
+            .mapToObj(index -> toOrderedSearchField(documentDefinitionName, searchFieldDtos.get(index), index))
+            .collect(Collectors.toList());
+        searchFieldRepository.saveAll(searchFields);
     }
 
-    public void createSearchConfiguration(String documentDefinitionName, List<SearchField> searchFields) {
-        if (!searchFieldRepository.existsByIdDocumentDefinitionName(documentDefinitionName)) {
+    public void createSearchConfiguration(List<SearchField> searchFields) {
+        if (searchFields.stream()
+                        .filter((searchField ->
+                                Collections.frequency(searchFields.stream()
+                                        .flatMap(field -> Stream.of(field.getKey()))
+                                        .collect(Collectors.toList()), searchField.getKey()
+                                ) > 1))
+                        .distinct().findAny().isEmpty()) {
             searchFieldRepository.saveAll(searchFields);
         }
     }
@@ -57,5 +73,21 @@ public class SearchFieldService {
     public void deleteSearchField(String documentDefinitionName, String key) {
         searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName, key).ifPresent(
                 searchFieldRepository::delete);
+    }
+
+    private SearchField toOrderedSearchField(String documentDefinitionName, SearchFieldDto searchFieldDto, int order) {
+        Optional<SearchField> fieldToUpdate = searchFieldRepository
+            .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchFieldDto.getKey());
+        if (fieldToUpdate.isEmpty()) {
+            throw new IllegalArgumentException("No search field found for document '" + documentDefinitionName + "' and key '" + searchFieldDto.getKey() + "'.");
+        }
+        var searchField = fieldToUpdate.get();
+        searchField.setPath(searchFieldDto.getPath());
+        searchField.setDataType(searchFieldDto.getDataType());
+        searchField.setFieldType(searchFieldDto.getFieldType());
+        searchField.setMatchType(searchFieldDto.getMatchType());
+        searchField.setOrder(order);
+        searchField.setTitle(searchFieldDto.getTitle());
+        return searchField;
     }
 }

@@ -31,6 +31,7 @@ include(
     "document-generation:local-document-generation",
     "document-generation:smartdocuments",
     "external-event",
+    "exact-plugin",
     "form",
     "form-flow",
     "form-flow-valtimo",
