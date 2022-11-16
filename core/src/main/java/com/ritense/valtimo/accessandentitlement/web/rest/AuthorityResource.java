@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -76,7 +77,7 @@ public class AuthorityResource {
     public ResponseEntity<List<Authority>> getAllAuthorities(Pageable pageable) {
         logger.debug("REST request to get a page of Authorities");
         Page<Authority> page = authorityService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/authorities");
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/authorities");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 

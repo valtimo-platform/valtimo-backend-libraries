@@ -28,10 +28,6 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceed
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -43,6 +39,12 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -107,7 +109,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
         when(documentDefinitionService.findForUser(anyBoolean(), pageCaptor.capture())).thenReturn(definitionPage);
 
-        mockMvc.perform(get("/api/document-definition?sort=id.name,DESC"))
+        mockMvc.perform(get("/api/v1/document-definition?sort=id.name,DESC"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -123,7 +125,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
         when(documentDefinitionService.findForUser(anyBoolean(), pageCaptor.capture())).thenReturn(definitionPage);
 
-        mockMvc.perform(get("/api/document-definition?sort=id.version,DESC"))
+        mockMvc.perform(get("/api/v1/document-definition?sort=id.version,DESC"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -139,7 +141,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
         when(documentDefinitionService.findForUser(anyBoolean(), pageCaptor.capture())).thenReturn(definitionPage);
 
-        mockMvc.perform(get("/api/document-definition?sort=readOnly,ASC&sort=id.name,DESC&sort=other,ASC"))
+        mockMvc.perform(get("/api/v1/document-definition?sort=readOnly,ASC&sort=id.name,DESC&sort=other,ASC"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))

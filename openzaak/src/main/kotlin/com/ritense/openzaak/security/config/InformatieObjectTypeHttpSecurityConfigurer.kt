@@ -27,7 +27,7 @@ class InformatieObjectTypeHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/openzaak/informatie-object-typen/{catalogus}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/openzaak/informatie-object-typen/{catalogus}").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
