@@ -14,31 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.document.domain.impl.searchfield;
+package com.ritense.document.domain.search;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-
-public enum SearchFieldDataType {
-    BOOLEAN("boolean"),
-    DATE("date"),
-    DATETIME("datetime"),
-    TIME("time"),
-    NUMBER("number"),
-    TEXT("text");
-
-    @JsonValue
-    private final String name;
-
-    SearchFieldDataType(String name) {
-        this.name = name;
-    }
-
-    public static SearchFieldDataType fromString(String text) {
-        return SearchFieldDataType.valueOf(text.toUpperCase());
-    }
-
-    @Override
-    public String toString() {
-        return this.name;
-    }
+public enum SearchOperator {
+    AND,
+    OR
 }

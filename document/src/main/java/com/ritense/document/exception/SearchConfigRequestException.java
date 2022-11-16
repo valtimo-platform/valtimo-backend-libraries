@@ -14,31 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.document.domain.impl.searchfield;
+package com.ritense.document.exception;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.ritense.document.domain.impl.searchfield.SearchField;
 
-public enum SearchFieldDataType {
-    BOOLEAN("boolean"),
-    DATE("date"),
-    DATETIME("datetime"),
-    TIME("time"),
-    NUMBER("number"),
-    TEXT("text");
+import javax.validation.ValidationException;
 
-    @JsonValue
-    private final String name;
+public class SearchConfigRequestException extends ValidationException {
 
-    SearchFieldDataType(String name) {
-        this.name = name;
-    }
-
-    public static SearchFieldDataType fromString(String text) {
-        return SearchFieldDataType.valueOf(text.toUpperCase());
-    }
-
-    @Override
-    public String toString() {
-        return this.name;
+    public SearchConfigRequestException(SearchField searchField, String type, String message) {
+        super("Configured to search for " + type + " but " + message + ". For SearchField '" + searchField.getKey() + "'.");
     }
 }
