@@ -29,7 +29,6 @@ import com.ritense.processdocument.service.impl.result.StartProcessForDocumentRe
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.result.FunctionResult;
-import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
@@ -37,13 +36,11 @@ import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -83,31 +80,6 @@ class CamundaProcessJsonSchemaDocumentServiceTest {
 
         assertTrue(result instanceof StartProcessForDocumentResultFailed);
         assertEquals("Document could not be found", result.errors().get(0).asString());
-    }
-
-    @Test
-    void startProcessForDocument_shouldNotReturnErrorWhenNoDocumentDefinitionLinkIsFound() {
-        Document document = mock(Document.class);
-        JsonSchemaDocumentDefinitionId documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId("testdef", 1L);
-        FunctionResult processDocumentDefinitionResult = mock(FunctionResult.class);
-        JsonSchemaDocumentId id = JsonSchemaDocumentId.existingId(UUID.randomUUID());
-
-        doReturn(Optional.of(document)).when(documentService).findBy(id);
-        doReturn(processDocumentDefinitionResult).when(processDocumentAssociationService).getProcessDocumentDefinitionResult(any());
-        when(processDocumentDefinitionResult.hasResult()).thenReturn(false);
-        when(processDocumentDefinitionResult.errors()).thenReturn(List.of(new OperationError.FromString("error-text")));
-        when(document.definitionId()).thenReturn(documentDefinitionId);
-
-        StartProcessForDocumentRequest request = new StartProcessForDocumentRequest(
-            id,
-            "test",
-            new HashMap<>()
-        );
-
-        StartProcessForDocumentResult result = processDocumentService.startProcessForDocument(request);
-
-        assertFalse(result instanceof StartProcessForDocumentResultFailed);
-        assertTrue(result.errors().isEmpty());
     }
 
     @Test
