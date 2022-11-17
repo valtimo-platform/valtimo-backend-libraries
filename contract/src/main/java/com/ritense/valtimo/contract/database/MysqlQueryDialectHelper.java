@@ -20,6 +20,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import java.time.temporal.TemporalAccessor;
 
 public class MysqlQueryDialectHelper implements QueryDialectHelper {
 
@@ -39,14 +40,19 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
 
     @Override
     public <T> Expression<T> getJsonValueExpression(CriteriaBuilder cb, Path column, String path, Class<T> type) {
-        return cb.function("JSON_UNQUOTE", type,
-            cb.function(
-                "JSON_EXTRACT",
-                type,
-                column,
-                cb.literal(path)
-            )
+        var jsonValue = cb.function(
+            "JSON_EXTRACT",
+            type,
+            column,
+            cb.literal(path)
         );
+        if (CharSequence.class.isAssignableFrom(type) || TemporalAccessor.class.isAssignableFrom(type)) {
+            return cb.function("JSON_UNQUOTE", type, jsonValue); // Strings or timestamps extracted from JSON have additional quotes ("") around them in MySQL 5.7.
+        } else if (Boolean.class.isAssignableFrom(type)) {
+            return cb.function("IF", type, jsonValue, cb.literal(1), cb.literal(0)); // Booleans extracted from JSON can be true/false while MySQL only accepts 1/0.
+        } else {
+            return jsonValue;
+        }
     }
 
     @Override

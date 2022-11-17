@@ -819,6 +819,105 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchForCreatedOnCasePropertyWithLocalDateClass() {
+        documentRepository.deleteAllInBatch();
+
+        var document = createDocument("{}").resultingDocument().get();
+
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
+                .addValue(document.createdOn().toLocalDate())
+                .searchType(EQUAL)
+                .path("case:createdOn"));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            Pageable.unpaged()
+        );
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchForBooleanTrueProperty() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"loan-approved\": true}").resultingDocument().get();
+        createDocument("{\"loan-approved\": false}").resultingDocument().get();
+
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
+                .addValue(true)
+                .searchType(EQUAL)
+                .path("doc:\"loan-approved\""));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            Pageable.unpaged()
+        );
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.toList().get(0).content().getValueBy(JsonPointer.valueOf("/loan-approved")).get().booleanValue())
+            .isTrue();
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchForBooleanFalseProperty() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"loan-approved\": true}").resultingDocument().get();
+        createDocument("{\"loan-approved\": false}").resultingDocument().get();
+
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
+                .addValue(false)
+                .searchType(EQUAL)
+                .path("doc:\"loan-approved\""));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            Pageable.unpaged()
+        );
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.toList().get(0).content().getValueBy(JsonPointer.valueOf("/loan-approved")).get().booleanValue())
+            .isFalse();
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchForIntegerProperty() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"size\": 5}").resultingDocument().get();
+        createDocument("{\"size\": 6}").resultingDocument().get();
+
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
+                .addValue(5)
+                .searchType(EQUAL)
+                .path("doc:size"));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            Pageable.unpaged()
+        );
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
     void shouldSearchWithSearchRequestWithMultipleFieldsUsingAnd() {
         documentRepository.deleteAllInBatch();
 
