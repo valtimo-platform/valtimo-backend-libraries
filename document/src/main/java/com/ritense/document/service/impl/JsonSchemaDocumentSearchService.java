@@ -349,6 +349,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .map(value -> value.toString().trim().toLowerCase())
                 .map(stringValue -> cb.equal(jsonValueLower, stringValue))
                 .toArray(Predicate[]::new);
+        } else if (!values.isEmpty() && values.stream().allMatch(TemporalAccessor.class::isInstance)) {
+            var jsonValueTemporal = toJavaUtilDateExpression(cb, jsonValue, (TemporalAccessor) values.get(0));
+            return values.stream()
+                .map(value -> cb.equal(jsonValueTemporal, toJavaUtilDate(value)))
+                .toArray(Predicate[]::new);
         } else {
             return values.stream()
                 .map(value -> cb.equal(jsonValue, value))
