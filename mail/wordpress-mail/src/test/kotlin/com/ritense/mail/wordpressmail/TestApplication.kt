@@ -16,39 +16,10 @@
 
 package com.ritense.mail.wordpressmail
 
-import com.ritense.connector.autoconfigure.ConnectorAutoConfiguration
-import com.ritense.connector.autoconfigure.ConnectorLiquibaseAutoConfiguration
-import com.ritense.connector.autoconfigure.ConnectorSecurityAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentLiquibaseAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentRetryAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentSecurityAutoConfiguration
-import com.ritense.document.autoconfigure.DocumentSnapshotAutoConfiguration
-import com.ritense.mail.autoconfigure.MailAutoConfiguration
-import com.ritense.mail.autoconfigure.MailLiquibaseAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import org.springframework.boot.runApplication
 
-@SpringBootApplication(
-    exclude = [
-        DataSourceAutoConfiguration::class,
-        DataSourceTransactionManagerAutoConfiguration::class,
-        HibernateJpaAutoConfiguration::class,
-        MailAutoConfiguration::class,
-        MailLiquibaseAutoConfiguration::class,
-        ConnectorAutoConfiguration::class,
-        ConnectorLiquibaseAutoConfiguration::class,
-        ConnectorSecurityAutoConfiguration::class,
-        DocumentAutoConfiguration::class,
-        DocumentSnapshotAutoConfiguration::class,
-        DocumentLiquibaseAutoConfiguration::class,
-        DocumentSecurityAutoConfiguration::class,
-        DocumentRetryAutoConfiguration::class
-    ]
-)
+@SpringBootApplication
 class TestApplication {
 
     fun main(args: Array<String>) {
