@@ -18,7 +18,6 @@ package com.ritense.processdocument.service.impl;
 
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.domain.ProcessInstanceId;
@@ -72,14 +71,12 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
 
     private static final Logger logger = LoggerFactory.getLogger(CamundaProcessJsonSchemaDocumentService.class);
     private final DocumentService documentService;
-    private final DocumentDefinitionService documentDefinitionService;
     private final CamundaTaskService camundaTaskService;
     private final CamundaProcessService camundaProcessService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
 
-    public CamundaProcessJsonSchemaDocumentService(DocumentService documentService, DocumentDefinitionService documentDefinitionService, CamundaTaskService camundaTaskService, CamundaProcessService camundaProcessService, ProcessDocumentAssociationService processDocumentAssociationService) {
+    public CamundaProcessJsonSchemaDocumentService(DocumentService documentService, CamundaTaskService camundaTaskService, CamundaProcessService camundaProcessService, ProcessDocumentAssociationService processDocumentAssociationService) {
         this.documentService = documentService;
-        this.documentDefinitionService = documentDefinitionService;
         this.camundaTaskService = camundaTaskService;
         this.camundaProcessService = camundaProcessService;
         this.processDocumentAssociationService = processDocumentAssociationService;

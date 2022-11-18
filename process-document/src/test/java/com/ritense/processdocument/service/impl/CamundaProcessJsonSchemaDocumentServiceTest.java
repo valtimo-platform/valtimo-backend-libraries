@@ -19,7 +19,6 @@ package com.ritense.processdocument.service.impl;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
@@ -51,14 +50,12 @@ import static org.mockito.Mockito.when;
 class CamundaProcessJsonSchemaDocumentServiceTest {
 
     private final DocumentService documentService = mock(DocumentService.class);
-    private final DocumentDefinitionService documentDefinitionService = mock(DocumentDefinitionService.class);
     private final CamundaTaskService camundaTaskService = mock(CamundaTaskService.class);
     private final CamundaProcessService camundaProcessService = mock(CamundaProcessService.class);
     private final ProcessDocumentAssociationService processDocumentAssociationService = mock(ProcessDocumentAssociationService.class);
 
     private final ProcessDocumentService processDocumentService = new CamundaProcessJsonSchemaDocumentService(
         documentService,
-        documentDefinitionService,
         camundaTaskService,
         camundaProcessService,
         processDocumentAssociationService
