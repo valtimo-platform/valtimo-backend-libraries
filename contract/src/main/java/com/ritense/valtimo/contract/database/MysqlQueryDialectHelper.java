@@ -42,7 +42,7 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
     public <T> Expression<T> getJsonValueExpression(CriteriaBuilder cb, Path column, String path, Class<T> type) {
         var jsonValue = cb.function(
             "JSON_EXTRACT",
-            type,
+            Object.class,
             column,
             cb.literal(path)
         );
@@ -51,7 +51,7 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
         } else if (Boolean.class.isAssignableFrom(type)) {
             return cb.function("IF", type, jsonValue, cb.literal(1), cb.literal(0)); // Booleans extracted from JSON can be true/false while MySQL only accepts 1/0.
         } else {
-            return jsonValue;
+            return jsonValue.as(type);
         }
     }
 

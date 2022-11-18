@@ -39,7 +39,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -748,7 +748,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
-                .rangeFrom(ZonedDateTime.parse("2022-01-01T12:10:00Z"))
+                .rangeFrom(LocalDateTime.parse("2022-01-01T12:10:00"))
                 .searchType(GREATER_THAN_OR_EQUAL_TO)
                 .path("doc:movedAtDateTime"));
 

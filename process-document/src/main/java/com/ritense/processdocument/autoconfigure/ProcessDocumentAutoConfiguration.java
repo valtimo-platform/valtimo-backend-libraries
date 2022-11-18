@@ -66,14 +66,12 @@ public class ProcessDocumentAutoConfiguration {
     @ConditionalOnMissingBean(ProcessDocumentService.class)
     public CamundaProcessJsonSchemaDocumentService processDocumentService(
         DocumentService documentService,
-        DocumentDefinitionService documentDefinitionService,
         CamundaTaskService camundaTaskService,
         CamundaProcessService camundaProcessService,
         ProcessDocumentAssociationService processDocumentAssociationService
     ) {
         return new CamundaProcessJsonSchemaDocumentService(
             documentService,
-            documentDefinitionService,
             camundaTaskService,
             camundaProcessService,
             processDocumentAssociationService
