@@ -40,29 +40,40 @@ public class SearchField implements Persistable<SearchFieldId> {
 
     @Column(name = "datatype", nullable = false, updatable = true)
     @Enumerated(EnumType.STRING)
-    private SearchFieldDatatype datatype;
+    private SearchFieldDataType dataType;
 
     @Column(name = "fieldtype", nullable = false, updatable = true)
     @Enumerated(EnumType.STRING)
-    private SearchFieldFieldtype fieldtype;
+    private SearchFieldFieldType fieldType;
 
-    @Column(name = "matchtype", nullable = false, updatable = true)
+    @Column(name = "matchtype", nullable = true, updatable = true)
     @Enumerated(EnumType.STRING)
-    private SearchFieldMatchtype matchtype;
+    private SearchFieldMatchType matchType;
+
+    @Column(name = "search_field_order", nullable = false, updatable = true)
+    private int order;
+
+    @Column(name = "title")
+    private String title;
 
     public SearchField(String key,
                        String path,
-                       SearchFieldDatatype datatype,
-                       SearchFieldFieldtype fieldtype,
-                       SearchFieldMatchtype matchtype) {
+                       SearchFieldDataType dataType,
+                       SearchFieldFieldType fieldType,
+                       SearchFieldMatchType matchType,
+                       int order,
+                       String title) {
         this.key = key;
         this.path = path;
-        this.datatype = datatype;
-        this.fieldtype = fieldtype;
-        this.matchtype = matchtype;
+        this.dataType = dataType;
+        this.fieldType = fieldType;
+        this.matchType = matchType;
+        this.order = order;
+        this.title = title;
     }
 
-    public SearchField() {}
+    public SearchField() {
+    }
 
     @Override
     public SearchFieldId getId() {
@@ -71,7 +82,7 @@ public class SearchField implements Persistable<SearchFieldId> {
 
     @Override
     public boolean isNew() {
-        if ( id == null ) {
+        if (id == null) {
             return false;
         }
 
@@ -94,28 +105,44 @@ public class SearchField implements Persistable<SearchFieldId> {
         this.path = path;
     }
 
-    public SearchFieldDatatype getDatatype() {
-        return datatype;
+    public SearchFieldDataType getDataType() {
+        return dataType;
     }
 
-    public void setDatatype(SearchFieldDatatype datatype) {
-        this.datatype = datatype;
+    public void setDataType(SearchFieldDataType dataType) {
+        this.dataType = dataType;
     }
 
-    public SearchFieldFieldtype getFieldtype() {
-        return fieldtype;
+    public SearchFieldFieldType getFieldType() {
+        return fieldType;
     }
 
-    public void setFieldtype(SearchFieldFieldtype fieldtype) {
-        this.fieldtype = fieldtype;
+    public void setFieldType(SearchFieldFieldType fieldType) {
+        this.fieldType = fieldType;
     }
 
-    public SearchFieldMatchtype getMatchtype() {
-        return matchtype;
+    public SearchFieldMatchType getMatchType() {
+        return matchType;
     }
 
-    public void setMatchtype(SearchFieldMatchtype matchtype) {
-        this.matchtype = matchtype;
+    public void setMatchType(SearchFieldMatchType matchType) {
+        this.matchType = matchType;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
 

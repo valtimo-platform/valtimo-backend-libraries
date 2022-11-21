@@ -2,7 +2,7 @@ spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3328/flowmailer-test
+        url: jdbc:mysql://localhost:3331/flowmailer-test
         username: valtimo
         password: password
         hikari:

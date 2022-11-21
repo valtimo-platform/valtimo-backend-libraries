@@ -22,24 +22,36 @@ import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import java.util.ArrayList;
 import java.util.List;
 
-//todo perhaps adding Mapstruct as dependency to eliminate the need for building mappers would be a nice idea
 public class SearchFieldMapper {
 
     private SearchFieldMapper() {
 
     }
 
-    public static List<SearchFieldDto> toDtoList(List<SearchField> entities){
+    public static List<SearchFieldDto> toDtoList(List<SearchField> entities) {
         List<SearchFieldDto> result = new ArrayList<>();
-        entities.forEach((entity) -> result.add(SearchFieldMapper.toDto(entity)));
+        entities.forEach(entity -> result.add(SearchFieldMapper.toDto(entity)));
         return result;
     }
 
     public static SearchFieldDto toDto(SearchField searchField) {
-        return new SearchFieldDto(searchField.getKey(), searchField.getPath(),searchField.getDatatype(),searchField.getFieldtype(),searchField.getMatchtype());
+        return new SearchFieldDto(searchField.getKey(),
+                searchField.getPath(),
+                searchField.getDataType(),
+                searchField.getFieldType(),
+                searchField.getMatchType(),
+                searchField.getTitle());
     }
 
-    public static SearchField toEntity(SearchFieldDto searchField) {
-        return new SearchField(searchField.getKey(), searchField.getPath(), searchField.getDataType(), searchField.getFieldType(), searchField.getMatchType());
+    public static SearchField toEntity(SearchFieldDto searchField, int order) {
+        return new SearchField(
+                searchField.getKey(),
+                searchField.getPath(),
+                searchField.getDataType(),
+                searchField.getFieldType(),
+                searchField.getMatchType(),
+                order,
+                searchField.getTitle()
+        );
     }
 }
