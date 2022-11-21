@@ -5,7 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 
 object TenantResolver {
 
-    const val DEFAULT_TENANT_ID = ""
+    const val DEFAULT_TENANT_ID = "" // TODO use a null value instead See JwtFilter that then needs to throw an error
 
     /**
      * Resolve tenant-id from auth
