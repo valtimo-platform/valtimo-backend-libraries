@@ -18,22 +18,22 @@ package com.ritense.document.web.rest;
 
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 public interface DocumentSearchFields {
 
     ResponseEntity<Void> addSearchField(
-            @PathVariable String documentDefinitionName,
-            @RequestBody SearchFieldDto searchField);
+        String documentDefinitionName,
+        SearchFieldDto searchField);
+
     ResponseEntity<List<SearchFieldDto>> getSearchField(String documentDefinitionName);
+
     ResponseEntity<Void> updateSearchField(
-            @PathVariable String documentDefinitionName,
-            @RequestBody SearchFieldDto searchFieldDto);
+        String documentDefinitionName,
+        List<SearchFieldDto> searchFieldDto);
+
     ResponseEntity<Void> deleteSearchField(
-            @PathVariable String documentDefinitionName,
-            @RequestParam String key);
+        String documentDefinitionName,
+        String key);
 }

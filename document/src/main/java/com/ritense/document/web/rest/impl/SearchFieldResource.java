@@ -52,7 +52,7 @@ public class SearchFieldResource implements DocumentSearchFields {
                 || searchField.getKey().trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        searchFieldService.addSearchField(documentDefinitionName, SearchFieldMapper.toEntity(searchField));
+        searchFieldService.addSearchField(documentDefinitionName, SearchFieldMapper.toEntity(searchField, -1));
         return ResponseEntity.ok().build();
     }
 
@@ -68,11 +68,11 @@ public class SearchFieldResource implements DocumentSearchFields {
     @PutMapping("/v1/document-search/{documentDefinitionName}/fields")
     public ResponseEntity<Void> updateSearchField(
             @PathVariable String documentDefinitionName,
-            @RequestBody SearchFieldDto searchFieldDto) {
-        if (searchFieldDto.getKey() == null || searchFieldDto.getKey().trim().isEmpty()) {
+            @RequestBody List<SearchFieldDto> searchFieldDtos) {
+        if (searchFieldDtos.stream().anyMatch(searchFieldDto -> searchFieldDto.getKey() == null || searchFieldDto.getKey().trim().isEmpty())) {
             return ResponseEntity.badRequest().build();
         }
-        searchFieldService.updateSearchFields(documentDefinitionName, searchFieldDto);
+        searchFieldService.updateSearchFields(documentDefinitionName, searchFieldDtos);
         return ResponseEntity.ok().build();
     }
 

@@ -17,17 +17,27 @@
 package com.ritense.document.service;
 
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.search.AdvancedSearchRequest;
+import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.service.impl.SearchRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface DocumentSearchService {
 
+    @SuppressWarnings({"squid:S1452","java:S1452"})
     Page<? extends Document> search(
         SearchRequest searchRequest,
         Pageable pageable
     );
 
+    @SuppressWarnings({"squid:S1452","java:S1452"})
+    Page<? extends Document> search(String documentDefinitionName, SearchWithConfigRequest searchWithConfigRequest, Pageable pageable);
+
+    @SuppressWarnings({"squid:S1452","java:S1452"})
+    Page<? extends Document> search(String documentDefinitionName, AdvancedSearchRequest searchRequest, Pageable pageable);
+
+    @SuppressWarnings({"squid:S1452","java:S1452"})
     default Page<? extends Document> searchWithoutAuthorization(
         SearchRequest searchRequest,
         Pageable pageable

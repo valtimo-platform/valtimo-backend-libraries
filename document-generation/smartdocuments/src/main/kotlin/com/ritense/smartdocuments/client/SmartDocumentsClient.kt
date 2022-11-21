@@ -28,6 +28,7 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.text.StringEscapeUtils
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.codec.ClientCodecConfigurer
 import org.springframework.web.client.HttpClientErrorException
@@ -63,7 +64,7 @@ class SmartDocumentsClient(
                 .bodyToMono(FilesResponse::class.java)
                 .block()!!
         } catch (e: WebClientResponseException) {
-            throw HttpClientErrorException(e.statusCode, e.responseBodyAsString)
+            throw HttpClientErrorException(e.statusCode, getErrorMessage(e))
         }
     }
 
@@ -100,6 +101,18 @@ class SmartDocumentsClient(
             )
         } catch (e: WebClientResponseException) {
             throw HttpClientErrorException(e.statusCode, e.responseBodyAsString)
+        }
+    }
+
+    private fun getErrorMessage(e: WebClientResponseException): String {
+        return when (e.statusCode) {
+            HttpStatus.UNAUTHORIZED -> "The request has not been applied because it lacks valid authentication " +
+                "credentials for the target resource. Response received from server:\n" + e.responseBodyAsString
+            HttpStatus.BAD_REQUEST -> "The server cannot or will not process the request due to something that is " +
+                "perceived to be a client error (e.g., no valid template specified, user has no privileges for the template," +
+                " malformed request syntax, invalid request message framing, or deceptive request routing)." +
+                " Response received from server:\n" + e.responseBodyAsString
+            else -> e.responseBodyAsString
         }
     }
 
@@ -158,13 +171,13 @@ class SmartDocumentsClient(
         }
         jsonParser.close()
         if (!correctOutputFormat) {
-            throw IllegalStateException("SmartDocuments didn't generate document with format '$outputFormat'")
+            throw IllegalStateException("SmartDocuments failed to generate document with format '$outputFormat'. The requested document format is not present in the output of smart documents.")
         }
         if (fileName == null) {
             throw IllegalStateException("SmartDocuments response didn't contain field 'filename'")
         }
         if (documentDataStart == -1L) {
-            throw IllegalStateException("SmartDocuments didn't generate document")
+            throw IllegalStateException("SmartDocuments failed to generate document")
         }
         return ParsedResponse(fileName, documentDataStart, documentDataEnd)
     }

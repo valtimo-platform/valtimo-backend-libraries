@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.document.repository;
+package com.ritense.document.exception;
 
 import com.ritense.document.domain.impl.searchfield.SearchField;
-import com.ritense.document.domain.impl.searchfield.SearchFieldId;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-import java.util.Optional;
+import javax.validation.ValidationException;
 
-public interface SearchFieldRepository extends JpaRepository<SearchField, SearchFieldId> {
+public class SearchConfigRequestException extends ValidationException {
 
-    List<SearchField> findAllByIdDocumentDefinitionNameOrderByOrder(String documentDefinitionName);
-
-    Optional<SearchField> findByIdDocumentDefinitionNameAndKey(String documentDefinitionName, String key);
-
-    boolean existsByIdDocumentDefinitionName(String documentDefinitionName);
+    public SearchConfigRequestException(SearchField searchField, String type, String message) {
+        super("Configured to search for " + type + " but " + message + ". For SearchField '" + searchField.getKey() + "'.");
+    }
 }
