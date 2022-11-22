@@ -1,7 +1,0 @@
-[
-    {
-        "processDefinitionKey": "document-generation-plugin",
-        "canInitializeDocument": true,
-        "startableByUser": true
-    }
-]
