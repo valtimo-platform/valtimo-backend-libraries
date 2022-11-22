@@ -28,7 +28,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface FormFileResource {
 
-    ResponseEntity<? extends Resource> uploadOpenZaakFile(String documentDefinitionName, String fileName, MultipartFile file);
+    ResponseEntity<? extends Resource> uploadFile(String documentDefinitionName, String fileName, MultipartFile file);
 
     RedirectView getFile(String id);
 
