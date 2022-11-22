@@ -65,13 +65,5 @@ valtimo:
         notificationTemplate: bpc-task-notification
         completionTemplate: bpc-task-completion
         reminderTemplate: bpc-task-reminder
-    auth0:
-        clientId: z07PPstdpIFTCPo52ZkanGjnVU9u1mTs
-        defaultConnection: bp-console
-        managementTokenApiClientId: 4b2rIa9Kbu6WVwtOgZ6k1xrEJub9IWHA
-        enabled: false
-        domain: ritense.eu.auth0.com
-        issuer: https://ritense.eu.auth0.com/
-        managementTokenApiClientSecret: #external
     plugin:
         encryption-secret: "abcdefghijklmnop"
