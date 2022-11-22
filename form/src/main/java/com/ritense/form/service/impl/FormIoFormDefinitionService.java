@@ -22,11 +22,11 @@ import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 import java.util.UUID;
 import javax.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class FormIoFormDefinitionService implements FormDefinitionService {
 
@@ -92,15 +92,19 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     @Override
     @Transactional
     public FormIoFormDefinition modifyFormDefinition(UUID id, String name, String definition, Boolean readOnly) {
-       return formDefinitionRepository.findById(id)
-        .map(formIoFormDefinition -> {
-            formIoFormDefinition.isWriting();
-            formIoFormDefinition.changeName(name);
-            formIoFormDefinition.changeDefinition(definition);
-            formIoFormDefinition.setReadOnly(readOnly);
-            formIoFormDefinition.doneWriting();
-            return formDefinitionRepository.save(formIoFormDefinition);
-        }).orElseThrow();
+        return formDefinitionRepository
+            .findById(id)
+            .map(
+                formIoFormDefinition -> {
+                    formIoFormDefinition.isWriting();
+                    formIoFormDefinition.changeName(name);
+                    formIoFormDefinition.changeDefinition(definition);
+                    formIoFormDefinition.setReadOnly(readOnly);
+                    formIoFormDefinition.doneWriting();
+                    return formDefinitionRepository.save(formIoFormDefinition);
+                }
+            )
+            .orElseThrow();
     }
 
     @Override
