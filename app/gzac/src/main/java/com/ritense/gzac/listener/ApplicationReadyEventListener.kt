@@ -23,15 +23,13 @@ import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
-import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
+import java.net.URI
+import java.util.UUID
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
-import java.net.URI
-import java.util.UUID
 
 
 @Component
