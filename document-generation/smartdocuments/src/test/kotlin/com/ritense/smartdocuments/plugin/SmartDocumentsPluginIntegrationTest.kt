@@ -170,16 +170,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
                 "templateGroup": "test-template-group",
                 "templateName": "pv:my-template-name-variable",
                 "format": "XML",
-                "templateData": [
-                    {
-                        "key": "achternaam",
-                        "value": "doc:/lastname"
-                    },
-                    {
-                        "key": "leeftijd",
-                        "value": "pv:age"
-                    }
-                ],
+                "templateData": [],
                 "resultingDocumentProcessVariableName": "my-generated-document"
             }
         """.trimIndent()
@@ -195,6 +186,32 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
         val requestBody =
             findRequestBody(HttpMethod.POST, "/wsxmldeposit/deposit/unattended", SmartDocumentsRequest::class.java)
         assertThat(requestBody.smartDocument.selection.template).isEqualTo("my-custom-template-name")
+    }
+
+    @Test
+    fun `should respond with placeholder when template-name contains process-variable that doesn't exist`() {
+        // given
+        saveProcessLink(
+            """
+            {
+                "templateGroup": "test-template-group",
+                "templateName": "pv:non-existing-process-variable",
+                "format": "XML",
+                "templateData": [],
+                "resultingDocumentProcessVariableName": "my-generated-document"
+            }
+        """.trimIndent()
+        )
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
+
+        // when
+        processDocumentService.newDocumentAndStartProcess(request)
+
+        // then
+        val requestBody =
+            findRequestBody(HttpMethod.POST, "/wsxmldeposit/deposit/unattended", SmartDocumentsRequest::class.java)
+        assertThat(requestBody.smartDocument.selection.template).isEqualTo("pv:non-existing-process-variable")
     }
 
     private fun saveProcessLink(generateDocumentActionProperties: String) {
