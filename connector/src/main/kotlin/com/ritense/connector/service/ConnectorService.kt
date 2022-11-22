@@ -65,7 +65,7 @@ open class ConnectorService(
     }
 
     open fun getConnectorInstanceById(id: UUID): ConnectorInstance {
-        return connectorTypeInstanceRepository.getById(ConnectorInstanceId.existingId(id))
+        return connectorTypeInstanceRepository.getReferenceById(ConnectorInstanceId.existingId(id))
     }
 
     open fun createConnectorInstance(
@@ -117,7 +117,7 @@ open class ConnectorService(
         modifyConnectorInstanceRequest: ModifyConnectorInstanceRequest
     ): ModifyConnectorInstanceResult {
         return try {
-            val connectorTypeInstance = connectorTypeInstanceRepository.getById(
+            val connectorTypeInstance = connectorTypeInstanceRepository.getReferenceById(
                 ConnectorInstanceId.existingId(modifyConnectorInstanceRequest.id)
             )
             val connectorType = connectorTypeRepository.findById(ConnectorTypeId.existingId(modifyConnectorInstanceRequest.typeId))
@@ -157,19 +157,6 @@ open class ConnectorService(
         val connectorTypeInstance = connectorTypeInstanceRepository.findByName(name)
         requireNotNull(connectorTypeInstance) { "ConnectorTypeInstance was not found with name: $name" }
         return load(connectorTypeInstance)
-    }
-
-    /**
-     * Instantiates a connector by name with configured properties.
-     * Get bean will retrieve the bean from the context. Connector beans should be annotated
-     * with <code>@Scope(BeanDefinition.SCOPE_PROTOTYPE)</code> to ensure call based creation.
-     *
-     * @param name the name of the connector instance
-     * @deprecated Changed method name to be able to load connectors from a BPMN model. Replaced by {@link #loadByName(String)}
-     */
-    @Deprecated("Changed method name to be able to load connectors from a BPMN model. Replaced by loadByName(String)")
-    open fun load(name: String): Connector {
-        return loadByName(name)
     }
 
     /**

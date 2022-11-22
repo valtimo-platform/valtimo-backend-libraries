@@ -29,11 +29,6 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
     private static final String LOWER_CASE_FUNCTION = "lower";
 
     @Override
-    public Expression<String> getJsonValueExpression(CriteriaBuilder cb, Path column, String path) {
-        return getValueForPath(cb, column, path, String.class);
-    }
-
-    @Override
     public <T> Expression<T> getJsonValueExpression(CriteriaBuilder cb, Path column, String path, Class<T> type) {
         return getValueForPath(cb, column, path, type);
     }
@@ -67,7 +62,7 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
     }
 
     private <T> Expression<T> getValueForPath(CriteriaBuilder cb, Path column, String path, Class<T> type) {
-        List<Expression<String>> pathParts = splitPath(path).stream().map(cb::literal).collect(Collectors.toList());
+        List<Expression<String>> pathParts = splitPath(path).stream().map(cb::literal).toList();
         Expression[] expressions = new Expression[pathParts.size() + 1];
         expressions[0] = column;
         System.arraycopy(pathParts.toArray(), 0, expressions, 1, pathParts.size());

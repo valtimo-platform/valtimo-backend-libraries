@@ -17,7 +17,6 @@
 package com.ritense.valtimo.accessandentitlement.domain;
 
 import com.ritense.valtimo.accessandentitlement.domain.event.AuthorityCreatedEvent;
-import com.ritense.valtimo.accessandentitlement.domain.event.AuthorityHourlyRateChangedEvent;
 import com.ritense.valtimo.accessandentitlement.domain.event.AuthorityNameChangedEvent;
 import com.ritense.valtimo.accessandentitlement.domain.listener.AuthorityDeletedEventListener;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
@@ -53,40 +52,13 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
     @Column(name = "system_authority", columnDefinition = "BIT", nullable = false)
     private Boolean systemAuthority = false;
 
-    @Column(name = "hourly_rate", columnDefinition = "NUMERIC", nullable = false)
-    private BigDecimal hourlyRate;
-
-    private Authority() {
-    }
-
-    /**
-     * @deprecated - This method will be removed in 11.0.0
-     * Use {@link #Authority(String, boolean)} instead.
-     */
-    @Deprecated(forRemoval = true, since = "9.4.0")
-    public Authority(String name, BigDecimal hourlyRate, boolean systemAuthority) {
-        assertArgumentNotNull(name, "name is required");
-        assertArgumentLength(name, 50, "name max length is 50");
-        assertArgumentNotNull(hourlyRate, "hourlyRate is required");
-        this.name = name;
-        this.hourlyRate = hourlyRate;
-        this.systemAuthority = systemAuthority;
-        registerEvent(new AuthorityCreatedEvent(
-            UUID.randomUUID(),
-            RequestHelper.getOrigin(),
-            LocalDateTime.now(),
-            AuditHelper.getActor(),
-            getName(),
-            getSystemAuthority(),
-            getHourlyRate()
-        ));
+    protected Authority() {
     }
 
     public Authority(String name, boolean systemAuthority) {
         assertArgumentNotNull(name, "name is required");
         assertArgumentLength(name, 50, "name max length is 50");
         this.name = name;
-        this.hourlyRate = BigDecimal.ZERO;
         this.systemAuthority = systemAuthority;
         registerEvent(new AuthorityCreatedEvent(
             UUID.randomUUID(),
@@ -114,44 +86,12 @@ public class Authority extends AbstractAggregateRoot implements Serializable {
         }
     }
 
-    /**
-     * @deprecated - This method will be removed in 11.0.0
-     */
-    @Deprecated(forRemoval = true, since = "9.4.0")
-    public void changeHourlyRate(BigDecimal hourlyRate) {
-        if (!this.hourlyRate.equals(hourlyRate)) {
-            final Money oldHourlyRate = getHourlyRate();
-            this.hourlyRate = hourlyRate;
-            registerEvent(new AuthorityHourlyRateChangedEvent(
-                UUID.randomUUID(),
-                RequestHelper.getOrigin(),
-                LocalDateTime.now(),
-                AuditHelper.getActor(),
-                getName(),
-                getSystemAuthority(),
-                getHourlyRate(),
-                oldHourlyRate
-            ));
-        }
-    }
-
     public Boolean getSystemAuthority() {
         return systemAuthority;
     }
 
     public String getName() {
         return name;
-    }
-
-    /**
-     * @deprecated - This method will be removed in 11.0.0
-     */
-    @Deprecated(forRemoval = true, since = "9.4.0")
-    public Money getHourlyRate() {
-        if (hourlyRate == null) {
-            return null;
-        }
-        return new Money(hourlyRate);
     }
 
     @Override
