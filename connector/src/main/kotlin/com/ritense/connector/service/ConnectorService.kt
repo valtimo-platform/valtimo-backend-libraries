@@ -38,8 +38,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.interceptor.TransactionAspectSupport
 import java.util.UUID
-import javax.transaction.Transactional
 import javax.validation.ConstraintViolationException
+import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 open class ConnectorService(
@@ -48,22 +48,27 @@ open class ConnectorService(
     private val connectorTypeRepository: ConnectorTypeRepository
 ) {
 
+    @Transactional(readOnly = true)
     open fun getConnectorTypes(): List<ConnectorType> {
         return connectorTypeRepository.findAll()
     }
 
+    @Transactional(readOnly = true)
     open fun getConnectorInstances(pageable: Pageable = Pageable.unpaged()): Page<ConnectorInstance> {
         return connectorTypeInstanceRepository.findAll(pageable)
     }
 
+    @Transactional(readOnly = true)
     open fun getConnectorInstancesByType(typeId: UUID, pageable: Pageable = Pageable.unpaged()): Page<ConnectorInstance> {
         return connectorTypeInstanceRepository.findAllByTypeId(ConnectorTypeId.existingId(typeId), pageable)
     }
 
+    @Transactional(readOnly = true)
     open fun getConnectorInstancesByTypeName(typeName: String, pageable: Pageable = Pageable.unpaged()): Page<ConnectorInstance> {
         return connectorTypeInstanceRepository.findAllByTypeName(typeName, pageable)
     }
 
+    @Transactional(readOnly = true)
     open fun getConnectorInstanceById(id: UUID): ConnectorInstance {
         return connectorTypeInstanceRepository.getById(ConnectorInstanceId.existingId(id))
     }
