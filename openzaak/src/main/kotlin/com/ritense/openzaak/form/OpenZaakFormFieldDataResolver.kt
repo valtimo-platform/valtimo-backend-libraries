@@ -21,7 +21,6 @@ import com.ritense.openzaak.exception.ZaakInstanceNotFoundException
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.valtimo.contract.form.DataResolvingContext
-import com.ritense.valtimo.contract.form.ExternalFormFieldType
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
 
 class OpenZaakFormFieldDataResolver(
@@ -30,7 +29,7 @@ class OpenZaakFormFieldDataResolver(
 ) : FormFieldDataResolver {
 
     override fun supports(externalFormFieldType: String): Boolean {
-        return externalFormFieldType == ExternalFormFieldType.OZ.name
+        return externalFormFieldType == "OpenZaak"
     }
 
     override fun get(

@@ -25,7 +25,6 @@ import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.EigenschapType
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
-import com.ritense.valtimo.contract.form.ExternalFormFieldType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks
@@ -73,7 +72,7 @@ internal class EigenschappenSubmittedListenerTest {
         MockitoAnnotations.openMocks(this)
 
         event = ExternalDataSubmittedEvent(
-            mapOf(ExternalFormFieldType.OZ.name.lowercase() to mapOf("voornaam" to "Piet")),
+            mapOf("OpenZaak".lowercase() to mapOf("voornaam" to "Piet")),
             documentDefinition,
             documentId
         )
