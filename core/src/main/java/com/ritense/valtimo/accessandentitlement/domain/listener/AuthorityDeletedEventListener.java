@@ -42,8 +42,7 @@ public class AuthorityDeletedEventListener {
                 LocalDateTime.now(),
                 AuditHelper.getActor(),
                 authority.getName(),
-                authority.getSystemAuthority(),
-                authority.getHourlyRate()
+                authority.getSystemAuthority()
             )
         );
     }

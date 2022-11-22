@@ -29,11 +29,6 @@ class OpenZaakFormFieldDataResolver(
     private val zaakInstanceLinkService: ZaakInstanceLinkService
 ) : FormFieldDataResolver {
 
-    @Deprecated("Deprecated in interface since 9.18")
-    override fun supports(externalFormFieldType: ExternalFormFieldType): Boolean {
-        return externalFormFieldType == ExternalFormFieldType.OZ
-    }
-
     override fun supports(externalFormFieldType: String): Boolean {
         return externalFormFieldType == ExternalFormFieldType.OZ.name
     }

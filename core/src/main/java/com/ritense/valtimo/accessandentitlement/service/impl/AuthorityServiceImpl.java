@@ -53,7 +53,7 @@ public class AuthorityServiceImpl implements AuthorityService {
         if (authorityOptional.isPresent()) {
             throw new EntityException("This authority already exists", "alreadyexists", ENTITY_NAME);
         }
-        Authority authority = new Authority(authorityRequest.getName(), authorityRequest.getHourlyRate(), false);
+        Authority authority = new Authority(authorityRequest.getName(), false);
         authorityRepository.save(authority);
         return authority;
     }
@@ -62,7 +62,6 @@ public class AuthorityServiceImpl implements AuthorityService {
     public Authority updateAuthority(AuthorityRequest authorityRequest) {
         Authority authority = getAuthorityOrThrowEntityException(authorityRequest.getName());
         authority.changeName(authorityRequest.getName());
-        authority.changeHourlyRate(authorityRequest.getHourlyRate());
         return authority;
     }
 

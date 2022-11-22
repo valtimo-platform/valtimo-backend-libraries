@@ -23,24 +23,6 @@ import java.util.UUID;
 
 public class AuthorityDeletedEvent extends AuthorityEvent {
 
-    /**
-     * @deprecated - This method will be removed in 11.0.0
-     * Use {@link #AuthorityDeletedEvent(UUID, String, LocalDateTime, String, String, Boolean)}  instead.
-     */
-    @Deprecated(forRemoval = true, since = "9.4.0")
-    @JsonCreator
-    public AuthorityDeletedEvent(
-        UUID id,
-        String origin,
-        LocalDateTime occurredOn,
-        String user,
-        String name,
-        Boolean systemAuthority,
-        Money hourlyRate
-    ) {
-        super(id, origin, occurredOn, user, name, systemAuthority, hourlyRate);
-    }
-
     @JsonCreator
     public AuthorityDeletedEvent(
         UUID id,

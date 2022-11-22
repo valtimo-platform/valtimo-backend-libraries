@@ -18,6 +18,7 @@ package com.ritense.valtimo.camunda.task.service;
 
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
+import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import java.util.List;
 import java.util.Map;
 import org.camunda.community.mockito.delegate.DelegateExecutionFake;
@@ -26,20 +27,19 @@ import org.camunda.community.mockito.delegate.DelegateTaskFake;
 public class NotificationTestHelper {
 
     public static ManageableUser user(String email, List<String> role) {
-        return new ValtimoUser(
-            "id",
-            "username",
-            "full name",
-            email,
-            "firstName",
-            "lastName",
-            "04545656",
-            true,
-            "nl",
-            false,
-            true,
-            role
-        );
+        return new ValtimoUserBuilder()
+            .id("id")
+            .username("username")
+            .name("full name")
+            .email(email)
+            .firstName("firstName")
+            .lastName("lastName")
+            .phoneNo("04545656")
+            .isEmailVerified(true)
+            .langKey("nl")
+            .blocked(false)
+            .activated(true)
+            .roles(role).build();
     }
 
     public static DelegateTaskFake mockTask(String id) {

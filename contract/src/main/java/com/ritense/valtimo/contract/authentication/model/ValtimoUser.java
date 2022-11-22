@@ -45,39 +45,6 @@ public class ValtimoUser implements Serializable, ManageableUser {
     public ValtimoUser() {
     }
 
-    /**
-     * @deprecated please use the {@link ValtimoUserBuilder} instead.
-     */
-    @Deprecated(since = "9.23.0", forRemoval = true)
-    @SuppressWarnings({"squid:S107", "java:S107"})
-    public ValtimoUser(
-        String id,
-        String username,
-        String name,
-        String email,
-        String firstName,
-        String lastName,
-        String phoneNo,
-        boolean isEmailVerified,
-        String langKey,
-        boolean blocked,
-        boolean activated,
-        List<String> roles
-    ) {
-        this.id = id;
-        this.username = username;
-        this.name = name;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNo = phoneNo;
-        this.isEmailVerified = isEmailVerified;
-        this.langKey = langKey;
-        this.blocked = blocked;
-        this.activated = activated;
-        this.roles = roles;
-    }
-
     public void setId(String id) {
         this.id = id;
     }

@@ -24,7 +24,6 @@ import com.ritense.valtimo.accessandentitlement.service.impl.AuthorityServiceImp
 import com.ritense.valtimo.service.AuthorizedUsersService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.math.BigDecimal;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,30 +48,28 @@ class AuthorityServiceTest {
     void shouldCreateAndReturnAuthority() {
         when(authorityRepository.findById(any())).thenReturn(Optional.empty());
 
-        final AuthorityRequest authorityRequest = new AuthorityRequest("role_name", BigDecimal.TEN);
+        final AuthorityRequest authorityRequest = new AuthorityRequest("role_name");
         final Authority authority = authorityService.createAuthority(authorityRequest);
 
         assertThat(authority.getName()).isEqualTo(authorityRequest.getName());
-        assertThat(authority.getSystemAuthority()).isEqualTo(false);
-        assertThat(authority.getHourlyRate()).isEqualTo(new Money(authorityRequest.getHourlyRate()));
+        assertThat(authority.getSystemAuthority()).isFalse();
     }
 
     @Test
     void shouldUpdateAndReturnAuthority() {
-        Authority authority = new Authority("role_name", BigDecimal.TEN, false);
+        Authority authority = new Authority("role_name", false);
         when(authorityRepository.findById(any())).thenReturn(Optional.of(authority));
 
-        final AuthorityRequest authorityRequest = new AuthorityRequest("role_b", BigDecimal.ONE);
+        final AuthorityRequest authorityRequest = new AuthorityRequest("role_b");
         authority = authorityService.updateAuthority(authorityRequest);
 
         assertThat(authority.getName()).isEqualTo(authorityRequest.getName());
-        assertThat(authority.getSystemAuthority()).isEqualTo(false);
-        assertThat(authority.getHourlyRate()).isEqualTo(new Money(authorityRequest.getHourlyRate()));
+        assertThat(authority.getSystemAuthority()).isFalse();
     }
 
     @Test
     void shouldDeleteAuthority() throws IllegalAccessException {
-        Authority authority = new Authority("role_name", BigDecimal.TEN, false);
+        Authority authority = new Authority("role_name", false);
         when(authorityRepository.findById(any())).thenReturn(Optional.of(authority));
         when(authorizedUsersService.isRoleInUse(any())).thenReturn(false);
 

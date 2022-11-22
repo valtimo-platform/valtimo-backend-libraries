@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Transactional
 public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinitionProcessLinkService {
@@ -43,27 +42,6 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
     }
 
     @Override
-    public DocumentDefinitionProcess getDocumentDefinitionProcess(String documentDefinitionName) {
-        var link = documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
-
-        if (link.isPresent()) {
-            var processDefinition = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionKey(link.get().getId().getProcessDefinitionKey())
-                .latestVersion()
-                .singleResult();
-
-            return new DocumentDefinitionProcess(processDefinition.getKey(), processDefinition.getName());
-        }
-
-        return null;
-    }
-
-    @Override
-    public Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName) {
-        return documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
-    }
-
-    @Override
     public List<DocumentDefinitionProcess> getDocumentDefinitionProcessList(String documentDefinitionName) {
         var links = documentDefinitionProcessLinkRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
 
@@ -74,7 +52,7 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
                 .singleResult();
 
             return new DocumentDefinitionProcess(processDefinition.getKey(), processDefinition.getName());
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     @Override
