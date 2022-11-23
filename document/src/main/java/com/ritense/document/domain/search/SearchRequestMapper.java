@@ -64,6 +64,7 @@ public class SearchRequestMapper {
     public static AdvancedSearchRequest toAdvancedSearchRequest(SearchWithConfigRequest searchRequest, List<AdvancedSearchRequest.OtherFilter> otherFilters) {
         var advancedSearchRequest = new AdvancedSearchRequest();
         advancedSearchRequest.setSearchOperator(searchRequest.getSearchOperator());
+        advancedSearchRequest.setAssigneeFilter(searchRequest.getAssigneeFilter());
         advancedSearchRequest.setOtherFilters(otherFilters);
         return advancedSearchRequest;
     }

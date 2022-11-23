@@ -20,12 +20,14 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
+import com.ritense.document.domain.search.AssigneeFilter;
 import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.domain.search.SearchRequestMapper;
 import com.ritense.document.domain.search.SearchRequestValidator;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.SearchFieldService;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.apache.commons.lang3.NotImplementedException;
@@ -77,19 +79,25 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private static final String CREATED_BY = "createdBy";
     private static final String SEQUENCE = "sequence";
     private static final String CONTENT = "content";
+    private static final String ASSIGNEE_ID = "assigneeId";
     private static final String DOC_PREFIX = "doc:";
     private static final String CASE_PREFIX = "case:";
 
     private final EntityManager entityManager;
-
     private final QueryDialectHelper queryDialectHelper;
-
     private final SearchFieldService searchFieldService;
+    private final UserManagementService userManagementService;
 
-    public JsonSchemaDocumentSearchService(EntityManager entityManager, QueryDialectHelper queryDialectHelper, SearchFieldService searchFieldService) {
+    public JsonSchemaDocumentSearchService(
+        EntityManager entityManager,
+        QueryDialectHelper queryDialectHelper,
+        SearchFieldService searchFieldService,
+        UserManagementService userManagementService
+    ) {
         this.entityManager = entityManager;
         this.queryDialectHelper = queryDialectHelper;
         this.searchFieldService = searchFieldService;
+        this.userManagementService = userManagementService;
     }
 
     @Override
@@ -188,6 +196,10 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             addUserRolePredicate(query, documentRoot, predicates);
         }
 
+        if (searchRequest.getAssigneeFilter() != null && searchRequest.getAssigneeFilter() != AssigneeFilter.ALL) {
+            predicates.add(getAssigneeFilterPredicate(cb, documentRoot, searchRequest.getAssigneeFilter()));
+        }
+
         if (searchRequest.getOtherFilters() != null && !searchRequest.getOtherFilters().isEmpty()) {
             predicates.add(getOtherFilersPredicate(cb, documentRoot, searchRequest));
         }
@@ -242,6 +254,22 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .collect(toList());
 
             predicates.add(cb.and(criteriaPredicates.toArray(Predicate[]::new)));
+        }
+    }
+
+    private Predicate getAssigneeFilterPredicate(CriteriaBuilder cb, Root<JsonSchemaDocument> documentRoot, AssigneeFilter assigneeFilter) {
+        var caseAssigneeIdColumn = documentRoot.get(ASSIGNEE_ID);
+        var userId = userManagementService.getCurrentUser().getId();
+
+        switch (assigneeFilter) {
+            case MINE:
+                return cb.equal(caseAssigneeIdColumn, userId);
+
+            case OPEN:
+                return cb.isNull(caseAssigneeIdColumn);
+
+            default:
+                return null;
         }
     }
 

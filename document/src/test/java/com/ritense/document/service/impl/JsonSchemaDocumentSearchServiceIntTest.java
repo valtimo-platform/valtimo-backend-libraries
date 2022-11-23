@@ -24,8 +24,10 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
+import com.ritense.document.domain.search.AssigneeFilter;
 import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.service.result.CreateDocumentResult;
+import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -54,11 +56,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 @Tag("integration")
 @Transactional
 class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
+    private static final String USER_ID = "a28994a3-31f9-4327-92a4-210c479d3055";
     private static final String USERNAME = "john@ritense.com";
     private JsonSchemaDocumentDefinition definition;
     private CreateDocumentResult originalDocument;
@@ -94,6 +98,10 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
                 new JsonDocumentContent("{\"street\": \"Kalverstraat\",\"place\": \"Amsterdam\"}").asJson()
             )
         );
+
+        var user = new ValtimoUserBuilder().username(USERNAME).email(USERNAME).id(USER_ID).build();
+        when(userManagementService.findById(USER_ID)).thenReturn(user);
+        when(userManagementService.getCurrentUser()).thenReturn(user);
     }
 
     @Test
@@ -972,6 +980,78 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(3);
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchForOpenCases() {
+        documentRepository.deleteAllInBatch();
+
+        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().get();
+        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
+        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
+
+        documentService.assignUserToDocument(document2.id().getId(), USER_ID);
+
+        var searchRequest = new AdvancedSearchRequest()
+            .assigneeFilter(AssigneeFilter.OPEN);
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:street")));
+
+        assertThat(result.toList()).hasSize(2);
+        assertThat(result.toList().get(0).id().getId()).isEqualTo(document1.id().getId());
+        assertThat(result.toList().get(1).id().getId()).isEqualTo(document3.id().getId());
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchForMyCases() {
+        documentRepository.deleteAllInBatch();
+
+        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().get();
+        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
+        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
+
+        documentService.assignUserToDocument(document2.id().getId(), USER_ID);
+
+        var searchRequest = new AdvancedSearchRequest()
+            .assigneeFilter(AssigneeFilter.MINE);
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:street")));
+
+        assertThat(result.toList()).hasSize(1);
+        assertThat(result.toList().get(0).id().getId()).isEqualTo(document2.id().getId());
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchForAll() {
+        documentRepository.deleteAllInBatch();
+
+        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().get();
+        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
+        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
+
+        documentService.assignUserToDocument(document2.id().getId(), USER_ID);
+
+        var searchRequest = new AdvancedSearchRequest()
+            .assigneeFilter(AssigneeFilter.ALL);
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:street")));
+
+        assertThat(result.toList()).hasSize(3);
+        assertThat(result.toList().get(0).id().getId()).isEqualTo(document1.id().getId());
+        assertThat(result.toList().get(1).id().getId()).isEqualTo(document2.id().getId());
+        assertThat(result.toList().get(2).id().getId()).isEqualTo(document3.id().getId());
     }
 
     private CreateDocumentResult createDocument(String content) {
