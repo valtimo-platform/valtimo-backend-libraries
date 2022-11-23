@@ -25,6 +25,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 
 public class SearchWithConfigRequest {
     private SearchOperator searchOperator = SearchOperator.AND;
+    private AssigneeFilter assigneeFilter = AssigneeFilter.ALL;
     private List<SearchWithConfigFilter> otherFilters = List.of();
 
     public SearchWithConfigRequest() {
@@ -44,6 +45,14 @@ public class SearchWithConfigRequest {
 
     public void setSearchOperator(SearchOperator searchOperator) {
         this.searchOperator = searchOperator;
+    }
+
+    public AssigneeFilter getAssigneeFilter() {
+        return assigneeFilter;
+    }
+
+    public void setAssigneeFilter(AssigneeFilter assigneeFilter) {
+        this.assigneeFilter = assigneeFilter;
     }
 
     public List<SearchWithConfigFilter> getOtherFilters() {
