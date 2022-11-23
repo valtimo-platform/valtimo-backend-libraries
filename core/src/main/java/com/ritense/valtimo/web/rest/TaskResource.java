@@ -22,6 +22,7 @@ import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.request.AssigneeRequest;
+import com.ritense.valtimo.service.websocket.WebSocketService;
 import com.ritense.valtimo.web.rest.dto.BatchAssignTaskDTO;
 import com.ritense.valtimo.web.rest.dto.CustomTaskDto;
 import com.ritense.valtimo.web.rest.dto.TaskCompletionDTO;

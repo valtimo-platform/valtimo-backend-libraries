@@ -46,6 +46,7 @@ import com.ritense.valtimo.security.config.SwaggerHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.TaskHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.UserHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ValtimoVersionHttpSecurityConfigurer;
+import com.ritense.valtimo.security.config.WebSocketSecurityConfigurer;
 import com.ritense.valtimo.security.interceptor.SecurityWhitelistProperties;
 import com.ritense.valtimo.security.interceptor.WhitelistIpRequest;
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
@@ -301,6 +302,13 @@ public class HttpSecurityAutoConfiguration {
         List<AuthenticationSecurityConfigurer> authenticationSecurityConfigurers
     ) {
         return new CoreHttpSecurityConfigurerAdapter(httpSecurityConfigurers, authenticationSecurityConfigurers);
+    }
+
+    @Order(480)
+    @Bean
+    @ConditionalOnMissingBean(WebSocketSecurityConfigurer.class)
+    public WebSocketSecurityConfigurer webSocketSecurityConfigurer() {
+        return new WebSocketSecurityConfigurer();
     }
 
     @Bean

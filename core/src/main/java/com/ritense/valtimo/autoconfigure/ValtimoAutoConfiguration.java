@@ -44,6 +44,7 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
 import com.ritense.valtimo.service.ProcessPropertyService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
+import com.ritense.valtimo.service.websocket.WebSocketService;
 import com.ritense.valtimo.web.rest.AccountResource;
 import com.ritense.valtimo.web.rest.PingResource;
 import com.ritense.valtimo.web.rest.ProcessInstanceResource;
@@ -71,7 +72,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
@@ -116,9 +117,20 @@ public class ValtimoAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(WebSocketService.class)
+    public WebSocketService webSocketService(
+        final SimpMessagingTemplate template
+        ) {
+        return new WebSocketService(template);
+    }
+
+    @Bean
     @ConditionalOnMissingBean(TaskCompletedListener.class)
-    public TaskCompletedListener taskCompletedListener(final ApplicationEventPublisher applicationEventPublisher) {
-        return new TaskCompletedListener(applicationEventPublisher);
+    public TaskCompletedListener taskCompletedListener(
+        final ApplicationEventPublisher applicationEventPublisher,
+        final WebSocketService webSocketService
+        ) {
+        return new TaskCompletedListener(applicationEventPublisher, webSocketService);
     }
 
     @Bean

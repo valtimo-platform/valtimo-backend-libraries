@@ -39,7 +39,11 @@ public class TaskHttpSecurityConfigurer implements HttpSecurityConfigurer {
                 .antMatchers(GET, "/api/task/{taskId}/comments").access(TASK_ACCESS_PERMISSION)
                 .antMatchers(POST, "/api/task/{taskId}/complete").access(TASK_ACCESS_PERMISSION)
                 .antMatchers(POST, "/api/task/{taskId}/unassign").access(TASK_ACCESS_PERMISSION)
-                .antMatchers(GET, "/api/task/{taskId}/candidate-user").access(TASK_ACCESS_PERMISSION);
+                .antMatchers(GET, "/api/task/{taskId}/candidate-user").access(TASK_ACCESS_PERMISSION)
+                // Web Sockets still do a handshake via HTTP
+                .antMatchers("/socket/**/**",
+                             "/socket/success",
+                             "/socket/socket").permitAll();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

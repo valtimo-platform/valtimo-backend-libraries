@@ -17,6 +17,7 @@
 package com.ritense.valtimo.camunda;
 
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
+import com.ritense.valtimo.service.websocket.WebSocketService;
 import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.camunda.bpm.engine.variable.VariableMap;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,8 @@ import static org.mockito.Mockito.verify;
 class TaskCompletedListenerTest {
 
     private ApplicationEventPublisher applicationEventPublisher;
+
+    private WebSocketService webSocketService;
     private TaskCompletedListener taskCompletedListener;
     private ArgumentCaptor<TaskCompletedEvent> taskCompletedEventCaptor;
     private DelegateTask delegateTask;
@@ -40,7 +43,8 @@ class TaskCompletedListenerTest {
     @BeforeEach
     void setup() {
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
-        taskCompletedListener = new TaskCompletedListener(applicationEventPublisher);
+        webSocketService = mock(WebSocketService.class);
+        taskCompletedListener = new TaskCompletedListener(applicationEventPublisher, webSocketService);
         taskCompletedEventCaptor = ArgumentCaptor.forClass(TaskCompletedEvent.class);
 
         delegateTask = delegateTaskFake()

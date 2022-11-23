@@ -19,6 +19,7 @@ package com.ritense.valtimo.camunda;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
 import com.ritense.valtimo.contract.utils.RequestHelper;
+import com.ritense.valtimo.service.websocket.WebSocketService;
 import org.camunda.bpm.engine.ActivityTypes;
 import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.camunda.bpm.engine.delegate.TaskListener;
@@ -33,11 +34,17 @@ import java.util.UUID;
 public class TaskCompletedListener extends ReactorTaskListener {
 
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final WebSocketService webSocketService;
 
-    public TaskCompletedListener(ApplicationEventPublisher applicationEventPublisher) {
+    public TaskCompletedListener(ApplicationEventPublisher applicationEventPublisher, WebSocketService webSocketService) {
         this.applicationEventPublisher = applicationEventPublisher;
+        this.webSocketService = webSocketService;
     }
 
+    /**
+     * This method will send a TaskCompletedEvent and send out a websocket message
+     * @param delegateTask
+     */
     @Override
     public void notify(DelegateTask delegateTask) {
         applicationEventPublisher.publishEvent(
@@ -56,6 +63,8 @@ public class TaskCompletedListener extends ReactorTaskListener {
                 delegateTask.getExecution().getProcessBusinessKey()
             )
         );
+
+        webSocketService.sendTaskChangedMessage(delegateTask.getProcessDefinitionId(), delegateTask.getAssignee());
     }
 
 }
