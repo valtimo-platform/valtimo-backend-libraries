@@ -125,9 +125,15 @@ public class DocumentAutoConfiguration {
     public JsonSchemaDocumentSearchService documentSearchService(
         final EntityManager entityManager,
         final QueryDialectHelper queryDialectHelper,
-        final SearchFieldService searchFieldService
-        ) {
-        return new JsonSchemaDocumentSearchService(entityManager, queryDialectHelper, searchFieldService);
+        final SearchFieldService searchFieldService,
+        final UserManagementService userManagementService
+    ) {
+        return new JsonSchemaDocumentSearchService(
+            entityManager,
+            queryDialectHelper,
+            searchFieldService,
+            userManagementService
+        );
     }
 
     @Bean
