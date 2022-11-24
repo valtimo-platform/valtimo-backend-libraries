@@ -46,7 +46,7 @@ public interface DocumentDefinitionResource {
     @GetMapping(value = "/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
         @RequestParam(name = "filteredOnRole", defaultValue = "true") boolean filteredOnRole,
-        @PageableDefault(sort = {"id.name"}, direction = ASC) Pageable pageable
+        @PageableDefault(sort = {"document_definition_name"}, direction = ASC) Pageable pageable
     );
 
     @GetMapping(value = "/document-definition/{name}")

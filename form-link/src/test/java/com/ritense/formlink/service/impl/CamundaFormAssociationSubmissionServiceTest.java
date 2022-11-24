@@ -32,13 +32,17 @@ import com.ritense.formlink.service.result.FormSubmissionResult;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.processdocument.service.impl.result.ModifyDocumentAndCompleteTaskResultSucceeded;
+import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
+
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -128,6 +132,98 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
         //Then
         assertThat(formSubmissionResult).isInstanceOf(FormSubmissionResultSucceeded.class);
         assertThat(formSubmissionResult.errors()).isEmpty();
+    }
+
+    @Test
+    public void shouldNotFindDocument() throws IOException {
+        //Given
+        String processDefinitionKey = "myProcessKey";
+        String formLinkId = "myFormLinkId";
+        String documentId = UUID.randomUUID().toString();
+        String taskInstanceId = "123";
+        ObjectNode formData = formData();
+
+        formAssociation = processFormAssociation(UUID.randomUUID(), UUID.randomUUID()).getFormAssociations().iterator().next();
+        when(formAssociationService.getFormAssociationByFormLinkId(any(), any())).thenReturn(Optional.of(formAssociation));
+
+        formDefinition = formDefinitionOf("user-task");
+        when(formDefinitionService.getFormDefinitionById(any())).thenReturn(Optional.of(formDefinition));
+
+        when(documentService.findBy(any())).thenReturn(Optional.empty());
+
+        //When
+        final var documentNotFoundException = formAssociationSubmissionService
+            .handleSubmission(processDefinitionKey, formLinkId, documentId, taskInstanceId, formData);
+
+        //Then
+        assertThat(documentNotFoundException).isNotNull();
+        assertThat(documentNotFoundException.errors()).isNotEmpty();
+        assertThat(documentNotFoundException.errors()).anyMatch(error -> error.asString().contains(documentId));
+    }
+
+    @Test
+    public void shouldNotFindProcessDocumentDefinitionByProdDefKey() throws IOException {
+        //Given
+        String processDefinitionKey = "myProcessKey";
+        String formLinkId = "myFormLinkId";
+        String documentId = null;
+        String taskInstanceId = "123";
+        ObjectNode formData = formData();
+
+        formAssociation = processFormAssociation(UUID.randomUUID(), UUID.randomUUID()).getFormAssociations().iterator().next();
+        when(formAssociationService.getFormAssociationByFormLinkId(any(), any())).thenReturn(Optional.of(formAssociation));
+
+        when(processDocumentAssociationService.findProcessDocumentDefinition(any()))
+            .thenReturn(Optional.empty());
+
+        formDefinition = formDefinitionOf("user-task");
+        when(formDefinitionService.getFormDefinitionById(any())).thenReturn(Optional.of(formDefinition));
+
+        final var jsonDocumentContent = JsonDocumentContent.build(formData);
+        final Optional<JsonSchemaDocument> document = Optional.of(createDocument(jsonDocumentContent));
+        when(documentService.findBy(any())).thenReturn(document);
+
+        //When
+        final var documentNotFoundException = formAssociationSubmissionService
+            .handleSubmission(processDefinitionKey, formLinkId, documentId, taskInstanceId, formData);
+
+        //Then
+        assertThat(documentNotFoundException).isNotNull();
+        assertThat(documentNotFoundException.errors()).isNotEmpty();
+        assertThat(documentNotFoundException.errors().stream().map(OperationError::asString).collect(Collectors.joining())).contains(processDefinitionKey);
+    }
+
+    @Test
+    public void shouldNotFindProcessDocumentDefinitionByProdDefKeyAndVersion() throws IOException {
+        //Given
+        String processDefinitionKey = "myProcessKey";
+        String formLinkId = "myFormLinkId";
+        String documentId = UUID.randomUUID().toString();
+        String taskInstanceId = "123";
+        ObjectNode formData = formData();
+
+        formAssociation = processFormAssociation(UUID.randomUUID(), UUID.randomUUID()).getFormAssociations().iterator().next();
+        when(formAssociationService.getFormAssociationByFormLinkId(any(), any())).thenReturn(Optional.of(formAssociation));
+
+        when(processDocumentAssociationService.findProcessDocumentDefinition(any(), anyLong()))
+            .thenReturn(Optional.empty());
+
+        formDefinition = formDefinitionOf("user-task");
+        when(formDefinitionService.getFormDefinitionById(any())).thenReturn(Optional.of(formDefinition));
+
+        final var jsonDocumentContent = JsonDocumentContent.build(formData);
+        final Optional<JsonSchemaDocument> document = Optional.of(createDocument(jsonDocumentContent));
+        when(documentService.findBy(any())).thenReturn(document);
+
+        //When
+        final var documentNotFoundException = formAssociationSubmissionService
+            .handleSubmission(processDefinitionKey, formLinkId, documentId, taskInstanceId, formData);
+
+        //Then
+        assertThat(documentNotFoundException).isNotNull();
+        assertThat(documentNotFoundException.errors()).isNotEmpty();
+        assertThat(documentNotFoundException.errors().stream().map(OperationError::asString).collect(Collectors.joining()))
+            .contains(processDefinitionKey, Long.toString(document.orElseThrow().definitionId().version()));
     }
 
     private ObjectNode formData() {

@@ -32,6 +32,7 @@ import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentVariableService;
+import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionSequenceGeneratorService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
@@ -123,9 +124,16 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentSearchService.class)
     public JsonSchemaDocumentSearchService documentSearchService(
         final EntityManager entityManager,
-        final QueryDialectHelper queryDialectHelper
+        final QueryDialectHelper queryDialectHelper,
+        final SearchFieldService searchFieldService,
+        final UserManagementService userManagementService
     ) {
-        return new JsonSchemaDocumentSearchService(entityManager, queryDialectHelper);
+        return new JsonSchemaDocumentSearchService(
+            entityManager,
+            queryDialectHelper,
+            searchFieldService,
+            userManagementService
+        );
     }
 
     @Bean
