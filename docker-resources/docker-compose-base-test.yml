@@ -52,4 +52,4 @@ services:
 #   url: jdbc:mysql://localhost:3329/objecttypen-api-test
 #   url: jdbc:mysql://localhost:3330/objecten-api-test
 #   url: jdbc:mysql://localhost:3331/flowmailer-test
-
+#   url: jdbc:mysql://localhost:3332/flowmailer-test
