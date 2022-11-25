@@ -24,15 +24,19 @@ class AesEncryption(secret: String) {
     private val key = SecretKeySpec(secret.toByteArray(), AES)
 
     fun encrypt(attribute: String): String {
-        val cipher = Cipher.getInstance(AES)
-        cipher.init(Cipher.ENCRYPT_MODE, key)
+        val cipher = createCipher(Cipher.ENCRYPT_MODE)
         return Base64.getEncoder().encodeToString(cipher.doFinal(attribute.toByteArray()))
     }
 
     fun decrypt(value: String): String {
-        val cipher = Cipher.getInstance(AES)
-        cipher.init(Cipher.DECRYPT_MODE, key)
+        val cipher = createCipher(Cipher.DECRYPT_MODE)
         return String(cipher.doFinal(Base64.getDecoder().decode(value)))
+    }
+
+    private fun createCipher(operationMode:Int): Cipher? {
+        val cipher = Cipher.getInstance(AES)
+        cipher.init(operationMode, key)
+        return cipher
     }
 
     companion object {
