@@ -33,7 +33,7 @@ class AesEncryption(secret: String) {
         return String(cipher.doFinal(Base64.getDecoder().decode(value)))
     }
 
-    private fun createCipher(operationMode:Int): Cipher? {
+    private fun createCipher(operationMode:Int): Cipher {
         val cipher = Cipher.getInstance(AES)
         cipher.init(operationMode, key)
         return cipher
