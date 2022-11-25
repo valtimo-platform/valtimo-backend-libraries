@@ -21,15 +21,16 @@ import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
 class AesEncryption(secret: String) {
-    private var key = SecretKeySpec(secret.toByteArray(), AES)
-    private var cipher = Cipher.getInstance(AES)
+    private val key = SecretKeySpec(secret.toByteArray(), AES)
 
     fun encrypt(attribute: String): String {
+        val cipher = Cipher.getInstance(AES)
         cipher.init(Cipher.ENCRYPT_MODE, key)
         return Base64.getEncoder().encodeToString(cipher.doFinal(attribute.toByteArray()))
     }
 
     fun decrypt(value: String): String {
+        val cipher = Cipher.getInstance(AES)
         cipher.init(Cipher.DECRYPT_MODE, key)
         return String(cipher.doFinal(Base64.getDecoder().decode(value)))
     }
