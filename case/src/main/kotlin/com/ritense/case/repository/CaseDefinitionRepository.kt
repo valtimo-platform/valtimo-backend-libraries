@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.case.domain
+package com.ritense.case.repository
 
-import org.hibernate.annotations.DynamicUpdate
-import javax.persistence.Access
-import javax.persistence.AccessType
-import javax.persistence.Column
-import javax.persistence.Embeddable
+import com.ritense.case.domain.CaseDefinition
+import org.springframework.data.jpa.repository.JpaRepository
 
-@Embeddable
-@Access(AccessType.FIELD)
-class CaseDefinitionSettings(
-    @Column(name = "can_have_assignee")
-    val canHaveAssignee: Boolean = false
-)
+interface CaseDefinitionRepository: JpaRepository<CaseDefinition, String>

@@ -16,8 +16,23 @@
 
 package com.ritense.case.web.rest.dto
 
+import com.ritense.case.domain.CaseDefinitionSettings
 import java.util.Optional
 
-class CaseDefinition(
+class CaseSettingsDto(
     val canHaveAssignee: Optional<Boolean>?
-)
+) {
+    fun update(newSettings: CaseDefinitionSettings): CaseDefinitionSettings{
+        return CaseDefinitionSettings(
+            getSettingForUpdate(newSettings.canHaveAssignee, this.canHaveAssignee)?: false
+        )
+    }
+
+    private fun <T> getSettingForUpdate(currentValue: T?, newValue: Optional<T>?): T? {
+        return if (newValue != null) {
+            newValue.orElse(null)
+        } else {
+            currentValue
+        }
+    }
+}

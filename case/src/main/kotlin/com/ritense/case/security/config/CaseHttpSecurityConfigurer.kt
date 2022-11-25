@@ -32,7 +32,7 @@ class CaseHttpSecurityConfigurer: HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/case/{caseDefinitionName}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(USER)
                 .antMatchers(PATCH, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(ADMIN)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
