@@ -26,9 +26,9 @@ public class DocumentWebSocketMessageBrokerConfigurer implements WebSocketMessag
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-         registry.addEndpoint("/document/stomp")
-             .setAllowedOrigins("*")
-             .withSockJS();
+         registry.addEndpoint("/socket/document/stomp")
+             .setAllowedOrigins("*");
+             //.withSockJS();
     }
 
     @Override
