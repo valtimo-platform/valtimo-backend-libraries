@@ -18,6 +18,6 @@ package com.ritense.mail.flowmailer.connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 
-class FlowmailerConnectorProperties(
+data class FlowmailerConnectorProperties(
     val flowmailerProperties: FlowmailerProperties
 ) : ConnectorProperties
