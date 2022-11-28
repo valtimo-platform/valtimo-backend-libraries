@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.case.domain
+package com.ritense.case.repository
 
-import javax.persistence.Column
-import javax.persistence.Embedded
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import com.ritense.case.domain.CaseDefinitionSettings
+import org.springframework.data.jpa.repository.JpaRepository
 
-@Entity
-@Table(name = "case_definition")
-data class CaseDefinition(
-    @Id
-    @Column(name = "case_definition_name")
-    val name: String,
-    @Embedded
-    val settings: CaseDefinitionSettings
-)
+interface CaseDefinitionSettingsRepository: JpaRepository<CaseDefinitionSettings, String>

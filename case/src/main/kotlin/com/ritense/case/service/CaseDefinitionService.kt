@@ -16,21 +16,20 @@
 
 package com.ritense.case.service
 
-import com.ritense.case.domain.CaseDefinition
 import com.ritense.case.domain.CaseDefinitionSettings
-import com.ritense.case.repository.CaseDefinitionRepository
+import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 
 class CaseDefinitionService(
-    private val repository: CaseDefinitionRepository
+    private val repository: CaseDefinitionSettingsRepository
 ) {
     fun getCaseSettings(caseDefinitionName: String): CaseDefinitionSettings {
-        return repository.getById(caseDefinitionName).settings
+        return repository.getById(caseDefinitionName)
     }
 
     fun updateCaseSettings(caseDefinitionName: String, newSettings: CaseSettingsDto): CaseDefinitionSettings {
-        val caseDefinition = repository.getById(caseDefinitionName)
-        val updatedCaseDefinition = caseDefinition.copy( settings = newSettings.update(caseDefinition.settings))
-        return repository.save(updatedCaseDefinition).settings
+        val caseDefinitionSettings = repository.getById(caseDefinitionName)
+        val updatedCaseDefinition = newSettings.update(caseDefinitionSettings)
+        return repository.save(updatedCaseDefinition)
     }
 }

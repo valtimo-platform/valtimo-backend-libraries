@@ -22,9 +22,10 @@ import java.util.Optional
 class CaseSettingsDto(
     val canHaveAssignee: Optional<Boolean>?
 ) {
-    fun update(newSettings: CaseDefinitionSettings): CaseDefinitionSettings{
+    fun update(currentSettings: CaseDefinitionSettings): CaseDefinitionSettings{
         return CaseDefinitionSettings(
-            getSettingForUpdate(newSettings.canHaveAssignee, this.canHaveAssignee)?: false
+            currentSettings.name,
+            getSettingForUpdate(currentSettings.canHaveAssignee, this.canHaveAssignee)?: false
         )
     }
 

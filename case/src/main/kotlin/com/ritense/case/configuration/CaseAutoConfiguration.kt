@@ -16,7 +16,7 @@
 
 package com.ritense.case.configuration
 
-import com.ritense.case.repository.CaseDefinitionRepository
+import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.CaseDefinitionResource
@@ -32,7 +32,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @Configuration
 @EnableJpaRepositories(
     basePackageClasses = [
-        CaseDefinitionRepository::class
+        CaseDefinitionSettingsRepository::class
     ]
 )
 @EntityScan(basePackages = ["com.ritense.case.domain"])
@@ -46,8 +46,8 @@ class CaseAutoConfiguration {
     }
 
     @Bean
-    fun caseService(
-        repository: CaseDefinitionRepository
+    fun caseDefinitionService(
+        repository: CaseDefinitionSettingsRepository
     ): CaseDefinitionService {
         return CaseDefinitionService(repository)
     }

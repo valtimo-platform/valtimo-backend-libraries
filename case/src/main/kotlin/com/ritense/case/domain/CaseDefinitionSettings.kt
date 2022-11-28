@@ -16,15 +16,17 @@
 
 package com.ritense.case.domain
 
-import org.hibernate.annotations.DynamicUpdate
-import javax.persistence.Access
-import javax.persistence.AccessType
 import javax.persistence.Column
-import javax.persistence.Embeddable
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.Table
 
-@Embeddable
-@Access(AccessType.FIELD)
+@Entity
+@Table(name = "case_definition")
 class CaseDefinitionSettings(
+    @Id
+    @Column(name = "case_definition_name")
+    val name: String,
     @Column(name = "can_have_assignee")
     val canHaveAssignee: Boolean = false
 )
