@@ -16,7 +16,8 @@
 
 package com.ritense.case.service
 
-import com.ritense.case.domain.CaseDefinition
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationStartedEvent
@@ -24,6 +25,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
 import java.io.InputStream
@@ -31,21 +33,18 @@ import java.nio.charset.StandardCharsets
 
 open class CaseDefinitionDeploymentService(
     private val resourceLoader: ResourceLoader,
+    private val objectMapper: ObjectMapper,
     private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
 ) {
 
     @Transactional
     @EventListener(ApplicationStartedEvent::class)
     open fun deployCaseDefinitions() {
-        logger.info { "Deploying plugin categories" }
-        try {
-            loadCaseDefinitionResources().forEach { resource ->
-                if (resource.filename != null) {
-                    deploy(resource)
-                }
+        logger.info { "Deploying case definitions" }
+        loadCaseDefinitionResources().forEach { resource ->
+            if (resource.filename != null) {
+                deploy(resource)
             }
-        } catch (e: Exception) {
-            throw RuntimeException("TODO", e)
         }
     }
 
@@ -57,29 +56,17 @@ open class CaseDefinitionDeploymentService(
         deploy(caseDefinitionName, StreamUtils.copyToString(content, StandardCharsets.UTF_8))
     }
 
-    fun deploy(caseDefinitionName: String, caseDefinitionSettings: String) {
-        val optionalCaseDefinition = caseDefinitionSettingsRepository.findById(caseDefinitionName)
-        val caseDefinition = optionalCaseDefinition.orElse(
-            CaseDefinition(caseDefinitionName)
-        )
-        try {
-            val existingDefinition = formFlowService.findLatestDefinitionByKey(formFlowKey)
-            var definitionId = FormFlowDefinitionId.newId(formFlowKey)
+    fun deploy(caseDefinitionName: String, configToLoad: String) {
+        logger.debug("Deploying case definition {}", caseDefinitionName)
+        val caseDefinitionSettings = caseDefinitionSettingsRepository.findByIdOrNull(caseDefinitionName)
 
-            if (existingDefinition != null) {
-                if (formFlowDefinitionConfig.contentEquals(existingDefinition)) {
-                    logger.info("Form Flow already deployed - {}", definitionId.toString())
-                    return
-                } else {
-                    definitionId = FormFlowDefinitionId.nextVersion(existingDefinition.id)
-                    logger.info("Form Flow changed. Deploying next version - {}", definitionId.toString())
-                }
-            }
-
-            formFlowService.save(formFlowDefinitionConfig.toDefinition(definitionId))
-            logger.info("Deployed Form Flow - {}", definitionId.toString())
-        } catch (e: Exception) {
-            throw RuntimeException("Failed to deploy Form Flow $formFlowKey", e)
+        if (caseDefinitionSettings != null) {
+            val updater = objectMapper.readerForUpdating(caseDefinitionSettings)
+            val updatedCaseDefinitionSettings = updater.readValue<CaseDefinitionSettings>(configToLoad)
+            caseDefinitionSettingsRepository.save(updatedCaseDefinitionSettings)
+            logger.debug {"Case definition $caseDefinitionName was updated"}
+        } else {
+            throw RuntimeException("Attempted to update settings for case that does not exist $caseDefinitionName")
         }
     }
 
