@@ -18,7 +18,7 @@ package com.ritense.objectsapi.taak
 
 import com.ritense.connector.domain.ConnectorProperties
 
-class TaakProperties(
+data class TaakProperties(
     var openNotificatieConnectionName: String = "",
     var objectsApiConnectionName: String = "",
 ) : ConnectorProperties

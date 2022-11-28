@@ -17,6 +17,6 @@ package com.ritense.mail.wordpressmail.connector
 
 import com.ritense.connector.domain.ConnectorProperties
 
-class WordpressMailConnectorProperties(
+data class WordpressMailConnectorProperties(
     val url: String? = ""
 ) : ConnectorProperties
