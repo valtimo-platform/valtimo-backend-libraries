@@ -16,14 +16,22 @@
 
 package com.ritense.case
 
+import com.ritense.resource.service.ResourceService
+import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
-@ExtendWith(value = [SpringExtension::class])
+@ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
 @Tag("integration")
 class BaseIntegrationTest {
+    @MockBean
+    lateinit var resourceService: ResourceService
+    @MockBean
+    lateinit var userManagementService: UserManagementService
 }
 
