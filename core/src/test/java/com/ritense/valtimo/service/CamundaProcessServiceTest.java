@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RepositoryService;
@@ -68,13 +69,19 @@ class CamundaProcessServiceTest {
     private RepositoryService repositoryService;
 
     @Mock
+    private ProcessPropertyService processPropertyService;
+
+    @Mock
+    private ValtimoProperties valtimoProperties;
+
+    @Mock
     private FormService formService;
 
     private HistoryService historyService = Mockito.mock(HistoryService.class, RETURNS_DEEP_STUBS);
 
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectAll() {
-        camundaProcessService = new CamundaProcessService(runtimeService, repositoryService, formService, historyService);
+        camundaProcessService = new CamundaProcessService(runtimeService, repositoryService, formService, historyService,processPropertyService, valtimoProperties);
 
         //when
         when(historyService.createHistoricProcessInstanceQuery()
@@ -106,7 +113,7 @@ class CamundaProcessServiceTest {
 
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectTwo() {
-        camundaProcessService = new CamundaProcessService(runtimeService, repositoryService, formService, historyService);
+        camundaProcessService = new CamundaProcessService(runtimeService, repositoryService, formService, historyService, processPropertyService, valtimoProperties);
 
         //when
         when(historyService.createHistoricProcessInstanceQuery()
