@@ -33,6 +33,7 @@ import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
+import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.camunda.bpm.engine.task.Task
@@ -40,6 +41,7 @@ import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.springframework.context.event.EventListener
 import java.net.MalformedURLException
 import java.net.URI
+import javax.persistence.EntityNotFoundException
 
 class TaakObjectListener(
     private val openNotificatieService: OpenNotificatieService,
@@ -58,20 +60,29 @@ class TaakObjectListener(
         if (event.notification.kanaal == OpenNotificatieConnector.OBJECTEN_KANAAL_NAME
             && event.notification.isUpdateNotification()
         ) {
-            val connector = openNotificatieService.findConnector(event.connectorId, event.authorizationKey)
-
-            if (connector is TaakObjectConnector && connector.getObjectsApiConnector().getProperties()
-                    .objectType.url == event.notification.getObjectTypeUrl()
-            ) {
-                val taakObjectId = event.notification.getObjectId()
-                val taakObjectRecord = connector.getTaakObjectRecord(taakObjectId)
-                val taakObject = taakObjectRecord.record.data
-                if (taakObject.status != TaakObjectStatus.ingediend) {
+            try {
+                val connector = try {
+                    openNotificatieService.findConnector(event.connectorId, event.authorizationKey)
+                } catch (e: EntityNotFoundException) {
+                    logger.error { "Failed to find connector with id '${event.connectorId}'" }
                     return
                 }
-                saveDataAndCompleteTask(taakObject)
 
-                connector.modifyTaakObjectStatusVerwerkt(taakObjectRecord)
+                if (connector is TaakObjectConnector && connector.getObjectsApiConnector().getProperties()
+                        .objectType.url == event.notification.getObjectTypeUrl()
+                ) {
+                    val taakObjectId = event.notification.getObjectId()
+                    val taakObjectRecord = connector.getTaakObjectRecord(taakObjectId)
+                    val taakObject = taakObjectRecord.record.data
+                    if (taakObject.status != TaakObjectStatus.ingediend) {
+                        return
+                    }
+                    saveDataAndCompleteTask(taakObject)
+
+                    connector.modifyTaakObjectStatusVerwerkt(taakObjectRecord)
+                }
+            } catch (e: Exception) {
+                logger.error { "Failed handle Taak notification. Connector id:  '${event.connectorId}'. Error: ${e.message}" }
             }
         }
     }
@@ -173,5 +184,9 @@ class TaakObjectListener(
         return runtimeService.createProcessInstanceQuery()
             .processInstanceId(task.processInstanceId)
             .singleResult() as VariableScope
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }

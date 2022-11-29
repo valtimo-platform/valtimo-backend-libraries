@@ -36,12 +36,11 @@ import com.ritense.valtimo.contract.result.OperationError
 import org.springframework.context.ApplicationContext
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.interceptor.TransactionAspectSupport
 import java.util.UUID
 import javax.validation.ConstraintViolationException
-import org.springframework.transaction.annotation.Transactional
 
-@Transactional
 open class ConnectorService(
     private val context: ApplicationContext,
     private val connectorTypeInstanceRepository: ConnectorTypeInstanceRepository,
@@ -73,6 +72,7 @@ open class ConnectorService(
         return connectorTypeInstanceRepository.getById(ConnectorInstanceId.existingId(id))
     }
 
+    @Transactional
     open fun createConnectorInstance(
         typeId: UUID,
         name: String,
@@ -83,6 +83,7 @@ open class ConnectorService(
         )
     }
 
+    @Transactional
     open fun createConnectorInstance(
         createConnectorInstanceRequest: CreateConnectorInstanceRequest
     ): CreateConnectorInstanceResult {
@@ -118,6 +119,7 @@ open class ConnectorService(
         }
     }
 
+    @Transactional
     open fun modifyConnectorTypeInstance(
         modifyConnectorInstanceRequest: ModifyConnectorInstanceRequest
     ): ModifyConnectorInstanceResult {
@@ -143,6 +145,7 @@ open class ConnectorService(
         }
     }
 
+    @Transactional
     open fun removeConnectorTypeInstance(id: UUID) {
         val connectorInstance = getConnectorInstanceById(id)
         val connector = load(connectorInstance)
@@ -158,6 +161,7 @@ open class ConnectorService(
      *
      * @param name the name of the connector instance
      */
+    @Transactional(readOnly = true)
     open fun loadByName(name: String): Connector {
         val connectorTypeInstance = connectorTypeInstanceRepository.findByName(name)
         requireNotNull(connectorTypeInstance) { "ConnectorTypeInstance was not found with name: $name" }
@@ -172,6 +176,7 @@ open class ConnectorService(
      * @param name the name of the connector instance
      * @deprecated Changed method name to be able to load connectors from a BPMN model. Replaced by {@link #loadByName(String)}
      */
+    @Transactional(readOnly = true)
     @Deprecated("Changed method name to be able to load connectors from a BPMN model. Replaced by loadByName(String)")
     open fun load(name: String): Connector {
         return loadByName(name)
@@ -184,6 +189,7 @@ open class ConnectorService(
      *
      * @param connectorInstance the connector instance entity representing the connector
      */
+    @Transactional(readOnly = true)
     open fun load(connectorInstance: ConnectorInstance): Connector {
         val connector = context.getBean(connectorInstance.type.className) as Connector
         requireNotNull(connector) { "Connector bean was not found with name: ${connectorInstance.type.className}" }
@@ -193,6 +199,7 @@ open class ConnectorService(
         return connector
     }
 
+    @Transactional(readOnly = true)
     open fun <T : Connector> loadByClassName(clazz: Class<T>): T {
         val className = ConnectorType.getNameFromClass(clazz)
         val connectorTypes = connectorTypeRepository.findByClassName(className)
