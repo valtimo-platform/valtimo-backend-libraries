@@ -35,10 +35,9 @@ dependencies {
 
     implementation 'io.github.microutils:kotlin-logging:2.1.23'
 
-    testImplementation project(':test-utils-common')
     testImplementation project(':resource')
+    testImplementation project(':test-utils-common')
 
-    testImplementation "mysql:mysql-connector-java"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"

@@ -21,7 +21,6 @@ import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionService
-import com.ritense.case.web.rest.CaseDefinitionResource
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
