@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.case.web.rest.dto
+package com.ritense.case
 
-import com.ritense.case.domain.CaseDefinitionSettings
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
-data class CaseSettingsDto(
-    val canHaveAssignee: Boolean? = null
-) {
-    fun update(currentSettings: CaseDefinitionSettings): CaseDefinitionSettings{
-        return CaseDefinitionSettings(
-            currentSettings.name,
-            getSettingForUpdate(currentSettings.canHaveAssignee, this.canHaveAssignee)?: false
-        )
-    }
+@SpringBootApplication
+class TestApplication {
 
-    private fun <T> getSettingForUpdate(currentValue: T?, newValue: T?): T? {
-        return newValue ?: currentValue
+    fun main(args: Array<String>) {
+        runApplication<TestApplication>(*args)
     }
 }

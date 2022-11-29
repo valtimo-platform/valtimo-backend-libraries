@@ -34,6 +34,11 @@ dependencies {
 
     implementation 'io.github.microutils:kotlin-logging:2.1.23'
 
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+
     jar {
         enabled = true
         manifest {

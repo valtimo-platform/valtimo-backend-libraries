@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.case.web.rest.dto
+package com.ritense.case
 
-import com.ritense.case.domain.CaseDefinitionSettings
+import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.mail.MailSender
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
-data class CaseSettingsDto(
-    val canHaveAssignee: Boolean? = null
-) {
-    fun update(currentSettings: CaseDefinitionSettings): CaseDefinitionSettings{
-        return CaseDefinitionSettings(
-            currentSettings.name,
-            getSettingForUpdate(currentSettings.canHaveAssignee, this.canHaveAssignee)?: false
-        )
-    }
-
-    private fun <T> getSettingForUpdate(currentValue: T?, newValue: T?): T? {
-        return newValue ?: currentValue
-    }
+@SpringBootTest
+@ExtendWith(value = [SpringExtension::class])
+@Tag("integration")
+class BaseIntegrationTest {
+    @MockBean
+    lateinit var userManagementService: UserManagementService
 }
+
