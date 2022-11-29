@@ -2,14 +2,14 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3320/case-valtimo-test
+    url: jdbc:mysql://localhost:3332/case-test
     username: valtimo
     password: password
     hikari:
       auto-commit: false
   liquibase:
     enabled: true
-    change-log: classpath:/config/liquibase/form-flow-master.xml
+    change-log: classpath:/config/liquibase/case-master.xml
     contexts: unit-test
   jpa:
     database-platform: org.hibernate.dialect.MySQL57Dialect
