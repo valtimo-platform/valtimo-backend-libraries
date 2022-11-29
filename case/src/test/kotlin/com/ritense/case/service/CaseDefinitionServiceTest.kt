@@ -1,13 +1,17 @@
 package com.ritense.case.service
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.web.rest.dto.CaseSettingsDto
+import com.ritense.document.exception.UnknownDocumentDefinitionException
+import com.ritense.document.service.DocumentDefinitionService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -17,10 +21,13 @@ class CaseDefinitionServiceTest {
 
     lateinit var service: CaseDefinitionService
 
+    lateinit var documentDefinitionService: DocumentDefinitionService
+
     @BeforeEach
     fun setUp() {
         repository = mock()
-        service = CaseDefinitionService(repository)
+        documentDefinitionService = mock()
+        service = CaseDefinitionService(repository, documentDefinitionService)
     }
 
     @Test
@@ -35,6 +42,17 @@ class CaseDefinitionServiceTest {
         verify(repository).getById(caseDefinitionName)
         assertEquals(caseDefinitionName, foundCaseDefinitionSettings.name)
         assertTrue(foundCaseDefinitionSettings.canHaveAssignee)
+    }
+
+    @Test
+    fun `should throw exception when getting case settings by id and document definition does not exist `() {
+        val caseDefinitionName = "name"
+
+        whenever(documentDefinitionService.findIdByName(any())).thenThrow(UnknownDocumentDefinitionException(caseDefinitionName))
+
+        assertThrows<UnknownDocumentDefinitionException> {
+            val foundCaseDefinitionSettings = service.getCaseSettings(caseDefinitionName)
+        }
     }
 
     @Test
@@ -54,5 +72,17 @@ class CaseDefinitionServiceTest {
         verify(repository).getById(caseDefinitionName)
         assertEquals(caseDefinitionName, returnedCaseDefinitionSettings.name)
         assertFalse(returnedCaseDefinitionSettings.canHaveAssignee)
+    }
+
+    @Test
+    fun `should throw exception when updating case settings and document definition does not exist `() {
+        val caseDefinitionName = "name"
+        val caseSettingsDto: CaseSettingsDto = mock()
+
+        whenever(documentDefinitionService.findIdByName(any())).thenThrow(UnknownDocumentDefinitionException(caseDefinitionName))
+
+        assertThrows<UnknownDocumentDefinitionException> {
+            val foundCaseDefinitionSettings = service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
+        }
     }
 }

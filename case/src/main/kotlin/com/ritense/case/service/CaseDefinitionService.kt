@@ -19,17 +19,29 @@ package com.ritense.case.service
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.web.rest.dto.CaseSettingsDto
+import com.ritense.document.exception.UnknownDocumentDefinitionException
+import com.ritense.document.service.DocumentDefinitionService
 
 class CaseDefinitionService(
-    private val repository: CaseDefinitionSettingsRepository
+    private val repository: CaseDefinitionSettingsRepository,
+    private val documentDefinitionService: DocumentDefinitionService
 ) {
+    @Throws(UnknownDocumentDefinitionException::class)
     fun getCaseSettings(caseDefinitionName: String): CaseDefinitionSettings {
+        checkIfDocumentDefinitionExists(caseDefinitionName)
         return repository.getById(caseDefinitionName)
     }
 
+    @Throws(UnknownDocumentDefinitionException::class)
     fun updateCaseSettings(caseDefinitionName: String, newSettings: CaseSettingsDto): CaseDefinitionSettings {
+        checkIfDocumentDefinitionExists(caseDefinitionName)
         val caseDefinitionSettings = repository.getById(caseDefinitionName)
         val updatedCaseDefinition = newSettings.update(caseDefinitionSettings)
         return repository.save(updatedCaseDefinition)
+    }
+
+    @Throws(UnknownDocumentDefinitionException::class)
+    private fun checkIfDocumentDefinitionExists(caseDefinitionName: String) {
+        documentDefinitionService.findIdByName(caseDefinitionName)
     }
 }

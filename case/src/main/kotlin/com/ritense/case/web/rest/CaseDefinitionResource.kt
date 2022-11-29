@@ -19,6 +19,7 @@ package com.ritense.case.web.rest
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseSettingsDto
+import com.ritense.document.exception.UnknownDocumentDefinitionException
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -37,9 +38,13 @@ class CaseDefinitionResource(
     fun getCaseSettings(
         @PathVariable caseDefinitionName: String
     ): ResponseEntity<CaseDefinitionSettings> {
-        return ResponseEntity.ok(
-            service.getCaseSettings(caseDefinitionName)
-        )
+        return try {
+            ResponseEntity.ok(
+                service.getCaseSettings(caseDefinitionName)
+            )
+        } catch (exception: UnknownDocumentDefinitionException) {
+            ResponseEntity.notFound().build()
+        }
     }
 
     @PatchMapping(value = ["/v1/case/{caseDefinitionName}/settings"])
@@ -47,8 +52,12 @@ class CaseDefinitionResource(
         @RequestBody caseSettingsDto: CaseSettingsDto,
         @PathVariable caseDefinitionName: String
     ): ResponseEntity<CaseDefinitionSettings> {
-        return ResponseEntity.ok(
-            service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
-        )
+        return try {
+            ResponseEntity.ok(
+                service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
+            )
+        } catch (exception: UnknownDocumentDefinitionException) {
+            ResponseEntity.notFound().build()
+        }
     }
 }
