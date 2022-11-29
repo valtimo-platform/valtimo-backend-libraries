@@ -13,10 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.mail.wordpressmail.connector
 
-import com.ritense.connector.domain.ConnectorProperties
+package com.ritense.document.domain.impl.assignee;
 
-data class WordpressMailConnectorProperties(
-    val url: String? = ""
-) : ConnectorProperties
+public class UnassignedDocumentCountDto {
+
+    private final String documentDefinitionName;
+    private final Long openDocumentCount;
+
+    public UnassignedDocumentCountDto(String documentDefinitionName, Long openDocumentCount) {
+        this.documentDefinitionName = documentDefinitionName;
+        this.openDocumentCount = openDocumentCount;
+    }
+
+    public String getDocumentDefinitionName() {
+        return documentDefinitionName;
+    }
+
+    public Long getOpenDocumentCount() {
+        return openDocumentCount;
+    }
+}

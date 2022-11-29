@@ -37,4 +37,6 @@ public interface DocumentRepository<T extends Document> extends JpaRepository<T,
         String createdBy,
         Pageable pageable
     );
+
+    Long countByDocumentDefinitionIdNameAndAssigneeId(String definitionName, String assigneeId);
 }

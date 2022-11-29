@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.ritense.connector.config.Decryptor
 import com.ritense.connector.config.Encryptor
 
-class ServerAuthSpecification(
+data class ServerAuthSpecification(
     var url: String = "",
     @set:JsonSerialize(using = Encryptor::class)
     @get:JsonDeserialize(using = Decryptor::class)

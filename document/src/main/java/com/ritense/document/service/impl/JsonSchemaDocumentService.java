@@ -155,7 +155,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    @Transactional
+    @Transactional(timeout = 30, rollbackFor = { Exception.class })
     public synchronized JsonSchemaDocument.ModifyDocumentResultImpl modifyDocument(
         ModifyDocumentRequest request
     ) {
