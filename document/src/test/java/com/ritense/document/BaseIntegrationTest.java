@@ -16,6 +16,10 @@
 
 package com.ritense.document;
 
+import com.ritense.document.domain.Document;
+import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.document.domain.impl.JsonDocumentContent;
+import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.repository.SearchFieldRepository;
@@ -98,5 +102,14 @@ public abstract class BaseIntegrationTest extends BaseTest {
             .firstName(firstName)
             .lastName(lastName)
             .build();
+    }
+
+    protected Document createDocument(DocumentDefinition documentDefinition, String content) {
+        return documentService.createDocument(
+            new NewDocumentRequest(
+                documentDefinition.id().name(),
+                new JsonDocumentContent(content).asJson()
+            )
+        ).resultingDocument().orElseThrow();
     }
 }
