@@ -55,7 +55,7 @@ class CaseDefinitionDeploymentServiceIntTest: BaseIntegrationTest() {
 
         val settings = caseDefinitionSettingsRepository.getById("no-settings-present")
 
-        assertEquals("all-properties-present", settings.name)
+        assertEquals("no-settings-present", settings.name)
         assertFalse(settings.canHaveAssignee)
 
     }
