@@ -16,10 +16,13 @@
 
 package com.ritense.case
 
+import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication
+@SpringBootApplication(
+    scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class],
+)
 class TestApplication {
 
     fun main(args: Array<String>) {

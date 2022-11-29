@@ -6,6 +6,7 @@ import com.ritense.document.service.DocumentDefinitionService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CaseDefinitionDeploymentServiceIntTest: BaseIntegrationTest() {
@@ -41,6 +42,21 @@ class CaseDefinitionDeploymentServiceIntTest: BaseIntegrationTest() {
         val settings = caseDefinitionSettingsRepository.getById("empty-properties")
 
         assertEquals("empty-properties", settings.name)
-        assertTrue(settings.canHaveAssignee)
+        assertFalse(settings.canHaveAssignee)
+    }
+
+    @Test
+    fun `should create settings with default values when settings file is not present`() {
+        documentDefinitionService.deploy("" +
+            "{\n" +
+            "    \"\$id\": \"no-settings-present.schema\",\n" +
+            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+            "}\n")
+
+        val settings = caseDefinitionSettingsRepository.getById("no-settings-present")
+
+        assertEquals("all-properties-present", settings.name)
+        assertFalse(settings.canHaveAssignee)
+
     }
 }

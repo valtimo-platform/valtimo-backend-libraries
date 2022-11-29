@@ -8,9 +8,8 @@ spring:
     hikari:
       auto-commit: false
   liquibase:
-    enabled: true
+    enabled: false
     change-log: classpath:/config/liquibase/case-master.xml
-    contexts: unit-test
   jpa:
     database-platform: org.hibernate.dialect.MySQL57Dialect
     database: mysql
