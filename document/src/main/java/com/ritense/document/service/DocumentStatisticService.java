@@ -17,52 +17,33 @@
 package com.ritense.document.service;
 
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
-import com.ritense.document.event.DocumentAssigneeChangedEvent;
 import com.ritense.document.repository.DocumentRepository;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
-public class DocumentAssigneeWebSocketService {
+import java.util.List;
 
-    private final SimpMessagingTemplate simpMessagingTemplate;
+public class DocumentStatisticService {
+
     private final DocumentDefinitionService documentDefinitionService;
     private final DocumentRepository documentRepository;
 
-    public DocumentAssigneeWebSocketService(
-        SimpMessagingTemplate simpMessagingTemplate,
+    public DocumentStatisticService(
         DocumentDefinitionService documentDefinitionService,
         DocumentRepository documentRepository
     ) {
-        this.simpMessagingTemplate = simpMessagingTemplate;
         this.documentDefinitionService = documentDefinitionService;
         this.documentRepository = documentRepository;
     }
 
-    @EventListener(DocumentAssigneeChangedEvent.class)
-    public void handleDocumentAssigneeChangedEvent() {
-        sendUnassignedDocumentCountList();
-    }
-
-    @EventListener(SessionSubscribeEvent.class)
-    public void handleSessionSubscribeEvent(SessionSubscribeEvent sessionSubscribeEvent) {
-        sendUnassignedDocumentCountList();
-    }
-
-    private void sendUnassignedDocumentCountList() {
-        var unassignedDocumentCountList = documentDefinitionService.findForUser(true, Pageable.unpaged())
+    public List<UnassignedDocumentCountDto> getUnassignedDocumentCountDtos() {
+        return documentDefinitionService.findForUser(true, Pageable.unpaged())
             .map(documentDefinition -> getUnassignedDocumentCountDto(documentDefinition.id().name()))
             .toList();
-
-        simpMessagingTemplate.convertAndSend(unassignedDocumentCountList);
     }
 
     private UnassignedDocumentCountDto getUnassignedDocumentCountDto(String documentDefinitionName) {
-        return new UnassignedDocumentCountDto(
-            documentDefinitionName,
-            documentRepository.countByDocumentDefinitionIdNameAndAssigneeId(documentDefinitionName, null)
-        );
+        long count = documentRepository.countByDocumentDefinitionIdNameAndAssigneeId(documentDefinitionName, null);
+        return new UnassignedDocumentCountDto(documentDefinitionName, count);
     }
 
 }

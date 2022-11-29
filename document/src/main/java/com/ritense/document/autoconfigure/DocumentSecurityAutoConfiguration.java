@@ -20,8 +20,6 @@ import com.ritense.document.security.config.DocumentDefinitionHttpSecurityConfig
 import com.ritense.document.security.config.DocumentHttpSecurityConfigurer;
 import com.ritense.document.security.config.DocumentSearchHttpSecurityConfigurer;
 import com.ritense.document.security.config.DocumentSnapshotHttpSecurityConfigurer;
-import com.ritense.document.security.config.DocumentWebSocketHttpSecurityConfigurer;
-import com.ritense.document.security.config.WebSocketSecurityConfigurer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,19 +54,6 @@ public class DocumentSecurityAutoConfiguration {
     @ConditionalOnMissingBean(DocumentSnapshotHttpSecurityConfigurer.class)
     public DocumentSnapshotHttpSecurityConfigurer documentSnapshotHttpSecurityConfigurer() {
         return new DocumentSnapshotHttpSecurityConfigurer();
-    }
-
-    @Order(294)
-    @Bean
-    @ConditionalOnMissingBean(DocumentWebSocketHttpSecurityConfigurer.class)
-    public DocumentWebSocketHttpSecurityConfigurer documentWebSocketHttpSecurityConfigurer() {
-        return new DocumentWebSocketHttpSecurityConfigurer();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(WebSocketSecurityConfigurer.class)
-    public WebSocketSecurityConfigurer webSocketSecurityConfigurer() {
-        return new WebSocketSecurityConfigurer();
     }
 
 }
