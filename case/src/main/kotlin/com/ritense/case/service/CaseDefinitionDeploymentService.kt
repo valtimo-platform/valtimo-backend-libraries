@@ -55,7 +55,7 @@ open class CaseDefinitionDeploymentService(
         }
     }
 
-    fun deploy(caseDefinitionName: String, configToLoad: String) {
+    private fun deploy(caseDefinitionName: String, configToLoad: String) {
         logger.debug("Deploying case definition {}", caseDefinitionName)
         val caseDefinitionSettings = caseDefinitionSettingsRepository.findByIdOrNull(caseDefinitionName)
 

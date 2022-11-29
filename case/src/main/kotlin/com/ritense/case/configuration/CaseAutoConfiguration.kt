@@ -21,7 +21,6 @@ import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionService
-import com.ritense.case.service.DocumentDefinitionCreatedListener
 import com.ritense.case.web.rest.CaseDefinitionResource
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -41,14 +40,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 )
 @EntityScan(basePackages = ["com.ritense.case.domain"])
 class CaseAutoConfiguration {
-
-    @Bean
-    fun caseDefinitionResource(
-        service: CaseDefinitionService
-    ): CaseDefinitionResource {
-        return CaseDefinitionResource(service)
-    }
-
     @Bean
     fun caseDefinitionService(
         repository: CaseDefinitionSettingsRepository
@@ -67,13 +58,6 @@ class CaseAutoConfiguration {
             objectMapper,
             caseDefinitionSettingsRepository
         )
-    }
-
-    @Bean
-    fun documentDefinitionCreatedListener(
-        caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
-    ): DocumentDefinitionCreatedListener {
-        return DocumentDefinitionCreatedListener(caseDefinitionSettingsRepository)
     }
 
     @Order(300)
