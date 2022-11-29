@@ -25,6 +25,7 @@ dockerCompose {
 
 dependencies {
     implementation project(':contract')
+    implementation project(':document')
     implementation project(':web')
 
     implementation "org.springframework.boot:spring-boot-starter"

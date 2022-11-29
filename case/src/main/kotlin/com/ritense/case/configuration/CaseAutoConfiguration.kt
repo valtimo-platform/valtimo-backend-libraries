@@ -16,9 +16,12 @@
 
 package com.ritense.case.configuration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
+import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case.service.DocumentDefinitionCreatedListener
 import com.ritense.case.web.rest.CaseDefinitionResource
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -27,6 +30,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
+import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
@@ -50,6 +54,26 @@ class CaseAutoConfiguration {
         repository: CaseDefinitionSettingsRepository
     ): CaseDefinitionService {
         return CaseDefinitionService(repository)
+    }
+
+    @Bean
+    fun caseDefinitionDeploymentService(
+        resourceLoader: ResourceLoader,
+        objectMapper: ObjectMapper,
+        caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
+    ): CaseDefinitionDeploymentService {
+        return CaseDefinitionDeploymentService(
+            resourceLoader,
+            objectMapper,
+            caseDefinitionSettingsRepository
+        )
+    }
+
+    @Bean
+    fun documentDefinitionCreatedListener(
+        caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
+    ): DocumentDefinitionCreatedListener {
+        return DocumentDefinitionCreatedListener(caseDefinitionSettingsRepository)
     }
 
     @Order(300)
