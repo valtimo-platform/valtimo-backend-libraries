@@ -45,7 +45,7 @@ spring:
         enabled: false
     jpa:
         database-platform: org.hibernate.dialect.MySQL57Dialect
-        show_sql: true
+        show_sql: false
         open-in-view: false
         properties:
             hibernate:
