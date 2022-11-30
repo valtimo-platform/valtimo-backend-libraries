@@ -112,6 +112,12 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
     fun `should not update case settings property when it has not been submitted`() {
         val caseDefinitionName = "resource-test-empty"
 
+        documentDefinitionService.deploy("" +
+            "{\n" +
+            "    \"\$id\": \"$caseDefinitionName.schema\",\n" +
+            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+            "}\n")
+
         val settings = CaseDefinitionSettings(caseDefinitionName, true)
         repository.save(settings)
 
