@@ -20,12 +20,14 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
+import com.ritense.document.domain.search.AssigneeFilter;
 import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.domain.search.SearchRequestMapper;
 import com.ritense.document.domain.search.SearchRequestValidator;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.SearchFieldService;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.apache.commons.lang3.NotImplementedException;
@@ -52,6 +54,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
@@ -76,19 +79,25 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private static final String CREATED_BY = "createdBy";
     private static final String SEQUENCE = "sequence";
     private static final String CONTENT = "content";
+    private static final String ASSIGNEE_ID = "assigneeId";
     private static final String DOC_PREFIX = "doc:";
     private static final String CASE_PREFIX = "case:";
 
     private final EntityManager entityManager;
-
     private final QueryDialectHelper queryDialectHelper;
-
     private final SearchFieldService searchFieldService;
+    private final UserManagementService userManagementService;
 
-    public JsonSchemaDocumentSearchService(EntityManager entityManager, QueryDialectHelper queryDialectHelper, SearchFieldService searchFieldService) {
+    public JsonSchemaDocumentSearchService(
+        EntityManager entityManager,
+        QueryDialectHelper queryDialectHelper,
+        SearchFieldService searchFieldService,
+        UserManagementService userManagementService
+    ) {
         this.entityManager = entityManager;
         this.queryDialectHelper = queryDialectHelper;
         this.searchFieldService = searchFieldService;
+        this.userManagementService = userManagementService;
     }
 
     @Override
@@ -187,6 +196,10 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             addUserRolePredicate(query, documentRoot, predicates);
         }
 
+        if (searchRequest.getAssigneeFilter() != null && searchRequest.getAssigneeFilter() != AssigneeFilter.ALL) {
+            predicates.add(getAssigneeFilterPredicate(cb, documentRoot, searchRequest.getAssigneeFilter()));
+        }
+
         if (searchRequest.getOtherFilters() != null && !searchRequest.getOtherFilters().isEmpty()) {
             predicates.add(getOtherFilersPredicate(cb, documentRoot, searchRequest));
         }
@@ -241,6 +254,22 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .collect(toList());
 
             predicates.add(cb.and(criteriaPredicates.toArray(Predicate[]::new)));
+        }
+    }
+
+    private Predicate getAssigneeFilterPredicate(CriteriaBuilder cb, Root<JsonSchemaDocument> documentRoot, AssigneeFilter assigneeFilter) {
+        var caseAssigneeIdColumn = documentRoot.get(ASSIGNEE_ID);
+        var userId = userManagementService.getCurrentUser().getId();
+
+        switch (assigneeFilter) {
+            case MINE:
+                return cb.equal(caseAssigneeIdColumn, userId);
+
+            case OPEN:
+                return cb.isNull(caseAssigneeIdColumn);
+
+            default:
+                return null;
         }
     }
 
@@ -338,25 +367,22 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         AdvancedSearchRequest.OtherFilter searchCriteria
     ) {
         var documentColumnName = searchCriteria.getPath().substring(CASE_PREFIX.length());
-        return documentRoot.get(documentColumnName);
+        return documentRoot.get(documentColumnName).as(searchCriteria.getDataType());
     }
 
     @SuppressWarnings("unchecked")
     private <T> Predicate[] searchEqual(CriteriaBuilder cb, Expression<T> jsonValue, List<T> values) {
-        if (!values.isEmpty() && values.stream().allMatch(String.class::isInstance)) {
+        if (values.isEmpty()) {
+            return new Predicate[0];
+        } else if (values.stream().anyMatch(value -> !(value instanceof String))) {
+            return values.stream()
+                .map(value -> cb.equal(jsonValue, value))
+                .toArray(Predicate[]::new);
+        } else {
             var jsonValueLower = cb.lower((Expression<String>) jsonValue);
             return values.stream()
                 .map(value -> value.toString().trim().toLowerCase())
                 .map(stringValue -> cb.equal(jsonValueLower, stringValue))
-                .toArray(Predicate[]::new);
-        } else if (!values.isEmpty() && values.stream().allMatch(TemporalAccessor.class::isInstance)) {
-            var jsonValueTemporal = toJavaUtilDateExpression(cb, jsonValue, (TemporalAccessor) values.get(0));
-            return values.stream()
-                .map(value -> cb.equal(jsonValueTemporal, toJavaUtilDate(value)))
-                .toArray(Predicate[]::new);
-        } else {
-            return values.stream()
-                .map(value -> cb.equal(jsonValue, value))
                 .toArray(Predicate[]::new);
         }
     }
@@ -364,8 +390,8 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     @SuppressWarnings("unchecked")
     private <T> Predicate[] searchLike(CriteriaBuilder cb, Expression<T> jsonValue, List<T> values) {
         if (values.isEmpty()) {
-            throw new IllegalArgumentException("Failed to do LIKE search. Reason: no values found");
-        } else if (values.stream().noneMatch(String.class::isInstance)) {
+            return new Predicate[0];
+        } else if (values.stream().anyMatch(value -> !(value instanceof String))) {
             throw new IllegalArgumentException("Failed to do LIKE search. Reason: values '" + Arrays.toString(values.toArray()) + "' aren't of type 'String'");
         } else {
             var jsonValueLower = cb.lower((Expression<String>) jsonValue);
@@ -382,7 +408,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private <T extends Comparable<? super T>> Predicate searchGreaterThanOrEqualTo(CriteriaBuilder cb, Expression<T> documentValue, T rangeFrom) {
         if (rangeFrom instanceof TemporalAccessor) {
-            var documentValueTimestamp = toJavaUtilDateExpression(cb, documentValue, (TemporalAccessor) rangeFrom);
+            var documentValueTimestamp = documentValue.as(java.util.Date.class);
             return cb.greaterThanOrEqualTo(documentValueTimestamp, toJavaUtilDate(rangeFrom));
         } else {
             return cb.greaterThanOrEqualTo(documentValue, cb.literal(rangeFrom));
@@ -391,7 +417,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private <T extends Comparable<? super T>> Predicate searchLessThanOrEqualTo(CriteriaBuilder cb, Expression<T> documentValue, T rangeTo) {
         if (rangeTo instanceof TemporalAccessor) {
-            var documentValueTimestamp = toJavaUtilDateExpression(cb, documentValue, (TemporalAccessor) rangeTo);
+            var documentValueTimestamp = documentValue.as(java.util.Date.class);
             return cb.lessThanOrEqualTo(documentValueTimestamp, toJavaUtilDate(rangeTo));
         } else {
             return cb.lessThanOrEqualTo(documentValue, cb.literal(rangeTo));
@@ -400,7 +426,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private <T extends Comparable<? super T>> Predicate searchBetween(CriteriaBuilder cb, Expression<T> documentValue, T rangeFrom, T rangeTo) {
         if (rangeFrom instanceof TemporalAccessor) {
-            var documentValueTimestamp = toJavaUtilDateExpression(cb, documentValue, (TemporalAccessor) rangeFrom);
+            var documentValueTimestamp = documentValue.as(java.util.Date.class);
             return cb.between(documentValueTimestamp, toJavaUtilDate(rangeFrom), toJavaUtilDate(rangeTo));
         } else {
             return cb.between(documentValue, cb.literal(rangeFrom), cb.literal(rangeTo));
@@ -410,31 +436,13 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     /**
      * Note: The CriteriaBuilder only supports with java.sql.Timestamp/Date/Time. These types extend java.util.Date
      */
-    private static Expression<java.util.Date> toJavaUtilDateExpression(CriteriaBuilder cb, Expression<?> expression, TemporalAccessor temporal) {
-        if (temporal instanceof LocalDate) {
-            return cb.function("DATE", java.util.Date.class, expression);
-        } else if (temporal instanceof Instant
-            || temporal instanceof LocalDateTime
-            || temporal instanceof OffsetDateTime
-            || temporal instanceof ZonedDateTime) {
-            return cb.function("TIMESTAMP", java.util.Date.class, expression);
-        } else if (temporal instanceof LocalTime) {
-            return cb.function("TIME", java.util.Date.class, expression);
-        } else {
-            throw new NotImplementedException("Unsupported temporal type: '" + temporal.getClass() + "' of value '" + temporal + "'");
-        }
-    }
-
-    /**
-     * Note: The CriteriaBuilder only supports with java.sql.Timestamp/Date/Time. These types extend java.util.Date
-     */
     private static java.util.Date toJavaUtilDate(Object value) {
         if (value instanceof LocalDate) {
-            return java.sql.Date.valueOf((LocalDate) value);
+            return java.util.Date.from(((LocalDate) value).atStartOfDay().toInstant(ZoneOffset.UTC));
         } else if (value instanceof Instant) {
             return java.sql.Timestamp.from((Instant) value);
         } else if (value instanceof LocalDateTime) {
-            return java.sql.Timestamp.valueOf((LocalDateTime) value);
+            return java.sql.Timestamp.from(((LocalDateTime) value).toInstant(ZoneOffset.UTC));
         } else if (value instanceof OffsetDateTime) {
             return java.sql.Timestamp.from(((OffsetDateTime) value).toInstant());
         } else if (value instanceof ZonedDateTime) {
@@ -466,7 +474,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                     );
                 } else if (order.getProperty().startsWith("$.")) {
                     return new OrderImpl(
-                        cb.lower(queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), order.getProperty(), String.class)),                        order.getDirection().isAscending()
+                        cb.lower(queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), order.getProperty(), String.class)), order.getDirection().isAscending()
                     );
                 } else {
                     return new OrderImpl(

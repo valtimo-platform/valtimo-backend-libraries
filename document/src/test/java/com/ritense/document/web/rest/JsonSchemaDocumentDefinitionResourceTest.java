@@ -19,6 +19,8 @@ package com.ritense.document.web.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
+import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import com.ritense.document.service.impl.UndeployJsonSchemaDocumentDefinitionService;
@@ -62,12 +64,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
+class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
     public static final String SOME_ROLE = "SOME_ROLE";
     private JsonSchemaDocumentDefinitionService documentDefinitionService;
     private DocumentDefinitionResource documentDefinitionResource;
     private UndeployDocumentDefinitionService undeployDocumentDefinitionService;
+    private DocumentStatisticService documentStatisticService;
     private MockMvc mockMvc;
     private Page<JsonSchemaDocumentDefinition> definitionPage;
     private JsonSchemaDocumentDefinition definition;
@@ -76,10 +79,12 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     public void setUp() {
         documentDefinitionService = mock(JsonSchemaDocumentDefinitionService.class);
         undeployDocumentDefinitionService = mock(UndeployJsonSchemaDocumentDefinitionService.class);
+        documentStatisticService = mock(DocumentStatisticService.class);
 
         documentDefinitionResource = new JsonSchemaDocumentDefinitionResource(
             documentDefinitionService,
-            undeployDocumentDefinitionService
+            undeployDocumentDefinitionService,
+            documentStatisticService
         );
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentDefinitionResource)
@@ -94,7 +99,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnPagedRecordPage() throws Exception {
+    void shouldReturnPagedRecordPage() throws Exception {
         when(documentDefinitionService.findForUser(anyBoolean(), any())).thenReturn(definitionPage);
 
         mockMvc.perform(get("/api/v1/document-definition"))
@@ -105,7 +110,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnPagedRecordPageWithOldSortByNameProperty() throws Exception {
+    void shouldReturnPagedRecordPageWithOldSortByNameProperty() throws Exception {
         ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
         when(documentDefinitionService.findForUser(anyBoolean(), pageCaptor.capture())).thenReturn(definitionPage);
 
@@ -121,7 +126,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnPagedRecordPageWithOldSortByVersionProperty() throws Exception {
+    void shouldReturnPagedRecordPageWithOldSortByVersionProperty() throws Exception {
         ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
         when(documentDefinitionService.findForUser(anyBoolean(), pageCaptor.capture())).thenReturn(definitionPage);
 
@@ -137,7 +142,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnPagedRecordPageWithMultipleOrderProperties() throws Exception {
+    void shouldReturnPagedRecordPageWithMultipleOrderProperties() throws Exception {
         ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
         when(documentDefinitionService.findForUser(anyBoolean(), pageCaptor.capture())).thenReturn(definitionPage);
 
@@ -158,7 +163,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnSingleDefinitionRecordByName() throws Exception {
+    void shouldReturnSingleDefinitionRecordByName() throws Exception {
         String definitionName = definition.getId().name();
         when(documentDefinitionService.findLatestByName(anyString())).thenReturn(Optional.of(definition));
         when(documentDefinitionService.getDocumentDefinitionRoles(eq(definitionName))).thenReturn(Set.of(SOME_ROLE));
@@ -170,7 +175,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnCreateSuccessResult() throws Exception {
+    void shouldReturnCreateSuccessResult() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest("{\n" +
             "  \"$id\": \"person.schema\",\n" +
@@ -210,7 +215,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnCreateFailedResult() throws Exception {
+    void shouldReturnCreateFailedResult() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest("{\n" +
             "  \"$id\": \"person.schema\",\n" +
@@ -250,7 +255,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnUndeployDocumentDefinitionSucceeded() throws Exception {
+    void shouldReturnUndeployDocumentDefinitionSucceeded() throws Exception {
         String definitionName = "documentDefinitionName";
 
         when(undeployDocumentDefinitionService.undeploy(eq(definitionName))).thenReturn(
@@ -267,7 +272,7 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnUndeployDocumentDefinitionFailed() throws Exception {
+    void shouldReturnUndeployDocumentDefinitionFailed() throws Exception {
         String definitionName = "documentDefinitionName";
 
         when(undeployDocumentDefinitionService.undeploy(eq(definitionName))).thenReturn(
@@ -281,6 +286,22 @@ public class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
             .andExpect(status().isBadRequest());
 
         verify(undeployDocumentDefinitionService, times(1)).undeploy(eq(definitionName));
+    }
+
+    @Test
+    void shouldReturnUnassignedDocumentCount() throws Exception {
+        when(documentStatisticService.getUnassignedDocumentCountDtos()).thenReturn(
+            List.of(new UnassignedDocumentCountDto("my-document-definition-name", 23L))
+        );
+
+        mockMvc.perform(
+                get("/api/document-definition/open/count").accept(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$.[0].documentDefinitionName").value("my-document-definition-name"))
+            .andExpect(jsonPath("$.[0].openDocumentCount").value(23L));
     }
 
 }

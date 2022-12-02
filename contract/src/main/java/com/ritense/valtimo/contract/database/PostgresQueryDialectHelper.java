@@ -20,6 +20,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,8 +30,20 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
     private static final String LOWER_CASE_FUNCTION = "lower";
 
     @Override
-    public <T> Expression<T> getJsonValueExpression(CriteriaBuilder cb, Path column, String path, Class<T> type) {
-        return getValueForPath(cb, column, path, type);
+    public <T> Expression<T> getJsonValueExpression(CriteriaBuilder cb, Path column, String jsonPath, Class<T> type) {
+        var jsonValue = cb.function(
+            "jsonb_path_query_first",
+            Object.class,
+            column,
+            cb.function("jsonpath", String.class, cb.literal(jsonPath))
+        );
+        if (String.class.isAssignableFrom(type)) {
+            return cb.trim('"', jsonValue.as(String.class)).as(type);
+        } else if (TemporalAccessor.class.isAssignableFrom(type)) {
+            return jsonValue.as(String.class).as(type);
+        } else {
+            return jsonValue.as(type);
+        }
     }
 
     @Override

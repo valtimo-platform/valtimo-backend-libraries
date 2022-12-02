@@ -17,33 +17,41 @@
 package com.ritense.document.web.rest.impl;
 
 import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
 import com.ritense.document.web.rest.DocumentDefinitionResource;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static org.springframework.http.ResponseEntity.ok;
 
 public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionResource {
 
     private final DocumentDefinitionService documentDefinitionService;
     private final UndeployDocumentDefinitionService undeployDocumentDefinitionService;
+    private final DocumentStatisticService documentStatisticService;
 
     public JsonSchemaDocumentDefinitionResource(
         DocumentDefinitionService documentDefinitionService,
-        UndeployDocumentDefinitionService undeployDocumentDefinitionService
+        UndeployDocumentDefinitionService undeployDocumentDefinitionService,
+        DocumentStatisticService documentStatisticService
     ) {
         this.documentDefinitionService = documentDefinitionService;
         this.undeployDocumentDefinitionService = undeployDocumentDefinitionService;
+        this.documentStatisticService = documentStatisticService;
     }
 
     @Override
@@ -87,6 +95,11 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
         }
 
         return ResponseEntity.of(documentDefinitionService.findLatestByName(name));
+    }
+
+    @Override
+    public ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount() {
+        return ResponseEntity.ok(documentStatisticService.getUnassignedDocumentCountDtos());
     }
 
     @Override

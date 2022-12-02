@@ -99,18 +99,21 @@ subprojects { subproject ->
     apply from: "$rootProject.projectDir/gradle/test.gradle"
     apply plugin: "com.avast.gradle.docker-compose"
     apply plugin: "maven-publish"
+    apply plugin: "org.jetbrains.dokka"
 
     task allDeps(type: DependencyReportTask) {}
 
-    task sourceJar(type: Jar) {
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        from sourceSets.main.allSource
-        classifier "sources"
+    java {
+        withSourcesJar()
+        withJavadocJar()
     }
 
-    task javadocJar(type: Jar) {
-        from dokkaJavadoc
-        classifier "javadoc"
+    ext.javaSubProjectPath = subproject.projectDir.getAbsolutePath() + "/src/main/java"
+    ext.kotlinSubProjectPath = subproject.projectDir.getAbsolutePath() + "/src/main/kotlin"
+    if (new File(ext.kotlinSubProjectPath).exists() && !new File(ext.javaSubProjectPath).exists()) {
+        tasks.getByName('javadocJar') {
+            from dokkaJavadoc
+        }
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {

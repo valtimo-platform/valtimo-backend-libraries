@@ -10,3 +10,18 @@ repositories {
     mavenCentral()
     mavenLocal()
 }
+
+subprojects { subproject ->
+
+    tasks.register("bootRunPostgres") {
+        group = "application"
+        description = "Runs the Spring Boot application on a postgres database"
+        doFirst {
+            tasks.bootRun.configure {
+                systemProperty("spring.profiles.active", "postgres")
+            }
+        }
+        finalizedBy("bootRun")
+    }
+
+}

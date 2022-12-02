@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 public class AdvancedSearchRequest {
     private SearchOperator searchOperator = SearchOperator.AND;
+    private AssigneeFilter assigneeFilter = AssigneeFilter.ALL;
     private List<OtherFilter> otherFilters = List.of();
 
     public AdvancedSearchRequest() {
@@ -38,6 +39,19 @@ public class AdvancedSearchRequest {
 
     public AdvancedSearchRequest searchOperator(SearchOperator searchOperator) {
         setSearchOperator(searchOperator);
+        return this;
+    }
+
+    public AssigneeFilter getAssigneeFilter() {
+        return assigneeFilter;
+    }
+
+    public void setAssigneeFilter(AssigneeFilter assigneeFilter) {
+        this.assigneeFilter = assigneeFilter;
+    }
+
+    public AdvancedSearchRequest assigneeFilter(AssigneeFilter assigneeFilter) {
+        setAssigneeFilter(assigneeFilter);
         return this;
     }
 

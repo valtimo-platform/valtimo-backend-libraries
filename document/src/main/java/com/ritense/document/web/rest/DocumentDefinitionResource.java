@@ -17,6 +17,7 @@
 package com.ritense.document.web.rest;
 
 import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
@@ -34,8 +35,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.Set;
+
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Set;
+
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -51,6 +55,9 @@ public interface DocumentDefinitionResource {
 
     @GetMapping(value = "/document-definition/{name}")
     ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(@PathVariable String name);
+
+    @GetMapping(value = "/document-definition/open/count")
+    ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount();
 
     @PostMapping(value = "/document-definition", consumes = APPLICATION_JSON_VALUE)
     ResponseEntity<DeployDocumentDefinitionResult> deployDocumentDefinition(

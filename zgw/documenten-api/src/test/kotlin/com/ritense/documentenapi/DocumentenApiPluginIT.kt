@@ -25,6 +25,7 @@ import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.repository.OpenZaakResourceRepository
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.json.Mapper
@@ -77,6 +78,7 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
 
     lateinit var server: MockWebServer
 
+    lateinit var pluginConfiguration: PluginConfiguration
     lateinit var processDefinitionId: String
 
     @BeforeEach
@@ -100,7 +102,7 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
         doReturn(TestAuthentication()).whenever(pluginService).createInstance(mockedId)
         doCallRealMethod().whenever(pluginService).createPluginConfiguration(any(), any(), any())
 
-        val configuration = pluginService.createPluginConfiguration(
+        pluginConfiguration = pluginService.createPluginConfiguration(
             "Documenten API plugin configuration",
             Mapper.INSTANCE.get().readTree(
                 pluginPropertiesJson
@@ -127,16 +129,7 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
             .singleResult()
             .id
 
-        pluginProcessLinkRepository.save(
-            PluginProcessLink(
-                PluginProcessLinkId(UUID.randomUUID()),
-                processDefinitionId,
-                "StoreDocument",
-                Mapper.INSTANCE.get().readTree(actionProperties) as ObjectNode,
-                configuration.id,
-                "store-temp-document"
-            )
-        )
+        saveProcessLink(actionProperties)
     }
 
     @Test
@@ -180,7 +173,50 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
         assertEquals("http://example.com", resourceId)
     }
 
-    fun setupMockDocumentenApiServer() {
+    @Test
+    fun `should store with meta-data-filename when process-link-filename is empty`() {
+        saveProcessLink("""
+            {
+                "fileName": null,
+                "confidentialityLevel": "zaakvertrouwelijk",
+                "title": "title",
+                "description": "description",
+                "localDocumentLocation": "localDocumentVariableName",
+                "storedDocumentUrl": "storedDocumentVariableName",
+                "informatieobjecttype": "testtype",
+                "taal": "nld",
+                "status": "in_bewerking"
+            }
+        """.trimIndent())
+        val documentId = temporaryResourceStorageService.store(
+            "test".byteInputStream(),
+            mapOf(MetadataType.FILE_NAME.key to "my-document.pdf")
+        )
+
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
+            .withProcessVars(mapOf("localDocumentVariableName" to documentId))
+
+        processDocumentService.newDocumentAndStartProcess(request)
+
+        val parsedOutput = Mapper.INSTANCE.get().readValue(server.takeRequest().body.readUtf8(), Map::class.java)
+        assertEquals("my-document.pdf", parsedOutput["bestandsnaam"])
+    }
+
+    private fun saveProcessLink(generateDocumentActionProperties: String) {
+        pluginProcessLinkRepository.save(
+            PluginProcessLink(
+                PluginProcessLinkId(UUID.fromString("71997298-163c-4a67-b52a-1dcc2af72b40")),
+                processDefinitionId,
+                "StoreDocument",
+                Mapper.INSTANCE.get().readTree(generateDocumentActionProperties) as ObjectNode,
+                pluginConfiguration.id,
+                "store-temp-document"
+            )
+        )
+    }
+
+    private fun setupMockDocumentenApiServer() {
         val dispatcher: Dispatcher = object : Dispatcher() {
             @Throws(InterruptedException::class)
             override fun dispatch(request: RecordedRequest): MockResponse {

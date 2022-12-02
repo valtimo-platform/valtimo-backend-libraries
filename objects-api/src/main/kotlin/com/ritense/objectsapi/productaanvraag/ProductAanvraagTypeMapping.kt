@@ -16,7 +16,7 @@
 
 package com.ritense.objectsapi.productaanvraag
 
-class ProductAanvraagTypeMapping(
+data class ProductAanvraagTypeMapping(
     val productAanvraagType: String,
     val caseDefinitionKey: String,
     val processDefinitionKey: String
