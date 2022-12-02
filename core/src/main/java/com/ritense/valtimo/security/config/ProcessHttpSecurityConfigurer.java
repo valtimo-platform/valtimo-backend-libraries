@@ -57,7 +57,7 @@ public class ProcessHttpSecurityConfigurer implements HttpSecurityConfigurer {
                     .antMatchers(GET, "/api/v1/process/{processDefinitionName}/count").hasAuthority(USER)
                     .antMatchers(POST, "/api/v1/process/{processInstanceId}/comment").hasAuthority(USER)
                     .antMatchers(POST, "/api/v1/process/{processInstanceId}/delete").hasAuthority(ADMIN)
-                    .antMatchers(POST,"/api/v1/process/definition/deployment").hasAuthority((ADMIN));
+                    .antMatchers(POST, "/api/v1/process/definition/deployment").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }
