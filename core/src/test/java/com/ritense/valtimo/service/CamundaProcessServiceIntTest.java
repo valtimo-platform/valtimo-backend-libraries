@@ -87,6 +87,5 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         ));
         Assertions.assertFalse(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("firstProcess")));
         Assertions.assertTrue(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("secondProcess")));
-
     }
 }

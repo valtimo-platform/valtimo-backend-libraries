@@ -59,7 +59,11 @@ public class CamundaProcessService {
     private final ProcessPropertyService processPropertyService;
     private final ValtimoProperties valtimoProperties;
 
-    public CamundaProcessService(RuntimeService runtimeService, RepositoryService repositoryService, FormService formService, HistoryService historyService, ProcessPropertyService processPropertyService, ValtimoProperties valtimoProperties) {
+    public CamundaProcessService(
+        RuntimeService runtimeService, RepositoryService repositoryService, FormService formService,
+        HistoryService historyService, ProcessPropertyService processPropertyService,
+        ValtimoProperties valtimoProperties
+    ) {
         this.runtimeService = runtimeService;
         this.repositoryService = repositoryService;
         this.formService = formService;
@@ -70,23 +74,23 @@ public class CamundaProcessService {
 
     public ProcessDefinition findProcessDefinitionById(String processDefinitionId) {
         return repositoryService
-                .createProcessDefinitionQuery()
-                .processDefinitionId(processDefinitionId)
-                .singleResult();
+            .createProcessDefinitionQuery()
+            .processDefinitionId(processDefinitionId)
+            .singleResult();
     }
 
     public boolean processDefinitionExistsByKey(String processDefinitionKey) {
         return repositoryService
-                .createProcessDefinitionQuery()
-                .processDefinitionKey(processDefinitionKey)
-                .count() >= 1;
+            .createProcessDefinitionQuery()
+            .processDefinitionKey(processDefinitionKey)
+            .count() >= 1;
     }
 
     public Optional<ProcessInstance> findProcessInstanceById(String processInstanceId) {
         return Optional.ofNullable(runtimeService
-                .createProcessInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .singleResult());
+            .createProcessInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .singleResult());
     }
 
     public void deleteProcessInstanceById(String processInstanceId, String reason) {
@@ -97,60 +101,65 @@ public class CamundaProcessService {
         runtimeService.removeVariables(processInstanceId, variableNames);
     }
 
-    public ProcessInstanceWithDefinition startProcess(String processDefinitionKey, String businessKey, Map<String, Object> variables) {
+    public ProcessInstanceWithDefinition startProcess(
+        String processDefinitionKey, String businessKey, Map<String, Object> variables
+    ) {
         final ProcessDefinition processDefinition = getProcessDefinition(processDefinitionKey);
         if (processDefinition == null) {
             throw new IllegalStateException("No process definition found with key: '" + processDefinitionKey + "'");
         }
         businessKey = businessKey.equals(UNDEFINED_BUSINESS_KEY) ? null : businessKey;
         ProcessInstance processInstance = formService.submitStartForm(
-                processDefinition.getId(),
-                businessKey,
-                FormUtils.createTypedVariableMap(variables)
+            processDefinition.getId(),
+            businessKey,
+            FormUtils.createTypedVariableMap(variables)
         );
         return new ProcessInstanceWithDefinition(processInstance, processDefinition);
     }
 
     public ProcessDefinition getProcessDefinition(String processDefinitionKey) {
         return repositoryService.createProcessDefinitionQuery()
-                .processDefinitionKey(processDefinitionKey)
-                .latestVersion()
-                .singleResult();
+            .processDefinitionKey(processDefinitionKey)
+            .latestVersion()
+            .singleResult();
     }
 
     public Map<String, Object> getProcessInstanceVariables(String processInstanceId, List<String> variableNames) {
         List<HistoricVariableInstance> historicVariableInstances = historyService
-                .createHistoricVariableInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .orderByVariableName()
-                .desc()
-                .list();
+            .createHistoricVariableInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .orderByVariableName()
+            .desc()
+            .list();
 
         return historicVariableInstances
-                .stream()
-                .filter(historicVariableInstance -> historicVariableInstance.getValue() != null && variableNames.contains(historicVariableInstance.getName()))
-                .collect(Collectors.toMap(HistoricVariableInstance::getName, HistoricVariableInstance::getValue));
+            .stream()
+            .filter(historicVariableInstance -> historicVariableInstance.getValue() != null && variableNames.contains(
+                historicVariableInstance.getName()))
+            .collect(Collectors.toMap(HistoricVariableInstance::getName, HistoricVariableInstance::getValue));
     }
 
-    public List<HistoricProcessInstance> getAllActiveContextProcessesStartedByCurrentUser(Set<String> processes, String userLogin) {
+    public List<HistoricProcessInstance> getAllActiveContextProcessesStartedByCurrentUser(
+        Set<String> processes, String userLogin
+    ) {
         List<HistoricProcessInstance> historicProcessInstances = historyService.createHistoricProcessInstanceQuery()
-                .startedBy(userLogin)
-                .unfinished()
-                .list();
+            .startedBy(userLogin)
+            .unfinished()
+            .list();
 
         return historicProcessInstances
-                .stream()
-                .filter(p -> processes.contains(p.getProcessDefinitionKey()))
-                .sorted(Comparator.comparing(HistoricProcessInstance::getStartTime).reversed())
-                .collect(Collectors.toList());
+            .stream()
+            .filter(p -> processes.contains(p.getProcessDefinitionKey()))
+            .sorted(Comparator.comparing(HistoricProcessInstance::getStartTime).reversed())
+            .collect(Collectors.toList());
     }
 
     public List<ProcessDefinition> getDeployedDefinitions() {
         return repositoryService.createProcessDefinitionQuery()
-                .orderByProcessDefinitionName().asc()
-                .active()
-                .latestVersion()
-                .list();
+            .orderByProcessDefinitionName().asc()
+            .active()
+            .latestVersion()
+            .list();
     }
 
     @Transactional
@@ -158,48 +167,50 @@ public class CamundaProcessService {
         logger.debug("delete all running process instances for processes with key: {}", processDefinitionKey);
 
         List<ProcessInstance> runningInstances = runtimeService.createProcessInstanceQuery()
-                .processDefinitionKey(processDefinitionKey)
-                .list();
+            .processDefinitionKey(processDefinitionKey)
+            .list();
 
         runningInstances.forEach(i -> deleteProcessInstanceById(i.getProcessInstanceId(), reason));
     }
 
-    public ProcessDefinition findLatestByProcessId(String processDefinitionKey) {
-        return repositoryService.createProcessDefinitionQuery()
-                .latestVersion()
-                .processDefinitionKey(processDefinitionKey)
-                .singleResult();
-    }
+    @Transactional
+    public void deploy(String processName, ByteArrayInputStream bpmn) throws ProcessNotUpdatableException {
+        BpmnModelInstance model = Bpmn.readModelFromStream(bpmn);
+        if (!isDeployable(model)) {
+            throw new ProcessNotUpdatableException("Process is not eligible to be deployed.");
+        }
 
-    private void deployProcess(String processName, BpmnModelInstance model) {
         repositoryService.createDeployment().addModelInstance(processName, model).deploy();
     }
 
-    public boolean isDeployable(BpmnModelInstance model) {
+    private boolean isDeployable(BpmnModelInstance model) {
         AtomicBoolean isDeployable = new AtomicBoolean(true);
         if (valtimoProperties.getProcess().isSystemProcessUpdatable()) {
             return isDeployable.get();
         }
         model.getDefinitions().getChildElementsByType(Process.class).forEach(
-                process -> {
-                    String processDefinitionKey = process.getId();
-                    if (processDefinitionKey == null || processDefinitionKey.isEmpty() || isSystemProcess(findLatestByProcessId(processDefinitionKey))) {
-                        isDeployable.set(false);
-                    } else {
-                        Optional.ofNullable(process.getExtensionElements())
-                                .ifPresent(extensionElements -> extensionElements.getChildElementsByType(CamundaProperties.class)
-                                        .forEach(
-                                                camundaProperties -> camundaProperties.getCamundaProperties()
-                                                        .stream()
-                                                        .filter(camundaProperty -> camundaProperty.getCamundaName().equals(SYSTEM_PROCESS_PROPERTY)
-                                                                && camundaProperty.getCamundaValue().equals("true")
-                                                        )
-                                                        .findAny()
-                                                        .ifPresent((property) -> isDeployable.set(false))
+            process -> {
+                String processDefinitionKey = process.getId();
+                if (processDefinitionKey == null || processDefinitionKey.isEmpty() || isSystemProcess(
+                    findLatestByProcessId(processDefinitionKey))) {
+                    isDeployable.set(false);
+                } else {
+                    Optional.ofNullable(process.getExtensionElements())
+                        .ifPresent(
+                            extensionElements -> extensionElements.getChildElementsByType(CamundaProperties.class)
+                                .forEach(
+                                    camundaProperties -> camundaProperties.getCamundaProperties()
+                                        .stream()
+                                        .filter(camundaProperty -> camundaProperty.getCamundaName().equals(
+                                            SYSTEM_PROCESS_PROPERTY)
+                                            && camundaProperty.getCamundaValue().equals("true")
                                         )
-                                );
-                    }
-                });
+                                        .findAny()
+                                        .ifPresent((property) -> isDeployable.set(false))
+                                )
+                        );
+                }
+            });
         return isDeployable.get();
     }
 
@@ -214,11 +225,10 @@ public class CamundaProcessService {
         return false;
     }
 
-    public void deploy(String processName, ByteArrayInputStream bpmn) throws ProcessNotUpdatableException {
-        BpmnModelInstance model = Bpmn.readModelFromStream(bpmn);
-        if (!isDeployable(model)) {
-            throw new ProcessNotUpdatableException("Process is not eligible to be deployed.");
-        }
-        deployProcess(processName, model);
+    private ProcessDefinition findLatestByProcessId(String processDefinitionKey) {
+        return repositoryService.createProcessDefinitionQuery()
+            .latestVersion()
+            .processDefinitionKey(processDefinitionKey)
+            .singleResult();
     }
 }
