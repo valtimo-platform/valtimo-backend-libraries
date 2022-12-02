@@ -77,7 +77,6 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
 
         formFlowStepComplete(formFlowInstance)
 
-        assertEquals(1, formFlowInstanceRepository.findAll().size)
         assertEquals(0, taskService.createTaskQuery().processInstanceId(processInstanceId.toString()).count())
     }
 
@@ -86,11 +85,12 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         deployFormFlow(onComplete = "\${valtimoFormFlow.completeTask(additionalProperties, step.submissionData)}")
         linkFormFlowToUserTask()
         val documentAndProcess = newDocumentAndStartProcess()
-        val formFlowInstance = getFormFlowInstances(documentAndProcess.resultingProcessInstanceId().get()).single()
+        val processInstanceId = documentAndProcess.resultingProcessInstanceId().get()
+        val formFlowInstance = getFormFlowInstances(processInstanceId).single()
 
         formFlowStepComplete(formFlowInstance, submission = """{"firstName":"John"}""")
 
-        assertEquals(1, formFlowInstanceRepository.findAll().size)
+        assertEquals(0, taskService.createTaskQuery().processInstanceId(processInstanceId.toString()).count())
         assertEquals(
             """{"submission":{"firstName":"John"}}""",
             documentAndProcess.resultingDocument().get().content().asJson().toString()
@@ -107,7 +107,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
 
         formFlowStepComplete(formFlowInstance, submission = """{"street":"Funenpark","approval":true}""")
 
-        assertEquals(1, formFlowInstanceRepository.findAll().size)
+        assertEquals(0, taskService.createTaskQuery().processInstanceId(processInstanceId.toString()).count())
         assertEquals(
             """{"address":{"streetName":"Funenpark"}}""",
             documentAndProcess.resultingDocument().get().content().asJson().toString()
