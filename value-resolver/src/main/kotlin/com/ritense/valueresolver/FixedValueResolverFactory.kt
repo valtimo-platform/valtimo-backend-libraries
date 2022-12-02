@@ -16,8 +16,8 @@
 
 package com.ritense.valueresolver
 
-import java.util.function.Function
 import org.camunda.bpm.engine.delegate.VariableScope
+import java.util.function.Function
 
 /**
  * This resolver returns the requestedValue as the value.
@@ -53,7 +53,7 @@ class FixedValueResolverFactory(
 
     override fun handleValues(
         processInstanceId: String,
-        variableScope: VariableScope,
+        variableScope: VariableScope?,
         values: Map<String, Any>
     ) {
         val firstValue = values.iterator().next()

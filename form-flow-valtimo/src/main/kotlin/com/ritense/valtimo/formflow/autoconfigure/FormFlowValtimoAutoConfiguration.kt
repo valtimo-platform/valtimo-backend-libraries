@@ -25,11 +25,14 @@ import com.ritense.formlink.service.FormAssociationService
 import com.ritense.formlink.service.impl.CamundaFormAssociationService
 import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
+import com.ritense.valtimo.formflow.common.ValtimoFormFlow
 import com.ritense.valtimo.formflow.handler.FormFlowCreateTaskEventHandler
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.valtimo.formflow.security.ValtimoFormFlowHttpSecurityConfigurer
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
 import com.ritense.valtimo.formflow.web.rest.ProcessLinkFormFlowDefinitionResource
+import com.ritense.valueresolver.ValueResolverService
+import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -88,6 +91,20 @@ class FormFlowValtimoAutoConfiguration {
             camundaFormAssociationService,
             documentService,
             objectMapper
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ValtimoFormFlow::class)
+    fun valtimoFormFlow(
+        taskService: TaskService,
+        objectMapper: ObjectMapper,
+        valueResolverService: ValueResolverService,
+    ): ValtimoFormFlow {
+        return ValtimoFormFlow(
+            taskService,
+            objectMapper,
+            valueResolverService,
         )
     }
 }

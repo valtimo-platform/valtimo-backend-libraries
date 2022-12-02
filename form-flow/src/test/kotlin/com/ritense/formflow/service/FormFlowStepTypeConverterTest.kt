@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.formflow.domain.definition.configuration
+package com.ritense.formflow.service
 
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.definition.configuration.step.StepTypeProperties
-import com.ritense.formflow.service.ObjectMapperConfigurer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
