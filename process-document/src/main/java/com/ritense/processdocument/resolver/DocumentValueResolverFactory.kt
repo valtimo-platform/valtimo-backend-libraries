@@ -18,8 +18,8 @@ package com.ritense.processdocument.resolver
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
-import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.patch.JsonPatchService
+import com.ritense.document.exception.ModifyDocumentException
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -63,7 +63,7 @@ class DocumentValueResolverFactory(
 
     override fun handleValues(
         processInstanceId: String,
-        variableScope: VariableScope,
+        variableScope: VariableScope?,
         values: Map<String, Any>
     ) {
         val document = processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)
@@ -77,13 +77,15 @@ class DocumentValueResolverFactory(
         }
 
         JsonPatchService.apply(jsonPatchBuilder.build(), documentContent)
-        documentService.modifyDocument(
-            ModifyDocumentRequest(
-                document?.id().toString(),
-                documentContent,
-                document?.version().toString()
+
+        try {
+            documentService.modifyDocument(document, documentContent)
+        } catch (exception: ModifyDocumentException) {
+            throw RuntimeException(
+                "Failed to handle values for processInstance '$processInstanceId'. Values: ${values}.",
+                exception
             )
-        )
+        }
     }
 
     private fun buildJsonPatch(builder: JsonPatchBuilder, content: JsonNode, path: JsonPointer, value: JsonNode) {
