@@ -16,26 +16,27 @@
 
 package com.ritense.processdocument.resolver
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.BooleanNode
 import com.fasterxml.jackson.databind.node.IntNode
 import com.fasterxml.jackson.databind.node.MissingNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
-import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
-import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 internal class DocumentValueResolverTest {
 
@@ -210,9 +211,9 @@ internal class DocumentValueResolverTest {
             mapOf("/firstname" to "John")
         )
 
-        val captor = argumentCaptor<ModifyDocumentRequest>()
-        verify(documentService).modifyDocument(captor.capture())
-        assertThat(captor.firstValue.content()).contains(TextNode.valueOf("John"))
+        val captor = argumentCaptor<JsonNode>()
+        verify(documentService).modifyDocument(eq(document), captor.capture())
+        assertThat(captor.firstValue).contains(TextNode.valueOf("John"))
     }
 
     @Test
@@ -225,9 +226,9 @@ internal class DocumentValueResolverTest {
             mapOf("/firstname" to "John")
         )
 
-        val captor = argumentCaptor<ModifyDocumentRequest>()
-        verify(documentService).modifyDocument(captor.capture())
-        assertThat(captor.firstValue.content()).contains(TextNode.valueOf("John"))
+        val captor = argumentCaptor<JsonNode>()
+        verify(documentService).modifyDocument(eq(document), captor.capture())
+        assertThat(captor.firstValue).contains(TextNode.valueOf("John"))
     }
 
     @Test
@@ -240,9 +241,9 @@ internal class DocumentValueResolverTest {
             mapOf("/approved" to true)
         )
 
-        val captor = argumentCaptor<ModifyDocumentRequest>()
-        verify(documentService).modifyDocument(captor.capture())
-        assertThat(captor.firstValue.content()).contains(BooleanNode.TRUE)
+        val captor = argumentCaptor<JsonNode>()
+        verify(documentService).modifyDocument(eq(document), captor.capture())
+        assertThat(captor.firstValue).contains(BooleanNode.TRUE)
     }
 
     @Test
@@ -255,9 +256,9 @@ internal class DocumentValueResolverTest {
             mapOf("/age" to 18)
         )
 
-        val captor = argumentCaptor<ModifyDocumentRequest>()
-        verify(documentService).modifyDocument(captor.capture())
-        assertThat(captor.firstValue.content()).contains(IntNode.valueOf(18))
+        val captor = argumentCaptor<JsonNode>()
+        verify(documentService).modifyDocument(eq(document), captor.capture())
+        assertThat(captor.firstValue).contains(IntNode.valueOf(18))
     }
 
     @Test
@@ -270,9 +271,9 @@ internal class DocumentValueResolverTest {
             mapOf("/a/-/b/-/c/-/firstname" to "John")
         )
 
-        val captor = argumentCaptor<ModifyDocumentRequest>()
-        verify(documentService).modifyDocument(captor.capture())
-        assertThat(captor.firstValue.content().at("/a/0/b/0/c/0/firstname")).isEqualTo(TextNode.valueOf("John"))
+        val captor = argumentCaptor<JsonNode>()
+        verify(documentService).modifyDocument(eq(document), captor.capture())
+        assertThat(captor.firstValue.at("/a/0/b/0/c/0/firstname")).isEqualTo(TextNode.valueOf("John"))
     }
 
     @Test
@@ -285,10 +286,10 @@ internal class DocumentValueResolverTest {
             mapOf("/myList/0" to "John")
         )
 
-        val captor = argumentCaptor<ModifyDocumentRequest>()
-        verify(documentService).modifyDocument(captor.capture())
-        assertThat(captor.firstValue.content().at("/myList/0")).isEqualTo(TextNode.valueOf("John"))
-        assertThat(captor.firstValue.content().at("/myList/1")).isEqualTo(MissingNode.getInstance())
+        val captor = argumentCaptor<JsonNode>()
+        verify(documentService).modifyDocument(eq(document), captor.capture())
+        assertThat(captor.firstValue.at("/myList/0")).isEqualTo(TextNode.valueOf("John"))
+        assertThat(captor.firstValue.at("/myList/1")).isEqualTo(MissingNode.getInstance())
     }
 
     @Test
@@ -301,10 +302,10 @@ internal class DocumentValueResolverTest {
             mapOf("/myList/-" to "John")
         )
 
-        val captor = argumentCaptor<ModifyDocumentRequest>()
-        verify(documentService).modifyDocument(captor.capture())
-        assertThat(captor.firstValue.content().at("/myList/0")).isEqualTo(TextNode.valueOf("Peter"))
-        assertThat(captor.firstValue.content().at("/myList/1")).isEqualTo(TextNode.valueOf("John"))
+        val captor = argumentCaptor<JsonNode>()
+        verify(documentService).modifyDocument(eq(document), captor.capture())
+        assertThat(captor.firstValue.at("/myList/0")).isEqualTo(TextNode.valueOf("Peter"))
+        assertThat(captor.firstValue.at("/myList/1")).isEqualTo(TextNode.valueOf("John"))
     }
 
     @Test
@@ -317,9 +318,9 @@ internal class DocumentValueResolverTest {
             mapOf("/myList/-" to mapOf("field" to "My field", "list" to listOf("My item 1", "My item 2")))
         )
 
-        val captor = argumentCaptor<ModifyDocumentRequest>()
-        verify(documentService).modifyDocument(captor.capture())
+        val captor = argumentCaptor<JsonNode>()
+        verify(documentService).modifyDocument(eq(document), captor.capture())
         val objectNode = jacksonObjectMapper().readTree("{\"field\":\"My field\",\"list\":[\"My item 1\",\"My item 2\"]}")
-        assertThat(captor.firstValue.content().at("/myList/0")).isEqualTo(objectNode)
+        assertThat(captor.firstValue.at("/myList/0")).isEqualTo(objectNode)
     }
 }

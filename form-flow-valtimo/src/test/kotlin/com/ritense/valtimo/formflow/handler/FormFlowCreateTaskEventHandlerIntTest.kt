@@ -17,7 +17,9 @@ import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 internal class FormFlowCreateTaskEventHandlerIntTest: BaseIntegrationTest() {
     @Autowired
     lateinit var documentDefinitionService: DocumentDefinitionService
