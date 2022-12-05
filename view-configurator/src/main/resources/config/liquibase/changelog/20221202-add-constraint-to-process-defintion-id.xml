@@ -21,6 +21,9 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
     <changeSet id="add_constraint_process_definition_id" author="Dillon Rochford">
+        <preConditions onFail="MARK_RAN">
+            <indexExists tableName="view_config" columnNames="process_definition_id"/>
+        </preConditions>
         <addUniqueConstraint columnNames="process_definition_id"
                              constraintName="unique_process_definition_id"
                              tableName="view_config"/>
