@@ -22,7 +22,9 @@
 
     <changeSet id="add_constraint_process_definition_id" author="Dillon Rochford">
         <preConditions onFail="MARK_RAN">
-            <indexExists tableName="view_config" columnNames="process_definition_id"/>
+            <not>
+                <indexExists tableName="view_config" columnNames="process_definition_id"/>
+            </not>
         </preConditions>
         <addUniqueConstraint columnNames="process_definition_id"
                              constraintName="unique_process_definition_id"
