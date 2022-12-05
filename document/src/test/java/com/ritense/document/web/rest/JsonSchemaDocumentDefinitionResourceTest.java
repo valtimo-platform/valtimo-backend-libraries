@@ -295,7 +295,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         );
 
         mockMvc.perform(
-                get("/api/document-definition/open/count").accept(MediaType.APPLICATION_JSON_VALUE))
+                get("/api/v1/document-definition/open/count").accept(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
