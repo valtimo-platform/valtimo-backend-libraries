@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.ritense.form.autoconfigure.FormAutoConfiguration;
 import com.ritense.form.domain.event.FormRegisteredEvent;
 import com.ritense.form.domain.exception.FormDefinitionParsingException;
 import org.hibernate.annotations.Type;
@@ -47,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
@@ -65,6 +67,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String PROCESS_VAR_PREFIX = "pv";
     public static final String EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ":";
     public static final String LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ".";
+    public static final String DISABLED_KEY = "disabled";
 
     @Id
     @Column(name = "id", updatable = false)
@@ -167,17 +170,26 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     public Map<String, List<ExternalContentItem>> buildExternalFormFieldsMap() {
+        return buildExternalFormFieldsMapFiltered(Optional.empty());
+    }
+
+    public Map<String, List<ExternalContentItem>> buildExternalFormFieldsMapForSubmission() {
+        return buildExternalFormFieldsMapFiltered(Optional.of(field -> !shouldIgnoreField(field)));
+    }
+
+    private Map<String, List<ExternalContentItem>> buildExternalFormFieldsMapFiltered(Optional<Predicate<ObjectNode>> predicate) {
         var map = new HashMap<String, List<ExternalContentItem>>();
         final JsonNode formDefinitionNode = asJson();
-        final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionNode);
-
-        inputFields.forEach(field -> getExternalFormField(field)
-            .ifPresent(externalContentItem ->
-                map.computeIfAbsent(
-                    externalContentItem.externalFormFieldType.toLowerCase(), externalFormFieldType -> new ArrayList<>()
-                ).add(externalContentItem)
-            )
-        );
+        FormIoFormDefinition.getInputFields(formDefinitionNode)
+            .stream()
+            .filter(field -> predicate.isEmpty() || predicate.get().test(field))
+            .forEach(field -> getExternalFormField(field)
+                .ifPresent(externalContentItem ->
+                    map.computeIfAbsent(
+                        externalContentItem.externalFormFieldType.toLowerCase(), externalFormFieldType -> new ArrayList<>()
+                    ).add(externalContentItem)
+                )
+            );
         return map;
     }
 
@@ -185,7 +197,10 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         final Map<String, Object> processVarFormData = new HashMap<>();
         final JsonNode formDefinitionNode = asJson();
         final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionNode);
-        inputFields.forEach(field -> getProcessVar(field)
+        inputFields
+            .stream()
+            .filter(field -> !shouldIgnoreField(field))
+            .forEach(field -> getProcessVar(field)
             .ifPresent(contentItem -> getValueBy(formData, contentItem.getJsonPointer())
                 .ifPresent(valueNode -> processVarFormData.put(contentItem.getName(), extractNodeValue(valueNode)))
             ));
@@ -239,10 +254,18 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     public List<ObjectNode> getDocumentMappedFields() {
+        return getDocumentMappedFieldsFiltered(Optional.empty());
+    }
+
+    public List<ObjectNode> getDocumentMappedFieldsForSubmission() {
+        return getDocumentMappedFieldsFiltered(Optional.of(field -> !shouldIgnoreField(field)));
+    }
+
+    private List<ObjectNode> getDocumentMappedFieldsFiltered(Optional<Predicate<JsonNode>> predicate) {
         final List<ObjectNode> inputFields = new LinkedList<>();
         List<ArrayNode> components = getComponents(this.asJson());
         components.forEach(componentsNode -> componentsNode.forEach(fieldNode -> {
-            if ((isDocumentContentVar(fieldNode))) {
+            if (predicate.isEmpty() || predicate.get().test(fieldNode) && (isDocumentContentVar(fieldNode))) {
                 inputFields.add((ObjectNode) fieldNode);
             }
         }));
@@ -267,6 +290,12 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             throw new IllegalArgumentException("The formDefinition argument could not be parsed as JSON.", e);
         }
         this.formDefinition = formDefinition;
+    }
+
+    private boolean shouldIgnoreField(JsonNode fieldNode) {
+        return FormAutoConfiguration.isIgnoreDisabledFields()
+            && fieldNode.has(DISABLED_KEY)
+            && fieldNode.get(DISABLED_KEY).asBoolean();
     }
 
     private void fill(ObjectNode field, JsonNode content) {

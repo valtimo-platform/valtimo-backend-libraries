@@ -18,32 +18,19 @@ package com.ritense.document.domain.impl.searchfield;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum SearchFieldMatchtype {
+public enum SearchFieldMatchType {
     LIKE("like"),
     EXACT("exact");
 
-    @JsonValue private final String name;
+    @JsonValue
+    private final String name;
 
-    SearchFieldMatchtype(String name) {
+    SearchFieldMatchType(String name) {
         this.name = name;
     }
 
-    public static SearchFieldMatchtype fromString(String text) {
-        for (SearchFieldMatchtype matchtype : SearchFieldMatchtype.values()) {
-            if (matchtype.name.equalsIgnoreCase(text)) {
-                return matchtype;
-            }
-        }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldMatchtype from string %s", text));
-    }
-
-    public static SearchFieldMatchtype fromKey(String key) {
-        for (SearchFieldMatchtype matchtype : SearchFieldMatchtype.values()) {
-            if (matchtype.name().equalsIgnoreCase(key)) {
-                return matchtype;
-            }
-        }
-        throw new IllegalStateException(String.format("Cannot create SearchFieldMatchtype from string %s", key));
+    public static SearchFieldMatchType fromString(String text) {
+        return SearchFieldMatchType.valueOf(text.toUpperCase());
     }
 
     @Override

@@ -21,20 +21,23 @@ public class SearchFieldDto {
 
     private String key;
     private String path;
-    private SearchFieldDatatype datatype;
-    private SearchFieldFieldtype fieldtype;
-    private SearchFieldMatchtype matchtype;
+    private SearchFieldDataType dataType;
+    private SearchFieldFieldType fieldType;
+    private SearchFieldMatchType matchType;
+    private String title;
 
     public SearchFieldDto(String key,
                           String path,
-                          SearchFieldDatatype datatype,
-                          SearchFieldFieldtype fieldtype,
-                          SearchFieldMatchtype matchtype) {
+                          SearchFieldDataType dataType,
+                          SearchFieldFieldType fieldType,
+                          SearchFieldMatchType matchType,
+                          String title) {
         this.key = key;
         this.path = path;
-        this.datatype = datatype;
-        this.fieldtype = fieldtype;
-        this.matchtype = matchtype;
+        this.dataType = dataType;
+        this.fieldType = fieldType;
+        this.matchType = matchType;
+        this.title = title;
     }
 
     public SearchFieldDto() {}
@@ -47,16 +50,16 @@ public class SearchFieldDto {
         return path;
     }
 
-    public SearchFieldDatatype getDatatype() {
-        return datatype;
+    public SearchFieldDataType getDataType() {
+        return dataType;
     }
 
-    public SearchFieldFieldtype getFieldtype() {
-        return fieldtype;
+    public SearchFieldFieldType getFieldType() {
+        return fieldType;
     }
 
-    public SearchFieldMatchtype getMatchtype() {
-        return matchtype;
+    public SearchFieldMatchType getMatchType() {
+        return matchType;
     }
 
     public void setKey(String key) {
@@ -67,16 +70,24 @@ public class SearchFieldDto {
         this.path = path;
     }
 
-    public void setDatatype(SearchFieldDatatype datatype) {
-        this.datatype = datatype;
+    public void setDataType(SearchFieldDataType dataType) {
+        this.dataType = dataType;
     }
 
-    public void setFieldtype(SearchFieldFieldtype fieldtype) {
-        this.fieldtype = fieldtype;
+    public void setFieldType(SearchFieldFieldType fieldType) {
+        this.fieldType = fieldType;
     }
 
-    public void setMatchtype(SearchFieldMatchtype matchtype) {
-        this.matchtype = matchtype;
+    public void setMatchType(SearchFieldMatchType matchType) {
+        this.matchType = matchType;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
 
