@@ -99,8 +99,8 @@ dependencies {
     implementation "org.hibernate:hibernate-envers"
 
     // Shedlock
-    implementation 'net.javacrumbs.shedlock:shedlock-spring:4.42.0'
-    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.42.0'
+    implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}"
+    implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:${shedlockVersion}"
 
     implementation('com.zaxxer:HikariCP') {
         exclude(module: 'tools')

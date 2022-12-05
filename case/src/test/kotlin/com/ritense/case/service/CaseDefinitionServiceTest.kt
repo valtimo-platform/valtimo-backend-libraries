@@ -1,9 +1,5 @@
 package com.ritense.case.service
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.web.rest.dto.CaseSettingsDto
@@ -12,6 +8,10 @@ import com.ritense.document.service.DocumentDefinitionService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
