@@ -16,7 +16,6 @@
 
 package com.valtimo.keycloak.security.jwt.authentication;
 
-import com.ritense.tenancy.TenantResolver;
 import com.ritense.tenancy.web.DelegatingTenantAuthenticationToken;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.contract.security.jwt.TokenAuthenticator;
@@ -28,13 +27,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.*;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.TENANT_KEY;
 import static java.util.Objects.requireNonNull;
 
