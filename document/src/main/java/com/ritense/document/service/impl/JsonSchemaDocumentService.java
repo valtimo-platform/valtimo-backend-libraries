@@ -157,7 +157,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    @Transactional
+    @Transactional(timeout = 30, rollbackFor = { Exception.class })
     public synchronized JsonSchemaDocument.ModifyDocumentResultImpl modifyDocument(
         ModifyDocumentRequest request
     ) {
@@ -262,7 +262,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
         var assignee = userManagementService.findById(assigneeId);
         if (assignee == null) {
-            logger.debug("Cannot set assignee for the invalid user id " + assigneeId);
+            logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
             throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
         }
 
@@ -313,7 +313,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         var searchCriteria = new SearchByUserGroupsCriteria();
         searchCriteria.addToOrUserGroups(getDocumentRoles(documentId));
         return userManagementService.findByRoles(searchCriteria).stream()
-            .map(user -> NamedUser.from(user))
+            .map(NamedUser::from)
             .collect(Collectors.toList());
     }
 }

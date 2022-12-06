@@ -21,6 +21,7 @@ include(
     "app:valtimo-core",
     "audit",
     "besluit",
+    "case",
     "connector",
     "contactmoment",
     "contract",

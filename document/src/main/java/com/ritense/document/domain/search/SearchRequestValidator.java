@@ -19,6 +19,7 @@ package com.ritense.document.domain.search;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.exception.SearchConfigRequestException;
+import com.ritense.valtimo.contract.utils.SecurityUtils;
 
 import javax.validation.ValidationException;
 import java.time.format.DateTimeFormatter;
@@ -34,6 +35,8 @@ import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.T
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTIPLE;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.RANGE;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
+import static com.ritense.document.domain.search.AssigneeFilter.MINE;
+import static com.ritense.document.domain.search.AssigneeFilter.OPEN;
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -64,6 +67,7 @@ public class SearchRequestValidator {
     );
 
     public static void validate(SearchWithConfigRequest searchRequest) {
+        validateAssigneeFilter(searchRequest.getAssigneeFilter());
         if (searchRequest.getOtherFilters() != null) {
             if (searchRequest.getSearchOperator() == null) {
                 throw new ValidationException("SearchOperator not present");
@@ -73,11 +77,21 @@ public class SearchRequestValidator {
     }
 
     public static void validate(AdvancedSearchRequest searchRequest) {
+        validateAssigneeFilter(searchRequest.getAssigneeFilter());
         if (searchRequest.getOtherFilters() != null) {
             if (searchRequest.getSearchOperator() == null) {
                 throw new ValidationException("SearchOperator not present");
             }
             searchRequest.getOtherFilters().forEach(SearchRequestValidator::validate);
+        }
+    }
+
+    private static void validateAssigneeFilter(AssigneeFilter assigneeFilter) {
+        if (assigneeFilter == OPEN || assigneeFilter == MINE) {
+            var userId = SecurityUtils.getCurrentUserLogin();
+            if (userId == null) {
+                throw new ValidationException("Failed to search for " + assigneeFilter + ". Reason: User is not logged in.");
+            }
         }
     }
 

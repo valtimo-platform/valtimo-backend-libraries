@@ -59,6 +59,7 @@ dependencies {
     implementation project(':form')
     implementation project(':form-link')
     implementation project(':document')
+    implementation project(':value-resolver')
 
     testImplementation project(':resource')
     testImplementation project(':process-document')

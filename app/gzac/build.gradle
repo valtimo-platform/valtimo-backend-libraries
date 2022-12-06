@@ -3,6 +3,7 @@ dependencies {
     implementation(project(":app"))
     implementation(project(":audit"))
     implementation(project(":besluit"))
+    implementation(project(":case"))
     implementation(project(":contactmoment"))
     implementation(project(":contract"))
     implementation(project(":connector"))
