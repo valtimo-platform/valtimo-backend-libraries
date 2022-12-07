@@ -18,6 +18,7 @@ package com.ritense.case.web.rest
 
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseDefinitionSettings
+import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
 import org.junit.jupiter.api.BeforeEach
@@ -41,7 +42,10 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
     lateinit var webApplicationContext: WebApplicationContext
 
     @Autowired
-    lateinit var repository: CaseDefinitionSettingsRepository
+    lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
+
+    @Autowired
+    lateinit var caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository
 
     @BeforeEach
     fun setUp() {
@@ -102,7 +106,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
 
-        val settingsInDatabase = repository.getById(caseDefinitionName)
+        val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
 
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
@@ -119,7 +123,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
             "}\n")
 
         val settings = CaseDefinitionSettings(caseDefinitionName, true)
-        repository.save(settings)
+        caseDefinitionSettingsRepository.save(settings)
 
         mockMvc
             .perform(
@@ -136,7 +140,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
 
-        val settingsInDatabase = repository.getById(caseDefinitionName)
+        val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
 
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
@@ -172,5 +176,35 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
                     .content("{\"canHaveAssignee\": true}")
             )
             .andExpect(MockMvcResultMatchers.status().isNotFound)
+    }
+
+    @Test
+    fun `should create list column`() {
+        val caseDefinitionName = "some-case"
+
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post(
+                        "/api/v1/case/{caseDefinitionName}/settings",
+                        caseDefinitionName
+                    )
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content("{\n" +
+                            "  \"title\": \"First name\",\n" +
+                            "  \"key\": \"first-name\",\n" +
+                            "  \"path\": \"doc:customer.firstName\" ,\n" +
+                            "  \"displayType\": {\n" +
+                            "    \"type\": \"enum\",\n" +
+                            "    \"displayTypeParameters\": {\n" +
+                            "        \"enum\": {\"key1\":\"Value 1\"},\n" +
+                            "        \"date-format\": \"\"\n" +
+                            "        }\n" +
+                            "    },\n" +
+                            "    \"sortable\": true ,\n" +
+                            "    \"defaultSort\": \"ASC\"\n" +
+                            "}")
+            )
+            .andExpect(MockMvcResultMatchers.status().isCreated)
     }
 }

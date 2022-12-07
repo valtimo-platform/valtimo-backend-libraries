@@ -28,5 +28,6 @@
     <property name="jsonType" value="JSON" dbms="postgresql"/>
 
     <include file="changelog/20221125-add-case-definition.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20221206-add-case-list-column.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -1,6 +1,7 @@
 package com.ritense.case.service
 
 import com.ritense.case.domain.CaseDefinitionSettings
+import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.document.exception.UnknownDocumentDefinitionException
@@ -17,7 +18,9 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CaseDefinitionServiceTest {
-    lateinit var repository: CaseDefinitionSettingsRepository
+    lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
+
+    lateinit var caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository
 
     lateinit var service: CaseDefinitionService
 
@@ -25,9 +28,12 @@ class CaseDefinitionServiceTest {
 
     @BeforeEach
     fun setUp() {
-        repository = mock()
+        caseDefinitionSettingsRepository = mock()
         documentDefinitionService = mock()
-        service = CaseDefinitionService(repository, documentDefinitionService)
+        service = CaseDefinitionService(
+            caseDefinitionSettingsRepository,
+            caseDefinitionListColumnRepository,
+            documentDefinitionService)
     }
 
     @Test
@@ -35,11 +41,11 @@ class CaseDefinitionServiceTest {
         val caseDefinitionName = "name"
         val caseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, true)
 
-        whenever(repository.getById(caseDefinitionName)).thenReturn(caseDefinitionSettings)
+        whenever(caseDefinitionSettingsRepository.getById(caseDefinitionName)).thenReturn(caseDefinitionSettings)
 
         val foundCaseDefinitionSettings = service.getCaseSettings(caseDefinitionName)
 
-        verify(repository).getById(caseDefinitionName)
+        verify(caseDefinitionSettingsRepository).getById(caseDefinitionName)
         assertEquals(caseDefinitionName, foundCaseDefinitionSettings.name)
         assertTrue(foundCaseDefinitionSettings.canHaveAssignee)
     }
@@ -63,13 +69,13 @@ class CaseDefinitionServiceTest {
 
         val caseSettingsDto: CaseSettingsDto = mock()
 
-        whenever(repository.getById(caseDefinitionName)).thenReturn(currentCaseDefinitionSettings)
-        whenever(repository.save(updatedCaseDefinitionSettings)).thenReturn(updatedCaseDefinitionSettings)
+        whenever(caseDefinitionSettingsRepository.getById(caseDefinitionName)).thenReturn(currentCaseDefinitionSettings)
+        whenever(caseDefinitionSettingsRepository.save(updatedCaseDefinitionSettings)).thenReturn(updatedCaseDefinitionSettings)
         whenever(caseSettingsDto.update(currentCaseDefinitionSettings)).thenReturn(updatedCaseDefinitionSettings)
 
         val returnedCaseDefinitionSettings = service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
 
-        verify(repository).getById(caseDefinitionName)
+        verify(caseDefinitionSettingsRepository).getById(caseDefinitionName)
         assertEquals(caseDefinitionName, returnedCaseDefinitionSettings.name)
         assertFalse(returnedCaseDefinitionSettings.canHaveAssignee)
     }

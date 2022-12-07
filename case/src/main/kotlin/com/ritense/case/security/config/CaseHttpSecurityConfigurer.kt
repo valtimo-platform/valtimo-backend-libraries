@@ -20,11 +20,7 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
-import org.springframework.http.HttpMethod.DELETE
-import org.springframework.http.HttpMethod.GET
-import org.springframework.http.HttpMethod.PATCH
-import org.springframework.http.HttpMethod.POST
-import org.springframework.http.HttpMethod.PUT
+import org.springframework.http.HttpMethod.*
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
 class CaseHttpSecurityConfigurer: HttpSecurityConfigurer {
@@ -34,6 +30,8 @@ class CaseHttpSecurityConfigurer: HttpSecurityConfigurer {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(USER)
                 .antMatchers(PATCH, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(ADMIN)
+                //.antMatchers(POST, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/case/{caseDefinitionName}/list-column").permitAll()
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
