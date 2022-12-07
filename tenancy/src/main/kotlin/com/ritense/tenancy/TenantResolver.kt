@@ -10,7 +10,10 @@ object TenantResolver {
      * @return Tenant id as string or null
      */
     @JvmStatic
-    fun getTenantId(): String =
-        (SecurityContextHolder.getContext().authentication as TenantAuthenticationToken).tenantId
+    fun getTenantId(): String {
+        val tenantId = (SecurityContextHolder.getContext().authentication as TenantAuthenticationToken).tenantId
+        require(tenantId.isNotEmpty()) { "'tenantId' can not be empty" }
+        return tenantId
+    }
 
 }

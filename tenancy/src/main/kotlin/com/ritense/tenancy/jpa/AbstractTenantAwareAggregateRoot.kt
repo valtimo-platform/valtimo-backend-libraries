@@ -1,7 +1,6 @@
 package com.ritense.tenancy.jpa
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.ritense.tenancy.TenantResolver.DEFAULT_TENANT_ID
 import com.ritense.tenancy.jpa.AbstractTenantAwareAggregateRoot.Companion.TENANT_COLUMN
 import com.ritense.tenancy.jpa.AbstractTenantAwareAggregateRoot.Companion.TENANT_FILTER_NAME
 import com.ritense.tenancy.jpa.AbstractTenantAwareAggregateRoot.Companion.TENANT_PARAMETER_NAME
@@ -21,12 +20,13 @@ import javax.persistence.MappedSuperclass
 )
 @Filter(name = TENANT_FILTER_NAME)
 @EntityListeners(TenantAwareListener::class)
-open class AbstractTenantAwareAggregateRoot<T : AbstractTenantAwareAggregateRoot<T>?> :
-    AbstractAggregateRoot<T>(), TenantAware {
+abstract class AbstractTenantAwareAggregateRoot<T : AbstractTenantAwareAggregateRoot<T>?> : AbstractAggregateRoot<T>(),
+    TenantAware
+{
 
     @JsonIgnore
     @Column(name = TENANT_COLUMN, columnDefinition = "VARCHAR(256)", nullable = false)
-    override var tenantId: String = DEFAULT_TENANT_ID
+    override var tenantId: String = "" // TenantAwareListener will populate value
 
     companion object {
         const val TENANT_FILTER_NAME = "tenantFilter"
