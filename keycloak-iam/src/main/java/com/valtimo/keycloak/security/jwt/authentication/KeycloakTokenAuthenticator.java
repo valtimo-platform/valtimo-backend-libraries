@@ -16,7 +16,7 @@
 
 package com.valtimo.keycloak.security.jwt.authentication;
 
-import com.ritense.tenancy.web.DelegatingTenantAuthenticationToken;
+import com.ritense.tenancy.authentication.TenantAuthenticationToken;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.contract.security.jwt.TokenAuthenticator;
 import io.jsonwebtoken.Claims;
@@ -86,18 +86,16 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
         final String email = getEmail(claims);
         final List<String> roles = getRoles(claims);
 
-        if (email != null && roles != null && !roles.isEmpty()) {
+        if (email != null && !roles.isEmpty()) {
             final Set<? extends GrantedAuthority> authorities = roles.stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.toUpperCase()))
                 .collect(Collectors.toSet());
 
             final User principal = new User(email, "", authorities);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
+            final Authentication authentication = new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
             if (valtimoProperties.getApp().getEnableTenancy()) {
-                authentication = new DelegatingTenantAuthenticationToken(
-                    authentication,
-                    getTenantId(claims)
-                );
+                logger.info("Creating tenant authentication token");
+                return new TenantAuthenticationToken(authentication, getTenantId(claims));
             }
             return authentication;
         }
@@ -108,7 +106,7 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
         if (claims.containsKey(TENANT_KEY)) {
             return claims.get(TENANT_KEY, String.class);
         }
-        throw new IllegalStateException("Unknown tenant");
+        throw new IllegalStateException("Missing tenant key in claims");
     }
 
     private String getEmail(Claims claims) {
@@ -118,13 +116,11 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
     private List<String> getRoles(Claims claims) {
         final Map<String, List<String>> realmSettings = claims.get(REALM_ACCESS, Map.class);
         final Map<String, Map<String, List<String>>> resourceSettings = claims.get(RESOURCE_ACCESS, Map.class);
-
-        List<String> roles = new ArrayList<>(realmSettings.get(ROLES_SCOPE));
+        final List<String> roles = new ArrayList<>(realmSettings.get(ROLES_SCOPE));
 
         if (!clientName.isBlank() && resourceSettings != null && resourceSettings.containsKey(clientName)) {
             roles.addAll(resourceSettings.get(clientName).get(ROLES_SCOPE));
         }
-
         return roles;
     }
 

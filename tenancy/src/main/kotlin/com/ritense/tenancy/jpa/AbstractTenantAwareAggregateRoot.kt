@@ -1,7 +1,6 @@
 package com.ritense.tenancy.jpa
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.ritense.tenancy.TenantAware
 import com.ritense.tenancy.TenantResolver.DEFAULT_TENANT_ID
 import com.ritense.tenancy.jpa.AbstractTenantAwareAggregateRoot.Companion.TENANT_COLUMN
 import com.ritense.tenancy.jpa.AbstractTenantAwareAggregateRoot.Companion.TENANT_FILTER_NAME

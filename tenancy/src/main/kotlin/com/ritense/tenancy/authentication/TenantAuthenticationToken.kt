@@ -1,13 +1,13 @@
-package com.ritense.tenancy.web;
+package com.ritense.tenancy.authentication;
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import javax.security.auth.Subject
 
-class DelegatingTenantAuthenticationToken(
+class TenantAuthenticationToken(
     private val delegate: Authentication,
-    val tenantId: String
-) : Authentication {
+    override val tenantId: String
+) : Authentication, TenantAware {
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority>? {
         return delegate.authorities

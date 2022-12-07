@@ -1,6 +1,5 @@
 package com.ritense.tenancy.jpa;
 
-import com.ritense.tenancy.TenantAware
 import com.ritense.tenancy.TenantResolver
 import javax.persistence.EntityNotFoundException
 import javax.persistence.PrePersist
