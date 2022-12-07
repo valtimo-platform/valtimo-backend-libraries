@@ -7,7 +7,7 @@ object TenantResolver {
 
     /**
      * Resolve tenant-id from auth
-     * @return Tenant id as string or null
+     * @return Tenant id as string not empty
      */
     @JvmStatic
     fun getTenantId(): String {
