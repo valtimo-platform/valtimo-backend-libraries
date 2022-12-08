@@ -16,12 +16,11 @@
 
 package com.ritense.valtimo.contract.hardening.config;
 
-import java.util.Collections;
 import java.util.Set;
 
 public class HardeningDefaults {
 
     interface Hardening {
-        Set<String> allowStacktraceOnIps = Collections.singleton("127.0.0.1");
+        Set<String> allowStacktraceOnIps = Set.of("127.0.0.1", "0:0:0:0:0:0:0:1");
     }
 }
