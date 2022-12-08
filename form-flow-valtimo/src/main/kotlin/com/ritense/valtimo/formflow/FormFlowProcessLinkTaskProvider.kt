@@ -57,8 +57,8 @@ class FormFlowProcessLinkTaskProvider(
 
     private fun createFormFlowInstance(task: Task): FormFlowInstance {
         val additionalProperties: MutableMap<String, Any> = getAdditionalProperties(task)
-        val formFlowIdAsArray = getFormAssociationByTask(task).formLink.formFlowId.split(":")
-        val formFlowDefinition: FormFlowDefinition = getFormFlowDefinition(formFlowIdAsArray)
+        val formFlowId = getFormAssociationByTask(task).formLink.formFlowId
+        val formFlowDefinition: FormFlowDefinition = getFormFlowDefinition(formFlowId)
         return formFlowService.save(formFlowDefinition.createInstance(additionalProperties))
     }
 
@@ -79,7 +79,8 @@ class FormFlowProcessLinkTaskProvider(
         return formAssociation
     }
 
-    private fun getFormFlowDefinition(formFlowIdAsArray: List<String>): FormFlowDefinition {
+    private fun getFormFlowDefinition(formFlowId: String): FormFlowDefinition {
+        val formFlowIdAsArray = formFlowId.split(":")
         if (formFlowIdAsArray.size != 2) {
             throw IllegalArgumentException("Invalid Format found for formFlowId '${Strings.join(formFlowIdAsArray, ':' )}'. Form flow id must have format key:version")
         }
