@@ -17,6 +17,7 @@
 package com.ritense.case.service
 
 import com.ritense.case.domain.CaseDefinitionSettings
+import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
@@ -43,10 +44,26 @@ class CaseDefinitionService(
         return caseDefinitionSettingsRepository.save(updatedCaseDefinition)
     }
 
+    @Throws(InvalidListColumnException::class)
     fun createListColumn(caseDefinitionName: String,caseListColumnDto: CaseListColumnDto){
-        caseListColumnDto.isValid()
-        val caseListColumn = caseListColumnDto.toEntity(caseDefinitionName)
-        caseDefinitionListColumnRepository.save(caseListColumn)
+        validateListColumn(caseDefinitionName,caseListColumnDto)
+        caseDefinitionListColumnRepository.save(caseListColumnDto.toEntity(caseDefinitionName))
+    }
+
+    @Throws(InvalidListColumnException::class,UnknownDocumentDefinitionException::class)
+    private fun validateListColumn(caseDefinitionName: String,caseListColumnDto: CaseListColumnDto){
+        documentDefinitionService.findIdByName(caseDefinitionName)
+        if(caseDefinitionListColumnRepository.existsByCaseDefinitionNameAndKey(caseDefinitionName,caseListColumnDto.key)){
+            throw InvalidListColumnException("Unable to create list column. A column with the same key already exists")
+        }
+        if(
+            caseListColumnDto.defaultSort != null &&
+            caseDefinitionListColumnRepository.findByCaseDefinitionName(caseDefinitionName).
+            any{ column -> column.defaultSort != null}
+        ){
+            throw InvalidListColumnException("Unable to create list column. A column with defaultSort value already exists")
+        }
+        caseListColumnDto.validate(caseDefinitionName)
     }
 
     @Throws(UnknownDocumentDefinitionException::class)

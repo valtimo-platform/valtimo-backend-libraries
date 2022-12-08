@@ -17,6 +17,7 @@
 package com.ritense.case.web.rest
 
 import com.ritense.case.domain.CaseDefinitionSettings
+import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
@@ -47,9 +48,18 @@ class CaseDefinitionResource(
     @PostMapping(value = ["/v1/case/{caseDefinitionName}/list-column"])
     fun createCaseListColumn(
         @PathVariable caseDefinitionName: String,
-        @RequestBody caseListColumn: CaseListColumnDto
+        @RequestBody caseListColumnDto: CaseListColumnDto
     ): ResponseEntity<Any>{
-        return ResponseEntity.ok().build();
+        try {
+            service.createListColumn(caseDefinitionName,caseListColumnDto)
+        }catch (e : Exception){
+            return when(e){
+                is InvalidListColumnException,
+                is UnknownDocumentDefinitionException -> ResponseEntity.badRequest().body(e.message)
+                else -> {throw e}
+            }
+        }
+        return ResponseEntity.ok().build()
     }
 
     @PatchMapping(value = ["/v1/case/{caseDefinitionName}/settings"])

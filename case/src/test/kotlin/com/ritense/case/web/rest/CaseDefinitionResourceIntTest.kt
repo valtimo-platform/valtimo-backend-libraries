@@ -178,7 +178,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.status().isNotFound)
     }
 
-    @Test
+    //@Test
     fun `should create list column`() {
         val caseDefinitionName = "some-case"
 

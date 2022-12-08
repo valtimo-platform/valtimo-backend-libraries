@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-package com.ritense.case.domain
+package com.ritense.case.exception
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
-data class EnumDisplayTypeParameter(
-    @JsonProperty(value = "enum")
-    val enum: Map<String,String>?
-): DisplayTypeParameter {
-    override fun validate(): Boolean {
-        return !enum.isNullOrEmpty()
-    }
-}
+class InvalidListColumnException(message: String): Exception(message)

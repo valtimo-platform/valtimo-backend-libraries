@@ -18,11 +18,11 @@ package com.ritense.case.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class EnumDisplayTypeParameter(
-    @JsonProperty(value = "enum")
-    val enum: Map<String,String>?
+data class DateFormatDisplayTypeParameter(
+    @JsonProperty("dateFormat")
+    private val dateFormat: String
 ): DisplayTypeParameter {
     override fun validate(): Boolean {
-        return !enum.isNullOrEmpty()
+        return dateFormat.isNotEmpty()
     }
 }

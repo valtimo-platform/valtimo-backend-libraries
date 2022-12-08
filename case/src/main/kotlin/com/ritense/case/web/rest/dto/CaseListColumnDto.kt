@@ -17,20 +17,31 @@
 package com.ritense.case.web.rest.dto
 
 import com.ritense.case.domain.CaseListColumn
+import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
+import com.ritense.case.exception.InvalidListColumnException
 
 data class CaseListColumnDto(
     val title: String?,
     val key : String,
     val path: String,
-    val displayType: DisplayType
+    val displayType: DisplayType,
+    val sortable: Boolean,
+    val defaultSort: ColumnDefaultSort?
     ) {
 
     fun toEntity(caseDefinitionName: String): CaseListColumn {
-        return CaseListColumn( caseDefinitionName,this.title,this.key,this.path,this.displayType)
+        return CaseListColumn( caseDefinitionName,this.title,this.key,this.path,this.displayType,sortable,defaultSort)
     }
 
-    fun isValid(): Boolean {
-        return displayType.displayTypeParameters.validate() && true;
+    fun validate(caseDefinitionName: String){
+        if(!true){ //todo use service to validate path
+            throw InvalidListColumnException(
+                "Path with value [${this.path}] is invalid for case definition with name [${caseDefinitionName}]"
+            )
+        }
+        if (!displayType.displayTypeParameters.validate()){
+            throw InvalidListColumnException("Display type parameters are invalid for type ${displayType.type}.")
+        }
     }
 }

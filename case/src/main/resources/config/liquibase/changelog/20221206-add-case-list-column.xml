@@ -22,13 +22,13 @@
     <property name="booleanFalseValue" value="0" dbms="mysql"/>
     <property name="booleanFalseValue" value="false" dbms="postgresql"/>
 
-    <changeSet id="3" author="Ritense">
+    <changeSet id="20221206-case_list_column" author="luis-soares">
         <createTable tableName="case_list_column">
             <column name="case_definition_name" type="varchar(256)">
-                <constraints primaryKey="true" nullable="false"/>
+                <constraints nullable="false"/>
             </column>
             <column name="title" type="varchar(256)"/>
-            <column name="key" type="varchar(256)">
+            <column name="column_key" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
             <column name="path" type="varchar(256)">
@@ -38,9 +38,14 @@
                 <constraints nullable="false"/>
             </column>
             <column name="sortable" type="BOOLEAN" defaultValueBoolean="${booleanFalseValue}">
-                <constraints nullable="false"/>
+                <constraints/>
             </column>
+            <column name="default_sort" type="varchar(10)"/>
         </createTable>
+        <addPrimaryKey
+                columnNames="case_definition_name,column_key"
+                constraintName="pk_case_definition_name_and_key"
+                tableName="case_list_column"/>
     </changeSet>
 
 </databaseChangeLog>

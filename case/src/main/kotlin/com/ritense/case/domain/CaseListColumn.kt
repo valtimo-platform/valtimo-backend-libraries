@@ -17,10 +17,7 @@
 package com.ritense.case.domain
 
 import org.hibernate.annotations.Type
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "case_list_column")
@@ -30,11 +27,16 @@ data class CaseListColumn(
     val caseDefinitionName: String,
     @Column(name = "title")
     val title: String?,
-    @Column(name = "key")
+    @Column(name = "column_key")
     val key : String,
     @Column(name = "path")
     val path: String,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "display_type", columnDefinition = "JSON")
-    val displayType: DisplayType
+    val displayType: DisplayType,
+    @Column(name = "sortable")
+    val sortable: Boolean,
+    @Column(name = "default_sort")
+    @Enumerated(EnumType.STRING)
+    val defaultSort: ColumnDefaultSort?
     )
