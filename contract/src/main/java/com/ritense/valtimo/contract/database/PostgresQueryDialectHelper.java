@@ -37,8 +37,13 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
             column,
             cb.function("jsonpath", String.class, cb.literal(jsonPath))
         );
-        if (String.class.isAssignableFrom(type) || TemporalAccessor.class.isAssignableFrom(type)) {
+        if (String.class.isAssignableFrom(type)) {
             return cb.trim('"', jsonValue.as(String.class)).as(type);
+        } else if (TemporalAccessor.class.isAssignableFrom(type)) {
+            return cb.selectCase()
+                .when(jsonValue.as(String.class).in("\"\""), null)
+                .otherwise(cb.trim('"', jsonValue.as(String.class)))
+                .as(type);
         } else {
             return jsonValue.as(type);
         }
