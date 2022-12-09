@@ -1,7 +1,25 @@
+/*
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.smartdocuments.client
 
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.smartdocuments.BaseTest
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
+import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -14,13 +32,14 @@ import org.junit.jupiter.api.TestInstance
 import org.mockito.kotlin.mock
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.client.WebClient
+import java.util.concurrent.TimeUnit.SECONDS
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class SmartDocumentsClientTest {
+internal class SmartDocumentsClientTest : BaseTest() {
 
     lateinit var mockDocumentenApi: MockWebServer
     lateinit var client: SmartDocumentsClient
-    var temporaryResourceStorageService = mock<TemporaryResourceStorageService>()
+    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
 
     @BeforeAll
     fun setUp() {
@@ -30,6 +49,8 @@ internal class SmartDocumentsClientTest {
         val properties = SmartDocumentsConnectorProperties(
             url = mockDocumentenApi.url("/").toString()
         )
+
+        temporaryResourceStorageService = TemporaryResourceStorageService()
 
         client = SmartDocumentsClient(
             properties,
@@ -125,7 +146,7 @@ internal class SmartDocumentsClientTest {
 
         assertEquals(
             "401 The request has not been applied because it lacks valid authentication credentials for the target " +
-                "resource. Response received from server:\n" + responseBody,
+                    "resource. Response received from server:\n" + responseBody,
             exception.message
         )
     }
@@ -174,8 +195,32 @@ internal class SmartDocumentsClientTest {
 
         assertEquals(
             "400 The server cannot or will not process the request due to something that is perceived to be a client " +
-                "error (e.g., no valid template specified, user has no privileges for the template, malformed request syntax, " +
-                "invalid request message framing, or deceptive request routing). Response received from server:\n" + responseBody,
+                    "error (e.g., no valid template specified, user has no privileges for the template, malformed request syntax, " +
+                    "invalid request message framing, or deceptive request routing). Response received from server:\n" + responseBody,
+            exception.message
+        )
+    }
+
+
+    @Test
+    fun `400 Bad Request response should throw exception when generating document stream`() {
+        val error400ResponseBody = readFileAsString("/data/post-generate-document-400-error-response.html")
+        mockDocumentenApi.enqueue(mockResponse(error400ResponseBody, "text/html; charset=utf-8", 400).setBodyDelay(1, SECONDS))
+
+        val exception = assertThrows(IllegalStateException::class.java) {
+            client.generateDocumentStream(
+                SmartDocumentsRequest(
+                    emptyMap(),
+                    SmartDocumentsRequest.SmartDocument(
+                        SmartDocumentsRequest.Selection("group", "template")
+                    )
+                ),
+                DocumentFormatOption.PDF
+            )
+        }
+
+        assertEquals(
+            "SmartDocuments didn't generate any document. Please check the logs above for a HttpClientErrorException.",
             exception.message
         )
     }

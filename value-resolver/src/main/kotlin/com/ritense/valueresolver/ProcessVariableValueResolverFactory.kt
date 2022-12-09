@@ -16,9 +16,9 @@
 
 package com.ritense.valueresolver
 
-import java.util.function.Function
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
+import java.util.function.Function
 
 /**
  * This resolver can resolve requestedValues against the variables of a process or task.
@@ -45,7 +45,7 @@ class ProcessVariableValueResolverFactory(
 
     override fun handleValues(
         processInstanceId: String,
-        variableScope: VariableScope,
+        variableScope: VariableScope?,
         values: Map<String, Any>
     ) {
         runtimeService.setVariables(processInstanceId, values)

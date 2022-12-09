@@ -1,0 +1,15 @@
+{
+    "startStep": "firstName",
+    "steps": [
+        {
+            "key": "firstName",
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            },
+            "onComplete": ["PLACEHOLDER"]
+        }
+    ]
+}

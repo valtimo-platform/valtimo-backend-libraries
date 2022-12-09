@@ -16,17 +16,30 @@
 
 package com.ritense.valtimo.formflow
 
+import com.ritense.document.exception.DocumentNotFoundException
+import com.ritense.document.service.DocumentService
+import com.ritense.formflow.domain.definition.FormFlowDefinition
+import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.formlink.domain.FormAssociation
 import com.ritense.formlink.domain.FormLink
 import com.ritense.formlink.domain.ProcessLinkTaskProvider
 import com.ritense.formlink.domain.TaskOpenResult
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
+import com.ritense.formlink.service.FormAssociationService
+import org.apache.logging.log4j.util.Strings
+import org.camunda.bpm.engine.RepositoryService
+import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.task.Task
 
 class FormFlowProcessLinkTaskProvider(
-    val formFlowService: FormFlowService
+    private val formFlowService: FormFlowService,
+    private val formAssociationService: FormAssociationService,
+    private val documentService: DocumentService,
+    private val repositoryService: RepositoryService,
+    private val runtimeService: RuntimeService,
 ): ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
-    private val FORM_FLOW_TASK_TYPE_KEY = "form-flow"
 
     override fun supports(formLink: FormLink?): Boolean {
         return formLink is BpmnElementFormFlowIdLink
@@ -34,7 +47,76 @@ class FormFlowProcessLinkTaskProvider(
 
     override fun getTaskResult(task: Task, formLink: FormLink): TaskOpenResult<FormFlowTaskOpenResultProperties> {
         val instances = formFlowService.findInstances(mapOf("taskInstanceId" to task.id))
-        assert(instances.size == 1)
-        return TaskOpenResult(FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(instances[0].id.id))
+        val instance = when (instances.size) {
+            0 -> createFormFlowInstance(task)
+            1 -> instances[0]
+            else -> throw IllegalStateException("Multiple form flow instances linked to task: ${task.id}")
+        }
+        return TaskOpenResult(FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(instance.id.id))
+    }
+
+    private fun createFormFlowInstance(task: Task): FormFlowInstance {
+        val additionalProperties = getAdditionalProperties(task)
+        val formFlowId = getFormAssociationByTask(task).formLink.formFlowId
+        val formFlowDefinition = getFormFlowDefinition(formFlowId)
+        return formFlowService.save(formFlowDefinition.createInstance(additionalProperties))
+    }
+
+    private fun getFormAssociationByTask(task: Task): FormAssociation {
+        val processDefinition = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionId(task.processDefinitionId)
+            .singleResult()
+
+        val formAssociation = formAssociationService.getFormAssociationByFormLinkId(
+            processDefinition.key,
+            task.taskDefinitionKey
+        ).orElseThrow { IllegalStateException("No form association found. Process: '${processDefinition.key}', task: '${task.taskDefinitionKey}'") }
+
+        if (formAssociation.formLink !is BpmnElementFormFlowIdLink) {
+            throw IllegalStateException("Found form association is not of type 'BpmnElementFormFlowIdLink'. Type: ${formAssociation.formLink.javaClass.simpleName}, process: '${processDefinition.key}', task: '${task.taskDefinitionKey}'")
+        }
+
+        return formAssociation
+    }
+
+    private fun getFormFlowDefinition(formFlowId: String): FormFlowDefinition {
+        val formFlowIdAsArray = formFlowId.split(":")
+        if (formFlowIdAsArray.size != 2) {
+            throw IllegalArgumentException("Invalid Format found for formFlowId '${Strings.join(formFlowIdAsArray, ':' )}'. Form flow id must have format key:version")
+        }
+        return if (formFlowIdAsArray[1] == "latest") {
+            formFlowService.findLatestDefinitionByKey(formFlowIdAsArray[0])!!
+        } else {
+            formFlowService.findDefinition(
+                FormFlowDefinitionId(formFlowIdAsArray[0], formFlowIdAsArray[1].toLong())
+            )
+        }
+    }
+
+    private fun getAdditionalProperties(task: Task): Map<String, Any> {
+        val processInstance = runtimeService.createProcessInstanceQuery()
+            .processInstanceId(task.processInstanceId)
+            .singleResult()
+
+        val additionalProperties = mutableMapOf(
+            "processInstanceId" to task.processInstanceId,
+            "processInstanceBusinessKey" to processInstance.businessKey,
+            "taskInstanceId" to task.id
+        )
+
+        try {
+            val document = documentService[processInstance.businessKey]
+            if (document != null) {
+                additionalProperties["documentId"] = processInstance.businessKey
+            }
+        } catch (e: DocumentNotFoundException) {
+            // we do nothing here, intentional
+        }
+
+        return additionalProperties
+    }
+
+    companion object {
+        private const val FORM_FLOW_TASK_TYPE_KEY = "form-flow"
     }
 }
