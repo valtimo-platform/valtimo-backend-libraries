@@ -17,7 +17,6 @@
 package com.ritense.smartdocuments.client
 
 import com.fasterxml.jackson.core.JsonFactory
-import com.fasterxml.jackson.core.JsonToken
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
@@ -28,6 +27,7 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.text.StringEscapeUtils
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.codec.ClientCodecConfigurer
 import org.springframework.web.client.HttpClientErrorException
@@ -43,7 +43,6 @@ import java.io.Writer
 import java.util.Base64
 import java.util.concurrent.Executors
 
-
 class SmartDocumentsClient(
     private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
     private val smartDocumentsWebClientBuilder: WebClient.Builder,
@@ -54,52 +53,67 @@ class SmartDocumentsClient(
     fun generateDocument(
         smartDocumentsRequest: SmartDocumentsRequest,
     ): FilesResponse {
-        try {
-            return webClient().post()
-                .uri("/wsxmldeposit/deposit/unattended")
-                .contentType(APPLICATION_JSON)
-                .bodyValue(smartDocumentsRequest)
-                .retrieve()
-                .bodyToMono(FilesResponse::class.java)
-                .block()!!
-        } catch (e: WebClientResponseException) {
-            throw HttpClientErrorException(e.statusCode, e.responseBodyAsString)
-        }
+        return webClient().post()
+            .uri("/wsxmldeposit/deposit/unattended")
+            .contentType(APPLICATION_JSON)
+            .bodyValue(smartDocumentsRequest)
+            .retrieve()
+            .bodyToMono(FilesResponse::class.java)
+            .doOnError { throw toHttpClientErrorException(it) }
+            .block()!!
     }
 
     fun generateDocumentStream(
         smartDocumentsRequest: SmartDocumentsRequest,
         outputFormat: DocumentFormatOption,
     ): FileStreamResponse {
-        try {
-            val responseOut = PipedOutputStream()
-            val responseIn = PipedInputStream(responseOut)
+        val responseOut = PipedOutputStream()
+        val responseIn = PipedInputStream(responseOut)
 
-            val bodyFlux = webClient().post()
-                .uri("/wsxmldeposit/deposit/unattended")
-                .contentType(APPLICATION_JSON)
-                .bodyValue(smartDocumentsRequest)
-                .retrieve()
-                .bodyToFlux<DataBuffer>()
-                .doOnError { responseIn.close() }
-                .doFinally { responseOut.close() }
+        val bodyFlux = webClient().post()
+            .uri("/wsxmldeposit/deposit/unattended")
+            .contentType(APPLICATION_JSON)
+            .bodyValue(smartDocumentsRequest)
+            .retrieve()
+            .bodyToFlux<DataBuffer>()
+            .doOnError {
+                responseIn.close()
+                throw toHttpClientErrorException(it)
+            }
+            .doFinally { responseOut.close() }
 
-            DataBufferUtils.write(bodyFlux, responseOut).subscribe(DataBufferUtils.releaseConsumer())
-            val responseResourceId = temporaryResourceStorageService.store(responseIn)
+        DataBufferUtils.write(bodyFlux, responseOut).subscribe(DataBufferUtils.releaseConsumer())
+        val responseResourceId = temporaryResourceStorageService.store(responseIn)
 
-            val parsedResponse = temporaryResourceStorageService.getResourceContentAsInputStream(responseResourceId)
-                .use { parseSmartDocumentsResponse(it, outputFormat) }
+        val parsedResponse = temporaryResourceStorageService.getResourceContentAsInputStream(responseResourceId)
+            .use { parseSmartDocumentsResponse(it, outputFormat) }
 
-            val resourceIn = temporaryResourceStorageService.getResourceContentAsInputStream(responseResourceId)
-            val documentDataIn = toDocumentDataInputStream(resourceIn, parsedResponse)
+        val resourceIn = temporaryResourceStorageService.getResourceContentAsInputStream(responseResourceId)
+        val documentDataIn = toDocumentDataInputStream(resourceIn, parsedResponse)
 
-            return FileStreamResponse(
-                parsedResponse.fileName,
-                FilenameUtils.getExtension(parsedResponse.fileName),
-                Base64.getDecoder().wrap(documentDataIn)
-            )
-        } catch (e: WebClientResponseException) {
-            throw HttpClientErrorException(e.statusCode, e.responseBodyAsString)
+        return FileStreamResponse(
+            parsedResponse.fileName,
+            FilenameUtils.getExtension(parsedResponse.fileName),
+            Base64.getDecoder().wrap(documentDataIn)
+        )
+    }
+
+    private fun toHttpClientErrorException(e: Throwable): HttpClientErrorException {
+        if (e is WebClientResponseException) {
+            val message = when (e.statusCode) {
+                HttpStatus.UNAUTHORIZED -> "The request has not been applied because it lacks valid authentication " +
+                        "credentials for the target resource. Response received from server:\n" + e.responseBodyAsString
+
+                HttpStatus.BAD_REQUEST -> "The server cannot or will not process the request due to something that is " +
+                        "perceived to be a client error (e.g., no valid template specified, user has no privileges for the template," +
+                        " malformed request syntax, invalid request message framing, or deceptive request routing)." +
+                        " Response received from server:\n" + e.responseBodyAsString
+
+                else -> e.responseBodyAsString
+            }
+            return HttpClientErrorException(e.statusCode, message)
+        } else {
+            return HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, e.message ?: "An unknown error occurred")
         }
     }
 
@@ -139,7 +153,7 @@ class SmartDocumentsClient(
         var documentDataEnd = -1L
 
         val jsonParser = JsonFactory().createParser(responseInputStream)
-        while (jsonParser.nextToken() !== JsonToken.END_ARRAY) {
+        while (jsonParser.nextToken() != null) {
             val fieldName = jsonParser.currentName
             if ("filename" == fieldName) {
                 fileName = jsonParser.nextTextValue()
@@ -157,14 +171,14 @@ class SmartDocumentsClient(
             }
         }
         jsonParser.close()
-        if (!correctOutputFormat) {
-            throw IllegalStateException("SmartDocuments didn't generate document with format '$outputFormat'")
-        }
-        if (fileName == null) {
+        if (!correctOutputFormat && fileName == null && documentDataStart == -1L) {
+            throw IllegalStateException("SmartDocuments didn't generate any document. Please check the logs above for a HttpClientErrorException.")
+        }  else if (!correctOutputFormat) {
+            throw IllegalStateException("SmartDocuments failed to generate document with format '$outputFormat'. The requested document format is not present in the output of smart documents.")
+        } else if (fileName == null) {
             throw IllegalStateException("SmartDocuments response didn't contain field 'filename'")
-        }
-        if (documentDataStart == -1L) {
-            throw IllegalStateException("SmartDocuments didn't generate document")
+        } else if (documentDataStart == -1L) {
+            throw IllegalStateException("SmartDocuments failed to generate document")
         }
         return ParsedResponse(fileName, documentDataStart, documentDataEnd)
     }

@@ -1,8 +1,15 @@
 {
     "searchFields": [
         {
-            "key": "lastname",
-            "path": "/lastname",
+            "key": "firstName",
+            "path": "doc:firstName",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "like"
+        },
+        {
+            "key": "lastName",
+            "path": "doc:lastName",
             "dataType": "text",
             "fieldType": "single",
             "matchType": "like"

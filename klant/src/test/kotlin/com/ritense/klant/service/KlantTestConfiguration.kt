@@ -16,71 +16,11 @@
 
 package com.ritense.klant.service
 
-import com.ritense.audit.autoconfigure.AuditAutoConfiguration
-import com.ritense.besluit.autoconfigure.BesluitAutoConfiguration
-import com.ritense.connector.autoconfigure.ConnectorAutoConfiguration
-import com.ritense.connector.autoconfigure.ConnectorLiquibaseAutoConfiguration
-import com.ritense.connector.autoconfigure.ConnectorSecurityAutoConfiguration
-import com.ritense.document.autoconfigure.*
-import com.ritense.openzaak.autoconfigure.OpenZaakAutoConfiguration
-import com.ritense.openzaak.autoconfigure.OpenZaakLiquibaseAutoConfiguration
-import com.ritense.openzaak.autoconfigure.OpenZaakSecurityAutoConfiguration
-import com.ritense.openzaak.catalogi.CatalogiAutoConfiguration
-import com.ritense.processdocument.autoconfigure.ProcessDocumentAuditAutoConfiguration
-import com.ritense.processdocument.autoconfigure.ProcessDocumentAutoConfiguration
-import com.ritense.processdocument.autoconfigure.ProcessDocumentKotlinAutoConfiguration
-import com.ritense.resource.autoconfigure.OpenZaakResourceAutoConfiguration
-import com.ritense.valtimo.autoconfigure.*
-import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
-import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import org.springframework.boot.test.context.TestConfiguration
 
-@SpringBootApplication(
-    exclude = [
-        AccessAndEntitlementAutoConfiguration::class,
-        AuditAutoConfiguration::class,
-        AuthenticationAutoConfiguration::class,
-        BesluitAutoConfiguration::class,
-        CatalogiAutoConfiguration::class,
-        CamundaAutoConfiguration::class,
-        CamundaBpmAutoConfiguration::class,
-        ChoiceFieldAutoConfiguration::class,
-        ConnectorAutoConfiguration::class,
-        ConnectorLiquibaseAutoConfiguration::class,
-        ConnectorSecurityAutoConfiguration::class,
-        ContextAutoConfiguration::class,
-        DataSourceAutoConfiguration::class,
-        DataSourceTransactionManagerAutoConfiguration::class,
-        DocumentAutoConfiguration::class,
-        DocumentSnapshotAutoConfiguration::class,
-        DocumentLiquibaseAutoConfiguration::class,
-        DocumentSecurityAutoConfiguration::class,
-        DocumentRetryAutoConfiguration::class,
-        EmailNotificationSettingsAutoConfiguration::class,
-        HibernateJpaAutoConfiguration::class,
-        HibernateJsonMapperConfiguration::class,
-        HttpSecurityAutoConfiguration::class,
-        LiquibaseAutoConfiguration::class,
-        LiquibaseRunnerAutoConfiguration::class,
-        OpenZaakAutoConfiguration::class,
-        OpenZaakLiquibaseAutoConfiguration::class,
-        OpenZaakResourceAutoConfiguration::class,
-        OpenZaakSecurityAutoConfiguration::class,
-        ProcessDataObjectAutoConfiguration::class,
-        ProcessDocumentAutoConfiguration::class,
-        ProcessDocumentKotlinAutoConfiguration::class,
-        ProcessDocumentAuditAutoConfiguration::class,
-        SearchFieldAutoConfiguration::class,
-        ValtimoAutoConfiguration::class,
-        ValtimoMethodSecurityAutoConfiguration::class,
-        ValtimoMybatisAutoConfiguration::class
-    ]
-)
+@SpringBootApplication
 class KlantTestConfiguration {
 
     fun main(args: Array<String>) {

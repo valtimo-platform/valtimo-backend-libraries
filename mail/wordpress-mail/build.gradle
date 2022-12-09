@@ -55,8 +55,11 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
 
+    testImplementation project(":core")
     testImplementation project(":mail")
     testImplementation project(":connector")
+    testImplementation project(":test-utils-common")
+    testImplementation project(":resource:local-resource")
 
     //Kotlin
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"

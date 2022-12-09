@@ -47,3 +47,9 @@ services:
 #   url: jdbc:mysql://localhost:3324/documenten-api-test
 #   url: jdbc:mysql://localhost:3325/zaken-api-test
 #   url: jdbc:mysql://localhost:3326/notes-test
+#   url: jdbc:mysql://localhost:3327/klant-test
+#   url: jdbc:mysql://localhost:3328/objecten-api-authentication-test
+#   url: jdbc:mysql://localhost:3329/objecttypen-api-test
+#   url: jdbc:mysql://localhost:3330/objecten-api-test
+#   url: jdbc:mysql://localhost:3331/flowmailer-test
+#   url: jdbc:mysql://localhost:3332/case-test

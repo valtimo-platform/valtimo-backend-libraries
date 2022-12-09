@@ -82,7 +82,7 @@ class FormFlowCreateTaskEventHandler(
         try {
             val document = documentService.get(task.execution.processBusinessKey)
             if (document != null) {
-                additionalProperties.put("documentId", task.execution.processBusinessKey)
+                additionalProperties["documentId"] = task.execution.processBusinessKey
             }
         } catch (e: DocumentNotFoundException) {
             // we do nothing here, intentional

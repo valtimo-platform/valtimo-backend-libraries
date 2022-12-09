@@ -24,5 +24,6 @@
     <include file="changelog/20180628-process-definition-variable.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180629-view-var-ordering.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20181102-view-var-groups.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20221202-add-constraint-to-process-defintion-id.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -74,7 +74,7 @@ class ValueResolverService(
      */
     fun handleValues(
         processInstanceId: String,
-        variableScope: VariableScope,
+        variableScope: VariableScope?,
         values: Map<String, Any>
     ) {
         values.entries

@@ -16,14 +16,39 @@
 
 package com.ritense.gzac;
 
+import com.ritense.valtimo.config.DefaultProfileUtil;
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 @SpringBootApplication(scanBasePackages = "com.ritense.*")
+@EnableScheduling
+@EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 @EnableProcessApplication
 public class GzacApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(GzacApplication.class, args);
+    private static final Logger logger = LoggerFactory.getLogger(GzacApplication.class);
+
+    public static void main(String[] args) throws UnknownHostException {
+        SpringApplication app = new SpringApplication(GzacApplication.class);
+        DefaultProfileUtil.addDefaultProfile(app);
+        Environment environment = app.run(args).getEnvironment();
+        logger.info(
+            "\n----------------------------------------------------------\n\t" +
+                "Application '{}' is running! Access URLs:\n\t" +
+                "Local: \t\thttp://127.0.0.1:{}\n\t" +
+                "External: \thttp://{}:{}\n----------------------------------------------------------",
+            environment.getProperty("spring.application.name"),
+            environment.getProperty("server.port"),
+            InetAddress.getLocalHost().getHostAddress(),
+            environment.getProperty("server.port")
+        );
     }
 }

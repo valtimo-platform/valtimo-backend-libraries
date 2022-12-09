@@ -17,18 +17,24 @@
 package com.ritense.document.web.rest.impl;
 
 import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
 import com.ritense.document.web.rest.DocumentDefinitionResource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -36,18 +42,50 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
 
     private final DocumentDefinitionService documentDefinitionService;
     private final UndeployDocumentDefinitionService undeployDocumentDefinitionService;
+    private final DocumentStatisticService documentStatisticService;
 
     public JsonSchemaDocumentDefinitionResource(
         DocumentDefinitionService documentDefinitionService,
-        UndeployDocumentDefinitionService undeployDocumentDefinitionService
+        UndeployDocumentDefinitionService undeployDocumentDefinitionService,
+        DocumentStatisticService documentStatisticService
     ) {
         this.documentDefinitionService = documentDefinitionService;
         this.undeployDocumentDefinitionService = undeployDocumentDefinitionService;
+        this.documentStatisticService = documentStatisticService;
     }
 
     @Override
     public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(boolean filteredOnRole, Pageable pageable) {
-        return ok(documentDefinitionService.findForUser(filteredOnRole, pageable));
+        // this keeps the API backwards compatible with old jpa entity columns in the sort
+        PageRequest pageRequest = PageRequest.of(
+            pageable.getPageNumber(),
+            pageable.getPageSize(),
+            Sort.by(
+                pageable.getSort()
+                    .stream()
+                    .map(order ->
+                        new Sort.Order(order.getDirection(), mapSortProperty(order.getProperty()))
+                    ).collect(Collectors.toList())
+            )
+        );
+
+        return ok(documentDefinitionService.findForUser(filteredOnRole, pageRequest));
+    }
+
+    private String mapSortProperty(String property) {
+        if (property.equals("id.name")) {
+            return "document_definition_name";
+        }
+        if (property.equals("id.version")) {
+            return "document_definition_version";
+        }
+        if (property.equals("readOnly")) {
+            return "read_only";
+        }
+        if (property.equals("createdOn")) {
+            return "created_on";
+        }
+        return property;
     }
 
     @Override
@@ -57,6 +95,11 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
         }
 
         return ResponseEntity.of(documentDefinitionService.findLatestByName(name));
+    }
+
+    @Override
+    public ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount() {
+        return ResponseEntity.ok(documentStatisticService.getUnassignedDocumentCountDtos());
     }
 
     @Override

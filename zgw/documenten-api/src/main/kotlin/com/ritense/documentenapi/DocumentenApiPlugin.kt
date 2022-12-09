@@ -74,15 +74,16 @@ class DocumentenApiPlugin(
         val documentLocation = execution.getVariable(localDocumentLocation) as String
         val contentAsInputStream = storageService.getResourceContentAsInputStream(documentLocation)
         val metadata = storageService.getResourceMetadata(documentLocation)
+        val fileNameNotNull = fileName ?: metadata[MetadataType.FILE_NAME.key] as String
 
         storeDocument(
             execution = execution,
             metadata = metadata,
-            title = title ?: fileName ?: metadata[MetadataType.FILE_NAME.key] as String,
+            title = title ?: fileNameNotNull,
             confidentialityLevel = getConfidentialityLevel(confidentialityLevel),
             status = status,
             language = taal,
-            filename = fileName,
+            filename = fileNameNotNull,
             contentAsInputStream = contentAsInputStream,
             description = description,
             informationObjectType = informatieobjecttype,

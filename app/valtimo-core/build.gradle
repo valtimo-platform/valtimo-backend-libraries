@@ -45,6 +45,14 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+
+    //ShedLock
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:4.42.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.42.0'
+
+    // Database
+    implementation "mysql:mysql-connector-java"
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.1'
 }
 
 apply from: "gradle/publishing.gradle"

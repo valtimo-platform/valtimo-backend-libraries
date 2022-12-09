@@ -19,12 +19,13 @@ package com.ritense.document.repository;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface SearchFieldRepository extends JpaRepository<SearchField, SearchFieldId> {
 
-    List<SearchField> findAllByIdDocumentDefinitionName(String documentDefinitionName);
+    List<SearchField> findAllByIdDocumentDefinitionNameOrderByOrder(String documentDefinitionName);
 
     Optional<SearchField> findByIdDocumentDefinitionNameAndKey(String documentDefinitionName, String key);
 
