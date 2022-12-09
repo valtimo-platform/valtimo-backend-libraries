@@ -152,6 +152,14 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
     }
 
     @Test
+    void shouldValidateJsonPathWithFunctions() {
+        var definition = definitionOf("array-example");
+        assertTrue(documentDefinitionService.isValidJsonPath(definition, "$.files.length()"));
+        assertTrue(documentDefinitionService.isValidJsonPath(definition, "$.files.someDatabaseSpecificFunction()"));
+        assertFalse(documentDefinitionService.isValidJsonPath(definition, "$.files.missingBracket("));
+    }
+
+    @Test
     void shouldValidateJsonPathWithWildcard() {
         var definition = definitionOf("array-example");
         assertTrue(documentDefinitionService.isValidJsonPath(definition, "$.files[*].id"));

@@ -16,11 +16,15 @@
 
 package com.ritense.document.service.impl;
 
+import com.jayway.jsonpath.InvalidPathException;
+import com.jayway.jsonpath.internal.path.ArrayPathToken;
 import com.jayway.jsonpath.internal.path.CompiledPath;
+import com.jayway.jsonpath.internal.path.FunctionPathToken;
 import com.jayway.jsonpath.internal.path.PathCompiler;
 import com.jayway.jsonpath.internal.path.PathToken;
 import com.jayway.jsonpath.internal.path.PredicatePathToken;
 import com.jayway.jsonpath.internal.path.RootPathToken;
+import com.jayway.jsonpath.internal.path.ScanPathToken;
 import com.jayway.jsonpath.internal.path.WildcardPathToken;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchema;
@@ -256,6 +260,11 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         } else if (jsonPathExpression.startsWith("case:")) {
             return;
         }
+        try {
+            PathCompiler.compile(jsonPathExpression);
+        } catch (InvalidPathException e) {
+            throw new ValidationException("Failed to compile JsonPath '" + jsonPathExpression + "' for document definition '" + documentDefinitionName + "'", e);
+        }
         if (!isValidJsonPath(definition, jsonPathExpression)) {
             throw new ValidationException("JsonPath '" + jsonPathExpression + "' doesn't point to any property inside document definition '" + documentDefinitionName + "'");
         }
@@ -263,13 +272,18 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public boolean isValidJsonPath(JsonSchemaDocumentDefinition definition, String jsonPathExpression) {
-        var compiledJsonPath = (CompiledPath) PathCompiler.compile(jsonPathExpression);
+        CompiledPath compiledJsonPath;
+        try {
+            compiledJsonPath = (CompiledPath) PathCompiler.compile(jsonPathExpression);
+        } catch (InvalidPathException e) {
+            logger.error("Failed to compile JsonPath '{}' for document definition '{}'", jsonPathExpression, definition.id().name(), e);
+            return false;
+        }
         var jsonPointer = toJsonPointerRecursive(compiledJsonPath.getRoot());
         return isValidJsonPointer(definition, jsonPointer);
     }
 
-    @Override
-    public boolean isValidJsonPointer(JsonSchemaDocumentDefinition definition, String jsonPointer) {
+    private boolean isValidJsonPointer(JsonSchemaDocumentDefinition definition, String jsonPointer) {
         return definition.getSchema().getSchema().definesProperty(jsonPointer);
     }
 
@@ -285,10 +299,14 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     private String toJsonPointerPart(PathToken pathToken) {
         if (pathToken == null
             || pathToken instanceof PredicatePathToken
-            || pathToken instanceof WildcardPathToken) {
+            || pathToken instanceof WildcardPathToken
+            || pathToken instanceof FunctionPathToken
+            || pathToken instanceof ScanPathToken) {
             return null;
         } else if (pathToken instanceof RootPathToken) {
             return "";
+        } else if (pathToken instanceof ArrayPathToken) {
+            return "/0";
         } else {
             return "/" + trim(getPathFragment(pathToken), "['", "']", "[", "]");
         }
