@@ -56,9 +56,9 @@ class FormFlowProcessLinkTaskProvider(
     }
 
     private fun createFormFlowInstance(task: Task): FormFlowInstance {
-        val additionalProperties: MutableMap<String, Any> = getAdditionalProperties(task)
+        val additionalProperties = getAdditionalProperties(task)
         val formFlowId = getFormAssociationByTask(task).formLink.formFlowId
-        val formFlowDefinition: FormFlowDefinition = getFormFlowDefinition(formFlowId)
+        val formFlowDefinition = getFormFlowDefinition(formFlowId)
         return formFlowService.save(formFlowDefinition.createInstance(additionalProperties))
     }
 
@@ -93,12 +93,12 @@ class FormFlowProcessLinkTaskProvider(
         }
     }
 
-    private fun getAdditionalProperties(task: Task): MutableMap<String, Any> {
+    private fun getAdditionalProperties(task: Task): Map<String, Any> {
         val processInstance = runtimeService.createProcessInstanceQuery()
             .processInstanceId(task.processInstanceId)
             .singleResult()
 
-        val additionalProperties: MutableMap<String, Any> = mutableMapOf(
+        val additionalProperties = mutableMapOf(
             "processInstanceId" to task.processInstanceId,
             "processInstanceBusinessKey" to processInstance.businessKey,
             "taskInstanceId" to task.id

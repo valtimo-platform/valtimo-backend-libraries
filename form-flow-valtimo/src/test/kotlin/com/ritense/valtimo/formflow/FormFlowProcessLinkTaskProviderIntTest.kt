@@ -137,6 +137,7 @@ internal class FormFlowProcessLinkTaskProviderIntTest: BaseIntegrationTest() {
         val task = taskService.createTaskQuery()
             .processInstanceId(result.resultingProcessInstanceId().get().toString())
             .singleResult()
+        assertEquals(0, formFlowInstanceRepository.findAll().size)
 
         processLinkService.openTask(UUID.fromString(task.id))
 
