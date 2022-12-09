@@ -19,6 +19,9 @@ package com.ritense.document.domain.impl;
 import com.ritense.document.TestHelper;
 import org.everit.json.schema.ValidationException;
 import org.junit.jupiter.api.Test;
+
+import java.net.URI;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -27,7 +30,7 @@ public class JsonSchemaDocumentDefinitionTest extends TestHelper {
     @Test
     public void shouldNotCreateDocumentDefinitionWithInvalidJsonSchema() {
         final JsonSchemaDocumentDefinitionId jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("invalidperson");
-        assertThrows(ValidationException.class, () -> JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name())));
+        assertThrows(ValidationException.class, () -> JsonSchema.fromResourceUri(URI.create("config/data/invalidperson.schema.json")));
     }
 
     @Test

@@ -31,9 +31,14 @@ import java.util.stream.Stream;
 public class SearchFieldService {
 
     private final SearchFieldRepository searchFieldRepository;
+    private final DocumentDefinitionService documentDefinitionService;
 
-    public SearchFieldService(final SearchFieldRepository searchFieldRepository) {
+    public SearchFieldService(
+        final SearchFieldRepository searchFieldRepository,
+        final DocumentDefinitionService documentDefinitionService
+    ) {
         this.searchFieldRepository = searchFieldRepository;
+        this.documentDefinitionService = documentDefinitionService;
     }
 
     public void addSearchField(String documentDefinitionName, SearchField searchField) {
@@ -44,6 +49,7 @@ public class SearchFieldService {
         }
         SearchFieldId searchFieldId = SearchFieldId.newId(documentDefinitionName);
         searchField.setId(searchFieldId);
+        documentDefinitionService.validateJsonPath(documentDefinitionName, searchField.getPath());
         searchFieldRepository.save(searchField);
     }
 
@@ -52,18 +58,25 @@ public class SearchFieldService {
     }
 
     public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
+        searchFieldDtos.forEach(searchFieldDto ->
+            documentDefinitionService.validateJsonPath(documentDefinitionName, searchFieldDto.getPath())
+        );
         var searchFields = IntStream.range(0, searchFieldDtos.size())
             .mapToObj(index -> toOrderedSearchField(documentDefinitionName, searchFieldDtos.get(index), index))
-            .collect(Collectors.toList());
+            .toList();
         searchFieldRepository.saveAll(searchFields);
     }
 
     public void createSearchConfiguration(List<SearchField> searchFields) {
+        searchFields.forEach(searchField -> {
+            assert searchField.getId() != null;
+            documentDefinitionService.validateJsonPath(searchField.getId().getDocumentDefinitionName(), searchField.getPath());
+        });
         if (searchFields.stream()
                         .filter((searchField ->
                                 Collections.frequency(searchFields.stream()
                                         .flatMap(field -> Stream.of(field.getKey()))
-                                        .collect(Collectors.toList()), searchField.getKey()
+                                        .toList(), searchField.getKey()
                                 ) > 1))
                         .distinct().findAny().isEmpty()) {
             searchFieldRepository.saveAll(searchFields);

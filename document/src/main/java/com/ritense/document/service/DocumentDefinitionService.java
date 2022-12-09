@@ -62,4 +62,9 @@ public interface DocumentDefinitionService {
     Set<String> getDocumentDefinitionRoles(String documentDefinitionName);
 
     void putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles);
+
+    void validateJsonPath(String documentDefinitionName, String jsonPathExpression);
+
+    boolean isValidJsonPath(JsonSchemaDocumentDefinition definition, String jsonPathExpression);
+
 }
