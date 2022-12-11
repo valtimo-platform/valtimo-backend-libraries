@@ -16,4 +16,17 @@
 
 package com.ritense.case.exception
 
-class InvalidListColumnException(message: String): Exception(message)
+import org.zalando.problem.AbstractThrowableProblem
+import org.zalando.problem.Exceptional
+import org.zalando.problem.Status
+
+class InvalidListColumnException(message: String?,status: Status):
+    AbstractThrowableProblem(
+    null,
+    message,
+    status
+) {
+    override fun getCause(): Exceptional? {
+        return null
+    }
+}

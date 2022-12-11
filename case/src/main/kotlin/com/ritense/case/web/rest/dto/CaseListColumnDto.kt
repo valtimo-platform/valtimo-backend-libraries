@@ -20,6 +20,7 @@ import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.exception.InvalidListColumnException
+import org.zalando.problem.Status
 
 data class CaseListColumnDto(
     val title: String?,
@@ -35,13 +36,8 @@ data class CaseListColumnDto(
     }
 
     fun validate(caseDefinitionName: String){
-        if(!true){ //todo use service to validate path
-            throw InvalidListColumnException(
-                "Path with value [${this.path}] is invalid for case definition with name [${caseDefinitionName}]"
-            )
-        }
         if (!displayType.displayTypeParameters.validate()){
-            throw InvalidListColumnException("Display type parameters are invalid for type ${displayType.type}.")
+            throw InvalidListColumnException("Display type parameters are invalid for type ${displayType.type}.",Status.BAD_REQUEST)
         }
     }
 }

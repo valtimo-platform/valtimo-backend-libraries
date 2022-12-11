@@ -178,22 +178,38 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.status().isNotFound)
     }
 
-    //@Test
+    @Test
     fun `should create list column`() {
-        val caseDefinitionName = "some-case"
-
+        val caseDefinitionName = "listColumnDocumentDefinition"
+        documentDefinitionService.deploy("" +
+                "{\n" +
+                "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                "    \"type\": \"object\",\n" +
+                "    \"properties\": {\n" +
+                "        \"firstName\": {\n" +
+                "            \"type\": \"string\",\n" +
+                "            \"description\": \"first name\"\n" +
+                "        },\n" +
+                "        \"lastName\": {\n" +
+                "            \"type\": \"string\",\n" +
+                "            \"description\": \"last name\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}")
         mockMvc
             .perform(
                 MockMvcRequestBuilders
                     .post(
-                        "/api/v1/case/{caseDefinitionName}/settings",
+                        "/api/v1/case/{caseDefinitionName}/list-column",
                         caseDefinitionName
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content("{\n" +
                             "  \"title\": \"First name\",\n" +
                             "  \"key\": \"first-name\",\n" +
-                            "  \"path\": \"doc:customer.firstName\" ,\n" +
+                            "  \"path\": \"doc:firstName\" ,\n" +
                             "  \"displayType\": {\n" +
                             "    \"type\": \"enum\",\n" +
                             "    \"displayTypeParameters\": {\n" +
@@ -205,6 +221,51 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
                             "    \"defaultSort\": \"ASC\"\n" +
                             "}")
             )
-            .andExpect(MockMvcResultMatchers.status().isCreated)
+            .andExpect(MockMvcResultMatchers.status().isOk)
+    }
+
+    @Test
+    fun `should return bad request`() {
+        val caseDefinitionName = "listColumnDocumentDefinition"
+        documentDefinitionService.deploy("" +
+                "{\n" +
+                "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                "    \"type\": \"object\",\n" +
+                "    \"properties\": {\n" +
+                "        \"firstName\": {\n" +
+                "            \"type\": \"string\",\n" +
+                "            \"description\": \"first name\"\n" +
+                "        },\n" +
+                "        \"lastName\": {\n" +
+                "            \"type\": \"string\",\n" +
+                "            \"description\": \"last name\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}")
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post(
+                        "/api/v1/case/{caseDefinitionName}/list-column",
+                        caseDefinitionName
+                    )
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content("{\n" +
+                            "  \"title\": \"First name\",\n" +
+                            "  \"key\": \"first-name\",\n" +
+                            "  \"path\": \"doc:firstName\" ,\n" +
+                            "  \"displayType\": {\n" +
+                            "    \"type\": \"enum\",\n" +
+                            "    \"displayTypeParameters\": {\n" +
+                            "        \"date-format\": \"\"\n" +
+                            "        }\n" +
+                            "    },\n" +
+                            "    \"sortable\": true ,\n" +
+                            "    \"defaultSort\": \"ASC\"\n" +
+                            "}")
+            )
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
     }
 }

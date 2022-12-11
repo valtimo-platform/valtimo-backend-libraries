@@ -24,6 +24,7 @@ import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
+import org.zalando.problem.Status
 
 class CaseDefinitionService(
     private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository,
@@ -54,14 +55,19 @@ class CaseDefinitionService(
     private fun validateListColumn(caseDefinitionName: String,caseListColumnDto: CaseListColumnDto){
         documentDefinitionService.findIdByName(caseDefinitionName)
         if(caseDefinitionListColumnRepository.existsByCaseDefinitionNameAndKey(caseDefinitionName,caseListColumnDto.key)){
-            throw InvalidListColumnException("Unable to create list column. A column with the same key already exists")
+            throw InvalidListColumnException("Unable to create list column. A column with the same key already exists",Status.BAD_REQUEST)
         }
         if(
             caseListColumnDto.defaultSort != null &&
             caseDefinitionListColumnRepository.findByCaseDefinitionName(caseDefinitionName).
             any{ column -> column.defaultSort != null}
         ){
-            throw InvalidListColumnException("Unable to create list column. A column with defaultSort value already exists")
+            throw InvalidListColumnException("Unable to create list column. A column with defaultSort value already exists",Status.BAD_REQUEST)
+        }
+        try{
+            documentDefinitionService.validateJsonPath(caseDefinitionName,caseListColumnDto.path)
+        }catch (ex: Exception){
+            throw InvalidListColumnException(ex.message, Status.BAD_REQUEST)
         }
         caseListColumnDto.validate(caseDefinitionName)
     }
