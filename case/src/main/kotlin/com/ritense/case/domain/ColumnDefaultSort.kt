@@ -17,5 +17,5 @@
 package com.ritense.case.domain
 
 enum class ColumnDefaultSort {
-    ASC,DESC
+    ASC, DESC
 }

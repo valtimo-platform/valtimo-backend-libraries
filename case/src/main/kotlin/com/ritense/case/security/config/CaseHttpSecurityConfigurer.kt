@@ -23,15 +23,17 @@ import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.*
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
-class CaseHttpSecurityConfigurer: HttpSecurityConfigurer {
+class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(USER)
                 .antMatchers(PATCH, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
-        } catch(e: Exception) {
+                //.antMatchers(POST, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/case/{caseDefinitionName}/list-column").permitAll()
+
+        } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
     }

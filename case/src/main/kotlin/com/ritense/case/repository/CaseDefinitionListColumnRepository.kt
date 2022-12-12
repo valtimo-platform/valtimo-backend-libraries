@@ -17,9 +17,10 @@
 package com.ritense.case.repository
 
 import com.ritense.case.domain.CaseListColumn
+import com.ritense.case.domain.CaseListColumnId
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface CaseDefinitionListColumnRepository: JpaRepository<CaseListColumn, String> {
-    fun existsByCaseDefinitionNameAndKey(caseDefinitionName: String, key: String): Boolean
-    fun findByCaseDefinitionName(caseDefinitionName: String): List<CaseListColumn>
+interface CaseDefinitionListColumnRepository : JpaRepository<CaseListColumn, CaseListColumnId> {
+    fun existsByColumnKeyCaseDefinitionNameAndColumnKeyKey(caseDefinitionName: String, key: String): Boolean
+    fun findByColumnKeyCaseDefinitionName(caseDefinitionName: String): List<CaseListColumn>
 }

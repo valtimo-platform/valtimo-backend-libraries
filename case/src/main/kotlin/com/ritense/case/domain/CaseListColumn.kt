@@ -22,13 +22,10 @@ import javax.persistence.*
 @Entity
 @Table(name = "case_list_column")
 data class CaseListColumn(
-    @Id
-    @Column(name = "case_definition_name")
-    val caseDefinitionName: String,
+    @EmbeddedId
+    val columnKey: CaseListColumnId,
     @Column(name = "title")
     val title: String?,
-    @Column(name = "column_key")
-    val key : String,
     @Column(name = "path")
     val path: String,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
@@ -39,4 +36,4 @@ data class CaseListColumn(
     @Column(name = "default_sort")
     @Enumerated(EnumType.STRING)
     val defaultSort: ColumnDefaultSort?
-    )
+)

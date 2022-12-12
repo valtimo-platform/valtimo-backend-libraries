@@ -20,8 +20,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class EnumDisplayTypeParameter(
     @JsonProperty(value = "enum")
-    val enum: Map<String,String>?
-): DisplayTypeParameter {
+    val enum: Map<String, String>?
+) : DisplayTypeParameter {
     override fun validate(): Boolean {
         return !enum.isNullOrEmpty()
     }

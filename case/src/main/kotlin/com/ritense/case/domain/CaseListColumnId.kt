@@ -16,6 +16,14 @@
 
 package com.ritense.case.domain
 
-interface DisplayTypeParameter {
-    fun validate(): Boolean
-}
+import com.ritense.valtimo.contract.domain.AbstractId
+import javax.persistence.Column
+import javax.persistence.Embeddable
+
+@Embeddable
+data class CaseListColumnId(
+    @Column(name = "case_definition_name")
+    val caseDefinitionName: String,
+    @Column(name = "column_key")
+    val key: String
+) : AbstractId<CaseListColumnId>()

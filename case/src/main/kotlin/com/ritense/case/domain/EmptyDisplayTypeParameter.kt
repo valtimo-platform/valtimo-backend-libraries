@@ -16,7 +16,7 @@
 
 package com.ritense.case.domain
 
-class EmptyDisplayTypeParameter: DisplayTypeParameter {
+class EmptyDisplayTypeParameter : DisplayTypeParameter {
     override fun validate(): Boolean {
         return true
     }
