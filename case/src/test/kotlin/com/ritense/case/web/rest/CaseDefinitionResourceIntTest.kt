@@ -73,14 +73,10 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should update case settings`() {
-
         documentDefinitionService.deploy(
             "" + "{\n" + "    \"\$id\": \"resource-test-update.schema\",\n" + "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" + "}\n"
         )
-
-
         val caseDefinitionName = "resource-test-update"
-
         mockMvc.perform(
             MockMvcRequestBuilders.patch(
                 "/api/v1/case/{caseDefinitionName}/settings", caseDefinitionName
@@ -88,9 +84,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
         ).andExpect(status().isOk).andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
-
         val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
-
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -98,14 +92,14 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should not update case settings property when it has not been submitted`() {
         val caseDefinitionName = "resource-test-empty"
-
         documentDefinitionService.deploy(
-            "" + "{\n" + "    \"\$id\": \"$caseDefinitionName.schema\",\n" + "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" + "}\n"
+                    "{\n" +
+                    "    \"\$id\": \"$caseDefinitionName.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
         )
-
         val settings = CaseDefinitionSettings(caseDefinitionName, true)
         caseDefinitionSettingsRepository.save(settings)
-
         mockMvc.perform(
             MockMvcRequestBuilders.patch(
                 "/api/v1/case/{caseDefinitionName}/settings", caseDefinitionName
@@ -113,9 +107,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
         ).andExpect(status().isOk).andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
-
         val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
-
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -123,7 +115,6 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should return not found when getting settings for case that does not exist`() {
         val caseDefinitionName = "some-case-that-does-not-exist"
-
         mockMvc.perform(
             MockMvcRequestBuilders.get(
                 "/api/v1/case/{caseDefinitionName}/settings", caseDefinitionName
@@ -134,7 +125,6 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should return not found when updating settings for case that does not exist`() {
         val caseDefinitionName = "some-case-that-does-not-exist"
-
         mockMvc.perform(
             MockMvcRequestBuilders.patch(
                 "/api/v1/case/{caseDefinitionName}/settings", caseDefinitionName
@@ -146,8 +136,22 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     fun `should create list column`() {
         val caseDefinitionName = "listColumnDocumentDefinition"
         documentDefinitionService.deploy(
-            "" + "{\n" + "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" + "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" + "    \"title\": \"listColumnDocumentDefinition\",\n" + "    \"type\": \"object\",\n" + "    \"properties\": {\n" + "        \"firstName\": {\n" + "            \"type\": \"string\",\n" + "            \"description\": \"first name\"\n" + "        },\n" + "        \"lastName\": {\n" + "            \"type\": \"string\",\n" + "            \"description\": \"last name\"\n" + "        }\n" + "    }\n" + "}"
-        )
+                    "{\n" +
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}")
         mockMvc.perform(
             MockMvcRequestBuilders.post(
                 LIST_COLUMN_PATH, caseDefinitionName

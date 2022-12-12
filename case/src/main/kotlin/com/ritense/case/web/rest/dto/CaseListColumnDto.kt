@@ -25,16 +25,16 @@ import org.zalando.problem.Status
 
 data class CaseListColumnDto(
     val title: String?,
-    val key : String,
+    val key: String,
     val path: String,
     val displayType: DisplayType,
     val sortable: Boolean,
     val defaultSort: ColumnDefaultSort?
-    ) {
+) {
 
     fun toEntity(caseDefinitionName: String): CaseListColumn {
         return CaseListColumn(
-            CaseListColumnId(caseDefinitionName,this.key),
+            CaseListColumnId(caseDefinitionName, this.key),
             this.title,
             this.path,
             this.displayType,
@@ -43,9 +43,12 @@ data class CaseListColumnDto(
         )
     }
 
-    fun validate(caseDefinitionName: String){
-        if (!displayType.displayTypeParameters.validate()){
-            throw InvalidListColumnException("Display type parameters are invalid for type ${displayType.type}.",Status.BAD_REQUEST)
+    fun validate(caseDefinitionName: String) {
+        if (!displayType.displayTypeParameters.validate()) {
+            throw InvalidListColumnException(
+                "Display type parameters are invalid for type ${displayType.type}.",
+                Status.BAD_REQUEST
+            )
         }
     }
 }
