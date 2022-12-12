@@ -18,10 +18,12 @@ package com.ritense.case.service
 
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.exception.InvalidListColumnException
+import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
+import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import org.zalando.problem.Status
@@ -48,12 +50,16 @@ class CaseDefinitionService(
     @Throws(InvalidListColumnException::class)
     fun createListColumn(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
         validateListColumn(caseDefinitionName, caseListColumnDto)
-        caseDefinitionListColumnRepository.save(caseListColumnDto.toEntity(caseDefinitionName))
+        caseDefinitionListColumnRepository.save(CaseListColumnMapper.toEntity(caseDefinitionName, caseListColumnDto))
     }
 
     @Throws(InvalidListColumnException::class, UnknownDocumentDefinitionException::class)
     private fun validateListColumn(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
-        documentDefinitionService.findIdByName(caseDefinitionName)
+        try {
+            checkIfDocumentDefinitionExists(caseDefinitionName)
+        } catch (ex: UnknownDocumentDefinitionException) {
+            throw InvalidListColumnException(ex.message, Status.BAD_REQUEST)
+        }
         if (caseDefinitionListColumnRepository.existsByIdCaseDefinitionNameAndIdKey(
                 caseDefinitionName,
                 caseListColumnDto.key
@@ -85,5 +91,16 @@ class CaseDefinitionService(
     @Throws(UnknownDocumentDefinitionException::class)
     private fun checkIfDocumentDefinitionExists(caseDefinitionName: String) {
         documentDefinitionService.findIdByName(caseDefinitionName)
+    }
+
+    @Throws(UnknownDocumentDefinitionException::class)
+    fun getListColumns(caseDefinitionName: String): List<CaseListColumnDto> {
+        try {
+            checkIfDocumentDefinitionExists(caseDefinitionName)
+        } catch (ex: UnknownDocumentDefinitionException) {
+            throw UnknownCaseDefinitionException(ex.message)
+        }
+        return CaseListColumnMapper
+            .toDtoList(caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName))
     }
 }
