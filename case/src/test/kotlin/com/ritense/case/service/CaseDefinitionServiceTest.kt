@@ -118,7 +118,7 @@ class CaseDefinitionServiceTest {
             .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
         whenever(
             caseDefinitionListColumnRepository
-                .existsByColumnKeyCaseDefinitionNameAndColumnKeyKey(
+                .existsByIdCaseDefinitionNameAndIdKey(
                     caseDefinitionName,
                     listColumnDto.key
                 )
@@ -128,7 +128,7 @@ class CaseDefinitionServiceTest {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).existsByColumnKeyCaseDefinitionNameAndColumnKeyKey(
+        verify(caseDefinitionListColumnRepository).existsByIdCaseDefinitionNameAndIdKey(
             caseDefinitionName,
             listColumnDto.key
         )
@@ -157,7 +157,7 @@ class CaseDefinitionServiceTest {
         )
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
             .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
-        whenever(caseDefinitionListColumnRepository.findByColumnKeyCaseDefinitionName(caseDefinitionName))
+        whenever(caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName))
             .thenReturn(
                 listOf(
                     listColumnDto.toEntity(caseDefinitionName)
@@ -167,7 +167,7 @@ class CaseDefinitionServiceTest {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).findByColumnKeyCaseDefinitionName(caseDefinitionName)
+        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionName(caseDefinitionName)
         assertEquals("Unable to create list column. A column with defaultSort value already exists", exception.message)
 
     }
@@ -180,7 +180,7 @@ class CaseDefinitionServiceTest {
         )
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
             .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
-        whenever(caseDefinitionListColumnRepository.findByColumnKeyCaseDefinitionName(caseDefinitionName))
+        whenever(caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName))
             .thenReturn(
                 emptyList()
             )
@@ -196,7 +196,7 @@ class CaseDefinitionServiceTest {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).findByColumnKeyCaseDefinitionName(caseDefinitionName)
+        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionName(caseDefinitionName)
         verify(documentDefinitionService).validateJsonPath(caseDefinitionName, listColumnDto.path)
         assertEquals(
             "JsonPath '"
@@ -215,7 +215,7 @@ class CaseDefinitionServiceTest {
         )
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
             .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
-        whenever(caseDefinitionListColumnRepository.findByColumnKeyCaseDefinitionName(caseDefinitionName))
+        whenever(caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName))
             .thenReturn(
                 emptyList()
             )
@@ -224,7 +224,7 @@ class CaseDefinitionServiceTest {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).findByColumnKeyCaseDefinitionName(caseDefinitionName)
+        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionName(caseDefinitionName)
         verify(documentDefinitionService).validateJsonPath(caseDefinitionName, listColumnDto.path)
         assertEquals("Display type parameters are invalid for type enum.", exception.message)
 

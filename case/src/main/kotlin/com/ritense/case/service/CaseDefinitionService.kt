@@ -54,7 +54,7 @@ class CaseDefinitionService(
     @Throws(InvalidListColumnException::class, UnknownDocumentDefinitionException::class)
     private fun validateListColumn(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
         documentDefinitionService.findIdByName(caseDefinitionName)
-        if (caseDefinitionListColumnRepository.existsByColumnKeyCaseDefinitionNameAndColumnKeyKey(
+        if (caseDefinitionListColumnRepository.existsByIdCaseDefinitionNameAndIdKey(
                 caseDefinitionName,
                 caseListColumnDto.key
             )
@@ -66,7 +66,7 @@ class CaseDefinitionService(
         }
         if (
             caseListColumnDto.defaultSort != null &&
-            caseDefinitionListColumnRepository.findByColumnKeyCaseDefinitionName(caseDefinitionName)
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName)
                 .any { column -> column.defaultSort != null }
         ) {
             throw InvalidListColumnException(

@@ -23,7 +23,7 @@ import javax.persistence.*
 @Table(name = "case_list_column")
 data class CaseListColumn(
     @EmbeddedId
-    val columnKey: CaseListColumnId,
+    val id: CaseListColumnId,
     @Column(name = "title")
     val title: String?,
     @Column(name = "path")
