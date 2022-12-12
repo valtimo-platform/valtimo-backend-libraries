@@ -18,7 +18,6 @@ package com.ritense.case.web.rest
 
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseDefinitionSettings
-import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
 import org.junit.jupiter.api.BeforeEach
@@ -43,10 +42,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
 
     @Autowired
     lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
-
-    @Autowired
-    lateinit var caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository
-
+    
     @BeforeEach
     fun setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
@@ -202,7 +198,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
             .perform(
                 MockMvcRequestBuilders
                     .post(
-                        "/api/v1/case/{caseDefinitionName}/list-column",
+                        "/api/v1/case/{caseDefinitionName}/columns",
                         caseDefinitionName
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -248,7 +244,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
             .perform(
                 MockMvcRequestBuilders
                     .post(
-                        "/api/v1/case/{caseDefinitionName}/list-column",
+                        "/api/v1/case/{caseDefinitionName}/columns",
                         caseDefinitionName
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)

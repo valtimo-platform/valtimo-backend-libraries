@@ -58,7 +58,7 @@ class CaseDefinitionResource(
         }
     }
 
-    @PostMapping(value = ["/v1/case/{caseDefinitionName}/list-column"])
+    @PostMapping(value = ["/v1/case/{caseDefinitionName}/columns"])
     fun createCaseListColumn(
         @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDto: CaseListColumnDto

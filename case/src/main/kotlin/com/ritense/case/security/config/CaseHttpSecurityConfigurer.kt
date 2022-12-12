@@ -29,8 +29,10 @@ class CaseHttpSecurityConfigurer: HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(USER)
+                //.antMatchers(GET,"/api/v1/case/{caseDefinitionName}/columns").hasAuthority(USER)
+                .antMatchers(GET,"/api/v1/case/{caseDefinitionName}/columns").permitAll()
                 .antMatchers(PATCH, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/case/{caseDefinitionName}/columns").hasAuthority(ADMIN)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
