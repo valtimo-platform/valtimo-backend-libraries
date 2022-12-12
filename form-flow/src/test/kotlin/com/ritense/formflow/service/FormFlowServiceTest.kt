@@ -29,13 +29,13 @@ import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowInstance
-import com.ritense.formflow.expression.ExpressionProcessor
-import com.ritense.formflow.expression.ExpressionProcessorFactory
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessor
+import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.any
@@ -48,7 +48,7 @@ internal class FormFlowServiceTest : BaseTest() {
     lateinit var formFlowService: FormFlowService
     lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
     lateinit var formFlowAdditionalPropertiesSearchRepository: FormFlowAdditionalPropertiesSearchRepository
-    lateinit var expressionProcessor: ExpressionProcessor
+    lateinit var expressionProcessor: SpelExpressionProcessor
 
     @BeforeEach
     fun beforeAll() {
@@ -62,9 +62,12 @@ internal class FormFlowServiceTest : BaseTest() {
             emptyList()
         )
 
-        val expressionProcessorFactory = mock(ExpressionProcessorFactory::class.java)
-        expressionProcessor = spy(SpelExpressionProcessor())
-        whenever(expressionProcessorFactory.create(any())).thenReturn(expressionProcessor)
+        val expressionProcessorFactory = spy(SpelExpressionProcessorFactory())
+        expressionProcessorFactory.setFlowProcessBeans(mapOf())
+        whenever(expressionProcessorFactory.create(any())).thenAnswer {
+            expressionProcessor = spy(it.callRealMethod() as SpelExpressionProcessor)
+            expressionProcessor
+        }
         ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory, mock(ApplicationContext::class.java))
     }
 
@@ -105,6 +108,22 @@ internal class FormFlowServiceTest : BaseTest() {
 
     }
 
+    @Test
+    fun `should pass variables to expression context`() {
+        val instance = createAndOpenFormFlowInstance(
+            onOpen = listOf(
+                "\${'Hello '+'World!'}", "\${3 / 1}"
+            )
+        )
+
+        instance.getCurrentStep().open()
+
+        val contextMap = getContextMap(expressionProcessor)
+        assertThat((contextMap["step"] as Map<String, Any>)["id"]).isEqualTo(instance.getCurrentStep().id)
+        assertThat((contextMap["step"] as Map<String, Any>)["key"]).isEqualTo(instance.getCurrentStep().stepKey)
+        assertThat((contextMap["instance"] as Map<String, Any>)["id"]).isEqualTo(instance.id)
+    }
+
     private fun createAndOpenFormFlowInstance(
         onBack: List<String>? = null,
         onOpen: List<String>? = null,
@@ -128,5 +147,15 @@ internal class FormFlowServiceTest : BaseTest() {
         whenever(formFlowInstanceRepository.getById(formFlowInstance.id)).thenReturn(formFlowInstance)
 
         return formFlowInstance
+    }
+
+    private fun getContextMap(expressionProcessor: SpelExpressionProcessor): Map<String, Any> {
+        try {
+            val contextMapField = SpelExpressionProcessor::class.java.getDeclaredField("contextMap")
+            contextMapField.isAccessible = true
+            return contextMapField.get(expressionProcessor) as Map<String, Any>
+        } catch (e: NoSuchMethodException) {
+            throw IllegalStateException(e)
+        }
     }
 }

@@ -79,6 +79,9 @@ data class FormFlowStepInstance(
                 "key" to stepKey,
                 "submissionData" to instance.getSubmissionDataContext()
             ),
+            "instance" to mapOf(
+                "id" to instance.id
+            ),
             "additionalProperties" to instance.getAdditionalProperties()
         )
     }
