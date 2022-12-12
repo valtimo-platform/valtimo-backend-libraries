@@ -17,6 +17,7 @@
 package com.ritense.case.web.rest.dto
 
 import com.ritense.case.domain.CaseListColumn
+import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.exception.InvalidListColumnException
@@ -32,7 +33,14 @@ data class CaseListColumnDto(
     ) {
 
     fun toEntity(caseDefinitionName: String): CaseListColumn {
-        return CaseListColumn( caseDefinitionName,this.title,this.key,this.path,this.displayType,sortable,defaultSort)
+        return CaseListColumn(
+            CaseListColumnId(caseDefinitionName,this.key),
+            this.title,
+            this.path,
+            this.displayType,
+            sortable,
+            defaultSort
+        )
     }
 
     fun validate(caseDefinitionName: String){

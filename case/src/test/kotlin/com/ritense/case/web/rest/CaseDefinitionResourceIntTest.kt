@@ -33,7 +33,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import kotlin.test.assertEquals
 
-class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
+class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     lateinit var mockMvc: MockMvc
 
     @Autowired
@@ -53,11 +53,13 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
     @Test
     fun `should get case settings with default values`() {
 
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"\$id\": \"resource-test-default.schema\",\n" +
-            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n")
+        documentDefinitionService.deploy(
+            "" +
+                    "{\n" +
+                    "    \"\$id\": \"resource-test-default.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+        )
 
 
         val caseDefinitionName = "resource-test-default"
@@ -80,11 +82,13 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
     @Test
     fun `should update case settings`() {
 
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"\$id\": \"resource-test-update.schema\",\n" +
-            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n")
+        documentDefinitionService.deploy(
+            "" +
+                    "{\n" +
+                    "    \"\$id\": \"resource-test-update.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+        )
 
 
         val caseDefinitionName = "resource-test-update"
@@ -114,11 +118,13 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
     fun `should not update case settings property when it has not been submitted`() {
         val caseDefinitionName = "resource-test-empty"
 
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"\$id\": \"$caseDefinitionName.schema\",\n" +
-            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n")
+        documentDefinitionService.deploy(
+            "" +
+                    "{\n" +
+                    "    \"\$id\": \"$caseDefinitionName.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+        )
 
         val settings = CaseDefinitionSettings(caseDefinitionName, true)
         caseDefinitionSettingsRepository.save(settings)
@@ -179,23 +185,25 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
     @Test
     fun `should create list column`() {
         val caseDefinitionName = "listColumnDocumentDefinition"
-        documentDefinitionService.deploy("" +
-                "{\n" +
-                "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "    \"title\": \"listColumnDocumentDefinition\",\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"firstName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"first name\"\n" +
-                "        },\n" +
-                "        \"lastName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"last name\"\n" +
-                "        }\n" +
-                "    }\n" +
-                "}")
+        documentDefinitionService.deploy(
+            "" +
+                    "{\n" +
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
+        )
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -204,20 +212,22 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
                         caseDefinitionName
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content("{\n" +
-                            "  \"title\": \"First name\",\n" +
-                            "  \"key\": \"first-name\",\n" +
-                            "  \"path\": \"doc:firstName\" ,\n" +
-                            "  \"displayType\": {\n" +
-                            "    \"type\": \"enum\",\n" +
-                            "    \"displayTypeParameters\": {\n" +
-                            "        \"enum\": {\"key1\":\"Value 1\"},\n" +
-                            "        \"date-format\": \"\"\n" +
-                            "        }\n" +
-                            "    },\n" +
-                            "    \"sortable\": true ,\n" +
-                            "    \"defaultSort\": \"ASC\"\n" +
-                            "}")
+                    .content(
+                        "{\n" +
+                                "  \"title\": \"First name\",\n" +
+                                "  \"key\": \"first-name\",\n" +
+                                "  \"path\": \"doc:firstName\" ,\n" +
+                                "  \"displayType\": {\n" +
+                                "    \"type\": \"enum\",\n" +
+                                "    \"displayTypeParameters\": {\n" +
+                                "        \"enum\": {\"key1\":\"Value 1\"},\n" +
+                                "        \"date-format\": \"\"\n" +
+                                "        }\n" +
+                                "    },\n" +
+                                "    \"sortable\": true ,\n" +
+                                "    \"defaultSort\": \"ASC\"\n" +
+                                "}"
+                    )
             )
             .andExpect(status().isOk)
     }
@@ -225,23 +235,25 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
     @Test
     fun `should return bad request on create`() {
         val caseDefinitionName = "listColumnDocumentDefinition"
-        documentDefinitionService.deploy("" +
-                "{\n" +
-                "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "    \"title\": \"listColumnDocumentDefinition\",\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"firstName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"first name\"\n" +
-                "        },\n" +
-                "        \"lastName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"last name\"\n" +
-                "        }\n" +
-                "    }\n" +
-                "}")
+        documentDefinitionService.deploy(
+            "" +
+                    "{\n" +
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
+        )
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -250,19 +262,21 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
                         caseDefinitionName
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content("{\n" +
-                            "  \"title\": \"First name\",\n" +
-                            "  \"key\": \"first-name\",\n" +
-                            "  \"path\": \"doc:firstName\" ,\n" +
-                            "  \"displayType\": {\n" +
-                            "    \"type\": \"enum\",\n" +
-                            "    \"displayTypeParameters\": {\n" +
-                            "        \"date-format\": \"\"\n" +
-                            "        }\n" +
-                            "    },\n" +
-                            "    \"sortable\": true ,\n" +
-                            "    \"defaultSort\": \"ASC\"\n" +
-                            "}")
+                    .content(
+                        "{\n" +
+                                "  \"title\": \"First name\",\n" +
+                                "  \"key\": \"first-name\",\n" +
+                                "  \"path\": \"doc:firstName\" ,\n" +
+                                "  \"displayType\": {\n" +
+                                "    \"type\": \"enum\",\n" +
+                                "    \"displayTypeParameters\": {\n" +
+                                "        \"date-format\": \"\"\n" +
+                                "        }\n" +
+                                "    },\n" +
+                                "    \"sortable\": true ,\n" +
+                                "    \"defaultSort\": \"ASC\"\n" +
+                                "}"
+                    )
             )
             .andExpect(status().isBadRequest)
     }

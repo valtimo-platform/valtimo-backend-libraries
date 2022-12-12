@@ -53,26 +53,32 @@ class CaseDefinitionService(
         caseDefinitionListColumnRepository.save(CaseListColumnMapper.toEntity(caseDefinitionName,caseListColumnDto))
     }
 
-    @Throws(InvalidListColumnException::class,UnknownDocumentDefinitionException::class)
-    private fun validateListColumn(caseDefinitionName: String,caseListColumnDto: CaseListColumnDto){
-        try{
-            checkIfDocumentDefinitionExists(caseDefinitionName)
-        }catch (ex: UnknownDocumentDefinitionException){
-            throw InvalidListColumnException(ex.message,Status.BAD_REQUEST)
+    @Throws(InvalidListColumnException::class, UnknownDocumentDefinitionException::class)
+    private fun validateListColumn(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
+        documentDefinitionService.findIdByName(caseDefinitionName)
+        if (caseDefinitionListColumnRepository.existsByIdCaseDefinitionNameAndIdKey(
+                caseDefinitionName,
+                caseListColumnDto.key
+            )
+        ) {
+            throw InvalidListColumnException(
+                "Unable to create list column. A column with the same key already exists",
+                Status.BAD_REQUEST
+            )
         }
-        if(caseDefinitionListColumnRepository.existsByCaseDefinitionNameAndKey(caseDefinitionName,caseListColumnDto.key)){
-            throw InvalidListColumnException("Unable to create list column. A column with the same key already exists",Status.BAD_REQUEST)
-        }
-        if(
+        if (
             caseListColumnDto.defaultSort != null &&
-            caseDefinitionListColumnRepository.findByCaseDefinitionName(caseDefinitionName).
-            any{ column -> column.defaultSort != null}
-        ){
-            throw InvalidListColumnException("Unable to create list column. A column with defaultSort value already exists",Status.BAD_REQUEST)
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName)
+                .any { column -> column.defaultSort != null }
+        ) {
+            throw InvalidListColumnException(
+                "Unable to create list column. A column with defaultSort value already exists",
+                Status.BAD_REQUEST
+            )
         }
-        try{
-            documentDefinitionService.validateJsonPath(caseDefinitionName,caseListColumnDto.path)
-        }catch (ex: Exception){
+        try {
+            documentDefinitionService.validateJsonPath(caseDefinitionName, caseListColumnDto.path)
+        } catch (ex: Exception) {
             throw InvalidListColumnException(ex.message, Status.BAD_REQUEST)
         }
         caseListColumnDto.validate(caseDefinitionName)

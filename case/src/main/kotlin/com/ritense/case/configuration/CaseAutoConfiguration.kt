@@ -60,7 +60,7 @@ class CaseAutoConfiguration {
         caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
         documentDefinitionService: DocumentDefinitionService
     ): CaseDefinitionService {
-        return CaseDefinitionService(repository, caseDefinitionListColumnRepository,documentDefinitionService)
+        return CaseDefinitionService(repository, caseDefinitionListColumnRepository, documentDefinitionService)
     }
 
     @Bean
@@ -97,7 +97,7 @@ class CaseAutoConfiguration {
 
     @Bean
     fun dateFormatDisplayTypeParameterType(): NamedType {
-        return NamedType(DateFormatDisplayTypeParameter::class.java, "dateFormat")
+        return NamedType(DateFormatDisplayTypeParameter::class.java, "date")
     }
 
     @Bean

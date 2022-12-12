@@ -69,8 +69,8 @@ class CaseDefinitionResource(
     fun createCaseListColumn(
         @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDto: CaseListColumnDto
-    ): ResponseEntity<Any>{
-        service.createListColumn(caseDefinitionName,caseListColumnDto)
+    ): ResponseEntity<Any> {
+        service.createListColumn(caseDefinitionName, caseListColumnDto)
         return ResponseEntity.ok().build()
     }
 }

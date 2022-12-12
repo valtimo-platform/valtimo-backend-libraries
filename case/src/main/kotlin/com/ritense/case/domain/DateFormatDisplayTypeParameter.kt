@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class DateFormatDisplayTypeParameter(
     @JsonProperty("dateFormat")
-    private val dateFormat: String
-): DisplayTypeParameter {
+    private val dateFormat: String?
+) : DisplayTypeParameter {
     override fun validate(): Boolean {
-        return dateFormat.isNotEmpty()
+        return true
     }
 }
