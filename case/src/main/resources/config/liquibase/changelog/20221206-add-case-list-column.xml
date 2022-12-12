@@ -22,7 +22,7 @@
     <property name="booleanFalseValue" value="0" dbms="mysql"/>
     <property name="booleanFalseValue" value="false" dbms="postgresql"/>
 
-    <changeSet id="20221206-case_list_column" author="luis-soares">
+    <changeSet id="20221206-case_list_column" author="Ritense">
         <createTable tableName="case_list_column">
             <column name="case_definition_name" type="varchar(256)">
                 <constraints nullable="false"/>
