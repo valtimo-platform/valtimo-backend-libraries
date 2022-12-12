@@ -18,7 +18,6 @@ package com.ritense.case.web.rest
 
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseDefinitionSettings
-import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
 import org.junit.jupiter.api.BeforeEach
@@ -31,9 +30,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 import kotlin.test.assertEquals
 
+@Transactional
 class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     lateinit var mockMvc: MockMvc
 
@@ -55,11 +56,13 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should get case settings with default values`() {
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"\$id\": \"resource-test-default.schema\",\n" +
-            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n")
+        documentDefinitionService.deploy(
+            "" +
+                    "{\n" +
+                    "    \"\$id\": \"resource-test-default.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+        )
         val caseDefinitionName = "resource-test-default"
         mockMvc.perform(
             MockMvcRequestBuilders.get(
@@ -72,11 +75,13 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should update case settings`() {
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"\$id\": \"resource-test-update.schema\",\n" +
-            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n")
+        documentDefinitionService.deploy(
+            "" +
+                    "{\n" +
+                    "    \"\$id\": \"resource-test-update.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+        )
 
 
         val caseDefinitionName = "resource-test-update"
@@ -96,7 +101,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     fun `should not update case settings property when it has not been submitted`() {
         val caseDefinitionName = "resource-test-empty"
         documentDefinitionService.deploy(
-                    "{\n" +
+            "{\n" +
                     "    \"\$id\": \"$caseDefinitionName.schema\",\n" +
                     "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
                     "}\n"
@@ -139,7 +144,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     fun `should create list column`() {
         val caseDefinitionName = "listColumnDocumentDefinition"
         documentDefinitionService.deploy(
-                    "{\n" +
+            "{\n" +
                     "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
                     "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
                     "    \"title\": \"listColumnDocumentDefinition\",\n" +
@@ -154,7 +159,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     "            \"description\": \"last name\"\n" +
                     "        }\n" +
                     "    }\n" +
-                    "}")
+                    "}"
+        )
         mockMvc.perform(
             MockMvcRequestBuilders.post(
                 LIST_COLUMN_PATH, caseDefinitionName
