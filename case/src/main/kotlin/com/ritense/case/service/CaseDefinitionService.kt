@@ -58,7 +58,7 @@ class CaseDefinitionService(
         try {
             documentDefinitionService.findIdByName(caseDefinitionName)
         } catch (ex: UnknownDocumentDefinitionException) {
-            throw (UnknownCaseDefinitionException(ex.message, Status.BAD_REQUEST))
+            throw InvalidListColumnException(ex.message, Status.BAD_REQUEST)
         }
         if (caseDefinitionListColumnRepository.existsByIdCaseDefinitionNameAndIdKey(
                 caseDefinitionName,
