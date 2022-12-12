@@ -17,10 +17,15 @@
 package com.ritense.case.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.ritense.case.domain.DateFormatDisplayTypeParameter
+import com.ritense.case.domain.EnumDisplayTypeParameter
+import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.web.rest.CaseDefinitionResource
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
@@ -52,9 +57,10 @@ class CaseAutoConfiguration {
     @Bean
     fun caseDefinitionService(
         repository: CaseDefinitionSettingsRepository,
+        caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
         documentDefinitionService: DocumentDefinitionService
     ): CaseDefinitionService {
-        return CaseDefinitionService(repository, documentDefinitionService)
+        return CaseDefinitionService(repository, caseDefinitionListColumnRepository, documentDefinitionService)
     }
 
     @Bean
@@ -82,5 +88,23 @@ class CaseAutoConfiguration {
     @Bean
     fun caseLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
         return LiquibaseMasterChangeLogLocation("config/liquibase/case-master.xml")
+    }
+
+    @Bean
+    fun enumDisplayTypeParameterType(): NamedType {
+        return NamedType(EnumDisplayTypeParameter::class.java, "enum")
+    }
+
+    @Bean
+    fun dateFormatDisplayTypeParameterType(): NamedType {
+        return NamedType(DateFormatDisplayTypeParameter::class.java, "date")
+    }
+
+    @Bean
+    fun caseObjectMapper(
+        objectMapper: ObjectMapper,
+        displayTypeParameterTypes: Collection<NamedType>
+    ): ObjectMapperConfigurer {
+        return ObjectMapperConfigurer(objectMapper, displayTypeParameterTypes)
     }
 }

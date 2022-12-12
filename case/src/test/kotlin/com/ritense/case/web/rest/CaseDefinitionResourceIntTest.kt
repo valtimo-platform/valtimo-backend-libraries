@@ -18,6 +18,7 @@ package com.ritense.case.web.rest
 
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseDefinitionSettings
+import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
 import org.junit.jupiter.api.BeforeEach
@@ -31,7 +32,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import kotlin.test.assertEquals
 
-class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
+class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     lateinit var mockMvc: MockMvc
 
     @Autowired
@@ -41,7 +42,10 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
     lateinit var webApplicationContext: WebApplicationContext
 
     @Autowired
-    lateinit var repository: CaseDefinitionSettingsRepository
+    lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
+
+    @Autowired
+    lateinit var caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository
 
     @BeforeEach
     fun setUp() {
@@ -51,11 +55,13 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
     @Test
     fun `should get case settings with default values`() {
 
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"\$id\": \"resource-test-default.schema\",\n" +
-            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n")
+        documentDefinitionService.deploy(
+            "" +
+                    "{\n" +
+                    "    \"\$id\": \"resource-test-default.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+        )
 
 
         val caseDefinitionName = "resource-test-default"
@@ -77,16 +83,14 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
 
     @Test
     fun `should update case settings`() {
-
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"\$id\": \"resource-test-update.schema\",\n" +
-            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n")
-
-
+        documentDefinitionService.deploy(
+            "" +
+                    "{\n" +
+                    "    \"\$id\": \"resource-test-update.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+        )
         val caseDefinitionName = "resource-test-update"
-
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -101,9 +105,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
-
-        val settingsInDatabase = repository.getById(caseDefinitionName)
-
+        val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -111,16 +113,15 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
     @Test
     fun `should not update case settings property when it has not been submitted`() {
         val caseDefinitionName = "resource-test-empty"
-
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"\$id\": \"$caseDefinitionName.schema\",\n" +
-            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n")
-
+        documentDefinitionService.deploy(
+            "" +
+                    "{\n" +
+                    "    \"\$id\": \"$caseDefinitionName.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+        )
         val settings = CaseDefinitionSettings(caseDefinitionName, true)
-        repository.save(settings)
-
+        caseDefinitionSettingsRepository.save(settings)
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -135,9 +136,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
-
-        val settingsInDatabase = repository.getById(caseDefinitionName)
-
+        val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -145,7 +144,6 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
     @Test
     fun `should return not found when getting settings for case that does not exist`() {
         val caseDefinitionName = "some-case-that-does-not-exist"
-
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -160,7 +158,6 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
     @Test
     fun `should return not found when updating settings for case that does not exist`() {
         val caseDefinitionName = "some-case-that-does-not-exist"
-
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -172,5 +169,104 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
                     .content("{\"canHaveAssignee\": true}")
             )
             .andExpect(MockMvcResultMatchers.status().isNotFound)
+    }
+
+    @Test
+    fun `should create list column`() {
+        val caseDefinitionName = "listColumnDocumentDefinition"
+        documentDefinitionService.deploy(
+            "" +
+                    "{\n" +
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
+        )
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post(
+                        "/api/v1/case/{caseDefinitionName}/list-column",
+                        caseDefinitionName
+                    )
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(
+                        "{\n" +
+                                "  \"title\": \"First name\",\n" +
+                                "  \"key\": \"first-name\",\n" +
+                                "  \"path\": \"doc:firstName\" ,\n" +
+                                "  \"displayType\": {\n" +
+                                "    \"type\": \"enum\",\n" +
+                                "    \"displayTypeParameters\": {\n" +
+                                "        \"enum\": {\"key1\":\"Value 1\"},\n" +
+                                "        \"date-format\": \"\"\n" +
+                                "        }\n" +
+                                "    },\n" +
+                                "    \"sortable\": true ,\n" +
+                                "    \"defaultSort\": \"ASC\"\n" +
+                                "}"
+                    )
+            )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+    }
+
+    @Test
+    fun `should return bad request`() {
+        val caseDefinitionName = "listColumnDocumentDefinition"
+        documentDefinitionService.deploy(
+            "" +
+                    "{\n" +
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
+        )
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post(
+                        "/api/v1/case/{caseDefinitionName}/list-column",
+                        caseDefinitionName
+                    )
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(
+                        "{\n" +
+                                "  \"title\": \"First name\",\n" +
+                                "  \"key\": \"first-name\",\n" +
+                                "  \"path\": \"doc:firstName\" ,\n" +
+                                "  \"displayType\": {\n" +
+                                "    \"type\": \"enum\",\n" +
+                                "    \"displayTypeParameters\": {\n" +
+                                "        \"date-format\": \"\"\n" +
+                                "        }\n" +
+                                "    },\n" +
+                                "    \"sortable\": true ,\n" +
+                                "    \"defaultSort\": \"ASC\"\n" +
+                                "}"
+                    )
+            )
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
     }
 }
