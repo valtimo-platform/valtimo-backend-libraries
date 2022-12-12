@@ -29,6 +29,7 @@ import java.util.UUID;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
+import org.springframework.transaction.annotation.Transactional;
 
 public class DefaultProcessLinkService implements ProcessLinkService {
     private final RepositoryService repositoryService;
@@ -49,6 +50,7 @@ public class DefaultProcessLinkService implements ProcessLinkService {
     }
 
     @Override
+    @Transactional
     public TaskOpenResult openTask(UUID taskId) {
         Task task = taskService
             .createTaskQuery()
