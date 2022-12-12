@@ -17,41 +17,43 @@
 package com.ritense.case.web.rest.mapper
 
 import com.ritense.case.domain.CaseListColumn
+import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 
 class CaseListColumnMapper {
-    companion object{
+    companion object {
 
-        fun toEntity(caseDefinitionName: String,caseListColumnDto: CaseListColumnDto): CaseListColumn {
+        fun toEntity(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto): CaseListColumn {
             return CaseListColumn(
-                caseDefinitionName,
+                CaseListColumnId(caseDefinitionName, caseListColumnDto.key),
                 caseListColumnDto.title,
-                caseListColumnDto.key,
                 caseListColumnDto.path,
                 caseListColumnDto.displayType,
                 caseListColumnDto.sortable,
-                caseListColumnDto.defaultSort)
+                caseListColumnDto.defaultSort
+            )
         }
 
         fun toDto(caseListColumn: CaseListColumn): CaseListColumnDto {
             return CaseListColumnDto(
                 caseListColumn.title,
-                caseListColumn.key,
+                caseListColumn.id.key,
                 caseListColumn.path,
                 caseListColumn.displayType,
                 caseListColumn.sortable,
-                caseListColumn.defaultSort)
+                caseListColumn.defaultSort
+            )
         }
 
-        fun toEntityList(caseDefinitionName: String,caseListColumns: List<CaseListColumnDto>): List<CaseListColumn>{
-            return caseListColumns.stream().map {
-                column -> toEntity(caseDefinitionName,column)
+        fun toEntityList(caseDefinitionName: String, caseListColumns: List<CaseListColumnDto>): List<CaseListColumn> {
+            return caseListColumns.stream().map { column ->
+                toEntity(caseDefinitionName, column)
             }.toList()
         }
 
         fun toDtoList(caseListColumns: List<CaseListColumn>): List<CaseListColumnDto> {
-            return caseListColumns.stream().map {
-                column -> toDto(column)
+            return caseListColumns.stream().map { column ->
+                toDto(column)
             }.toList()
         }
     }

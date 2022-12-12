@@ -29,11 +29,12 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(USER)
-                //.antMatchers(GET,"/api/v1/case/{caseDefinitionName}/columns").hasAuthority(USER)
-                .antMatchers(GET,"/api/v1/case/{caseDefinitionName}/columns").permitAll()
+                //.antMatchers(GET,"/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/list-column").permitAll()
                 .antMatchers(PATCH, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/case/{caseDefinitionName}/columns").hasAuthority(ADMIN)
-        } catch(e: Exception) {
+                //.antMatchers(POST, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/case/{caseDefinitionName}/list-column").permitAll()
+        } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
     }

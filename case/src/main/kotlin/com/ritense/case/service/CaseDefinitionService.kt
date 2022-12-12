@@ -48,9 +48,9 @@ class CaseDefinitionService(
     }
 
     @Throws(InvalidListColumnException::class)
-    fun createListColumn(caseDefinitionName: String,caseListColumnDto: CaseListColumnDto){
-        validateListColumn(caseDefinitionName,caseListColumnDto)
-        caseDefinitionListColumnRepository.save(CaseListColumnMapper.toEntity(caseDefinitionName,caseListColumnDto))
+    fun createListColumn(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
+        validateListColumn(caseDefinitionName, caseListColumnDto)
+        caseDefinitionListColumnRepository.save(CaseListColumnMapper.toEntity(caseDefinitionName, caseListColumnDto))
     }
 
     @Throws(InvalidListColumnException::class, UnknownDocumentDefinitionException::class)
@@ -88,14 +88,15 @@ class CaseDefinitionService(
     private fun checkIfDocumentDefinitionExists(caseDefinitionName: String) {
         documentDefinitionService.findIdByName(caseDefinitionName)
     }
+
     @Throws(UnknownDocumentDefinitionException::class)
     fun getListColumns(caseDefinitionName: String): List<CaseListColumnDto> {
-        try{
+        try {
             checkIfDocumentDefinitionExists(caseDefinitionName)
-        }catch (ex: UnknownDocumentDefinitionException){
-            throw UnknownCaseDefinitionException(ex.message,Status.BAD_REQUEST)
+        } catch (ex: UnknownDocumentDefinitionException) {
+            throw UnknownCaseDefinitionException(ex.message, Status.BAD_REQUEST)
         }
         return CaseListColumnMapper
-            .toDtoList(caseDefinitionListColumnRepository.findByCaseDefinitionName(caseDefinitionName))
+            .toDtoList(caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName))
     }
 }
