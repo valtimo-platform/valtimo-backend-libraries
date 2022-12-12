@@ -42,7 +42,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
 
     @Autowired
     lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
-    
+
     @BeforeEach
     fun setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()

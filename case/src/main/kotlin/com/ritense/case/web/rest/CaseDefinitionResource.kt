@@ -58,6 +58,13 @@ class CaseDefinitionResource(
         }
     }
 
+    @GetMapping(value = ["/v1/case/{caseDefinitionName}/columns"])
+    fun getCaseListColumn(
+        @PathVariable caseDefinitionName: String
+    ): ResponseEntity<List<CaseListColumnDto>>{
+        return ResponseEntity.ok().body(service.getListColumns(caseDefinitionName))
+    }
+
     @PostMapping(value = ["/v1/case/{caseDefinitionName}/columns"])
     fun createCaseListColumn(
         @PathVariable caseDefinitionName: String,

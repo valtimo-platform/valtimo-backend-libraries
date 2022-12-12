@@ -22,6 +22,7 @@ import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
+import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import org.zalando.problem.Status
@@ -48,12 +49,12 @@ class CaseDefinitionService(
     @Throws(InvalidListColumnException::class)
     fun createListColumn(caseDefinitionName: String,caseListColumnDto: CaseListColumnDto){
         validateListColumn(caseDefinitionName,caseListColumnDto)
-        caseDefinitionListColumnRepository.save(caseListColumnDto.toEntity(caseDefinitionName))
+        caseDefinitionListColumnRepository.save(CaseListColumnMapper.toEntity(caseDefinitionName,caseListColumnDto))
     }
 
     @Throws(InvalidListColumnException::class,UnknownDocumentDefinitionException::class)
     private fun validateListColumn(caseDefinitionName: String,caseListColumnDto: CaseListColumnDto){
-        documentDefinitionService.findIdByName(caseDefinitionName)
+        checkIfDocumentDefinitionExists(caseDefinitionName)
         if(caseDefinitionListColumnRepository.existsByCaseDefinitionNameAndKey(caseDefinitionName,caseListColumnDto.key)){
             throw InvalidListColumnException("Unable to create list column. A column with the same key already exists",Status.BAD_REQUEST)
         }
@@ -75,5 +76,11 @@ class CaseDefinitionService(
     @Throws(UnknownDocumentDefinitionException::class)
     private fun checkIfDocumentDefinitionExists(caseDefinitionName: String) {
         documentDefinitionService.findIdByName(caseDefinitionName)
+    }
+    @Throws(UnknownDocumentDefinitionException::class)
+    fun getListColumns(caseDefinitionName: String): List<CaseListColumnDto> {
+        checkIfDocumentDefinitionExists(caseDefinitionName)
+        return CaseListColumnMapper
+            .toDtoList(caseDefinitionListColumnRepository.findByCaseDefinitionName(caseDefinitionName))
     }
 }
