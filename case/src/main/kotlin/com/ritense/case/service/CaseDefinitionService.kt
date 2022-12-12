@@ -18,6 +18,7 @@ package com.ritense.case.service
 
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.exception.InvalidListColumnException
+import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
@@ -54,7 +55,11 @@ class CaseDefinitionService(
 
     @Throws(InvalidListColumnException::class,UnknownDocumentDefinitionException::class)
     private fun validateListColumn(caseDefinitionName: String,caseListColumnDto: CaseListColumnDto){
-        checkIfDocumentDefinitionExists(caseDefinitionName)
+        try{
+            checkIfDocumentDefinitionExists(caseDefinitionName)
+        }catch (ex: UnknownDocumentDefinitionException){
+            throw InvalidListColumnException(ex.message,Status.BAD_REQUEST)
+        }
         if(caseDefinitionListColumnRepository.existsByCaseDefinitionNameAndKey(caseDefinitionName,caseListColumnDto.key)){
             throw InvalidListColumnException("Unable to create list column. A column with the same key already exists",Status.BAD_REQUEST)
         }
@@ -79,7 +84,11 @@ class CaseDefinitionService(
     }
     @Throws(UnknownDocumentDefinitionException::class)
     fun getListColumns(caseDefinitionName: String): List<CaseListColumnDto> {
-        checkIfDocumentDefinitionExists(caseDefinitionName)
+        try{
+            checkIfDocumentDefinitionExists(caseDefinitionName)
+        }catch (ex: UnknownDocumentDefinitionException){
+            throw UnknownCaseDefinitionException(ex.message,Status.BAD_REQUEST)
+        }
         return CaseListColumnMapper
             .toDtoList(caseDefinitionListColumnRepository.findByCaseDefinitionName(caseDefinitionName))
     }

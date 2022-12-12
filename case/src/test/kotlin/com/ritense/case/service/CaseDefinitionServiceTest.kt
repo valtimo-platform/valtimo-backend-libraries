@@ -125,7 +125,7 @@ class CaseDefinitionServiceTest {
             DisplayType("enum", EnumDisplayTypeParameter(mapOf(Pair("Key1","Value1")))))
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
             .thenThrow(UnknownDocumentDefinitionException::class.java)
-        assertThrows<UnknownDocumentDefinitionException> {
+        assertThrows<InvalidListColumnException> {
             service.createListColumn(caseDefinitionName,listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)

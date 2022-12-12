@@ -27,6 +27,8 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import kotlin.test.assertEquals
@@ -69,7 +71,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
             )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(false))
@@ -97,7 +99,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content("{\"canHaveAssignee\": true}")
             )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
@@ -131,7 +133,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content("{}")
             )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
@@ -154,7 +156,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
                         caseDefinitionName
                     )
             )
-            .andExpect(MockMvcResultMatchers.status().isNotFound)
+            .andExpect(status().isNotFound)
     }
 
     @Test
@@ -171,7 +173,7 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content("{\"canHaveAssignee\": true}")
             )
-            .andExpect(MockMvcResultMatchers.status().isNotFound)
+            .andExpect(status().isNotFound)
     }
 
     @Test
@@ -217,11 +219,11 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
                             "    \"defaultSort\": \"ASC\"\n" +
                             "}")
             )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(status().isOk)
     }
 
     @Test
-    fun `should return bad request`() {
+    fun `should return bad request on create`() {
         val caseDefinitionName = "listColumnDocumentDefinition"
         documentDefinitionService.deploy("" +
                 "{\n" +
@@ -262,6 +264,57 @@ class CaseDefinitionResourceIntTest: BaseIntegrationTest() {
                             "    \"defaultSort\": \"ASC\"\n" +
                             "}")
             )
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `should return bad request on get with invalid document definition`() {
+        val caseDefinitionName = "listColumnDocumentDefinition"
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(
+                        "/api/v1/case/{caseDefinitionName}/columns",
+                        caseDefinitionName
+                    )
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `should return columns for document definition`() {
+        val caseDefinitionName = "listColumnDocumentDefinition"
+        `should create list column`()
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(
+                        "/api/v1/case/{caseDefinitionName}/columns",
+                        caseDefinitionName
+                    )
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andExpect{
+                status().isOk
+                content().json("" +
+                        "[\n" +
+                        "  {\n" +
+                        "    \"title\": \"First name\",\n" +
+                        "    \"key\": \"first-name\",\n" +
+                        "    \"path\": \"doc:firstName\",\n" +
+                        "    \"displayType\": {\n" +
+                        "      \"type\": \"enum\",\n" +
+                        "      \"displayTypeParameters\": {\n" +
+                        "        \"enum\": {\n" +
+                        "          \"key1\": \"Value 1\"\n" +
+                        "        }\n" +
+                        "      }\n" +
+                        "    },\n" +
+                        "    \"sortable\": true,\n" +
+                        "    \"defaultSort\": \"ASC\"\n" +
+                        "  }\n" +
+                        "]")
+            }
     }
 }
