@@ -83,7 +83,6 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should update case settings`() {
-
         documentDefinitionService.deploy(
             "" +
                     "{\n" +
@@ -91,10 +90,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
                     "}\n"
         )
-
-
         val caseDefinitionName = "resource-test-update"
-
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -109,9 +105,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
-
         val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
-
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -119,7 +113,6 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should not update case settings property when it has not been submitted`() {
         val caseDefinitionName = "resource-test-empty"
-
         documentDefinitionService.deploy(
             "" +
                     "{\n" +
@@ -127,10 +120,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
                     "}\n"
         )
-
         val settings = CaseDefinitionSettings(caseDefinitionName, true)
         caseDefinitionSettingsRepository.save(settings)
-
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -145,9 +136,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
-
         val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
-
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -155,7 +144,6 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should return not found when getting settings for case that does not exist`() {
         val caseDefinitionName = "some-case-that-does-not-exist"
-
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -170,7 +158,6 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should return not found when updating settings for case that does not exist`() {
         val caseDefinitionName = "some-case-that-does-not-exist"
-
         mockMvc
             .perform(
                 MockMvcRequestBuilders
