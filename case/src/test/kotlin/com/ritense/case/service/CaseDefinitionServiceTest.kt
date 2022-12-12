@@ -15,8 +15,13 @@ import com.ritense.document.service.DocumentDefinitionService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.*
-import javax.xml.bind.ValidationException
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doNothing
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import javax.validation.ValidationException
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -76,17 +81,13 @@ class CaseDefinitionServiceTest {
         val caseDefinitionName = "name"
         val currentCaseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, true)
         val updatedCaseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, false)
-
         val caseSettingsDto: CaseSettingsDto = mock()
-
         whenever(caseDefinitionSettingsRepository.getById(caseDefinitionName)).thenReturn(currentCaseDefinitionSettings)
         whenever(caseDefinitionSettingsRepository.save(updatedCaseDefinitionSettings)).thenReturn(
             updatedCaseDefinitionSettings
         )
         whenever(caseSettingsDto.update(currentCaseDefinitionSettings)).thenReturn(updatedCaseDefinitionSettings)
-
         val returnedCaseDefinitionSettings = service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
-
         verify(caseDefinitionSettingsRepository).getById(caseDefinitionName)
         assertEquals(caseDefinitionName, returnedCaseDefinitionSettings.name)
         assertFalse(returnedCaseDefinitionSettings.canHaveAssignee)
@@ -96,13 +97,11 @@ class CaseDefinitionServiceTest {
     fun `should throw exception when updating case settings and document definition does not exist `() {
         val caseDefinitionName = "name"
         val caseSettingsDto: CaseSettingsDto = mock()
-
         whenever(documentDefinitionService.findIdByName(any())).thenThrow(
             UnknownDocumentDefinitionException(
                 caseDefinitionName
             )
         )
-
         assertThrows<UnknownDocumentDefinitionException> {
             val foundCaseDefinitionSettings = service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
         }

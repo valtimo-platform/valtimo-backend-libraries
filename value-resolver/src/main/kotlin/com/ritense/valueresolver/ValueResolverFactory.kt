@@ -16,8 +16,8 @@
 
 package com.ritense.valueresolver
 
-import java.util.function.Function
 import org.camunda.bpm.engine.delegate.VariableScope
+import java.util.function.Function
 
 /**
  * A factory that creates a value resolver for a specific prefix.
@@ -54,5 +54,5 @@ interface ValueResolverFactory {
      * @param variableScope An implementation of VariableScope.
      * @param values The values to handle. i.e. mapOf(doc:add:/firstname to John)
      */
-    fun handleValues(processInstanceId: String, variableScope: VariableScope, values: Map<String, Any>)
+    fun handleValues(processInstanceId: String, variableScope: VariableScope?, values: Map<String, Any>)
 }

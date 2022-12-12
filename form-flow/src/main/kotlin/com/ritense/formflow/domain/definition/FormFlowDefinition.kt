@@ -42,9 +42,9 @@ data class FormFlowDefinition(
         steps.forEach { step -> step.id.formFlowDefinition = this }
     }
 
-    fun createInstance(additionalProperties: MutableMap<String, Any>) : FormFlowInstance {
+    fun createInstance(additionalProperties: Map<String, Any>) : FormFlowInstance {
         return FormFlowInstance(formFlowDefinition = this,
-            additionalProperties = additionalProperties)
+            additionalProperties = additionalProperties.toMutableMap())
     }
 
     fun getStepByKey(key: String): FormFlowStep {
