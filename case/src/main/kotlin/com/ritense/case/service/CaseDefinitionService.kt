@@ -98,7 +98,7 @@ class CaseDefinitionService(
         try {
             checkIfDocumentDefinitionExists(caseDefinitionName)
         } catch (ex: UnknownDocumentDefinitionException) {
-            throw UnknownCaseDefinitionException(ex.message, Status.BAD_REQUEST)
+            throw UnknownCaseDefinitionException(ex.message)
         }
         return CaseListColumnMapper
             .toDtoList(caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName))

@@ -20,12 +20,12 @@ import org.zalando.problem.AbstractThrowableProblem
 import org.zalando.problem.Exceptional
 import org.zalando.problem.Status
 
-class UnknownCaseDefinitionException(message: String?, status: Status):
+class UnknownCaseDefinitionException(message: String?) :
     AbstractThrowableProblem(
-    null,
-    message,
-    status
-) {
+        null,
+        message,
+        Status.BAD_REQUEST
+    ) {
     override fun getCause(): Exceptional? {
         return null
     }

@@ -68,7 +68,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             MockMvcRequestBuilders.get(
                 "/api/v1/case/{caseDefinitionName}/settings", caseDefinitionName
             ).contentType(MediaType.APPLICATION_JSON_VALUE)
-        ).andExpect(status().isOk).andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+        ).andExpect(status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(false))
     }
@@ -89,7 +90,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             MockMvcRequestBuilders.patch(
                 "/api/v1/case/{caseDefinitionName}/settings", caseDefinitionName
             ).contentType(MediaType.APPLICATION_JSON_VALUE).content("{\"canHaveAssignee\": true}")
-        ).andExpect(status().isOk).andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+        ).andExpect(status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
         val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
@@ -112,7 +114,9 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             MockMvcRequestBuilders.patch(
                 "/api/v1/case/{caseDefinitionName}/settings", caseDefinitionName
             ).contentType(MediaType.APPLICATION_JSON_VALUE).content("{}")
-        ).andExpect(status().isOk).andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+        )
+            .andExpect(status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
         val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
@@ -174,13 +178,42 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     fun `should return bad request on create`() {
         val caseDefinitionName = "listColumnDocumentDefinition"
         documentDefinitionService.deploy(
-            "" + "{\n" + "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" + "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" + "    \"title\": \"listColumnDocumentDefinition\",\n" + "    \"type\": \"object\",\n" + "    \"properties\": {\n" + "        \"firstName\": {\n" + "            \"type\": \"string\",\n" + "            \"description\": \"first name\"\n" + "        },\n" + "        \"lastName\": {\n" + "            \"type\": \"string\",\n" + "            \"description\": \"last name\"\n" + "        }\n" + "    }\n" + "}"
+            "{\n" +
+                    "  \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "  \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "  \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "  \"type\": \"object\",\n" +
+                    "  \"properties\": {\n" +
+                    "    \"firstName\": {\n" +
+                    "      \"type\": \"string\",\n" +
+                    "      \"description\": \"first name\"\n" +
+                    "    },\n" +
+                    "    \"lastName\": {\n" +
+                    "      \"type\": \"string\",\n" +
+                    "      \"description\": \"last name\"\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "}"
         )
         mockMvc.perform(
             MockMvcRequestBuilders.post(
                 LIST_COLUMN_PATH, caseDefinitionName
             ).contentType(MediaType.APPLICATION_JSON_VALUE).content(
-                "{\n" + "  \"title\": \"First name\",\n" + "  \"key\": \"first-name\",\n" + "  \"path\": \"doc:firstName\" ,\n" + "  \"displayType\": {\n" + "    \"type\": \"enum\",\n" + "    \"displayTypeParameters\": {\n" + "        \"date-format\": \"\"\n" + "        }\n" + "    },\n" + "    \"sortable\": true ,\n" + "    \"defaultSort\": \"ASC\"\n" + "}"
+                """
+                    {
+                      "title": "First name",
+                      "key": "first-name",
+                      "path": "doc:firstName",
+                      "displayType": {
+                        "type": "enum",
+                        "displayTypeParameters": {
+                          "date-format": ""
+                        }
+                      },
+                      "sortable": true,
+                      "defaultSort": "ASC"
+                    }
+                """.trimIndent()
             )
         ).andExpect(status().isBadRequest)
     }
@@ -206,7 +239,25 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
         ).andExpect {
             status().isOk
             content().json(
-                "" + "[\n" + "  {\n" + "    \"title\": \"First name\",\n" + "    \"key\": \"first-name\",\n" + "    \"path\": \"doc:firstName\",\n" + "    \"displayType\": {\n" + "      \"type\": \"enum\",\n" + "      \"displayTypeParameters\": {\n" + "        \"enum\": {\n" + "          \"key1\": \"Value 1\"\n" + "        }\n" + "      }\n" + "    },\n" + "    \"sortable\": true,\n" + "    \"defaultSort\": \"ASC\"\n" + "  }\n" + "]"
+                """
+                [
+                  {
+                    "title": "First name",
+                    "key": "first-name",
+                    "path": "doc:firstName",
+                    "displayType": {
+                      "type": "enum",
+                      "displayTypeParameters": {
+                        "enum": {
+                          "key1": "Value 1"
+                        }
+                      }
+                    },
+                    "sortable": true,
+                    "defaultSort": "ASC"
+                  }
+                ]
+            """.trimIndent()
             )
         }
     }
