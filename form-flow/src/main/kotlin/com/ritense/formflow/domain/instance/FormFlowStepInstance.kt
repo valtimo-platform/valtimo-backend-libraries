@@ -80,7 +80,7 @@ data class FormFlowStepInstance(
         }
 
         return stepsWithResult
-            .firstOrNull { (_, result) -> result == null }
+            .lastOrNull { (_, result) -> result == null }
             ?.first
     }
 
