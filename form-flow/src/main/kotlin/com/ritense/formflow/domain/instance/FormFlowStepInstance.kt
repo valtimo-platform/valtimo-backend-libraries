@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.domain.instance
 
+import com.ritense.formflow.domain.definition.FormFlowNextStep
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import org.hibernate.annotations.Type
@@ -27,6 +28,7 @@ import javax.persistence.FetchType
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.Table
+
 
 @Entity
 @Table(name = "form_flow_step_instance")
@@ -49,25 +51,38 @@ data class FormFlowStepInstance(
         get() = instance.formFlowDefinition.getStepByKey(stepKey)
 
     fun back() {
-        processExpressions(FormFlowStep::onBack)
+        processExpressions<Any>(definition.onBack)
     }
+
     fun open() {
-        processExpressions(FormFlowStep::onOpen)
+        processExpressions<Any>(definition.onOpen)
     }
 
     fun complete(submissionData: String) {
         this.submissionData = submissionData
 
-        processExpressions(FormFlowStep::onComplete)
+        processExpressions<Any>(definition.onComplete)
     }
 
-    private fun processExpressions(expressionist: (FormFlowStep)-> List<String>?) {
-        ExpressionProcessorFactoryHolder.getinstance()?.let {
+    fun determineNextStep(): FormFlowNextStep? {
+        val conditions = definition.nextSteps
+            .map { nextStep -> nextStep.condition }
+
+        val stepsWithResult = definition.nextSteps
+            .zip(processExpressions<Boolean>(conditions))
+
+        return stepsWithResult
+            .firstOrNull { (_, result) -> result == null || result }
+            ?.first
+    }
+
+    private fun <T> processExpressions(expressions: List<String?>): List<T?> {
+        return ExpressionProcessorFactoryHolder.getInstance().let {
             val variables = createVarMap()
             val expressionProcessor = it.create(variables)
 
-            expressionist(definition)?.forEach { expression ->
-                expressionProcessor.process<Any>(expression)
+            expressions.map { expression ->
+                expression?.let { expressionProcessor.process<T>(expression) }
             }
         }
     }

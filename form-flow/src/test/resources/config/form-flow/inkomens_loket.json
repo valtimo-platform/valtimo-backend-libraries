@@ -14,7 +14,7 @@
             ],
             "nextSteps": [
                 {
-                    "condition": "${step.submissionData.woonplaats.inUtrecht == true}",
+                    "condition": "${#jsonPath(step.submissionData, '$.woonplaats.inUtrecht')}",
                     "step": "leeftijd"
                 },
                 {
@@ -36,7 +36,7 @@
             ],
             "nextSteps": [
                 {
-                    "condition": "${submissionData.leeftijd.isOuderDan21 == true && submissionData.leeftijd.isJongerDanAOW == true}",
+                    "condition": "${#jsonPath(step.submissionData, '$.leeftijd.isOuderDan21') || #jsonPath(step.submissionData, '$.leeftijd.isJongerDanAOW')}",
                     "step": "gezinssituatie"
                 },
                 {
@@ -82,7 +82,7 @@
             "key": "inkomen",
             "nextSteps": [
                 {
-                    "condition": "${submissionData.inkomen.value <= submissionData.gezinssituatie.vermogenGrens}",
+                    "condition": "${#jsonPath(step.submissionData, '$.inkomen.value') <= #jsonPath(step.submissionData, '$.gezinssituatie.vermogenGrens')}",
                     "step": "vermogen"
                 },
                 {

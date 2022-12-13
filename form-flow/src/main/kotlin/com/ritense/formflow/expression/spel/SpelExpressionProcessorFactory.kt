@@ -18,8 +18,10 @@ package com.ritense.formflow.expression.spel
 
 import com.ritense.formflow.expression.ExpressionProcessor
 import com.ritense.formflow.expression.ExpressionProcessorFactory
+import org.springframework.beans.BeanUtils
 import org.springframework.context.expression.MapAccessor
 import org.springframework.expression.spel.support.StandardEvaluationContext
+import org.springframework.integration.json.JsonPathUtils
 
 class SpelExpressionProcessorFactory(
 ): ExpressionProcessorFactory {
@@ -27,6 +29,7 @@ class SpelExpressionProcessorFactory(
     override fun create(variables: Map<String, Any>?): ExpressionProcessor {
         val context = StandardEvaluationContext()
         context.addPropertyAccessor(MapAccessor())
+        context.registerFunction("jsonPath", BeanUtils.resolveSignature("evaluate", JsonPathUtils::class.java)!!)
 
         val contextMap: MutableMap<String, Any> = formFlowBeans.toMutableMap()
 
