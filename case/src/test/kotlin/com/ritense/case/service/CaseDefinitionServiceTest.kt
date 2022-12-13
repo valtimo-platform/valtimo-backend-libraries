@@ -15,12 +15,7 @@ import com.ritense.document.service.DocumentDefinitionService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doNothing
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import javax.validation.ValidationException
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -124,7 +119,7 @@ class CaseDefinitionServiceTest {
         )
             .thenReturn(true)
         val exception = assertThrows<InvalidListColumnException> {
-            service.createListColumn(caseDefinitionName, listColumnDto)
+            service.upsertListColumn(caseDefinitionName, listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
         verify(caseDefinitionListColumnRepository).existsByIdCaseDefinitionNameAndIdKey(
@@ -143,7 +138,7 @@ class CaseDefinitionServiceTest {
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
             .thenThrow(UnknownDocumentDefinitionException::class.java)
         assertThrows<InvalidListColumnException> {
-            service.createListColumn(caseDefinitionName, listColumnDto)
+            service.upsertListColumn(caseDefinitionName, listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
     }
@@ -163,7 +158,7 @@ class CaseDefinitionServiceTest {
                 )
             )
         val exception = assertThrows<InvalidListColumnException> {
-            service.createListColumn(caseDefinitionName, listColumnDto)
+            service.upsertListColumn(caseDefinitionName, listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
         verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionName(caseDefinitionName)
@@ -192,7 +187,7 @@ class CaseDefinitionServiceTest {
         }
             .whenever(documentDefinitionService).validateJsonPath(caseDefinitionName, listColumnDto.path)
         val exception = assertThrows<InvalidListColumnException> {
-            service.createListColumn(caseDefinitionName, listColumnDto)
+            service.upsertListColumn(caseDefinitionName, listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
         verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionName(caseDefinitionName)
@@ -220,7 +215,7 @@ class CaseDefinitionServiceTest {
             )
         doNothing().whenever(documentDefinitionService).validateJsonPath(caseDefinitionName, listColumnDto.path)
         val exception = assertThrows<InvalidListColumnException> {
-            service.createListColumn(caseDefinitionName, listColumnDto)
+            service.upsertListColumn(caseDefinitionName, listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
         verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionName(caseDefinitionName)

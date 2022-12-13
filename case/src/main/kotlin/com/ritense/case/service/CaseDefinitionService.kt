@@ -21,18 +21,31 @@ import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
+import com.ritense.case.service.validations.CaseDefinitionColumnValidator
+import com.ritense.case.service.validations.CreateColumnValidator
+import com.ritense.case.service.validations.Operation
+import com.ritense.case.service.validations.UpdateColumnValidator
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
-import org.zalando.problem.Status
+import org.springframework.transaction.annotation.Transactional
 
-class CaseDefinitionService(
+open class CaseDefinitionService(
     private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository,
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
     private val documentDefinitionService: DocumentDefinitionService
 ) {
+    var validators: Map<Operation, CaseDefinitionColumnValidator> = mapOf(
+        Pair(
+            Operation.CREATE, CreateColumnValidator(caseDefinitionListColumnRepository, documentDefinitionService)
+        ),
+        Pair(
+            Operation.UPDATE, UpdateColumnValidator(caseDefinitionListColumnRepository, documentDefinitionService)
+        )
+    )
+
     @Throws(UnknownDocumentDefinitionException::class)
     fun getCaseSettings(caseDefinitionName: String): CaseDefinitionSettings {
         checkIfDocumentDefinitionExists(caseDefinitionName)
@@ -47,45 +60,11 @@ class CaseDefinitionService(
         return caseDefinitionSettingsRepository.save(updatedCaseDefinition)
     }
 
+    @Transactional
     @Throws(InvalidListColumnException::class)
-    fun createListColumn(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
-        validateListColumn(caseDefinitionName, caseListColumnDto)
+    open fun upsertListColumn(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto, operation: Operation) {
+        validators[operation]!!.validate(caseDefinitionName, caseListColumnDto)
         caseDefinitionListColumnRepository.save(CaseListColumnMapper.toEntity(caseDefinitionName, caseListColumnDto))
-    }
-
-    @Throws(InvalidListColumnException::class, UnknownDocumentDefinitionException::class)
-    private fun validateListColumn(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
-        try {
-            checkIfDocumentDefinitionExists(caseDefinitionName)
-        } catch (ex: UnknownDocumentDefinitionException) {
-            throw InvalidListColumnException(ex.message, Status.BAD_REQUEST)
-        }
-        if (caseDefinitionListColumnRepository.existsByIdCaseDefinitionNameAndIdKey(
-                caseDefinitionName,
-                caseListColumnDto.key
-            )
-        ) {
-            throw InvalidListColumnException(
-                "Unable to create list column. A column with the same key already exists",
-                Status.BAD_REQUEST
-            )
-        }
-        if (
-            caseListColumnDto.defaultSort != null &&
-            caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName)
-                .any { column -> column.defaultSort != null }
-        ) {
-            throw InvalidListColumnException(
-                "Unable to create list column. A column with defaultSort value already exists",
-                Status.BAD_REQUEST
-            )
-        }
-        try {
-            documentDefinitionService.validateJsonPath(caseDefinitionName, caseListColumnDto.path)
-        } catch (ex: Exception) {
-            throw InvalidListColumnException(ex.message, Status.BAD_REQUEST)
-        }
-        caseListColumnDto.validate(caseDefinitionName)
     }
 
     @Throws(UnknownDocumentDefinitionException::class)

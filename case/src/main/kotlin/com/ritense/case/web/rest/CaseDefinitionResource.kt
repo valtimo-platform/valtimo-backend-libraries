@@ -18,6 +18,7 @@ package com.ritense.case.web.rest
 
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case.service.validations.Operation
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.document.exception.UnknownDocumentDefinitionException
@@ -70,7 +71,16 @@ class CaseDefinitionResource(
         @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDto: CaseListColumnDto
     ): ResponseEntity<Any> {
-        service.createListColumn(caseDefinitionName, caseListColumnDto)
+        service.upsertListColumn(caseDefinitionName, caseListColumnDto, Operation.CREATE)
+        return ResponseEntity.ok().build()
+    }
+
+    @PutMapping(value = ["/v1/case/{caseDefinitionName}/list-column"])
+    fun updateListColumn(
+        @PathVariable caseDefinitionName: String,
+        @RequestBody caseListColumnDto: CaseListColumnDto
+    ): ResponseEntity<Any> {
+        service.upsertListColumn(caseDefinitionName, caseListColumnDto, Operation.UPDATE)
         return ResponseEntity.ok().build()
     }
 }

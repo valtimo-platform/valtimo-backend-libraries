@@ -24,12 +24,12 @@ import com.ritense.case.exception.InvalidListColumnException
 import org.zalando.problem.Status
 
 data class CaseListColumnDto(
-    val title: String?,
-    val key: String,
-    val path: String,
-    val displayType: DisplayType,
-    val sortable: Boolean,
-    val defaultSort: ColumnDefaultSort?
+    var title: String?,
+    var key: String,
+    var path: String,
+    var displayType: DisplayType,
+    var sortable: Boolean,
+    var defaultSort: ColumnDefaultSort?
 ) {
 
     fun toEntity(caseDefinitionName: String): CaseListColumn {
@@ -43,7 +43,8 @@ data class CaseListColumnDto(
         )
     }
 
-    fun validate(caseDefinitionName: String) {
+    @Throws(InvalidListColumnException::class)
+    fun validate() {
         if (!displayType.displayTypeParameters.validate()) {
             throw InvalidListColumnException(
                 "Display type parameters are invalid for type ${displayType.type}.",
