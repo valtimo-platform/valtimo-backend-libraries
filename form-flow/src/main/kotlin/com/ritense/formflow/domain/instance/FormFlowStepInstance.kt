@@ -71,8 +71,16 @@ data class FormFlowStepInstance(
         val stepsWithResult = definition.nextSteps
             .zip(processExpressions<Boolean>(conditions))
 
+        val firstStepWithResultTrue = stepsWithResult
+            .firstOrNull { (_, result) -> result != null && result }
+            ?.first
+
+        if (firstStepWithResultTrue != null) {
+            return firstStepWithResultTrue
+        }
+
         return stepsWithResult
-            .firstOrNull { (_, result) -> result == null || result }
+            .firstOrNull { (_, result) -> result == null }
             ?.first
     }
 
