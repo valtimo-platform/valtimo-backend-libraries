@@ -86,7 +86,7 @@ public class CamundaFormAssociationResourceTest extends BaseTest {
         parameters.put("formLinkId", Collections.singletonList(formAssociation.getFormLink().getId()));
 
         mockMvc.perform(
-            get("/api/form-association/form-definition").params(parameters).contentType(MediaType.APPLICATION_JSON_VALUE))
+            get("/api/v1/form-association/form-definition").params(parameters).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
     }
@@ -113,7 +113,7 @@ public class CamundaFormAssociationResourceTest extends BaseTest {
         //parameters.put("taskInstanceId", Collections.singletonList(null));
 
         mockMvc.perform(
-            get("/api/form-association/form-definition").params(parameters)
+            get("/api/v1/form-association/form-definition").params(parameters)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
@@ -133,7 +133,7 @@ public class CamundaFormAssociationResourceTest extends BaseTest {
         parameters.put("processDefinitionKey", Collections.singletonList(camundaProcessFormAssociation.getProcessDefinitionKey()));
 
         mockMvc.perform(
-            get("/api/form-association/form-definition").params(parameters).contentType(MediaType.APPLICATION_JSON_VALUE))
+            get("/api/v1/form-association/form-definition").params(parameters).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
     }

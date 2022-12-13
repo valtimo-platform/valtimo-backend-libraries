@@ -43,7 +43,7 @@ class VersionResourceTest {
 
     @Test
     void getValtimoVersion() throws Exception {
-        mockMvc.perform(get("/api/valtimo/version")
+        mockMvc.perform(get("/api/v1/valtimo/version")
             .accept(APPLICATION_JSON_VALUE)
             .contentType(APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())

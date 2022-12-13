@@ -32,14 +32,14 @@ public class DocumentHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/document/{id}").hasAuthority(USER)
-                .antMatchers(POST, "/api/document").hasAuthority(USER)
-                .antMatchers(PUT, "/api/document").hasAuthority(USER)
-                .antMatchers(POST, "/api/document/{document-id}/resource/{resource-id}").hasAuthority(USER)
-                .antMatchers(DELETE, "/api/document/{document-id}/resource/{resource-id}").hasAuthority(USER)
-                .antMatchers(POST, "/api/document/{documentId}/assign").hasAuthority(USER)
-                .antMatchers(POST, "/api/document/{documentId}/unassign").hasAuthority(USER)
-                .antMatchers(GET, "/api/document/{document-id}/candidate-user").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/document/{id}").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/document").hasAuthority(USER)
+                .antMatchers(PUT, "/api/v1/document").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/document/{document-id}/resource/{resource-id}").hasAuthority(USER)
+                .antMatchers(DELETE, "/api/v1/document/{document-id}/resource/{resource-id}").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/document/{documentId}/assign").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/document/{documentId}/unassign").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/document/{document-id}/candidate-user").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

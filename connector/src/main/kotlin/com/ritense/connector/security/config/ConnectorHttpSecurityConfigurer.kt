@@ -30,13 +30,13 @@ class ConnectorHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/connector/type").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/connector/instance").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/connector/instance/{instanceId}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/connector/instance/{typeId}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/connector/instance").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/connector/instance").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/connector/instance/{instanceId}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/connector/type").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/connector/instance").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/connector/instance/{instanceId}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/connector/instance/{typeId}").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/connector/instance").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/connector/instance").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/connector/instance/{instanceId}").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

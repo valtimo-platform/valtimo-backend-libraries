@@ -1,0 +1,18 @@
+{
+    "searchFields": [
+        {
+            "key": "firstName",
+            "path": "doc:firstName",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "like"
+        },
+        {
+            "key": "age",
+            "path": "doc:age",
+            "dataType": "number",
+            "fieldType": "single",
+            "matchType": "exact"
+        }
+    ]
+}

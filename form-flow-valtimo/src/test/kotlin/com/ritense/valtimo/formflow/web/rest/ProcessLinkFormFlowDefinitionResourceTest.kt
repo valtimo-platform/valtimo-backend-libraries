@@ -16,8 +16,6 @@
 
 package com.ritense.valtimo.formflow.web.rest
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStep
@@ -29,6 +27,8 @@ import org.hamcrest.Matchers.containsInAnyOrder
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -59,7 +59,7 @@ internal class ProcessLinkFormFlowDefinitionResourceTest {
         mockMvc
             .perform(
                 MockMvcRequestBuilders
-                    .get("/api/process-link/form-flow-definition")
+                    .get("/api/v1/process-link/form-flow-definition")
                     .accept(MediaType.APPLICATION_JSON_VALUE)
             ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$").isNotEmpty)
@@ -84,7 +84,7 @@ internal class ProcessLinkFormFlowDefinitionResourceTest {
         mockMvc
             .perform(
                 MockMvcRequestBuilders
-                    .get("/api/process-link/form-flow-definition")
+                    .get("/api/v1/process-link/form-flow-definition")
                     .accept(MediaType.APPLICATION_JSON_VALUE)
             ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$").isNotEmpty)
@@ -108,7 +108,7 @@ internal class ProcessLinkFormFlowDefinitionResourceTest {
         mockMvc
             .perform(
                 MockMvcRequestBuilders
-                    .get("/api/process-link/form-flow-definition")
+                    .get("/api/v1/process-link/form-flow-definition")
                     .accept(MediaType.APPLICATION_JSON_VALUE)
             ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$").isNotEmpty)

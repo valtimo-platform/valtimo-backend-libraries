@@ -25,11 +25,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/documentdefinition/{documentDefinitionName}/zaaktype"])
+@RequestMapping(value = ["/api"])
 class CatalogiResource(
     val catalogiService: CatalogiService
 ) {
-    @GetMapping(value = ["/documenttype"])
+    @GetMapping(value = ["/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype"])
     fun getZaakObjecttypes(
         @PathVariable(name = "documentDefinitionName") documentDefinitionName: String
     ): ResponseEntity<List<InformatieobjecttypeDto>> {

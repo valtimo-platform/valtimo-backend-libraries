@@ -16,8 +16,6 @@
 
 package com.ritense.mail.wordpressmail.service
 
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.connector.service.ConnectorService
 import com.ritense.mail.wordpressmail.BaseTest
 import com.ritense.mail.wordpressmail.connector.WordpressMailConnector
@@ -27,6 +25,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.times
+import org.mockito.kotlin.whenever
 
 class WordpressMailDispatcherTest : BaseTest() {
     lateinit var connectorService: ConnectorService

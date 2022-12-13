@@ -48,13 +48,13 @@ public class MilestoneInstanceResource {
         this.milestoneInstanceService = milestoneInstanceService;
     }
 
-    @GetMapping(value = "/milestone-instances")
+    @GetMapping(value = "/v1/milestone-instances")
     public ResponseEntity<List<MilestoneInstanceDTO>> getMilestoneInstances() {
         logger.debug("REST request to get all milestone instances");
         return ResponseEntity.ok(milestoneInstanceService.getAllMilestoneInstances());
     }
 
-    @GetMapping(value = "/milestones/{processDefinitionId}/flownodes", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/v1/milestones/{processDefinitionId}/flownodes", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<FlowNodeDTO> getDiagramFlowNodes(@PathVariable String processDefinitionId) {
         final Collection<FlowNode> flowNodeCollection =

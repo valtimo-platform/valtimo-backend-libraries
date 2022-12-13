@@ -325,46 +325,4 @@
         GROUP BY  ACT_RU_IDENTITYLINK.GROUP_ID_
     </select>
 
-    <select id="getProcessInstancesByProcessDataObjectObject" parameterType="org.camunda.bpm.engine.impl.db.ListQueryParameterObject" resultMap="searchInstancesResultMap">
-        <include refid="com.ritense.valtimo.camunda.common.bindOrderBy">
-            <property name="tablealias" value="PI"/>
-        </include>
-        SELECT
-            RES.ID_,
-            RES.BUSINESS_KEY_,
-            RES.DELETE_REASON_,
-            RES.START_TIME_,
-            RES.END_TIME_,
-            RES.PROC_DEF_KEY_,
-            RES.START_USER_ID_,
-            RES.STATE_ = 'SUSPENDED' AS SUSPENDED,
-            V.ID_ AS VAR_ID_,
-            V.NAME_ AS VAR_NAME_,
-            V.TEXT_ AS VAR_TEXT_,
-            V.VAR_TYPE_ AS VAR_TYPE_,
-            V.TEXT_ AS VAR_TEXT_,
-            V.LONG_ AS VAR_LONG_,
-            V.DOUBLE_ AS VAR_DOUBLE_
-        FROM
-            (${limitBefore} SELECT PI.*
-            FROM
-                ${prefix}ACT_HI_PROCINST PI
-            INNER JOIN process_data_object_relation PDR ON PI.ID_ = PDR.process_instance_id
-            <include refid="selectSearchProcessInstancesSqlCriteria"/>
-                AND PDR.obj_type = #{parameter.objType, jdbcType=VARCHAR}
-                AND PDR.obj_id = #{parameter.objId, jdbcType=VARCHAR}
-            ${orderBy}
-            ${limitBetween}
-            ${limitAfter}) RES
-        LEFT JOIN ${prefix}ACT_HI_VARINST V ON V.PROC_INST_ID_ = RES.ID_
-    </select>
-
-    <select id="getProcessInstancesByProcessDataObjectObjectCount" parameterType="org.camunda.bpm.engine.impl.db.ListQueryParameterObject" resultType="long">
-        SELECT count( ${distinct} PI.ID_)
-        FROM   ${prefix}ACT_HI_PROCINST PI
-        INNER JOIN process_data_object_relation PDR ON PI.ID_ = PDR.process_instance_id
-        <include refid="selectSearchProcessInstancesSqlCriteria"/>
-        AND PDR.obj_type = #{parameter.objType, jdbcType=VARCHAR} AND PDR.obj_id = #{parameter.objId, jdbcType=VARCHAR}
-    </select>
-
 </mapper>

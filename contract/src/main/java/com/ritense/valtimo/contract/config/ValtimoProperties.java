@@ -142,18 +142,8 @@ public class ValtimoProperties {
     }
 
     public static class JWT {
-        private boolean base64encoding = false;
         private String secret;
         private long tokenValidityInSeconds = 180000;
-        private long tokenValidityInSecondsForRememberMe = 2592000;
-
-        public boolean isBase64encoding() {
-            return base64encoding;
-        }
-
-        public void setBase64encoding(boolean base64encoding) {
-            this.base64encoding = base64encoding;
-        }
 
         public String getSecret() {
             return secret;
@@ -169,14 +159,6 @@ public class ValtimoProperties {
 
         public void setTokenValidityInSeconds(long tokenValidityInSeconds) {
             this.tokenValidityInSeconds = tokenValidityInSeconds;
-        }
-
-        public long getTokenValidityInSecondsForRememberMe() {
-            return tokenValidityInSecondsForRememberMe;
-        }
-
-        public void setTokenValidityInSecondsForRememberMe(long tokenValidityInSecondsForRememberMe) {
-            this.tokenValidityInSecondsForRememberMe = tokenValidityInSecondsForRememberMe;
         }
     }
 

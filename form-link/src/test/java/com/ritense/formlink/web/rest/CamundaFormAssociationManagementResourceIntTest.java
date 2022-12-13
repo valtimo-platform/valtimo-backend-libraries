@@ -88,7 +88,7 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
         );
 
         mockMvc.perform(
-                get("/api/form-association-management").param("processDefinitionKey", PROCESS_DEFINITION_KEY)
+                get("/api/v1/form-association-management").param("processDefinitionKey", PROCESS_DEFINITION_KEY)
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andExpect(jsonPath("*").isArray())
@@ -104,7 +104,7 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
         final var request = createUserTaskFormAssociationRequest(formDefinition.getId());
 
         mockMvc.perform(
-                post("/api/form-association-management")
+                post("/api/v1/form-association-management")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .content(TestUtil.convertObjectToJsonBytes(request))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -124,7 +124,7 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
 
         final var request = createUserTaskFormAssociationRequest(formDefinition.getId());
         final MvcResult result = mockMvc.perform(
-                post("/api/form-association-management")
+                post("/api/v1/form-association-management")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .content(TestUtil.convertObjectToJsonBytes(request))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -135,7 +135,7 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
         final var id = UUID.fromString(documentContext.read("$['id']").toString());
         final var modifyFormLinkRequest = modifyFormAssociationRequest(id, secondFormDefinition.getId(), true);
         mockMvc.perform(
-                put("/api/form-association-management")
+                put("/api/v1/form-association-management")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .content(TestUtil.convertObjectToJsonBytes(modifyFormLinkRequest))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -172,7 +172,7 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
 
         mockMvc.perform(
                 delete(
-                    "/api/form-association-management/{processDefinitionKey}/{formAssociationId}",
+                    "/api/v1/form-association-management/{processDefinitionKey}/{formAssociationId}",
                     PROCESS_DEFINITION_KEY,
                     formAssociation.getId()
                 )

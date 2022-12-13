@@ -41,7 +41,7 @@ class ProcessDocumentSecurityResourceTest extends SecuritySpecificEndpointIntegr
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void createProcessDocumentDefinitionAsAdmin() throws Exception {
-        var request = MockMvcRequestBuilders.request(POST, "/api/process-document/definition");
+        var request = MockMvcRequestBuilders.request(POST, "/api/v1/process-document/definition");
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);
         request.with(r -> {
@@ -54,7 +54,7 @@ class ProcessDocumentSecurityResourceTest extends SecuritySpecificEndpointIntegr
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void createProcessDocumentDefinitionAsUser() throws Exception {
-        var request = MockMvcRequestBuilders.request(POST, "/api/process-document/definition");
+        var request = MockMvcRequestBuilders.request(POST, "/api/v1/process-document/definition");
 
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);
@@ -70,7 +70,7 @@ class ProcessDocumentSecurityResourceTest extends SecuritySpecificEndpointIntegr
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void deleteProcessDocumentDefinitionAsAdmin() throws Exception {
-        var request = MockMvcRequestBuilders.request(DELETE, "/api/process-document/definition");
+        var request = MockMvcRequestBuilders.request(DELETE, "/api/v1/process-document/definition");
 
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);
@@ -86,7 +86,7 @@ class ProcessDocumentSecurityResourceTest extends SecuritySpecificEndpointIntegr
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void deleteProcessDocumentDefinitionAsUser() throws Exception {
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(DELETE, "/api/process-document/definition");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(DELETE, "/api/v1/process-document/definition");
 
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);

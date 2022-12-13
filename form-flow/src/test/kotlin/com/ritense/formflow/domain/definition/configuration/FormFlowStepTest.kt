@@ -18,14 +18,14 @@ package com.ritense.formflow.domain.definition.configuration
 
 import com.ritense.formflow.domain.definition.FormFlowNextStep as FormFlowNextStepEntity
 import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 internal class FormFlowStepTest {
 

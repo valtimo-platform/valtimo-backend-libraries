@@ -37,12 +37,12 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/document/{documentId}/note", produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [MediaType.APPLICATION_JSON_VALUE])
 class NoteResource(
     private val noteService: NoteService,
     private val documentService: DocumentService,
 ) {
-    @GetMapping
+    @GetMapping("/v1/document/{documentId}/note")
     fun getNotes(
         @PathVariable(name = "documentId") documentId: UUID,
         @PageableDefault(
@@ -63,7 +63,7 @@ class NoteResource(
         return ResponseEntity.ok(notes.map { note -> NoteResponseDto(note) })
     }
 
-    @PostMapping
+    @PostMapping("/v1/document/{documentId}/note")
     fun createNote(
         @PathVariable(name = "documentId") documentId: UUID,
         @RequestBody noteDto: NoteCreateRequestDto

@@ -34,21 +34,21 @@ public class ChoiceFieldHttpSecurityConfigurer implements HttpSecurityConfigurer
             http.authorizeRequests()
                 .antMatchers(
                     GET,
-                    "/api/choice-fields",
-                    "/api/choice-fields/{id}",
-                    "/api/choice-fields/name/{name}"
+                    "/api/v1/choice-fields",
+                    "/api/v1/choice-fields/{id}",
+                    "/api/v1/choice-fields/name/{name}"
                 ).hasAuthority(USER)
-                .antMatchers(POST, "/api/choice-fields").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/choice-fields").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/choice-fields/{id}").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/choice-fields").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/choice-fields").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/choice-fields/{id}").hasAuthority(ADMIN)
                 //choice-field-values
-                .antMatchers(GET, "/api/choice-field-values").hasAuthority(USER)
-                .antMatchers(POST, "/api/choice-field-values").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/choice-field-values").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/choice-field-values/{id}").hasAuthority(USER)
-                .antMatchers(DELETE, "/api/choice-field-values/{id}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/choice-field-values/choice-field/{choicefield_name}/value/{value}").hasAuthority(USER)
-                .antMatchers(GET, "/api/choice-field-values/{choice_field_name}/values").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/choice-field-values").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/choice-field-values").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/choice-field-values").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/choice-field-values/{id}").hasAuthority(USER)
+                .antMatchers(DELETE, "/api/v1/choice-field-values/{id}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/choice-field-values/choice-field/{choicefield_name}/value/{value}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/choice-field-values/{choice_field_name}/values").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

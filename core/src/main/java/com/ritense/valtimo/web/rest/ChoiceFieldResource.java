@@ -54,7 +54,7 @@ public class ChoiceFieldResource {
         this.choiceFieldService = choiceFieldService;
     }
 
-    @PostMapping(value = "/choice-fields")
+    @PostMapping(value = "/v1/choice-fields")
     public ResponseEntity<ChoiceField> createChoiceField(@Valid @RequestBody ChoiceField choiceField) throws URISyntaxException {
         logger.debug("REST request to save ChoiceField : {}", choiceField);
         if (choiceField.getId() != null) {
@@ -63,12 +63,12 @@ public class ChoiceFieldResource {
                 .body(null);
         }
         ChoiceField result = choiceFieldService.save(choiceField);
-        return ResponseEntity.created(new URI("/api/choice-fields/" + result.getId()))
+        return ResponseEntity.created(new URI("/api/v1/choice-fields/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert("choiceField", result.getKeyName()))
             .body(result);
     }
 
-    @PutMapping(value = "/choice-fields")
+    @PutMapping(value = "/v1/choice-fields")
     public ResponseEntity<ChoiceField> updateChoiceField(@Valid @RequestBody ChoiceField choiceField) throws URISyntaxException {
         logger.debug("REST request to update ChoiceField : {}", choiceField);
         if (choiceField.getId() == null) {
@@ -80,15 +80,15 @@ public class ChoiceFieldResource {
             .body(result);
     }
 
-    @GetMapping(value = "/choice-fields")
+    @GetMapping(value = "/v1/choice-fields")
     public ResponseEntity<List<ChoiceField>> getAllChoiceFields(Pageable pageable) {
         logger.debug("REST request to get a page of ChoiceFields");
         Page<ChoiceField> page = choiceFieldService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/choice-fields");
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/choice-fields");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/choice-fields/{id}")
+    @GetMapping(value = "/v1/choice-fields/{id}")
     public ResponseEntity<ChoiceField> getChoiceField(@PathVariable Long id) {
         logger.debug("REST request to get ChoiceField : {}", id);
         Optional<ChoiceField> choiceFieldOptional = choiceFieldService.findOneById(id);
@@ -97,7 +97,7 @@ public class ChoiceFieldResource {
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping(value = "/choice-fields/name/{name}")
+    @GetMapping(value = "/v1/choice-fields/name/{name}")
     public ResponseEntity<ChoiceFieldDTO> getChoiceFieldByName(@PathVariable String name) {
         logger.debug("REST request to get ChoiceField : {}", name);
         ChoiceFieldDTO choiceFieldDTO = choiceFieldService.findOneByName(name);
@@ -106,7 +106,7 @@ public class ChoiceFieldResource {
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping(value = "/choice-fields/{id}")
+    @DeleteMapping(value = "/v1/choice-fields/{id}")
     public ResponseEntity<Void> deleteChoiceField(@PathVariable Long id) {
         logger.debug("REST request to delete ChoiceField : {}", id);
         choiceFieldService.delete(id);

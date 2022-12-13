@@ -83,7 +83,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var postContent = "{ \"assigneeId\": \"" + user.getId() + "\"}";
 
         mockMvc.perform(
-            post("/api/document/{documentId}/assign", document.id().getId().toString())
+            post("/api/v1/document/{documentId}/assign", document.id().getId().toString())
                 .content(postContent)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -111,7 +111,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var postContent = "{ \"assigneeId\": \"" + user.getId() + "\"}";
 
         mockMvc.perform(
-                post("/api/document/{documentId}/assign", document.id().getId().toString())
+                post("/api/v1/document/{documentId}/assign", document.id().getId().toString())
                     .content(user.getId())
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -125,7 +125,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         when(userManagementService.findById(user.getId())).thenReturn(user);
 
         mockMvc.perform(
-                post("/api/document/{documentId}/unassign", document.id().getId().toString())
+                post("/api/v1/document/{documentId}/unassign", document.id().getId().toString())
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());

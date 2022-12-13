@@ -72,7 +72,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
 
     @Test
     fun `should get plugin configurations by category`() {
-        mockMvc.perform(get("/api/plugin/configuration?category=test-interface")
+        mockMvc.perform(get("/api/v1/plugin/configuration?category=test-interface")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -91,7 +91,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
 
     @Test
     fun `should not find get plugin configurations with non-existing category`() {
-        mockMvc.perform(get("/api/plugin/configuration?category=some-random-string")
+        mockMvc.perform(get("/api/v1/plugin/configuration?category=some-random-string")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -119,7 +119,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
         )
 
         // assert that the new plugin configuration is not included in the result
-        mockMvc.perform(get("/api/plugin/configuration?activityType=bpmn:ServiceTask")
+        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ServiceTask")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
         )

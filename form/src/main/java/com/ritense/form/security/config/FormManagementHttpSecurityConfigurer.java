@@ -34,11 +34,11 @@ public class FormManagementHttpSecurityConfigurer implements HttpSecurityConfigu
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/form-management").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/form-management/{formDefinitionId}").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/form-management/{formDefinitionId}").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/form-management").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/form-management").hasAuthority(ADMIN);
+                .antMatchers(GET, "/api/v1/form-management").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/form-management/{formDefinitionId}").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/form-management/{formDefinitionId}").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/form-management").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/form-management").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -67,7 +67,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "form3"));
 
         mockMvc.perform(
-                get("/api/form-management")
+                get("/api/v1/form-management")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andDo(print())
@@ -81,7 +81,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "bcde"));
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "cdef"));
 
-        mockMvc.perform(get("/api/form-management")
+        mockMvc.perform(get("/api/v1/form-management")
                 .param("searchTerm", "BC"))
             .andExpect(status().isOk())
             .andDo(print())
@@ -93,7 +93,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
     void shouldReturn200WithInvalidSearch() throws Exception {
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "abcd"));
 
-        mockMvc.perform(get("/api/form-management")
+        mockMvc.perform(get("/api/v1/form-management")
                 .param("searchTerm", "e"))
             .andExpect(status().isOk())
             .andDo(print())
@@ -105,7 +105,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
     void shouldReturn200WithFormCreated() throws Exception {
         final var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false);
         mockMvc.perform(
-                post("/api/form-management")
+                post("/api/v1/form-management")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .content(TestUtil.convertObjectToJsonBytes(request))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -120,7 +120,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
     void shouldReturn200WithFormModified() throws Exception {
         final var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false);
         final MvcResult result = mockMvc.perform(
-                post("/api/form-management")
+                post("/api/v1/form-management")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .content(TestUtil.convertObjectToJsonBytes(request))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -133,7 +133,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
         final var newDefinition = "{\"key\":\"someValue\"}";
 
         mockMvc.perform(
-                put("/api/form-management")
+                put("/api/v1/form-management")
                     .content(TestUtil.convertObjectToJsonBytes(
                         new ModifyFormDefinitionRequest(id, DEFAULT_FORM_DEFINITION_NAME, newDefinition)
                     ))
@@ -153,7 +153,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
         assertThat(formDefinitionRepository.existsById(savedFormDefinition.getId())).isTrue();
 
         mockMvc.perform(
-                delete("/api/form-management/{formDefinitionId}", savedFormDefinition.getId())
+                delete("/api/v1/form-management/{formDefinitionId}", savedFormDefinition.getId())
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isNoContent());

@@ -44,31 +44,31 @@ class FormIoFormManagementSecurityResourceTest extends SecuritySpecificEndpointI
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void getAllAsAdmin() throws Exception {
-        assertHttpStatus(GET, "/api/form-management", OK);
+        assertHttpStatus(GET, "/api/v1/form-management", OK);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void getAllAsUser() throws Exception {
-        assertHttpStatus(GET, "/api/form-management", FORBIDDEN);
+        assertHttpStatus(GET, "/api/v1/form-management", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void getFormDefinitionByIdAsAdmin() throws Exception {
-        assertHttpStatus(GET, "/api/form-management/" + UUID.randomUUID().toString(), NO_CONTENT);
+        assertHttpStatus(GET, "/api/v1/form-management/" + UUID.randomUUID().toString(), NO_CONTENT);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void getFormDefinitionByIdAsUser() throws Exception {
-        assertHttpStatus(GET, "/api/form-management/" + UUID.randomUUID().toString(), FORBIDDEN);
+        assertHttpStatus(GET, "/api/v1/form-management/" + UUID.randomUUID().toString(), FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void queryFormDefinitionAsUser() throws Exception {
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(GET, "/api/form-management");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(GET, "/api/v1/form-management");
         request.param("searchTerm", "test");
         request.accept(MediaType.APPLICATION_JSON);
         request.with(r -> {
@@ -81,7 +81,7 @@ class FormIoFormManagementSecurityResourceTest extends SecuritySpecificEndpointI
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void queryFormDefinitionAsAdmin() throws Exception {
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(GET, "/api/form-management");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(GET, "/api/v1/form-management");
         request.param("searchTerm", "test");
         request.accept(MediaType.APPLICATION_JSON);
         request.with(r -> {
@@ -94,7 +94,7 @@ class FormIoFormManagementSecurityResourceTest extends SecuritySpecificEndpointI
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void createFormDefinitionAsAdmin() throws Exception {
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(POST, "/api/form-management");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(POST, "/api/v1/form-management");
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);
         request.with(r -> {
@@ -107,7 +107,7 @@ class FormIoFormManagementSecurityResourceTest extends SecuritySpecificEndpointI
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void createFormDefinitionAsUser() throws Exception {
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(POST, "/api/form-management");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(POST, "/api/v1/form-management");
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);
         request.with(r -> {
@@ -120,7 +120,7 @@ class FormIoFormManagementSecurityResourceTest extends SecuritySpecificEndpointI
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void modifyFormDefinitionAsAdmin() throws Exception {
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(PUT, "/api/form-management");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(PUT, "/api/v1/form-management");
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);
         request.with(r -> {
@@ -133,7 +133,7 @@ class FormIoFormManagementSecurityResourceTest extends SecuritySpecificEndpointI
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void modifyFormDefinitionAsUser() throws Exception {
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(PUT, "/api/form-management");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(PUT, "/api/v1/form-management");
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);
         request.with(r -> {
@@ -146,13 +146,13 @@ class FormIoFormManagementSecurityResourceTest extends SecuritySpecificEndpointI
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void deleteFormDefinitionAsAdmin() throws Exception {
-        assertHttpStatus(DELETE, "/api/form-management/" + UUID.randomUUID().toString(), INTERNAL_SERVER_ERROR);
+        assertHttpStatus(DELETE, "/api/v1/form-management/" + UUID.randomUUID().toString(), INTERNAL_SERVER_ERROR);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void deleteFormDefinitionAsUser() throws Exception {
-        assertHttpStatus(DELETE, "/api/form-management/" + UUID.randomUUID().toString(), FORBIDDEN);
+        assertHttpStatus(DELETE, "/api/v1/form-management/" + UUID.randomUUID().toString(), FORBIDDEN);
     }
 
 }

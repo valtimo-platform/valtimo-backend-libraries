@@ -16,8 +16,6 @@
 
 package com.ritense.openzaak.web.rest.impl
 
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandler
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
@@ -31,6 +29,8 @@ import com.ritense.valtimo.contract.json.Mapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType
@@ -84,7 +84,7 @@ internal class ZaakTypeLinkResourceTest {
         whenever(zaakTypeLinkService.assignServiceTaskHandler(eq(zaaktypeLinkId), eq(serviceTaskHandlerRequest)))
             .thenReturn(CreateServiceTaskHandlerResultSucceeded(zaaktypeLink))
 
-        mockMvc.perform(post("/api/openzaak/link/{id}/service-handler", id)
+        mockMvc.perform(post("/api/v1/openzaak/link/{id}/service-handler", id)
             .content(Mapper.INSTANCE.get().writeValueAsString(serviceTaskHandlerRequest))
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -114,7 +114,7 @@ internal class ZaakTypeLinkResourceTest {
         whenever(zaakTypeLinkService.modifyServiceTaskHandler(eq(zaaktypeLinkId), eq(serviceTaskHandlerRequest)))
             .thenReturn(ModifyServiceTaskHandlerResultSucceeded(zaaktypeLink))
 
-        mockMvc.perform(put("/api/openzaak/link/{id}/service-handler", id)
+        mockMvc.perform(put("/api/v1/openzaak/link/{id}/service-handler", id)
             .content(Mapper.INSTANCE.get().writeValueAsString(serviceTaskHandlerRequest))
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)

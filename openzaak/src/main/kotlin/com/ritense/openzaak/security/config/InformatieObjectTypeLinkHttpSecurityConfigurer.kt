@@ -29,9 +29,9 @@ class InformatieObjectTypeLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/openzaak/informatie-object-type-link/{documentDefinitionName}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/openzaak/informatie-object-type-link").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/openzaak/informatie-object-type-link/{documentDefinitionName}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/openzaak/informatie-object-type-link/{documentDefinitionName}").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/openzaak/informatie-object-type-link").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/openzaak/informatie-object-type-link/{documentDefinitionName}").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

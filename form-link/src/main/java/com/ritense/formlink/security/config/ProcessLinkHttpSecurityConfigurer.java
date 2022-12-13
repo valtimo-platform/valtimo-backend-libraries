@@ -31,7 +31,7 @@ public class ProcessLinkHttpSecurityConfigurer implements HttpSecurityConfigurer
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/process-link/task/{taskId}").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/process-link/task/{taskId}").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -16,20 +16,19 @@
 
 package com.ritense.contactmoment.web.rest.impl
 
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.contactmoment.BaseContactMomentIntegrationTest
 import com.ritense.klant.domain.Klant
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.Recipient
-import java.util.UUID
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.hasEntry
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
@@ -38,6 +37,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import java.util.UUID
 
 internal class MessageResourceIT: BaseContactMomentIntegrationTest() {
 
@@ -72,7 +72,7 @@ internal class MessageResourceIT: BaseContactMomentIntegrationTest() {
         )
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/document/${documentId}/message")
+            MockMvcRequestBuilders.post("/api/v1/document/${documentId}/message")
                 .content(postBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE))

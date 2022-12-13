@@ -27,7 +27,7 @@ class TemporaryResourceStorageHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(POST, "/api/resource/temp").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/resource/temp").hasAuthority(USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

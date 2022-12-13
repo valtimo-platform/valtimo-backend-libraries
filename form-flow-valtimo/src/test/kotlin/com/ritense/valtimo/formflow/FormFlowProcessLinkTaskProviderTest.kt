@@ -16,10 +16,6 @@
 
 package com.ritense.valtimo.formflow
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.document.service.DocumentService
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.instance.FormFlowInstance
@@ -37,6 +33,10 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import java.util.Optional
 import java.util.UUID
