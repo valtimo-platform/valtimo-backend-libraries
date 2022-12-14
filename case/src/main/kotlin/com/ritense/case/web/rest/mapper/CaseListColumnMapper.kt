@@ -30,7 +30,8 @@ class CaseListColumnMapper {
                 caseListColumnDto.path,
                 caseListColumnDto.displayType,
                 caseListColumnDto.sortable,
-                caseListColumnDto.defaultSort
+                caseListColumnDto.defaultSort,
+                caseListColumnDto.order!!
             )
         }
 
@@ -41,7 +42,8 @@ class CaseListColumnMapper {
                 caseListColumn.path,
                 caseListColumn.displayType,
                 caseListColumn.sortable,
-                caseListColumn.defaultSort
+                caseListColumn.defaultSort,
+                caseListColumn.order
             )
         }
 

@@ -23,7 +23,13 @@ import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
 @RequestMapping(value = ["/api"])
@@ -71,6 +77,15 @@ class CaseDefinitionResource(
         @RequestBody caseListColumnDto: CaseListColumnDto
     ): ResponseEntity<Any> {
         service.createListColumn(caseDefinitionName, caseListColumnDto)
+        return ResponseEntity.ok().build()
+    }
+
+    @PutMapping(value = ["/v1/case/{caseDefinitionName}/list-column"])
+    fun updateListColumn(
+        @PathVariable caseDefinitionName: String,
+        @RequestBody caseListColumnDtoList: List<CaseListColumnDto>
+    ): ResponseEntity<Any> {
+        service.updateListColumns(caseDefinitionName, caseListColumnDtoList)
         return ResponseEntity.ok().build()
     }
 }

@@ -16,34 +16,24 @@
 
 package com.ritense.case.web.rest.dto
 
-import com.ritense.case.domain.CaseListColumn
-import com.ritense.case.domain.CaseListColumnId
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.exception.InvalidListColumnException
 import org.zalando.problem.Status
 
 data class CaseListColumnDto(
-    val title: String?,
-    val key: String,
-    val path: String,
-    val displayType: DisplayType,
-    val sortable: Boolean,
-    val defaultSort: ColumnDefaultSort?
+    var title: String?,
+    var key: String,
+    var path: String,
+    var displayType: DisplayType,
+    var sortable: Boolean,
+    var defaultSort: ColumnDefaultSort?,
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    var order: Int?
 ) {
-
-    fun toEntity(caseDefinitionName: String): CaseListColumn {
-        return CaseListColumn(
-            CaseListColumnId(caseDefinitionName, this.key),
-            this.title,
-            this.path,
-            this.displayType,
-            sortable,
-            defaultSort
-        )
-    }
-
-    fun validate(caseDefinitionName: String) {
+    @Throws(InvalidListColumnException::class)
+    fun validate() {
         if (!displayType.displayTypeParameters.validate()) {
             throw InvalidListColumnException(
                 "Display type parameters are invalid for type ${displayType.type}.",

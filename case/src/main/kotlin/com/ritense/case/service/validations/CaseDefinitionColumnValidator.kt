@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.case.repository
+package com.ritense.case.service.validations
 
-import com.ritense.case.domain.CaseListColumn
-import com.ritense.case.domain.CaseListColumnId
-import org.springframework.data.jpa.repository.JpaRepository
+import com.ritense.case.web.rest.dto.CaseListColumnDto
 
-interface CaseDefinitionListColumnRepository : JpaRepository<CaseListColumn, CaseListColumnId> {
-    fun existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): Boolean
-    fun findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(caseDefinitionName: String): List<CaseListColumn>
-    fun findTopByIdCaseDefinitionNameOrderByOrderDesc(caseDefinitionName: String): CaseListColumn?
+interface CaseDefinitionColumnValidator {
+
+    fun validate(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto)
+
+    fun validate(caseDefinitionName: String, caseListColumnDtoList: List<CaseListColumnDto>)
+
 }
