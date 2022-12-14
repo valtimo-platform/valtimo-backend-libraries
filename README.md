@@ -22,6 +22,9 @@ We're not planning to build the next all-in-one monolith. The idea is to connect
 ## How does this fit the 5-layers model from the Dutch Common Ground initiative?
 This is typically layer-4 - so process and business logic. In itself the application is a layered model as well (it has a database and a UI), as any other application. Also relevant to know is that Valtimo does not cover Formflow at the moment. We are working on a standard available integration with Open Zaak initiative (layer 1/2). For the future we are also thinking to add more default integrations like IRMA.
 
+## Contributing
+Contributions are welcome! To get you in the right direction consult the [Valtimo documentation](https://docs.valtimo.nl/readme/contributing) for guidelines on how to contribute.
+
 ## License
 The source files in this repo are licensed to you under the EUPL 1.2. You can download the license in 23 languages: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12. If you have any questions about the use of this codebase in a larger work: just ask us.
 
