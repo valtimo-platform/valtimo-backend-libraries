@@ -80,6 +80,6 @@ open class ValtimoFormFlow(
         if (valueNode.isMissingNode) {
             throw RuntimeException("Missing data on path '$path'")
         }
-        return Mapper.INSTANCE.get().treeToValue(valueNode, Object::class.java)
+        return objectMapper.treeToValue(valueNode, Object::class.java)
     }
 }
