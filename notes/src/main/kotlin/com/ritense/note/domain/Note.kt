@@ -43,7 +43,7 @@ class Note(
     val createdDate: LocalDateTime,
 
     @Column(name = "content", columnDefinition = "CLOB", nullable = false)
-    val content: String,
+    var content: String,
 
     @Column(name = "document_id", nullable = false)
     val documentId: UUID,

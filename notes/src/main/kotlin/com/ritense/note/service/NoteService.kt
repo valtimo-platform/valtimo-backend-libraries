@@ -19,6 +19,10 @@ package com.ritense.note.service
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.note.domain.Note
 import com.ritense.note.event.NoteCreatedEvent
+import com.ritense.note.event.NoteDeletedEvent
+import com.ritense.note.event.NoteUpdatedEvent
+import com.ritense.note.exception.NoteAccessDeniedException
+import com.ritense.note.exception.NoteNotFoundException
 import com.ritense.note.repository.NoteRepository
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.utils.SecurityUtils
@@ -51,6 +55,35 @@ class NoteService(
         val node = noteRepository.save(Note(documentId, user, noteContent))
         applicationEventPublisher.publishEvent(NoteCreatedEvent(documentId.id, node.id))
         return node
+    }
+
+    fun editNote(noteId: UUID, noteContent: String): Note {
+        logger.debug { "Update note with id '$noteId'" }
+        SecurityUtils.getCurrentUserLogin()
+        val note = getNoteById(noteId)
+        verifyCurrentUserHasAccessToNote(note)
+        note.content = noteContent
+        val updatedNote = noteRepository.save(note)
+        applicationEventPublisher.publishEvent(NoteUpdatedEvent(noteId))
+        return updatedNote
+    }
+
+    fun deleteNote(noteId: UUID) {
+        logger.debug { "Delete note with id '$noteId'" }
+        verifyCurrentUserHasAccessToNote(getNoteById(noteId))
+        noteRepository.deleteById(noteId)
+        applicationEventPublisher.publishEvent(NoteDeletedEvent(noteId))
+    }
+
+    private fun getNoteById(noteId: UUID): Note {
+        return noteRepository.findById(noteId).orElseThrow { NoteNotFoundException(noteId) }
+    }
+
+    private fun verifyCurrentUserHasAccessToNote(note: Note) {
+        val user = userManagementService.currentUser
+        if (user.id != note.createdByUserId) {
+            throw NoteAccessDeniedException(user.email, note.id)
+        }
     }
 
     companion object {

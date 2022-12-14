@@ -19,8 +19,10 @@ package com.ritense.note.security.config
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
+import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
 class NoteHttpSecurityConfigurer : HttpSecurityConfigurer {
@@ -30,6 +32,8 @@ class NoteHttpSecurityConfigurer : HttpSecurityConfigurer {
             http.authorizeRequests()
                 .antMatchers(POST, "/api/v1/document/{document-id}/note").hasAuthority(USER)
                 .antMatchers(GET, "/api/v1/document/{document-id}/note").hasAuthority(USER)
+                .antMatchers(PUT, "/api/v1/note/{note-id}").hasAuthority(USER)
+                .antMatchers(DELETE, "/api/v1/note/{note-id}").hasAuthority(USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
