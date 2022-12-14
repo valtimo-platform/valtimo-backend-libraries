@@ -32,6 +32,7 @@ import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 open class CaseDefinitionService(
     private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository,
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
@@ -60,9 +61,8 @@ open class CaseDefinitionService(
         return caseDefinitionSettingsRepository.save(updatedCaseDefinition)
     }
 
-    @Transactional
     @Throws(InvalidListColumnException::class)
-    open fun upsertListColumn(
+    fun upsertListColumn(
         caseDefinitionName: String,
         caseListColumnDtoList: List<CaseListColumnDto>,
         operation: Operation
@@ -70,12 +70,18 @@ open class CaseDefinitionService(
         when (operation) {
             Operation.CREATE -> {
                 validators[operation]!!.validate(caseDefinitionName, caseListColumnDtoList[0])
+                caseListColumnDtoList[0].order = caseDefinitionListColumnRepository
+                    .findTopByIdCaseDefinitionNameOrderByOrderDesc(caseDefinitionName)?.order ?: 0
                 caseDefinitionListColumnRepository
                     .save(CaseListColumnMapper.toEntity(caseDefinitionName, caseListColumnDtoList[0]))
             }
 
             Operation.UPDATE -> {
                 validators[operation]!!.validate(caseDefinitionName, caseListColumnDtoList)
+                var order = 0
+                caseListColumnDtoList.forEach { caseListColumnDto ->
+                    caseListColumnDto.order = order++
+                }
                 caseDefinitionListColumnRepository
                     .saveAll(CaseListColumnMapper.toEntityList(caseDefinitionName, caseListColumnDtoList))
             }
@@ -95,6 +101,10 @@ open class CaseDefinitionService(
             throw UnknownCaseDefinitionException(ex.message)
         }
         return CaseListColumnMapper
-            .toDtoList(caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName))
+            .toDtoList(
+                caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+                    caseDefinitionName
+                )
+            )
     }
 }

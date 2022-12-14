@@ -22,5 +22,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface CaseDefinitionListColumnRepository : JpaRepository<CaseListColumn, CaseListColumnId> {
     fun existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): Boolean
-    fun findByIdCaseDefinitionName(caseDefinitionName: String): List<CaseListColumn>
+    fun findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(caseDefinitionName: String): List<CaseListColumn>
+    fun findTopByIdCaseDefinitionNameOrderByOrderDesc(caseDefinitionName: String): CaseListColumn?
 }

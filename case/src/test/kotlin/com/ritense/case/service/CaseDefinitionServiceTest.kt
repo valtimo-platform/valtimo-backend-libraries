@@ -154,17 +154,23 @@ class CaseDefinitionServiceTest {
         )
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
             .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
-        whenever(caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName))
+        whenever(
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+                caseDefinitionName
+            )
+        )
             .thenReturn(
                 listOf(
-                    listColumnDto.toEntity(caseDefinitionName)
+                    CaseListColumnMapper.toEntity(caseDefinitionName, listColumnDto)
                 )
             )
         val exception = assertThrows<InvalidListColumnException> {
             service.upsertListColumn(caseDefinitionName, listOf(listColumnDto), Operation.CREATE)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionName(caseDefinitionName)
+        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+            caseDefinitionName
+        )
         assertEquals("Unable to create list column. A column with defaultSort value already exists", exception.message)
 
     }
@@ -177,7 +183,11 @@ class CaseDefinitionServiceTest {
         )
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
             .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
-        whenever(caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName))
+        whenever(
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+                caseDefinitionName
+            )
+        )
             .thenReturn(
                 emptyList()
             )
@@ -193,7 +203,9 @@ class CaseDefinitionServiceTest {
             service.upsertListColumn(caseDefinitionName, listOf(listColumnDto), Operation.CREATE)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionName(caseDefinitionName)
+        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+            caseDefinitionName
+        )
         verify(documentDefinitionService).validateJsonPath(caseDefinitionName, listColumnDto.path)
         assertEquals(
             "JsonPath '"
@@ -212,7 +224,11 @@ class CaseDefinitionServiceTest {
         )
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
             .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
-        whenever(caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName))
+        whenever(
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+                caseDefinitionName
+            )
+        )
             .thenReturn(
                 emptyList()
             )
@@ -221,7 +237,9 @@ class CaseDefinitionServiceTest {
             service.upsertListColumn(caseDefinitionName, listOf(listColumnDto), Operation.CREATE)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionName(caseDefinitionName)
+        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+            caseDefinitionName
+        )
         verify(documentDefinitionService).validateJsonPath(caseDefinitionName, listColumnDto.path)
         assertEquals("Display type parameters are invalid for type enum.", exception.message)
 
@@ -234,7 +252,8 @@ class CaseDefinitionServiceTest {
             path = "doc:firstName",
             displayType = displayType,
             sortable = true,
-            defaultSort = ColumnDefaultSort.ASC
+            defaultSort = ColumnDefaultSort.ASC,
+            order = 1
         )
     }
 
@@ -245,7 +264,8 @@ class CaseDefinitionServiceTest {
             path = "doc:lastName",
             displayType = displayType,
             sortable = true,
-            defaultSort = null
+            defaultSort = null,
+            order = 2
         )
     }
 
@@ -275,7 +295,11 @@ class CaseDefinitionServiceTest {
         listColumnDtoLastName.defaultSort = ColumnDefaultSort.ASC
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
             .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
-        whenever(caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName))
+        whenever(
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+                caseDefinitionName
+            )
+        )
             .thenReturn(
                 listOf(
                     CaseListColumnMapper.toEntity(caseDefinitionName, listColumnDtoFirstName),
@@ -290,7 +314,9 @@ class CaseDefinitionServiceTest {
             )
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionName(caseDefinitionName)
+        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+            caseDefinitionName
+        )
         assertEquals("Invalid set of columns. There is more than 1 column with default sort value", exception.message)
     }
 
@@ -305,7 +331,11 @@ class CaseDefinitionServiceTest {
         )
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
             .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
-        whenever(caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName))
+        whenever(
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+                caseDefinitionName
+            )
+        )
             .thenReturn(
                 listOf(
                     CaseListColumnMapper.toEntity(caseDefinitionName, listColumnDtoFirstName),
@@ -324,7 +354,9 @@ class CaseDefinitionServiceTest {
             service.upsertListColumn(caseDefinitionName, listOf(listColumnDtoFirstName), Operation.UPDATE)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionName(caseDefinitionName)
+        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+            caseDefinitionName
+        )
         verify(documentDefinitionService).validateJsonPath(caseDefinitionName, listColumnDtoFirstName.path)
         assertEquals(
             "JsonPath '"

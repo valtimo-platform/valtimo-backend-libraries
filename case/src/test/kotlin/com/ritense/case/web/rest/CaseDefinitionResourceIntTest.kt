@@ -18,6 +18,8 @@ package com.ritense.case.web.rest
 
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseDefinitionSettings
+import com.ritense.case.domain.ColumnDefaultSort
+import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
 import org.junit.jupiter.api.BeforeEach
@@ -25,6 +27,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultMatcher
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
@@ -33,6 +36,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @Transactional
 class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
@@ -46,6 +50,9 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
+
+    @Autowired
+    lateinit var caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository
 
     val LIST_COLUMN_PATH: String = "/api/v1/case/{caseDefinitionName}/list-column"
 
@@ -195,11 +202,9 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     "  }\n" +
                     "}"
         )
-        mockMvc.perform(
-            MockMvcRequestBuilders.post(
-                LIST_COLUMN_PATH, caseDefinitionName
-            ).contentType(MediaType.APPLICATION_JSON_VALUE).content(
-                """
+        createListColumn(
+            caseDefinitionName,
+            """
                     {
                       "title": "First name",
                       "key": "first-name",
@@ -213,9 +218,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                       "sortable": true,
                       "defaultSort": "ASC"
                     }
-                """.trimIndent()
-            )
-        ).andExpect(status().isBadRequest)
+                """.trimIndent(), status().isBadRequest
+        )
     }
 
     @Test
@@ -236,10 +240,11 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             MockMvcRequestBuilders.get(
                 LIST_COLUMN_PATH, caseDefinitionName
             ).contentType(MediaType.APPLICATION_JSON_VALUE)
-        ).andExpect {
-            status().isOk
-            content().json(
-                """
+        )
+            .andExpect {
+                status().isOk
+                content().json(
+                    """
                 [
                   {
                     "title": "First name",
@@ -258,7 +263,123 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                   }
                 ]
             """.trimIndent()
-            )
-        }
+                )
+            }
     }
+
+    @Test
+    fun `should update columns for case definition`() {
+        val caseDefinitionName = "listColumnDocumentDefinition"
+        documentDefinitionService.deploy(
+            "{\n" +
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
+        )
+        createListColumn(
+            caseDefinitionName,
+            """
+                          {
+                            "title": "First name",
+                            "key": "first-name",
+                            "path": "doc:firstName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true,
+                            "defaultSort": "ASC"
+                          }
+                """.trimIndent(), status().isOk
+        )
+        createListColumn(
+            caseDefinitionName,
+            """
+                          {
+                            "title": "Last name",
+                            "key": "last-name",
+                            "path": "doc:lastName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true
+                          }
+                """.trimIndent(), status().isOk
+        )
+        mockMvc.perform(
+            MockMvcRequestBuilders.put(LIST_COLUMN_PATH, caseDefinitionName)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(
+                    """
+                        [
+                          {
+                            "title": "Last name",
+                            "key": "last-name",
+                            "path": "doc:lastName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true,
+                            "defaultSort": "DESC"
+                          },
+                          {
+                            "title": "First name",
+                            "key": "first-name",
+                            "path": "doc:firstName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true
+                          }
+                        ]
+                    """.trimIndent()
+                )
+        ).andExpect(status().isOk)
+        val columns = caseDefinitionListColumnRepository
+            .findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(caseDefinitionName)
+        assertEquals("last-name", columns[0].id.key)
+        assertEquals(ColumnDefaultSort.DESC, columns[0].defaultSort)
+        assertEquals("first-name", columns[1].id.key)
+        assertNull(columns[1].defaultSort)
+    }
+
+    private fun createListColumn(caseDefinitionName: String, json: String, expectedStatus: ResultMatcher) {
+        mockMvc.perform(
+            MockMvcRequestBuilders.post(LIST_COLUMN_PATH, caseDefinitionName)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(json)
+        ).andDo { result -> print(result.response.contentAsString) }.andExpect(expectedStatus)
+    }
+
 }

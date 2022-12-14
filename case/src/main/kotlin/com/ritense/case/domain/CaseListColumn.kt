@@ -35,5 +35,11 @@ data class CaseListColumn(
     val sortable: Boolean,
     @Column(name = "default_sort")
     @Enumerated(EnumType.STRING)
-    val defaultSort: ColumnDefaultSort?
-)
+    val defaultSort: ColumnDefaultSort?,
+    @Column(name = "column_order")
+    val order: Int
+) {
+    interface OrderProjection {
+        fun getOrder()
+    }
+}

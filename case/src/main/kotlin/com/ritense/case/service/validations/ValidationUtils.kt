@@ -49,7 +49,9 @@ open class ValidationUtils(
     internal fun isCreateColumnDefaultSortValid(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
         if (existsColumnWithDefaultSort(
                 caseListColumnDto,
-                caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName)
+                caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+                    caseDefinitionName
+                )
             )
         ) {
             throw InvalidListColumnException(

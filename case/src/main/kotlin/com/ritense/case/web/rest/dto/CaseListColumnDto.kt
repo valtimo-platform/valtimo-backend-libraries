@@ -16,8 +16,7 @@
 
 package com.ritense.case.web.rest.dto
 
-import com.ritense.case.domain.CaseListColumn
-import com.ritense.case.domain.CaseListColumnId
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.exception.InvalidListColumnException
@@ -29,20 +28,10 @@ data class CaseListColumnDto(
     var path: String,
     var displayType: DisplayType,
     var sortable: Boolean,
-    var defaultSort: ColumnDefaultSort?
+    var defaultSort: ColumnDefaultSort?,
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    var order: Int?
 ) {
-
-    fun toEntity(caseDefinitionName: String): CaseListColumn {
-        return CaseListColumn(
-            CaseListColumnId(caseDefinitionName, this.key),
-            this.title,
-            this.path,
-            this.displayType,
-            sortable,
-            defaultSort
-        )
-    }
-
     @Throws(InvalidListColumnException::class)
     fun validate() {
         if (!displayType.displayTypeParameters.validate()) {
