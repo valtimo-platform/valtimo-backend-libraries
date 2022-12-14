@@ -18,8 +18,10 @@ package com.ritense.case.service.validations
 
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.exception.InvalidListColumnException
+import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
+import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import org.zalando.problem.Status
@@ -57,20 +59,35 @@ open class ValidationUtils(
         }
     }
 
-    internal fun existsColumnWithDefaultSort(
-        caseListColumnDto: CaseListColumnDto, columns: List<CaseListColumn>
-    ): Boolean {
-        return caseListColumnDto.defaultSort != null &&
-                columns.any { column -> column.defaultSort != null }
-    }
-
     @Throws(InvalidListColumnException::class)
     internal fun existsDocumentDefinition(documentDefinitionName: String) {
         try {
             documentDefinitionService.findIdByName(documentDefinitionName)
         } catch (ex: UnknownDocumentDefinitionException) {
-            throw InvalidListColumnException(ex.message, Status.BAD_REQUEST)
+            throw UnknownCaseDefinitionException(ex.message)
         }
+    }
+
+    @Throws
+    internal fun overrideListColumnDtoWithDefaultSort(
+        caseDefinitionName: String,
+        caseListColumnDtoList: List<CaseListColumnDto>,
+        columns: List<CaseListColumn>
+    ) {
+        caseListColumnDtoList.forEach { caseListColumnDto ->
+            if (existsColumnWithDefaultSort(caseListColumnDto, columns)) {
+                val column = CaseListColumnMapper.toDto(columns.first { column -> column.defaultSort != null })
+                column.defaultSort = null
+                caseDefinitionListColumnRepository.save(CaseListColumnMapper.toEntity(caseDefinitionName, column))
+            }
+        }
+    }
+
+    internal fun existsColumnWithDefaultSort(
+        caseListColumnDto: CaseListColumnDto, columns: List<CaseListColumn>
+    ): Boolean {
+        return caseListColumnDto.defaultSort != null &&
+                columns.any { column -> column.defaultSort != null }
     }
 
     @Throws(InvalidListColumnException::class)

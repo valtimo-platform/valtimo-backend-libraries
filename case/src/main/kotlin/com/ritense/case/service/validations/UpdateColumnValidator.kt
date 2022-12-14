@@ -19,7 +19,6 @@ package com.ritense.case.service.validations
 import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
-import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.document.service.DocumentDefinitionService
 import org.zalando.problem.Status
 
@@ -27,16 +26,13 @@ class UpdateColumnValidator(
     caseDefinitionSettingsRepository: CaseDefinitionListColumnRepository,
     documentDefinitionService: DocumentDefinitionService
 ) : ValidationUtils(caseDefinitionSettingsRepository, documentDefinitionService), CaseDefinitionColumnValidator {
-
-    @Throws(InvalidListColumnException::class)
     override fun validate(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
-        existsDocumentDefinition(caseDefinitionName)
-        existsListColumn(caseDefinitionName, caseListColumnDto)
-        isJsonPathValid(caseDefinitionName, caseListColumnDto)
-        caseListColumnDto.validate()
+        TODO("Not yet implemented")
     }
 
+
     override fun validate(caseDefinitionName: String, caseListColumnDtoList: List<CaseListColumnDto>) {
+        existsDocumentDefinition(caseDefinitionName)
         val columns = caseDefinitionListColumnRepository.findByIdCaseDefinitionName(caseDefinitionName)
         val defaultSortColumns =
             caseListColumnDtoList.filter { caseListColumnDto -> caseListColumnDto.defaultSort != null }
@@ -46,13 +42,10 @@ class UpdateColumnValidator(
                 Status.BAD_REQUEST
             )
         }
+        overrideListColumnDtoWithDefaultSort(caseDefinitionName, caseListColumnDtoList, columns)
         caseListColumnDtoList.forEach { caseListColumnDto ->
-            if (existsColumnWithDefaultSort(caseListColumnDto, columns)) {
-                val column = CaseListColumnMapper.toDto(columns.first { column -> column.defaultSort != null })
-                column.defaultSort = null
-                caseDefinitionListColumnRepository.save(CaseListColumnMapper.toEntity(caseDefinitionName, column))
-            }
+            isJsonPathValid(caseDefinitionName, caseListColumnDto)
+            caseListColumnDto.validate()
         }
-
     }
 }

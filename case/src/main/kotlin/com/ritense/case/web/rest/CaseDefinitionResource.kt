@@ -71,14 +71,14 @@ class CaseDefinitionResource(
         @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDto: CaseListColumnDto
     ): ResponseEntity<Any> {
-        service.upsertListColumn(caseDefinitionName, caseListColumnDto, Operation.CREATE)
+        service.upsertListColumn(caseDefinitionName, listOf(caseListColumnDto), Operation.CREATE)
         return ResponseEntity.ok().build()
     }
 
     @PutMapping(value = ["/v1/case/{caseDefinitionName}/list-column"])
     fun updateListColumn(
         @PathVariable caseDefinitionName: String,
-        @RequestBody caseListColumnDto: CaseListColumnDto
+        @RequestBody caseListColumnDto: List<CaseListColumnDto>
     ): ResponseEntity<Any> {
         service.upsertListColumn(caseDefinitionName, caseListColumnDto, Operation.UPDATE)
         return ResponseEntity.ok().build()

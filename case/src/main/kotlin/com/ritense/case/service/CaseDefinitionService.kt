@@ -62,9 +62,24 @@ open class CaseDefinitionService(
 
     @Transactional
     @Throws(InvalidListColumnException::class)
-    open fun upsertListColumn(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto, operation: Operation) {
-        validators[operation]!!.validate(caseDefinitionName, caseListColumnDto)
-        caseDefinitionListColumnRepository.save(CaseListColumnMapper.toEntity(caseDefinitionName, caseListColumnDto))
+    open fun upsertListColumn(
+        caseDefinitionName: String,
+        caseListColumnDtoList: List<CaseListColumnDto>,
+        operation: Operation
+    ) {
+        when (operation) {
+            Operation.CREATE -> {
+                validators[operation]!!.validate(caseDefinitionName, caseListColumnDtoList[0])
+                caseDefinitionListColumnRepository
+                    .save(CaseListColumnMapper.toEntity(caseDefinitionName, caseListColumnDtoList[0]))
+            }
+
+            Operation.UPDATE -> {
+                validators[operation]!!.validate(caseDefinitionName, caseListColumnDtoList)
+                caseDefinitionListColumnRepository
+                    .saveAll(CaseListColumnMapper.toEntityList(caseDefinitionName, caseListColumnDtoList))
+            }
+        }
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
