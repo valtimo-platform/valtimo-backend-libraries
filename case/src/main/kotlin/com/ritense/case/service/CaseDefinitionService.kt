@@ -39,12 +39,8 @@ open class CaseDefinitionService(
     private val documentDefinitionService: DocumentDefinitionService
 ) {
     var validators: Map<Operation, CaseDefinitionColumnValidator> = mapOf(
-        Pair(
-            Operation.CREATE, CreateColumnValidator(caseDefinitionListColumnRepository, documentDefinitionService)
-        ),
-        Pair(
-            Operation.UPDATE, UpdateColumnValidator(caseDefinitionListColumnRepository, documentDefinitionService)
-        )
+        Operation.CREATE to CreateColumnValidator(caseDefinitionListColumnRepository, documentDefinitionService),
+        Operation.UPDATE to UpdateColumnValidator(caseDefinitionListColumnRepository, documentDefinitionService)
     )
 
     @Throws(UnknownDocumentDefinitionException::class)
@@ -62,30 +58,29 @@ open class CaseDefinitionService(
     }
 
     @Throws(InvalidListColumnException::class)
-    fun upsertListColumn(
+    fun createListColumn(
         caseDefinitionName: String,
-        caseListColumnDtoList: List<CaseListColumnDto>,
-        operation: Operation
+        caseListColumnDto: CaseListColumnDto
     ) {
-        when (operation) {
-            Operation.CREATE -> {
-                validators[operation]!!.validate(caseDefinitionName, caseListColumnDtoList[0])
-                caseListColumnDtoList[0].order = caseDefinitionListColumnRepository
-                    .findTopByIdCaseDefinitionNameOrderByOrderDesc(caseDefinitionName)?.order ?: 0
-                caseDefinitionListColumnRepository
-                    .save(CaseListColumnMapper.toEntity(caseDefinitionName, caseListColumnDtoList[0]))
-            }
+        validators[Operation.CREATE]!!.validate(caseDefinitionName, caseListColumnDto)
+        caseListColumnDto.order = caseDefinitionListColumnRepository
+            .findTopByIdCaseDefinitionNameOrderByOrderDesc(caseDefinitionName)?.order ?: 0
+        caseDefinitionListColumnRepository
+            .save(CaseListColumnMapper.toEntity(caseDefinitionName, caseListColumnDto))
+    }
 
-            Operation.UPDATE -> {
-                validators[operation]!!.validate(caseDefinitionName, caseListColumnDtoList)
-                var order = 0
-                caseListColumnDtoList.forEach { caseListColumnDto ->
-                    caseListColumnDto.order = order++
-                }
-                caseDefinitionListColumnRepository
-                    .saveAll(CaseListColumnMapper.toEntityList(caseDefinitionName, caseListColumnDtoList))
-            }
+    fun updateListColumns(
+        caseDefinitionName: String,
+        caseListColumnDtoList: List<CaseListColumnDto>
+    ) {
+
+        validators[Operation.UPDATE]!!.validate(caseDefinitionName, caseListColumnDtoList)
+        var order = 0
+        caseListColumnDtoList.forEach { caseListColumnDto ->
+            caseListColumnDto.order = order++
         }
+        caseDefinitionListColumnRepository
+            .saveAll(CaseListColumnMapper.toEntityList(caseDefinitionName, caseListColumnDtoList))
     }
 
     @Throws(UnknownDocumentDefinitionException::class)

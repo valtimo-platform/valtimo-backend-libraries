@@ -16,8 +16,13 @@
 
 package com.ritense.case.domain
 
+import javax.persistence.Column
+import javax.persistence.EmbeddedId
+import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
+import javax.persistence.Table
 import org.hibernate.annotations.Type
-import javax.persistence.*
 
 @Entity
 @Table(name = "case_list_column")
@@ -38,8 +43,4 @@ data class CaseListColumn(
     val defaultSort: ColumnDefaultSort?,
     @Column(name = "column_order")
     val order: Int
-) {
-    interface OrderProjection {
-        fun getOrder()
-    }
-}
+)
