@@ -16,6 +16,9 @@
 
 package com.ritense.formflow.domain.instance
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.formflow.domain.definition.FormFlowNextStep
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
@@ -28,7 +31,6 @@ import javax.persistence.FetchType
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.Table
-
 
 @Entity
 @Table(name = "form_flow_step_instance")
@@ -100,7 +102,7 @@ data class FormFlowStepInstance(
             "step" to mapOf(
                 "id" to id,
                 "key" to stepKey,
-                "submissionData" to instance.getSubmissionDataContext()
+                "submissionData" to jacksonObjectMapper().readValue<JsonNode>(instance.getSubmissionDataContext())
             ),
             "instance" to mapOf(
                 "id" to instance.id
