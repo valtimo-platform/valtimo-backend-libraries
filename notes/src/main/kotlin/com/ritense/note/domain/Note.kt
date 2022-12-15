@@ -27,7 +27,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "note")
-class Note(
+data class Note(
 
     @Id
     @Column(name = "id", nullable = false, updatable = false)

@@ -21,6 +21,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.dto.NoteCreateRequestDto
 import com.ritense.note.web.rest.dto.NoteResponseDto
+import com.ritense.note.web.rest.dto.NoteUpdateRequestDto
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -28,9 +29,11 @@ import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -79,5 +82,22 @@ class NoteResource(
             noteDto.content,
         )
         return ResponseEntity.ok(NoteResponseDto(note))
+    }
+
+    @PutMapping("/v1/note/{noteId}")
+    fun editNote(
+        @PathVariable(name = "noteId") noteId: UUID,
+        @RequestBody noteDto: NoteUpdateRequestDto
+    ): ResponseEntity<NoteResponseDto> {
+        val note = noteService.editNote(noteId, noteDto.content)
+        return ResponseEntity.ok(NoteResponseDto(note))
+    }
+
+    @DeleteMapping("/v1/note/{noteId}")
+    fun deleteNote(
+        @PathVariable(name = "noteId") noteId: UUID
+    ): ResponseEntity<Unit> {
+        noteService.deleteNote(noteId)
+        return ResponseEntity.noContent().build()
     }
 }
