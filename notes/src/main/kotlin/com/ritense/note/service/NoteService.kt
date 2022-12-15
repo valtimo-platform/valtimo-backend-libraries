@@ -52,9 +52,9 @@ class NoteService(
         logger.debug { "Create note for document $documentId" }
         SecurityUtils.getCurrentUserLogin()
         val user = userManagementService.currentUser
-        val node = noteRepository.save(Note(documentId, user, noteContent))
-        applicationEventPublisher.publishEvent(NoteCreatedEvent(documentId.id, node.id))
-        return node
+        val note = noteRepository.save(Note(documentId, user, noteContent))
+        applicationEventPublisher.publishEvent(NoteCreatedEvent(documentId.id, note.id))
+        return note
     }
 
     fun editNote(noteId: UUID, noteContent: String): Note {
@@ -62,8 +62,8 @@ class NoteService(
         SecurityUtils.getCurrentUserLogin()
         val note = getNoteById(noteId)
         verifyCurrentUserHasAccessToNote(note)
-        note.content = noteContent
-        val updatedNote = noteRepository.save(note)
+        val copiedNote = note.copy(content = noteContent)
+        val updatedNote = noteRepository.save(copiedNote)
         applicationEventPublisher.publishEvent(NoteUpdatedEvent(noteId))
         return updatedNote
     }

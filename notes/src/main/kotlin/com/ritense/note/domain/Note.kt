@@ -27,7 +27,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "note")
-class Note(
+data class Note(
 
     @Id
     @Column(name = "id", nullable = false, updatable = false)
@@ -43,7 +43,7 @@ class Note(
     val createdDate: LocalDateTime,
 
     @Column(name = "content", columnDefinition = "CLOB", nullable = false)
-    var content: String,
+    val content: String,
 
     @Column(name = "document_id", nullable = false)
     val documentId: UUID,
