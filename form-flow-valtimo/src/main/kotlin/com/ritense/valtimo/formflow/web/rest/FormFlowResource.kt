@@ -66,14 +66,9 @@ class FormFlowResource(
     ): ResponseEntity<CompleteStepResult> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
 
-        val submissionDataJsonObject = if (submissionData == null) {
-            JSONObject()
-        } else {
-            JSONObject(submissionData.toString())
-        }
         val stepInstance = instance.complete(
             FormFlowStepInstanceId.existingId(stepInstanceId),
-            submissionDataJsonObject
+            toJsonObject(submissionData)
         )
         formFlowService.save(instance)
 
