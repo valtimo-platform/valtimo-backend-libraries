@@ -87,11 +87,26 @@ class FormFlowResource(
         @RequestBody incompleteSubmissionData: JsonNode?
     ): ResponseEntity<GetFormFlowStateResult> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
-        val incompleteSubmissionDataJson = incompleteSubmissionData?.let { JSONObject(it.toString()) }
-        val stepInstance = instance.back(incompleteSubmissionDataJson)
+        if (incompleteSubmissionData != null) {
+            instance.save(toJsonObject(incompleteSubmissionData))
+        }
+        val stepInstance = instance.back()
         formFlowService.save(instance)
 
         return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
+    }
+
+    @PostMapping("/v1/form-flow/{formFlowId}/save")
+    @Transactional
+    fun saveStep(
+        @PathVariable(name = "formFlowId") formFlowId: String,
+        @RequestBody incompleteSubmissionData: JsonNode?
+    ): ResponseEntity<Unit> {
+        val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
+        instance.save(toJsonObject(incompleteSubmissionData))
+        formFlowService.save(instance)
+
+        return ResponseEntity.noContent().build()
     }
 
     private fun openStep(stepInstance: FormFlowStepInstance?): FormFlowStepResult? {
@@ -104,6 +119,14 @@ class FormFlowResource(
             )
         } else {
             null
+        }
+    }
+
+    private fun toJsonObject(jsonNode: JsonNode?): JSONObject {
+        return if (jsonNode == null) {
+            JSONObject()
+        } else {
+            JSONObject(jsonNode.toString())
         }
     }
 }
