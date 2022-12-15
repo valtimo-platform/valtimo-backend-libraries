@@ -83,11 +83,12 @@ class FormFlowResource(
     @PostMapping("/v1/form-flow/{formFlowId}/back")
     @Transactional
     fun backStep(
-        @PathVariable(name = "formFlowId") formFlowId: String
+        @PathVariable(name = "formFlowId") formFlowId: String,
+        @RequestBody incompleteSubmissionData: JsonNode?
     ): ResponseEntity<GetFormFlowStateResult> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
-
-        val stepInstance = instance.back()
+        val incompleteSubmissionDataJson = incompleteSubmissionData?.let { JSONObject(it.toString()) }
+        val stepInstance = instance.back(incompleteSubmissionDataJson)
         formFlowService.save(instance)
 
         return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))

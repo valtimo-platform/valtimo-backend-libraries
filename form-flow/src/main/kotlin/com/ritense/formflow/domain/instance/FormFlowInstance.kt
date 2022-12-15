@@ -84,14 +84,15 @@ class FormFlowInstance(
 
     /**
      * This method navigates to the previous step (if present).
+     * @param incompleteSubmissionData This data will be set as the submissionData of the step
      *
      * @return The previous step (optional)
      */
-    fun back(): FormFlowStepInstance? {
-        val previousStepOrder = getCurrentStep().order - 1
+    fun back(incompleteSubmissionData: JSONObject? = null): FormFlowStepInstance? {
+        val currentStep = getCurrentStep()
+        val previousStepOrder = currentStep.order - 1
         return if (previousStepOrder >= 0) {
-            val formFlowStepInstance = getCurrentStep()
-            formFlowStepInstance.back()
+            currentStep.back(incompleteSubmissionData?.toString())
             val previousStep = history.single { it.order == previousStepOrder }
             currentFormFlowStepInstanceId = previousStep.id
             previousStep
@@ -144,7 +145,8 @@ class FormFlowInstance(
     }
 
     private fun mergeSubmissionData(source: JSONObject, target: JSONObject) {
-        for (key in JSONObject.getNames(source)) {
+        val keys = JSONObject.getNames(source) ?: arrayOf()
+        for (key in keys) {
             val value = source.get(key)
             if (target.has(key) && value is JSONObject) {
                 mergeSubmissionData(value, target.getJSONObject(key))

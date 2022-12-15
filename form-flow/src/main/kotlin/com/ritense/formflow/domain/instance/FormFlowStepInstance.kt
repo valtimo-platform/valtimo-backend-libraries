@@ -48,7 +48,11 @@ data class FormFlowStepInstance(
     val definition: FormFlowStep
         get() = instance.formFlowDefinition.getStepByKey(stepKey)
 
-    fun back() {
+    fun back(incompleteSubmissionData: String? = null) {
+        if (incompleteSubmissionData != null) {
+            this.submissionData = incompleteSubmissionData
+        }
+
         processExpressions(FormFlowStep::onBack)
     }
     fun open() {

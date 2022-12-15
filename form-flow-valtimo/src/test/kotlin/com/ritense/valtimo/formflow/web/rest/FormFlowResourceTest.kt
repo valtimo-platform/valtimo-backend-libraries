@@ -142,4 +142,20 @@ class FormFlowResourceTest : BaseTest() {
         verify(formFlowInstance).back()
         verify(stepInstance).open()
     }
+
+    @Test
+    fun `should navigate to previous step with submission data`() {
+        whenever(formFlowInstance.back(any())).thenReturn(stepInstance)
+
+        mockMvc.perform(
+            post("/api/v1/form-flow/{flowId}/back", formFlowInstance.id.id)
+                .content("{\"step1\":\"A\"}")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.step.id").value(stepInstanceId.id.toString()))
+
+        verify(formFlowInstance).back(any())
+    }
 }

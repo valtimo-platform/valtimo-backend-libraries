@@ -356,4 +356,24 @@ internal class FormFlowInstanceTest : BaseTest() {
         assertEquals("{\"step2\":\"B\"}", instance.getHistory()[1].submissionData)
         assertEquals(null, instance.getHistory()[2].submissionData)
     }
+
+    @Test
+    fun `complete - back with submission data, should save submission data, but not use back submission data for context`() {
+        val expressionProcessorFactory = SpelExpressionProcessorFactory()
+        ExpressionProcessorFactoryHolder.setInstance(
+            expressionProcessorFactory,
+            Mockito.mock(ApplicationContext::class.java)
+        )
+        expressionProcessorFactory.setFlowProcessBeans(mapOf("formFlowBeanTestHelper" to FormFlowBeanTestHelper()))
+        val definition = getFormFlowDefinition("key", readFileAsString("/config/form-flow/inkomens_loket.json"))
+        val instance = definition.createInstance(mutableMapOf())
+
+        instance.complete(instance.currentFormFlowStepInstanceId!!, JSONObject("{\"step1\":\"A\"}"))
+        instance.back(JSONObject("{\"step2\":\"B\"}"))
+
+        assertEquals("{\"step1\":\"A\"}", instance.getSubmissionDataContext())
+        assertEquals(2, instance.getHistory().size)
+        assertEquals("{\"step1\":\"A\"}", instance.getHistory()[0].submissionData)
+        assertEquals("{\"step2\":\"B\"}", instance.getHistory()[1].submissionData)
+    }
 }
