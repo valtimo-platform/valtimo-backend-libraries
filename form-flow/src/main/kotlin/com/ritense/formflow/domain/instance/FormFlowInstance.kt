@@ -173,17 +173,17 @@ class FormFlowInstance(
         if (currentFormFlowStepInstanceId == null && history.isNotEmpty()) {
             return null
         }
-        var stepKey = formFlowDefinition.startStep
-        var stepOrder = 0
-        if (currentFormFlowStepInstanceId != null) {
+
+        val stepKey: String
+        val stepOrder: Int
+        if (currentFormFlowStepInstanceId == null) {
+            stepKey = formFlowDefinition.startStep
+            stepOrder = 0
+        } else  {
             val currentStepInstance = getCurrentStep()
-            val currentStep = formFlowDefinition.getStepByKey(currentStepInstance.stepKey)
+            val nextStep = currentStepInstance.determineNextStep() ?: return null
 
-            if (currentStep.nextSteps.isEmpty()) {
-                return null
-            }
-
-            stepKey = currentStep.nextSteps.first().step
+            stepKey = nextStep.step
             stepOrder = currentStepInstance.order + 1
         }
         return history.singleOrNull { it.stepKey == stepKey && it.order == stepOrder }

@@ -36,11 +36,11 @@ class ExpressionProcessorFactoryHolderIntTest: BaseIntegrationTest() {
             .setInstance(SpelExpressionProcessorFactory(), applicationContext = applicationContext)
 
         val spelExpressionProcessorFactory =
-            ExpressionProcessorFactoryHolder.getinstance()!! as SpelExpressionProcessorFactory
+            ExpressionProcessorFactoryHolder.getInstance() as SpelExpressionProcessorFactory
 
         assertNotNull(spelExpressionProcessorFactory.formFlowBeans)
         assertEquals(1, spelExpressionProcessorFactory.formFlowBeans.size)
-        assertTrue(spelExpressionProcessorFactory.formFlowBeans.get("formFlowBeanTestHelper") is FormFlowBeanTestHelper)
+        assertTrue(spelExpressionProcessorFactory.formFlowBeans["formFlowBeanTestHelper"] is FormFlowBeanTestHelper)
     }
 
     @Test
@@ -48,7 +48,7 @@ class ExpressionProcessorFactoryHolderIntTest: BaseIntegrationTest() {
         ExpressionProcessorFactoryHolder
             .setInstance(SpelExpressionProcessorFactory(), applicationContext = applicationContext)
         val evaluationResult = ExpressionProcessorFactoryHolder
-            .getinstance()!!
+            .getInstance()
             .create()
             .process<Any>("\${formFlowBeanTestHelper.returnTrue()}")
 
@@ -61,7 +61,7 @@ class ExpressionProcessorFactoryHolderIntTest: BaseIntegrationTest() {
         ExpressionProcessorFactoryHolder
             .setInstance(SpelExpressionProcessorFactory(), applicationContext = applicationContext)
         val expressionProcessor = ExpressionProcessorFactoryHolder
-            .getinstance()!!
+            .getInstance()
             .create()
 
         assertThrows<ExpressionExecutionException> {
