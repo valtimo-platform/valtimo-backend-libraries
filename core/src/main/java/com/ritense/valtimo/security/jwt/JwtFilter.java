@@ -73,6 +73,7 @@ public class JwtFilter extends GenericFilterBean {
             String authenticatedUserId = null;
             Authentication authentication = null;
             HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+            slf4jLogger.debug("Request URL '{}'", httpServletRequest.getRequestURL().toString());
             String jwt = resolveToken(httpServletRequest);
             if (StringUtils.hasText(jwt)) {
                 if (this.tokenAuthenticationService.validateToken(jwt)) {
@@ -81,25 +82,27 @@ public class JwtFilter extends GenericFilterBean {
                     authenticatedUserId = authentication.getName();
                 }
             }
-            if (valtimoProperties.getApp().getEnableTenancy()) {
-                if (authentication instanceof TenantAware) {
-                    final var tenantAuthenticationToken = (TenantAuthenticationToken) authentication;
-                    final String tenantId = tenantAuthenticationToken.getTenantId();
-                    slf4jLogger.info(
-                        "Camunda multi-tenant setAuthenticatedUserId='{}' with tenantId='{}'",
-                        authenticatedUserId,
-                        tenantId
-                    );
-                    identityService.setAuthentication(authenticatedUserId, null, List.of(tenantId));
+            if (authentication != null) {
+                if (valtimoProperties.getApp().getEnableTenancy()) {
+                    if (authentication instanceof TenantAware) {
+                        final var tenantAuthenticationToken = (TenantAuthenticationToken) authentication;
+                        final String tenantId = tenantAuthenticationToken.getTenantId();
+                        slf4jLogger.debug(
+                            "Camunda multi-tenant setAuthenticatedUserId='{}' with tenantId='{}'",
+                            authenticatedUserId,
+                            tenantId
+                        );
+                        identityService.setAuthentication(authenticatedUserId, null, List.of(tenantId));
+                    } else {
+                        slf4jLogger.debug(
+                            "Missing TenantAware authentication found instead '{}' skipping multi-tenancy",
+                            authentication.getClass().getSimpleName()
+                        );
+                    }
                 } else {
-                    slf4jLogger.warn(
-                        "Failed to set Camunda multi-tenant mode for authenticatedUserId='{}'",
-                        authenticatedUserId
-                    );
+                    slf4jLogger.debug("Camunda setAuthenticatedUserId='{}'", authenticatedUserId);
+                    identityService.setAuthenticatedUserId(authenticatedUserId);
                 }
-            } else {
-                slf4jLogger.info("Camunda setAuthenticatedUserId='{}'", authenticatedUserId);
-                identityService.setAuthenticatedUserId(authenticatedUserId);
             }
             filterChain.doFilter(servletRequest, servletResponse);
             // User (authentication) should always be set or reset to null
