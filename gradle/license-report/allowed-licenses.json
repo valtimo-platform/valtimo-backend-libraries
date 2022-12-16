@@ -19,6 +19,12 @@
             "moduleLicense": "MPL 2.0 or EPL 1.0"
         },
         {
+            "moduleLicense": "MPL 2.0"
+        },
+        {
+            "moduleLicense": "EPL 1.0"
+        },
+        {
             "moduleLicense": "GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1"
         },
         {
@@ -38,6 +44,9 @@
         },
         {
             "moduleLicense": "MIT License"
+        },
+        {
+            "moduleLicense": "MIT-0"
         },
         {
             "moduleLicense": "GNU GENERAL PUBLIC LICENSE, Version 2 + Classpath Exception"
@@ -70,12 +79,7 @@
         },
         {
             "moduleLicense": null,
-            "moduleVersion": "2.*",
-            "moduleName": "io.github.microutils:kotlin-logging"
-        },
-        {
-            "moduleLicense": null,
-            "moduleVersion": "2.*",
+            "moduleVersion": "3.*",
             "moduleName": "io.github.microutils:kotlin-logging"
         },
         {
