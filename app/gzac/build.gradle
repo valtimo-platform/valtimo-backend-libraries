@@ -62,9 +62,7 @@ dependencies {
 
 
     // Database
-    implementation "mysql:mysql-connector-java"
     implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
-
 }
 
 apply from: "gradle/publishing.gradle"

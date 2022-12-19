@@ -2,6 +2,6 @@ version: '3.9'
 services:
     db:
         ports:
-            - "3305:3306"
+            - "3305:5432"
         environment:
-            - MYSQL_DATABASE=connector-test
+            - POSTGRES_DB=connector-test
