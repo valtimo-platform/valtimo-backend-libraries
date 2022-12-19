@@ -28,8 +28,8 @@ public class WebhookHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/mandrill/webhook").permitAll()
-                .antMatchers(POST, "/api/mandrill/webhook").permitAll();
+                .antMatchers(GET, "/api/v1/mandrill/webhook").permitAll()
+                .antMatchers(POST, "/api/v1/mandrill/webhook").permitAll();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

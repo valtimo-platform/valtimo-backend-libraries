@@ -26,13 +26,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/openzaak/resultaat"],
+@RequestMapping(value = ["/api"],
     produces = [MediaType.APPLICATION_JSON_VALUE],
     consumes = [MediaType.APPLICATION_JSON_VALUE]
 )
 interface ResultaatResource {
 
-    @PostMapping // can get worden body naar query param
+    @PostMapping ("/v1/openzaak/resultaat") // can be a get if body is moved to queryparam
     fun getResultaatTypes(@RequestBody zaakTypeRequest: ZaakTypeRequest): ResponseEntity<List<ResultaatType>>
 
 }

@@ -21,21 +21,15 @@ import com.ritense.openzaak.exception.ZaakInstanceNotFoundException
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.valtimo.contract.form.DataResolvingContext
-import com.ritense.valtimo.contract.form.ExternalFormFieldType
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
-import java.util.UUID
 
 class OpenZaakFormFieldDataResolver(
     private val zaakService: ZaakService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService
 ) : FormFieldDataResolver {
 
-    override fun supports(externalFormFieldType: ExternalFormFieldType): Boolean {
-        return externalFormFieldType == ExternalFormFieldType.OZ
-    }
-
     override fun supports(externalFormFieldType: String): Boolean {
-        return externalFormFieldType == ExternalFormFieldType.OZ.name
+        return externalFormFieldType == "OpenZaak"
     }
 
     override fun get(

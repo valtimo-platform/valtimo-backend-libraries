@@ -33,9 +33,14 @@ import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
+import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.UUID
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.util.UUID
 
 internal class DocumentValueResolverTest {

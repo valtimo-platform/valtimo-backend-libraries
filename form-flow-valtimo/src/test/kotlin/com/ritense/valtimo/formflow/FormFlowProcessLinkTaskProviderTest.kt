@@ -40,6 +40,9 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import java.util.Optional
 import java.util.UUID
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 internal class FormFlowProcessLinkTaskProviderTest {
 

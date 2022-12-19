@@ -27,17 +27,17 @@ dependencies {
     implementation project(':zgw:objecten-api')
     implementation project(':zgw:objecttypen-api')
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
 
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
-    testImplementation 'com.squareup.okhttp3:mockwebserver:4.10.0'
-    testImplementation "com.squareup.okhttp3:okhttp:4.10.0"
+    testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
+    testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     //Kotlin
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {
         enabled = true

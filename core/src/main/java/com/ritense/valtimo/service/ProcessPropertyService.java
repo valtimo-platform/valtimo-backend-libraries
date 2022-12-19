@@ -17,6 +17,7 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.contract.config.ValtimoProperties;
+import com.ritense.valtimo.domain.processdefinition.ProcessDefinitionProperties;
 import com.ritense.valtimo.processdefinition.repository.ProcessDefinitionPropertiesRepository;
 import org.camunda.bpm.engine.RepositoryService;
 
@@ -64,6 +65,10 @@ public class ProcessPropertyService {
             throw new RuntimeException("Failed to find process definition with id: " + processDefinitionId);
         }
         return processDefinition.getKey();
+    }
+
+    public ProcessDefinitionProperties findByProcessDefinitionKey(String processDefinitionKey){
+        return processDefinitionPropertiesRepository.findByProcessDefinitionKey(processDefinitionKey);
     }
 
 }

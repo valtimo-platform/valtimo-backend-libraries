@@ -30,22 +30,6 @@
 
 * * *
 
-**4.** **Group:** com.auth0 **Name:** auth0 **Version:** 1.13.2
-
-**POM Project URL:** `[https://github.com/auth0/auth0-java](https://github.com/auth0/auth0-java)`
-
-**POM License: The MIT License (MIT)** - [https://raw.githubusercontent.com/auth0/auth0-java/master/LICENSE](https://raw.githubusercontent.com/auth0/auth0-java/master/LICENSE)
-
-* * *
-
-**5.** **Group:** com.auth0 **Name:** java-jwt **Version:** 3.8.1
-
-**POM Project URL:** `[https://github.com/auth0/java-jwt](https://github.com/auth0/java-jwt)`
-
-**POM License: The MIT License (MIT)** - [https://raw.githubusercontent.com/auth0/java-jwt/master/LICENSE](https://raw.githubusercontent.com/auth0/java-jwt/master/LICENSE)
-
-* * *
-
 **6.** **Group:** com.carrotsearch **Name:** hppc **Version:** 0.8.1
 
 **Manifest Project URL:** `[http://www.carrotsearch.com](http://www.carrotsearch.com)`

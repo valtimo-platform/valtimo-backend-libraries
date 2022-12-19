@@ -18,8 +18,8 @@ package com.ritense.valtimo.milestones.service.mapper;
 
 import com.ritense.valtimo.milestones.domain.Milestone;
 import com.ritense.valtimo.milestones.web.rest.dto.MilestoneDTO;
-import org.mapstruct.Mapper;
 import java.util.List;
+import org.mapstruct.Mapper;
 
 /**
  * Mapper for the entity Milestone and its DTO MilestoneDTO.

@@ -26,13 +26,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/openzaak/status"],
+@RequestMapping(value = ["/api"],
     produces = [MediaType.APPLICATION_JSON_VALUE],
     consumes = [MediaType.APPLICATION_JSON_VALUE]
 )
 interface StatusResource {
 
-    @PostMapping
+    @PostMapping("/v1/openzaak/status")
     fun getStatusTypes(@RequestBody zaakTypeRequest: ZaakTypeRequest): ResponseEntity<List<StatusType>>
 
 }

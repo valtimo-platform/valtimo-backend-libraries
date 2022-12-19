@@ -34,37 +34,37 @@ class ChoiceFieldValueSecurityResourceTest extends SecuritySpecificEndpointInteg
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void createChoiceFieldValueAsAdmin() throws Exception {
-        assertHttpStatus(POST, "/api/choice-field-values", BAD_REQUEST);
+        assertHttpStatus(POST, "/api/v1/choice-field-values", BAD_REQUEST);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void createChoiceFieldValueAsUser() throws Exception {
-        assertHttpStatus(POST, "/api/choice-field-values", FORBIDDEN);
+        assertHttpStatus(POST, "/api/v1/choice-field-values", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void updateChoiceFieldValueAsAdmin() throws Exception {
-        assertHttpStatus(PUT, "/api/choice-field-values", BAD_REQUEST);
+        assertHttpStatus(PUT, "/api/v1/choice-field-values", BAD_REQUEST);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void updateChoiceFieldValueAsUser() throws Exception {
-        assertHttpStatus(PUT, "/api/choice-field-values", FORBIDDEN);
+        assertHttpStatus(PUT, "/api/v1/choice-field-values", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void deleteChoiceFieldValueAsAdmin() throws Exception {
-        assertHttpStatus(DELETE, "/api/choice-field-values/1", INTERNAL_SERVER_ERROR);
+        assertHttpStatus(DELETE, "/api/v1/choice-field-values/1", INTERNAL_SERVER_ERROR);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void deleteChoiceFieldValueAsUser() throws Exception {
-        assertHttpStatus(DELETE, "/api/choice-field-values/1", FORBIDDEN);
+        assertHttpStatus(DELETE, "/api/v1/choice-field-values/1", FORBIDDEN);
     }
 
 }

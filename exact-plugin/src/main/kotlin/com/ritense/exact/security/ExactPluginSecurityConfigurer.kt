@@ -10,7 +10,7 @@ class ExactPluginSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(POST, "/api/plugin/exact/exchange").hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(POST, "/api/v1/plugin/exact/exchange").hasAuthority(AuthoritiesConstants.ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

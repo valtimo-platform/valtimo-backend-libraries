@@ -31,9 +31,6 @@ import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentD
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstance;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
-import com.ritense.processdocument.domain.impl.DocumentDefinitionProcess;
-import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessLinkResponse;
-import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest;
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
@@ -148,7 +145,7 @@ class ProcessDocumentResourceTest extends BaseTest {
         when(processDocumentAssociationService.getAllProcessDocumentDefinitions(any())).thenReturn(processDocumentInstancesPage);
 
         mockMvc.perform(
-                get("/api/process-document/definition")
+                get("/api/v1/process-document/definition")
                     .accept(APPLICATION_JSON_VALUE)
                     .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -165,7 +162,7 @@ class ProcessDocumentResourceTest extends BaseTest {
             .thenReturn(List.of(processDocumentDefinition));
 
         mockMvc.perform(
-                get("/api/process-document/definition/document/{document-definition-name}", DOCUMENT_DEFINITION_NAME)
+                get("/api/v1/process-document/definition/document/{document-definition-name}", DOCUMENT_DEFINITION_NAME)
                     .accept(APPLICATION_JSON_VALUE)
                     .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -182,7 +179,7 @@ class ProcessDocumentResourceTest extends BaseTest {
             .thenReturn(Optional.of(processDocumentDefinition));
 
         mockMvc.perform(
-                get("/api/process-document/definition/processinstance/{processInstanceId}", PROCESS_INSTANCE_ID)
+                get("/api/v1/process-document/definition/processinstance/{processInstanceId}", PROCESS_INSTANCE_ID)
                     .accept(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
@@ -198,7 +195,7 @@ class ProcessDocumentResourceTest extends BaseTest {
             .thenReturn(List.of(processDocumentInstance));
 
         mockMvc.perform(
-                get("/api/process-document/instance/document/{documentId}", UUID.randomUUID().toString())
+                get("/api/v1/process-document/instance/document/{documentId}", UUID.randomUUID().toString())
                     .accept(APPLICATION_JSON_VALUE)
                     .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -229,7 +226,7 @@ class ProcessDocumentResourceTest extends BaseTest {
         var request = new NewDocumentAndStartProcessRequest("some-key", newDocumentRequest);
 
         mockMvc.perform(
-                post("/api/process-document/operation/new-document-and-start-process")
+                post("/api/v1/process-document/operation/new-document-and-start-process")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(APPLICATION_JSON_VALUE)
                     .content(TestUtil.convertObjectToJsonBytes(request)))
@@ -259,7 +256,7 @@ class ProcessDocumentResourceTest extends BaseTest {
         var request = new ModifyDocumentAndCompleteTaskRequest(modifyRequest, "task-id");
 
         mockMvc.perform(
-                post("/api/process-document/operation/modify-document-and-complete-task")
+                post("/api/v1/process-document/operation/modify-document-and-complete-task")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(APPLICATION_JSON_VALUE)
                     .content(TestUtil.convertObjectToJsonBytes(request)))
@@ -291,7 +288,7 @@ class ProcessDocumentResourceTest extends BaseTest {
             .thenReturn(Optional.of(camundaProcessJsonSchemaDocumentDefinition));
 
         mockMvc.perform(
-                post("/api/process-document/definition")
+                post("/api/v1/process-document/definition")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .accept(APPLICATION_JSON_VALUE)
                     .contentType(APPLICATION_JSON_VALUE)
@@ -307,7 +304,7 @@ class ProcessDocumentResourceTest extends BaseTest {
         when(processDocumentAssociationService.createProcessDocumentDefinition(any())).thenReturn(Optional.empty());
 
         mockMvc.perform(
-                post("/api/process-document/definition")
+                post("/api/v1/process-document/definition")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .accept(APPLICATION_JSON_VALUE)
                     .contentType(APPLICATION_JSON_VALUE)
@@ -335,7 +332,7 @@ class ProcessDocumentResourceTest extends BaseTest {
         var request = new ModifyDocumentAndStartProcessRequest("some-key", modifyRequest);
 
         mockMvc.perform(
-                post("/api/process-document/operation/modify-document-and-start-process")
+                post("/api/v1/process-document/operation/modify-document-and-start-process")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(APPLICATION_JSON_VALUE)
                     .content(TestUtil.convertObjectToJsonBytes(request)))
@@ -356,72 +353,13 @@ class ProcessDocumentResourceTest extends BaseTest {
             false
         );
         mockMvc.perform(
-                delete("/api/process-document/definition")
+                delete("/api/v1/process-document/definition")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(APPLICATION_JSON_VALUE)
                     .content(TestUtil.convertObjectToJsonBytes(request)))
             .andDo(print())
             .andExpect(status().isNoContent());
         verify(processDocumentAssociationService).deleteProcessDocumentDefinition((ProcessDocumentDefinitionRequest) any());
-    }
-
-    @Test
-    void shouldGetDocumentDefinitionProcesses() throws Exception {
-        String documentDefinitionName = "name";
-        DocumentDefinitionProcess documentDefinitionProcess = new DocumentDefinitionProcess(
-            "processDefinitionKey",
-            "processName"
-        );
-        when(documentDefinitionProcessLinkService.getDocumentDefinitionProcess(documentDefinitionName))
-            .thenReturn(documentDefinitionProcess);
-
-        mockMvc.perform(
-                get("/api/process-document/demo/{name}/process", documentDefinitionName))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.processDefinitionKey").value("processDefinitionKey"))
-            .andExpect(jsonPath("$.processName").value("processName"));
-
-        verify(documentDefinitionProcessLinkService).getDocumentDefinitionProcess(documentDefinitionName);
-    }
-
-    @Test
-    void shouldPutDocumentDefinitionProcesses() throws Exception {
-        String documentDefinitionName = "name";
-        DocumentDefinitionProcessLinkResponse response = new DocumentDefinitionProcessLinkResponse(
-            "processDefinitionKey",
-            "processName"
-        );
-        DocumentDefinitionProcessRequest request = new DocumentDefinitionProcessRequest(
-            "processDefinitionKey",
-            "DOCUMENT_UPLOAD"
-        );
-
-        when(documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(eq(documentDefinitionName), any()))
-            .thenReturn(response);
-
-        mockMvc.perform(
-                put("/api/process-document/demo/{name}/process", documentDefinitionName)
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .content(TestUtil.convertObjectToJsonBytes(request))
-                    .characterEncoding(StandardCharsets.UTF_8.name()))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.processDefinitionKey").value("processDefinitionKey"))
-            .andExpect(jsonPath("$.processName").value("processName"));
-
-        verify(documentDefinitionProcessLinkService).saveDocumentDefinitionProcess(eq(documentDefinitionName), any());
-    }
-
-    @Test
-    void shouldDeleteDocumentDefinitionProcesses() throws Exception {
-        String documentDefinitionName = "name";
-
-        mockMvc.perform(delete("/api/process-document/demo/{name}/process", documentDefinitionName))
-            .andDo(print())
-            .andExpect(status().isOk());
-
-        verify(documentDefinitionProcessLinkService).deleteDocumentDefinitionProcess(documentDefinitionName);
     }
 
 }

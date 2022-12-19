@@ -31,11 +31,11 @@ import java.util.UUID
 
 
 @RestController
-@RequestMapping(value = ["/api/document/{documentId}/zaak"])
+@RequestMapping(value = ["/api"])
 class ZaakObjectResource(
     val zaakObjectService: ZaakObjectService
 ) {
-    @GetMapping(value = ["/objecttype"])
+    @GetMapping(value = ["/v1/document/{documentId}/zaak/objecttype"])
     fun getZaakObjecttypes(
         @PathVariable(name = "documentId") documentId: UUID
     ): ResponseEntity<List<ObjecttypeDto>> {
@@ -45,7 +45,7 @@ class ZaakObjectResource(
         return ResponseEntity.ok(zaakObjectTypes)
     }
 
-    @GetMapping(value = ["/object"])
+    @GetMapping(value = ["/v1/document/{documentId}/zaak/object"])
     fun getZaakObjecten(
         @PathVariable(name = "documentId") documentId: UUID,
         @RequestParam(name = "typeUrl") typeUrl: URI
@@ -55,7 +55,7 @@ class ZaakObjectResource(
         return ResponseEntity.ok(objectDtos)
     }
 
-    @GetMapping(value = ["/object/form"])
+    @GetMapping(value = ["/v1/document/{documentId}/zaak/object/form"])
     fun getZaakObjecten(
         @RequestParam(name = "objectUrl") objectUrl: URI
     ): ResponseEntity<FormDefinition>{

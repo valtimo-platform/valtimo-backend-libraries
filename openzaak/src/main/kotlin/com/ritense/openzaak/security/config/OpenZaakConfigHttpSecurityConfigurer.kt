@@ -27,7 +27,7 @@ class OpenZaakConfigHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/openzaak/config").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/openzaak/config").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

@@ -49,7 +49,7 @@ internal class PluginDefinitionResourceIT: BaseIntegrationTest() {
 
     @Test
     fun `should get plugin action definitions by key`() {
-        mockMvc.perform(get("/api/plugin/definition/test-plugin/action")
+        mockMvc.perform(get("/api/v1/plugin/definition/test-plugin/action")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -71,7 +71,7 @@ internal class PluginDefinitionResourceIT: BaseIntegrationTest() {
 
     @Test
     fun `should get plugin action definitions by key and activity type`() {
-        mockMvc.perform(get("/api/plugin/definition/test-plugin/action?activityType=SERVICE_TASK")
+        mockMvc.perform(get("/api/v1/plugin/definition/test-plugin/action?activityType=SERVICE_TASK")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)

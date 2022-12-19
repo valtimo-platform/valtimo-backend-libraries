@@ -24,10 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/openzaak/zaaktype"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 interface ZaakTypeResource {
 
-    @GetMapping
+    @GetMapping("/v1/openzaak/zaaktype")
     fun getZaakTypes(): ResponseEntity<List<ZaakType>>
 
 }

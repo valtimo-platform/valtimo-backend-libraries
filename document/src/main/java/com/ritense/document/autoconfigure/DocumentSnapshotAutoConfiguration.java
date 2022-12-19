@@ -20,7 +20,10 @@ import com.ritense.document.domain.impl.listener.DocumentSnapshotCapturedEventLi
 import com.ritense.document.domain.impl.listener.DocumentSnapshotCapturedEventPublisher;
 import com.ritense.document.domain.impl.listener.UndeployDocumentDefinitionEventListener;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
+import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.repository.DocumentSnapshotRepository;
+import com.ritense.document.repository.impl.MysqlJsonSchemaDocumentSnapshotRepository;
+import com.ritense.document.repository.impl.PostgresJsonSchemaDocumentSnapshotRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
@@ -34,6 +37,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 
 @Configuration
 @ConditionalOnProperty(prefix = "valtimo.versioning", name = "enabled", havingValue = "true", matchIfMissing = true)
@@ -83,4 +87,23 @@ public class DocumentSnapshotAutoConfiguration {
         return new UndeployDocumentDefinitionEventListener(documentSnapshotService);
     }
 
+    @Bean
+    @ConditionalOnProperty(prefix = "valtimo", name = "database", havingValue = "postgres")
+    public JpaRepositoryFactoryBean<
+        DocumentSnapshotRepository<JsonSchemaDocumentSnapshot>,
+        JsonSchemaDocumentSnapshot,
+        DocumentSnapshot.Id
+    > postgresJsonSchemaDocumentSnapshotRepository() {
+        return new JpaRepositoryFactoryBean<>(PostgresJsonSchemaDocumentSnapshotRepository.class);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "valtimo", name = "database", havingValue = "mysql", matchIfMissing = true)
+    public JpaRepositoryFactoryBean<
+        DocumentSnapshotRepository<JsonSchemaDocumentSnapshot>,
+        JsonSchemaDocumentSnapshot,
+        DocumentSnapshot.Id
+    > mysqlJsonSchemaDocumentSnapshotRepository() {
+        return new JpaRepositoryFactoryBean<>(MysqlJsonSchemaDocumentSnapshotRepository.class);
+    }
 }

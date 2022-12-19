@@ -33,7 +33,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:1"
+    api "javax.inject:javax.inject:${javaxInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -42,7 +42,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-validation"
 
-    implementation "com.fasterxml.jackson.module:jackson-module-afterburner"
+    implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
     implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
@@ -50,7 +50,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
@@ -59,9 +59,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
     implementation "org.hibernate:hibernate-core"
-    implementation 'org.glassfish:javax.json:1.1.4'
     implementation "org.springframework.boot:spring-boot-starter-webflux"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.6.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:${kotlinCoroutinesVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
@@ -71,12 +70,11 @@ dependencies {
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${kotlinCoroutinesVersion}"
     testImplementation project(':test-utils-common')
-    testImplementation "com.squareup.okhttp3:mockwebserver:4.9.3"
-    testImplementation "com.squareup.okhttp3:okhttp:4.9.3"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
-    testImplementation "io.netty:netty-resolver-dns-native-macos:4.1.72.Final:osx-aarch_64"
+    testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
+    testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {
         enabled = true

@@ -2,6 +2,6 @@ version: '3.9'
 services:
     db:
         ports:
-            - "3323:3306"
+            - "3323:5432"
         environment:
-            - MYSQL_DATABASE=value-resolver-test
+            - POSTGRES_DB=value-resolver-test

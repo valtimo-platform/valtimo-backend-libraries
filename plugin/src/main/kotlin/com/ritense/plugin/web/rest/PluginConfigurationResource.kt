@@ -37,12 +37,12 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping(value = ["/api/plugin"])
+@RequestMapping(value = ["/api"])
 class PluginConfigurationResource(
     private var pluginService: PluginService
 ) {
 
-    @GetMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(value = ["/v1/plugin/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getPluginDefinitions(@RequestParam("category") category: String?,
                              @RequestParam("activityType") activityType: ActivityType?)
         : ResponseEntity<List<PluginConfigurationDto>> {
@@ -57,7 +57,7 @@ class PluginConfigurationResource(
             .map { PluginConfigurationDto(it) })
     }
 
-    @PostMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(value = ["/v1/plugin/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun createPluginConfiguration(
         @RequestBody createPluginConfiguration: CreatePluginConfigurationDto
     ): ResponseEntity<PluginConfigurationDto> {
@@ -72,7 +72,7 @@ class PluginConfigurationResource(
         )
     }
 
-    @PutMapping(value = ["/configuration/{pluginConfigurationId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(value = ["/v1/plugin/configuration/{pluginConfigurationId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun updatePluginConfiguration(
         @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID,
         @RequestBody updatePluginConfiguration: UpdatePluginConfigurationDto
@@ -88,7 +88,7 @@ class PluginConfigurationResource(
         )
     }
 
-    @DeleteMapping(value = ["/configuration/{pluginConfigurationId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping(value = ["/v1/plugin/configuration/{pluginConfigurationId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun deletePluginConfiguration(
         @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID
     ): ResponseEntity<Void> {

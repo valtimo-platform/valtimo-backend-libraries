@@ -24,12 +24,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/process-link/form-flow-definition"])
+@RequestMapping(value = ["/api"])
 class ProcessLinkFormFlowDefinitionResource(
     val formFlowService: FormFlowService
 ) {
 
-    @GetMapping
+    @GetMapping("/v1/process-link/form-flow-definition")
     fun getFormLinkOptions(): ResponseEntity<List<FormFlowDefinition>> {
         val formFlowDefinitions = formFlowService.getFormFlowDefinitions()
 

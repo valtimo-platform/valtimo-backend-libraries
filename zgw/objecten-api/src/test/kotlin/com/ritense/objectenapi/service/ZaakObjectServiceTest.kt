@@ -16,11 +16,6 @@
 
 package com.ritense.objectenapi.service
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.ObjectenApiPlugin
@@ -37,6 +32,11 @@ import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.ZaakObject
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.net.URI
 import java.util.Optional
 import java.util.UUID

@@ -53,16 +53,16 @@ public class UserResource {
         this.userManagementService = userManagementService;
     }
 
-    @PostMapping(value = "/users")
+    @PostMapping(value = "/v1/users")
     public ResponseEntity<ManageableUser> createUser(@RequestBody ValtimoUser valtimoUser) throws URISyntaxException {
         logger.debug("Request to save ValtimoUser : {}", valtimoUser);
         final ManageableUser user = userManagementService.createUser(valtimoUser);
-        final URI uri = new URI("/api/users/" + UriUtils.encode(user.getId(), StandardCharsets.UTF_8));
+        final URI uri = new URI("/api/v1/users/" + UriUtils.encode(user.getId(), StandardCharsets.UTF_8));
         final HttpHeaders headers = HeaderUtil.createAlert("userManagement.created", user.getEmail());
         return ResponseEntity.created(uri).headers(headers).body(user);
     }
 
-    @PutMapping(value = "/users")
+    @PutMapping(value = "/v1/users")
     public ResponseEntity<ManageableUser> updateUser(@RequestBody ValtimoUser valtimoUser) {
         logger.debug("Request to update ValtimoUser : {}", valtimoUser);
         final ManageableUser user = userManagementService.updateUser(valtimoUser);
@@ -70,7 +70,7 @@ public class UserResource {
         return ResponseEntity.ok().headers(headers).body(user);
     }
 
-    @PutMapping(value = "/users/{userId}/activate")
+    @PutMapping(value = "/v1/users/{userId}/activate")
     public ResponseEntity<Void> activateUser(@PathVariable String userId) {
         logger.debug("Request to activate userId : {}", userId);
         userManagementService.activateUser(userId);
@@ -78,7 +78,7 @@ public class UserResource {
         return ResponseEntity.ok().headers(headers).build();
     }
 
-    @PutMapping(value = "/users/{userId}/deactivate")
+    @PutMapping(value = "/v1/users/{userId}/deactivate")
     public ResponseEntity<Void> deactivateUser(@PathVariable String userId) {
         logger.debug("Request to deactivate user : {}", userId);
         userManagementService.deactivateUser(userId);
@@ -86,19 +86,19 @@ public class UserResource {
         return ResponseEntity.ok().headers(headers).build();
     }
 
-    @GetMapping(value = "/users")
+    @GetMapping(value = "/v1/users")
     public ResponseEntity<Page<ManageableUser>> getAllUsers(Pageable pageable) throws URISyntaxException {
         final Page<ManageableUser> page = userManagementService.getAllUsers(pageable);
         return ResponseEntity.ok(page);
     }
 
-    @GetMapping(value = "/users", params = {"searchTerm"})
+    @GetMapping(value = "/v1/users", params = {"searchTerm"})
     public ResponseEntity<Page<ManageableUser>> queryUsers(@RequestParam("searchTerm") String searchTerm, Pageable pageable) {
         final Page<ManageableUser> page = userManagementService.queryUsers(searchTerm, pageable);
         return ResponseEntity.ok(page);
     }
 
-    @GetMapping(value = "/users/email/{email}/")
+    @GetMapping(value = "/v1/users/email/{email}/")
     public ResponseEntity<ManageableUser> getUserByEmail(@PathVariable String email) {
         logger.debug("Request to get user by email : {}", email);
         return userManagementService.findByEmail(email)
@@ -106,21 +106,21 @@ public class UserResource {
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping(value = "/users/{userId}")
+    @GetMapping(value = "/v1/users/{userId}")
     public ResponseEntity<ManageableUser> getUser(@PathVariable String userId) {
         logger.debug("Request to get user by id : {}", userId);
         final ManageableUser manageableUser = userManagementService.findById(userId);
         return ResponseEntity.ok(manageableUser);
     }
 
-    @GetMapping(value = "/users/authority/{authority}")
+    @GetMapping(value = "/v1/users/authority/{authority}")
     public ResponseEntity<List<ManageableUser>> getAllUsersByRole(@PathVariable String authority) {
         logger.debug("Request to get users by role : {}", authority);
         final List<ManageableUser> usersWithRole = userManagementService.findByRole(authority);
         return ResponseEntity.ok(usersWithRole);
     }
 
-    @DeleteMapping(value = "/users/{userId}")
+    @DeleteMapping(value = "/v1/users/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
         logger.debug("Request to delete user : {}", userId);
         userManagementService.deleteUser(userId);
@@ -128,7 +128,7 @@ public class UserResource {
         return ResponseEntity.ok().headers(headers).build();
     }
 
-    @PostMapping(value = "/users/send-verification-email/{userId}")
+    @PostMapping(value = "/v1/users/send-verification-email/{userId}")
     public ResponseEntity<Void> resendVerificationEmail(@PathVariable String userId) {
         logger.debug("Request to resend verification email to user : {}", userId);
         boolean success = userManagementService.resendVerificationEmail(userId);

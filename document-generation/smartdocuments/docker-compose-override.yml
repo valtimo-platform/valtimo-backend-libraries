@@ -2,6 +2,6 @@ version: '3.9'
 services:
   db:
     ports:
-      - "3317:3306"
+      - "3317:5432"
     environment:
-      - MYSQL_DATABASE=smartdocuments-test
+      - POSTGRES_DB=smartdocuments-test

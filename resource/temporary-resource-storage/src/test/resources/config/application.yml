@@ -1,8 +1,8 @@
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3317/smartdocuments-test
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:3317/smartdocuments-test
     username: valtimo
     password: password
     hikari:
@@ -10,8 +10,8 @@ spring:
   liquibase:
     enabled: false
   jpa:
-    database-platform: org.hibernate.dialect.MySQL57Dialect
-    database: mysql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
     show_sql: true
     open-in-view: false
     properties:
@@ -34,6 +34,9 @@ spring:
         physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
       use-new-id-generator-mappings: false
+
+valtimo:
+  database: postgres
 
 spring-actuator:
   username: test

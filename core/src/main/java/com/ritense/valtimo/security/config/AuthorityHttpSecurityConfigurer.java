@@ -30,11 +30,11 @@ public class AuthorityHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/authorities").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/authorities/{name}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/authorities").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/authorities").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/authorities/{name}").hasAuthority(ADMIN);
+                .antMatchers(GET, "/api/v1/authorities").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/authorities/{name}").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/authorities").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/authorities").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/authorities/{name}").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

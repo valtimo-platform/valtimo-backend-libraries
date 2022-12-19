@@ -105,7 +105,7 @@ class DefaultProcessLinkResourceIT extends BaseIntegrationTest {
         assertEquals(1, list.size());
 
         mockMvc.perform(
-            get("/api/process-link/task/" + list.get(0).getId())
+            get("/api/v1/process-link/task/" + list.get(0).getId())
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())

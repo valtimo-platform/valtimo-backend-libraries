@@ -36,11 +36,11 @@ import org.springframework.web.bind.annotation.RestController
 import javax.transaction.Transactional
 
 @RestController
-@RequestMapping(value = ["/api/form-flow"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class FormFlowResource(
     private val formFlowService: FormFlowService
 ) {
-    @GetMapping("/{formFlowInstanceId}")
+    @GetMapping("/v1/form-flow/{formFlowInstanceId}")
     @Transactional
     fun getFormFlowState(
         @PathVariable(name = "formFlowInstanceId") instanceId: String,
@@ -57,7 +57,7 @@ class FormFlowResource(
         return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
     }
 
-    @PostMapping("/{formFlowId}/step/{stepInstanceId}")
+    @PostMapping("/v1/form-flow/{formFlowId}/step/{stepInstanceId}")
     @Transactional
     fun completeStep(
         @PathVariable(name = "formFlowId") formFlowId: String,
@@ -80,7 +80,7 @@ class FormFlowResource(
         return ResponseEntity.ok(CompleteStepResult(instance.id.id, openStep(stepInstance)))
     }
 
-    @PostMapping("/{formFlowId}/back")
+    @PostMapping("/v1/form-flow/{formFlowId}/back")
     @Transactional
     fun backStep(
         @PathVariable(name = "formFlowId") formFlowId: String
