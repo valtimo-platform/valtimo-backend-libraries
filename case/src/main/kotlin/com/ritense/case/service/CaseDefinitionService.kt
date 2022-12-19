@@ -18,6 +18,7 @@ package com.ritense.case.service
 
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.exception.InvalidListColumnException
+import com.ritense.case.exception.UnknownCaseDefinitionColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
@@ -33,7 +34,7 @@ import com.ritense.document.service.DocumentDefinitionService
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-open class CaseDefinitionService(
+class CaseDefinitionService(
     private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository,
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
     private val documentDefinitionService: DocumentDefinitionService
@@ -101,5 +102,22 @@ open class CaseDefinitionService(
                     caseDefinitionName
                 )
             )
+    }
+
+    @Throws(UnknownDocumentDefinitionException::class, UnknownCaseDefinitionColumnException::class)
+    fun deleteCaseListColumn(caseDefinitionName: String, columnKey: String) {
+        try {
+            checkIfDocumentDefinitionExists(caseDefinitionName)
+        } catch (ex: UnknownDocumentDefinitionException) {
+            throw UnknownCaseDefinitionException(ex.message)
+        }
+        if (!caseDefinitionListColumnRepository
+                .existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName, columnKey)
+        ) {
+            throw UnknownCaseDefinitionColumnException(
+                "Can't delete case definition column. Column does not exist."
+            )
+        }
+        caseDefinitionListColumnRepository.deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName, columnKey)
     }
 }
