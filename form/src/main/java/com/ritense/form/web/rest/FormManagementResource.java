@@ -32,25 +32,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/api/form-management", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface FormManagementResource {
 
-    @GetMapping
+    @GetMapping(value = "/v1/form-management")
     ResponseEntity<Page<? extends FormDefinition>> getAll(Pageable pageable);
 
-    @GetMapping(params = {"searchTerm"})
+    @GetMapping(value = "/v1/form-management", params = {"searchTerm"})
     ResponseEntity<Page<? extends FormDefinition>> queryFormDefinitions(@RequestParam("searchTerm") String searchTerm, Pageable pageable);
 
-    @GetMapping(value = "/{formDefinitionId}", consumes = MediaType.ALL_VALUE)
+    @GetMapping(value = "/v1/form-management/{formDefinitionId}", consumes = MediaType.ALL_VALUE)
     ResponseEntity<? extends FormDefinition> getFormDefinitionById(String formDefinitionId);
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/form-management", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<? extends FormDefinition> createFormDefinition(CreateFormDefinitionRequest request);
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/v1/form-management", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<? extends FormDefinition> modifyFormDefinition(ModifyFormDefinitionRequest request);
 
-    @DeleteMapping(value = "/{formDefinitionId}")
+    @DeleteMapping(value = "/v1/form-management/{formDefinitionId}")
     ResponseEntity<Void> deleteFormDefinition(String formDefinitionId);
 
 }

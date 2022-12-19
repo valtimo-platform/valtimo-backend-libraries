@@ -26,12 +26,13 @@ dependencies {
     implementation project(":audit")
     implementation project(":contract")
     implementation project(":document")
+    implementation project(":web")
 
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
-    implementation "io.github.microutils:kotlin-logging:2.1.23"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     testImplementation project(":core")
     testImplementation project(":resource:local-resource")
@@ -40,8 +41,8 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
 
-    testImplementation "io.kotest:kotest-assertions-core:5.5.1"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "io.kotest:kotest-assertions-core:${kotestVersion}"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {
         enabled = true

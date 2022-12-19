@@ -75,7 +75,7 @@ class TaskResourceTest {
 
     @Test
     void assign() throws Exception {
-        mockMvc.perform(post("/api/task/{taskId}/assign", taskId)
+        mockMvc.perform(post("/api/v1/task/{taskId}/assign", taskId)
             .content(objectMapper.writeValueAsString(assigneeRequest))
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)

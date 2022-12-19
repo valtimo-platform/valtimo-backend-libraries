@@ -15,7 +15,7 @@ class ExactResource(
     val exactService: ExactService
 ) {
 
-    @PostMapping("/plugin/exact/exchange")
+    @PostMapping("/v1/plugin/exact/exchange")
     fun exchange(@RequestBody request: ExactExchangeRequest): ExactExchangeResponse {
         return exactService.exchange(request)
     }

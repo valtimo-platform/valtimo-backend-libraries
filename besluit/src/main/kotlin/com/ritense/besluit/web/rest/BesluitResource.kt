@@ -24,10 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/besluittype"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 interface BesluitResource {
 
-    @GetMapping
+    @GetMapping("/v1/besluittype")
     fun getBesluittypen(
     ): ResponseEntity<List<BesluitType>>
 

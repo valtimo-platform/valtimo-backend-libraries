@@ -24,7 +24,7 @@ public class FormSecuritySmokeIntegrationTest extends CoreSecuritySmokeIntegrati
     @Override
     protected Set<String> getIgnoredPathPatterns() {
         final Set<String> ignoredPathPatterns = super.getIgnoredPathPatterns();
-        ignoredPathPatterns.add("/api/form-file");
+        ignoredPathPatterns.add("/api/v1/form-file");
         return ignoredPathPatterns;
     }
 

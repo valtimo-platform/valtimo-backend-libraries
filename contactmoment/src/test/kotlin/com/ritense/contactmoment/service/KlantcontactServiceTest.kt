@@ -16,26 +16,23 @@
 
 package com.ritense.contactmoment.service
 
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
-import com.ritense.connector.service.ConnectorService
-import com.ritense.contactmoment.connector.ContactMomentConnector
-import com.ritense.contactmoment.domain.Kanaal
 import com.ritense.contactmoment.domain.request.SendMessageRequest
 import com.ritense.klant.domain.Klant
 import com.ritense.klant.service.KlantService
 import com.ritense.valtimo.contract.mail.MailSender
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.Recipient
-import java.util.UUID
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.hasEntry
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import java.util.UUID
 
 internal class KlantcontactServiceTest {
 

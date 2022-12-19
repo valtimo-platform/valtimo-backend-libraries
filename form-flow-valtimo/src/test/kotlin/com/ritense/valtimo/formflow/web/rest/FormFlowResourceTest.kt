@@ -1,10 +1,6 @@
 package com.ritense.valtimo.formflow.web.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
@@ -18,6 +14,10 @@ import com.ritense.valtimo.formflow.BaseTest
 import com.ritense.valtimo.formflow.handler.FormTypeProperties
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -76,7 +76,7 @@ class FormFlowResourceTest : BaseTest() {
             .perform(
                 MockMvcRequestBuilders
                     .get(
-                        "/api/form-flow/{instanceId}",
+                        "/api/v1/form-flow/{instanceId}",
                         formFlowInstanceId.id.toString()
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -100,7 +100,7 @@ class FormFlowResourceTest : BaseTest() {
             .perform(
                 MockMvcRequestBuilders
                     .get(
-                        "/api/form-flow/{instanceId}",
+                        "/api/v1/form-flow/{instanceId}",
                         UUID.randomUUID().toString()
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -113,7 +113,7 @@ class FormFlowResourceTest : BaseTest() {
     fun `should complete step`() {
         whenever(formFlowInstance.complete(any(), any())).thenReturn(stepInstance)
 
-        mockMvc.perform(post("/api/form-flow/{flowId}/step/{stepId}", formFlowInstance.id.id, formFlowInstance.getCurrentStep().id.id))
+        mockMvc.perform(post("/api/v1/form-flow/{flowId}/step/{stepId}", formFlowInstance.id.id, formFlowInstance.getCurrentStep().id.id))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(formFlowInstance.id.id.toString()))
@@ -130,7 +130,7 @@ class FormFlowResourceTest : BaseTest() {
     fun `should navigate to previous step`() {
         whenever(formFlowInstance.back()).thenReturn(stepInstance)
 
-        mockMvc.perform(post("/api/form-flow/{flowId}/back", formFlowInstance.id.id))
+        mockMvc.perform(post("/api/v1/form-flow/{flowId}/back", formFlowInstance.id.id))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(formFlowInstance.id.id.toString()))

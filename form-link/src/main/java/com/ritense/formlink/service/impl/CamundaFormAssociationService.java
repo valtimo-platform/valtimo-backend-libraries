@@ -151,21 +151,6 @@ public class CamundaFormAssociationService implements FormAssociationService {
 
     @Override
     public Optional<JsonNode> getPreFilledFormDefinitionByFormLinkId(
-        Document.Id documentId,
-        String processDefinitionKey,
-        String formLinkId,
-        String taskInstanceId
-    ) {
-        return getPreFilledFormDefinitionByFormLinkId(
-            processDefinitionKey,
-            formLinkId,
-            Optional.ofNullable(documentId),
-            Optional.ofNullable(taskInstanceId)
-        );
-    }
-
-    @Override
-    public Optional<JsonNode> getPreFilledFormDefinitionByFormLinkId(
         String processDefinitionKey,
         String formLinkId,
         Optional<Document.Id> documentId,
@@ -225,18 +210,6 @@ public class CamundaFormAssociationService implements FormAssociationService {
             null
         );
         return createFormAssociation(new CreateFormAssociationRequest(processDefinitionKey, formLinkRequest));
-    }
-
-    @Override
-    @Transactional
-    public FormAssociation createFormAssociation(
-        String processDefinitionKey,
-        String formName,
-        String formLinkElementId,
-        FormAssociationType type,
-        boolean isPublic
-    ) {
-        return createFormAssociation(processDefinitionKey, formName, formLinkElementId, type);
     }
 
     @Override

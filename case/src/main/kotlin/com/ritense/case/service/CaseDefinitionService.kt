@@ -17,31 +17,89 @@
 package com.ritense.case.service
 
 import com.ritense.case.domain.CaseDefinitionSettings
+import com.ritense.case.exception.InvalidListColumnException
+import com.ritense.case.exception.UnknownCaseDefinitionException
+import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
+import com.ritense.case.service.validations.CaseDefinitionColumnValidator
+import com.ritense.case.service.validations.CreateColumnValidator
+import com.ritense.case.service.validations.Operation
+import com.ritense.case.service.validations.UpdateColumnValidator
+import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
+import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
+import org.springframework.transaction.annotation.Transactional
 
-class CaseDefinitionService(
-    private val repository: CaseDefinitionSettingsRepository,
+@Transactional
+open class CaseDefinitionService(
+    private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository,
+    private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
     private val documentDefinitionService: DocumentDefinitionService
 ) {
+    var validators: Map<Operation, CaseDefinitionColumnValidator> = mapOf(
+        Operation.CREATE to CreateColumnValidator(caseDefinitionListColumnRepository, documentDefinitionService),
+        Operation.UPDATE to UpdateColumnValidator(caseDefinitionListColumnRepository, documentDefinitionService)
+    )
+
     @Throws(UnknownDocumentDefinitionException::class)
     fun getCaseSettings(caseDefinitionName: String): CaseDefinitionSettings {
         checkIfDocumentDefinitionExists(caseDefinitionName)
-        return repository.getById(caseDefinitionName)
+        return caseDefinitionSettingsRepository.getById(caseDefinitionName)
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
     fun updateCaseSettings(caseDefinitionName: String, newSettings: CaseSettingsDto): CaseDefinitionSettings {
         checkIfDocumentDefinitionExists(caseDefinitionName)
-        val caseDefinitionSettings = repository.getById(caseDefinitionName)
+        val caseDefinitionSettings = caseDefinitionSettingsRepository.getById(caseDefinitionName)
         val updatedCaseDefinition = newSettings.update(caseDefinitionSettings)
-        return repository.save(updatedCaseDefinition)
+        return caseDefinitionSettingsRepository.save(updatedCaseDefinition)
+    }
+
+    @Throws(InvalidListColumnException::class)
+    fun createListColumn(
+        caseDefinitionName: String,
+        caseListColumnDto: CaseListColumnDto
+    ) {
+        validators[Operation.CREATE]!!.validate(caseDefinitionName, caseListColumnDto)
+        caseListColumnDto.order = caseDefinitionListColumnRepository
+            .findTopByIdCaseDefinitionNameOrderByOrderDesc(caseDefinitionName)?.order ?: 0
+        caseDefinitionListColumnRepository
+            .save(CaseListColumnMapper.toEntity(caseDefinitionName, caseListColumnDto))
+    }
+
+    fun updateListColumns(
+        caseDefinitionName: String,
+        caseListColumnDtoList: List<CaseListColumnDto>
+    ) {
+
+        validators[Operation.UPDATE]!!.validate(caseDefinitionName, caseListColumnDtoList)
+        var order = 0
+        caseListColumnDtoList.forEach { caseListColumnDto ->
+            caseListColumnDto.order = order++
+        }
+        caseDefinitionListColumnRepository
+            .saveAll(CaseListColumnMapper.toEntityList(caseDefinitionName, caseListColumnDtoList))
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
     private fun checkIfDocumentDefinitionExists(caseDefinitionName: String) {
         documentDefinitionService.findIdByName(caseDefinitionName)
+    }
+
+    @Throws(UnknownDocumentDefinitionException::class)
+    fun getListColumns(caseDefinitionName: String): List<CaseListColumnDto> {
+        try {
+            checkIfDocumentDefinitionExists(caseDefinitionName)
+        } catch (ex: UnknownDocumentDefinitionException) {
+            throw UnknownCaseDefinitionException(ex.message)
+        }
+        return CaseListColumnMapper
+            .toDtoList(
+                caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+                    caseDefinitionName
+                )
+            )
     }
 }

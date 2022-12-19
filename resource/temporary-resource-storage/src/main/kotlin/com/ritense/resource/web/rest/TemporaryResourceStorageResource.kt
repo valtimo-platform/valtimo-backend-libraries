@@ -31,13 +31,13 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@RequestMapping("/api/resource/temp")
+@RequestMapping("/api")
 class TemporaryResourceStorageResource(
     private val resourceService: TemporaryResourceStorageService,
     private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
-    @PostMapping(consumes = [MULTIPART_FORM_DATA_VALUE])
+    @PostMapping(value = ["/v1/resource/temp"], consumes = [MULTIPART_FORM_DATA_VALUE])
     fun uploadFileWithMetadata(
         @RequestParam("file") file: MultipartFile,
         @RequestParam metaData: Map<String, Any>,

@@ -84,7 +84,7 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
     @Test
     fun `should deploy new version Form Flow`() {
         var inkomensLoketJson = readFileAsString("/config/form-flow/inkomens_loket.json")
-        inkomensLoketJson = inkomensLoketJson.replace("isOuderDan21 == true", "isOuderDan21 == false")
+        inkomensLoketJson = inkomensLoketJson.replace("4*3", "5*2")
         formFlowDeploymentService.deploy("inkomens_loket", inkomensLoketJson)
 
         val inkomensLoket = formFlowService.findLatestDefinitionByKey("inkomens_loket")

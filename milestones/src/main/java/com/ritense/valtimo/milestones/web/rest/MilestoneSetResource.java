@@ -50,7 +50,7 @@ public class MilestoneSetResource {
         this.milestoneSetRepository = milestoneSetRepository;
     }
 
-    @GetMapping("/milestone-sets/{id}")
+    @GetMapping("/v1/milestone-sets/{id}")
     public ResponseEntity<MilestoneSet> getMilestoneSet(@PathVariable Long id) {
         logger.debug("REST request to get Milestone set : {}", id);
         Optional<MilestoneSet> milestoneSetOptional = milestoneSetRepository.findById(id);
@@ -59,14 +59,14 @@ public class MilestoneSetResource {
             .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/milestone-sets")
+    @GetMapping("/v1/milestone-sets")
     public ResponseEntity<List<MilestoneSet>> listMilestoneSets() {
         logger.debug("REST request to get all milestone sets");
         List<MilestoneSet> milestoneSetList = milestoneSetService.listMilestoneSets();
         return ResponseEntity.ok(milestoneSetList);
     }
 
-    @PostMapping("/milestone-sets")
+    @PostMapping("/v1/milestone-sets")
     public ResponseEntity<MilestoneSet> saveMilestoneSet(@Valid @RequestBody MilestoneSet milestoneSet) {
         logger.debug("REST request to save Milestone set : {}", milestoneSet);
 
@@ -89,7 +89,7 @@ public class MilestoneSetResource {
 
     }
 
-    @DeleteMapping("/milestone-sets/{id}")
+    @DeleteMapping("/v1/milestone-sets/{id}")
     public ResponseEntity<Void> deleteMilestoneSet(@PathVariable Long id) {
         logger.debug("REST request to delete Milestone set : {}", id);
         milestoneSetService.delete(id);

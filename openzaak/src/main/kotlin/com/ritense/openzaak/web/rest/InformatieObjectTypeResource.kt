@@ -26,9 +26,9 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping(value = ["/api/openzaak/informatie-object-typen"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 interface InformatieObjectTypeResource {
 
-    @GetMapping(value = ["/{catalogus}"])
+    @GetMapping(value = ["/v1/openzaak/informatie-object-typen/{catalogus}"])
     fun get(@PathVariable(name = "catalogus") catalogus: UUID): ResponseEntity<Collection<InformatieObjectType?>>
 }

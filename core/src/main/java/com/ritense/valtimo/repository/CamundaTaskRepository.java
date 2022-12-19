@@ -17,6 +17,9 @@
 package com.ritense.valtimo.repository;
 
 import com.ritense.valtimo.repository.camunda.dto.TaskExtended;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 import org.camunda.bpm.engine.impl.Direction;
 import org.camunda.bpm.engine.impl.QueryOrderingProperty;
@@ -26,11 +29,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import static org.camunda.bpm.engine.impl.Direction.ASCENDING;
 import static org.camunda.bpm.engine.impl.Direction.DESCENDING;
 

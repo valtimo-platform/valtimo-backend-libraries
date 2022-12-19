@@ -31,17 +31,18 @@ class ExpressionProcessorFactoryHolder {
                 applicationContext.getBeansWithAnnotation(FormFlowBean::class.java)
             )
 
-            if(this.expressionProcessorFactory != null) {
+            if (this.expressionProcessorFactory != null) {
                 logger.warn { "ExpressionProcessorFactory instance was already set, this should not happen in runtime!" }
             }
             this.expressionProcessorFactory = expressionProcessorFactory
         }
 
-        fun getinstance(): ExpressionProcessorFactory? {
-            if(this.expressionProcessorFactory == null) {
-                logger.warn { "ExpressionProcessorFactory instance is not available. Expressions will not be executed!" }
+        fun getInstance(): ExpressionProcessorFactory {
+            if (this.expressionProcessorFactory == null) {
+                throw IllegalStateException("ExpressionProcessorFactory instance is not available")
+            } else {
+                return expressionProcessorFactory!!
             }
-            return expressionProcessorFactory
         }
     }
 }

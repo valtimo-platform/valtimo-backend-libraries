@@ -37,7 +37,7 @@ public class ProcessInstanceResource {
         this.camundaProcessService = camundaProcessService;
     }
 
-    @PostMapping(value = "/process-instance/{id}/variables")
+    @PostMapping(value = "/v1/process-instance/{id}/variables")
     public ResponseEntity<Map<String, Object>> getProcessInstanceVariables(
         @PathVariable String id,
         @RequestBody List<String> variableNames

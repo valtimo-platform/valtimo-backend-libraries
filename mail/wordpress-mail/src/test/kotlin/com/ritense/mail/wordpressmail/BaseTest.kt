@@ -16,8 +16,6 @@
 
 package com.ritense.mail.wordpressmail
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.document.service.DocumentSequenceGeneratorService
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
@@ -31,6 +29,8 @@ import com.ritense.valtimo.contract.mail.model.value.Subject
 import org.mockito.ArgumentCaptor
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 
 abstract class BaseTest {
 

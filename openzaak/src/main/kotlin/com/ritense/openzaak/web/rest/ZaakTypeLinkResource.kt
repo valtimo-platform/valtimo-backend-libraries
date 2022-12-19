@@ -37,34 +37,34 @@ import java.util.UUID
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(value = ["/api/openzaak/link"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 interface ZaakTypeLinkResource {
 
-    @GetMapping(value = ["/{documentDefinitionName}"])
+    @GetMapping(value = ["/v1/openzaak/link/{documentDefinitionName}"])
     fun get(@PathVariable(name = "documentDefinitionName") documentDefinitionName: String): ResponseEntity<ZaakTypeLink?>
 
-    @GetMapping(value = ["/process/{processDefinitionKey}"])
+    @GetMapping(value = ["/v1/openzaak/link/process/{processDefinitionKey}"])
     fun getByProcess(@PathVariable(name = "processDefinitionKey") processDefinitionKey: String): ResponseEntity<List<ZaakTypeLink?>>
 
-    @PostMapping
+    @PostMapping("/v1/openzaak/link")
     fun create(@Valid @RequestBody request: CreateZaakTypeLinkRequest): ResponseEntity<CreateZaakTypeLinkResult>
 
-    @DeleteMapping(value = ["/{documentDefinitionName}"])
+    @DeleteMapping(value = ["/v1/openzaak/link/{documentDefinitionName}"])
     fun remove(@PathVariable(name = "documentDefinitionName") documentDefinitionName: String): ResponseEntity<ZaakTypeLink?>
 
-    @PostMapping(value = ["/{id}/service-handler"])
+    @PostMapping(value = ["/v1/openzaak/link/{id}/service-handler"])
     fun createServiceTaskHandler(
         @PathVariable(name = "id") id: UUID,
         @Valid @RequestBody request: ServiceTaskHandlerRequest
     ): ResponseEntity<CreateServiceTaskHandlerResult>
 
-    @PutMapping(value = ["/{id}/service-handler"])
+    @PutMapping(value = ["/v1/openzaak/link/{id}/service-handler"])
     fun modifyServiceTaskHandler(
         @PathVariable(name = "id") id: UUID,
         @Valid @RequestBody request: ServiceTaskHandlerRequest
     ): ResponseEntity<ModifyServiceTaskHandlerResult>
 
-    @DeleteMapping(value = ["/{id}/service-handler/{processDefinitionKey}/{serviceTaskId}"])
+    @DeleteMapping(value = ["/v1/openzaak/link/{id}/service-handler/{processDefinitionKey}/{serviceTaskId}"])
     fun removeServiceTaskHandler(
         @PathVariable(name = "id") id: UUID,
         @PathVariable(name = "processDefinitionKey") processDefinitionKey: String,

@@ -31,16 +31,16 @@ import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(value = ["/api/openzaak/informatie-object-type-link"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 interface InformatieObjectTypeLinkResource {
 
-    @GetMapping(value = ["/{documentDefinitionName}"])
+    @GetMapping(value = ["/v1/openzaak/informatie-object-type-link/{documentDefinitionName}"])
     fun get(@PathVariable(name = "documentDefinitionName") documentDefinitionName: String): ResponseEntity<InformatieObjectTypeLink?>
 
-    @PostMapping
+    @PostMapping("/v1/openzaak/informatie-object-type-link")
     fun create(@Valid @RequestBody request: CreateInformatieObjectTypeLinkRequest): ResponseEntity<CreateInformatieObjectTypeLinkResult>
 
-    @DeleteMapping(value = ["/{documentDefinitionName}"])
+    @DeleteMapping(value = ["/v1/openzaak/informatie-object-type-link/{documentDefinitionName}"])
     fun remove(@PathVariable(name = "documentDefinitionName") documentDefinitionName: String): ResponseEntity<InformatieObjectTypeLink?>
 
 }

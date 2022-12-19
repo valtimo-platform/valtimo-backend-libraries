@@ -16,9 +16,9 @@
   -->
 
 <databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
     <property name="uuidType" value="uuid" dbms="postgresql"/>
@@ -28,5 +28,6 @@
     <property name="jsonType" value="JSON" dbms="postgresql"/>
 
     <include file="changelog/20221125-add-case-definition.xml" relativeToChangelogFile="true"/>
-
+    <include file="changelog/20221206-add-case-list-column.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20221214-add-column-order-to-list-column.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

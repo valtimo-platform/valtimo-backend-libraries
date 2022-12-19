@@ -33,6 +33,6 @@ public class FormLinkRateLimitConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(interceptor)
-            .addPathPatterns("/api/public/**");
+            .addPathPatterns("/api/v1/public/**");
     }
 }

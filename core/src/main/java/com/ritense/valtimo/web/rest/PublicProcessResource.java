@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/api/public", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PublicProcessResource {
 
     private final FormService formService;
@@ -59,9 +59,12 @@ public class PublicProcessResource {
         this.camundaProcessService = camundaProcessService;
     }
 
-    @GetMapping(value = "/process/definition/{processDefinitionKey}/start-form")
+    @GetMapping(value = "/v1/public/process/definition/{processDefinitionKey}/start-form")
     @ResponseBody
-    public ResponseEntity<StartFormDto> getStartForm(HttpServletRequest request, @PathVariable String processDefinitionKey) {
+    public ResponseEntity<StartFormDto> getStartForm(
+        HttpServletRequest request,
+        @PathVariable String processDefinitionKey) {
+
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
             .processDefinitionKey(processDefinitionKey)
             .latestVersion()
@@ -80,7 +83,8 @@ public class PublicProcessResource {
         return new ResponseEntity<>(startFormDto, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/process/definition/{processDefinitionKey}/{businessKey}/start", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/public/process/definition/{processDefinitionKey}/{businessKey}/start",
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<ProcessInstanceDto> startProcessInstance(
         @PathVariable String processDefinitionKey,

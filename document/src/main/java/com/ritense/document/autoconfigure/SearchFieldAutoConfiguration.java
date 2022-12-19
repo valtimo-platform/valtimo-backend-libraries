@@ -43,9 +43,10 @@ public class SearchFieldAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(SearchFieldService.class)
     public SearchFieldService searchFieldService(
-        SearchFieldRepository searchFieldRepository
+        SearchFieldRepository searchFieldRepository,
+        DocumentDefinitionService documentDefinitionService
     ) {
-        return new SearchFieldService(searchFieldRepository);
+        return new SearchFieldService(searchFieldRepository, documentDefinitionService);
     }
 
     @Bean

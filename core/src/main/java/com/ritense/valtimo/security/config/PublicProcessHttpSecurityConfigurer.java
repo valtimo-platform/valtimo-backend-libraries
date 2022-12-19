@@ -28,8 +28,8 @@ public class PublicProcessHttpSecurityConfigurer implements HttpSecurityConfigur
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/public/process/definition/{processDefinitionKey}/start-form").permitAll()
-                .antMatchers(POST, "/api/public/process/definition/{processDefinitionKey}/{businessKey}/start").permitAll();
+                .antMatchers(GET, "/api/v1/public/process/definition/{processDefinitionKey}/start-form").permitAll()
+                .antMatchers(POST, "/api/v1/public/process/definition/{processDefinitionKey}/{businessKey}/start").permitAll();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }
