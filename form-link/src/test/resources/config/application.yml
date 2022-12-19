@@ -1,8 +1,8 @@
 spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3302/form-link-test
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:3302/form-link-test
         username: valtimo
         password: password
         hikari:
@@ -11,8 +11,8 @@ spring:
         enabled: true
         change-log: classpath:/config/liquibase/formlink-master.xml
     jpa:
-        database-platform: org.hibernate.dialect.MySQL8Dialect
-        database: mysql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        database: postgresql
         show_sql: true
         open-in-view: false
         properties:
@@ -58,6 +58,7 @@ aws:
         bucketRegion: eu-central-1
 
 valtimo:
+    database: postgres
     mandrill:
         apiKey: some-key
         dateFormat: dd-MM-yyyy

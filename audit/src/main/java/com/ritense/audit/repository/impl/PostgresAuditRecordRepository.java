@@ -71,9 +71,9 @@ public interface PostgresAuditRecordRepository extends AuditRecordRepository<Aud
         Pageable pageable
     );
 
-    @Query(value=" SELECT      ar " +
-        "    FROM        AuditRecord ar " +
-        "    WHERE       ar.auditEvent ->> ?1 = ?2 ", nativeQuery=true)
+    @Query(value=" SELECT ar.* " +
+        "    FROM        audit_record ar " +
+        "    WHERE       ar.audit_event ->> ?1 = ?2 ", nativeQuery=true)
     Page<AuditRecord> findAuditRecordsByProperty(String key, Object value, Pageable pageable);
 
     @Modifying

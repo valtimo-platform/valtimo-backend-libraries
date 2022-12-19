@@ -3,10 +3,10 @@ services:
     database:
         image: mysql:8.0.31
         ports:
-            - "3306:3306"
+            - "3306:5432"
         environment:
             MYSQL_ROOT_PASSWORD: password
-            MYSQL_DATABASE: valtimo-implementation-dev
+            POSTGRES_DB: valtimo-implementation-dev
             MYSQL_USER: valtimo
             MYSQL_PASSWORD: password
             MYSQL_ROOT_HOST: "%"

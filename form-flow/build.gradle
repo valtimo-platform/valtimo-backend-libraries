@@ -37,7 +37,7 @@ dependencies {
     implementation "org.springframework:spring-expression"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
-    testImplementation "mysql:mysql-connector-java"
+    testImplementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {

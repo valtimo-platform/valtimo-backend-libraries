@@ -11,8 +11,8 @@ spring:
             enabled: true
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/valtimo-core
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5432/valtimo-core
         username: valtimo
         password: password
         hikari:
@@ -44,8 +44,8 @@ spring:
     liquibase:
         enabled: false
     jpa:
-        database-platform: org.hibernate.dialect.MySQL8Dialect
-        database: mysql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        database: postgresql
         show_sql: false
         open-in-view: false
         properties:
@@ -127,6 +127,7 @@ mailing:
 valtimo:
     app:
         scheme: http
+    database: postgres
     #mandrill:
     #    apiKey: #external
     #    dateFormat: dd-MM-yyyy
@@ -195,7 +196,7 @@ scheduling:
 camunda:
     bpm:
         database:
-            type: mysql
+            type: postgres
         history-level: AUDIT
         history-level-default: AUDIT
         admin-user:

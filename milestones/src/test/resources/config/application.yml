@@ -1,8 +1,8 @@
 spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3313/milestones-test
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:3313/milestones-test
         username: valtimo
         password: password
         hikari:
@@ -26,6 +26,7 @@ camunda:
         history-level: audit
 
 valtimo:
+    database: postgres
     mandrill:
         apiKey: some-key
         dateFormat: dd-MM-yyyy

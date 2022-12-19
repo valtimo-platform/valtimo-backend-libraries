@@ -1,8 +1,8 @@
 spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3307/audit-test
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:3307/audit-test
         username: valtimo
         password: password
         hikari:
@@ -12,8 +12,8 @@ spring:
         change-log: classpath:/config/liquibase/audit-master.xml
         contexts: unit-test
     jpa:
-        database-platform: org.hibernate.dialect.MySQL8Dialect
-        database: mysql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        database: postgresql
         show_sql: true
         open-in-view: false
         properties:
@@ -46,3 +46,6 @@ scheduling:
     job:
         cron:
             cleanupAuditEvents: 0 0 4 * * ? # Every day at 00:00
+
+valtimo:
+    database: postgres
