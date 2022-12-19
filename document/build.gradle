@@ -22,8 +22,9 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':contract')
-    implementation project(':resource')
+    implementation project(":contract")
+    implementation project(":resource")
+    implementation project(":web")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -61,6 +62,7 @@ dependencies {
 
     implementation "com.github.erosb:everit-json-schema:${everitJsonSchemaVersion}"
     implementation "com.flipkart.zjsonpatch:zjsonpatch:${zjsonpatchVersion}"
+    implementation "com.jayway.jsonpath:json-path:${jaywayJsonpathVersion}"
     implementation "org.springframework.retry:spring-retry:${springRetryVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"

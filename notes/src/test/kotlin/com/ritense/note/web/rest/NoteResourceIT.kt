@@ -25,13 +25,16 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.note.BaseIntegrationTest
+import com.ritense.note.repository.NoteRepository
 import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.dto.NoteCreateRequestDto
+import com.ritense.note.web.rest.dto.NoteUpdateRequestDto
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
@@ -40,8 +43,10 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -59,6 +64,9 @@ internal class NoteResourceIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var noteService: NoteService
+
+    @Autowired
+    lateinit var noteRepository: NoteRepository
 
     @Autowired
     lateinit var documentDefinitionService: DocumentDefinitionService
@@ -148,8 +156,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         noteService.createNote(jsonSchemaDocumentId, testContent)
 
         mockMvc.perform(
-            get("/api/v1" +
-                "/document/{documentId}/note", documentId)
+            get("/api/v1/document/{documentId}/note", documentId)
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -159,6 +166,36 @@ internal class NoteResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$.content[0].createdDate").isNotEmpty)
             .andExpect(jsonPath("$.content[0].content").value(testContent))
             .andExpect(jsonPath("$.content[0].documentId").value(documentId.toString()))
+    }
+
+    @Test
+    @WithMockUser(TEST_USER)
+    fun `should update note`() {
+        val note = noteService.createNote(JsonSchemaDocumentId.existingId(documentId), "Test note")
+        val noteUpdateRequestDto = NoteUpdateRequestDto(content = "Test note updated")
+
+        mockMvc.perform(
+            put("/api/v1/note/{noteId}", note.id)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(jacksonObjectMapper().writeValueAsString(noteUpdateRequestDto))
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content").value("Test note updated"))
+    }
+
+    @Test
+    @WithMockUser(TEST_USER)
+    fun `should delete note`() {
+        val note = noteService.createNote(JsonSchemaDocumentId.existingId(documentId), "Test note")
+
+        mockMvc.perform(
+            delete("/api/v1/note/{noteId}", note.id)
+        )
+            .andDo(print())
+            .andExpect(status().isNoContent)
+
+        assertThat(noteRepository.existsById(note.id)).isFalse
     }
 
     companion object {
