@@ -64,6 +64,7 @@ include(
     "web",
     "zgw:catalogi-api",
     "zgw:documenten-api",
+    "zgw:notificaties-api",
     "zgw:objecten-api",
     "zgw:objecttypen-api",
     "zgw:zaken-api"
