@@ -1,8 +1,8 @@
 spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3305/connector-test
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:3305/connector-test
         username: valtimo
         password: password
         hikari:
@@ -11,8 +11,8 @@ spring:
         enabled: false
         change-log: classpath:/config/liquibase/connector-master.xml
     jpa:
-        database-platform: org.hibernate.dialect.MySQL8Dialect
-        database: mysql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        database: postgresql
         show_sql: true
         open-in-view: false
         properties:
@@ -36,5 +36,6 @@ spring:
                 implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
             use-new-id-generator-mappings: false
 valtimo:
+    database: postgres
     connector-encryption:
         secret: "0123456789101112"

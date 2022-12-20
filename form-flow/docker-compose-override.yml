@@ -2,6 +2,6 @@ version: '3.9'
 services:
     db:
         ports:
-            - "3321:3306"
+            - "3321:5432"
         environment:
-            - MYSQL_DATABASE=form-flow-test
+            - POSTGRES_DB=form-flow-test

@@ -11,8 +11,8 @@ spring:
             enabled: true
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/gzac-core
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5444/gzac-core-db
         username: gzac
         password: password
         hikari:
@@ -36,6 +36,7 @@ spring:
                 elideSetAutoCommits: true
                 maintainTimeStats: false
                 serverTimezone: UTC
+                stringtype: unspecified
                 allowPublicKeyRetrieval: true
 
     groovy:
@@ -44,7 +45,7 @@ spring:
     liquibase:
         enabled: false
     jpa:
-        database-platform: org.hibernate.dialect.MySQL8Dialect
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
         show_sql: true
         open-in-view: false
         properties:
@@ -131,6 +132,7 @@ mailing:
 valtimo:
     app:
         scheme: http
+    database: postgres
     mandrill:
         apiKey: #external
         dateFormat: dd-MM-yyyy

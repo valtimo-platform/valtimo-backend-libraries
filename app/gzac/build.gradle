@@ -26,6 +26,7 @@ dependencies {
     implementation(project(":resource:temporary-resource-storage"))
     implementation(project(":web"))
     implementation(project(":zgw:documenten-api"))
+    implementation(project(":zgw:notificaties-api"))
     implementation(project(":zgw:objecten-api"))
     implementation(project(":zgw:objecttypen-api"))
     implementation(project(":zgw:zaken-api"))
@@ -62,9 +63,7 @@ dependencies {
 
 
     // Database
-    implementation "mysql:mysql-connector-java"
     implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
-
 }
 
 apply from: "gradle/publishing.gradle"

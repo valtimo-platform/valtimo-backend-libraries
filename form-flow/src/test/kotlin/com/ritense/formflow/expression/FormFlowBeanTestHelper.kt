@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.expression
 
+import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.stereotype.Component
 
 @FormFlowBean
@@ -27,7 +28,7 @@ class FormFlowBeanTestHelper {
     }
 
     // Used in expressions, do not remove
-    fun parseContext(submissionData: String): Boolean {
+    fun parseContext(submissionData: JsonNode): Boolean {
         return true
     }
 

@@ -3,8 +3,8 @@ spring:
         allow-bean-definition-overriding: false
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3310/process-document-test
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:3310/process-document-test
         username: valtimo
         password: password
         hikari:
@@ -12,8 +12,8 @@ spring:
     liquibase:
         enabled: false
     jpa:
-        database-platform: org.hibernate.dialect.MySQL8Dialect
-        database: mysql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        database: postgresql
         show_sql: true
         open-in-view: false
         properties:
@@ -59,6 +59,7 @@ aws:
         bucketRegion: eu-central-1
 
 valtimo:
+    database: postgres
     mandrill:
         apiKey: n/a
         dateFormat: dd-MM-yyyy

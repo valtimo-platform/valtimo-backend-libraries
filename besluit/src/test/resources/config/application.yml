@@ -1,8 +1,8 @@
 spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3318/besluit-test
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:3318/besluit-test
         username: valtimo
         password: password
         hikari:
@@ -10,8 +10,8 @@ spring:
     liquibase:
         enabled: false
     jpa:
-        database-platform: org.hibernate.dialect.MySQL8Dialect
-        database: mysql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        database: postgresql
         show_sql: true
         open-in-view: false
         properties:
@@ -40,6 +40,7 @@ spring-actuator:
     password: test
 
 valtimo:
+    database: postgres
     connector-encryption:
         secret: "0123456789101112"
     plugin:

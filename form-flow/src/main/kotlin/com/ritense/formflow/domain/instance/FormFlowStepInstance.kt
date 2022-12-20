@@ -56,6 +56,10 @@ data class FormFlowStepInstance(
         processExpressions<Any>(definition.onBack)
     }
 
+    fun save(incompleteSubmissionData: String) {
+        this.submissionData = incompleteSubmissionData
+    }
+
     fun open() {
         processExpressions<Any>(definition.onOpen)
     }
