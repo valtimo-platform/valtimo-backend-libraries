@@ -66,14 +66,9 @@ class FormFlowResource(
     ): ResponseEntity<CompleteStepResult> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
 
-        val submissionDataJsonObject = if (submissionData == null) {
-            JSONObject()
-        } else {
-            JSONObject(submissionData.toString())
-        }
         val stepInstance = instance.complete(
             FormFlowStepInstanceId.existingId(stepInstanceId),
-            submissionDataJsonObject
+            toJsonObject(submissionData)
         )
         formFlowService.save(instance)
 
@@ -83,14 +78,30 @@ class FormFlowResource(
     @PostMapping("/v1/form-flow/{formFlowId}/back")
     @Transactional
     fun backStep(
-        @PathVariable(name = "formFlowId") formFlowId: String
+        @PathVariable(name = "formFlowId") formFlowId: String,
+        @RequestBody incompleteSubmissionData: JsonNode?
     ): ResponseEntity<GetFormFlowStateResult> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
-
+        if (incompleteSubmissionData != null) {
+            instance.save(toJsonObject(incompleteSubmissionData))
+        }
         val stepInstance = instance.back()
         formFlowService.save(instance)
 
         return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
+    }
+
+    @PostMapping("/v1/form-flow/{formFlowId}/save")
+    @Transactional
+    fun saveStep(
+        @PathVariable(name = "formFlowId") formFlowId: String,
+        @RequestBody incompleteSubmissionData: JsonNode?
+    ): ResponseEntity<Unit> {
+        val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
+        instance.save(toJsonObject(incompleteSubmissionData))
+        formFlowService.save(instance)
+
+        return ResponseEntity.noContent().build()
     }
 
     private fun openStep(stepInstance: FormFlowStepInstance?): FormFlowStepResult? {
@@ -103,6 +114,14 @@ class FormFlowResource(
             )
         } else {
             null
+        }
+    }
+
+    private fun toJsonObject(jsonNode: JsonNode?): JSONObject {
+        return if (jsonNode == null) {
+            JSONObject()
+        } else {
+            JSONObject(jsonNode.toString())
         }
     }
 }
