@@ -2,6 +2,6 @@ version: '3.9'
 services:
     db:
         ports:
-            - "0300:5432"
+            - "3333:5432"
         environment:
             - POSTGRES_DB=object-management-api-test
