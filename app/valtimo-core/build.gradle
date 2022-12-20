@@ -40,8 +40,6 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
-    implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
-
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
