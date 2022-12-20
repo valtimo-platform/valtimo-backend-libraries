@@ -111,13 +111,10 @@ class CaseDefinitionService(
         } catch (ex: UnknownDocumentDefinitionException) {
             throw UnknownCaseDefinitionException(ex.message)
         }
-        if (!caseDefinitionListColumnRepository
+        if (caseDefinitionListColumnRepository
                 .existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName, columnKey)
         ) {
-            throw UnknownCaseDefinitionColumnException(
-                "Can't delete case definition column. Column does not exist."
-            )
+            caseDefinitionListColumnRepository.deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName, columnKey)
         }
-        caseDefinitionListColumnRepository.deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName, columnKey)
     }
 }

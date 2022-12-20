@@ -419,7 +419,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
         mockMvc.perform(
             MockMvcRequestBuilders.delete("$LIST_COLUMN_PATH/{columnKey}", caseDefinitionName, columnKey)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-        ).andExpect(status().isOk)
+        ).andExpect(status().isNoContent)
     }
 
     @Test

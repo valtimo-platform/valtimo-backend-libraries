@@ -96,6 +96,6 @@ class CaseDefinitionResource(
         @PathVariable columnKey: String
     ): ResponseEntity<Any> {
         service.deleteCaseListColumn(caseDefinitionName, columnKey)
-        return ResponseEntity.ok().build()
+        return ResponseEntity.noContent().build()
     }
 }
