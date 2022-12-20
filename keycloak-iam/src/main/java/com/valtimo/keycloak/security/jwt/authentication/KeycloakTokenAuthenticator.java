@@ -94,7 +94,7 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
             final User principal = new User(email, "", authorities);
             final Authentication authentication = new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
             if (valtimoProperties.getApp().getEnableTenancy()) {
-                logger.info("Creating tenant authentication token");
+                logger.debug("Creating tenant authentication token");
                 return new TenantAuthenticationToken(authentication, getTenantId(claims));
             }
             return authentication;
