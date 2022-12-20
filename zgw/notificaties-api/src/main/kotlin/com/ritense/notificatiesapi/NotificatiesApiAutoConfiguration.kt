@@ -16,9 +16,17 @@
 
 package com.ritense.notificatiesapi
 
+import com.ritense.plugin.service.PluginService
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
 class NotificatiesApiAutoConfiguration {
 
+    @Bean
+    fun notificatiesApiPluginFactory(
+        pluginService: PluginService
+    ): NotificatiesApiPluginFactory {
+        return NotificatiesApiPluginFactory(pluginService)
+    }
 }
