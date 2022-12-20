@@ -18,7 +18,6 @@ package com.ritense.case.service
 
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.exception.InvalidListColumnException
-import com.ritense.case.exception.UnknownCaseDefinitionColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
@@ -104,7 +103,7 @@ class CaseDefinitionService(
             )
     }
 
-    @Throws(UnknownDocumentDefinitionException::class, UnknownCaseDefinitionColumnException::class)
+    @Throws(UnknownDocumentDefinitionException::class)
     fun deleteCaseListColumn(caseDefinitionName: String, columnKey: String) {
         try {
             checkIfDocumentDefinitionExists(caseDefinitionName)
