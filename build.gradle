@@ -70,6 +70,10 @@ allprojects {
             mavenBom "com.fasterxml.jackson:jackson-bom:${jacksonVersion}"
             mavenBom "org.junit:junit-bom:${junitVersion}"
         }
+        dependencies {
+            dependency "org.yaml:snakeyaml:${snakeYamlVersionOverride}"
+            dependency "io.netty:netty-codec:${nettyCodecVersionOverride}"
+        }
     }
 
     bootJar.enabled = false
