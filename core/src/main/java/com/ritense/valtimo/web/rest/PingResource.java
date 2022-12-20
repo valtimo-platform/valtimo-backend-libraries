@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  * nor does it require authentication to access (which is important for some types of health checks).
  */
 @RestController
-@RequestMapping(value = "/api/ping")
+@RequestMapping(value = "/api/v1/ping")
 public class PingResource {
 
     private static final String PING_RESPONSE = "pong";

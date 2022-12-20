@@ -49,7 +49,7 @@ open class ValtimoFormFlow(
      * @param submissionData the data that was submitted at the end of a Form Flow step
      */
     @Transactional
-    open fun completeTask(additionalProperties: Map<String, Any>, submissionData: String?) {
+    open fun completeTask(additionalProperties: Map<String, Any>, submissionData: JsonNode?) {
         return completeTask(additionalProperties, submissionData, mapOf("doc:/submission" to ""))
     }
 
@@ -63,13 +63,12 @@ open class ValtimoFormFlow(
     @Transactional
     open fun completeTask(
         additionalProperties: Map<String, Any>,
-        submissionData: String?,
+        submissionData: JsonNode?,
         submissionSavePath: Map<String, String>
     ) {
         if (submissionData != null) {
             val processInstanceId = additionalProperties["processInstanceId"] as String
-            val submissionJson = objectMapper.readTree(submissionData)
-            val submissionValues = submissionSavePath.entries.associate { it.key to getValue(submissionJson, it.value) }
+            val submissionValues = submissionSavePath.entries.associate { it.key to getValue(submissionData, it.value) }
             valueResolverService.handleValues(processInstanceId, null, submissionValues)
         }
 
@@ -81,6 +80,6 @@ open class ValtimoFormFlow(
         if (valueNode.isMissingNode) {
             throw RuntimeException("Missing data on path '$path'")
         }
-        return Mapper.INSTANCE.get().treeToValue(valueNode, Object::class.java)
+        return objectMapper.treeToValue(valueNode, Object::class.java)
     }
 }

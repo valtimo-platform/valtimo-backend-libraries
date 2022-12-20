@@ -16,8 +16,8 @@
 
 package com.ritense.objectenapi.web.rest
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
@@ -73,7 +73,7 @@ internal class ZaakObjectResourceTest {
 
         mockMvc
             .perform(
-                get("/api/document/$documentId/zaak/objecttype")
+                get("/api/v1/document/$documentId/zaak/objecttype")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -114,7 +114,7 @@ internal class ZaakObjectResourceTest {
 
         mockMvc
             .perform(
-                get("/api/document/$documentId/zaak/object?typeUrl=http://example.com/objecttype")
+                get("/api/v1/document/$documentId/zaak/object?typeUrl=http://example.com/objecttype")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -150,7 +150,7 @@ internal class ZaakObjectResourceTest {
 
         mockMvc
             .perform(
-                get("/api/document/$documentId/zaak/object/form?objectUrl=$objectUrl")
+                get("/api/v1/document/$documentId/zaak/object/form?objectUrl=$objectUrl")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -172,7 +172,7 @@ internal class ZaakObjectResourceTest {
 
         mockMvc
             .perform(
-                get("/api/document/$documentId/zaak/object/form?objectUrl=$objectUrl")
+                get("/api/v1/document/$documentId/zaak/object/form?objectUrl=$objectUrl")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)

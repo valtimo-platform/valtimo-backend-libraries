@@ -36,13 +36,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class AuthorityResource {
 
     private static final String AUTHORITY = "authority";
@@ -59,7 +60,7 @@ public class AuthorityResource {
     ) throws URISyntaxException {
         logger.debug("REST request to create Authority : {}", authorityRequest);
         final Authority authority = authorityService.createAuthority(authorityRequest);
-        return ResponseEntity.created(new URI("/api/authorities/" + authority.getName()))
+        return ResponseEntity.created(new URI("/api/v1/authorities/" + authority.getName()))
             .headers(HeaderUtil.createEntityCreationAlert(AUTHORITY, authority.getName()))
             .body(authority);
     }
@@ -76,7 +77,7 @@ public class AuthorityResource {
     public ResponseEntity<List<Authority>> getAllAuthorities(Pageable pageable) {
         logger.debug("REST request to get a page of Authorities");
         Page<Authority> page = authorityService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/authorities");
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/authorities");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 

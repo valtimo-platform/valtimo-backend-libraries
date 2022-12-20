@@ -19,19 +19,21 @@ package com.ritense.valtimo.formflow.common
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.formflow.domain.instance.FormFlowInstance
-import com.ritense.formflow.repository.FormFlowInstanceRepository
+import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType
 import com.ritense.formlink.domain.request.CreateFormAssociationRequest
 import com.ritense.formlink.domain.request.FormLinkRequest
 import com.ritense.formlink.service.FormAssociationService
+import com.ritense.formlink.service.ProcessLinkService
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.formflow.BaseIntegrationTest
+import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.TaskService
@@ -39,6 +41,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Transactional
 class ValtimoFormFlowIntTest : BaseIntegrationTest() {
@@ -50,7 +53,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     lateinit var formAssociationService: FormAssociationService
 
     @Autowired
-    lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
+    lateinit var processLinkService: ProcessLinkService
 
     @Autowired
     lateinit var taskService: TaskService
@@ -73,7 +76,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         linkFormFlowToUserTask()
         val documentAndProcess = newDocumentAndStartProcess()
         val processInstanceId = documentAndProcess.resultingProcessInstanceId().get()
-        val formFlowInstance = getFormFlowInstances(processInstanceId).single()
+        val formFlowInstance = openTasks(processInstanceId).single()
 
         formFlowStepComplete(formFlowInstance)
 
@@ -86,7 +89,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         linkFormFlowToUserTask()
         val documentAndProcess = newDocumentAndStartProcess()
         val processInstanceId = documentAndProcess.resultingProcessInstanceId().get()
-        val formFlowInstance = getFormFlowInstances(processInstanceId).single()
+        val formFlowInstance = openTasks(processInstanceId).single()
 
         formFlowStepComplete(formFlowInstance, submission = """{"firstName":"John"}""")
 
@@ -103,7 +106,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         linkFormFlowToUserTask()
         val documentAndProcess = newDocumentAndStartProcess()
         val processInstanceId = documentAndProcess.resultingProcessInstanceId().get()
-        val formFlowInstance = getFormFlowInstances(processInstanceId).single()
+        val formFlowInstance = openTasks(processInstanceId).single()
 
         formFlowStepComplete(formFlowInstance, submission = """{"street":"Funenpark","approval":true}""")
 
@@ -162,11 +165,15 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         )
     }
 
-    private fun getFormFlowInstances(processInstanceId: ProcessInstanceId): List<FormFlowInstance> {
+    private fun openTasks(processInstanceId: ProcessInstanceId): List<FormFlowInstance> {
         return taskService.createTaskQuery()
             .processInstanceId(processInstanceId.toString())
             .list()
-            .flatMap { formFlowService.findInstances(mapOf("taskInstanceId" to it.id)) }
+            .asSequence()
+            .map { processLinkService.openTask(UUID.fromString(it.id)) }
+            .filter { it.properties is FormFlowTaskOpenResultProperties }
+            .map { (it.properties as FormFlowTaskOpenResultProperties).formFlowInstanceId }
+            .map { formFlowService.getInstanceById(FormFlowInstanceId(it)) }
             .toList()
     }
 }

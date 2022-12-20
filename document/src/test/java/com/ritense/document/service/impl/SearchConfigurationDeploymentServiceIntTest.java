@@ -18,6 +18,7 @@ package com.ritense.document.service.impl;
 
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.impl.searchfield.SearchField;
+import com.ritense.document.domain.impl.searchfield.SearchFieldId;
 import com.ritense.document.service.SearchFieldService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.NUMBER;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TEXT;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.EXACT;
@@ -41,24 +43,24 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
 
     @Test
     void shouldDeploySearchConfigurationFromResourceFolder() {
-        var documentDefinitionName = "profile";
+        var documentDefinitionName = "person";
 
         var searchFields = searchFieldService.getSearchFields(documentDefinitionName);
 
         assertThat(searchFields).hasSize(2);
-        assertThat(searchFields.get(0).getId().getDocumentDefinitionName()).isEqualTo("profile");
+        assertThat(searchFields.get(0).getId().getDocumentDefinitionName()).isEqualTo(documentDefinitionName);
         assertThat(searchFields.get(0).getKey()).isEqualTo("firstName");
         assertThat(searchFields.get(0).getPath()).isEqualTo("doc:firstName");
         assertThat(searchFields.get(0).getDataType()).isEqualTo(TEXT);
         assertThat(searchFields.get(0).getFieldType()).isEqualTo(SINGLE);
         assertThat(searchFields.get(0).getMatchType()).isEqualTo(LIKE);
         assertThat(searchFields.get(0).getOrder()).isZero();
-        assertThat(searchFields.get(1).getId().getDocumentDefinitionName()).isEqualTo("profile");
-        assertThat(searchFields.get(1).getKey()).isEqualTo("lastName");
-        assertThat(searchFields.get(1).getPath()).isEqualTo("doc:lastName");
-        assertThat(searchFields.get(1).getDataType()).isEqualTo(TEXT);
+        assertThat(searchFields.get(1).getId().getDocumentDefinitionName()).isEqualTo(documentDefinitionName);
+        assertThat(searchFields.get(1).getKey()).isEqualTo("age");
+        assertThat(searchFields.get(1).getPath()).isEqualTo("doc:age");
+        assertThat(searchFields.get(1).getDataType()).isEqualTo(NUMBER);
         assertThat(searchFields.get(1).getFieldType()).isEqualTo(SINGLE);
-        assertThat(searchFields.get(1).getMatchType()).isEqualTo(LIKE);
+        assertThat(searchFields.get(1).getMatchType()).isEqualTo(EXACT);
         assertThat(searchFields.get(1).getOrder()).isOne();
     }
 
@@ -66,8 +68,8 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
     void shouldFailToDeployDueToDuplicateKeys() {
         List<SearchField> searchFields = new ArrayList<>();
         searchFields.add(new SearchField(
-                "someKey",
-                "doc:some.path",
+                "street",
+                "doc:street",
                 TEXT,
                 SINGLE,
                 EXACT,
@@ -75,31 +77,32 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
                 null
         ));
         searchFields.add(new SearchField(
-                "someKey",
-                "doc:some.path",
+                "street",
+                "doc:street",
                 TEXT,
                 SINGLE,
                 LIKE,
                 1,
                 null
         ));
+        searchFields.forEach(searchField -> searchField.setId(SearchFieldId.newId("house")));
         searchFieldService.createSearchConfiguration(searchFields);
-        searchFields = searchFieldService.getSearchFields("aDefinitionName");
+        searchFields = searchFieldService.getSearchFields("house");
         assertThat(searchFields).isEmpty();
     }
 
     @Test
     void shouldThrowExceptionDueToDuplicateKey() {
-        SearchField searchField = new SearchField("someKey",
-                "doc:somePath",
+        SearchField searchField = new SearchField("birthday",
+                "doc:birthday",
                 TEXT,
                 SINGLE,
                 LIKE,
                 0,
                 null);
-        searchFieldService.addSearchField("aDefinitionName", searchField);
+        searchFieldService.addSearchField("person", searchField);
         assertThrows(IllegalArgumentException.class,
-                () -> searchFieldService.addSearchField("aDefinitionName", searchField));
+                () -> searchFieldService.addSearchField("person", searchField));
     }
 
 }

@@ -32,7 +32,7 @@ import java.util.UUID
  *      {
  *          "storage": "url",
  *          "name": "test-736b4bfc-5ed0-4fac-a9c2-89629ccbe451.rtf",
- *          "url": "https://console.test.valtimo.nl/api/form-file?baseUrl=http%3A%2F%2Flocalhost%3A4200&project=&form=/test-736b4bfc-5ed0-4fac-a9c2-89629ccbe451.rtf",
+ *          "url": "https://console.test.valtimo.nl/api/v1/form-file?baseUrl=http%3A%2F%2Flocalhost%3A4200&project=&form=/test-736b4bfc-5ed0-4fac-a9c2-89629ccbe451.rtf",
  *          "size": 391,
  *          "type": "text/rtf",
  *          "data": {

@@ -84,7 +84,7 @@ public class CamundaFormAssociationResourceIntTest extends BaseIntegrationTest {
         parameters.put("formLinkId", Collections.singletonList(userTaskFormAssociation.getFormLink().getId()));
 
         mockMvc.perform(
-            get("/api/form-association/form-definition").params(parameters).contentType(MediaType.APPLICATION_JSON_VALUE))
+            get("/api/v1/form-association/form-definition").params(parameters).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
     }
@@ -93,7 +93,7 @@ public class CamundaFormAssociationResourceIntTest extends BaseIntegrationTest {
     @WithMockUser(username = "john@ritense.com", authorities = USER)
     public void shouldReturn200WithFormDefinitionByFormKey() throws Exception {
         mockMvc.perform(
-            get("/api/form-association/form-definition/myForm").contentType(MediaType.APPLICATION_JSON_VALUE))
+            get("/api/v1/form-association/form-definition/myForm").contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
     }
@@ -102,7 +102,7 @@ public class CamundaFormAssociationResourceIntTest extends BaseIntegrationTest {
     @WithMockUser(username = "john@ritense.com", authorities = USER)
     public void shouldReturn200WithStartEventFormDefinitionByProcessDefinitionKey() throws Exception {
         mockMvc.perform(
-            get("/api/form-association/form-definition")
+            get("/api/v1/form-association/form-definition")
                 .param("processDefinitionKey", PROCESS_DEFINITION_KEY)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -117,7 +117,7 @@ public class CamundaFormAssociationResourceIntTest extends BaseIntegrationTest {
         parameters.put("processDefinitionKey", Collections.singletonList(PROCESS_DEFINITION_KEY));
         parameters.put("formLinkId", Collections.singletonList("formLinkId"));
         mockMvc.perform(
-            post("/api/form-association/form-definition/submission")
+            post("/api/v1/form-association/form-definition/submission")
                 .params(parameters)
                 .content("{}")
                 .contentType(MediaType.APPLICATION_JSON_VALUE))

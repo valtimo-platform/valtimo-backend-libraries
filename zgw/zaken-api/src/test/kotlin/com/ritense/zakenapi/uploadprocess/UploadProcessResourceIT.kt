@@ -52,7 +52,7 @@ class UploadProcessResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should respond with no process-case-link when none has been configured`() {
-        mockMvc.perform(get("/api/uploadprocess/case/{caseDefinitionKey}/check-link", CASE_DEFINITION_KEY))
+        mockMvc.perform(get("/api/v1/uploadprocess/case/{caseDefinitionKey}/check-link", CASE_DEFINITION_KEY))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.processCaseLinkExists").value(false))
@@ -68,7 +68,7 @@ class UploadProcessResourceIT : BaseIntegrationTest() {
             )
         )
 
-        mockMvc.perform(get("/api/uploadprocess/case/{caseDefinitionKey}/check-link", CASE_DEFINITION_KEY))
+        mockMvc.perform(get("/api/v1/uploadprocess/case/{caseDefinitionKey}/check-link", CASE_DEFINITION_KEY))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.processCaseLinkExists").value(true))

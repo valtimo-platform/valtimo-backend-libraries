@@ -58,7 +58,7 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(value = "/api/process-document", produces = APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_VALUE)
 public class ProcessDocumentResource {
 
     private final ProcessDocumentService processDocumentService;
@@ -75,14 +75,14 @@ public class ProcessDocumentResource {
         this.documentDefinitionProcessLinkService = documentDefinitionProcessLinkService;
     }
 
-    @GetMapping(value = "/definition")
+    @GetMapping(value = "/v1/process-document/definition")
     public ResponseEntity<Page<? extends ProcessDocumentDefinition>> getProcessDocumentDefinitions(
         @PageableDefault(sort = {"processDocumentDefinitionId.documentDefinitionName.name"}, direction = DESC) Pageable pageable
     ) {
         return ResponseEntity.ok(processDocumentAssociationService.getAllProcessDocumentDefinitions(pageable));
     }
 
-    @PostMapping(value = "/definition", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/process-document/definition", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<? extends ProcessDocumentDefinition> createProcessDocumentDefinition(
         @Valid @RequestBody ProcessDocumentDefinitionRequest request
     ) {
@@ -91,7 +91,7 @@ public class ProcessDocumentResource {
             .orElse(ResponseEntity.badRequest().build());
     }
 
-    @DeleteMapping(value = "/definition", consumes = APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/v1/process-document/definition", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteProcessDocumentDefinition(
         @Valid @RequestBody ProcessDocumentDefinitionRequest request
     ) {
@@ -99,14 +99,14 @@ public class ProcessDocumentResource {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping(value = "/definition/document/{document-definition-name}")
+    @GetMapping(value = "/v1/process-document/definition/document/{document-definition-name}")
     public ResponseEntity<List<? extends ProcessDocumentDefinition>> findProcessDocumentDefinitions(
         @PathVariable(name = "document-definition-name") String documentDefinitionName
     ) {
         return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName));
     }
 
-    @GetMapping("/definition/processinstance/{processInstanceId}")
+    @GetMapping("/v1/process-document/definition/processinstance/{processInstanceId}")
     public ResponseEntity<ProcessDocumentDefinition> getProcessDocumentDefinition(
         @PathVariable String processInstanceId
     ) {
@@ -115,7 +115,7 @@ public class ProcessDocumentResource {
             .orElse(ResponseEntity.badRequest().build());
     }
 
-    @GetMapping(value = "/instance/document/{documentId}")
+    @GetMapping(value = "/v1/process-document/instance/document/{documentId}")
     public ResponseEntity<List<? extends ProcessDocumentInstance>> findProcessDocumentInstances(
         @PathVariable UUID documentId
     ) {
@@ -123,7 +123,7 @@ public class ProcessDocumentResource {
             processDocumentAssociationService.findProcessDocumentInstances(JsonSchemaDocumentId.existingId(documentId)));
     }
 
-    @PostMapping(value = "/operation/new-document-and-start-process", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/process-document/operation/new-document-and-start-process", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<NewDocumentAndStartProcessResult> newDocumentAndStartProcess(
         @Valid @RequestBody NewDocumentAndStartProcessRequest request
     ) {
@@ -133,7 +133,7 @@ public class ProcessDocumentResource {
     }
 
     @PreAuthorize("hasAuthority('ROLE_USER') and hasPermission(#request.taskId(), 'taskAccess')")
-    @PostMapping(value = "/operation/modify-document-and-complete-task", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/process-document/operation/modify-document-and-complete-task", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<ModifyDocumentAndCompleteTaskResult> modifyDocumentAndCompleteTask(
         @Valid @RequestBody ModifyDocumentAndCompleteTaskRequest request
     ) {
@@ -142,53 +142,13 @@ public class ProcessDocumentResource {
         return ResponseEntity.status(httpStatus).body(result);
     }
 
-    @PostMapping(value = "/operation/modify-document-and-start-process", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/process-document/operation/modify-document-and-start-process", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<ModifyDocumentAndStartProcessResult> modifyDocumentAndStartProcess(
         @Valid @RequestBody ModifyDocumentAndStartProcessRequest request
     ) {
         final var result = processDocumentService.modifyDocumentAndStartProcess(request);
         final var httpStatus = getHttpStatus(result.resultingDocument());
         return ResponseEntity.status(httpStatus).body(result);
-    }
-
-    /**
-     * @deprecated This is only a demo endpoint.
-     * A generic endpoint that can link processes of different types/tags will be made in the future
-     */
-    @Deprecated(since = "9.21.0", forRemoval = true)
-    @GetMapping("/demo/{documentDefinitionName}/process")
-    public ResponseEntity<DocumentDefinitionProcess> getDocumentDefinitionProcess(
-        @PathVariable String documentDefinitionName
-    ) {
-        var result = documentDefinitionProcessLinkService.getDocumentDefinitionProcess(documentDefinitionName);
-        return ResponseEntity.ok(result);
-    }
-
-    /**
-     * @deprecated This is only a demo endpoint.
-     * A generic endpoint that can link processes of different types/tags will be made in the future
-     */
-    @Deprecated(since = "9.21.0", forRemoval = true)
-    @PutMapping("/demo/{documentDefinitionName}/process")
-    public ResponseEntity<DocumentDefinitionProcessLinkResponse> putDocumentDefinitionProcess(
-        @PathVariable String documentDefinitionName,
-        @Valid @RequestBody DocumentDefinitionProcessRequest request
-    ) {
-        var response = documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(documentDefinitionName, request);
-        return ResponseEntity.ok(response);
-    }
-
-    /**
-     * @deprecated This is only a demo endpoint.
-     * A generic endpoint that can link processes of different types/tags will be made in the future
-     */
-    @Deprecated(since = "9.21.0", forRemoval = true)
-    @DeleteMapping("/demo/{documentDefinitionName}/process")
-    public ResponseEntity<Void> deleteDocumentDefinitionProcess(
-        @PathVariable String documentDefinitionName
-    ) {
-        documentDefinitionProcessLinkService.deleteDocumentDefinitionProcess(documentDefinitionName);
-        return ResponseEntity.ok().build();
     }
 
     private HttpStatus getHttpStatus(Optional<? extends Document> document) {

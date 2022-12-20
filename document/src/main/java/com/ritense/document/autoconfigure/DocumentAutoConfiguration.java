@@ -44,12 +44,14 @@ import com.ritense.document.service.impl.UndeployJsonSchemaDocumentDefinitionSer
 import com.ritense.document.web.rest.DocumentDefinitionResource;
 import com.ritense.document.web.rest.DocumentResource;
 import com.ritense.document.web.rest.DocumentSearchResource;
+import com.ritense.document.web.rest.error.DocumentModuleExceptionTranslator;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
+import com.ritense.valtimo.contract.hardening.service.HardeningService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
@@ -59,6 +61,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import javax.persistence.EntityManager;
+import java.util.Optional;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.document.repository")
@@ -202,5 +205,13 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentSpringContextHelper.class)
     public DocumentSpringContextHelper documentSpringContextHelper() {
         return new DocumentSpringContextHelper();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentModuleExceptionTranslator.class)
+    public DocumentModuleExceptionTranslator documentModuleExceptionTranslator(
+        Optional<HardeningService> hardeningServiceOptional
+    ) {
+        return new DocumentModuleExceptionTranslator(hardeningServiceOptional);
     }
 }

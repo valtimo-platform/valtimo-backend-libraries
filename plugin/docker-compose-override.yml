@@ -2,6 +2,6 @@ version: '3.9'
 services:
     db:
         ports:
-            - "3322:3306"
+            - "3322:5432"
         environment:
-            - MYSQL_DATABASE=plugin-test
+            - POSTGRES_DB=plugin-test

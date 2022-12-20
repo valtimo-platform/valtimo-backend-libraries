@@ -16,14 +16,14 @@
 
 package com.ritense.catalogiapi.web.rest
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.objectenapi.service.CatalogiService
 import com.ritense.objectenapi.web.rest.CatalogiResource
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -66,7 +66,7 @@ internal class CatalogiResourceTest {
 
         mockMvc
             .perform(
-                MockMvcRequestBuilders.get("/api/documentdefinition/$documentDefinitionName/zaaktype/documenttype")
+                MockMvcRequestBuilders.get("/api/v1/documentdefinition/$documentDefinitionName/zaaktype/documenttype")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)

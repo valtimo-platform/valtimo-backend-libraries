@@ -2,6 +2,6 @@ version: '3.9'
 services:
     db:
         ports:
-            - "3319:3306"
+            - "3319:5432"
         environment:
-            - MYSQL_DATABASE=haalcentraal-brp-test
+            - POSTGRES_DB=haalcentraal-brp-test

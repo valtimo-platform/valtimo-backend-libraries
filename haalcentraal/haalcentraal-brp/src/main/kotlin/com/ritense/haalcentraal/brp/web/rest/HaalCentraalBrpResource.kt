@@ -27,12 +27,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/haalcentraal"])
+@RequestMapping(value = ["/api"])
 class HaalCentraalBrpResource(
     val connectorService: ConnectorService
 ) {
 
-    @PostMapping("/personen")
+    @PostMapping("/v1/haalcentraal/personen")
     fun findPersonByBsn(
         @RequestBody request: GetPeopleRequest
     ): ResponseEntity<List<Person>> {

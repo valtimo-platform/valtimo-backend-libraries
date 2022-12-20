@@ -1,55 +1,42 @@
 version: '3.9'
 services:
     db:
-        image: mysql:5.7
-        platform: linux/amd64
+        image: postgres:14.1
         #ports:
-           # - "3306:3306" #needs overriding "XXXX:3306" XXXX=your-own-port-per-module-test
+           # - "5432:5432" #needs overriding "XXXX:5432" XXXX=your-own-port-per-module-test
         environment:
-            MYSQL_ROOT_PASSWORD: password
-            MYSQL_DATABASE: valtimo #needs overriding
-            MYSQL_USER: valtimo
-            MYSQL_PASSWORD: password
-            MYSQL_ROOT_HOST: "%"
-        command: [
-            "--default-authentication-plugin=mysql_native_password",
-            "--lower_case_table_names=1",
-            "--collation-server=utf8mb4_unicode_ci",
-            "--character-set-server=utf8mb4",
-            "--explicit_defaults_for_timestamp",
-            "--ssl=false",
-            "--innodb_flush_method=O_DIRECT",
-            "--sql_mode=NO_ENGINE_SUBSTITUTION"
-        ]
+            POSTGRES_DB: valtimo #needs overriding
+            POSTGRES_USER: valtimo
+            POSTGRES_PASSWORD: password
 # Ports taken
-#   url: jdbc:mysql://localhost:3301/form-test
-#   url: jdbc:mysql://localhost:3302/form-test-link
-#   url: jdbc:mysql://localhost:3303/document-test
-#   url: jdbc:mysql://localhost:3304/core-test
-#   url: jdbc:mysql://localhost:3305/connector-test
-#   url: jdbc:mysql://localhost:3307/audit-test
-#   url: jdbc:mysql://localhost:3308/objects-api-test
-#   url: jdbc:mysql://localhost:3309/openzaak-test
-#   url: jdbc:mysql://localhost:3310/process-document-test
-#   url: jdbc:mysql://localhost:3311/s3-resource-test
-#   url: jdbc:mysql://localhost:3312/reporting-cloud-test
-#   url: jdbc:mysql://localhost:3313/milestones-test
-#   url: jdbc:mysql://localhost:3314/mail-test
-#   url: jdbc:mysql://localhost:3315/contactmoment-test
-#   url: jdbc:mysql://localhost:3316/wordpress-mail-test
-#   url: jdbc:mysql://localhost:3317/smartdocuments-test
-#   url: jdbc:mysql://localhost:3318/besluit-test
-#   url: jdbc:mysql://localhost:3319/haalcentraal-brp-test
-#   url: jdbc:mysql://localhost:3320/form-flow-valtimo-test
-#   url: jdbc:mysql://localhost:3321/form-flow-test
-#   url: jdbc:mysql://localhost:3322/plugin-test
-#   url: jdbc:mysql://localhost:3323/value-resolver-test
-#   url: jdbc:mysql://localhost:3324/documenten-api-test
-#   url: jdbc:mysql://localhost:3325/zaken-api-test
-#   url: jdbc:mysql://localhost:3326/notes-test
-#   url: jdbc:mysql://localhost:3327/klant-test
-#   url: jdbc:mysql://localhost:3328/objecten-api-authentication-test
-#   url: jdbc:mysql://localhost:3329/objecttypen-api-test
-#   url: jdbc:mysql://localhost:3330/objecten-api-test
-#   url: jdbc:mysql://localhost:3331/flowmailer-test
-#   url: jdbc:mysql://localhost:3332/case-test
+#   url: jdbc:postgresql://localhost:3301/form-test
+#   url: jdbc:postgresql://localhost:3302/form-test-link
+#   url: jdbc:postgresql://localhost:3303/document-test
+#   url: jdbc:postgresql://localhost:3304/core-test
+#   url: jdbc:postgresql://localhost:3305/connector-test
+#   url: jdbc:postgresql://localhost:3307/audit-test
+#   url: jdbc:postgresql://localhost:3308/objects-api-test
+#   url: jdbc:postgresql://localhost:3309/openzaak-test
+#   url: jdbc:postgresql://localhost:3310/process-document-test
+#   url: jdbc:postgresql://localhost:3311/s3-resource-test
+#   url: jdbc:postgresql://localhost:3312/reporting-cloud-test
+#   url: jdbc:postgresql://localhost:3313/milestones-test
+#   url: jdbc:postgresql://localhost:3314/mail-test
+#   url: jdbc:postgresql://localhost:3315/contactmoment-test
+#   url: jdbc:postgresql://localhost:3316/wordpress-mail-test
+#   url: jdbc:postgresql://localhost:3317/smartdocuments-test
+#   url: jdbc:postgresql://localhost:3318/besluit-test
+#   url: jdbc:postgresql://localhost:3319/haalcentraal-brp-test
+#   url: jdbc:postgresql://localhost:3320/form-flow-valtimo-test
+#   url: jdbc:postgresql://localhost:3321/form-flow-test
+#   url: jdbc:postgresql://localhost:3322/plugin-test
+#   url: jdbc:postgresql://localhost:3323/value-resolver-test
+#   url: jdbc:postgresql://localhost:3324/documenten-api-test
+#   url: jdbc:postgresql://localhost:3325/zaken-api-test
+#   url: jdbc:postgresql://localhost:3326/notes-test
+#   url: jdbc:postgresql://localhost:3327/klant-test
+#   url: jdbc:postgresql://localhost:3328/objecten-api-authentication-test
+#   url: jdbc:postgresql://localhost:3329/objecttypen-api-test
+#   url: jdbc:postgresql://localhost:3330/objecten-api-test
+#   url: jdbc:postgresql://localhost:3331/flowmailer-test
+#   url: jdbc:postgresql://localhost:3332/case-test

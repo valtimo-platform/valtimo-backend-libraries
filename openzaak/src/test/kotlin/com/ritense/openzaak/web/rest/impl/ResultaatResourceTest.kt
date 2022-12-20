@@ -16,8 +16,6 @@
 
 package com.ritense.openzaak.web.rest.impl
 
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.openzaak.BaseTest
 import com.ritense.openzaak.service.impl.ZaakResultaatService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
@@ -25,6 +23,8 @@ import com.ritense.openzaak.service.impl.model.catalogi.ResultaatType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.test.web.servlet.MockMvc
@@ -63,7 +63,7 @@ class ResultaatResourceTest : BaseTest() {
                 listOf(resultaatType())
             ))
 
-        mvc.perform(MockMvcRequestBuilders.post("/api/openzaak/resultaat")
+        mvc.perform(MockMvcRequestBuilders.post("/api/v1/openzaak/resultaat")
             .content("""{"zaaktype": "http://example.com"}""")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(APPLICATION_JSON_VALUE)

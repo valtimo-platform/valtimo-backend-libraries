@@ -36,7 +36,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/api/document-snapshot", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResource {
 
     private final DocumentSnapshotService documentSnapshotService;
@@ -48,7 +48,7 @@ public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResou
     }
 
     @Override
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/v1/document-snapshot/{id}")
     public ResponseEntity<? extends DocumentSnapshot> getDocumentSnapshot(@PathVariable(name = "id") UUID snapshotId) {
         return documentSnapshotService.findById(JsonSchemaDocumentSnapshotId.existingId(snapshotId))
             .filter(it -> hasAccessToDefinitionName(it.document().definitionId().name()))
@@ -57,7 +57,7 @@ public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResou
     }
 
     @Override
-    @GetMapping
+    @GetMapping(value = "/v1/document-snapshot")
     public ResponseEntity<Page<? extends DocumentSnapshot>> getDocumentSnapshots(
         @RequestParam(value = "definitionName", required = false) String definitionName,
         @RequestParam(value = "documentId", required = false) UUID documentId,

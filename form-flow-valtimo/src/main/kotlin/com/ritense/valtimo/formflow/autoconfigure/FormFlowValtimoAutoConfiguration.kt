@@ -26,12 +26,13 @@ import com.ritense.formlink.service.impl.CamundaFormAssociationService
 import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
-import com.ritense.valtimo.formflow.handler.FormFlowCreateTaskEventHandler
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.valtimo.formflow.security.ValtimoFormFlowHttpSecurityConfigurer
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
 import com.ritense.valtimo.formflow.web.rest.ProcessLinkFormFlowDefinitionResource
 import com.ritense.valueresolver.ValueResolverService
+import org.camunda.bpm.engine.RepositoryService
+import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -42,19 +43,20 @@ import org.springframework.core.annotation.Order
 class FormFlowValtimoAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(FormFlowCreateTaskEventHandler::class)
-    fun formFlowCreateTaskCommandHandler(formFlowService: FormFlowService,
-        formAssociationService: FormAssociationService,
-        documentService: DocumentService
-    ): FormFlowCreateTaskEventHandler {
-        return FormFlowCreateTaskEventHandler(formFlowService, formAssociationService, documentService)
-    }
-
-    @Bean
     fun formFlowProcessLinkTaskProvider(
-        formFlowService: FormFlowService
+        formFlowService: FormFlowService,
+        formAssociationService: FormAssociationService,
+        documentService: DocumentService,
+        repositoryService: RepositoryService,
+        runtimeService: RuntimeService,
     ): ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
-        return FormFlowProcessLinkTaskProvider(formFlowService)
+        return FormFlowProcessLinkTaskProvider(
+            formFlowService,
+            formAssociationService,
+            documentService,
+            repositoryService,
+            runtimeService,
+        )
     }
 
     @Bean

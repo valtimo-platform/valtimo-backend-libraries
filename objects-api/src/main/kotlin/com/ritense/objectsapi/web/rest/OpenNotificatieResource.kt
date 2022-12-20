@@ -27,10 +27,10 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/notification"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 interface OpenNotificatieResource {
 
-    @PostMapping
+    @PostMapping("/v1/notification")
     fun handleNotification(
         @RequestBody notification: HandleNotificationRequest,
         @RequestHeader("Authorization") authHeader: String?,

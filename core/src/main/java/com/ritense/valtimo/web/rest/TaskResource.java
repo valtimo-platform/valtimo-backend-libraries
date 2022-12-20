@@ -59,17 +59,17 @@ public class TaskResource extends AbstractTaskResource {
         super(taskService, formService, camundaTaskService, camundaProcessService);
     }
 
-    @GetMapping(value = "/task")
+    @GetMapping(value = "/v1/task")
     public ResponseEntity<List<? extends TaskExtended>> getTasks(
         @RequestParam CamundaTaskService.TaskFilter filter,
         Pageable pageable
     ) throws Exception {
         var page = camundaTaskService.findTasksFiltered(filter, pageable);
-        var headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/task");
+        var headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/task");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    @GetMapping(value = "/task/{taskId}")
+    @GetMapping(value = "/v1/task/{taskId}")
     public ResponseEntity<CustomTaskDto> getTask(@PathVariable String taskId, HttpServletRequest request) {
         CustomTaskDto customTaskDto;
         try {
@@ -80,26 +80,26 @@ public class TaskResource extends AbstractTaskResource {
         return ResponseEntity.ok(customTaskDto);
     }
 
-    @PostMapping(value = "/task/{taskId}/assign")
+    @PostMapping(value = "/v1/task/{taskId}/assign")
     public ResponseEntity<Void> assign(@PathVariable String taskId, @RequestBody AssigneeRequest assigneeRequest) {
         camundaTaskService.assign(taskId, assigneeRequest.getAssignee());
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/task/assign/batch-assign")
+    @PostMapping(value = "/v1/task/assign/batch-assign")
     public ResponseEntity<Void> batchClaim(@RequestBody BatchAssignTaskDTO batchAssignTaskDTO) {
         final String assignee = batchAssignTaskDTO.getAssignee();
         batchAssignTaskDTO.getTasksIds().forEach(taskId -> camundaTaskService.assign(taskId, assignee));
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/task/{taskId}/unassign")
+    @PostMapping(value = "/v1/task/{taskId}/unassign")
     public ResponseEntity<Void> unassign(@PathVariable String taskId) {
         camundaTaskService.unassign(taskId);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/task/{taskId}/complete")
+    @PostMapping(value = "/v1/task/{taskId}/complete")
     public ResponseEntity<Void> complete(
         @PathVariable String taskId,
         @RequestBody TaskCompletionDTO taskCompletionDTO
@@ -108,7 +108,7 @@ public class TaskResource extends AbstractTaskResource {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/task/batch-complete")
+    @PostMapping(value = "/v1/task/batch-complete")
     public ResponseEntity<Void> batchComplete(@RequestBody List<String> taskIdList) {
         taskIdList.forEach(taskId -> {
             if (!camundaTaskService.hasTaskFormData(taskId)) {
@@ -118,7 +118,7 @@ public class TaskResource extends AbstractTaskResource {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/task/{taskId}/comments")
+    @GetMapping(value = "/v1/task/{taskId}/comments")
     public ResponseEntity<List<Comment>> getProcessInstanceComments(@PathVariable String taskId) {
         final Task task = camundaTaskService.findTaskById(taskId);
         List<Comment> taskComments = taskService.getTaskComments(task.getId());
@@ -127,7 +127,7 @@ public class TaskResource extends AbstractTaskResource {
         return ResponseEntity.ok(taskComments);
     }
 
-    @GetMapping(value = "/task/{taskId}/candidate-user", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/v1/task/{taskId}/candidate-user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ManageableUser>> getTaskCandidateUsers(@PathVariable String taskId) {
         List<ManageableUser> users = camundaTaskService.getCandidateUsers(taskId);
         return ResponseEntity.ok(users);

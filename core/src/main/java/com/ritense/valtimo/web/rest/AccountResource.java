@@ -41,19 +41,19 @@ public class AccountResource {
         this.currentUserService = currentUserService;
     }
 
-    @GetMapping(value = "/account")
+    @GetMapping(value = "/v1/account")
     public ResponseEntity<ManageableUser> getAccount() throws IllegalAccessException {
         final ManageableUser currentUser = currentUserService.getCurrentUser();
         return ResponseEntity.ok(currentUser);
     }
 
-    @PostMapping(value = "/account/profile")
+    @PostMapping(value = "/v1/account/profile")
     public ResponseEntity<Void> updateProfile(@Valid @RequestBody Profile profile) throws IllegalAccessException {
         currentUserService.updateProfile(profile);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/account/change_password", produces = MediaType.TEXT_PLAIN_VALUE)
+    @PostMapping(value = "/v1/account/change_password", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<Void> changePassword(@RequestBody String password) throws IllegalAccessException {
         currentUserService.changePassword(password);
         return ResponseEntity.ok().build();

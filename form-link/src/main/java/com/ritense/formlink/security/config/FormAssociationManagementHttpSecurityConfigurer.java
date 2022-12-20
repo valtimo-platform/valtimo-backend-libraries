@@ -34,11 +34,11 @@ public class FormAssociationManagementHttpSecurityConfigurer implements HttpSecu
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/form-association-management").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/form-association-management/{formAssociationId}").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/form-association-management").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/form-association-management").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/form-association-management/{processDefinitionKey}/{formAssociationId}").hasAuthority(ADMIN);
+                .antMatchers(GET, "/api/v1/form-association-management").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/form-association-management/{formAssociationId}").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/form-association-management").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/form-association-management").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/form-association-management/{processDefinitionKey}/{formAssociationId}").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -30,11 +30,6 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
     private static final String LOWER_CASE_FUNCTION = "lower";
 
     @Override
-    public Expression<String> getJsonValueExpression(CriteriaBuilder cb, Path column, String path) {
-        return getValueForPath(cb, column, path, String.class);
-    }
-
-    @Override
     public <T> Expression<T> getJsonValueExpression(CriteriaBuilder cb, Path column, String jsonPath, Class<T> type) {
         var jsonValue = cb.function(
             "jsonb_path_query_first",
@@ -45,7 +40,10 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
         if (String.class.isAssignableFrom(type)) {
             return cb.trim('"', jsonValue.as(String.class)).as(type);
         } else if (TemporalAccessor.class.isAssignableFrom(type)) {
-            return jsonValue.as(String.class).as(type);
+            return cb.selectCase()
+                .when(jsonValue.as(String.class).in("\"\""), cb.nullLiteral(type))
+                .otherwise(cb.trim('"', jsonValue.as(String.class)))
+                .as(type);
         } else {
             return jsonValue.as(type);
         }
@@ -80,7 +78,7 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
     }
 
     private <T> Expression<T> getValueForPath(CriteriaBuilder cb, Path column, String path, Class<T> type) {
-        List<Expression<String>> pathParts = splitPath(path).stream().map(cb::literal).collect(Collectors.toList());
+        List<Expression<String>> pathParts = splitPath(path).stream().map(cb::literal).toList();
         Expression[] expressions = new Expression[pathParts.size() + 1];
         expressions[0] = column;
         System.arraycopy(pathParts.toArray(), 0, expressions, 1, pathParts.size());

@@ -29,17 +29,17 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/plugin"])
+@RequestMapping(value = ["/api"])
 class PluginDefinitionResource(
     private var pluginService: PluginService
 ) {
 
-    @GetMapping(value = ["/definition"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(value = ["/v1/plugin/definition"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getPluginDefinitions(): ResponseEntity<List<PluginDefinition>> {
         return ResponseEntity.ok(pluginService.getPluginDefinitions())
     }
 
-    @GetMapping(value = ["/definition/{pluginDefinitionKey}/action"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(value = ["/v1/plugin/definition/{pluginDefinitionKey}/action"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getPluginDefinitionActions(
         @PathVariable pluginDefinitionKey: String,
         @RequestParam("activityType") activityType: ActivityType?

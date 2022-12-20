@@ -56,7 +56,7 @@ public class ChoiceFieldValueResource {
         this.choiceFieldRepository = choiceFieldRepository;
     }
 
-    @PostMapping(value = "/choice-field-values")
+    @PostMapping(value = "/v1/choice-field-values")
     public ResponseEntity<ChoiceFieldValue> createChoiceFieldValue(
         @Valid @RequestBody ChoiceFieldValue choiceFieldValue,
         @RequestParam("choice_field_name") String choiceFieldName
@@ -70,12 +70,12 @@ public class ChoiceFieldValueResource {
         ChoiceField choiceField = choiceFieldRepository.findByKeyName(choiceFieldName);
         choiceFieldValue.setChoiceField(choiceField);
         ChoiceFieldValue result = choiceFieldValueService.save(choiceFieldValue);
-        return ResponseEntity.created(new URI("/api/choice-field-values/" + result.getId()))
+        return ResponseEntity.created(new URI("/api/v1/choice-field-values/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert("choiceFieldValue", result.getName()))
             .body(result);
     }
 
-    @PutMapping(value = "/choice-field-values")
+    @PutMapping(value = "/v1/choice-field-values")
     public ResponseEntity<ChoiceFieldValue> updateChoiceFieldValue(
         @Valid @RequestBody ChoiceFieldValue choiceFieldValue,
         @RequestParam("choice_field_name") String choiceFieldName
@@ -92,15 +92,15 @@ public class ChoiceFieldValueResource {
             .body(result);
     }
 
-    @GetMapping(value = "/choice-field-values")
+    @GetMapping(value = "/v1/choice-field-values")
     public ResponseEntity<List<ChoiceFieldValue>> getAllChoiceFieldValues(Pageable pageable) {
         logger.debug("REST request to get a page of ChoiceFieldValues");
         final Page<ChoiceFieldValue> page = choiceFieldValueService.findAll(pageable);
-        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/choice-field-values");
+        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/choice-field-values");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    @GetMapping(value = "/choice-field-values/{id}")
+    @GetMapping(value = "/v1/choice-field-values/{id}")
     public ResponseEntity<ChoiceFieldValue> getChoiceFieldValue(@PathVariable Long id) {
         logger.debug("REST request to get ChoiceFieldValue : {}", id);
         return choiceFieldValueService.findOne(id)
@@ -108,14 +108,14 @@ public class ChoiceFieldValueResource {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping(value = "/choice-field-values/{id}")
+    @DeleteMapping(value = "/v1/choice-field-values/{id}")
     public ResponseEntity<Void> deleteChoiceFieldValue(@PathVariable Long id) {
         logger.debug("REST request to delete ChoiceFieldValue : {}", id);
         choiceFieldValueService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert("choiceFieldValue", id.toString())).build();
     }
 
-    @GetMapping(value = "/choice-field-values/choice-field/{choicefield_name}/value/{value}")
+    @GetMapping(value = "/v1/choice-field-values/choice-field/{choicefield_name}/value/{value}")
     public ResponseEntity<ChoiceFieldValue> getChoiceFieldValuesByChoiceField(
         @PathVariable(name = "choicefield_name") String choiceFieldName,
         @PathVariable(name = "value") String value
@@ -125,14 +125,14 @@ public class ChoiceFieldValueResource {
         return ResponseEntity.ok(choiceFieldValue);
     }
 
-    @GetMapping(value = "/choice-field-values/{choice_field_name}/values")
+    @GetMapping(value = "/v1/choice-field-values/{choice_field_name}/values")
     public ResponseEntity<List<ChoiceFieldValue>> getChoiceFieldValuesByChoiceField(
         Pageable pageable,
         @PathVariable(name = "choice_field_name") String choiceFieldName
     ) {
         logger.debug("REST request to get ChoiceField : {}", choiceFieldName);
         final Page<ChoiceFieldValue> page = choiceFieldValueService.findAllByChoiceFieldKeyName(pageable, choiceFieldName);
-        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/choice-field-values");
+        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/choice-field-values");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 

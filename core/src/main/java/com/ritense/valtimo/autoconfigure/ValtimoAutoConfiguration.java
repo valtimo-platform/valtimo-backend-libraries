@@ -149,9 +149,11 @@ public class ValtimoAutoConfiguration {
         final RuntimeService runtimeService,
         final RepositoryService repositoryService,
         final FormService formService,
-        final HistoryService historyService
+        final HistoryService historyService,
+        final ProcessPropertyService processPropertyService,
+        final ValtimoProperties valtimoProperties
     ) {
-        return new CamundaProcessService(runtimeService, repositoryService, formService, historyService);
+        return new CamundaProcessService(runtimeService, repositoryService, formService, historyService,processPropertyService,valtimoProperties);
     }
 
     @Bean
@@ -291,7 +293,8 @@ public class ValtimoAutoConfiguration {
         final CamundaProcessService camundaProcessService,
         final ProcessShortTimerService processShortTimerService,
         final CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository,
-        final ProcessPropertyService processPropertyService
+        final ProcessPropertyService processPropertyService,
+        final ValtimoProperties valtimoProperties
     ) {
         return new ProcessResource(
             taskService,

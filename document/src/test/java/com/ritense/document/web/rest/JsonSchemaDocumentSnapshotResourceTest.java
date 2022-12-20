@@ -80,7 +80,7 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(documentDefinition.id().name()))
             .thenReturn(true);
 
-        mockMvc.perform(get("/api/document-snapshot/{id}", documentSnapshot.id())
+        mockMvc.perform(get("/api/v1/document-snapshot/{id}", documentSnapshot.id())
             .accept(APPLICATION_JSON_VALUE)
             .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -102,7 +102,7 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
             any())
         ).thenReturn(documentSnapshotPage);
 
-        mockMvc.perform(get("/api/document-snapshot/")
+        mockMvc.perform(get("/api/v1/document-snapshot/")
             .param("definitionName", document.definitionId().name())
             .param("documentId", document.id().toString())
             .param("fromDateTime", fromDateTime.toString())

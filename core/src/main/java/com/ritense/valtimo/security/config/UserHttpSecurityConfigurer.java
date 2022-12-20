@@ -31,16 +31,16 @@ public class UserHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/users").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/users").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/users").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/users/{userId}/activate").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/users/{userId}/deactivate").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/users/email/{email}/").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/users/{userId}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/users/authority/{authority}").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/users/{userId}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/users/send-verification-email/{userId}").hasAuthority(ADMIN);
+                .antMatchers(GET, "/api/v1/users").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/users").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/users").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/users/{userId}/activate").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/users/{userId}/deactivate").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/users/email/{email}/").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/users/{userId}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/users/authority/{authority}").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/users/{userId}").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/users/send-verification-email/{userId}").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

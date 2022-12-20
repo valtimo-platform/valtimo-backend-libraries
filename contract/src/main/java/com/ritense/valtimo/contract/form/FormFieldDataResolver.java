@@ -21,25 +21,11 @@ import java.util.UUID;
 
 public interface FormFieldDataResolver {
 
-    @Deprecated(forRemoval = true, since = "9.18")
-    default boolean supports(ExternalFormFieldType externalFormFieldType) {
-        return false;
-    }
+    boolean supports(String externalFormFieldType);
 
-    default boolean supports(String externalFormFieldType) {
-        return supports(ExternalFormFieldType.fromKey(externalFormFieldType));
-    }
-
-    @Deprecated(forRemoval = true, since = "9.21")
-    default Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames) {
-        throw new RuntimeException("The 'get' method should be implemented!");
-    }
-
-    default Map<String, Object> get(
+    Map<String, Object> get(
         DataResolvingContext dataResolvingContext,
         String... varNames
-    ) {
-        return get(dataResolvingContext.getDocumentDefinitionName(), dataResolvingContext.getDocumentId(), varNames);
-    }
+    );
 
 }

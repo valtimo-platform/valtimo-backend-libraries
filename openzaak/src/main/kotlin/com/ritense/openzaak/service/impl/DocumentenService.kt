@@ -65,15 +65,6 @@ class DocumentenService(
             .execute(DocumentCreatedResult::class.java).url
     }
 
-    @Deprecated(
-        message = "Deprecated since 9.0.0, use the new function createObjectInformatieObject(URI, UUID)",
-        replaceWith = ReplaceWith("createObjectInformatieObject(enkelvoudigInformatieObject, documentId)"),
-        DeprecationLevel.WARNING
-    )
-    override fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, documentId: UUID, documentDefinitionName: String) {
-        createObjectInformatieObject(enkelvoudigInformatieObject, documentId)
-    }
-
     override fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, documentId: UUID) {
         val zaakInstanceUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
         createObjectInformatieObject(enkelvoudigInformatieObject, zaakInstanceUrl)

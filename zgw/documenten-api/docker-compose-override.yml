@@ -2,6 +2,6 @@ version: '3.9'
 services:
     db:
         ports:
-            - "3324:3306"
+            - "3324:5432"
         environment:
-            - MYSQL_DATABASE=documenten-api-test
+            - POSTGRES_DB=documenten-api-test

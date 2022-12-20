@@ -16,16 +16,16 @@
 
 package com.ritense.resource.web.rest
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.atLeastOnce
-import com.nhaarman.mockitokotlin2.verify
 import com.ritense.resource.BaseIntegrationTest
 import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.PayloadApplicationEvent
 import org.springframework.http.MediaType
@@ -67,7 +67,7 @@ internal class TemporaryResourceStorageResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            multipart("/api/resource/temp")
+            multipart("/api/v1/resource/temp")
                 .file(file)
                 .param("author", "Klaveren")
                 .contentType(MULTIPART_FORM_DATA_VALUE)
