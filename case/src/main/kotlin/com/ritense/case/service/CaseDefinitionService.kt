@@ -33,7 +33,7 @@ import com.ritense.document.service.DocumentDefinitionService
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-open class CaseDefinitionService(
+class CaseDefinitionService(
     private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository,
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
     private val documentDefinitionService: DocumentDefinitionService
@@ -101,5 +101,19 @@ open class CaseDefinitionService(
                     caseDefinitionName
                 )
             )
+    }
+
+    @Throws(UnknownDocumentDefinitionException::class)
+    fun deleteCaseListColumn(caseDefinitionName: String, columnKey: String) {
+        try {
+            checkIfDocumentDefinitionExists(caseDefinitionName)
+        } catch (ex: UnknownDocumentDefinitionException) {
+            throw UnknownCaseDefinitionException(ex.message)
+        }
+        if (caseDefinitionListColumnRepository
+                .existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName, columnKey)
+        ) {
+            caseDefinitionListColumnRepository.deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName, columnKey)
+        }
     }
 }
