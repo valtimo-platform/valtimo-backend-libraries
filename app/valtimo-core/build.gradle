@@ -40,7 +40,7 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.7'
+    implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
@@ -51,7 +51,7 @@ dependencies {
     implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:${shedlockVersion}"
 
     // Database
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.1'
+    implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
 }
 
 apply from: "gradle/publishing.gradle"
