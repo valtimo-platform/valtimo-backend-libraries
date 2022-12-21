@@ -23,6 +23,7 @@ import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -87,5 +88,14 @@ class CaseDefinitionResource(
     ): ResponseEntity<Any> {
         service.updateListColumns(caseDefinitionName, caseListColumnDtoList)
         return ResponseEntity.ok().build()
+    }
+
+    @DeleteMapping(value = ["/v1/case/{caseDefinitionName}/list-column/{columnKey}"])
+    fun deleteListColumn(
+        @PathVariable caseDefinitionName: String,
+        @PathVariable columnKey: String
+    ): ResponseEntity<Any> {
+        service.deleteCaseListColumn(caseDefinitionName, columnKey)
+        return ResponseEntity.noContent().build()
     }
 }

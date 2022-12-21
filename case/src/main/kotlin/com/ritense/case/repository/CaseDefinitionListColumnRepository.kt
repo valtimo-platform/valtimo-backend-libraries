@@ -24,4 +24,5 @@ interface CaseDefinitionListColumnRepository : JpaRepository<CaseListColumn, Cas
     fun existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): Boolean
     fun findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(caseDefinitionName: String): List<CaseListColumn>
     fun findTopByIdCaseDefinitionNameOrderByOrderDesc(caseDefinitionName: String): CaseListColumn?
+    fun deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String)
 }

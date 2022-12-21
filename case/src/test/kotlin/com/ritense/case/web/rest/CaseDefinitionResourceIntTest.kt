@@ -22,6 +22,8 @@ import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -35,8 +37,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @Transactional
 class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
@@ -374,6 +374,92 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
         assertNull(columns[1].defaultSort)
     }
 
+    @Test
+    fun `should delete column for case definition`() {
+        val caseDefinitionName = "listColumnDocumentDefinition"
+        documentDefinitionService.deploy(
+            "{\n" +
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
+        )
+        val columnKey = "first-name"
+        createListColumn(
+            caseDefinitionName,
+            """
+                          {
+                            "title": "First name",
+                            "key": "$columnKey",
+                            "path": "doc:firstName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true,
+                            "defaultSort": "ASC"
+                          }
+                """.trimIndent(), status().isOk
+        )
+        mockMvc.perform(
+            MockMvcRequestBuilders.delete("$LIST_COLUMN_PATH/{columnKey}", caseDefinitionName, columnKey)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andExpect(status().isNoContent)
+    }
+
+    @Test
+    fun `should respond with no content for non existing column`() {
+        val caseDefinitionName = "listColumnDocumentDefinition"
+        documentDefinitionService.deploy(
+            "{\n" +
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
+        )
+        val columnKey = "first-name"
+        mockMvc.perform(
+            MockMvcRequestBuilders.delete("$LIST_COLUMN_PATH/{columnKey}", caseDefinitionName, columnKey)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andExpect(status().isNoContent)
+    }
+
+    @Test
+    fun `should respond bad request for non existing case definition`() {
+        val caseDefinitionName = "listColumnDocumentDefinition"
+        val columnKey = "first-name"
+        mockMvc.perform(
+            MockMvcRequestBuilders.delete("$LIST_COLUMN_PATH/{columnKey}", caseDefinitionName, columnKey)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andExpect(status().isBadRequest)
+    }
+
     private fun createListColumn(caseDefinitionName: String, json: String, expectedStatus: ResultMatcher) {
         mockMvc.perform(
             MockMvcRequestBuilders.post(LIST_COLUMN_PATH, caseDefinitionName)
@@ -381,5 +467,4 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                 .content(json)
         ).andDo { result -> print(result.response.contentAsString) }.andExpect(expectedStatus)
     }
-
 }

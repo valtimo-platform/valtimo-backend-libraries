@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.case.domain
+package com.ritense.notificatiesapi
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.ritense.plugin.annotation.Plugin
+import com.ritense.plugin.annotation.PluginProperty
+import java.net.URI
 
-data class DateFormatDisplayTypeParameter(
-    @JsonProperty("dateFormat")
-    val dateFormat: String?
-) : DisplayTypeParameter {
-    override fun validate(): Boolean {
-        return true
-    }
+@Plugin(
+    key = "notificatiesapi",
+    title = "Notificaties API",
+    description = "Enable interfacing with Notificaties API specification compliant APIs"
+)
+class NotificatiesApiPlugin {
+    @PluginProperty(key = "url", secret = false)
+    lateinit var url: URI
 }

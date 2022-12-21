@@ -16,9 +16,19 @@
 
 package com.ritense.notificatiesapi
 
+import com.ritense.plugin.service.PluginService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
 class NotificatiesApiAutoConfiguration {
 
+    @Bean
+    @ConditionalOnMissingBean(NotificatiesApiPluginFactory::class)
+    fun notificatiesApiPluginFactory(
+        pluginService: PluginService
+    ): NotificatiesApiPluginFactory {
+        return NotificatiesApiPluginFactory(pluginService)
+    }
 }
