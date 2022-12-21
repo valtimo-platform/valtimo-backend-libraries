@@ -20,16 +20,16 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
     <changeSet author="Niek Mol" id="added-object-management-table">
         <createTable tableName="object-management">
-            <column name="id" type="uuidType">
+            <column name="id" type="${uuidType}">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_object-management"/>
             </column>
             <column name="title" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="objecten_api_plugin_configuration_id" type="uuidType">
+            <column name="objecten_api_plugin_configuration_id" type="${uuidType}">
                 <constraints nullable="false"/>
             </column>
-            <column name="objecttypen_api_plugin_configuration_id" type="uuidType">
+            <column name="objecttypen_api_plugin_configuration_id" type="${uuidType}">
                 <constraints nullable="false"/>
             </column>
             <column name="objecttype_id" type="VARCHAR(255)">
