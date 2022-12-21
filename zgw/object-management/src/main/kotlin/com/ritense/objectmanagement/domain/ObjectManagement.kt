@@ -23,7 +23,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "added-object-management-table")
+@Table(name = "object_management_configuration")
 data class ObjectManagement(
     @Id
     @Column(name = "id", nullable = false, updatable = false)
