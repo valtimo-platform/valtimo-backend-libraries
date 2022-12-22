@@ -27,9 +27,9 @@ import javax.persistence.Table
 data class ObjectManagement(
     @Id
     @Column(name = "id", nullable = false, updatable = false)
-    val id: UUID,
+    val id: UUID = UUID.randomUUID(),
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title", nullable = false, unique = true)
     val title: String,
 
     @Column(name = "objecten_api_plugin_configuration_id", nullable = false)
@@ -45,8 +45,8 @@ data class ObjectManagement(
     val showInDataMenu: Boolean = false,
 
     @Column(name = "form_definition_view")
-    val formDefinitionView: String?,
+    val formDefinitionView: String? = null,
 
     @Column(name = "form_definition_edit")
-    val formDefinitionEdit: String?
+    val formDefinitionEdit: String? = null
 )

@@ -42,4 +42,8 @@
             <column name="form_definition_edit" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="title unique in object_management_configuration" author="Ritense">
+        <addUniqueConstraint tableName="object_management_configuration" columnNames="title"/>
+    </changeSet>
 </databaseChangeLog>
