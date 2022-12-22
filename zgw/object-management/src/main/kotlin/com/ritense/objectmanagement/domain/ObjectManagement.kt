@@ -36,7 +36,7 @@ data class ObjectManagement(
     val objecttypenApiPluginConfigurationId: UUID,
 
     @Column(name = "objecttype_id", nullable = false)
-    val objecttypeId: UUID,
+    val objecttypeId: String,
 
     @Column(name = "objecttypen_api_plugin_configuration_id", nullable = false)
     val objectenApiPluginConfigurationId: UUID,

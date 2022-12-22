@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.objectmanagement.service
 
 import com.ritense.objectmanagement.BaseIntegrationTest
@@ -18,10 +34,10 @@ internal class ObjectManagementServiceIntTest: BaseIntegrationTest() {
     @Test
     @Order(1)
     fun `objectManagementConfiguration can be created`() {
-        val objectManagement = objectManagementService.createAndUpdate(ObjectManagement(
+        val objectManagement = objectManagementService.create(ObjectManagement(
             title = "test",
             objectenApiPluginConfigurationId = UUID.randomUUID(),
-            objecttypeId = UUID.randomUUID(),
+            objecttypeId = UUID.randomUUID().toString(),
             objecttypenApiPluginConfigurationId = UUID.randomUUID()
         ))
         assertThat(objectManagement).isNotNull
@@ -30,10 +46,10 @@ internal class ObjectManagementServiceIntTest: BaseIntegrationTest() {
     @Test
     @Order(2)
     fun getById() {
-        val objectManagement = objectManagementService.createAndUpdate(ObjectManagement(
+        val objectManagement = objectManagementService.create(ObjectManagement(
             title = "test1",
             objectenApiPluginConfigurationId = UUID.randomUUID(),
-            objecttypeId = UUID.randomUUID(),
+            objecttypeId = UUID.randomUUID().toString(),
             objecttypenApiPluginConfigurationId = UUID.randomUUID()
         ))
         val toReviewObjectManagement = objectManagementService.getById(objectManagement.id)
@@ -48,16 +64,16 @@ internal class ObjectManagementServiceIntTest: BaseIntegrationTest() {
     @Test
     @Order(2)
     fun getAll() {
-        objectManagementService.createAndUpdate(ObjectManagement(
+        objectManagementService.create(ObjectManagement(
             title = "test2",
             objectenApiPluginConfigurationId = UUID.randomUUID(),
-            objecttypeId = UUID.randomUUID(),
+            objecttypeId = UUID.randomUUID().toString(),
             objecttypenApiPluginConfigurationId = UUID.randomUUID()
         ))
-        objectManagementService.createAndUpdate(ObjectManagement(
+        objectManagementService.create(ObjectManagement(
             title = "test3",
             objectenApiPluginConfigurationId = UUID.randomUUID(),
-            objecttypeId = UUID.randomUUID(),
+            objecttypeId = UUID.randomUUID().toString(),
             objecttypenApiPluginConfigurationId = UUID.randomUUID()
         ))
         val objectManagementList = objectManagementService.getAll()
