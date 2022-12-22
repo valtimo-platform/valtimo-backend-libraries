@@ -16,8 +16,10 @@
 
 package com.ritense.objectmanagement.security.config
 
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
 class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
@@ -25,6 +27,14 @@ class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/api/v1/object/management/configuration")
+                .hasAuthority(AuthoritiesConstants.USER)
+                .antMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{id}")
+                .hasAuthority(AuthoritiesConstants.USER)
+                .antMatchers(HttpMethod.GET, "/api/v1/object/management/configuration")
+                .hasAuthority(AuthoritiesConstants.USER)
+                .antMatchers(HttpMethod.PUT, "/api/v1/object/management/configuration")
+                .hasAuthority(AuthoritiesConstants.USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
