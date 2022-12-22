@@ -27,28 +27,29 @@ class ObjectManagementService(
     private val objectManagementRepository: ObjectManagementRepository
 ) {
 
-    fun create(objectManagement: ObjectManagement): ObjectManagement {
-        val databaseObjectManagement = objectManagementRepository.findByTitle(objectManagement.title)
-        if (databaseObjectManagement != null) {
-            throw ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "This title already exists please chose another title"
-            )
-        }
-        return objectManagementRepository.save(objectManagement)
-    }
-
-    fun update(objectManagement: ObjectManagement): ObjectManagement {
-        val databaseObjectManagement = objectManagementRepository.findByTitle(objectManagement.title)
-        if (databaseObjectManagement != null) {
-            if (objectManagement.id != databaseObjectManagement.id)
+    fun create(objectManagement: ObjectManagement): ObjectManagement =
+        with(objectManagementRepository.findByTitle(objectManagement.title)) {
+            if (this != null) {
                 throw ResponseStatusException(
                     HttpStatus.CONFLICT,
-                    "This title already exists please chose another title"
+                    "This title already exists. Please choose another title"
                 )
+            }
+            objectManagementRepository.save(objectManagement)
         }
-        return objectManagementRepository.save(objectManagement)
-    }
+
+    fun update(objectManagement: ObjectManagement): ObjectManagement =
+        with(objectManagementRepository.findByTitle(objectManagement.title)) {
+            if (this != null) {
+                if (objectManagement.id != id) {
+                    throw ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "This title already exists. Please choose another title"
+                    )
+                }
+            }
+            objectManagementRepository.save(objectManagement)
+        }
 
     fun getById(id: UUID): ObjectManagement? = objectManagementRepository.findByIdOrNull(id)
 

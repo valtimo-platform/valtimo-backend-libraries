@@ -35,24 +35,16 @@ class ObjectManagementResource(
 ) {
 
     @PostMapping
-    fun create(@Valid @RequestBody objectManagement: ObjectManagement): ObjectManagement {
-        return objectManagementService.create(objectManagement)
-    }
+    fun create(@Valid @RequestBody objectManagement: ObjectManagement): ObjectManagement = objectManagementService.create(objectManagement)
 
     @PutMapping
-    fun update(@Valid @RequestBody objectManagement: ObjectManagement): ObjectManagement {
-        return objectManagementService.update(objectManagement)
-    }
+    fun update(@Valid @RequestBody objectManagement: ObjectManagement): ObjectManagement = objectManagementService.update(objectManagement)
 
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: UUID): ObjectManagement? {
-        return objectManagementService.getById(id)
-    }
+    fun getById(@PathVariable id: UUID): ObjectManagement? = objectManagementService.getById(id)
 
     @GetMapping
-    fun getAll(): MutableList<ObjectManagement> {
-        return objectManagementService.getAll()
-    }
+    fun getAll(): MutableList<ObjectManagement> = objectManagementService.getAll()
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: UUID) = objectManagementService.deleteById(id)
