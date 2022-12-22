@@ -51,7 +51,7 @@ dependencies {
 
     // Spring cloud stream RabbitMQ
     implementation 'org.springframework.cloud:spring-cloud-starter-stream-rabbit:3.1.6'
-
+    implementation 'org.springframework.cloud:spring-cloud-function-context:3.2.3'
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     jar {
