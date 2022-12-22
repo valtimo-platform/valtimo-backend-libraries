@@ -35,6 +35,8 @@ class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
                 .hasAuthority(AuthoritiesConstants.USER)
                 .antMatchers(HttpMethod.PUT, "/api/v1/object/management/configuration")
                 .hasAuthority(AuthoritiesConstants.USER)
+                .antMatchers(HttpMethod.DELETE, "/api/v1/object/management/configuration/{id}")
+                .hasAuthority(AuthoritiesConstants.USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

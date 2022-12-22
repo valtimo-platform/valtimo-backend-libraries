@@ -57,8 +57,6 @@ internal class ObjectManagementServiceIntTest: BaseIntegrationTest() {
         assertThat(objectManagement.title).isEqualTo(toReviewObjectManagement?.title)
         assertThat(objectManagement.objecttypenApiPluginConfigurationId)
             .isEqualTo(toReviewObjectManagement?.objecttypenApiPluginConfigurationId)
-
-
     }
 
     @Test
@@ -79,4 +77,23 @@ internal class ObjectManagementServiceIntTest: BaseIntegrationTest() {
         val objectManagementList = objectManagementService.getAll()
         assertThat(objectManagementList.size).isEqualTo(2)
     }
+
+    @Test
+    @Order(2)
+    fun deleteById() {
+       val objectManagement = createObjectManagement()
+
+        objectManagementService.deleteById(objectManagement.id)
+
+        val objectManagementList = objectManagementService.getAll()
+        assertThat(!objectManagementList.contains(objectManagement))
+    }
+
+    private fun createObjectManagement(): ObjectManagement =
+        objectManagementService.create(ObjectManagement(
+            title = "test",
+            objectenApiPluginConfigurationId = UUID.randomUUID(),
+            objecttypeId = UUID.randomUUID().toString(),
+            objecttypenApiPluginConfigurationId = UUID.randomUUID()
+        ))
 }

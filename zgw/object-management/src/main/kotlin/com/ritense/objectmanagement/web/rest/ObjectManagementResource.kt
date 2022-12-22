@@ -18,6 +18,7 @@ package com.ritense.objectmanagement.web.rest
 
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
+import org.springframework.web.bind.annotation.DeleteMapping
 import java.util.UUID
 import javax.validation.Valid
 import org.springframework.web.bind.annotation.GetMapping
@@ -53,4 +54,6 @@ class ObjectManagementResource(
         return objectManagementService.getAll()
     }
 
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable id: UUID) = objectManagementService.deleteById(id)
 }

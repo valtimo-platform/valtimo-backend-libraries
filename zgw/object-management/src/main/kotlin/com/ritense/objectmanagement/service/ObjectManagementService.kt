@@ -50,11 +50,9 @@ class ObjectManagementService(
         return objectManagementRepository.save(objectManagement)
     }
 
-    fun getById(id: UUID): ObjectManagement? {
-        return objectManagementRepository.findByIdOrNull(id)
-    }
+    fun getById(id: UUID): ObjectManagement? = objectManagementRepository.findByIdOrNull(id)
 
-    fun getAll(): MutableList<ObjectManagement> {
-        return objectManagementRepository.findAll()
-    }
+    fun getAll(): MutableList<ObjectManagement> = objectManagementRepository.findAll()
+
+    fun deleteById(id: UUID) = objectManagementRepository.deleteById(id)
 }
