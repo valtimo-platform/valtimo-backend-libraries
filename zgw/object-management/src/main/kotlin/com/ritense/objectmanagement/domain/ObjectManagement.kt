@@ -39,7 +39,7 @@ data class ObjectManagement(
     val objecttypeId: UUID,
 
     @Column(name = "objecttypen_api_plugin_configuration_id", nullable = false)
-    val objectenApiPluginConfigurationId: String,
+    val objectenApiPluginConfigurationId: UUID,
 
     @Column(name = "show_data_in_menu", nullable = false)
     val showInDataMenu: Boolean = false,

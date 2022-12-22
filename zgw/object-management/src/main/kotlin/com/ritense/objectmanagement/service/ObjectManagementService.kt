@@ -5,10 +5,8 @@ import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import java.util.UUID
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
-import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 
-@Service
 class ObjectManagementService(
     private val objectManagementRepository: ObjectManagementRepository
 ) {
