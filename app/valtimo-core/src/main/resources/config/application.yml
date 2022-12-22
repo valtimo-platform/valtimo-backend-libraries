@@ -12,7 +12,7 @@ spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:5432/valtimo-core
+        url: jdbc:postgresql://localhost:5433/valtimo-core-db
         username: valtimo
         password: password
         hikari:
