@@ -19,6 +19,7 @@ dependencies {
     implementation(project(":notes"))
     implementation(project(":objects-api"))
     implementation(project(":openzaak"))
+    implementation(project(":plugin-authentication:notificaties-api-authentication"))
     implementation(project(":plugin-authentication:objecten-api-authentication"))
     implementation(project(":plugin-valtimo"))
     implementation(project(":process-document"))

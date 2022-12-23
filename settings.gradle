@@ -53,6 +53,7 @@ include(
     "openzaak",
     "plugin",
     "plugin-valtimo",
+    "plugin-authentication:notificaties-api-authentication",
     "plugin-authentication:objecten-api-authentication",
     "process-document",
     "resource",
