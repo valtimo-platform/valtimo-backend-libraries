@@ -12,16 +12,16 @@ Please clearly explain how the vulnerability can be exploited, preferably with s
 We ask you to provide your name, email address and telephone number in order to communicate with you regarding your report. Providing a name and telephone number is optional. If you are eligible for a reward, we will also need your address if you wish us to send it to you. We may therefore ask for your address after your report is processed. Your data will not be shared with third parties unless disclosure of these data is compelled by law or by a court ruling.
 
 # We ask you to..
-- Not to disclose the issue in other channels like social media. 
-- Not to share the info with others. 
-- Not to make any further attempts to use the vulnerability again after the notification.
+- Not disclose the issue in other channels like social media. 
+- Not share the info with others. 
+- Not make any further attempts to use the vulnerability again after the notification.
 - Only do what is strictly necessary to demonstrate the vulnerability.
-- Not to apply general vulnerability scanning on live systems.
+- Not apply general vulnerability scanning on live systems.
 - Bot place a backdoor in an information system, regardless of its purpose (such as to demonstrate a vulnerability).
-- Not to copy, change or delete data from- or in running systems. Only send us the (minimum) information you need to demonstrate the problem. For example, create a directory listing of files or screenshots with only the information needed to demonstrate the vulnerability.
-- Not to social engineer. 
-- Not to affect the availability of running systems.
-- Not to use so-called 'brute force attacks' to get into running systems.
+- Not copy, change or delete data from- or in running systems. Only send us the (minimum) information you need to demonstrate the problem. For example, create a directory listing of files or screenshots with only the information needed to demonstrate the vulnerability.
+- Not social engineer. 
+- Not affect the availability of running systems.
+- Not use so-called 'brute force attacks' to get into running systems.
 
 # Our promise
 - You will receive an acknowledgment from us as soon as possible, and at least within 3 working days. Depending on the action to be taken, you may receive further followup emails. 
