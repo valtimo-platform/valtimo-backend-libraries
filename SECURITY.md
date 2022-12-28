@@ -40,7 +40,7 @@ We value your contribution to keeping this software secure. We have small reward
 We determine whether a reward applies and which reward is offered, based on the risk of the security problem. To be eligible, a report must be valid and unreported, and the reported vulnerability must be significant in terms of risk. 
 
 A Reward is not offered if a reporter or the report does not comply with the rules of this procedure.
-If the report does not concern a security issue or poses a low risk, no reward may be offered. See a non-exhaustive list of vulnerabilities for which no reward is paid further down this page.
+If the report does not concern a security issue or poses a low risk, no reward may be offered.
 
 When duplicate reports are received about a specific vulnerability, the reward will be awarded to the first person to report this vulnerability. A reward awarded will only be provided to one person.
 
