@@ -16,16 +16,41 @@
 
 package com.ritense.objectmanagement.autoconfigure
 
+import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.security.config.ObjectManagementHttpSecurityConfigurer
+import com.ritense.objectmanagement.service.ObjectManagementService
+import com.ritense.objectmanagement.web.rest.ObjectManagementResource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
+@EnableJpaRepositories(basePackages = ["com.ritense.objectmanagement.repository"])
 @EntityScan("com.ritense.objectmanagement.domain")
 class ObjectManagementAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(ObjectManagementService::class)
+    fun objectManagementService(
+        objectManagementRepository: ObjectManagementRepository
+    ): ObjectManagementService {
+        return ObjectManagementService(
+            objectManagementRepository
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ObjectManagementResource::class)
+    fun objectManagementResource(
+        objectManagementService: ObjectManagementService
+    ): ObjectManagementResource {
+        return ObjectManagementResource(
+            objectManagementService
+        )
+    }
 
     @Order(301)
     @Bean
