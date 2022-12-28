@@ -17,14 +17,14 @@ We ask you to provide your name, email address and telephone number in order to 
 - Not make any further attempts to use the vulnerability again after the notification.
 - Only do what is strictly necessary to demonstrate the vulnerability.
 - Not apply general vulnerability scanning on live systems.
-- Bot place a backdoor in an information system, regardless of its purpose (such as to demonstrate a vulnerability).
+- Not place a backdoor in an information system, regardless of its purpose (such as to demonstrate a vulnerability).
 - Not copy, change or delete data from- or in running systems. Only send us the (minimum) information you need to demonstrate the problem. For example, create a directory listing of files or screenshots with only the information needed to demonstrate the vulnerability.
 - Not social engineer. 
 - Not affect the availability of running systems.
 - Not use so-called 'brute force attacks' to get into running systems.
 
 # Our promise
-- You will receive an acknowledgment from us as soon as possible, and at least within 3 working days. Depending on the action to be taken, you may receive further followup emails. 
+- You will receive an acknowledgment from us as soon as possible, and at least within 3 working days. Depending on the action to be taken, you may receive further follow-up emails. 
 - If you have complied with the above conditions, we will not take legal action against you regarding the report. 
 - We treat your report confidentially and will not share your personal information with third parties without your consent, unless this is necessary to comply with a legal obligation. Reporting under a pseudonym is possible. 
 - We will keep you informed of the progress of solving the problem.
