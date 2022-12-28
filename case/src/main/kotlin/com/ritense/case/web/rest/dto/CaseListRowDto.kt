@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.case
+package com.ritense.case.web.rest.dto
 
-import com.ritense.case.configuration.CaseAutoConfiguration
-import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
+data class CaseListRowDto(
+    val items: List<CaseListItemDto>,
+) {
 
-@SpringBootApplication(
-    scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class, CaseAutoConfiguration::class],
-)
-class TestApplication {
-
-    fun main(args: Array<String>) {
-        runApplication<TestApplication>(*args)
-    }
+    data class CaseListItemDto(
+        val key: String,
+        val value: Any?,
+    )
 }

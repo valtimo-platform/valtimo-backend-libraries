@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.case
+package com.ritense.valueresolver.exception
 
-import com.ritense.case.configuration.CaseAutoConfiguration
-import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
+import mu.KotlinLogging
+import org.zalando.problem.AbstractThrowableProblem
+import org.zalando.problem.Status
 
-@SpringBootApplication(
-    scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class, CaseAutoConfiguration::class],
-)
-class TestApplication {
+class ValueResolverValidationException(message: String?, exception: Throwable? = null) :
+    AbstractThrowableProblem(null, message, Status.BAD_REQUEST) {
 
-    fun main(args: Array<String>) {
-        runApplication<TestApplication>(*args)
+    init {
+        logger.error { exception }
+    }
+
+    override fun getCause() = null
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 }

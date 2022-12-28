@@ -65,6 +65,70 @@ class ValueResolverService(
         }.flatten().toMap()
     }
 
+
+    /**
+     * This method provides a way of resolving requestedValues into values using defined resolvers.
+     * requestedValues are typically prefixed, like 'pv:propertyName'.
+     * If not, a resolver should be configured to handle '' prefixes.
+     *
+     * A requestedValue can only be resolved when a resolver for that prefix is configured.
+     * An unresolved requestedValue will not be included in the returned map.
+     *
+     * @param documentInstanceId The documentInstanceId these values belong to
+     * @param requestedValues The requestedValues that should be resolved into values.
+     * @return A map where the key is the requestedValue, and the value the resolved value.
+     */
+    fun validateValues(
+        documentDefinitionName: String,
+        requestedValues: List<String>
+    ) {
+        //Group by prefix
+        requestedValues.groupBy {
+            it.substringBefore(":", missingDelimiterValue = "")
+        }.forEach { (prefix, requestedValues) ->
+            //Create a resolver per prefix group
+            val resolverFactory = resolverFactoryMap[prefix]
+                ?: throw RuntimeException("No resolver factory found for value prefix $prefix")
+            val validator = resolverFactory.createValidator(documentDefinitionName)
+            //Create a list of resolved Map entries
+            requestedValues.forEach { requestedValue ->
+                validator.apply(requestedValue.substringAfter(":"))
+            }
+        }
+    }
+
+    /**
+     * This method provides a way of resolving requestedValues into values using defined resolvers.
+     * requestedValues are typically prefixed, like 'pv:propertyName'.
+     * If not, a resolver should be configured to handle '' prefixes.
+     *
+     * A requestedValue can only be resolved when a resolver for that prefix is configured.
+     * An unresolved requestedValue will not be included in the returned map.
+     *
+     * @param documentInstanceId The documentInstanceId these values belong to
+     * @param requestedValues The requestedValues that should be resolved into values.
+     * @return A map where the key is the requestedValue, and the value the resolved value.
+     */
+    fun resolveValues(
+        documentInstanceId: String,
+        requestedValues: List<String>
+    ): Map<String, Any> {
+        //Group by prefix
+        return requestedValues.groupBy {
+            it.substringBefore(":", missingDelimiterValue = "")
+        }.mapNotNull { (prefix, requestedValues) ->
+            //Create a resolver per prefix group
+            val resolverFactory = resolverFactoryMap[prefix]
+                ?: throw RuntimeException("No resolver factory found for value prefix $prefix")
+            val resolver = resolverFactory.createResolver(documentInstanceId)
+            //Create a list of resolved Map entries
+            requestedValues.mapNotNull { requestedValue ->
+                resolver.apply(requestedValue.substringAfter(":"))
+                    ?.let { requestedValue to it }
+            }
+        }.flatten().toMap()
+    }
+
     /**
      * Handle values. Usually by storing them somewhere.
      *

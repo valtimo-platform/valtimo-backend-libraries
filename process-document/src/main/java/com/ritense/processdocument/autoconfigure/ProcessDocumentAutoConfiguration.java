@@ -19,6 +19,7 @@ package com.ritense.processdocument.autoconfigure;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import com.ritense.processdocument.domain.delegate.DocumentVariableDelegate;
 import com.ritense.processdocument.domain.delegate.ProcessDocumentStartEventMessageDelegate;
 import com.ritense.processdocument.domain.impl.delegate.DocumentVariableDelegateImpl;
@@ -31,7 +32,8 @@ import com.ritense.processdocument.domain.listener.StartEventListener;
 import com.ritense.processdocument.repository.DocumentDefinitionProcessLinkRepository;
 import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
-import com.ritense.processdocument.resolver.DocumentValueResolverFactory;
+import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory;
+import com.ritense.processdocument.resolver.DocumentTableValueResolver;
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentDeploymentService;
@@ -177,14 +179,23 @@ public class ProcessDocumentAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(DocumentValueResolverFactory.class)
-    public ValueResolverFactory documentValueResolver(
+    @ConditionalOnMissingBean(DocumentJsonValueResolverFactory.class)
+    public ValueResolverFactory documentJsonValueResolver(
         ProcessDocumentService processDocumentService,
-        DocumentService documentService)  {
-        return new DocumentValueResolverFactory(processDocumentService, documentService);
+        DocumentService documentService,
+        JsonSchemaDocumentDefinitionService documentDefinitionService
+    )  {
+        return new DocumentJsonValueResolverFactory(processDocumentService, documentService, documentDefinitionService);
     }
 
-
+    @Bean
+    @ConditionalOnMissingBean(DocumentJsonValueResolverFactory.class)
+    public DocumentTableValueResolver documentTableValueResolver(
+        ProcessDocumentService processDocumentService,
+        DocumentService documentService
+    )  {
+        return new DocumentTableValueResolver(processDocumentService, documentService);
+    }
 
     @Bean
     @ConditionalOnMissingBean(DocumentDefinitionProcessLinkService.class)

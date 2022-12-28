@@ -19,6 +19,7 @@ package com.ritense.case
 import com.ritense.resource.service.ResourceService
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -35,5 +36,8 @@ class BaseIntegrationTest {
 
     @MockBean
     lateinit var resourceService: ResourceService
+
+    @MockBean
+    lateinit var mailSender: MailSender
 }
 

@@ -39,6 +39,23 @@ class FixedValueResolverFactory(
         processInstanceId: String,
         variableScope: VariableScope
     ): Function<String, Any?> {
+        return createResolver()
+    }
+
+    override fun createResolver(documentId: String): Function<String, Any?> {
+        return createResolver()
+    }
+
+    override fun handleValues(
+        processInstanceId: String,
+        variableScope: VariableScope?,
+        values: Map<String, Any>
+    ) {
+        val firstValue = values.iterator().next()
+        throw RuntimeException("Can't save fixed value (unknown destination): {${firstValue.key} to ${firstValue.value}}")
+    }
+
+    private fun createResolver(): Function<String, Any?> {
         return Function { requestedValue->
             requestedValue.toBooleanStrictOrNull()
                 ?: requestedValue.toLongOrNull()
@@ -51,12 +68,4 @@ class FixedValueResolverFactory(
         }
     }
 
-    override fun handleValues(
-        processInstanceId: String,
-        variableScope: VariableScope?,
-        values: Map<String, Any>
-    ) {
-        val firstValue = values.iterator().next()
-        throw RuntimeException("Can't save fixed value (unknown destination): {${firstValue.key} to ${firstValue.value}}")
-    }
 }
