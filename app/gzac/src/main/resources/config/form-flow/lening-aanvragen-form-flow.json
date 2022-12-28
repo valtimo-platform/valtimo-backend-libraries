@@ -1,0 +1,68 @@
+{
+    "startStep": "personal-information-step",
+    "steps": [
+        {
+            "key": "personal-information-step",
+            "onBack": [],
+            "onOpen": [],
+            "onComplete": [],
+            "nextSteps": [
+                {
+                    "condition": null,
+                    "step": "additional-information-step"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "user-task-personal-information"
+                }
+            }
+        },
+        {
+            "key": "additional-information-step",
+            "onBack": [],
+            "onOpen": [],
+            "onComplete": [],
+            "nextSteps": [
+                {
+                    "condition": "${step.submissionData.'leen-bedrag' > step.submissionData.jaaromzet}",
+                    "step": "load-denied-step"
+                },
+                {
+                    "step": "confirm-loan-step"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "user-task-additional-information"
+                }
+            }
+        },
+        {
+            "key": "confirm-loan-step",
+            "onBack": [],
+            "onOpen": [],
+            "onComplete": ["${valtimoFormFlow.completeTask(additionalProperties, step.submissionData, {'doc:/':''})}"],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "user-task-confirm-load"
+                }
+            }
+        },
+        {
+            "key": "load-denied-step",
+            "onBack": [],
+            "onOpen": [],
+            "onComplete": ["${valtimoFormFlow.completeTask(additionalProperties)}"],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "user-task-loan-denied"
+                }
+            }
+        }
+    ]
+}
