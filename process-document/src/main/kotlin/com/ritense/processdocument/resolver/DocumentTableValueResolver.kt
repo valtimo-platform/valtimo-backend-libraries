@@ -26,6 +26,11 @@ import org.camunda.bpm.engine.delegate.VariableScope
 import java.lang.IllegalArgumentException
 import java.util.function.Function
 
+/**
+ * This resolver can resolve requestedValues against the Document table columns
+ *
+ * The value of the requestedValue should be in the format case:assigneeFullName
+ */
 class DocumentTableValueResolver(
     private val processDocumentService: ProcessDocumentService,
     private val documentService: DocumentService,

@@ -42,7 +42,7 @@ class FixedValueResolverFactory(
         return createResolver()
     }
 
-    override fun createResolver(documentId: String): Function<String, Any?> {
+    override fun createResolver(documentInstanceId: String): Function<String, Any?> {
         return createResolver()
     }
 

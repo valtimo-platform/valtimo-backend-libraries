@@ -50,12 +50,7 @@ class ValueResolverService(
         variableScope: VariableScope,
         requestedValues: List<String>
     ): Map<String, Any> {
-        //Group by prefix
-        return requestedValues.groupBy {
-            it.substringBefore(":", missingDelimiterValue = "")
-        }.mapNotNull { (prefix, requestedValues) ->
-            //Create a resolver per prefix group
-            val resolverFactory = resolverFactoryMap[prefix]?:throw RuntimeException("No resolver factory found for value prefix $prefix")
+        return toResolverFactoryMap(requestedValues).map { (resolverFactory, requestedValues) ->
             val resolver = resolverFactory.createResolver(processInstanceId, variableScope)
             //Create a list of resolved Map entries
             requestedValues.mapNotNull { requestedValue ->
@@ -67,30 +62,22 @@ class ValueResolverService(
 
 
     /**
-     * This method provides a way of resolving requestedValues into values using defined resolvers.
+     * This method provides a way of validating a propertyName using defined resolvers.
      * requestedValues are typically prefixed, like 'pv:propertyName'.
-     * If not, a resolver should be configured to handle '' prefixes.
+     * If not, a resolver should be configured to handle 'pv' prefixes.
      *
-     * A requestedValue can only be resolved when a resolver for that prefix is configured.
-     * An unresolved requestedValue will not be included in the returned map.
+     * If the resolver doesn't accept the propertyName, it will throw an error.
      *
-     * @param documentInstanceId The documentInstanceId these values belong to
-     * @param requestedValues The requestedValues that should be resolved into values.
-     * @return A map where the key is the requestedValue, and the value the resolved value.
+     * @param documentInstanceId The documentInstanceId these values belong to.
+     * @param requestedValues The requestedValues that should be validated.
      */
     fun validateValues(
         documentDefinitionName: String,
         requestedValues: List<String>
     ) {
-        //Group by prefix
-        requestedValues.groupBy {
-            it.substringBefore(":", missingDelimiterValue = "")
-        }.forEach { (prefix, requestedValues) ->
-            //Create a resolver per prefix group
-            val resolverFactory = resolverFactoryMap[prefix]
-                ?: throw RuntimeException("No resolver factory found for value prefix $prefix")
+        toResolverFactoryMap(requestedValues).forEach { (resolverFactory, requestedValues) ->
             val validator = resolverFactory.createValidator(documentDefinitionName)
-            //Create a list of resolved Map entries
+
             requestedValues.forEach { requestedValue ->
                 validator.apply(requestedValue.substringAfter(":"))
             }
@@ -100,7 +87,7 @@ class ValueResolverService(
     /**
      * This method provides a way of resolving requestedValues into values using defined resolvers.
      * requestedValues are typically prefixed, like 'pv:propertyName'.
-     * If not, a resolver should be configured to handle '' prefixes.
+     * If not, a resolver should be configured to handle 'pv' prefixes.
      *
      * A requestedValue can only be resolved when a resolver for that prefix is configured.
      * An unresolved requestedValue will not be included in the returned map.
@@ -113,13 +100,7 @@ class ValueResolverService(
         documentInstanceId: String,
         requestedValues: List<String>
     ): Map<String, Any> {
-        //Group by prefix
-        return requestedValues.groupBy {
-            it.substringBefore(":", missingDelimiterValue = "")
-        }.mapNotNull { (prefix, requestedValues) ->
-            //Create a resolver per prefix group
-            val resolverFactory = resolverFactoryMap[prefix]
-                ?: throw RuntimeException("No resolver factory found for value prefix $prefix")
+        return toResolverFactoryMap(requestedValues).map { (resolverFactory, requestedValues) ->
             val resolver = resolverFactory.createResolver(documentInstanceId)
             //Create a list of resolved Map entries
             requestedValues.mapNotNull { requestedValue ->
@@ -141,17 +122,26 @@ class ValueResolverService(
         variableScope: VariableScope?,
         values: Map<String, Any>
     ) {
-        values.entries
-            .groupBy { it.key.substringBefore(":", missingDelimiterValue = "") }
-            .forEach { (prefix, values) ->
-                val resolverFactory = resolverFactoryMap[prefix]
-                    ?: throw RuntimeException("No resolver factory found for value prefix $prefix")
+        toResolverFactoryMap(values.keys).forEach { (resolverFactory, propertyPaths) ->
 
-                resolverFactory.handleValues(
-                    processInstanceId,
-                    variableScope,
-                    values.associate { it.key.substringAfter(":") to it.value }
-                )
-            }
+            resolverFactory.handleValues(
+                processInstanceId,
+                variableScope,
+                propertyPaths.associate { propertyPath -> propertyPath.substringAfter(":") to values[propertyPath]!! }
+            )
+        }
+    }
+
+    private fun toResolverFactoryMap(requestedValues: Collection<String>): Map<ValueResolverFactory, List<String>> {
+        //Group by prefix
+        return requestedValues.groupBy {
+            it.substringBefore(":", missingDelimiterValue = "")
+        }.mapNotNull { (prefix, requestedValues) ->
+            //Create a resolver per prefix group
+            val resolverFactory = resolverFactoryMap[prefix]
+                ?: throw RuntimeException("No resolver factory found for value prefix $prefix")
+            //Create a map of ValueResolverFactories
+            resolverFactory to requestedValues
+        }.toMap()
     }
 }

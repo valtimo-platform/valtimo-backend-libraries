@@ -38,7 +38,7 @@ import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.function.Function
 
 /**
- * This resolver can resolve requestedValues against Document linked to the process
+ * This resolver can resolve requestedValues against the Document JSON content
  *
  * The value of the requestedValue should be in the format doc:some.json.path
  */

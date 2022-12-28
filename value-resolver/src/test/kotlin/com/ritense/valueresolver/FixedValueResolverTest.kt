@@ -102,6 +102,19 @@ internal class FixedValueResolverTest {
     }
 
     @Test
+    fun `should resolve boolean value from requestedValue for documentId`() {
+        val documentInstanceId = UUID.randomUUID().toString()
+
+        val resolvedValue = fixedValueResolver.createResolver(
+            documentInstanceId = documentInstanceId,
+        ).apply(
+            "true"
+        )
+
+        Assertions.assertThat(resolvedValue).isEqualTo(true)
+    }
+
+    @Test
     fun `should NOT handle value`() {
         val processInstanceId = UUID.randomUUID().toString()
         val variableScope = DelegateTaskFake()

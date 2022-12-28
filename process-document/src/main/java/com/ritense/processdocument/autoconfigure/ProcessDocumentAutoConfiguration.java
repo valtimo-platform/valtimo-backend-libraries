@@ -184,7 +184,7 @@ public class ProcessDocumentAutoConfiguration {
         ProcessDocumentService processDocumentService,
         DocumentService documentService,
         JsonSchemaDocumentDefinitionService documentDefinitionService
-    )  {
+    ) {
         return new DocumentJsonValueResolverFactory(processDocumentService, documentService, documentDefinitionService);
     }
 
@@ -193,7 +193,7 @@ public class ProcessDocumentAutoConfiguration {
     public DocumentTableValueResolver documentTableValueResolver(
         ProcessDocumentService processDocumentService,
         DocumentService documentService
-    )  {
+    ) {
         return new DocumentTableValueResolver(processDocumentService, documentService);
     }
 
