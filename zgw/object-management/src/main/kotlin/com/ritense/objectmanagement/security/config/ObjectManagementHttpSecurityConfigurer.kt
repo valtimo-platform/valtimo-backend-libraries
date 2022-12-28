@@ -28,13 +28,15 @@ class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/v1/object/management/configuration")
-                .hasAuthority(AuthoritiesConstants.USER)
+                .hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{id}")
-                .hasAuthority(AuthoritiesConstants.USER)
+                .hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(HttpMethod.GET, "/api/v1/object/management/configuration")
-                .hasAuthority(AuthoritiesConstants.USER)
+                .hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(HttpMethod.PUT, "/api/v1/object/management/configuration")
-                .hasAuthority(AuthoritiesConstants.USER)
+                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(HttpMethod.DELETE, "/api/v1/object/management/configuration/{id}")
+                .hasAuthority(AuthoritiesConstants.ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

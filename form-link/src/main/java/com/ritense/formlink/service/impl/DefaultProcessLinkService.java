@@ -31,6 +31,8 @@ import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
+
 public class DefaultProcessLinkService implements ProcessLinkService {
     private final RepositoryService repositoryService;
     private final TaskService taskService;
@@ -50,7 +52,7 @@ public class DefaultProcessLinkService implements ProcessLinkService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = SERIALIZABLE)
     public TaskOpenResult openTask(UUID taskId) {
         Task task = taskService
             .createTaskQuery()

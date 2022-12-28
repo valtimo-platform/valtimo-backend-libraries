@@ -34,49 +34,47 @@ internal class ObjectManagementServiceIntTest: BaseIntegrationTest() {
     @Test
     @Order(1)
     fun `objectManagementConfiguration can be created`() {
-        val objectManagement = objectManagementService.create(ObjectManagement(
-            title = "test",
-            objectenApiPluginConfigurationId = UUID.randomUUID(),
-            objecttypeId = UUID.randomUUID().toString(),
-            objecttypenApiPluginConfigurationId = UUID.randomUUID()
-        ))
+        val objectManagement = createObjectManagement()
         assertThat(objectManagement).isNotNull
     }
 
     @Test
     @Order(2)
     fun getById() {
-        val objectManagement = objectManagementService.create(ObjectManagement(
-            title = "test1",
-            objectenApiPluginConfigurationId = UUID.randomUUID(),
-            objecttypeId = UUID.randomUUID().toString(),
-            objecttypenApiPluginConfigurationId = UUID.randomUUID()
-        ))
+        val objectManagement = createObjectManagement()
         val toReviewObjectManagement = objectManagementService.getById(objectManagement.id)
         assertThat(objectManagement.id).isEqualTo(toReviewObjectManagement?.id)
         assertThat(objectManagement.title).isEqualTo(toReviewObjectManagement?.title)
         assertThat(objectManagement.objecttypenApiPluginConfigurationId)
             .isEqualTo(toReviewObjectManagement?.objecttypenApiPluginConfigurationId)
-
-
     }
 
     @Test
     @Order(2)
     fun getAll() {
-        objectManagementService.create(ObjectManagement(
-            title = "test2",
-            objectenApiPluginConfigurationId = UUID.randomUUID(),
-            objecttypeId = UUID.randomUUID().toString(),
-            objecttypenApiPluginConfigurationId = UUID.randomUUID()
-        ))
-        objectManagementService.create(ObjectManagement(
-            title = "test3",
-            objectenApiPluginConfigurationId = UUID.randomUUID(),
-            objecttypeId = UUID.randomUUID().toString(),
-            objecttypenApiPluginConfigurationId = UUID.randomUUID()
-        ))
+        createObjectManagement("test1")
+        createObjectManagement("test2")
+
         val objectManagementList = objectManagementService.getAll()
         assertThat(objectManagementList.size).isEqualTo(2)
     }
+
+    @Test
+    @Order(2)
+    fun deleteById() {
+       val objectManagement = createObjectManagement()
+
+        objectManagementService.deleteById(objectManagement.id)
+
+        val objectManagementList = objectManagementService.getAll()
+        assertThat(!objectManagementList.contains(objectManagement))
+    }
+
+    private fun createObjectManagement(title: String? = null): ObjectManagement =
+        objectManagementService.create(ObjectManagement(
+            title = title ?: "test",
+            objectenApiPluginConfigurationId = UUID.randomUUID(),
+            objecttypeId = UUID.randomUUID().toString(),
+            objecttypenApiPluginConfigurationId = UUID.randomUUID()
+        ))
 }
