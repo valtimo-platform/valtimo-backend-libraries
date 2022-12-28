@@ -18,6 +18,8 @@ package com.ritense.objectmanagement.web.rest
 
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import java.util.UUID
 import javax.validation.Valid
@@ -28,24 +30,29 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
-
-@RequestMapping("/api/v1/object/management/configuration")
+@RequestMapping("/api/v1/object/management/configuration", produces = [MediaType.APPLICATION_JSON_VALUE])
 class ObjectManagementResource(
     private val objectManagementService: ObjectManagementService
 ) {
 
     @PostMapping
-    fun create(@Valid @RequestBody objectManagement: ObjectManagement): ObjectManagement = objectManagementService.create(objectManagement)
+    fun create(@Valid @RequestBody objectManagement: ObjectManagement): ResponseEntity<ObjectManagement> =
+        ResponseEntity.ok(objectManagementService.create(objectManagement))
 
     @PutMapping
-    fun update(@Valid @RequestBody objectManagement: ObjectManagement): ObjectManagement = objectManagementService.update(objectManagement)
+    fun update(@Valid @RequestBody objectManagement: ObjectManagement): ResponseEntity<ObjectManagement> =
+        ResponseEntity.ok(objectManagementService.update(objectManagement))
 
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: UUID): ObjectManagement? = objectManagementService.getById(id)
+    fun getById(@PathVariable id: UUID): ResponseEntity<ObjectManagement?> =
+        ResponseEntity.ok(objectManagementService.getById(id))
 
     @GetMapping
-    fun getAll(): MutableList<ObjectManagement> = objectManagementService.getAll()
+    fun getAll(): ResponseEntity<MutableList<ObjectManagement>> = ResponseEntity.ok(objectManagementService.getAll())
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: UUID) = objectManagementService.deleteById(id)
+    fun delete(@PathVariable id: UUID): ResponseEntity<Any> {
+        objectManagementService.deleteById(id)
+        return ResponseEntity.noContent().build()
+    }
 }
