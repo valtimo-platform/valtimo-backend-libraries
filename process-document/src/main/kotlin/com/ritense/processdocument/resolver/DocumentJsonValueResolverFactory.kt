@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.jayway.jsonpath.InvalidPathException
 import com.jayway.jsonpath.JsonPath
+import com.jayway.jsonpath.PathNotFoundException
 import com.jayway.jsonpath.internal.path.PathCompiler
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
@@ -73,8 +74,8 @@ class DocumentJsonValueResolverFactory(
         }
     }
 
-    override fun createResolver(documentId: String): Function<String, Any?> {
-        return createResolver(documentService.get(documentId))
+    override fun createResolver(documentInstanceId: String): Function<String, Any?> {
+        return createResolver(documentService.get(documentInstanceId))
     }
 
     override fun handleValues(
@@ -153,7 +154,11 @@ class DocumentJsonValueResolverFactory(
     }
 
     private fun resolveForJsonPath(document: Document, jsonPathPostfix: String): Any? {
-        return JsonPath.read(document.content().asJson().toString(), "$.$jsonPathPostfix")
+        return try {
+            JsonPath.read<Any?>(document.content().asJson().toString(), "$.$jsonPathPostfix")
+        } catch (ignore: PathNotFoundException){
+            null
+        }
     }
 
     private fun buildJsonPatch(builder: JsonPatchBuilder, content: JsonNode, path: JsonPointer, value: JsonNode) {
