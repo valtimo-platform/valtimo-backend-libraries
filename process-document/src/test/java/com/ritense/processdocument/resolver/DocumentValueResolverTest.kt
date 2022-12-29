@@ -25,6 +25,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.service.DocumentService
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import org.assertj.core.api.Assertions.assertThat
@@ -42,8 +43,9 @@ internal class DocumentValueResolverTest {
 
     private lateinit var processDocumentService: ProcessDocumentService
     private lateinit var documentService: DocumentService
+    private lateinit var documentDefinitionService: JsonSchemaDocumentDefinitionService
 
-    private lateinit var documentValueResolver: DocumentValueResolverFactory
+    private lateinit var documentValueResolver: DocumentJsonValueResolverFactory
 
     private lateinit var processInstanceId: String
     private lateinit var variableScope: DelegateTaskFake
@@ -53,7 +55,8 @@ internal class DocumentValueResolverTest {
     internal fun setUp() {
         processDocumentService = mock()
         documentService = mock()
-        documentValueResolver = DocumentValueResolverFactory(processDocumentService, documentService)
+        documentDefinitionService = mock()
+        documentValueResolver = DocumentJsonValueResolverFactory(processDocumentService, documentService, documentDefinitionService)
 
         processInstanceId = UUID.randomUUID().toString()
         variableScope = DelegateTaskFake()

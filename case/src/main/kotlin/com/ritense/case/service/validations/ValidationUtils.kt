@@ -24,11 +24,13 @@ import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.valueresolver.ValueResolverService
 import org.zalando.problem.Status
 
 open class ValidationUtils(
     open val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
-    open val documentDefinitionService: DocumentDefinitionService
+    open val documentDefinitionService: DocumentDefinitionService,
+    open val valueResolverService: ValueResolverService,
 ) {
 
     @Throws(InvalidListColumnException::class)
@@ -93,9 +95,9 @@ open class ValidationUtils(
     }
 
     @Throws(InvalidListColumnException::class)
-    internal fun isJsonPathValid(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
+    internal fun isPropertyPathValid(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
         try {
-            documentDefinitionService.validateJsonPath(caseDefinitionName, caseListColumnDto.path)
+            valueResolverService.validateValues(caseDefinitionName, listOf(caseListColumnDto.path))
         } catch (ex: Exception) {
             throw InvalidListColumnException(ex.message, Status.BAD_REQUEST)
         }

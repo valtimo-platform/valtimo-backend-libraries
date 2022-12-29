@@ -16,6 +16,7 @@
 
 package com.ritense.valueresolver
 
+import com.ritense.valueresolver.exception.ValueResolverValidationException
 import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.function.Function
 
@@ -47,6 +48,40 @@ interface ValueResolverFactory {
      * @return a resolver that handles one requestedValue at a time within the same context.
      */
     fun createResolver(processInstanceId: String, variableScope: VariableScope)
+        : Function<String, Any?>
+
+    /**
+     * This creates a property validator within a certain context.
+     * The validator will throw and exception when the property is invalid
+     * The returned validator can be called multiple times within the same context for different properties.
+     *
+     * We can use this strategy to limit the amount of calls to an external source, which is a performance benefit.
+     *
+     * The path argument of the returned resolver is already stripped of the prefix:
+     * 'someProperty' will be passed as an argument when the original requestedValue was 'pv:someProperty'
+     *
+     * @param documentDefinitionName The name of the document-definition that these properties belong to
+     *
+     * @return a resolver that handles one requestedValue at a time within the same context.
+     */
+    @Throws(ValueResolverValidationException::class)
+    fun createValidator(documentDefinitionName: String)
+            : Function<String, Unit> = Function { }
+
+    /**
+     * This creates a requestedValue resolver within a certain context.
+     * The returned resolver can be called multiple times within the same context for different requestedValues.
+     *
+     * We can use this strategy to limit the amount of calls to an external source, which is a performance benefit.
+     *
+     * The requestedValue argument of the returned resolver is already stripped of the prefix:
+     * 'someProperty' will be passed as an argument when the original requestedValue was 'pv:someProperty'
+     *
+     * @param documentId The documentId these values belong to
+     *
+     * @return a resolver that handles one requestedValue at a time within the same context.
+     */
+    fun createResolver(documentId: String)
         : Function<String, Any?>
 
     /**

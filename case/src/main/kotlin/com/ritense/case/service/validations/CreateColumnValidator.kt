@@ -20,18 +20,24 @@ import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.valueresolver.ValueResolverService
 
 class CreateColumnValidator(
     override val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
-    override val documentDefinitionService: DocumentDefinitionService
-) : ValidationUtils(caseDefinitionListColumnRepository, documentDefinitionService), CaseDefinitionColumnValidator {
+    override val documentDefinitionService: DocumentDefinitionService,
+    override val valueResolverService: ValueResolverService,
+) : ValidationUtils(
+    caseDefinitionListColumnRepository,
+    documentDefinitionService,
+    valueResolverService
+), CaseDefinitionColumnValidator {
 
     @Throws(InvalidListColumnException::class)
     override fun validate(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
         existsDocumentDefinition(caseDefinitionName)
         existsListColumn(caseDefinitionName, caseListColumnDto)
         isCreateColumnDefaultSortValid(caseDefinitionName, caseListColumnDto)
-        isJsonPathValid(caseDefinitionName, caseListColumnDto)
+        isPropertyPathValid(caseDefinitionName, caseListColumnDto)
         caseListColumnDto.validate()
     }
 

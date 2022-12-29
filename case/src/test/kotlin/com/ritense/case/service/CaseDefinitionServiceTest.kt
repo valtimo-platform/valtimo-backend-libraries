@@ -14,7 +14,8 @@ import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
-import javax.validation.ValidationException
+import com.ritense.valueresolver.ValueResolverService
+import com.ritense.valueresolver.exception.ValueResolverValidationException
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -37,15 +38,19 @@ class CaseDefinitionServiceTest {
 
     lateinit var documentDefinitionService: DocumentDefinitionService
 
+    lateinit var valueResolverService: ValueResolverService
+
     @BeforeEach
     fun setUp() {
         caseDefinitionSettingsRepository = mock()
         documentDefinitionService = mock()
         caseDefinitionListColumnRepository = mock()
+        valueResolverService = mock()
         service = CaseDefinitionService(
             caseDefinitionSettingsRepository,
             caseDefinitionListColumnRepository,
-            documentDefinitionService
+            documentDefinitionService,
+            valueResolverService,
         )
     }
 
@@ -196,13 +201,13 @@ class CaseDefinitionServiceTest {
                 emptyList()
             )
         doAnswer {
-            throw ValidationException(
+            throw ValueResolverValidationException(
                 "JsonPath '"
                         + listColumnDto.path +
                         "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
             )
         }
-            .whenever(documentDefinitionService).validateJsonPath(caseDefinitionName, listColumnDto.path)
+            .whenever(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDto.path))
         val exception = assertThrows<InvalidListColumnException> {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
@@ -210,7 +215,7 @@ class CaseDefinitionServiceTest {
         verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
             caseDefinitionName
         )
-        verify(documentDefinitionService).validateJsonPath(caseDefinitionName, listColumnDto.path)
+        verify(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDto.path))
         assertEquals(
             "JsonPath '"
                     + listColumnDto.path +
@@ -236,7 +241,7 @@ class CaseDefinitionServiceTest {
             .thenReturn(
                 emptyList()
             )
-        doNothing().whenever(documentDefinitionService).validateJsonPath(caseDefinitionName, listColumnDto.path)
+        doNothing().whenever(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDto.path))
         val exception = assertThrows<InvalidListColumnException> {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
@@ -244,7 +249,7 @@ class CaseDefinitionServiceTest {
         verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
             caseDefinitionName
         )
-        verify(documentDefinitionService).validateJsonPath(caseDefinitionName, listColumnDto.path)
+        verify(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDto.path))
         assertEquals("Display type parameters are invalid for type enum.", exception.message)
 
     }
@@ -322,13 +327,13 @@ class CaseDefinitionServiceTest {
                 )
             )
         doAnswer {
-            throw ValidationException(
+            throw ValueResolverValidationException(
                 "JsonPath '"
                         + listColumnDtoFirstName.path +
                         "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
             )
         }
-            .whenever(documentDefinitionService).validateJsonPath(caseDefinitionName, listColumnDtoFirstName.path)
+            .whenever(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDtoFirstName.path))
         val exception = assertThrows<InvalidListColumnException> {
             service.updateListColumns(caseDefinitionName, listOf(listColumnDtoFirstName))
         }
@@ -336,7 +341,7 @@ class CaseDefinitionServiceTest {
         verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
             caseDefinitionName
         )
-        verify(documentDefinitionService).validateJsonPath(caseDefinitionName, listColumnDtoFirstName.path)
+        verify(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDtoFirstName.path))
         assertEquals(
             "JsonPath '"
                     + listColumnDtoFirstName.path +

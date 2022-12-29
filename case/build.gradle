@@ -26,6 +26,7 @@ dockerCompose {
 dependencies {
     implementation project(':contract')
     implementation project(':document')
+    implementation project(':value-resolver')
     implementation project(':web')
 
     implementation "org.springframework.boot:spring-boot-starter"
@@ -35,6 +36,7 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
+    testImplementation project(':process-document')
     testImplementation project(':resource')
     testImplementation project(':test-utils-common')
 
