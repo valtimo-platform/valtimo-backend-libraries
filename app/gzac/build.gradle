@@ -65,6 +65,12 @@ dependencies {
     implementation "mysql:mysql-connector-java"
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.1'
 
+    implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.8.0'
+    implementation 'org.springframework.cloud:spring-cloud-function-context:3.2.6'
+    implementation "org.yaml:snakeyaml:1.33"
+    implementation "io.netty:netty-codec:4.1.86.Final"
+    implementation 'org.mybatis:mybatis:3.5.11'
+
 }
 
 apply from: "gradle/publishing.gradle"
