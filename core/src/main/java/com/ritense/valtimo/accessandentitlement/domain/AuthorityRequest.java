@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.accessandentitlement.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -25,12 +27,16 @@ public class AuthorityRequest {
     @Pattern(regexp = "^[a-zA-Z0-9-_]+$")
     private String name;
 
-    public AuthorityRequest(String name) {
+    public AuthorityRequest(@JsonProperty("name") String name) {
         this.name = name;
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

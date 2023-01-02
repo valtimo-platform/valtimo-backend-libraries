@@ -20,12 +20,18 @@ import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.valueresolver.ValueResolverService
 import org.zalando.problem.Status
 
 class UpdateColumnValidator(
     caseDefinitionSettingsRepository: CaseDefinitionListColumnRepository,
-    documentDefinitionService: DocumentDefinitionService
-) : ValidationUtils(caseDefinitionSettingsRepository, documentDefinitionService), CaseDefinitionColumnValidator {
+    documentDefinitionService: DocumentDefinitionService,
+    valueResolverService: ValueResolverService,
+) : ValidationUtils(
+    caseDefinitionSettingsRepository,
+    documentDefinitionService,
+    valueResolverService
+), CaseDefinitionColumnValidator {
     override fun validate(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
         TODO("Not yet implemented")
     }
@@ -45,7 +51,7 @@ class UpdateColumnValidator(
         }
         overrideListColumnDtoWithDefaultSort(caseDefinitionName, caseListColumnDtoList, columns)
         caseListColumnDtoList.forEach { caseListColumnDto ->
-            isJsonPathValid(caseDefinitionName, caseListColumnDto)
+            isPropertyPathValid(caseDefinitionName, caseListColumnDto)
             caseListColumnDto.validate()
         }
     }

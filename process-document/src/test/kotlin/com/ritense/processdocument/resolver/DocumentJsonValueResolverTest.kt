@@ -25,6 +25,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.service.DocumentService
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import org.assertj.core.api.Assertions.assertThat
@@ -38,27 +39,32 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.UUID
 
-internal class DocumentValueResolverTest {
+internal class DocumentJsonValueResolverTest {
 
     private lateinit var processDocumentService: ProcessDocumentService
     private lateinit var documentService: DocumentService
+    private lateinit var documentDefinitionService: JsonSchemaDocumentDefinitionService
 
-    private lateinit var documentValueResolver: DocumentValueResolverFactory
+    private lateinit var documentValueResolver: DocumentJsonValueResolverFactory
 
     private lateinit var processInstanceId: String
     private lateinit var variableScope: DelegateTaskFake
+    private lateinit var documentInstanceId: String
     private lateinit var document: Document
 
     @BeforeEach
     internal fun setUp() {
         processDocumentService = mock()
         documentService = mock()
-        documentValueResolver = DocumentValueResolverFactory(processDocumentService, documentService)
+        documentDefinitionService = mock()
+        documentValueResolver = DocumentJsonValueResolverFactory(processDocumentService, documentService, documentDefinitionService)
 
         processInstanceId = UUID.randomUUID().toString()
         variableScope = DelegateTaskFake()
+        documentInstanceId = UUID.randomUUID().toString()
         document = mock()
         whenever(processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)).thenReturn(document)
+        whenever(documentService.get(documentInstanceId)).thenReturn(document)
     }
 
     @Test
@@ -200,6 +206,137 @@ internal class DocumentValueResolverTest {
 
         assertThat(resolvedValue).isEqualTo(null)
     }
+
+    @Test
+    fun `should resolve boolean value from document properties for JsonPath`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "value": true, "lastName": "Doe"}}}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            documentInstanceId = documentInstanceId
+        ).apply(
+            "root.child.value"
+        )
+
+        assertThat(resolvedValue).isEqualTo(true)
+    }
+
+    @Test
+    fun `should resolve string value from document properties for JsonPath`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "lastName": "Doe"}}}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            documentInstanceId = documentInstanceId
+        ).apply(
+            "root.child.firstName"
+        )
+
+        assertThat(resolvedValue).isEqualTo("John")
+    }
+
+    @Test
+    fun `should resolve int value from document properties for JsonPath`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "lastName": "Doe", "age": 5}}}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            documentInstanceId = documentInstanceId
+        ).apply(
+            "root.child.age"
+        )
+
+        assertThat(resolvedValue).isEqualTo(5)
+    }
+
+    @Test
+    fun `should NOT resolve requestedValue from document properties for JsonPath`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "lastName": "Doe"}}}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            documentInstanceId = documentInstanceId
+        ).apply(
+            "root.child.value"
+        )
+
+        assertThat(resolvedValue).isNull()
+    }
+
+    @Test
+    fun `should resolve object-value from document properties for JsonPath`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"profile":{"firstName":"John"}}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            documentInstanceId = documentInstanceId
+        ).apply(
+            "profile"
+        )
+
+        assertThat(resolvedValue).isEqualTo(mapOf("firstName" to "John"))
+    }
+
+    @Test
+    fun `should resolve array-value from document properties for JsonPath`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"cities":[{"name":"Amsterdam"},{"name":"Utrecht"}]}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            documentInstanceId = documentInstanceId
+        ).apply(
+            "cities"
+        )
+
+        assertThat(resolvedValue).isEqualTo(listOf(mapOf("name" to "Amsterdam"), mapOf("name" to "Utrecht")))
+    }
+
+    @Test
+    fun `should resolve empty-object-value from document properties for JsonPath`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{}}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            documentInstanceId = documentInstanceId
+        ).apply(
+            "root"
+        )
+
+        assertThat(resolvedValue).isEqualTo(emptyMap<String, Any>())
+    }
+
+    @Test
+    fun `should resolve empty-array-value from document properties for JsonPath`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":[]}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            documentInstanceId = documentInstanceId
+        ).apply(
+            "root"
+        )
+
+        assertThat(resolvedValue).isEqualTo(emptyList<Any>())
+    }
+
+    @Test
+    fun `should resolve null-value from document properties for JsonPath`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":null}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            documentInstanceId = documentInstanceId
+        ).apply(
+            "root"
+        )
+
+        assertThat(resolvedValue).isEqualTo(null)
+    }
+
+    @Test
+    fun `should resolve missing-value from document properties for JsonPath`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("""{}"""))
+
+        val resolvedValue = documentValueResolver.createResolver(
+            documentInstanceId = documentInstanceId
+        ).apply(
+            "root"
+        )
+
+        assertThat(resolvedValue).isEqualTo(null)
+    }
+
 
     @Test
     fun `should add text value`() {
