@@ -17,7 +17,7 @@
 package com.ritense.mail.flowmailer.connector
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockitokotlin2.any
+import org.mockito.kotlin.any
 import com.ritense.document.service.DocumentService
 import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.mail.flowmailer.config.FlowmailerProperties

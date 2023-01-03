@@ -16,9 +16,9 @@
 
 package com.ritense.contactmoment.web.rest.impl
 
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import com.ritense.contactmoment.BaseContactMomentIntegrationTest
 import com.ritense.klant.domain.Klant
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage

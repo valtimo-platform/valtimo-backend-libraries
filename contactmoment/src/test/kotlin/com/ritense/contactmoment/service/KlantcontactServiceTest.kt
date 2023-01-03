@@ -16,10 +16,10 @@
 
 package com.ritense.contactmoment.service
 
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentConnector
 import com.ritense.contactmoment.domain.Kanaal

@@ -16,8 +16,8 @@
 
 package com.ritense.openzaak.web.rest.impl
 
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
 import org.junit.jupiter.api.BeforeEach

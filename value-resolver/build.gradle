@@ -37,7 +37,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation 'org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.16.0'
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
 
     jar {
         enabled = true

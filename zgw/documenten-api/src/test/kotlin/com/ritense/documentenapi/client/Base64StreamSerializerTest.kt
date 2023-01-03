@@ -19,8 +19,8 @@ package com.ritense.documentenapi.client
 import com.fasterxml.jackson.core.Base64Variants
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.junit.jupiter.api.Test
 import java.io.InputStream
 

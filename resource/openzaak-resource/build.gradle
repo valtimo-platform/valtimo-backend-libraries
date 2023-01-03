@@ -61,7 +61,7 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
 
     //Kotlin
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
 
     testImplementation project(':zgw:documenten-api')
     testImplementation project(':zgw:zaken-api')

@@ -16,8 +16,8 @@
 
 package com.ritense.mail.wordpressmail
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 import com.ritense.document.service.DocumentSequenceGeneratorService
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName

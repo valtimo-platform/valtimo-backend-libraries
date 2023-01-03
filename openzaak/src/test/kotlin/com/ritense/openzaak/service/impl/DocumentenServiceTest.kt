@@ -1,6 +1,6 @@
 package com.ritense.openzaak.service.impl
 
-import com.nhaarman.mockitokotlin2.verify
+import org.mockito.kotlin.verify
 import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import org.junit.jupiter.api.Assertions.assertEquals

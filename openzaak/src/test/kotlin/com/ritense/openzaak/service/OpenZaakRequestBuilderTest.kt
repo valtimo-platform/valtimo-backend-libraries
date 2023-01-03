@@ -16,8 +16,8 @@
 
 package com.ritense.openzaak.service
 
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
 import com.ritense.openzaak.BaseTest
 import com.ritense.openzaak.service.impl.OpenZaakRequestBuilder
 import com.ritense.openzaak.service.impl.model.ResultWrapper

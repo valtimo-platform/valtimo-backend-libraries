@@ -16,7 +16,7 @@
 
 package com.ritense.contactmoment.web.rest.impl
 
-import com.nhaarman.mockitokotlin2.verify
+import org.mockito.kotlin.verify
 import com.ritense.contactmoment.domain.request.SendMessageRequest
 import com.ritense.contactmoment.service.KlantcontactService
 import java.util.UUID

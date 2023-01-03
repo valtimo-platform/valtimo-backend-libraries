@@ -16,7 +16,7 @@
 
 package com.ritense.contactmoment
 
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.whenever
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.connector.domain.ConnectorInstanceId

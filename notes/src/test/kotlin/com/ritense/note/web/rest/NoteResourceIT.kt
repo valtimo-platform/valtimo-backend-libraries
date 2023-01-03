@@ -18,7 +18,7 @@ package com.ritense.note.web.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.JsonPath
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.whenever
 import com.ritense.audit.service.AuditService
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.Mapper

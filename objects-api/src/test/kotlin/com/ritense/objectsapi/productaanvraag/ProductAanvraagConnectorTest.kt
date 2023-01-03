@@ -17,7 +17,7 @@
 package com.ritense.objectsapi.productaanvraag
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.whenever
 import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.connector.domain.ConnectorInstanceId
 import com.ritense.connector.domain.ConnectorProperties

@@ -16,8 +16,8 @@
 
 package com.ritense.catalogiapi.web.rest
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.objectenapi.service.CatalogiService
 import com.ritense.objectenapi.web.rest.CatalogiResource

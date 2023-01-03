@@ -19,9 +19,6 @@ package com.ritense.formlink.domain.impl.submission
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchema
 import com.ritense.document.domain.impl.JsonSchemaDocument
@@ -46,6 +43,9 @@ import org.mockito.MockitoAnnotations
 import org.springframework.context.ApplicationEventPublisher
 import java.net.URI
 import java.util.Optional
+import org.mockito.kotlin.any
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
 
 class FormIoSubmissionTest : BaseTest() {
 
@@ -121,7 +121,7 @@ class FormIoSubmissionTest : BaseTest() {
 
         val result = formIoSubmission.apply()
 
-        verifyZeroInteractions(applicationEventPublisher)
+        verifyNoInteractions(applicationEventPublisher)
 
         assertThat(result is FormSubmissionResultSucceeded)
     }
@@ -143,7 +143,7 @@ class FormIoSubmissionTest : BaseTest() {
 
         val result = formIoSubmission.apply()
 
-        verifyZeroInteractions(applicationEventPublisher)
+        verifyNoInteractions(applicationEventPublisher)
 
         assertThat(result is FormSubmissionResultSucceeded)
     }

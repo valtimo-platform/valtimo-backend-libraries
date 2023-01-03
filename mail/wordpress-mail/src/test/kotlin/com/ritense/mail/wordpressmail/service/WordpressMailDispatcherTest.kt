@@ -16,8 +16,8 @@
 
 package com.ritense.mail.wordpressmail.service
 
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.times
+import org.mockito.kotlin.whenever
 import com.ritense.connector.service.ConnectorService
 import com.ritense.mail.wordpressmail.BaseTest
 import com.ritense.mail.wordpressmail.connector.WordpressMailConnector

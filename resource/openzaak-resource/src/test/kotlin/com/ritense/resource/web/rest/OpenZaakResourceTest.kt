@@ -16,7 +16,7 @@
 
 package com.ritense.resource.web.rest
 
-import com.nhaarman.mockitokotlin2.verify
+import org.mockito.kotlin.verify
 import com.ritense.resource.service.ResourceService
 import com.ritense.resource.web.ObjectContentDTO
 import com.ritense.resource.web.ObjectUrlDTO

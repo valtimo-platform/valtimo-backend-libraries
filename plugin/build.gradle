@@ -36,7 +36,7 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation 'org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.16.0'
 

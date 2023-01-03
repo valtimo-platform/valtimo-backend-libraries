@@ -16,8 +16,8 @@
 
 package com.ritense.plugin
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.extension.mockito.service.RuntimeServiceFluentMock
 import org.springframework.boot.autoconfigure.SpringBootApplication

@@ -77,7 +77,7 @@ dependencies {
     testImplementation "org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.13.0"
 
     //Kotlin
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
     testImplementation "org.mockito:mockito-inline"
 
     testImplementation project(':plugin')

@@ -1,6 +1,6 @@
 package com.ritense.smartdocuments.client
 
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.mock
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
