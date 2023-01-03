@@ -367,7 +367,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                 )
         ).andExpect(status().isOk)
         val columns = caseDefinitionListColumnRepository
-            .findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(caseDefinitionName)
+            .findByIdCaseDefinitionNameOrderByOrderAsc(caseDefinitionName)
         assertEquals("last-name", columns[0].id.key)
         assertEquals(ColumnDefaultSort.DESC, columns[0].defaultSort)
         assertEquals("first-name", columns[1].id.key)
