@@ -107,7 +107,7 @@ class CaseDefinitionService(
         }
         return CaseListColumnMapper
             .toDtoList(
-                caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+                caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
                     caseDefinitionName
                 )
             )
