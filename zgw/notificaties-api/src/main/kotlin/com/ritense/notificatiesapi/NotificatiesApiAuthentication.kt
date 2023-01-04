@@ -16,19 +16,8 @@
 
 package com.ritense.notificatiesapi
 
-import com.ritense.plugin.annotation.Plugin
-import com.ritense.plugin.annotation.PluginProperty
-import java.net.URI
+import com.ritense.plugin.annotation.PluginCategory
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
-@Plugin(
-    key = "notificatiesapi",
-    title = "Notificaties API",
-    description = "Enable interfacing with Notificaties API specification compliant APIs"
-)
-class NotificatiesApiPlugin {
-    @PluginProperty(key = "url", secret = false)
-    lateinit var url: URI
-
-    @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
-    lateinit var authenticationPluginConfiguration: NotificatiesApiAuthentication
-}
+@PluginCategory("notificaties-api-authentication")
+interface NotificatiesApiAuthentication : ExchangeFilterFunction

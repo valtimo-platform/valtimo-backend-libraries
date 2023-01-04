@@ -15,22 +15,22 @@
  */
 
 dockerCompose {
-    projectName = "notificaties-api"
+    projectName = "notificaties-api-authentication"
     isRequiredBy(integrationTesting)
     isRequiredBy(securityTesting)
     useComposeFiles.addAll("../../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
 }
 
 dependencies {
+    implementation project(':core')
     implementation project(':plugin')
     implementation project(':openzaak')
+    implementation project(':zgw:notificaties-api')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
-    implementation "org.springframework.boot:spring-boot-starter-security"
 
-    testImplementation project(":contract")
-
+    testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
@@ -42,7 +42,7 @@ dependencies {
     jar {
         enabled = true
         manifest {
-            attributes("Implementation-Title": "ZGW Notificaties API plugin spring boot starter")
+            attributes("Implementation-Title": "Notificaties API Authentication plugin spring boot starter")
             attributes("Implementation-Version": projectVersion)
         }
     }
