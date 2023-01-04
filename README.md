@@ -32,3 +32,7 @@ The source files in this repo are licensed to you under the EUPL 1.2. You can do
 For more information check the following links.
 - Website: https://www.valtimo.nl
 - Documentation: https://docs.valtimo.nl
+
+## Getting started
+* Clone `https://github.com/valtimo-platform/valtimo-docker-profiles` and run the compose file for your desired edition
+* Then run the gradle `bootRun` for your desired edition (for the gzac edition this is `app/gzac/application/bootRun`)

@@ -403,7 +403,9 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     private <T> Predicate searchIn(CriteriaBuilder cb, Expression<T> jsonValue, List<T> values) {
-        return cb.literal(jsonValue).in(values);
+        var in = cb.in(jsonValue);
+        values.forEach(in::value);
+        return in;
     }
 
     private <T extends Comparable<? super T>> Predicate searchGreaterThanOrEqualTo(CriteriaBuilder cb, Expression<T> documentValue, T rangeFrom) {

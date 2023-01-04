@@ -25,10 +25,14 @@ import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.web.rest.CaseDefinitionResource
+import com.ritense.case.web.rest.CaseInstanceResource
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.document.service.DocumentSearchService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import com.ritense.valueresolver.ValueResolverService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
@@ -47,6 +51,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EntityScan(basePackages = ["com.ritense.case.domain"])
 class CaseAutoConfiguration {
 
+    @ConditionalOnMissingBean(name = ["caseDefinitionResource"])
     @Bean
     fun caseDefinitionResource(
         service: CaseDefinitionService
@@ -55,12 +60,38 @@ class CaseAutoConfiguration {
     }
 
     @Bean
+    fun caseInstanceResource(
+        service: CaseInstanceService
+    ): CaseInstanceResource {
+        return CaseInstanceResource(service)
+    }
+
+    @Bean
     fun caseDefinitionService(
         repository: CaseDefinitionSettingsRepository,
         caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
-        documentDefinitionService: DocumentDefinitionService
-    ): CaseDefinitionService {
-        return CaseDefinitionService(repository, caseDefinitionListColumnRepository, documentDefinitionService)
+        documentDefinitionService: DocumentDefinitionService,
+        valueResolverService: ValueResolverService,
+        ): CaseDefinitionService {
+        return CaseDefinitionService(
+            repository,
+            caseDefinitionListColumnRepository,
+            documentDefinitionService,
+            valueResolverService
+        )
+    }
+
+    @Bean
+    fun casInstanceService(
+        caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
+        documentSearchService: DocumentSearchService,
+        valueResolverService: ValueResolverService,
+    ): CaseInstanceService {
+        return CaseInstanceService(
+            caseDefinitionListColumnRepository,
+            documentSearchService,
+            valueResolverService,
+        )
     }
 
     @Bean

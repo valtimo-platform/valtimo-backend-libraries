@@ -30,17 +30,27 @@ import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.valueresolver.ValueResolverService
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class CaseDefinitionService(
     private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository,
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
-    private val documentDefinitionService: DocumentDefinitionService
+    private val documentDefinitionService: DocumentDefinitionService,
+    private val valueResolverService: ValueResolverService,
 ) {
     var validators: Map<Operation, CaseDefinitionColumnValidator> = mapOf(
-        Operation.CREATE to CreateColumnValidator(caseDefinitionListColumnRepository, documentDefinitionService),
-        Operation.UPDATE to UpdateColumnValidator(caseDefinitionListColumnRepository, documentDefinitionService)
+        Operation.CREATE to CreateColumnValidator(
+            caseDefinitionListColumnRepository,
+            documentDefinitionService,
+            valueResolverService
+        ),
+        Operation.UPDATE to UpdateColumnValidator(
+            caseDefinitionListColumnRepository,
+            documentDefinitionService,
+            valueResolverService
+        )
     )
 
     @Throws(UnknownDocumentDefinitionException::class)
@@ -97,7 +107,7 @@ class CaseDefinitionService(
         }
         return CaseListColumnMapper
             .toDtoList(
-                caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+                caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
                     caseDefinitionName
                 )
             )

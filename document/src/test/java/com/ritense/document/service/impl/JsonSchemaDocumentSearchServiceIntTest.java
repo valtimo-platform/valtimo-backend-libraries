@@ -48,6 +48,7 @@ import java.util.Set;
 import static com.ritense.document.domain.search.DatabaseSearchType.BETWEEN;
 import static com.ritense.document.domain.search.DatabaseSearchType.EQUAL;
 import static com.ritense.document.domain.search.DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO;
+import static com.ritense.document.domain.search.DatabaseSearchType.IN;
 import static com.ritense.document.domain.search.DatabaseSearchType.LESS_THAN_OR_EQUAL_TO;
 import static com.ritense.document.domain.search.DatabaseSearchType.LIKE;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER;
@@ -980,6 +981,31 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(3);
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = USER)
+    void shouldSearchWithSearchRequestWithIn() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Wallstreet\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
+
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
+                .addValue("Funenpark")
+                .addValue("Czaar Peterstraat")
+                .searchType(IN)
+                .path("doc:street"));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            Pageable.unpaged());
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(2);
     }
 
     @Test
