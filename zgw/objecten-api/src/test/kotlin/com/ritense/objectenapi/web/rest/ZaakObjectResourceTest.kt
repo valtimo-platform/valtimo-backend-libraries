@@ -23,6 +23,7 @@ import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objecttypenapi.client.Objecttype
+import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.valtimo.contract.json.Mapper
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
@@ -45,11 +46,13 @@ internal class ZaakObjectResourceTest {
     lateinit var mockMvc: MockMvc
     lateinit var zaakObjectService: ZaakObjectService
     lateinit var zaakObjectResource: ZaakObjectResource
+    lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
 
     @BeforeEach
     fun init() {
         zaakObjectService = mock()
-        zaakObjectResource = ZaakObjectResource(zaakObjectService)
+        zaakInstanceLinkService = mock()
+        zaakObjectResource = ZaakObjectResource(zaakObjectService, zaakInstanceLinkService)
 
         mockMvc = MockMvcBuilders
             .standaloneSetup(zaakObjectResource)
@@ -186,4 +189,8 @@ internal class ZaakObjectResourceTest {
         converter.objectMapper = Mapper.INSTANCE.get()
         return converter
     }
+
+    // 1 example for the happy flow
+    // 2. throw the exception
+
 }
