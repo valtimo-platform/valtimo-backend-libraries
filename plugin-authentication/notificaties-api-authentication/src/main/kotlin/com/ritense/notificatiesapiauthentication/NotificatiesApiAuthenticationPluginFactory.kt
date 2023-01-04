@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.notificatiesapi
+import com.ritense.notificatiesapiauthentication.NotificatiesApiAuthenticationPlugin
+import com.ritense.openzaak.service.TokenGeneratorService
+import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.service.PluginService
 
-import com.ritense.plugin.annotation.Plugin
-import com.ritense.plugin.annotation.PluginProperty
-import java.net.URI
+class NotificatiesApiAuthenticationPluginFactory(
+    pluginService: PluginService,
+    val tokenGeneratorService: TokenGeneratorService
+) : PluginFactory<NotificatiesApiAuthenticationPlugin>(pluginService) {
 
-@Plugin(
-    key = "notificatiesapi",
-    title = "Notificaties API",
-    description = "Enable interfacing with Notificaties API specification compliant APIs"
-)
-class NotificatiesApiPlugin {
-    @PluginProperty(key = "url", secret = false)
-    lateinit var url: URI
-
-    @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
-    lateinit var authenticationPluginConfiguration: NotificatiesApiAuthentication
+    override fun create(): NotificatiesApiAuthenticationPlugin {
+        return NotificatiesApiAuthenticationPlugin(tokenGeneratorService)
+    }
 }
