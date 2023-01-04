@@ -40,7 +40,7 @@ class UpdateColumnValidator(
     override fun validate(caseDefinitionName: String, caseListColumnDtoList: List<CaseListColumnDto>) {
         existsDocumentDefinition(caseDefinitionName)
         val columns =
-            caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(caseDefinitionName)
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(caseDefinitionName)
         val defaultSortColumns =
             caseListColumnDtoList.filter { caseListColumnDto -> caseListColumnDto.defaultSort != null }
         if (defaultSortColumns.size > 1) {
