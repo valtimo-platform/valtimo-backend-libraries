@@ -24,8 +24,12 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
 import com.ritense.case.domain.CaseListColumn
+import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.document.domain.Document
 import com.ritense.valueresolver.ValueResolverService
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.zalando.problem.Status
 
 @Transactional
 class CaseInstanceService(
@@ -39,12 +43,27 @@ class CaseInstanceService(
         pageable: Pageable
     ): Page<CaseListRowDto> {
 
-        val caseListColumns = caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAscSortableAsc(
+        val caseListColumns = caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
             caseDefinitionName
         )
+        val newPageable = mutatePageable(caseListColumns, pageable)
 
-        return documentSearchService.search(caseDefinitionName, searchRequest, pageable)
+        return documentSearchService.search(caseDefinitionName, searchRequest, newPageable)
             .map { document -> toCaseListRowDto(document, caseListColumns) }
+    }
+
+    private fun mutatePageable(caseListColumns: Collection<CaseListColumn>, pageable: Pageable): PageRequest {
+        val newSortOrders = pageable.sort.map { sortOrder ->
+            val caseListColumn = caseListColumns.find { caseListColumn -> caseListColumn.id.key == sortOrder.property }
+                ?: throw InvalidListColumnException(
+                    "Trying to sort on unknown list column '${sortOrder.property}'",
+                    Status.BAD_REQUEST
+                )
+
+            Sort.Order(sortOrder.direction, caseListColumn.path, sortOrder.nullHandling)
+        }
+        val newSort = Sort.by(newSortOrders.toMutableList())
+        return PageRequest.of(pageable.pageNumber, pageable.pageSize, newSort)
     }
 
     private fun toCaseListRowDto(document: Document, caseListColumns: List<CaseListColumn>): CaseListRowDto {
