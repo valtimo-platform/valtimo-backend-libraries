@@ -16,6 +16,7 @@
 
 package com.ritense.objectenapi.web.rest
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import com.ritense.form.domain.FormIoFormDefinition
@@ -23,6 +24,8 @@ import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objecttypenapi.client.Objecttype
+import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
+import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
 import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.valtimo.contract.json.Mapper
 import org.hamcrest.Matchers
@@ -33,6 +36,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -190,7 +194,78 @@ internal class ZaakObjectResourceTest {
         return converter
     }
 
-    // 1 example for the happy flow
-    // 2. throw the exception
+    @Test
+    fun `should return ZaakInstaceLink for given zaakInstanceUrl`() {
+        // given:
+        val url = URI("http://localhost:8001/zaken/api/v1/zaken/df64a38e-566a-409d-8275-9207f70f79e7")
 
+        val result = ZaakInstanceLink(
+            zaakInstanceLinkId = ZaakInstanceLinkId(
+                id = UUID.randomUUID()
+            ),
+            zaakInstanceUrl = url,
+            zaakInstanceId = UUID.randomUUID(),
+            documentId = UUID.randomUUID(),
+            zaakTypeUrl = URI("http://example.com"),
+        )
+
+        //when:
+        whenever(zaakInstanceLinkService.getByZaakInstanceUrl(url)).thenReturn(
+            result
+        )
+
+        //then:
+        mockMvc.perform(
+            get("/api/v1/zaakinstancelink/zaak?zaakInstanceUrl=$url")
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(
+                MockMvcResultMatchers.content().json(
+                    jacksonObjectMapper().writeValueAsString(result)
+                )
+            )
+    }
+
+    @Test
+    fun `should return ZaakInstaceLink for given documentId`() {
+        // given:
+        val docId = UUID.randomUUID()
+
+        val result = ZaakInstanceLink(
+            zaakInstanceLinkId = ZaakInstanceLinkId(
+                id = UUID.randomUUID()
+            ),
+            zaakInstanceUrl = URI("http://example.com"),
+            zaakInstanceId = UUID.randomUUID(),
+            documentId = docId,
+            zaakTypeUrl = URI("http://example.com"),
+        )
+
+        //when:
+        whenever(zaakInstanceLinkService.getByDocumentId(docId)).thenReturn(
+            result
+        )
+
+        //then:
+        mockMvc.perform(
+            get("/api/v1/zaakinstancelink/document?documentId=$docId")
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(
+                MockMvcResultMatchers.content().json(
+                    jacksonObjectMapper().writeValueAsString(result)
+                )
+            )
+
+    }
 }
