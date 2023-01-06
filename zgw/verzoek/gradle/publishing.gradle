@@ -19,8 +19,8 @@ pluginManager.withPlugin('maven-publish') {
         publications {
             maven(MavenPublication) {
                 pom {
-                    name = 'Notificaties API module'
-                    description = 'The Notificaties API module contains the plugin to connect to the Notificaties API'
+                    name = 'Verzoek module'
+                    description = 'The Verzoek module contains the plugin to handle verzoeken'
                     developers {
                         developer {
                             id = "team-valtimo"
