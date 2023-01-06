@@ -52,14 +52,6 @@ public final class JsonSchema {
         .readWriteContext(ReadWriteContext.WRITE)
         .build();
 
-    @Transient
-    private static final transient SchemaLoader.SchemaLoaderBuilder SCHEMA_LOADER_BUILDER = SchemaLoader.builder()
-        .schemaClient(SchemaClient.classPathAwareClient())
-        .resolutionScope(DEFAULT_REFERENCE_PATH_LOCATION)
-        .useDefaults(true)
-        .draftV7Support()
-        .addFormatValidator(new UuidValidator());
-
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "json_schema", columnDefinition = "json")
     private String schema;
@@ -110,7 +102,7 @@ public final class JsonSchema {
 
     @JsonIgnore
     public Schema getSchema() {
-        final SchemaLoader schemaLoader = SCHEMA_LOADER_BUILDER
+        final SchemaLoader schemaLoader = getSchemaLoaderBuilder()
             .schemaJson(new JSONObject(new JSONTokener(schema)))
             .build();
         return schemaLoader.load().build();
@@ -131,6 +123,16 @@ public final class JsonSchema {
     @Override
     public int hashCode() {
         return Objects.hash(getSchema());
+    }
+
+    @Transient
+    private static SchemaLoader.SchemaLoaderBuilder getSchemaLoaderBuilder() {
+        return SchemaLoader.builder()
+            .schemaClient(SchemaClient.classPathAwareClient())
+            .resolutionScope(DEFAULT_REFERENCE_PATH_LOCATION)
+            .useDefaults(true)
+            .draftV7Support()
+            .addFormatValidator(new UuidValidator());
     }
 
 }
