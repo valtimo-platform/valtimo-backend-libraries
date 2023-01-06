@@ -33,7 +33,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-web"
 
-    implementation 'io.github.microutils:kotlin-logging:2.1.23'
+    implementation 'io.github.microutils:kotlin-logging'
 
     testImplementation project(':resource')
     testImplementation project(':test-utils-common')

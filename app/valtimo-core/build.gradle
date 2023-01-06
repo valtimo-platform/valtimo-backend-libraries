@@ -38,9 +38,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation "io.github.microutils:kotlin-logging"
 
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.7'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.8'
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
@@ -54,11 +54,11 @@ dependencies {
     implementation "mysql:mysql-connector-java"
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.1'
 
-    implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.8.0'
-    implementation 'org.springframework.cloud:spring-cloud-function-context:3.2.6'
-    implementation "org.yaml:snakeyaml:1.33"
-    implementation "io.netty:netty-codec:4.1.86.Final"
-    implementation 'org.mybatis:mybatis:3.5.11'
+    implementation "org.liquibase:liquibase-core"
+    implementation "org.springframework.cloud:spring-cloud-function-context"
+    implementation "org.yaml:snakeyaml"
+    implementation "io.netty:netty-codec"
+    implementation 'org.mybatis:mybatis'
 
 }
 

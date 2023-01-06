@@ -37,7 +37,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation 'io.github.microutils:kotlin-logging'
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
@@ -45,12 +45,12 @@ dependencies {
 
     implementation "org.springframework:spring-tx"
     implementation group: 'io.swagger.core.v3', name: 'swagger-jaxrs2', version: '2.1.1'
-    api group: 'com.google.guava', name: 'guava', version: '28.2-jre'
+    api group: 'com.google.guava', name: 'guava', version: '31.1-jre'
 
     implementation("io.springfox:springfox-swagger2:2.9.2") {
         exclude module: 'mapstruct'
     }
-    api "org.zalando:problem-spring-web:0.25.2"
+    api 'org.zalando:problem-spring-web:0.27.0'
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 

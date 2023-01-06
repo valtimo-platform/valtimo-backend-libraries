@@ -41,7 +41,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation "io.github.microutils:kotlin-logging"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
@@ -54,7 +54,7 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation "org.testcontainers:jdbc"
-    testImplementation group: 'org.liquibase', name: 'liquibase-core', version: '4.8.0'
+    testImplementation "org.liquibase:liquibase-core"
     testImplementation group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.3.3'
     testImplementation group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
 

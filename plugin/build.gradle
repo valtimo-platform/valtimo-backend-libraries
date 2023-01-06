@@ -32,7 +32,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
 
     implementation "io.github.classgraph:classgraph:4.8.147"
-    implementation 'io.github.microutils:kotlin-logging:2.1.23'
+    implementation 'io.github.microutils:kotlin-logging'
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"

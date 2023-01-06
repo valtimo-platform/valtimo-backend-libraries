@@ -27,7 +27,7 @@ dependencies {
     implementation project(':plugin')
     implementation project(':zgw')
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation "io.github.microutils:kotlin-logging"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
