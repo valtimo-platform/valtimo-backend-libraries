@@ -43,3 +43,4 @@ services:
 #   url: jdbc:postgresql://localhost:3333/object-manegement-test
 #   url: jdbc:postgresql://localhost:3334/notificaties-api-test
 #   url: jdbc:postgresql://localhost:3335/notificaties-api-authentication-test
+#   url: jdbc:postgresql://localhost:3336/verzoek-test
