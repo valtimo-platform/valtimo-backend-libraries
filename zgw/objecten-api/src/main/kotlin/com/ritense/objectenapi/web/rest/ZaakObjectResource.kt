@@ -20,7 +20,7 @@ import com.ritense.form.domain.FormDefinition
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.web.rest.result.ObjectDto
 import com.ritense.objectenapi.web.rest.result.ObjecttypeDto
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
+import com.ritense.objectenapi.web.rest.result.ZaakInstanceLinkDTO
 import com.ritense.openzaak.service.ZaakInstanceLinkService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -69,17 +69,23 @@ class ZaakObjectResource(
     @GetMapping(value = ["/v1/zaakinstancelink/zaak"])
     fun getZaakInstanceLink(
         @RequestParam(name = "zaakInstanceUrl") zaakInstanceUrl: URI
-    ): ResponseEntity<ZaakInstanceLink>{
+    ): ResponseEntity<ZaakInstanceLinkDTO>{
         val entity = zaakInstanceLinkService.getByZaakInstanceUrl(zaakInstanceUrl)
-        return  ResponseEntity.ok(entity)
+        return  ResponseEntity.ok(ZaakInstanceLinkDTO(
+            zaakInstanceUrl = entity.zaakInstanceUrl,
+            documentId = entity.documentId)
+        )
     }
 
     @GetMapping(value = ["/v1/zaakinstancelink/document"])
     fun getZaakInstanceLink(
         @RequestParam(name = "documentId") documentId: UUID
-    ): ResponseEntity<ZaakInstanceLink>{
+    ): ResponseEntity<ZaakInstanceLinkDTO>{
         val entity = zaakInstanceLinkService.getByDocumentId(documentId)
-        return  ResponseEntity.ok(entity)
+        return  ResponseEntity.ok(ZaakInstanceLinkDTO(
+            zaakInstanceUrl = entity.zaakInstanceUrl,
+            documentId = entity.documentId)
+        )
     }
 
 }

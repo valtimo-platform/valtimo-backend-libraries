@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.exception
+package com.ritense.objectenapi.web.rest.result
 
-class ZaakInstanceNotFoundException(message: String, cause: Throwable) : RuntimeException(message)
+import java.net.URI
+import java.util.UUID
+
+class ZaakInstanceLinkDTO(
+    val zaakInstanceUrl: URI,
+    val documentId: UUID
+)
