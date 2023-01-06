@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.repository
+package com.ritense.valtimo
 
-import com.ritense.plugin.domain.PluginProcessLink
-import com.ritense.plugin.domain.PluginProcessLinkId
-import org.springframework.data.jpa.repository.JpaRepository
+import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.service.PluginService
 
-interface PluginProcessLinkRepository: JpaRepository<PluginProcessLink, PluginProcessLinkId> {
-    fun findByProcessDefinitionId(processDefinitionId: String): List<PluginProcessLink>
-    fun findByProcessDefinitionIdAndActivityId(processDefinitionId: String, activityId: String): List<PluginProcessLink>
+class TestPluginFactory(
+    pluginService: PluginService
+) : PluginFactory<TestPlugin>(pluginService) {
+    override fun create(): TestPlugin {
+        return TestPlugin()
+    }
 }
