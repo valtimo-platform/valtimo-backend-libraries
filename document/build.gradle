@@ -52,7 +52,7 @@ dependencies {
 
     implementation "org.hibernate:hibernate-core"
 
-    implementation "org.apache.commons:commons-lang3:3.8.1"
+    implementation "org.apaimplementation \"org.liquibase.ext:liquibase-hibernate5\"che.commons:commons-lang3:3.8.1"
 
     implementation "com.fasterxml.jackson.core:jackson-annotations"
     implementation "com.fasterxml.jackson.module:jackson-module-afterburner"

@@ -81,6 +81,7 @@ allprojects {
             dependency "org.springframework.cloud:spring-cloud-function-context:3.2.6"
             dependency "org.springframework.cloud:spring-cloud-starter-stream-rabbit:3.2.6"
             dependency "org.springframework.cloud:spring-cloud-starter-stream-rabbit:3.2.6"
+            dependency "org.liquibase.ext:liquibase-hibernate5:4.8.0"
         }
     }
 
