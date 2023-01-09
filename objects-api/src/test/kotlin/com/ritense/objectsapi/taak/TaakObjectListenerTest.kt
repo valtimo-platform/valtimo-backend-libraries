@@ -1,10 +1,5 @@
 package com.ritense.objectsapi.taak
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.ritense.connector.domain.Connector
 import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.domain.GenericObject
@@ -21,10 +16,15 @@ import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
+import java.util.UUID
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.UUID
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 internal class TaakObjectListenerTest {
 

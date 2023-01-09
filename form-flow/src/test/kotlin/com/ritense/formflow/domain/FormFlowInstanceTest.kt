@@ -16,8 +16,6 @@
 
 package com.ritense.formflow.domain
 
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import com.ritense.formflow.BaseTest
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
@@ -40,6 +38,8 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationContext
 
 internal class FormFlowInstanceTest : BaseTest() {

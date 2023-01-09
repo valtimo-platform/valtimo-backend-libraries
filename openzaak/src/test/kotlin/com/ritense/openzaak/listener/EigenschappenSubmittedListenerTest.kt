@@ -16,9 +16,6 @@
 
 package com.ritense.openzaak.listener
 
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.service.impl.EigenschapService
@@ -29,13 +26,16 @@ import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.EigenschapType
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.form.ExternalFormFieldType
+import java.net.URI
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import java.net.URI
-import java.util.UUID
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 internal class EigenschappenSubmittedListenerTest {
 

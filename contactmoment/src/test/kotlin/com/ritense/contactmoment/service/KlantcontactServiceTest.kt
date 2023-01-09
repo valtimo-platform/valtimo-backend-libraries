@@ -16,13 +16,6 @@
 
 package com.ritense.contactmoment.service
 
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import com.ritense.connector.service.ConnectorService
-import com.ritense.contactmoment.connector.ContactMomentConnector
-import com.ritense.contactmoment.domain.Kanaal
 import com.ritense.contactmoment.domain.request.SendMessageRequest
 import com.ritense.klant.domain.Klant
 import com.ritense.klant.service.KlantService
@@ -36,6 +29,10 @@ import org.hamcrest.Matchers.hasEntry
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 internal class KlantcontactServiceTest {
 

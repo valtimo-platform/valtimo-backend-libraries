@@ -16,18 +16,18 @@
 
 package com.ritense.catalogiapi.service
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.objectenapi.service.CatalogiService
 import com.ritense.plugin.service.PluginService
+import java.net.URI
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import java.net.URI
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 internal class CatalogiServiceTest {
 

@@ -16,13 +16,13 @@
 
 package com.ritense.resource.service
 
+import com.ritense.resource.domain.OpenZaakResource
+import java.net.URI
+import kotlin.test.assertEquals
+import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import com.ritense.resource.domain.OpenZaakResource
-import org.junit.jupiter.api.Test
-import java.net.URI
-import kotlin.test.assertEquals
 
 internal class OpenZaakResourceProviderTest {
 

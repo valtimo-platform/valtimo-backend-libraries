@@ -16,20 +16,20 @@
 
 package com.ritense.openzaak.web.rest.impl
 
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.whenever
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.util.UUID
 
 internal class InformatieObjectTypeResourceTest {
 

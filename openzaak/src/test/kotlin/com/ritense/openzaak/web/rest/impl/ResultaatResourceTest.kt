@@ -16,15 +16,17 @@
 
 package com.ritense.openzaak.web.rest.impl
 
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.whenever
 import com.ritense.openzaak.BaseTest
 import com.ritense.openzaak.service.impl.ZaakResultaatService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.ResultaatType
+import java.net.URI
+import java.nio.charset.StandardCharsets
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.test.web.servlet.MockMvc
@@ -32,8 +34,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.net.URI
-import java.nio.charset.StandardCharsets
 
 class ResultaatResourceTest : BaseTest() {
 

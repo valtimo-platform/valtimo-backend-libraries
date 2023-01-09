@@ -16,11 +16,6 @@
 
 package com.ritense.documentenapi
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.DOCUMENT_URL_PROCESS_VAR
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.RESOURCE_ID_PROCESS_VAR
 import com.ritense.documentenapi.client.ConfidentialityLevel
@@ -30,9 +25,6 @@ import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.resource.service.TemporaryResourceStorageService
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.junit.jupiter.api.Test
-import org.springframework.context.ApplicationEventPublisher
 import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
@@ -40,6 +32,14 @@ import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.springframework.context.ApplicationEventPublisher
 
 internal class DocumentenApiPluginTest {
 

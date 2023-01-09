@@ -27,15 +27,15 @@ import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
+import java.net.URI
+import java.util.UUID
+import javax.validation.ConstraintViolationException
 import org.assertj.core.api.Assertions.assertThat
+import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.MockitoAnnotations
-import java.net.URI
-import java.util.UUID
-import javax.validation.ConstraintViolationException
-import org.camunda.community.mockito.delegate.DelegateExecutionFake
 
 class ZaakTypeLinkTest {
 

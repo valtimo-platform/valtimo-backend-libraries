@@ -21,16 +21,16 @@ import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.Recipient
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty
+import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 
 internal class MailServiceTest {
 

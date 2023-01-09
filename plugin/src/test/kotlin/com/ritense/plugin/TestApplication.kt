@@ -16,10 +16,10 @@
 
 package com.ritense.plugin
 
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.community.mockito.service.RuntimeServiceFluentMock
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration

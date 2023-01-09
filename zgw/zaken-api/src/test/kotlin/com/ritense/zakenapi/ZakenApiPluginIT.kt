@@ -1,11 +1,6 @@
 package com.ritense.zakenapi
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doCallRealMethod
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.domain.PluginConfiguration
@@ -20,6 +15,12 @@ import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.resource.domain.ResourceId
 import com.ritense.resource.repository.OpenZaakResourceRepository
 import com.ritense.valtimo.contract.json.Mapper
+import java.net.URI
+import java.time.LocalDateTime
+import java.util.Optional
+import java.util.UUID
+import javax.transaction.Transactional
+import kotlin.test.assertEquals
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -29,17 +30,16 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doCallRealMethod
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
-import java.net.URI
-import java.time.LocalDateTime
-import java.util.Optional
-import java.util.UUID
-import javax.transaction.Transactional
-import kotlin.test.assertEquals
 
 @Transactional
 class ZakenApiPluginIT : BaseIntegrationTest() {

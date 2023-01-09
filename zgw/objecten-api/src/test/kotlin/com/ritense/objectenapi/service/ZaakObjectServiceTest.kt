@@ -16,11 +16,6 @@
 
 package com.ritense.objectenapi.service
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.ObjectenApiPlugin
@@ -35,8 +30,6 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.ZaakObject
-import org.junit.jupiter.api.Assertions.assertThrows
-import org.junit.jupiter.api.Test
 import java.net.URI
 import java.util.Optional
 import java.util.UUID
@@ -44,6 +37,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 internal class ZaakObjectServiceTest {
 

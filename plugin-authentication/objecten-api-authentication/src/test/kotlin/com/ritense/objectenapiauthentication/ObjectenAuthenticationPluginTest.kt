@@ -16,19 +16,19 @@
 
 package com.ritense.objectenapiauthentication
 
+import java.net.URI
+import kotlin.test.assertEquals
+import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.junit.jupiter.api.Test
 import org.springframework.http.HttpMethod
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
-import java.net.URI
-import kotlin.test.assertEquals
 
 internal class ObjectenAuthenticationPluginTest {
     @Test

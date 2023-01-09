@@ -16,10 +16,6 @@
 
 package com.ritense.smartdocuments.service
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
@@ -29,14 +25,18 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.smartdocuments.BaseSmartDocumentsIntegrationTest
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.valtimo.contract.resource.Resource
+import java.time.LocalDateTime
+import java.util.UUID
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDateTime
-import java.util.UUID
 
 @AutoConfigureWebTestClient(timeout = "36000")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

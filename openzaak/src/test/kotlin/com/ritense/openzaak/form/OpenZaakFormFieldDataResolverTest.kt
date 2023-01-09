@@ -16,7 +16,6 @@
 
 package com.ritense.openzaak.form
 
-import org.mockito.kotlin.whenever
 import com.ritense.openzaak.BaseTest
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
@@ -28,17 +27,18 @@ import com.ritense.openzaak.service.impl.model.zaak.Eigenschap
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
 import com.ritense.valtimo.contract.form.DataResolvingContext
 import com.ritense.valtimo.contract.json.Mapper
+import java.net.URI
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers
+import org.mockito.kotlin.whenever
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import java.net.URI
-import java.util.UUID
 
 internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
 

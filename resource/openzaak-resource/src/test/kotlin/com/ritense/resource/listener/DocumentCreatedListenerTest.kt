@@ -16,16 +16,16 @@
 
 package com.ritense.resource.listener
 
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
 import com.ritense.resource.service.OpenZaakService
-import org.junit.jupiter.api.Test
 import java.net.URI
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.Test
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 
 internal class DocumentCreatedListenerTest {
 

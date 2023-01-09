@@ -1,11 +1,5 @@
 package com.ritense.zakenapi
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -16,11 +10,17 @@ import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zgw.Page
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.junit.jupiter.api.Test
 import java.net.URI
 import java.util.UUID
 import kotlin.test.assertEquals
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 internal class ZakenApiPluginTest {
 

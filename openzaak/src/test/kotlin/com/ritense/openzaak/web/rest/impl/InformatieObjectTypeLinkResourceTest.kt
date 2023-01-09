@@ -16,8 +16,6 @@
 
 package com.ritense.openzaak.web.rest.impl
 
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.whenever
 import com.ritense.openzaak.domain.mapping.impl.InformatieObjectTypeLink
 import com.ritense.openzaak.domain.mapping.impl.InformatieObjectTypeLinkId
 import com.ritense.openzaak.service.impl.InformatieObjectTypeLinkService
@@ -26,9 +24,14 @@ import com.ritense.openzaak.service.impl.result.CreateInformatieObjectTypeLinkRe
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.result.OperationError
+import java.net.URI
+import java.nio.charset.StandardCharsets
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -36,9 +39,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.net.URI
-import java.nio.charset.StandardCharsets
-import java.util.UUID
 
 internal class InformatieObjectTypeLinkResourceTest {
 

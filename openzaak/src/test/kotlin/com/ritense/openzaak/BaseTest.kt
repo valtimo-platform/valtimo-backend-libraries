@@ -16,8 +16,6 @@
 
 package com.ritense.openzaak
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.whenever
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchema
 import com.ritense.document.domain.impl.JsonSchemaDocument
@@ -32,13 +30,15 @@ import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
+import java.net.URI
+import java.util.Optional
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestTemplate
-import java.net.URI
-import java.util.Optional
 
 abstract class BaseTest {
 

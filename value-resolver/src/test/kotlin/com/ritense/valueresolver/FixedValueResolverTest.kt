@@ -16,7 +16,6 @@
 
 package com.ritense.valueresolver
 
-import java.io.InvalidClassException
 import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.community.mockito.delegate.DelegateTaskFake

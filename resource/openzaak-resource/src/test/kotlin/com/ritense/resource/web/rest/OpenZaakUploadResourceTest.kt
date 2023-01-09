@@ -16,7 +16,6 @@
 
 package com.ritense.resource.web.rest
 
-import org.mockito.kotlin.verify
 import com.ritense.resource.domain.ResourceId
 import com.ritense.resource.service.ResourceService
 import java.net.URI
@@ -25,9 +24,10 @@ import java.util.UUID
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
+import org.mockito.kotlin.verify
 import org.springframework.http.HttpStatus
 import org.springframework.web.multipart.MultipartFile
 

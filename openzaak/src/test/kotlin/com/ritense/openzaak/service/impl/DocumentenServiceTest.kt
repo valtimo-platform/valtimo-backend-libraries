@@ -1,24 +1,24 @@
 package com.ritense.openzaak.service.impl
 
-import org.mockito.kotlin.verify
 import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.openzaak.domain.connector.OpenZaakConfig
+import java.net.URI
+import java.util.Arrays
+import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
+import org.mockito.kotlin.verify
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
-import java.net.URI
-import java.util.Arrays
-import java.util.UUID
 
 internal class DocumentenServiceTest {
 

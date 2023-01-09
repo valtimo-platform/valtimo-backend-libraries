@@ -16,8 +16,6 @@
 
 package com.ritense.openzaak.service
 
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.whenever
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
@@ -29,14 +27,16 @@ import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService
+import java.net.URI
+import java.util.Optional
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import java.net.URI
-import java.util.Optional
-import java.util.UUID
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
 
 class ZaakTypeLinkServiceTest {
 

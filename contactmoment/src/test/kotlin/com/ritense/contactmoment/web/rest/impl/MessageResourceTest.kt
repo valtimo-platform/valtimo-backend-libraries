@@ -16,12 +16,12 @@
 
 package com.ritense.contactmoment.web.rest.impl
 
-import org.mockito.kotlin.verify
 import com.ritense.contactmoment.domain.request.SendMessageRequest
 import com.ritense.contactmoment.service.KlantcontactService
 import java.util.UUID
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.verify
 
 internal class MessageResourceTest {
 
