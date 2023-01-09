@@ -22,8 +22,10 @@ import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
 import java.net.URI
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 import java.util.UUID
 
+@Repository
 interface ZaakInstanceLinkRepository : JpaRepository<ZaakInstanceLink, ZaakInstanceLinkId> {
 
     fun findByDocumentId(documentId: UUID): ZaakInstanceLink?
