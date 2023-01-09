@@ -31,6 +31,7 @@ dependencies {
     implementation(project(":zgw:object-management"))
     implementation(project(":zgw:objecten-api"))
     implementation(project(":zgw:objecttypen-api"))
+    implementation(project(":zgw:verzoek"))
     implementation(project(":zgw:zaken-api"))
 
     api "org.springframework.security:spring-security-core"
