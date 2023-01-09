@@ -24,6 +24,8 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.boot.test.mock.mockito.SpyBean
+import org.springframework.core.io.support.ResourcePatternResolver
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
@@ -39,5 +41,9 @@ class BaseIntegrationTest {
 
     @MockBean
     lateinit var mailSender: MailSender
+
+    @SpyBean
+    lateinit var resourcePatternResolver: ResourcePatternResolver
+
 }
 
