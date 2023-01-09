@@ -28,17 +28,19 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-validation"
 
-    implementation "org.liquibase.ext:liquibase-hibernate5"
-    implementation "com.vladmihalcea:hibernate-types-52:2.14.0"
+    implementation ("org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}") {
+        exclude group: 'com.h2database', module: 'h2'
+    }
+    implementation "com.vladmihalcea:hibernate-types-52:${hibernateTypesVersion}"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
-    implementation "io.github.microutils:kotlin-logging:2.1.21"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
-    implementation "com.github.erosb:everit-json-schema:1.14.0"
+    implementation "com.github.erosb:everit-json-schema:${everitJsonSchemaVersion}"
     implementation "org.springframework:spring-expression"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "mysql:mysql-connector-java"
-    testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {
         enabled = true

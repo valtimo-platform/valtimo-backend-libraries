@@ -66,23 +66,13 @@ allprojects {
 
     dependencyManagement {
         imports {
-            mavenBom "software.amazon.awssdk:bom:2.15.82"
+            mavenBom "software.amazon.awssdk:bom:${awsSdkVersion}"
             mavenBom "org.testcontainers:testcontainers-bom:1.15.1"
-            mavenBom "com.fasterxml.jackson:jackson-bom:2.13.4.20221013"
-            mavenBom "org.junit:junit-bom:5.7.2"
-            mavenBom "io.netty:netty-bom:4.1.86.Final"
+            mavenBom "com.fasterxml.jackson:jackson-bom:${jacksonVersion}"
+            mavenBom "org.junit:junit-bom:${junitVersion}"
         }
         dependencies {
-            dependency "org.yaml:snakeyaml:1.33"
-            dependency "org.mybatis:mybatis:3.5.11"
-            dependency "io.github.microutils:kotlin-logging:3.0.4"
-            dependency "org.json:json:20201115"
-            dependency "org.liquibase:liquibase-core:4.8.0"
-            dependency "org.springframework.cloud:spring-cloud-function-context:3.2.6"
-            dependency "org.springframework.cloud:spring-cloud-starter-stream-rabbit:3.2.6"
-            dependency "org.springframework.cloud:spring-cloud-starter-stream-rabbit:3.2.6"
-            dependency "org.liquibase.ext:liquibase-hibernate5:4.8.0"
-            dependency "org.postgresql:postgresql:42.5.1"
+            dependency "org.yaml:snakeyaml:${snakeYamlVersion}"
         }
     }
 

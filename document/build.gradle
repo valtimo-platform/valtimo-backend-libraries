@@ -28,7 +28,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:1"
+    api "javax.inject:javax.inject:${javaxInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -44,26 +44,28 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
-    implementation "org.liquibase:liquibase-core"
-    implementation "org.liquibase.ext:liquibase-hibernate5"
-    implementation group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+    implementation ("org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}") {
+        exclude group: 'com.h2database', module: 'h2'
+    }
+    implementation "com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}"
 
-    implementation group: 'com.vladmihalcea', name: 'hibernate-types-52', version: '2.12.1'
+    implementation "com.vladmihalcea:hibernate-types-52:${hibernateTypesVersion}"
 
     implementation "org.hibernate:hibernate-core"
 
-    implementation "org.apache.commons:commons-lang3:3.8.1"
+    implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 
     implementation "com.fasterxml.jackson.core:jackson-annotations"
     implementation "com.fasterxml.jackson.module:jackson-module-afterburner"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
-    implementation group: 'org.json', name: 'json'
-    implementation group: 'com.github.erosb', name: 'everit-json-schema', version: '1.12.1'
-    implementation group: 'com.flipkart.zjsonpatch', name: 'zjsonpatch', version: '0.4.11'
-    implementation group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.5.RELEASE'
-    implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
+    implementation "org.json:json:${orgJsonJsonVersion}"
+    implementation "com.github.erosb:everit-json-schema:${everitJsonSchemaVersion}"
+    implementation "com.flipkart.zjsonpatch:zjsonpatch:${zjsonpatchVersion}"
+    implementation "org.springframework.retry:spring-retry:${springRetryVersion}"
+    implementation "org.glassfish:javax.json:${glassfishJavaxJsonVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 

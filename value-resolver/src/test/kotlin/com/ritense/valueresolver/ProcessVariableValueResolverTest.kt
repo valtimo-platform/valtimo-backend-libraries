@@ -21,7 +21,7 @@ import org.mockito.kotlin.verify
 import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
+import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Test
 
 internal class ProcessVariableValueResolverTest {

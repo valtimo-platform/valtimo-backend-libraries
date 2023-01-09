@@ -30,7 +30,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:1"
+    api "javax.inject:javax.inject:${javaxInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -47,7 +47,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
@@ -55,19 +55,19 @@ dependencies {
     testImplementation "mysql:mysql-connector-java"
 
     // Spring
-    implementation "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:3.2.1"
+    implementation "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${camundaVersion}"
     implementation "org.springframework:spring-jdbc"
 
     // Mapstruct
-    implementation "org.mapstruct:mapstruct-jdk8:${mapstruct_version}"
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstruct_version}"
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
     // Hibernate
     implementation "org.hibernate:hibernate-core"
     implementation "org.hibernate:hibernate-envers"
 
     implementation "io.dropwizard.metrics:metrics-core"
-    implementation "io.dropwizard.metrics:metrics-annotation:4.0.5"
+    implementation "io.dropwizard.metrics:metrics-annotation"
 
     testImplementation "org.springframework.security:spring-security-test"
 }

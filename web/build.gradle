@@ -20,7 +20,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:1"
+    api "javax.inject:javax.inject:${javaxInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -37,20 +37,20 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation 'io.github.microutils:kotlin-logging'
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
     implementation "org.springframework:spring-tx"
-    implementation group: 'io.swagger.core.v3', name: 'swagger-jaxrs2', version: '2.1.1'
-    api group: 'com.google.guava', name: 'guava', version: '31.1-jre'
+    implementation "io.swagger.core.v3:swagger-jaxrs2:${swaggerJaxrs2Version}"
+    api "com.google.guava:guava:${guavaVersion}"
 
     implementation("io.springfox:springfox-swagger2:2.9.2") {
         exclude module: 'mapstruct'
     }
-    api 'org.zalando:problem-spring-web:0.27.0'
+    api "org.zalando:problem-spring-web:${zalandoProblemVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 

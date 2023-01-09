@@ -13,9 +13,12 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom "software.amazon.awssdk:bom:2.19.9"
-        mavenBom "com.fasterxml.jackson:jackson-bom:2.14.1"
-        mavenBom "org.junit:junit-bom:5.7.2"
+        mavenBom "software.amazon.awssdk:bom:${awsSdkVersion}"
+        mavenBom "com.fasterxml.jackson:jackson-bom:${jacksonVersion}"
+        mavenBom "org.junit:junit-bom:${junitVersion}"
+    }
+    dependencies {
+        dependency "org.yaml:snakeyaml:${snakeYamlVersion}"
     }
 }
 

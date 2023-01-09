@@ -21,7 +21,7 @@ import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.Recipient
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake
+import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty
 import org.junit.jupiter.api.BeforeEach

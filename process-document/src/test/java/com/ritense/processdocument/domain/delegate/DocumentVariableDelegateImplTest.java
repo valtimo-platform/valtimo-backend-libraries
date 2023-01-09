@@ -25,7 +25,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.processdocument.BaseTest;
 import com.ritense.processdocument.domain.impl.delegate.DocumentVariableDelegateImpl;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake;
+import org.camunda.community.mockito.delegate.DelegateExecutionFake;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

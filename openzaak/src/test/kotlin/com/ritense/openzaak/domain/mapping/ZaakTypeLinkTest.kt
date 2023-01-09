@@ -35,7 +35,7 @@ import org.mockito.MockitoAnnotations
 import java.net.URI
 import java.util.UUID
 import javax.validation.ConstraintViolationException
-import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake
+import org.camunda.community.mockito.delegate.DelegateExecutionFake
 
 class ZaakTypeLinkTest {
 
