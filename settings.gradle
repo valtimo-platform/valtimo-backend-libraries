@@ -69,5 +69,6 @@ include(
     "zgw:object-management",
     "zgw:objecten-api",
     "zgw:objecttypen-api",
+    "zgw:verzoek",
     "zgw:zaken-api"
 )
