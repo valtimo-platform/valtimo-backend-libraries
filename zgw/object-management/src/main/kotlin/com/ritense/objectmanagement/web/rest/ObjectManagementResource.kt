@@ -18,11 +18,11 @@ package com.ritense.objectmanagement.web.rest
 
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
+import java.util.UUID
+import javax.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
-import java.util.UUID
-import javax.validation.Valid
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -55,4 +55,8 @@ class ObjectManagementResource(
         objectManagementService.deleteById(id)
         return ResponseEntity.noContent().build()
     }
+
+    @GetMapping("/{configuration_id}/object")
+    fun getObjects(@PathVariable configuration_id: UUID): ResponseEntity<MutableList<ObjectManagement>> =
+        ResponseEntity.ok(objectManagementService.getObjects(configuration_id))
 }

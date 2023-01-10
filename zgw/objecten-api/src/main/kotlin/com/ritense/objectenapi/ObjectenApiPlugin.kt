@@ -22,6 +22,7 @@ import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import java.net.URI
+import java.util.UUID
 
 @Plugin(
     key = "objectenapi",
@@ -38,6 +39,10 @@ class ObjectenApiPlugin(
 
     fun getObject(objectUrl: URI): ObjectWrapper {
         return objectenApiClient.getObject(authenticationPluginConfiguration, objectUrl)
+    }
+
+    fun getObjectsByObjectTypeId(objectUrl: URI, objectTypeId: UUID): ObjectWrapper {
+        return objectenApiClient.getObjectByConfigurationId(authenticationPluginConfiguration, objectUrl, objectTypeId)
     }
 
     fun objectUpdate(objectUrl: URI, objectRequest: ObjectRequest): ObjectWrapper {

@@ -24,7 +24,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 
 class ObjectManagementService(
-    private val objectManagementRepository: ObjectManagementRepository
+    private val objectManagementRepository: ObjectManagementRepository,
+    private val objectenApiPlugin: ObjectenApiPlugin
 ) {
 
     fun create(objectManagement: ObjectManagement): ObjectManagement =
@@ -56,4 +57,9 @@ class ObjectManagementService(
     fun getAll(): MutableList<ObjectManagement> = objectManagementRepository.findAll()
 
     fun deleteById(id: UUID) = objectManagementRepository.deleteById(id)
+
+    fun getObjects(id: UUID) {
+        val objectTypeId = getById(id)?.objecttypeId
+
+    }
 }
