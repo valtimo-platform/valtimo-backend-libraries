@@ -18,24 +18,15 @@ package com.ritense.verzoek
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.BaseIntegrationTest
-import com.ritense.plugin.PluginDeploymentListener
-import com.ritense.plugin.annotation.Plugin
+import com.ritense.notificatiesapiauthentication.NotificatiesApiAuthenticationPlugin
 import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
-import com.ritense.plugin.domain.PluginDefinition
-import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.service.PluginService
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import java.net.URI
-import kotlin.reflect.full.findAnnotations
-import kotlin.reflect.full.functions
-import kotlin.reflect.jvm.isAccessible
 
 internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
 
@@ -45,17 +36,35 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var pluginService: PluginService
 
+    lateinit var notificatiesApiPluginConfiguration: PluginConfiguration
+
+    @BeforeEach
+    fun beforeEach() {
+        val notificatiesApiAuthenticationPluginConfiguration = createPluginConfiguration(
+            "notificatiesapiauthentication", """
+            {
+              "clientId": "my-client-id",
+              "clientSecret": "my-client-secret"
+            }
+        """.trimIndent()
+        )
+
+        notificatiesApiPluginConfiguration = createPluginConfiguration(
+            "notificatiesapi", """
+            {
+              "url": "https://example.com/my-notificatie-api-url",
+              "authenticationPluginConfiguration": "${notificatiesApiAuthenticationPluginConfiguration.id.id}"
+            }
+        """.trimIndent()
+        )
+    }
+
     @Test
     fun `should create VerzoekPlugin`() {
-        val verzoekPluginProperties: String = """
+        val verzoekPluginConfiguration = createPluginConfiguration(
+            "verzoek", """
             {
-              "notificatiesApiPluginConfiguration": {
-                "url": "https://example.com/my-notificatie-api-url",
-                "authenticationPluginConfiguration": {
-                  "clientId": "my-client-id",
-                  "clientSecret": "my-client-secret"
-                }
-              },
+              "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
               "objectManagementId": "0b993a22-aa70-49a8-934a-79b17a70df6f",
               "systemProcessDefinitionKey": "verzoek-process",
               "rsin": "637549971",
@@ -68,16 +77,12 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
               }]
             }
         """.trimIndent()
-        val pluginConfiguration = pluginService.createPluginConfiguration(
-            "my-verzoek-plugin-configuration",
-            jacksonObjectMapper().readTree(verzoekPluginProperties).deepCopy(),
-            "verzoek"
         )
 
-        val plugin = verzoekPluginFactory.create(pluginConfiguration)
+        val plugin = verzoekPluginFactory.create(verzoekPluginConfiguration)
 
         assertEquals(URI("https://example.com/my-notificatie-api-url"), plugin.notificatiesApiPluginConfiguration.url)
-        assertNotNull(plugin.notificatiesApiPluginConfiguration.authenticationPluginConfiguration)
+        assertTrue(plugin.notificatiesApiPluginConfiguration.authenticationPluginConfiguration is NotificatiesApiAuthenticationPlugin)
         assertEquals("verzoek-process", plugin.systemProcessDefinitionKey)
         assertEquals("637549971", plugin.rsin.toString())
         assertEquals(1, plugin.verzoekProperties.size)
@@ -88,24 +93,11 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
         assertEquals("Initiator", plugin.verzoekProperties[0].initiatorRolDescription)
     }
 
-    private fun createPluginDefinition(): PluginDefinition {
-        val pluginDefinitionRepositoryMock = mock<PluginDefinitionRepository>()
-        whenever(pluginDefinitionRepositoryMock.save(any())).thenAnswer { it.arguments[0] }
-        val pluginDeploymentListener = PluginDeploymentListener(
-            mock(),
-            mock(),
-            pluginDefinitionRepositoryMock,
-            mock(),
-            mock(),
-            mock()
+    private fun createPluginConfiguration(pluginDefinitionKey: String, pluginProperties: String): PluginConfiguration {
+        return pluginService.createPluginConfiguration(
+            "my-configuration-$pluginDefinitionKey-${pluginProperties.hashCode()}",
+            jacksonObjectMapper().readTree(pluginProperties).deepCopy(),
+            pluginDefinitionKey
         )
-        val createPluginDefinitionFunction = PluginDeploymentListener::class.functions
-            .find { it.name == "createPluginDefinition" }!!
-        createPluginDefinitionFunction.isAccessible = true
-        return createPluginDefinitionFunction.call(
-            pluginDeploymentListener,
-            VerzoekPlugin::class.java,
-            VerzoekPlugin::class.findAnnotations(Plugin::class).single()
-        ) as PluginDefinition
     }
 }

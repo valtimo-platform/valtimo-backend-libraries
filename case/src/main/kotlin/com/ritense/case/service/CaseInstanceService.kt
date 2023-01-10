@@ -70,7 +70,7 @@ class CaseInstanceService(
         val paths = caseListColumns.map { it.path }
         val resolvedValuesMap = valueResolverService.resolveValues(document.id().id.toString(), paths)
 
-        return CaseListRowDto(caseListColumns.map { caseListColumn ->
+        return CaseListRowDto(document.id().toString(), caseListColumns.map { caseListColumn ->
             CaseListRowDto.CaseListItemDto(caseListColumn.id.key, resolvedValuesMap[caseListColumn.path])
         })
     }
