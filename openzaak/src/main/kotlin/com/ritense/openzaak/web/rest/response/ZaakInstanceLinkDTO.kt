@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.web.rest.result
+package com.ritense.openzaak.web.rest.response
 
 import java.net.URI
 import java.util.UUID
