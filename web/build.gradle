@@ -44,12 +44,12 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
     implementation "org.springframework:spring-tx"
-    implementation "io.swagger.core.v3:swagger-jaxrs2:${swaggerJaxrs2Version}"
     api "com.google.guava:guava:${guavaVersion}"
 
-    implementation("io.springfox:springfox-swagger2:2.9.2") {
-        exclude module: 'mapstruct'
-    }
+    implementation "org.springdoc:springdoc-openapi-webmvc-core:${springDocVersion}"
+    implementation "org.springdoc:springdoc-openapi-kotlin:${springDocVersion}"
+    implementation "org.springdoc:springdoc-openapi-security:${springDocVersion}"
+
     api "org.zalando:problem-spring-web:${zalandoProblemVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
