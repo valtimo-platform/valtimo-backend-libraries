@@ -14,36 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.case
+package com.ritense
 
-import com.ritense.resource.service.ResourceService
-import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
-import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.boot.test.mock.mockito.SpyBean
-import org.springframework.core.io.support.ResourcePatternResolver
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
-@ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
+@ExtendWith(value = [SpringExtension::class])
 @Tag("integration")
-class BaseIntegrationTest {
-
-    @MockBean
-    lateinit var userManagementService: UserManagementService
-
-    @MockBean
-    lateinit var resourceService: ResourceService
-
-    @MockBean
-    lateinit var mailSender: MailSender
-
-    @SpyBean
-    lateinit var resourcePatternResolver: ResourcePatternResolver
-
-}
-
+abstract class BaseIntegrationTest
