@@ -1,0 +1,16 @@
+[
+    {
+        "key": "test",
+        "title": "some-title",
+        "path": "case:createdOn",
+        "displayType": {
+            "type": "date",
+            "displayTypeParameters": {
+                "dateFormat": "yyyy-MM-dd"
+            }
+        },
+        "sortable": false,
+        "defaultSort": "DESC",
+        "order": 0
+    }
+]
