@@ -19,6 +19,8 @@ package com.ritense.case.service
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.case.web.rest.dto.CaseListColumnDto
+import java.io.FileNotFoundException
+import java.nio.charset.StandardCharsets
 import mu.KotlinLogging
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONArray
@@ -30,7 +32,6 @@ import org.springframework.core.io.Resource
 import org.springframework.core.io.support.ResourcePatternResolver
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
-import java.nio.charset.StandardCharsets
 
 open class CaseListDeploymentService(
     private val resourcePatternResolver: ResourcePatternResolver,
@@ -83,7 +84,11 @@ open class CaseListDeploymentService(
     }
 
     private fun loadCaseListResources(): Array<Resource> {
-        return resourcePatternResolver.getResources(CASE_LIST_DEFINITIONS_PATH)
+        return try {
+            resourcePatternResolver.getResources(CASE_LIST_DEFINITIONS_PATH)
+        } catch (ex: FileNotFoundException) {
+            emptyArray()
+        }
     }
 
     private fun loadCaseListSchemaResource(): Resource {
@@ -92,7 +97,7 @@ open class CaseListDeploymentService(
 
     companion object {
         internal const val CASE_LIST_SCHEMA_PATH = "classpath:config/case/schema/case-list.schema.json"
-        internal const val CASE_LIST_DEFINITIONS_PATH = "classpath:config/case/list/*.json"
+        internal const val CASE_LIST_DEFINITIONS_PATH = "classpath:config/case/*.json"
         val logger = KotlinLogging.logger {}
     }
 }
