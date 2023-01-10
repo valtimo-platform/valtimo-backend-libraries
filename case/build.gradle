@@ -35,6 +35,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "com.github.erosb:everit-json-schema:${everitJsonSchemaVersion}"
 
     testImplementation project(':process-document')
     testImplementation project(':resource')
