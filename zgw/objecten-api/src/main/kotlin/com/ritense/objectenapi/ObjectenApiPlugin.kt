@@ -23,7 +23,6 @@ import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import java.net.URI
-import java.util.UUID
 
 @Plugin(
     key = "objectenapi",
@@ -35,6 +34,7 @@ class ObjectenApiPlugin(
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
+
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: ObjectenApiAuthentication
 

@@ -74,7 +74,7 @@ internal class ObjectManagementServiceIntTest: BaseIntegrationTest() {
         objectManagementService.create(ObjectManagement(
             title = title ?: "test",
             objectenApiPluginConfigurationId = UUID.randomUUID(),
-            objecttypeId = "https.blabla/89239713y58713",
+            objecttypeId = UUID.randomUUID().toString(),
             objecttypenApiPluginConfigurationId = UUID.randomUUID()
         ))
 }
