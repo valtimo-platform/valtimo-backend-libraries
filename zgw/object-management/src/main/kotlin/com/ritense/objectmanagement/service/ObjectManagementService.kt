@@ -16,8 +16,13 @@
 
 package com.ritense.objectmanagement.service
 
+import com.ritense.objectenapi.ObjectenApiPlugin
+import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
+import com.ritense.objecttypenapi.ObjecttypenApiPlugin
+import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.plugin.service.PluginService
 import java.util.UUID
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
@@ -25,7 +30,7 @@ import org.springframework.web.server.ResponseStatusException
 
 class ObjectManagementService(
     private val objectManagementRepository: ObjectManagementRepository,
-    private val objectenApiPlugin: ObjectenApiPlugin
+    private val pluginService: PluginService
 ) {
 
     fun create(objectManagement: ObjectManagement): ObjectManagement =
@@ -58,8 +63,19 @@ class ObjectManagementService(
 
     fun deleteById(id: UUID) = objectManagementRepository.deleteById(id)
 
-    fun getObjects(id: UUID) {
-        val objectTypeId = getById(id)?.objecttypeId
+    fun getObjects(id: UUID): ObjectsList {
+        val objectManagement = getById(id)!!
 
+        val objectTypePluginInstance = pluginService
+            .createInstance(
+                PluginConfigurationId.existingId(objectManagement.objecttypenApiPluginConfigurationId)
+            ) as ObjecttypenApiPlugin
+
+        val objectenPluginInstance = pluginService
+            .createInstance(
+                PluginConfigurationId.existingId(objectManagement.objectenApiPluginConfigurationId)
+            ) as ObjectenApiPlugin
+
+        return objectenPluginInstance.getObjectsByObjectTypeId(objectTypePluginInstance.url, objectenPluginInstance.url)
     }
 }

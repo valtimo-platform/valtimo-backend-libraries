@@ -19,6 +19,7 @@ package com.ritense.objectenapi
 import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectenApiClient
+import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import java.net.URI
@@ -41,8 +42,8 @@ class ObjectenApiPlugin(
         return objectenApiClient.getObject(authenticationPluginConfiguration, objectUrl)
     }
 
-    fun getObjectsByObjectTypeId(objectUrl: URI, objectTypeId: UUID): ObjectWrapper {
-        return objectenApiClient.getObjectByConfigurationId(authenticationPluginConfiguration, objectUrl, objectTypeId)
+    fun getObjectsByObjectTypeId(objectTypeUrl: URI, objectUrl: URI): ObjectsList {
+        return objectenApiClient.getObjectsByObjecttypeUrl(authenticationPluginConfiguration, objectTypeUrl, objectUrl)
     }
 
     fun objectUpdate(objectUrl: URI, objectRequest: ObjectRequest): ObjectWrapper {

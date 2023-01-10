@@ -16,6 +16,7 @@
 
 package com.ritense.objectmanagement.web.rest
 
+import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import java.util.UUID
@@ -57,6 +58,6 @@ class ObjectManagementResource(
     }
 
     @GetMapping("/{configuration_id}/object")
-    fun getObjects(@PathVariable configuration_id: UUID): ResponseEntity<MutableList<ObjectManagement>> =
+    fun getObjects(@PathVariable configuration_id: UUID): ResponseEntity<ObjectsList> =
         ResponseEntity.ok(objectManagementService.getObjects(configuration_id))
 }

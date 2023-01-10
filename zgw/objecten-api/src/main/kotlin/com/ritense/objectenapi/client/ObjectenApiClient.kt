@@ -19,7 +19,8 @@ package com.ritense.objectenapi.client
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import org.springframework.web.reactive.function.client.WebClient
 import java.net.URI
-import java.util.UUID
+import org.springframework.web.reactive.function.server.RequestPredicates.queryParam
+import org.springframework.web.util.UriBuilder
 
 class ObjectenApiClient(
     val webClient: WebClient
@@ -42,19 +43,23 @@ class ObjectenApiClient(
         return result?.body!!
     }
 
-    fun getObjectByConfigurationId(
+    fun getObjectsByObjecttypeUrl(
         authentication: ObjectenApiAuthentication,
-        objectUrl: URI,
-        objectTypeId: UUID
-    ): ObjectWrapper {
+        objecttypeUrl: URI,
+        objectUrl: URI
+    ): ObjectsList {
         val result = webClient
             .mutate()
             .filter(authentication)
             .build()
             .get()
-            .uri(objectUrl)
+            .uri{ builder ->
+                builder.path(objectUrl.toURL().protocol + "://" + objectUrl.host)
+                    .queryParam("type", objecttypeUrl)
+                    .build()
+            }
             .retrieve()
-            .toEntity(ObjectWrapper::class.java)
+            .toEntity(ObjectsList::class.java)
             .block()
 
         return result?.body!!
