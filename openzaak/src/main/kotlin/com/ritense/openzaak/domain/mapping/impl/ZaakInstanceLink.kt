@@ -33,7 +33,6 @@ import javax.persistence.Table
 data class ZaakInstanceLink(
 
     @EmbeddedId
-    @JsonProperty("id")
     val zaakInstanceLinkId: ZaakInstanceLinkId,
 
     @Convert(converter = UriAttributeConverter::class)
@@ -56,6 +55,7 @@ data class ZaakInstanceLink(
         validate()
     }
 
+    @JsonProperty("id")
     override fun getId(): ZaakInstanceLinkId {
         return zaakInstanceLinkId
     }
