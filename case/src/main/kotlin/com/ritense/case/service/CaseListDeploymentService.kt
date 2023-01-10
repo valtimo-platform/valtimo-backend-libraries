@@ -97,7 +97,7 @@ open class CaseListDeploymentService(
 
     companion object {
         internal const val CASE_LIST_SCHEMA_PATH = "classpath:config/case/schema/case-list.schema.json"
-        internal const val CASE_LIST_DEFINITIONS_PATH = "classpath:config/case/*.json"
+        internal const val CASE_LIST_DEFINITIONS_PATH = "classpath:config/case/list/*.json"
         val logger = KotlinLogging.logger {}
     }
 }
