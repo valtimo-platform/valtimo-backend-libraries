@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.case.web.rest.dto
+package com.ritense.verzoek
 
-data class CaseListRowDto(
-    val id: String,
-    val items: List<CaseListItemDto>,
-) {
+import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.service.PluginService
 
-    data class CaseListItemDto(
-        val key: String,
-        val value: Any?,
-    )
+class VerzoekPluginFactory(
+    pluginService: PluginService,
+) : PluginFactory<VerzoekPlugin>(pluginService) {
+
+    override fun create(): VerzoekPlugin {
+        return VerzoekPlugin()
+    }
 }

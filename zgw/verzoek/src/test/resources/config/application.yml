@@ -35,7 +35,13 @@ spring:
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
       use-new-id-generator-mappings: false
 
+spring-actuator:
+  username: test
+  password: test
+
 valtimo:
   database: postgres
   plugin:
     encryption-secret: "abcdefghijklmnop"
+  connector-encryption:
+    secret: "0123456789101112"
