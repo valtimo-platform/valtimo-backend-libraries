@@ -175,3 +175,7 @@ tasks.withType(PublishToMavenRepository) {
 tasks.withType(PublishToMavenLocal) {
     enabled = false
 }
+
+htmlDependencyReport {
+    projects = project.allprojects
+}
