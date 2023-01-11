@@ -16,7 +16,6 @@
 
 package com.ritense.resource.web.rest
 
-import com.nhaarman.mockitokotlin2.verify
 import com.ritense.resource.service.ResourceService
 import com.ritense.resource.web.ObjectContentDTO
 import com.ritense.resource.web.ObjectUrlDTO
@@ -28,8 +27,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
+import org.mockito.kotlin.verify
 import org.springframework.http.HttpStatus
 
 internal class OpenZaakResourceTest {

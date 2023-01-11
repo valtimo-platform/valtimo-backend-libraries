@@ -16,22 +16,15 @@
 
 package com.ritense.objectsapi.taak
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.connector.service.ConnectorService
 import com.ritense.objectsapi.domain.request.CreateObjectRequest
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.openzaak.provider.KvkProvider
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valueresolver.ValueResolverService
+import java.util.UUID
+import kotlin.contracts.ExperimentalContracts
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
@@ -39,8 +32,14 @@ import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import java.util.UUID
-import kotlin.contracts.ExperimentalContracts
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalContracts::class)
 internal class TaakObjectConnectorTest {

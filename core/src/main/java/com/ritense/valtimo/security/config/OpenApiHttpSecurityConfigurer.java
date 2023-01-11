@@ -22,14 +22,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.springframework.http.HttpMethod.GET;
 
-public class SwaggerHttpSecurityConfigurer implements HttpSecurityConfigurer {
+public class OpenApiHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/v2/api-docs").hasAuthority(ADMIN)
-                .antMatchers("/v2/api-docs/**").hasAuthority(ADMIN);
+                .antMatchers(GET, "/v3/api-docs").hasAuthority(ADMIN)
+                .antMatchers("/v3/api-docs/**").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

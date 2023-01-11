@@ -16,10 +16,10 @@
 
 package com.ritense.mail.wordpressmail.connector
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.isNull
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
+import org.mockito.kotlin.whenever
 import com.ritense.document.service.DocumentService
 import com.ritense.mail.wordpressmail.BaseTest
 import com.ritense.mail.wordpressmail.domain.EmailSendRequest

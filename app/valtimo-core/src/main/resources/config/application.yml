@@ -147,7 +147,7 @@ valtimo:
         whitelist:
             hosts:
                 - localhost
-    swagger:
+    openapi:
         enabled: false
         title: Valtimo Implementation API
         description: Valtimo Implementation API documentation

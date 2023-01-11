@@ -23,7 +23,7 @@ import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
-import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake;
+import org.camunda.community.mockito.delegate.DelegateTaskFake;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;

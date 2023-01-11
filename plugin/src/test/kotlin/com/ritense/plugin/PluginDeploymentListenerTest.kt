@@ -16,12 +16,6 @@
 
 package com.ritense.plugin
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.domain.PluginDefinition
@@ -30,10 +24,16 @@ import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginCategoryRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import kotlin.test.assertFailsWith
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertFailsWith
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 internal class PluginDeploymentListenerTest {
 

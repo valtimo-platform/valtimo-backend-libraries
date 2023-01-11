@@ -18,7 +18,6 @@ package com.ritense.note.web.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.JsonPath
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.audit.service.AuditService
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.Mapper
@@ -33,8 +32,10 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
@@ -47,7 +48,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.util.UUID
 
 internal class NoteResourceIT : BaseIntegrationTest() {
 

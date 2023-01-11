@@ -26,11 +26,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import static org.camunda.bpm.engine.impl.Direction.ASCENDING;
 import static org.camunda.bpm.engine.impl.Direction.DESCENDING;
 

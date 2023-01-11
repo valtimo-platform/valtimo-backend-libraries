@@ -20,7 +20,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:1"
+    api "javax.inject:javax.inject:${javaxInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -37,7 +37,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     implementation "mysql:mysql-connector-java"
 
@@ -45,7 +45,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
-    implementation('org.liquibase:liquibase-core') {
+    implementation("org.liquibase:liquibase-core:${liquibaseVersion}") {
         exclude(module: 'jetty-servlet')
     }
 

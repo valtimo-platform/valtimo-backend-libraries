@@ -20,12 +20,12 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
-    implementation "io.github.microutils:kotlin-logging:2.1.23"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     testImplementation project(':test-utils-common')
 

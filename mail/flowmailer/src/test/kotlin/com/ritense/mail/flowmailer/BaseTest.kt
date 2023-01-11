@@ -16,7 +16,7 @@
 
 package com.ritense.mail.flowmailer
 
-import com.nhaarman.mockitokotlin2.any
+import org.mockito.kotlin.any
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchema
 import com.ritense.document.domain.impl.JsonSchemaDocument

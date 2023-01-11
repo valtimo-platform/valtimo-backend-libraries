@@ -66,10 +66,13 @@ allprojects {
 
     dependencyManagement {
         imports {
-            mavenBom "software.amazon.awssdk:bom:2.15.62"
+            mavenBom "software.amazon.awssdk:bom:${awsSdkVersion}"
             mavenBom "org.testcontainers:testcontainers-bom:1.15.1"
-            mavenBom "com.fasterxml.jackson:jackson-bom:2.13.3"
-            mavenBom "org.junit:junit-bom:5.7.2"
+            mavenBom "com.fasterxml.jackson:jackson-bom:${jacksonVersion}"
+            mavenBom "org.junit:junit-bom:${junitVersion}"
+        }
+        dependencies {
+            dependency "org.yaml:snakeyaml:${snakeYamlVersion}"
         }
     }
 
@@ -157,8 +160,8 @@ subprojects { subproject ->
         enabled = true
         manifest {
             attributes(
-                "Implementation-Title": projectName,
-                "Implementation-Version": projectVersion
+                    "Implementation-Title": projectName,
+                    "Implementation-Version": projectVersion
             )
         }
     }

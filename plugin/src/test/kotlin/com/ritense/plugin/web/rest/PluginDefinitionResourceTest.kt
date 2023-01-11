@@ -16,14 +16,15 @@
 
 package com.ritense.plugin.web.rest
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
+import java.nio.charset.StandardCharsets
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -31,7 +32,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.nio.charset.StandardCharsets
 
 internal class PluginDefinitionResourceTest {
 

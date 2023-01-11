@@ -16,17 +16,17 @@
 
 package com.ritense.objectenapi
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectenApiClient
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import java.net.URI
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 internal class ObjectenApiPluginTest{
 

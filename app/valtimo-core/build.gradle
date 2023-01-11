@@ -21,7 +21,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:1"
+    api "javax.inject:javax.inject:${javaxInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -38,21 +38,27 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.7'
+    implementation "org.postgresql:postgresql"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
     //ShedLock
-    implementation 'net.javacrumbs.shedlock:shedlock-spring:4.42.0'
-    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.42.0'
+    implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}"
+    implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:${shedlockVersion}"
 
     // Database
     implementation "mysql:mysql-connector-java"
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.1'
+    implementation "org.postgresql:postgresql"
+
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+    implementation "org.yaml:snakeyaml:${snakeYamlVersion}"
+    implementation "io.netty:netty-codec"
+    implementation 'org.mybatis:mybatis'
+
 }
 
 apply from: "gradle/publishing.gradle"

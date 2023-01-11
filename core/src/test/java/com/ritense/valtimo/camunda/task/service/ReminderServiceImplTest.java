@@ -25,7 +25,7 @@ import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.engine.task.TaskQuery;
-import org.camunda.bpm.extension.mockito.CamundaMockito;
+import org.camunda.community.mockito.CamundaMockito;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;

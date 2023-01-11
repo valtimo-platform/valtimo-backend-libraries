@@ -18,13 +18,15 @@
 
 package com.ritense.openzaak.service
 
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.openzaak.BaseTest
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
 import com.ritense.openzaak.exception.ZaakInstanceLinkNotFoundException
 import com.ritense.openzaak.repository.ZaakInstanceLinkRepository
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
+import java.net.URI
+import java.util.Optional
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -32,9 +34,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import java.net.URI
-import java.util.Optional
-import java.util.UUID
+import org.mockito.kotlin.whenever
 
 class ZaakInstanceLinkServiceTest: BaseTest() {
 

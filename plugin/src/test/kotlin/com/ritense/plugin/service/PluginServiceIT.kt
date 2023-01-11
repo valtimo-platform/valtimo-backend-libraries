@@ -17,11 +17,6 @@
 package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.TestPlugin
@@ -32,16 +27,21 @@ import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.valtimo.contract.json.Mapper
-import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.transaction.annotation.Transactional
 import java.lang.reflect.InvocationTargetException
 import java.util.UUID
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
+import org.camunda.community.mockito.delegate.DelegateExecutionFake
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 
 
 internal class PluginServiceIT: BaseIntegrationTest() {

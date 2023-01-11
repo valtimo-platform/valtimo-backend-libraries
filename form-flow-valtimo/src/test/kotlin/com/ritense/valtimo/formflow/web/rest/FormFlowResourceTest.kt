@@ -1,10 +1,6 @@
 package com.ritense.valtimo.formflow.web.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
@@ -16,8 +12,13 @@ import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.BaseTest
 import com.ritense.valtimo.formflow.handler.FormTypeProperties
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -26,7 +27,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.util.UUID
 
 class FormFlowResourceTest : BaseTest() {
     lateinit var mockMvc: MockMvc
