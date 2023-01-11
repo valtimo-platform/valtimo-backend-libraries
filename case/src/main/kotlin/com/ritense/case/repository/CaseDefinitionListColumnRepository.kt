@@ -23,6 +23,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface CaseDefinitionListColumnRepository : JpaRepository<CaseListColumn, CaseListColumnId> {
     fun existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): Boolean
     fun findByIdCaseDefinitionNameOrderByOrderAsc(caseDefinitionName: String): List<CaseListColumn>
-    fun findTopByIdCaseDefinitionNameOrderByOrderDesc(caseDefinitionName: String): CaseListColumn?
     fun deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String)
+    fun countByIdCaseDefinitionName(caseDefinitionName: String): Int
 }
