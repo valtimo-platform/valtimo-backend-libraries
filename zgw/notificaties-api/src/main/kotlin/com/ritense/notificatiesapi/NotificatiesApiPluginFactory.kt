@@ -17,14 +17,18 @@
 
 package com.ritense.notificatiesapi
 
+import com.ritense.notificatiesapi.client.NotificatiesApiClient
+import com.ritense.notificatiesapi.repository.AbonnementLinkRepository
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 
 class NotificatiesApiPluginFactory(
-    pluginService: PluginService
+    pluginService: PluginService,
+    private val client: NotificatiesApiClient,
+    private val abonnementLinkRepository: AbonnementLinkRepository
 ) : PluginFactory<NotificatiesApiPlugin>(pluginService) {
 
     override fun create(): NotificatiesApiPlugin {
-        return NotificatiesApiPlugin()
+        return NotificatiesApiPlugin(client, abonnementLinkRepository)
     }
 }
