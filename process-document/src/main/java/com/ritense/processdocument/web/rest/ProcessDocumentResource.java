@@ -151,6 +151,46 @@ public class ProcessDocumentResource {
         return ResponseEntity.status(httpStatus).body(result);
     }
 
+    /**
+     * @deprecated This is only a demo endpoint.
+     * A generic endpoint that can link processes of different types/tags will be made in the future
+     */
+    @Deprecated(since = "9.21.0", forRemoval = true)
+    @GetMapping("/v1/process-document/demo/{documentDefinitionName}/process")
+    public ResponseEntity<DocumentDefinitionProcess> getDocumentDefinitionProcess(
+        @PathVariable String documentDefinitionName
+    ) {
+        var result = documentDefinitionProcessLinkService.getDocumentDefinitionProcess(documentDefinitionName);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * @deprecated This is only a demo endpoint.
+     * A generic endpoint that can link processes of different types/tags will be made in the future
+     */
+    @Deprecated(since = "9.21.0", forRemoval = true)
+    @PutMapping("/v1/process-document/demo/{documentDefinitionName}/process")
+    public ResponseEntity<DocumentDefinitionProcessLinkResponse> putDocumentDefinitionProcess(
+        @PathVariable String documentDefinitionName,
+        @Valid @RequestBody DocumentDefinitionProcessRequest request
+    ) {
+        var response = documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(documentDefinitionName, request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * @deprecated This is only a demo endpoint.
+     * A generic endpoint that can link processes of different types/tags will be made in the future
+     */
+    @Deprecated(since = "9.21.0", forRemoval = true)
+    @DeleteMapping("/v1/process-document/demo/{documentDefinitionName}/process")
+    public ResponseEntity<Void> deleteDocumentDefinitionProcess(
+        @PathVariable String documentDefinitionName
+    ) {
+        documentDefinitionProcessLinkService.deleteDocumentDefinitionProcess(documentDefinitionName);
+        return ResponseEntity.ok().build();
+    }
+
     private HttpStatus getHttpStatus(Optional<? extends Document> document) {
         return document.isPresent() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
     }
