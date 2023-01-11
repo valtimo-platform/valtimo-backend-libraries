@@ -28,4 +28,7 @@ import java.net.URI
 class NotificatiesApiPlugin {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
+
+    @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
+    lateinit var authenticationPluginConfiguration: NotificatiesApiAuthentication
 }

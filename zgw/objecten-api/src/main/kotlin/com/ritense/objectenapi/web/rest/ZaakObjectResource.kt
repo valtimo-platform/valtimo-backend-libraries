@@ -33,7 +33,7 @@ import java.util.UUID
 @RestController
 @RequestMapping(value = ["/api"])
 class ZaakObjectResource(
-    val zaakObjectService: ZaakObjectService
+    val zaakObjectService: ZaakObjectService,
 ) {
     @GetMapping(value = ["/v1/document/{documentId}/zaak/objecttype"])
     fun getZaakObjecttypes(
@@ -62,4 +62,5 @@ class ZaakObjectResource(
         val form = zaakObjectService.getZaakObjectForm(objectUrl)
         return form?.let { ResponseEntity.ok(it) } ?: ResponseEntity.notFound().build()
     }
+
 }

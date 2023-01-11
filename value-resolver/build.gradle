@@ -32,6 +32,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
     api "org.camunda.bpm:camunda-engine:${camundaVersion}"
+    api "org.zalando:problem-spring-web:${problemSpringWebVersion}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"

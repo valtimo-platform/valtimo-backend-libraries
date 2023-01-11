@@ -26,6 +26,7 @@ dockerCompose {
 dependencies {
     implementation project(':contract')
     implementation project(':document')
+    implementation project(':value-resolver')
     implementation project(':web')
 
     implementation "org.springframework.boot:spring-boot-starter"
@@ -34,7 +35,9 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "com.github.erosb:everit-json-schema:${everitJsonSchemaVersion}"
 
+    testImplementation project(':process-document')
     testImplementation project(':resource')
     testImplementation project(':test-utils-common')
 

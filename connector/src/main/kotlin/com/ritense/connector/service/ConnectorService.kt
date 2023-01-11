@@ -177,7 +177,7 @@ open class ConnectorService(
      */
     @Transactional(readOnly = true)
     open fun load(connectorInstance: ConnectorInstance): Connector {
-        val connector = context.getBean(connectorInstance.type.className) as Connector
+        val connector = context.getBean(connectorInstance.type.className) as Connector?
         requireNotNull(connector) { "Connector bean was not found with name: ${connectorInstance.type.className}" }
         with(connector) {
             setProperties(connectorInstance.connectorProperties)
