@@ -28,7 +28,7 @@ import org.springframework.core.annotation.Order
 @ConditionalOnClass(DataSource::class)
 class NotificatiesApiLiquibaseAutoConfiguration {
 
-    @Order(Ordered.HIGHEST_PRECEDENCE + 12)
+    @Order(Ordered.HIGHEST_PRECEDENCE + 25)
     @Bean
     fun notificatiesApiLiquibaseChangeLogLocation(): LiquibaseMasterChangeLogLocation {
         return LiquibaseMasterChangeLogLocation("config/liquibase/notificaties-api-master.xml")
