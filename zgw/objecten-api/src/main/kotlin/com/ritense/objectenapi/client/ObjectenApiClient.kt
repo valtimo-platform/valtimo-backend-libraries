@@ -49,18 +49,20 @@ class ObjectenApiClient(
         val result = webClient
             .mutate()
             .filter(authentication)
+            .baseUrl(objectUrl.toString())
             .build()
             .get()
             .uri { builder ->
-                builder.path(objectUrl.toURL().protocol + "://" + objectUrl.host)
+                builder
                     .queryParam("type", objecttypeUrl)
                     .build()
             }
             .retrieve()
-            .toEntity(ObjectsList::class.java)
+            .toEntity(Any::class.java)
             .block()
 
-        return result?.body!!
+        val retunWaarde = result?.body!!
+        return retunWaarde as ObjectsList
     }
 
     fun objectUpdate(
