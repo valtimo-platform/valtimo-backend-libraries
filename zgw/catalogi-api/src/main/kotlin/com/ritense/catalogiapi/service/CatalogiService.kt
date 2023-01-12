@@ -32,12 +32,12 @@ class CatalogiService(
         logger.debug { "Getting documenttypes for document definition $documentDefinitionName" }
         val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(documentDefinitionName)
 
-        val catalogiApiPluginInstance = findZakenApiPlugin(zaakTypeUrl)
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl)
 
         return catalogiApiPluginInstance.getInformatieobjecttypes(zaakTypeUrl)
     }
 
-    private fun findZakenApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin {
+    private fun findCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin {
         val catalogiApiPluginInstance = pluginService
             .createInstance(CatalogiApiPlugin::class.java) { properties: JsonNode ->
                 zaakTypeUrl.toString().startsWith(properties.get("url").textValue())

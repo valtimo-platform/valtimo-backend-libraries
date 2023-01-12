@@ -73,8 +73,7 @@ class CaseDefinitionService(
         caseListColumnDto: CaseListColumnDto
     ) {
         validators[Operation.CREATE]!!.validate(caseDefinitionName, caseListColumnDto)
-        caseListColumnDto.order = caseDefinitionListColumnRepository
-            .findTopByIdCaseDefinitionNameOrderByOrderDesc(caseDefinitionName)?.order ?: 0
+        caseListColumnDto.order = caseDefinitionListColumnRepository.countByIdCaseDefinitionName(caseDefinitionName)
         caseDefinitionListColumnRepository
             .save(CaseListColumnMapper.toEntity(caseDefinitionName, caseListColumnDto))
     }
