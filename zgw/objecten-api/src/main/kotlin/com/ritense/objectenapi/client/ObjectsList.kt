@@ -2,8 +2,8 @@ package com.ritense.objectenapi.client
 
 class ObjectsList(
     val count: Int,
-    val next: String,
-    val previous: String,
-    val results: List<ObjectRecord>
+    val next: String? = null,
+    val previous: String? = null,
+    val results: List<ObjectWrapper>
 ) {
 }

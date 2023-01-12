@@ -49,16 +49,16 @@ class ObjectenApiClient(
         val result = webClient
             .mutate()
             .filter(authentication)
-            .baseUrl(objectUrl.toString())
+            .baseUrl("http://localhost:8010/api/v2/objects")
             .build()
             .get()
             .uri { builder ->
                 builder
-                    .queryParam("type", objecttypeUrl)
+                    .queryParam("type", "http://host.docker.internal:8011/api/v1/objecttypes/feeaa795-d212-4fa2-bb38-2c34996e5702")
                     .build()
             }
             .retrieve()
-            .toEntity(Any::class.java)
+            .toEntity(ObjectsList::class.java)
             .block()
 
         val retunWaarde = result?.body!!
