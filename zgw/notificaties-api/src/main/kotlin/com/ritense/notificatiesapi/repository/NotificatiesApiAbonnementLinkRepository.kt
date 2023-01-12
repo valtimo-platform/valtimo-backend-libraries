@@ -20,4 +20,4 @@ import com.ritense.notificatiesapi.domain.NotificatiesApiAbonnementLink
 import com.ritense.notificatiesapi.domain.NotificatiesApiConfigurationId
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface AbonnementLinkRepository : JpaRepository<NotificatiesApiAbonnementLink, NotificatiesApiConfigurationId>
+interface NotificatiesApiAbonnementLinkRepository : JpaRepository<NotificatiesApiAbonnementLink, NotificatiesApiConfigurationId>

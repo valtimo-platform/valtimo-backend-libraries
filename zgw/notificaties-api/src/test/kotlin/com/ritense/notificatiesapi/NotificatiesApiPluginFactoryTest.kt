@@ -18,7 +18,7 @@ package com.ritense.notificatiesapi
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.notificatiesapi.client.NotificatiesApiClient
-import com.ritense.notificatiesapi.repository.AbonnementLinkRepository
+import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -36,7 +36,7 @@ internal class NotificatiesApiPluginFactoryTest {
     fun `should create NotificatiesApiPlugin`() {
         val pluginService = mock<PluginService>()
         val client = mock<NotificatiesApiClient>()
-        val abonnementLinkRepository = mock<AbonnementLinkRepository>()
+        val abonnementLinkRepository = mock<NotificatiesApiAbonnementLinkRepository>()
 
         whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
 

@@ -21,7 +21,7 @@ import com.ritense.notificatiesapi.domain.Abonnement
 import com.ritense.notificatiesapi.domain.Kanaal
 import com.ritense.notificatiesapi.domain.NotificatiesApiAbonnementLink
 import com.ritense.notificatiesapi.domain.NotificatiesApiConfigurationId
-import com.ritense.notificatiesapi.repository.AbonnementLinkRepository
+import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -39,7 +39,7 @@ import mu.KotlinLogging
 )
 class NotificatiesApiPlugin(
     private val client: NotificatiesApiClient,
-    private val abonnementLinkRepository: AbonnementLinkRepository
+    private val abonnementLinkRepository: NotificatiesApiAbonnementLinkRepository
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI

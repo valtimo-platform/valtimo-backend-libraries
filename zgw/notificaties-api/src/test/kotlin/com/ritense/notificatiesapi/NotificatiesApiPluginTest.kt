@@ -21,7 +21,7 @@ import com.ritense.notificatiesapi.domain.Abonnement
 import com.ritense.notificatiesapi.domain.Kanaal
 import com.ritense.notificatiesapi.domain.NotificatiesApiAbonnementLink
 import com.ritense.notificatiesapi.domain.NotificatiesApiConfigurationId
-import com.ritense.notificatiesapi.repository.AbonnementLinkRepository
+import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
 import com.ritense.plugin.domain.PluginConfigurationId
 import java.net.URI
 import java.util.Optional
@@ -42,7 +42,7 @@ import org.mockito.kotlin.whenever
 
 internal class NotificatiesApiPluginTest {
     lateinit var notificatiesApiClient: NotificatiesApiClient
-    lateinit var abonnementLinkRepository: AbonnementLinkRepository
+    lateinit var abonnementLinkRepository: NotificatiesApiAbonnementLinkRepository
     lateinit var plugin: NotificatiesApiPlugin
 
     @BeforeEach
