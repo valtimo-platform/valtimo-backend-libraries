@@ -45,6 +45,10 @@ task jacocoMerge(type: JacocoMerge, group: 'verification') {
     executionData = project.fileTree(dir: '.', include: '**/build/jacoco/test.exec')
 }
 
+htmlDependencyReport {
+    projects = project.allprojects
+}
+
 //Sonarqube
 sonarqube {
     properties {
