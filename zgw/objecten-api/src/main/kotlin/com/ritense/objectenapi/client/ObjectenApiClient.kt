@@ -18,6 +18,7 @@ package com.ritense.objectenapi.client
 
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import java.net.URI
+import org.springframework.data.domain.Pageable
 import org.springframework.web.reactive.function.client.WebClient
 
 class ObjectenApiClient(
@@ -43,26 +44,29 @@ class ObjectenApiClient(
 
     fun getObjectsByObjecttypeUrl(
         authentication: ObjectenApiAuthentication,
-        objecttypeUrl: URI,
-        objectUrl: URI
+        objecttypesApiUrl: URI,
+        objectsApiUrl: URI,
+        objectypeId: String,
+        pageable: Pageable
     ): ObjectsList {
         val result = webClient
             .mutate()
             .filter(authentication)
-            .baseUrl("http://localhost:8010/api/v2/objects")
+            .baseUrl("${objectsApiUrl}objects")
             .build()
             .get()
             .uri { builder ->
                 builder
-                    .queryParam("type", "http://host.docker.internal:8011/api/v1/objecttypes/feeaa795-d212-4fa2-bb38-2c34996e5702")
+                    .queryParam("type", "${objecttypesApiUrl}${objectypeId}")
+                    .queryParam("pageSize", pageable.pageSize)
+                    .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
                     .build()
             }
             .retrieve()
             .toEntity(ObjectsList::class.java)
             .block()
 
-        val retunWaarde = result?.body!!
-        return retunWaarde as ObjectsList
+        return result?.body!!
     }
 
     fun objectUpdate(

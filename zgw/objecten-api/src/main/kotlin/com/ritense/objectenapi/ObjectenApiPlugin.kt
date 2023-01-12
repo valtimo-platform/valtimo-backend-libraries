@@ -23,6 +23,7 @@ import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import java.net.URI
+import org.springframework.data.domain.Pageable
 
 @Plugin(
     key = "objectenapi",
@@ -42,8 +43,19 @@ class ObjectenApiPlugin(
         return objectenApiClient.getObject(authenticationPluginConfiguration, objectUrl)
     }
 
-    fun getObjectsByObjectTypeId(objectTypeUrl: URI, objectUrl: URI): ObjectsList {
-        return objectenApiClient.getObjectsByObjecttypeUrl(authenticationPluginConfiguration, objectTypeUrl, objectUrl)
+    fun getObjectsByObjectTypeId(
+        objecttypesApiUrl: URI,
+        objectsApiUrl: URI,
+        objecttypeId: String,
+        pageable: Pageable
+    ): ObjectsList {
+        return objectenApiClient.getObjectsByObjecttypeUrl(
+            authenticationPluginConfiguration,
+            objecttypesApiUrl,
+            objectsApiUrl,
+            objecttypeId,
+            pageable
+        )
     }
 
     fun objectUpdate(objectUrl: URI, objectRequest: ObjectRequest): ObjectWrapper {

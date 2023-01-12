@@ -16,11 +16,16 @@
 
 package com.ritense.objectmanagement.web.rest
 
+import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import java.util.UUID
 import javax.validation.Valid
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -58,6 +63,9 @@ class ObjectManagementResource(
     }
 
     @GetMapping("/{configuration_id}/object")
-    fun getObjects(@PathVariable configuration_id: UUID): ResponseEntity<ObjectsList> =
-        ResponseEntity.ok(objectManagementService.getObjects(configuration_id))
+    fun getObjects(
+        @PathVariable configuration_id: UUID,
+        @PageableDefault pageable: Pageable
+    ): ResponseEntity<PageImpl<ObjectWrapper>> =
+        ResponseEntity.ok(objectManagementService.getObjects(configuration_id, pageable))
 }

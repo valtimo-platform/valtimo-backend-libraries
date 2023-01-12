@@ -17,6 +17,7 @@
 package com.ritense.objectmanagement.service
 
 import com.ritense.objectenapi.ObjectenApiPlugin
+import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
@@ -24,6 +25,8 @@ import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import java.util.UUID
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
@@ -63,7 +66,7 @@ class ObjectManagementService(
 
     fun deleteById(id: UUID) = objectManagementRepository.deleteById(id)
 
-    fun getObjects(id: UUID): ObjectsList {
+    fun getObjects(id: UUID, pageable: Pageable): PageImpl<ObjectWrapper> {
         val objectManagement = getById(id)!!
 
         val objectTypePluginInstance = pluginService
@@ -76,6 +79,13 @@ class ObjectManagementService(
                 PluginConfigurationId.existingId(objectManagement.objectenApiPluginConfigurationId)
             ) as ObjectenApiPlugin
 
-        return objectenPluginInstance.getObjectsByObjectTypeId(objectTypePluginInstance.url, objectenPluginInstance.url)
+        val objectsList = objectenPluginInstance.getObjectsByObjectTypeId(
+            objectTypePluginInstance.url,
+            objectenPluginInstance.url,
+            objectManagement.objecttypeId,
+            pageable
+        )
+
+        return PageImpl(objectsList.results, pageable, objectsList.count.toLong())
     }
 }
