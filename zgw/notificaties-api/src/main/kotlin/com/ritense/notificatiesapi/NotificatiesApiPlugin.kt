@@ -79,7 +79,7 @@ class NotificatiesApiPlugin(
         val pluginId = NotificatiesApiConfigurationId(pluginConfigurationId.id)
 
         abonnementLinkRepository.findById(pluginId)
-            .ifPresent {
+            .ifPresentOrElse({
                 try {
                     runBlocking {
                         client.deleteAbonnement(
@@ -92,6 +92,12 @@ class NotificatiesApiPlugin(
                     logger.warn(e) { "Abonnement could not be deleted in Notificaties API" }
                 }
                 abonnementLinkRepository.deleteById(pluginId)
+            }
+            ) {
+                logger.warn {
+                    "Abonnement link was not found in the NotificatiesApiAbonnementLinkRepository" +
+                        "for plugin configuration with id: $pluginConfigurationId"
+                }
             }
     }
 
