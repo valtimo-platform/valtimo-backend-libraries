@@ -27,12 +27,18 @@ class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/v1/object/management/configuration").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{id}").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/object/management/configuration").permitAll()
-                .antMatchers(HttpMethod.PUT, "/api/v1/object/management/configuration").permitAll()
-                .antMatchers(HttpMethod.DELETE, "/api/v1/object/management/configuration/{id}").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{configuration_id}/object").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/object/management/configuration")
+                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{id}")
+                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/v1/object/management/configuration")
+                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(HttpMethod.PUT, "/api/v1/object/management/configuration")
+                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(HttpMethod.DELETE, "/api/v1/object/management/configuration/{id}")
+                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{configuration_id}/object")
+                .hasAuthority(AuthoritiesConstants.ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
