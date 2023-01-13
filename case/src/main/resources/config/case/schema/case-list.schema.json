@@ -35,7 +35,10 @@
         "type": "boolean"
       },
       "defaultSort": {
-        "type": "string"
+        "type": [
+          "string",
+          "null"
+        ]
       },
       "order": {
         "type": "integer"
