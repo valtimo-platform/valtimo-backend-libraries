@@ -44,13 +44,16 @@ internal class NotificatiesApiPluginTest {
     lateinit var notificatiesApiClient: NotificatiesApiClient
     lateinit var abonnementLinkRepository: NotificatiesApiAbonnementLinkRepository
     lateinit var plugin: NotificatiesApiPlugin
+    lateinit var pluginConfigurationId: PluginConfigurationId
 
     @BeforeEach
     fun setup() {
+
         notificatiesApiClient = mock()
         abonnementLinkRepository = mock()
+        pluginConfigurationId = PluginConfigurationId(UUID.randomUUID())
 
-        plugin = NotificatiesApiPlugin(notificatiesApiClient, abonnementLinkRepository)
+        plugin = NotificatiesApiPlugin(pluginConfigurationId, notificatiesApiClient, abonnementLinkRepository)
             .apply {
                 url = URI("http://example.com")
                 authenticationPluginConfiguration = mock()
@@ -60,6 +63,7 @@ internal class NotificatiesApiPluginTest {
 
     @Test
     fun `ensure kanaal exists creates kanaal when kanaal doesnt exist`(): Unit = runBlocking {
+
         whenever(notificatiesApiClient.getKanalen(any(), any()))
             .thenReturn(
                 listOf(
@@ -93,7 +97,7 @@ internal class NotificatiesApiPluginTest {
 
     @Test
     fun `createAbonnement should create abonnement and save entity`(): Unit = runBlocking {
-        val pluginId = PluginConfigurationId(UUID.randomUUID())
+
         val abonnementId = UUID.randomUUID()
         val abonnement = Abonnement(
             url = "http://example.com/abonnement/$abonnementId",
@@ -118,7 +122,6 @@ internal class NotificatiesApiPluginTest {
 
         plugin.createAbonnement(
             callbackUrl = "http://example.com/callback",
-            pluginConfigurationId = pluginId,
             kanaalNames = setOf("test-kanaal")
         )
 
@@ -129,11 +132,11 @@ internal class NotificatiesApiPluginTest {
 
     @Test
     fun `deleteAbonnement should delete abonnement in Notificaties API and repository`() {
-        val pluginId = PluginConfigurationId(UUID.randomUUID())
+
         val abonnementId = UUID.randomUUID()
         val notificatiesApiConfigurationIdCaptor = ArgumentCaptor.forClass(NotificatiesApiConfigurationId::class.java)
         val abonnementLink = NotificatiesApiAbonnementLink(
-            pluginConfigurationId = pluginId,
+            pluginConfigurationId = pluginConfigurationId,
             url = "http://example.com/abonnement/$abonnementId",
             auth = "some-key"
         )
@@ -143,7 +146,7 @@ internal class NotificatiesApiPluginTest {
                 Optional.of(abonnementLink)
             )
 
-        plugin.deleteAbonnement(pluginConfigurationId = pluginId)
+        plugin.deleteAbonnement()
 
         verifyBlocking(notificatiesApiClient, times(1)) {
             deleteAbonnement(
@@ -155,14 +158,13 @@ internal class NotificatiesApiPluginTest {
 
     @Test
     fun `deleteAbonnement should do nothing if abonnement link does not exist`() {
-        val pluginId = PluginConfigurationId(UUID.randomUUID())
 
         whenever(abonnementLinkRepository.findById(any()))
             .thenReturn(
                 Optional.empty()
             )
 
-        plugin.deleteAbonnement(pluginConfigurationId = pluginId)
+        plugin.deleteAbonnement()
 
         verifyBlocking(notificatiesApiClient, never()) {
             deleteAbonnement(any(), any(), any())

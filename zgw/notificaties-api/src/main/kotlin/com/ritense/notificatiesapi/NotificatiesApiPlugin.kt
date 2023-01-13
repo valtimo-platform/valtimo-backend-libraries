@@ -38,6 +38,7 @@ import mu.KotlinLogging
     description = "Enable interfacing with Notificaties API specification compliant APIs"
 )
 class NotificatiesApiPlugin(
+    val pluginConfigurationId: PluginConfigurationId,
     private val client: NotificatiesApiClient,
     private val abonnementLinkRepository: NotificatiesApiAbonnementLinkRepository
 ) {
@@ -48,7 +49,6 @@ class NotificatiesApiPlugin(
     lateinit var authenticationPluginConfiguration: NotificatiesApiAuthentication
 
     fun createAbonnement(
-        pluginConfigurationId: PluginConfigurationId,
         callbackUrl: String,
         kanaalNames: Set<String> = DEFAULT_KANALEN_NAMES
     ) {
@@ -75,30 +75,32 @@ class NotificatiesApiPlugin(
         }
     }
 
-    fun deleteAbonnement(pluginConfigurationId: PluginConfigurationId) {
+    fun deleteAbonnement() {
         val pluginId = NotificatiesApiConfigurationId(pluginConfigurationId.id)
 
         abonnementLinkRepository.findById(pluginId)
-            .ifPresentOrElse({
-                try {
-                    runBlocking {
-                        client.deleteAbonnement(
-                            authenticationPluginConfiguration,
-                            url,
-                            it.url.substringAfterLast("/")
-                        )
+            .ifPresentOrElse(
+                {
+                    try {
+                        runBlocking {
+                            client.deleteAbonnement(
+                                authenticationPluginConfiguration,
+                                url,
+                                it.url.substringAfterLast("/")
+                            )
+                        }
+                    } catch (e: Exception) {
+                        logger.warn(e) { "Abonnement could not be deleted in Notificaties API" }
                     }
-                } catch (e: Exception) {
-                    logger.warn(e) { "Abonnement could not be deleted in Notificaties API" }
+                    abonnementLinkRepository.deleteById(pluginId)
+                },
+                {
+                    logger.warn {
+                        "Abonnement link was not found in the NotificatiesApiAbonnementLinkRepository" +
+                            "for plugin configuration with id: $pluginConfigurationId"
+                    }
                 }
-                abonnementLinkRepository.deleteById(pluginId)
-            }
-            ) {
-                logger.warn {
-                    "Abonnement link was not found in the NotificatiesApiAbonnementLinkRepository" +
-                        "for plugin configuration with id: $pluginConfigurationId"
-                }
-            }
+            )
     }
 
     fun ensureKanalenExist(kanalen: Set<String>): Unit = runBlocking {

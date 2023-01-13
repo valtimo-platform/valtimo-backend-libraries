@@ -29,6 +29,7 @@ class NotificatiesApiPluginFactory(
 ) : PluginFactory<NotificatiesApiPlugin>(pluginService) {
 
     override fun create(): NotificatiesApiPlugin {
-        return NotificatiesApiPlugin(client, abonnementLinkRepository)
+        val pluginConfigurationId = super.pluginConfigurationId
+        return NotificatiesApiPlugin(pluginConfigurationId, client, abonnementLinkRepository)
     }
 }
