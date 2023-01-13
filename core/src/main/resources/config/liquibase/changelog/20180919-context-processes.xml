@@ -19,9 +19,14 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-    <changeSet id="context_process_add_visible_in_menu" author="Max">
+    <changeSet id="context_process_add_visible_in_menu_fix" author="Max">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="context_processes" columnName="visible_in_menu"/>
+            </not>
+        </preConditions>
         <addColumn tableName="context_processes">
-            <column name="visible_in_menu" type="boolean" valueBoolean="true" defaultValue="true" defaultValueBoolean="true">
+            <column name="visible_in_menu" type="boolean" valueBoolean="true" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
