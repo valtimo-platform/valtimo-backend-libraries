@@ -42,6 +42,22 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
     }
 
     @Override
+    public DocumentDefinitionProcess getDocumentDefinitionProcess(String documentDefinitionName) {
+        var link = documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
+
+        if (link.isPresent()) {
+            var processDefinition = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionKey(link.get().getId().getProcessDefinitionKey())
+                .latestVersion()
+                .singleResult();
+
+            return new DocumentDefinitionProcess(processDefinition.getKey(), processDefinition.getName());
+        }
+
+        return null;
+    }
+
+    @Override
     public List<DocumentDefinitionProcess> getDocumentDefinitionProcessList(String documentDefinitionName) {
         var links = documentDefinitionProcessLinkRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
 
