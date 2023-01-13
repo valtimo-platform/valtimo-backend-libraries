@@ -40,6 +40,9 @@
             "moduleLicense": "MIT License"
         },
         {
+            "moduleLicense": "MIT-0"
+        },
+        {
             "moduleLicense": "GNU GENERAL PUBLIC LICENSE, Version 2 + Classpath Exception"
         },
         {
@@ -75,7 +78,7 @@
         },
         {
             "moduleLicense": null,
-            "moduleVersion": "2.*",
+            "moduleVersion": "3.*",
             "moduleName": "io.github.microutils:kotlin-logging"
         },
         {
@@ -107,6 +110,16 @@
             "moduleLicense": null,
             "moduleVersion": "9.*",
             "moduleName": "com.microsoft.sqlserver:mssql-jdbc"
+        },
+        {
+            "moduleLicense": "The GNU General Public License, v2 with Universal FOSS Exception, v1.0",
+            "moduleVersion": "8.*",
+            "moduleName": "com.mysql:mysql-connector-j"
+        },
+        {
+            "moduleLicense": null,
+            "moduleVersion": "8.*",
+            "moduleName": "mysql:mysql-connector-java"
         }
     ]
 }
