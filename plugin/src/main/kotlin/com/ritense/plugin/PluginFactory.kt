@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,19 +26,20 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
 import java.util.UUID
-import org.apache.commons.lang3.reflect.FieldUtils
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaType
+import org.apache.commons.lang3.reflect.FieldUtils
 
 /**
  *  This factory is meant to be extended for a specific type of plugin. It can create a plugin of type T given a
  *  configuration. The class extending this factory has to be registered as a bean of type PluginFactory<T>.
  */
 abstract class PluginFactory<T : Any>(
-    var pluginService: PluginService
+    var pluginService: PluginService,
 ) {
     private var fullyQualifiedClassName: String = ""
+    lateinit var pluginConfigurationId: PluginConfigurationId
 
     /**
      * Create the base plugin instance, without any additional plugin properties.
@@ -54,6 +55,7 @@ abstract class PluginFactory<T : Any>(
      * @return plugin instance of type T
      */
     fun create(configuration: PluginConfiguration): T {
+        pluginConfigurationId = configuration.id
         val instance = create()
 
         injectProperties(instance, configuration)
@@ -63,6 +65,7 @@ abstract class PluginFactory<T : Any>(
 
     fun canCreate(configuration: PluginConfiguration): Boolean {
         if (fullyQualifiedClassName.isEmpty()) {
+            pluginConfigurationId = configuration.id
             val instance = create()
             fullyQualifiedClassName = instance::class.java.name
         }
@@ -108,7 +111,8 @@ abstract class PluginFactory<T : Any>(
 
             pluginService.createInstance(pluginConfigurationId)
         } else if (propertyType.typeParameters.isNotEmpty()) {
-            val propertyTypeWithGeneric = getPropertyTypeWithGeneric(instance::class, propertyDefinition.fieldName, mapper)
+            val propertyTypeWithGeneric =
+                getPropertyTypeWithGeneric(instance::class, propertyDefinition.fieldName, mapper)
             assert(propertyType == propertyTypeWithGeneric.rawClass)
             mapper.treeToValue(
                 configuredProperty,
