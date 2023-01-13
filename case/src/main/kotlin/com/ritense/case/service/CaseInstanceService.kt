@@ -55,12 +55,8 @@ class CaseInstanceService(
     private fun mutatePageable(caseListColumns: Collection<CaseListColumn>, pageable: Pageable): PageRequest {
         val newSortOrders = pageable.sort.map { sortOrder ->
             val caseListColumn = caseListColumns.find { caseListColumn -> caseListColumn.id.key == sortOrder.property }
-                ?: throw InvalidListColumnException(
-                    "Trying to sort on unknown list column '${sortOrder.property}'",
-                    Status.BAD_REQUEST
-                )
-
-            Sort.Order(sortOrder.direction, caseListColumn.path, sortOrder.nullHandling)
+            val sortingProperty = caseListColumn?.path ?: sortOrder.property
+            Sort.Order(sortOrder.direction, sortingProperty, sortOrder.nullHandling)
         }
         val newSort = Sort.by(newSortOrders.toMutableList())
         return PageRequest.of(pageable.pageNumber, pageable.pageSize, newSort)

@@ -84,15 +84,15 @@ class CaseInstanceServiceTest {
     }
 
     @Test
-    fun `should throw error when sorting the search with unknown case list column`() {
+    fun `should sort on jsonpath when sorting the search`() {
         val searchRequest = SearchWithConfigRequest()
-        val pageable = PageRequest.of(0,1, Sort.by("unknown-case-list-column"))
+        val pageable = PageRequest.of(0,1, Sort.by("\$.some.jsonPath"))
         whenever(documentSearchService.search(CASE_DEFINITION_NAME, searchRequest, pageable))
             .thenReturn(PageImpl(listOf(DOCUMENT)))
 
-        assertThrows<InvalidListColumnException> {
-            service.search(CASE_DEFINITION_NAME, searchRequest, pageable)
-        }
+        val documentsPage = service.search(CASE_DEFINITION_NAME, searchRequest, pageable)
+
+        assertEquals(documentsPage.content.size, 1)
     }
 
     companion object {
