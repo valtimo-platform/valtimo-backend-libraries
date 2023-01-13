@@ -65,6 +65,7 @@ abstract class PluginFactory<T : Any>(
 
     fun canCreate(configuration: PluginConfiguration): Boolean {
         if (fullyQualifiedClassName.isEmpty()) {
+            pluginConfigurationId = configuration.id
             val instance = create()
             fullyQualifiedClassName = instance::class.java.name
         }
