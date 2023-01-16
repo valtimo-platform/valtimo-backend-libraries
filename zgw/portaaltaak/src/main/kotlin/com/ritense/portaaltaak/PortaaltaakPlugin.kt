@@ -16,9 +16,9 @@
 
 package com.ritense.portaaltaak
 
+import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
-import java.util.*
 
 @Plugin(
     key = "portaaltaak",
@@ -26,6 +26,6 @@ import java.util.*
     description = "Enable interfacing with Portaaltaak specification compliant APIs"
 )
 class PortaaltaakPlugin {
-    @PluginProperty(key = "openNotificatiesPluginConfigurationUuid", secret = false)
-    lateinit var openNotificatiesPluginConfigurationUuid: UUID
+    @PluginProperty(key = "notificatiesApiPluginConfiguration", secret = false)
+    lateinit var notificatiesApiPluginConfiguration: NotificatiesApiPlugin
 }
