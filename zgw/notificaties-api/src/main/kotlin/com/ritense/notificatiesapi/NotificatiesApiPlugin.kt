@@ -17,6 +17,7 @@
 package com.ritense.notificatiesapi
 
 import com.ritense.plugin.annotation.Plugin
+import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.annotation.PluginProperty
 import java.net.URI
 
@@ -25,6 +26,7 @@ import java.net.URI
     title = "Notificaties API",
     description = "Enable interfacing with Notificaties API specification compliant APIs"
 )
+@PluginCategory("notificaties-api-plugin")
 class NotificatiesApiPlugin {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
