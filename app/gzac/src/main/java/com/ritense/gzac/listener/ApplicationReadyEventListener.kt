@@ -347,7 +347,7 @@ class ApplicationReadyEventListener(
             )
         )
         return if (existing.isEmpty()) {
-            return pluginService.createPluginConfiguration(
+            pluginService.createPluginConfiguration(
                 title = "Notificaties API",
                 pluginDefinitionKey = "notificatiesapi",
                 properties = jacksonObjectMapper().readValue(
@@ -396,7 +396,7 @@ class ApplicationReadyEventListener(
             )
         )
         return if (existing.isEmpty()) {
-            return pluginService.createPluginConfiguration(
+            pluginService.createPluginConfiguration(
                 title = "Objecten API",
                 pluginDefinitionKey = "objectenapi",
                 properties = jacksonObjectMapper().readValue(
@@ -421,7 +421,7 @@ class ApplicationReadyEventListener(
             )
         )
         return if (existing.isEmpty()) {
-            return pluginService.createPluginConfiguration(
+            pluginService.createPluginConfiguration(
                 title = "Objecttypen API",
                 pluginDefinitionKey = "objecttypenapi",
                 properties = jacksonObjectMapper().readValue(
@@ -446,7 +446,7 @@ class ApplicationReadyEventListener(
             )
         )
         return if (existing.isEmpty()) {
-            return pluginService.createPluginConfiguration(
+            pluginService.createPluginConfiguration(
                 title = "Catalogi API",
                 pluginDefinitionKey = "catalogiapi",
                 properties = jacksonObjectMapper().readValue(
@@ -471,7 +471,7 @@ class ApplicationReadyEventListener(
             )
         )
         return if (existing.isEmpty()) {
-            return pluginService.createPluginConfiguration(
+            pluginService.createPluginConfiguration(
                 title = "Verzoek lening",
                 pluginDefinitionKey = "verzoek",
                 properties = jacksonObjectMapper().readValue(
@@ -505,7 +505,7 @@ class ApplicationReadyEventListener(
             )
         )
         return if (existing.isEmpty()) {
-            return pluginService.createPluginConfiguration(
+            pluginService.createPluginConfiguration(
                 title = "SmartDocuments",
                 pluginDefinitionKey = "smartdocuments",
                 properties = jacksonObjectMapper().readValue(
