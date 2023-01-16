@@ -56,13 +56,13 @@ class CaseDefinitionService(
     @Throws(UnknownDocumentDefinitionException::class)
     fun getCaseSettings(caseDefinitionName: String): CaseDefinitionSettings {
         checkIfDocumentDefinitionExists(caseDefinitionName)
-        return caseDefinitionSettingsRepository.getById(caseDefinitionName)
+        return caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
     fun updateCaseSettings(caseDefinitionName: String, newSettings: CaseSettingsDto): CaseDefinitionSettings {
         checkIfDocumentDefinitionExists(caseDefinitionName)
-        val caseDefinitionSettings = caseDefinitionSettingsRepository.getById(caseDefinitionName)
+        val caseDefinitionSettings = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         val updatedCaseDefinition = newSettings.update(caseDefinitionSettings)
         return caseDefinitionSettingsRepository.save(updatedCaseDefinition)
     }

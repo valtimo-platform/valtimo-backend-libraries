@@ -33,6 +33,7 @@ import org.zalando.problem.Status
 
 @Transactional
 class CaseInstanceService(
+    private val caseDefinitionService: CaseDefinitionService,
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
     private val documentSearchService: DocumentSearchService,
     private val valueResolverService: ValueResolverService,
@@ -66,9 +67,18 @@ class CaseInstanceService(
         val paths = caseListColumns.map { it.path }
         val resolvedValuesMap = valueResolverService.resolveValues(document.id().id.toString(), paths)
 
-        return CaseListRowDto(document.id().toString(), caseListColumns.map { caseListColumn ->
+        val items = caseListColumns.map { caseListColumn ->
             CaseListRowDto.CaseListItemDto(caseListColumn.id.key, resolvedValuesMap[caseListColumn.path])
-        })
+        }.toMutableList()
+
+        if (items.none { it.key == "assigneeFullName" }) {
+            val caseSettings = caseDefinitionService.getCaseSettings(document.definitionId().name())
+            if (caseSettings.canHaveAssignee) {
+                items.add(CaseListRowDto.CaseListItemDto("assigneeFullName", document.assigneeFullName()))
+            }
+        }
+
+        return CaseListRowDto(document.id().toString(), items)
     }
 
 }
