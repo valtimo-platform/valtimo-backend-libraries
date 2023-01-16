@@ -17,7 +17,7 @@
 package com.ritense.valtimo.camunda.processaudit;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 
@@ -43,7 +43,7 @@ public class ProcessEndedEvent extends ProcessInstanceEvent {
         this.processDefinitionKey = processDefinitionKey;
     }
 
-    @JsonIgnore(false)
+    @JsonProperty
     @JsonView(AuditView.Public.class)
     public String getProcessDefinitionKey() {
         return processDefinitionKey;
