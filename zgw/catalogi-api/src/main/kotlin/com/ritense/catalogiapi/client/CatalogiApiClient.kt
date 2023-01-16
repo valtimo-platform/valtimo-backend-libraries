@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.client
+package com.ritense.catalogiapi.client
 
 import com.ritense.catalogiapi.CatalogiApiAuthentication
-import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
 import com.ritense.catalogiapi.domain.Informatieobjecttype
+import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
-import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import java.net.URI
@@ -75,6 +74,37 @@ class CatalogiApiClient(
             .uri(informatieobjecttypeUrl)
             .retrieve()
             .toEntity(Informatieobjecttype::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
+    fun getRoltypen(
+        authentication: CatalogiApiAuthentication,
+        baseUrl: URI,
+        request: RoltypeRequest,
+    ): Page<Roltype> {
+        if (baseUrl.host != request.zaaktype?.host) {
+            throw IllegalArgumentException(
+                "Requested zaakTypeUrl '${request.zaaktype}' is not valid for baseUrl '$baseUrl'"
+            )
+        }
+
+        val result = webclient
+            .mutate()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .pathSegment("roltypen")
+                    .addOptionalQueryParamFromRequest("zaaktype", request.zaaktype)
+                    .addOptionalQueryParamFromRequest("omschrijvingGeneriek", request.omschrijvingGeneriek)
+                    .addOptionalQueryParamFromRequest("status", request.status?.getSearchValue())
+                    .addOptionalQueryParamFromRequest("page", request.page)
+                    .build()
+            }.retrieve()
+            .toEntity(ClientTools.getTypedPage(Roltype::class.java))
             .block()
 
         return result?.body!!

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.security
+package com.ritense.catalogiapi.security
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
@@ -28,6 +28,7 @@ class CatalogiApiHttpSecurityConfigurer: HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/zaaktype/roltype").hasAuthority(USER)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

@@ -19,7 +19,6 @@ package com.ritense.catalogiapi.client
 import com.ritense.catalogiapi.CatalogiApiAuthentication
 import com.ritense.catalogiapi.domain.InformatieobjecttypeRichting
 import com.ritense.catalogiapi.domain.InformatieobjecttypeVertrouwelijkheid
-import com.ritense.zakenapi.client.CatalogiApiClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
@@ -67,7 +66,7 @@ internal class CatalogiApiClientTes {
             zaaktype = URI("http://example.com/zaaktype"),
             informatieobjecttype = URI("http://example.com/informatieobjecttype"),
             richting = InformatieobjecttypeRichting.INKOMEND,
-            status = ZaaktypeInformatieobjecttypeStatus.ALLES,
+            status = ZaakPublishedStatus.ALLES,
             page = 3
         )
         val recordedRequest = sendGetZaaktypeInformatieobjecttypeRequest(request)
@@ -138,6 +137,49 @@ internal class CatalogiApiClientTes {
         }
         assertEquals("Requested informatieobjecttypeUrl 'http://other-domain.com/informatieobjecttypen/" +
             "f3974b80-b538-48c1-b82e-3a3113fc9971' is not valid for baseUrl 'http://example.com'", exception.message)
+    }
+
+    @Test
+    fun `should send get roltypen request and parse response`() {
+        val webClient = WebClient.create()
+        val client = CatalogiApiClient(webClient)
+        val baseUrl = mockApi.url("api").toString()
+        val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
+        val responseBody = """
+            {
+                "count": 1,
+                "next": null,
+                "previous": null,
+                "results": [
+                    {
+                        "url": "http://example.com/id",
+                        "zaaktype": "$zaakTypeUrl",
+                        "omschrijving": "Aanvrager",
+                        "omschrijvingGeneriek": "initiator"
+                    }
+                ]
+            }
+        """.trimIndent()
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val response = client.getRoltypen(
+            authentication = TestAuthentication(),
+            baseUrl = URI(baseUrl),
+            request = RoltypeRequest(
+                zaaktype = URI(zaakTypeUrl),
+                omschrijvingGeneriek = "initiator",
+                status = ZaakPublishedStatus.ALLES,
+                page = 1
+            )
+        )
+
+        // to make sure the request is cleaned up to prevent issues with other tests
+        mockApi.takeRequest()
+        assertEquals(1, response.results.size)
+        assertEquals("http://example.com/id", response.results[0].url.toString())
+        assertEquals(zaakTypeUrl, response.results[0].zaaktype.toString())
+        assertEquals("Aanvrager", response.results[0].omschrijving)
+        assertEquals("initiator", response.results[0].omschrijvingGeneriek)
     }
 
     private fun sendGetZaaktypeInformatieobjecttypeRequest(

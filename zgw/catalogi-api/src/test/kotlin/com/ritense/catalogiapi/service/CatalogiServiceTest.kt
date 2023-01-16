@@ -18,7 +18,6 @@ package com.ritense.catalogiapi.service
 
 import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.catalogiapi.domain.Informatieobjecttype
-import com.ritense.objectenapi.service.CatalogiService
 import com.ritense.plugin.service.PluginService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows

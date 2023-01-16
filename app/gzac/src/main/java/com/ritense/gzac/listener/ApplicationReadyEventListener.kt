@@ -1,5 +1,9 @@
 package com.ritense.gzac.listener
 
+import com.fasterxml.jackson.core.json.JsonReadFeature
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.besluit.connector.BesluitProperties
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
@@ -7,6 +11,8 @@ import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
+import com.ritense.objectmanagement.domain.ObjectManagement
+import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagTypeMapping
@@ -23,13 +29,15 @@ import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
+import com.ritense.plugin.service.PluginConfigurationSearchParameters
+import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
-import java.net.URI
-import java.util.UUID
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import java.net.URI
+import java.util.UUID
 
 
 @Component
@@ -39,11 +47,14 @@ class ApplicationReadyEventListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
     private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
     private val documentDefinitionService: DocumentDefinitionService,
+    private val pluginService: PluginService,
+    private val objectManagementService: ObjectManagementService,
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
     fun handleApplicationReady() {
         createConnectors()
+        createPlugins()
     }
 
     @EventListener(DocumentDefinitionDeployedEvent::class)
@@ -64,6 +75,24 @@ class ApplicationReadyEventListener(
             createProductAanvraagConnector(connectorTypes.findId("ProductAanvragen"))
             createTaakConnector(connectorTypes.findId("Taak"))
             createBesluitConnector(connectorTypes.findId("Besluiten"))
+        } catch (ex: Exception) {
+            logger.error { ex }
+        }
+    }
+
+    fun createPlugins() {
+        try {
+            val zakenApiAuthenticationPluginId = createZakenApiAuthenticationPlugin()
+            createCatalogiApiPlugin(zakenApiAuthenticationPluginId)
+            val notificatiesApiAuthenticationPluginId = createNotificatiesApiAuthenticationPlugin()
+            val notificatiesApiPluginId = createNotificatiesApiPlugin(notificatiesApiAuthenticationPluginId)
+            val objectenApiAuthenticationPluginId = createObjectenApiAuthenticationPlugin()
+            val objectenApiPluginId = createObjectenApiPlugin(objectenApiAuthenticationPluginId)
+            val objecttypenApiPluginId = createObjecttypenApiPlugin(objectenApiAuthenticationPluginId)
+            val bezwaarConfigurationId = createBezwaarObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
+            createBomenObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
+            createVerzoekPlugin(notificatiesApiPluginId, bezwaarConfigurationId)
+            createSmartDocumentsPlugin()
         } catch (ex: Exception) {
             logger.error { ex }
         }
@@ -257,7 +286,280 @@ class ApplicationReadyEventListener(
         )
     }
 
-    fun connectZaakType(event: DocumentDefinitionDeployedEvent) {
+    private fun createZakenApiAuthenticationPlugin(): UUID {
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "OpenZaak Authentication",
+                pluginDefinitionKey = "openzaak",
+            )
+        )
+        return if (existing.isEmpty()) {
+            pluginService.createPluginConfiguration(
+                title = "OpenZaak Authentication",
+                pluginDefinitionKey = "openzaak",
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "clientId": "valtimo_client",
+                        "clientSecret": "e09b8bc5-5831-4618-ab28-41411304309d"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
+    private fun createNotificatiesApiAuthenticationPlugin(): UUID {
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "OpenNotificaties Authentication",
+                pluginDefinitionKey = "notificatiesapiauthentication",
+            )
+        )
+        val mapper = JsonMapper.builder()
+            .enable(JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER)
+            .build();
+        return if (existing.isEmpty()) {
+            pluginService.createPluginConfiguration(
+                title = "OpenNotificaties Authentication",
+                pluginDefinitionKey = "notificatiesapiauthentication",
+                properties = mapper.readValue(
+                    """
+                    {
+                        "clientId": "valtimo",
+                        "clientSecret": "zZ!xRP&\${'$'}qTn4A9ETa^ZMKepDm^8egjPz"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
+    private fun createNotificatiesApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "Notificaties API",
+                pluginDefinitionKey = "notificatiesapi",
+            )
+        )
+        return if (existing.isEmpty()) {
+            return pluginService.createPluginConfiguration(
+                title = "Notificaties API",
+                pluginDefinitionKey = "notificatiesapi",
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "url": "http://localhost:8002/",
+                        "authenticationPluginConfiguration": "$authenticationPluginConfigurationId"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
+    private fun createObjectenApiAuthenticationPlugin(): UUID {
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "Objecten API Authentication",
+                pluginDefinitionKey = "objecttokenauthentication",
+            )
+        )
+        return if (existing.isEmpty()) {
+            pluginService.createPluginConfiguration(
+                title = "Objecten API Authentication",
+                pluginDefinitionKey = "objecttokenauthentication",
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "token": "182c13e2209161852c53cef53a879f7a2f923430"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
+    private fun createObjectenApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "Objecten API",
+                pluginDefinitionKey = "objectenapi",
+            )
+        )
+        return if (existing.isEmpty()) {
+            return pluginService.createPluginConfiguration(
+                title = "Objecten API",
+                pluginDefinitionKey = "objectenapi",
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "url": "http://localhost:8010/api/v2/",
+                        "authenticationPluginConfiguration": "$authenticationPluginConfigurationId"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
+    private fun createObjecttypenApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "Objecttypen API",
+                pluginDefinitionKey = "objecttypenapi",
+            )
+        )
+        return if (existing.isEmpty()) {
+            return pluginService.createPluginConfiguration(
+                title = "Objecttypen API",
+                pluginDefinitionKey = "objecttypenapi",
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "url": "http://host.docker.internal:8011/api/v1/objecttypes/",
+                        "authenticationPluginConfiguration": "$authenticationPluginConfigurationId"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
+    private fun createCatalogiApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "Catalogi API",
+                pluginDefinitionKey = "catalogiapi",
+            )
+        )
+        return if (existing.isEmpty()) {
+            return pluginService.createPluginConfiguration(
+                title = "Catalogi API",
+                pluginDefinitionKey = "catalogiapi",
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "url": "http://localhost:8001/catalogi/api/v1/",
+                        "authenticationPluginConfiguration": "$authenticationPluginConfigurationId"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
+    private fun createVerzoekPlugin(notificatiesApiPluginConfiguration: UUID, objectManagementId: UUID): UUID {
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "Verzoek lening",
+                pluginDefinitionKey = "verzoek",
+            )
+        )
+        return if (existing.isEmpty()) {
+            return pluginService.createPluginConfiguration(
+                title = "Verzoek lening",
+                pluginDefinitionKey = "verzoek",
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "notificatiesApiPluginConfiguration": "$notificatiesApiPluginConfiguration",
+                        "objectManagementId": "$objectManagementId",
+                        "systemProcessDefinitionKey": "verzoek",
+                        "rsin": "051845623",
+                        "verzoekProperties": [{
+                            "type": "lening",
+                            "caseDefinitionName": "leningen",
+                            "processDefinitionKey": "lening-aanvragen",
+                            "initiatorRoltypeUrl": "http://localhost:8001/catalogi/api/v1/roltypen/1c359a1b-c38d-47b8-bed5-994db88ead61",
+                            "initiatorRolDescription": "Initiator"
+                        }]
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
+    private fun createSmartDocumentsPlugin(): UUID {
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "SmartDocuments",
+                pluginDefinitionKey = "smartdocuments",
+            )
+        )
+        return if (existing.isEmpty()) {
+            return pluginService.createPluginConfiguration(
+                title = "SmartDocuments",
+                pluginDefinitionKey = "smartdocuments",
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "url": "https://example.com/",
+                        "username": "test-user",
+                        "password": "test-password"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
+    private fun createBezwaarObjectManagement(
+        objecttypenApiPluginConfigurationId: UUID,
+        objectenApiPluginConfigurationId: UUID
+    ): UUID {
+        return objectManagementService.update(
+            ObjectManagement(
+                id = UUID.fromString("29400564-d25f-491c-abb2-afc42894ac9d"),
+                title = "Bezwaar",
+                objecttypenApiPluginConfigurationId = objecttypenApiPluginConfigurationId,
+                objecttypeId = "021f685e-9482-4620-b157-34cd4003da6b",
+                objectenApiPluginConfigurationId = objectenApiPluginConfigurationId,
+                showInDataMenu = false,
+                formDefinitionView = null,
+                formDefinitionEdit = null,
+            )
+        ).id
+    }
+
+    private fun createBomenObjectManagement(
+        objecttypenApiPluginConfigurationId: UUID,
+        objectenApiPluginConfigurationId: UUID
+    ): UUID {
+        return objectManagementService.update(
+            ObjectManagement(
+                id = UUID.fromString("d8257077-ec44-44d3-9d2e-e8c87fa6fd09"),
+                title = "Bomen",
+                objecttypenApiPluginConfigurationId = objecttypenApiPluginConfigurationId,
+                objecttypeId = "feeaa795-d212-4fa2-bb38-2c34996e5702",
+                objectenApiPluginConfigurationId = objectenApiPluginConfigurationId,
+                showInDataMenu = true,
+                formDefinitionView = "boom.editform",
+                formDefinitionEdit = "boom.editform",
+            )
+        ).id
+    }
+
+    private fun connectZaakType(event: DocumentDefinitionDeployedEvent) {
         if (event.documentDefinition().id().name().equals("leningen")) {
             zaakTypeLinkService.createZaakTypeLink(
                 CreateZaakTypeLinkRequest(
@@ -276,7 +578,7 @@ class ApplicationReadyEventListener(
         }
     }
 
-    fun setDocumentDefinitionRole(event: DocumentDefinitionDeployedEvent) {
+    private fun setDocumentDefinitionRole(event: DocumentDefinitionDeployedEvent) {
         documentDefinitionService.putDocumentDefinitionRoles(
             event.documentDefinition().id().name(),
             setOf(AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER)
