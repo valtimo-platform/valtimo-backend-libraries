@@ -17,6 +17,7 @@
 package com.ritense.portaaltaak
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -24,6 +25,7 @@ import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -35,13 +37,14 @@ internal class PortaaltaakPluginFactoryTest {
         val pluginService = mock<PluginService>()
         whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
 
-        val factory = PortaaltaakPluginFactory(
-            pluginService
-        )
+        val notificatiesApiPluginMock = mock<NotificatiesApiPlugin>()
+        whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(notificatiesApiPluginMock)
+
+        val factory = PortaaltaakPluginFactory(pluginService)
 
         val portaaltaakPluginProperties: String = """
             {
-              "openNotificatiesPluginConfigurationUuid": "4d9e7fe7-0671-4955-a106-fc71dc7527a6"
+              "notificatiesApiPluginConfiguration": "4d9e7fe7-0671-4955-a106-fc71dc7527a6"
             }
         """.trimIndent()
         val pluginDefinition = createPluginDefinition()
@@ -55,7 +58,7 @@ internal class PortaaltaakPluginFactoryTest {
         )
         val plugin = factory.create(pluginConfiguration)
 
-        assertEquals("4d9e7fe7-0671-4955-a106-fc71dc7527a6", plugin.openNotificatiesPluginConfigurationUuid.toString())
+        assertEquals(notificatiesApiPluginMock, plugin.notificatiesApiPluginConfiguration)
     }
 
     private fun createPluginDefinition(): PluginDefinition {
@@ -70,8 +73,9 @@ internal class PortaaltaakPluginFactoryTest {
 
         propertyDefinitions.add(
             PluginProperty(
-                "openNotificatiesPluginConfigurationUuid", pluginDefinition, "title", required = true,
-                secret = false, "openNotificatiesPluginConfigurationUuid", "java.util.UUID"
+                "notificatiesApiPluginConfiguration", pluginDefinition, "title", required = true,
+                secret = false, "notificatiesApiPluginConfiguration",
+                "com.ritense.notificatiesapi.NotificatiesApiPlugin"
             )
         )
 
