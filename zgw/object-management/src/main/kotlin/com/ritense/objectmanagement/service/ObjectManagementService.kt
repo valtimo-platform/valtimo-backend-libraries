@@ -17,14 +17,16 @@
 package com.ritense.objectmanagement.service
 
 import com.ritense.objectenapi.ObjectenApiPlugin
-import com.ritense.objectenapi.client.ObjectWrapper
-import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.objectmanagement.domain.ObjectManagement
+import com.ritense.objectmanagement.domain.ObjectsDto
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import java.util.UUID
+import mu.KLogger
+import mu.KotlinLogging
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -66,8 +68,14 @@ class ObjectManagementService(
 
     fun deleteById(id: UUID) = objectManagementRepository.deleteById(id)
 
-    fun getObjects(id: UUID, pageable: Pageable): PageImpl<ObjectWrapper> {
-        val objectManagement = getById(id)!!
+    fun getObjects(id: UUID, pageable: Pageable): PageImpl<ObjectsDto> {
+        val objectManagement = getById(id) ?: let {
+            logger.info {
+                "The requested Id is not configured as a objectnamagement configuration. " +
+                    "The requested id was: $id"
+            }
+            throw NotFoundException()
+        }
 
         val objectTypePluginInstance = pluginService
             .createInstance(
@@ -86,6 +94,19 @@ class ObjectManagementService(
             pageable
         )
 
-        return PageImpl(objectsList.results, pageable, objectsList.count.toLong())
+        val objectsDtoList = objectsList.results.map {
+            ObjectsDto(it.url.toString(), it.record.index ?: let {
+                logger.info {
+                    "No index available"
+                }
+                throw throw NotFoundException()
+            })
+        }
+
+        return PageImpl(objectsDtoList, pageable, objectsList.count.toLong())
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

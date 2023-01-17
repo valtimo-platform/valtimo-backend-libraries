@@ -57,7 +57,7 @@ class ObjectenApiClient(
             .get()
             .uri { builder ->
                 builder
-                    .queryParam("type", "${objecttypesApiUrl}${objectypeId}")
+                    .queryParam("type", "${objecttypesApiUrl}/api/v1/objecttypes/${objectypeId}")
                     .queryParam("pageSize", pageable.pageSize)
                     .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
                     .build()
