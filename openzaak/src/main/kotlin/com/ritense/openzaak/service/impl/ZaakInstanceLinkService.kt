@@ -18,11 +18,11 @@
 
 package com.ritense.openzaak.service.impl
 
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
 import com.ritense.openzaak.exception.ZaakInstanceLinkNotFoundException
-import com.ritense.openzaak.repository.ZaakInstanceLinkRepository
 import com.ritense.openzaak.service.ZaakInstanceLinkService
+import com.ritense.zakenapi.domain.ZaakInstanceLink
+import com.ritense.zakenapi.domain.ZaakInstanceLinkId
+import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import java.net.URI
 import java.util.UUID
 

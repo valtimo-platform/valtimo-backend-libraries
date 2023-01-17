@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.mapping.impl
+package com.ritense.zakenapi.repository
 
 import com.ritense.zakenapi.domain.ZaakInstanceLink
+import com.ritense.zakenapi.domain.ZaakInstanceLinkId
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
+import java.net.URI
+import java.util.UUID
 
-class ZaakInstanceLinks : HashSet<ZaakInstanceLink> {
-    constructor() : super()
-    constructor(c: Collection<ZaakInstanceLink>) : super(c)
+@Repository
+interface ZaakInstanceLinkRepository : JpaRepository<ZaakInstanceLink, ZaakInstanceLinkId> {
+
+    fun findByDocumentId(documentId: UUID): ZaakInstanceLink?
+
+    fun findByZaakInstanceUrl(zaakInstanceUrl: URI): ZaakInstanceLink?
 }

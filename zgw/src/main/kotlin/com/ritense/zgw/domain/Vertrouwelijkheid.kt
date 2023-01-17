@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.mapping.impl
+package com.ritense.zgw.domain
 
-import com.ritense.zakenapi.domain.ZaakInstanceLink
+import com.fasterxml.jackson.annotation.JsonValue
 
-class ZaakInstanceLinks : HashSet<ZaakInstanceLink> {
-    constructor() : super()
-    constructor(c: Collection<ZaakInstanceLink>) : super(c)
+enum class Vertrouwelijkheid(@JsonValue val key: String) {
+    OPENBAAR("openbaar"),
+    BEPERKT_OPENBAAR("beperkt_openbaar"),
+    INTERN("intern"),
+    ZAAKVERTROUWELIJK("zaakvertrouwelijk"),
+    VERTROUWELIJK("vertrouwelijk"),
+    CONFIDENTIEEL("confidentieel"),
+    GEHEIM("geheim"),
+    ZEER_GEHEIM("zeer_geheim")
 }
