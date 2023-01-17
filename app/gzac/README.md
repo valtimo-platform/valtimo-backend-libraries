@@ -1,16 +1,16 @@
-###GZAC
+### GZAC
 
 This is a GZAC - Valtimo edition for local development.
 Includes an array of additional services for OpenZaak/OpenFormulieren
 
 Clone external git repo https://github.com/valtimo-platform/valtimo-docker-profiles
 
-####1 Docker-compose up
+#### Docker-compose up
 
 Run in terminal:
 <code>valtimo-docker-profiles/gzac-platform% docker-compose up</code>
 
-####2 Run Spring-boot-application
+#### Run Spring-boot-application
 
 Run in IntellJ Gradle: <code>app -> gzac -> application -> bootRun</code>
 
