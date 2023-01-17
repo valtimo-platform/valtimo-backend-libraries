@@ -39,7 +39,6 @@ import mu.KotlinLogging
     description = "Enable interfacing with Notificaties API specification compliant APIs"
 )
 @PluginCategory("notificaties-api-plugin")
-class NotificatiesApiPlugin {
 class NotificatiesApiPlugin(
     val pluginConfigurationId: PluginConfigurationId,
     private val client: NotificatiesApiClient,
