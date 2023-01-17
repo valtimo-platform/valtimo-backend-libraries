@@ -43,7 +43,7 @@ class CatalogiResource(
         return ResponseEntity.ok(zaakObjectTypes)
     }
 
-    @GetMapping(value = ["/v1/case/{caseDefinitionName}/zaaktype/roltype"])
+    @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/roltype"])
     fun getZaakRoltypes(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<RoltypeDto>> {
