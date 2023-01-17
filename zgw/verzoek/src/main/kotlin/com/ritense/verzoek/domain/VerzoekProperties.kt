@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.web.rest.result
+package com.ritense.verzoek.domain
 
 import java.net.URI
-import java.util.UUID
 
-class ZaakInstanceLinkDTO(
-    val zaakInstanceUrl: URI,
-    val documentId: UUID
+data class VerzoekProperties(
+    val type: String,
+    val caseDefinitionName: String,
+    val processDefinitionKey: String,
+    val initiatorRoltypeUrl: URI,
+    val initiatorRolDescription: String,
 )

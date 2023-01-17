@@ -16,14 +16,15 @@
 
 package com.ritense.case.service
 
+import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.domain.EmptyDisplayTypeParameter
-import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.document.service.DocumentSearchService
@@ -44,6 +45,8 @@ class CaseInstanceServiceTest {
 
     private lateinit var service: CaseInstanceService
 
+    private lateinit var caseDefinitionService: CaseDefinitionService
+
     private lateinit var caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository
 
     private lateinit var documentSearchService: DocumentSearchService
@@ -52,10 +55,12 @@ class CaseInstanceServiceTest {
 
     @BeforeEach
     fun setUp() {
+        caseDefinitionService = mock()
         caseDefinitionListColumnRepository = mock()
         documentSearchService = mock()
         valueResolverService = mock()
         service = CaseInstanceService(
+            caseDefinitionService,
             caseDefinitionListColumnRepository,
             documentSearchService,
             valueResolverService,
@@ -66,6 +71,7 @@ class CaseInstanceServiceTest {
             .thenReturn(listOf(FIRST_NAME_CASE_LIST_COLUMN))
         whenever(valueResolverService.resolveValues(DOCUMENT.id().id.toString(), listOf("doc:firstName")))
             .thenReturn(mapOf("doc:firstName" to "John"))
+        whenever(DOCUMENT.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId(CASE_DEFINITION_NAME))
     }
 
     @Test
@@ -74,6 +80,8 @@ class CaseInstanceServiceTest {
         val pageable = Pageable.ofSize(10)
         whenever(documentSearchService.search(CASE_DEFINITION_NAME, searchRequest, pageable))
             .thenReturn(PageImpl(listOf(DOCUMENT)))
+        whenever(caseDefinitionService.getCaseSettings(CASE_DEFINITION_NAME))
+            .thenReturn(CaseDefinitionSettings(CASE_DEFINITION_NAME, false))
 
         val documentsPage = service.search(CASE_DEFINITION_NAME, searchRequest, pageable)
 
@@ -84,15 +92,17 @@ class CaseInstanceServiceTest {
     }
 
     @Test
-    fun `should throw error when sorting the search with unknown case list column`() {
+    fun `should sort on jsonpath when sorting the search`() {
         val searchRequest = SearchWithConfigRequest()
-        val pageable = PageRequest.of(0,1, Sort.by("unknown-case-list-column"))
+        val pageable = PageRequest.of(0, 1, Sort.by("\$.some.jsonPath"))
         whenever(documentSearchService.search(CASE_DEFINITION_NAME, searchRequest, pageable))
             .thenReturn(PageImpl(listOf(DOCUMENT)))
+        whenever(caseDefinitionService.getCaseSettings(CASE_DEFINITION_NAME))
+            .thenReturn(CaseDefinitionSettings(CASE_DEFINITION_NAME, false))
 
-        assertThrows<InvalidListColumnException> {
-            service.search(CASE_DEFINITION_NAME, searchRequest, pageable)
-        }
+        val documentsPage = service.search(CASE_DEFINITION_NAME, searchRequest, pageable)
+
+        assertEquals(documentsPage.content.size, 1)
     }
 
     companion object {
