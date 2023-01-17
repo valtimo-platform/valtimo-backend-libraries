@@ -21,6 +21,6 @@ import java.net.URI
 data class RoltypeRequest(
     val zaaktype: URI? = null,
     val omschrijvingGeneriek: String? = null,
-    val status: ZaakPublishedStatus? = null,
+    val status: ZaakTypePublishedStatus? = null,
     val page: Int? = null
 )

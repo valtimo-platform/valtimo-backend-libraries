@@ -16,7 +16,7 @@
 
 package com.ritense.catalogiapi.client
 
-enum class ZaakPublishedStatus {
+enum class ZaakTypePublishedStatus {
     ALLES,
     CONCEPT,
     DEFINITIEF;

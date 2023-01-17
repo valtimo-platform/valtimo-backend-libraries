@@ -66,7 +66,7 @@ internal class CatalogiApiClientTes {
             zaaktype = URI("http://example.com/zaaktype"),
             informatieobjecttype = URI("http://example.com/informatieobjecttype"),
             richting = InformatieobjecttypeRichting.INKOMEND,
-            status = ZaakPublishedStatus.ALLES,
+            status = ZaakTypePublishedStatus.ALLES,
             page = 3
         )
         val recordedRequest = sendGetZaaktypeInformatieobjecttypeRequest(request)
@@ -168,7 +168,7 @@ internal class CatalogiApiClientTes {
             request = RoltypeRequest(
                 zaaktype = URI(zaakTypeUrl),
                 omschrijvingGeneriek = "initiator",
-                status = ZaakPublishedStatus.ALLES,
+                status = ZaakTypePublishedStatus.ALLES,
                 page = 1
             )
         )
