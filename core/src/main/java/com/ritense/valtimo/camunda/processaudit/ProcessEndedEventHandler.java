@@ -40,6 +40,7 @@ public class ProcessEndedEventHandler implements HistoryEventHandler {
             final String processDefinitionId = historyEvent.getProcessDefinitionId();
             final String processInstanceId = historyEvent.getProcessInstanceId();
             final String businessKey = ((HistoricProcessInstanceEventEntity) historyEvent).getBusinessKey();
+            final String processDefinitionKey = historyEvent.getProcessDefinitionKey();
 
             applicationEventPublisher.publishEvent(
                 new ProcessEndedEvent(
@@ -49,7 +50,8 @@ public class ProcessEndedEventHandler implements HistoryEventHandler {
                     AuditHelper.getActor(),
                     processDefinitionId,
                     processInstanceId,
-                    businessKey
+                    businessKey,
+                    processDefinitionKey
                 )
             );
         }

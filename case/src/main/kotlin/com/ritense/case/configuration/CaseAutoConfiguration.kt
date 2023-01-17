@@ -86,11 +86,13 @@ class CaseAutoConfiguration {
 
     @Bean
     fun caseInstanceService(
+        caseDefinitionService: CaseDefinitionService,
         caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
         documentSearchService: DocumentSearchService,
         valueResolverService: ValueResolverService,
     ): CaseInstanceService {
         return CaseInstanceService(
+            caseDefinitionService,
             caseDefinitionListColumnRepository,
             documentSearchService,
             valueResolverService,

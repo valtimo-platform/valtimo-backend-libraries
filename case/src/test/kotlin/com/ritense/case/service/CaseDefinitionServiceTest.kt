@@ -75,11 +75,11 @@ class CaseDefinitionServiceTest {
         val caseDefinitionName = "name"
         val caseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, true)
 
-        whenever(caseDefinitionSettingsRepository.getById(caseDefinitionName)).thenReturn(caseDefinitionSettings)
+        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)).thenReturn(caseDefinitionSettings)
 
         val foundCaseDefinitionSettings = service.getCaseSettings(caseDefinitionName)
 
-        verify(caseDefinitionSettingsRepository).getById(caseDefinitionName)
+        verify(caseDefinitionSettingsRepository).getReferenceById(caseDefinitionName)
         assertEquals(caseDefinitionName, foundCaseDefinitionSettings.name)
         assertTrue(foundCaseDefinitionSettings.canHaveAssignee)
     }
@@ -105,13 +105,13 @@ class CaseDefinitionServiceTest {
         val currentCaseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, true)
         val updatedCaseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, false)
         val caseSettingsDto: CaseSettingsDto = mock()
-        whenever(caseDefinitionSettingsRepository.getById(caseDefinitionName)).thenReturn(currentCaseDefinitionSettings)
+        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)).thenReturn(currentCaseDefinitionSettings)
         whenever(caseDefinitionSettingsRepository.save(updatedCaseDefinitionSettings)).thenReturn(
             updatedCaseDefinitionSettings
         )
         whenever(caseSettingsDto.update(currentCaseDefinitionSettings)).thenReturn(updatedCaseDefinitionSettings)
         val returnedCaseDefinitionSettings = service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
-        verify(caseDefinitionSettingsRepository).getById(caseDefinitionName)
+        verify(caseDefinitionSettingsRepository).getReferenceById(caseDefinitionName)
         assertEquals(caseDefinitionName, returnedCaseDefinitionSettings.name)
         assertFalse(returnedCaseDefinitionSettings.canHaveAssignee)
     }

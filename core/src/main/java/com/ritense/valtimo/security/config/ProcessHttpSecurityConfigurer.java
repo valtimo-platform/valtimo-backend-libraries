@@ -32,7 +32,7 @@ public class ProcessHttpSecurityConfigurer implements HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                     .antMatchers(GET, "/api/v1/process/definition").hasAuthority(USER)
-                    .antMatchers(GET, "/api/v1/process/definition/{processDefinitionId}/count").hasAuthority(USER)
+                    .antMatchers(POST, "/api/v1/process/definition/{processDefinitionId}/count").hasAuthority(USER)
                     .antMatchers(GET, "/api/v1/process/definition/{processDefinitionId}/xml").hasAuthority(USER)
                     .antMatchers(PUT, "/api/v1/process/definition/{processDefinitionId}/xml/timer").hasAuthority(USER)
                     .antMatchers(GET, "/api/v1/process/definition/{processDefinitionKey}/search-properties").hasAuthority(USER)
@@ -54,7 +54,7 @@ public class ProcessHttpSecurityConfigurer implements HttpSecurityConfigurer {
                     .antMatchers(GET, "/api/v1/process/{processInstanceId}/activities").hasAuthority(USER)
                     .antMatchers(GET, "/api/v1/process/{processInstanceId}/comments").hasAuthority(USER)
                     .antMatchers(GET, "/api/v1/process/{processDefinitionName}/search").hasAuthority(USER)
-                    .antMatchers(GET, "/api/v1/process/{processDefinitionName}/count").hasAuthority(USER)
+                    .antMatchers(POST, "/api/v1/process/{processDefinitionName}/count").hasAuthority(USER)
                     .antMatchers(POST, "/api/v1/process/{processInstanceId}/comment").hasAuthority(USER)
                     .antMatchers(POST, "/api/v1/process/{processInstanceId}/delete").hasAuthority(ADMIN)
                     .antMatchers(POST, "/api/v1/process/definition/deployment").hasAuthority(ADMIN);

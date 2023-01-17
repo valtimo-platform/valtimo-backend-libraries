@@ -19,6 +19,7 @@ package com.ritense.document.web.rest.searchfields;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.domain.impl.searchfield.SearchField;
+import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import com.ritense.document.domain.impl.searchfield.SearchFieldFieldType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
@@ -119,8 +120,38 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    void shouldRespondWith400WhenDataTypeNotTextAndMatchTypeNotExact() throws Exception {
+        var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
+        searchFieldDto.setDataType(SearchFieldDataType.DATE);
+        searchFieldDto.setMatchType(LIKE);
+        mockMvc.perform(
+                        post("/api/v1/document-search/{documentDefinitionName}/fields",
+                                DOCUMENT_DEFINITION_NAME)
+                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    void shouldRespondWith400WhenDataTypeBooleanAndFieldTypeRange() throws Exception {
+        var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
+        searchFieldDto.setDataType(SearchFieldDataType.BOOLEAN);
+        searchFieldDto.setFieldType(SearchFieldFieldType.RANGE);
+        mockMvc.perform(
+                        post("/api/v1/document-search/{documentDefinitionName}/fields",
+                                DOCUMENT_DEFINITION_NAME)
+                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
     void shouldRespondWith400BadRequestOnSearchFieldPathValidationError() throws Exception {
-        var searchFieldDto = new SearchFieldDto("lastName", "doc:invalid.path", TEXT, SINGLE, LIKE,null);
+        var searchFieldDto = new SearchFieldDto("lastName", "doc:invalid.path", TEXT, SINGLE, LIKE, null);
 
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
@@ -129,7 +160,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.detail", is("JsonPath '$.invalid.path' doesn't point to any property inside document definition '"+DOCUMENT_DEFINITION_NAME+"'")));
+                .andExpect(jsonPath("$.detail", is("JsonPath '$.invalid.path' doesn't point to any property inside document definition '" + DOCUMENT_DEFINITION_NAME + "'")));
     }
 
     @Test
@@ -153,7 +184,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$[0].dataType", is(TEXT.toString())))
                 .andExpect(jsonPath("$[0].fieldType", is(SINGLE.toString())))
                 .andExpect(jsonPath("$[0].matchType", is(EXACT.toString())))
-                .andExpect(jsonPath("$[0].title", is("aTitle")));;
+                .andExpect(jsonPath("$[0].title", is("aTitle")));
     }
 
     @Test
@@ -205,16 +236,16 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldReturnChangeOrderingWhenUpdateSearchFields() throws Exception {
         var searchFields = List.of(
-                new SearchFieldDto("age", "doc:age", NUMBER, SINGLE, EXACT,null),
-                new SearchFieldDto("firstName", "doc:firstName", TEXT, SINGLE, LIKE,null)
+                new SearchFieldDto("age", "doc:age", NUMBER, SINGLE, EXACT, null),
+                new SearchFieldDto("firstName", "doc:firstName", TEXT, SINGLE, LIKE, null)
         );
         mockMvc.perform(
-                put("/api/v1/document-search/{documentDefinitionName}/fields",
-                    "person")
-                    .content(Mapper.INSTANCE.get().writeValueAsString(searchFields))
-                    .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andDo(print())
-            .andExpect(status().isOk());
+                        put("/api/v1/document-search/{documentDefinitionName}/fields",
+                                "person")
+                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFields))
+                                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk());
 
         var searchFieldsResult = searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder("person");
         assertEquals("age", searchFieldsResult.get(0).getKey());

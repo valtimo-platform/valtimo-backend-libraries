@@ -15,6 +15,7 @@ plugins {
     id "jacoco"
     id "com.avast.gradle.docker-compose" version "${dockerComposePluginVersion}"
     id "com.github.jk1.dependency-license-report" version "${dependencyLicenseReportVersion}"
+    id "project-report"
 }
 
 /*
@@ -42,6 +43,10 @@ def allTestCoverageFile = "${rootProject.buildDir}/jacoco/allTestCoverage.exec"
 task jacocoMerge(type: JacocoMerge, group: 'verification') {
     destinationFile = file(allTestCoverageFile)
     executionData = project.fileTree(dir: '.', include: '**/build/jacoco/test.exec')
+}
+
+htmlDependencyReport {
+    projects = project.allprojects
 }
 
 //Sonarqube

@@ -21,6 +21,7 @@ import com.ritense.openzaak.security.config.InformatieObjectTypeLinkHttpSecurity
 import com.ritense.openzaak.security.config.OpenZaakConfigHttpSecurityConfigurer
 import com.ritense.openzaak.security.config.ResultaatHttpSecurityConfigurer
 import com.ritense.openzaak.security.config.StatusHttpSecurityConfigurer
+import com.ritense.openzaak.security.config.ZaakInstanceLinkHttpSecurityConfigurer
 import com.ritense.openzaak.security.config.ZaakTypeHttpSecurityConfigurer
 import com.ritense.openzaak.security.config.ZaakTypeLinkHttpSecurityConfigurer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -57,6 +58,13 @@ class OpenZaakSecurityAutoConfiguration {
     @ConditionalOnMissingBean(StatusHttpSecurityConfigurer::class)
     fun statusHttpSecurityConfigurer(): StatusHttpSecurityConfigurer {
         return StatusHttpSecurityConfigurer()
+    }
+
+    @Bean
+    @Order(270)
+    @ConditionalOnMissingBean(ZaakInstanceLinkHttpSecurityConfigurer::class)
+    fun zaakInstanceLinkHttpSecurityConfigurer(): ZaakInstanceLinkHttpSecurityConfigurer {
+        return ZaakInstanceLinkHttpSecurityConfigurer()
     }
 
     @Bean
