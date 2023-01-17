@@ -27,14 +27,18 @@ import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
-class CaseHttpSecurityConfigurer: HttpSecurityConfigurer {
+class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(USER)
                 .antMatchers(PATCH, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(ADMIN)
-        } catch(e: Exception) {
+                .antMatchers(POST, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/case/{caseDefinitionName}/list-column/{columnKey}").hasAuthority(ADMIN)
+        } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
     }

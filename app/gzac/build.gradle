@@ -26,6 +26,8 @@ dependencies {
     implementation(project(":resource:temporary-resource-storage"))
     implementation(project(":web"))
     implementation(project(":zgw:documenten-api"))
+    implementation(project(":zgw:notificaties-api"))
+    implementation(project(":zgw:object-management"))
     implementation(project(":zgw:objecten-api"))
     implementation(project(":zgw:objecttypen-api"))
     implementation(project(":zgw:zaken-api"))

@@ -8,11 +8,11 @@
             "matchType": "like"
         },
         {
-            "key": "lastName",
-            "path": "doc:lastName",
-            "dataType": "text",
+            "key": "age",
+            "path": "doc:age",
+            "dataType": "number",
             "fieldType": "single",
-            "matchType": "like"
+            "matchType": "exact"
         }
     ]
 }

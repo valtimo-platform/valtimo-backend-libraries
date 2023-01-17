@@ -81,23 +81,33 @@ class FormFlowInstance(
         return navigateToNextStep()
     }
 
-
     /**
      * This method navigates to the previous step (if present).
      *
      * @return The previous step (optional)
      */
     fun back(): FormFlowStepInstance? {
-        val previousStepOrder = getCurrentStep().order - 1
+        val currentStep = getCurrentStep()
+        val previousStepOrder = currentStep.order - 1
         return if (previousStepOrder >= 0) {
-            val formFlowStepInstance = getCurrentStep()
-            formFlowStepInstance.back()
+            currentStep.back()
             val previousStep = history.single { it.order == previousStepOrder }
             currentFormFlowStepInstanceId = previousStep.id
             previousStep
         } else {
             null
         }
+    }
+
+    /**
+     * This method saves submission data for the current step but will *not* complete the step.
+     * The submitted data can be changed at any time.
+     * @param incompleteSubmissionData This data will be set as the submissionData of the step.
+     *
+     * @return The previous step (optional)
+     */
+    fun save(incompleteSubmissionData: JSONObject) {
+        getCurrentStep().save(incompleteSubmissionData.toString())
     }
 
     fun getCurrentStep(): FormFlowStepInstance {
@@ -144,7 +154,8 @@ class FormFlowInstance(
     }
 
     private fun mergeSubmissionData(source: JSONObject, target: JSONObject) {
-        for (key in JSONObject.getNames(source)) {
+        val keys = JSONObject.getNames(source) ?: arrayOf()
+        for (key in keys) {
             val value = source.get(key)
             if (target.has(key) && value is JSONObject) {
                 mergeSubmissionData(value, target.getJSONObject(key))
@@ -171,17 +182,17 @@ class FormFlowInstance(
         if (currentFormFlowStepInstanceId == null && history.isNotEmpty()) {
             return null
         }
-        var stepKey = formFlowDefinition.startStep
-        var stepOrder = 0
-        if (currentFormFlowStepInstanceId != null) {
+
+        val stepKey: String
+        val stepOrder: Int
+        if (currentFormFlowStepInstanceId == null) {
+            stepKey = formFlowDefinition.startStep
+            stepOrder = 0
+        } else  {
             val currentStepInstance = getCurrentStep()
-            val currentStep = formFlowDefinition.getStepByKey(currentStepInstance.stepKey)
+            val nextStep = currentStepInstance.determineNextStep() ?: return null
 
-            if (currentStep.nextSteps.isEmpty()) {
-                return null
-            }
-
-            stepKey = currentStep.nextSteps.first().step
+            stepKey = nextStep.step
             stepOrder = currentStepInstance.order + 1
         }
         return history.singleOrNull { it.stepKey == stepKey && it.order == stepOrder }

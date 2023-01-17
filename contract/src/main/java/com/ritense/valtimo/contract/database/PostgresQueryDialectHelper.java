@@ -40,7 +40,10 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
         if (String.class.isAssignableFrom(type)) {
             return cb.trim('"', jsonValue.as(String.class)).as(type);
         } else if (TemporalAccessor.class.isAssignableFrom(type)) {
-            return jsonValue.as(String.class).as(type);
+            return cb.selectCase()
+                .when(jsonValue.as(String.class).in("\"\""), cb.nullLiteral(type))
+                .otherwise(cb.trim('"', jsonValue.as(String.class)))
+                .as(type);
         } else {
             return jsonValue.as(type);
         }
