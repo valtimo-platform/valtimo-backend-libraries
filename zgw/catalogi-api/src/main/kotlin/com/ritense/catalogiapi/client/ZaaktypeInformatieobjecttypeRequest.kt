@@ -23,6 +23,6 @@ data class ZaaktypeInformatieobjecttypeRequest(
     val zaaktype: URI? = null,
     val informatieobjecttype: URI? = null,
     val richting: InformatieobjecttypeRichting? = null,
-    val status: ZaaktypeInformatieobjecttypeStatus? = null,
+    val status: ZaakTypePublishedStatus? = null,
     val page: Int? = null
 )
