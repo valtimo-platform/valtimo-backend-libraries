@@ -16,8 +16,6 @@
 
 package com.ritense.objectenapi.web.rest
 
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
@@ -27,6 +25,8 @@ import com.ritense.valtimo.contract.json.Mapper
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.MockMvc
@@ -186,4 +186,5 @@ internal class ZaakObjectResourceTest {
         converter.objectMapper = Mapper.INSTANCE.get()
         return converter
     }
+
 }

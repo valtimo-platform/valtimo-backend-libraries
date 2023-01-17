@@ -17,6 +17,7 @@
 package com.ritense.case.web.rest.dto
 
 data class CaseListRowDto(
+    val id: String,
     val items: List<CaseListItemDto>,
 ) {
 

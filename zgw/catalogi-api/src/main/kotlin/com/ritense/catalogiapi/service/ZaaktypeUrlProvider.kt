@@ -20,4 +20,5 @@ import java.net.URI
 
 interface ZaaktypeUrlProvider {
     fun getZaaktypeUrl(documentDefinitionName: String): URI
+    fun getZaaktypeUrlByCaseDefinitionName(caseDefinitionName: String): URI
 }

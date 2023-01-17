@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.catalogiapi.client
+package com.ritense.verzoek
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.ritense.catalogiapi.domain.InformatieobjecttypeRichting
-import java.net.URI
+import com.ritense.BaseIntegrationTest
+import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.Test
 
-enum class ZaaktypeInformatieobjecttypeStatus {
-    ALLES,
-    CONCEPT,
-    DEFINITIEF;
+internal class VerzoekAutoConfigurationIntTest : BaseIntegrationTest() {
 
-    fun getSearchValue(): String {
-        return this.name.lowercase()
+    @Test
+    fun `should load application context`() {
+        Assertions.assertThat(true).isTrue
     }
 }

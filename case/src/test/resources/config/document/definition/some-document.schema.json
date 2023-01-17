@@ -1,0 +1,11 @@
+{
+    "$id": "some-document.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Some document definition",
+    "type": "object",
+    "properties": {
+        "key": {
+            "type": "string"
+        }
+    }
+}

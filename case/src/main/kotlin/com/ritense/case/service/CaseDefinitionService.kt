@@ -56,13 +56,13 @@ class CaseDefinitionService(
     @Throws(UnknownDocumentDefinitionException::class)
     fun getCaseSettings(caseDefinitionName: String): CaseDefinitionSettings {
         checkIfDocumentDefinitionExists(caseDefinitionName)
-        return caseDefinitionSettingsRepository.getById(caseDefinitionName)
+        return caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
     fun updateCaseSettings(caseDefinitionName: String, newSettings: CaseSettingsDto): CaseDefinitionSettings {
         checkIfDocumentDefinitionExists(caseDefinitionName)
-        val caseDefinitionSettings = caseDefinitionSettingsRepository.getById(caseDefinitionName)
+        val caseDefinitionSettings = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         val updatedCaseDefinition = newSettings.update(caseDefinitionSettings)
         return caseDefinitionSettingsRepository.save(updatedCaseDefinition)
     }
@@ -73,8 +73,7 @@ class CaseDefinitionService(
         caseListColumnDto: CaseListColumnDto
     ) {
         validators[Operation.CREATE]!!.validate(caseDefinitionName, caseListColumnDto)
-        caseListColumnDto.order = caseDefinitionListColumnRepository
-            .findTopByIdCaseDefinitionNameOrderByOrderDesc(caseDefinitionName)?.order ?: 0
+        caseListColumnDto.order = caseDefinitionListColumnRepository.countByIdCaseDefinitionName(caseDefinitionName)
         caseDefinitionListColumnRepository
             .save(CaseListColumnMapper.toEntity(caseDefinitionName, caseListColumnDto))
     }

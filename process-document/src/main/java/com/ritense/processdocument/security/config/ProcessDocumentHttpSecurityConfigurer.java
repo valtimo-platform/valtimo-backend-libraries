@@ -42,7 +42,10 @@ public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfig
                 .antMatchers(GET, "/api/v1/process-document/instance/document/{document-id}/audit").hasAuthority(USER)
                 .antMatchers(POST, "/api/v1/process-document/operation/new-document-and-start-process").hasAuthority(USER)
                 .antMatchers(POST, "/api/v1/process-document/operation/modify-document-and-complete-task").hasAuthority(USER)
-                .antMatchers(POST, "/api/v1/process-document/operation/modify-document-and-start-process").hasAuthority(USER);
+                .antMatchers(POST, "/api/v1/process-document/operation/modify-document-and-start-process").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/process-document/demo/{documentDefinitionName}/process").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/process-document/demo/{documentDefinitionName}/process").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/process-document/demo/{documentDefinitionName}/process").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -26,7 +26,6 @@ import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZakenApiPlugin
-import com.ritense.zakenapi.domain.ZaakObject
 import mu.KotlinLogging
 import java.net.URI
 import java.util.UUID

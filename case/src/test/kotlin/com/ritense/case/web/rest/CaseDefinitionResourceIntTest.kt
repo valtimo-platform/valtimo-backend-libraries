@@ -460,6 +460,115 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
         ).andExpect(status().isBadRequest)
     }
 
+    @Test
+    fun `should insert list column with correct order`() {
+        val caseDefinitionName = "listColumnDocumentDefinition"
+        documentDefinitionService.deploy(
+            "{\n" +
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
+        )
+        createListColumn(
+            caseDefinitionName,
+            """
+                          {
+                            "title": "First name",
+                            "key": "first-name",
+                            "path": "doc:firstName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true,
+                            "defaultSort": "ASC"
+                          }
+                """.trimIndent(), status().isOk
+        )
+        createListColumn(
+            caseDefinitionName,
+            """
+                          {
+                            "title": "Last name",
+                            "key": "last-name",
+                            "path": "doc:firstName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true
+                          }
+                """.trimIndent(), status().isOk
+        )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.get(
+                LIST_COLUMN_PATH, caseDefinitionName
+            ).contentType(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andExpect {
+                status().isOk
+                content().json(
+                    """
+                [
+                  {
+                    "title": "First name",
+                    "key": "first-name",
+                    "path": "doc:firstName",
+                    "displayType": {
+                      "type": "enum",
+                      "displayTypeParameters": {
+                        "enum": {
+                          "key1": "Value 1"
+                        }
+                      }
+                    },
+                    "order": 0,
+                    "sortable": true,
+                    "defaultSort": "ASC"
+                  },
+                  {
+                    "title": "Last name",
+                    "key": "last-name",
+                    "path": "doc:lastName",
+                    "displayType": {
+                      "type": "enum",
+                      "displayTypeParameters": {
+                        "enum": {
+                          "key1": "Value 1"
+                        }
+                      }
+                    },
+                    "order": 1,
+                    "sortable": true,
+                    "defaultSort": null
+                  }
+                ]
+            """.trimIndent()
+                )
+            }
+    }
+
     private fun createListColumn(caseDefinitionName: String, json: String, expectedStatus: ResultMatcher) {
         mockMvc.perform(
             MockMvcRequestBuilders.post(LIST_COLUMN_PATH, caseDefinitionName)
