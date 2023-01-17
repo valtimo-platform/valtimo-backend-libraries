@@ -54,7 +54,7 @@ class CaseInstanceResourceTest {
     fun `should get case settings`() {
         val caseDefinitionName = "name"
         val caseListDto = PageImpl(
-            listOf(CaseListRowDto(listOf(CaseListRowDto.CaseListItemDto("createdOn", "2022-12-28"))))
+            listOf(CaseListRowDto("myDocumentId", listOf(CaseListRowDto.CaseListItemDto("createdOn", "2022-12-28"))))
         )
 
         whenever(service.search(eq(caseDefinitionName), any(), any())).thenReturn(caseListDto)

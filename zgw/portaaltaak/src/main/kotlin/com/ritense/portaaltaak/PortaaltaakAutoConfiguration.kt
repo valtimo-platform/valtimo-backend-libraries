@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package com.ritense.notificatiesapi
+package com.ritense.portaaltaak
 
 import com.ritense.plugin.service.PluginService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -22,13 +22,13 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class NotificatiesApiAutoConfiguration {
+class PortaaltaakAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(NotificatiesApiPluginFactory::class)
-    fun notificatiesApiPluginFactory(
+    @ConditionalOnMissingBean(PortaaltaakPluginFactory::class)
+    fun portaaltaakPluginFactory(
         pluginService: PluginService
-    ): NotificatiesApiPluginFactory {
-        return NotificatiesApiPluginFactory(pluginService)
+    ): PortaaltaakPluginFactory {
+        return PortaaltaakPluginFactory(pluginService)
     }
 }

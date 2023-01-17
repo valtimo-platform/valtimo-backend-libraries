@@ -17,14 +17,19 @@
 package com.ritense.document.service;
 
 import com.ritense.document.domain.impl.searchfield.SearchField;
+import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
+import com.ritense.document.domain.impl.searchfield.SearchFieldFieldType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
+import com.ritense.document.domain.impl.searchfield.SearchFieldMatchType;
+import com.ritense.document.exception.InvalidSearchFieldException;
 import com.ritense.document.repository.SearchFieldRepository;
+import com.ritense.document.web.rest.impl.SearchFieldMapper;
+import org.zalando.problem.Status;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -34,8 +39,8 @@ public class SearchFieldService {
     private final DocumentDefinitionService documentDefinitionService;
 
     public SearchFieldService(
-        final SearchFieldRepository searchFieldRepository,
-        final DocumentDefinitionService documentDefinitionService
+            final SearchFieldRepository searchFieldRepository,
+            final DocumentDefinitionService documentDefinitionService
     ) {
         this.searchFieldRepository = searchFieldRepository;
         this.documentDefinitionService = documentDefinitionService;
@@ -47,6 +52,7 @@ public class SearchFieldService {
         if (optSearchField.isPresent()) {
             throw new IllegalArgumentException("Search field already exists for document '" + documentDefinitionName + "' and key '" + searchField.getKey() + "'.");
         }
+        validateSearchField(SearchFieldMapper.toDto(searchField));
         SearchFieldId searchFieldId = SearchFieldId.newId(documentDefinitionName);
         searchField.setId(searchFieldId);
         documentDefinitionService.validateJsonPath(documentDefinitionName, searchField.getPath());
@@ -58,12 +64,13 @@ public class SearchFieldService {
     }
 
     public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
+        searchFieldDtos.forEach(this::validateSearchField);
         searchFieldDtos.forEach(searchFieldDto ->
-            documentDefinitionService.validateJsonPath(documentDefinitionName, searchFieldDto.getPath())
+                documentDefinitionService.validateJsonPath(documentDefinitionName, searchFieldDto.getPath())
         );
         var searchFields = IntStream.range(0, searchFieldDtos.size())
-            .mapToObj(index -> toOrderedSearchField(documentDefinitionName, searchFieldDtos.get(index), index))
-            .toList();
+                .mapToObj(index -> toOrderedSearchField(documentDefinitionName, searchFieldDtos.get(index), index))
+                .toList();
         searchFieldRepository.saveAll(searchFields);
     }
 
@@ -73,12 +80,12 @@ public class SearchFieldService {
             documentDefinitionService.validateJsonPath(searchField.getId().getDocumentDefinitionName(), searchField.getPath());
         });
         if (searchFields.stream()
-                        .filter((searchField ->
-                                Collections.frequency(searchFields.stream()
-                                        .flatMap(field -> Stream.of(field.getKey()))
-                                        .toList(), searchField.getKey()
-                                ) > 1))
-                        .distinct().findAny().isEmpty()) {
+                .filter((searchField ->
+                        Collections.frequency(searchFields.stream()
+                                .flatMap(field -> Stream.of(field.getKey()))
+                                .toList(), searchField.getKey()
+                        ) > 1))
+                .distinct().findAny().isEmpty()) {
             searchFieldRepository.saveAll(searchFields);
         }
     }
@@ -90,7 +97,7 @@ public class SearchFieldService {
 
     private SearchField toOrderedSearchField(String documentDefinitionName, SearchFieldDto searchFieldDto, int order) {
         Optional<SearchField> fieldToUpdate = searchFieldRepository
-            .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchFieldDto.getKey());
+                .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchFieldDto.getKey());
         if (fieldToUpdate.isEmpty()) {
             throw new IllegalArgumentException("No search field found for document '" + documentDefinitionName + "' and key '" + searchFieldDto.getKey() + "'.");
         }
@@ -102,5 +109,25 @@ public class SearchFieldService {
         searchField.setOrder(order);
         searchField.setTitle(searchFieldDto.getTitle());
         return searchField;
+    }
+
+
+    private void validateSearchField(SearchFieldDto searchFieldDto) {
+        if (!searchFieldDto.getDataType().equals(SearchFieldDataType.TEXT)
+                && !searchFieldDto.getMatchType().equals(SearchFieldMatchType.EXACT)) {
+            throw new InvalidSearchFieldException(
+                    "Match type " + searchFieldDto.getMatchType().toString()
+                            + "is invalid for data type " + searchFieldDto.getDataType(),
+                    Status.BAD_REQUEST
+            );
+        }
+        if (searchFieldDto.getDataType().equals(SearchFieldDataType.BOOLEAN)
+                && searchFieldDto.getFieldType().equals(SearchFieldFieldType.RANGE)) {
+            throw new InvalidSearchFieldException(
+                    "Field type " + searchFieldDto.getFieldType().toString()
+                            + "is invalid for data type " + searchFieldDto.getDataType(),
+                    Status.BAD_REQUEST
+            );
+        }
     }
 }

@@ -47,6 +47,7 @@ import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakStatusService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakTypeService
+import com.ritense.openzaak.web.rest.ZaakInstanceLinkResource
 import com.ritense.openzaak.web.rest.impl.InformatieObjectTypeLinkResource
 import com.ritense.openzaak.web.rest.impl.InformatieObjectTypeResource
 import com.ritense.openzaak.web.rest.impl.OpenZaakConfigResource
@@ -300,6 +301,14 @@ class OpenZaakAutoConfiguration {
         openZaakConfigService: OpenZaakConfigService
     ): OpenZaakConfigResource {
         return OpenZaakConfigResource(openZaakConfigService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakInstanceLinkResource::class)
+    fun zaakInstanceLinkResource(
+        zaakInstanceLinkService: ZaakInstanceLinkService
+    ): ZaakInstanceLinkResource {
+        return ZaakInstanceLinkResource(zaakInstanceLinkService)
     }
 
     @Bean

@@ -25,6 +25,7 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginCategory
+import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -45,6 +46,7 @@ import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.valueresolver.ValueResolverService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import java.util.UUID
@@ -284,7 +286,8 @@ class PluginService(
             } else {
                 try {
                     val propertyClass = Class.forName(pluginProperty.fieldType)
-                    if (propertyClass.isAnnotationPresent(PluginCategory::class.java)) {
+                    if (propertyClass.isAnnotationPresent(Plugin::class.java)
+                        || propertyClass.isAnnotationPresent(PluginCategory::class.java)) {
                         val propertyConfigurationId = PluginConfigurationId.existingId(UUID.fromString(propertyNode.textValue()))
                         val propertyConfiguration = pluginConfigurationRepository.findById(propertyConfigurationId)
                         assert(propertyConfiguration.isPresent) { "Plugin configuration with id ${propertyConfigurationId.id} does not exist!" }

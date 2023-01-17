@@ -43,15 +43,19 @@ class PluginConfigurationResource(
 ) {
 
     @GetMapping(value = ["/v1/plugin/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getPluginDefinitions(@RequestParam("category") category: String?,
+    fun getPluginDefinitions(@RequestParam("pluginDefinitionKey") pluginDefinitionKey: String?,
+                             @RequestParam("pluginConfigurationTitle") pluginConfigurationTitle: String?,
+                             @RequestParam("category") category: String?,
                              @RequestParam("activityType") activityType: ActivityType?)
         : ResponseEntity<List<PluginConfigurationDto>> {
 
         return ResponseEntity.ok(
             pluginService.getPluginConfigurations(
                 PluginConfigurationSearchParameters(
-                    category,
-                    activityType
+                    pluginDefinitionKey = pluginDefinitionKey,
+                    pluginConfigurationTitle = pluginConfigurationTitle,
+                    category = category,
+                    activityType = activityType
                 )
             )
             .map { PluginConfigurationDto(it) })
