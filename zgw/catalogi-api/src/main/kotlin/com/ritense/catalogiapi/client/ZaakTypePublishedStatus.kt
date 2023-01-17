@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.catalogiapi.service
+package com.ritense.catalogiapi.client
 
-import java.net.URI
+enum class ZaakTypePublishedStatus {
+    ALLES,
+    CONCEPT,
+    DEFINITIEF;
 
-interface ZaaktypeUrlProvider {
-    fun getZaaktypeUrl(documentDefinitionName: String): URI
-    fun getZaaktypeUrlByCaseDefinitionName(caseDefinitionName: String): URI
+    fun getSearchValue(): String {
+        return this.name.lowercase()
+    }
 }

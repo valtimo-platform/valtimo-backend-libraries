@@ -51,6 +51,14 @@ class PluginConfigurationSearchRepository(
         query: CriteriaQuery<PluginConfiguration>
     ): Array<Predicate> {
         val predicates: MutableList<Predicate> = mutableListOf()
+        if (pluginConfigurationSearchParameters.pluginDefinitionKey != null) {
+            predicates.add(pluginDefinitionKeyPredicate(pluginConfigurationSearchParameters, cb, root, query))
+        }
+
+        if (pluginConfigurationSearchParameters.pluginConfigurationTitle != null) {
+            predicates.add(pluginConfigurationTitlePredicate(pluginConfigurationSearchParameters, cb, root))
+        }
+
         if (pluginConfigurationSearchParameters.activityType != null) {
             predicates.add(activityTypePredicate(pluginConfigurationSearchParameters, cb, root, query))
         }
@@ -59,6 +67,32 @@ class PluginConfigurationSearchRepository(
             predicates.add(categoryPredicate(pluginConfigurationSearchParameters, cb, root, query))
         }
         return predicates.toTypedArray()
+    }
+
+    private fun pluginDefinitionKeyPredicate(
+        pluginConfigurationSearchParameters: PluginConfigurationSearchParameters,
+        cb: CriteriaBuilder,
+        root: Root<PluginConfiguration>,
+        query: CriteriaQuery<PluginConfiguration>
+    ): Predicate {
+        val subQueryDefinitions = query.subquery(PluginDefinition::class.java)
+        val definitionsFrom = subQueryDefinitions.from(PluginDefinition::class.java)
+
+        subQueryDefinitions.select(definitionsFrom)
+        subQueryDefinitions.where(
+            cb.equal(root.get<PluginDefinition>(PLUGIN_DEFINITION), definitionsFrom),
+            cb.equal(definitionsFrom.get<String>(PLUGIN_DEFINITION_KEY), pluginConfigurationSearchParameters.pluginDefinitionKey)
+        )
+
+        return cb.exists(subQueryDefinitions)
+    }
+
+    private fun pluginConfigurationTitlePredicate(
+        pluginConfigurationSearchParameters: PluginConfigurationSearchParameters,
+        cb: CriteriaBuilder,
+        root: Root<PluginConfiguration>,
+    ): Predicate {
+        return cb.equal(root.get<String>(PLUGIN_CONFIGURATION_TITLE), pluginConfigurationSearchParameters.pluginConfigurationTitle)
     }
 
     private fun activityTypePredicate(
@@ -105,6 +139,8 @@ class PluginConfigurationSearchRepository(
 
     companion object {
         private const val PLUGIN_DEFINITION = "pluginDefinition"
+        private const val PLUGIN_DEFINITION_KEY = "key"
+        private const val PLUGIN_CONFIGURATION_TITLE = "title"
         private const val PLUGIN_CATEGORIES = "categories"
         private const val PLUGIN_ACTION_DEFINITIONS = "actions"
         private const val ACTIVITY_TYPES = "activityTypes"

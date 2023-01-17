@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.web.rest
+package com.ritense.catalogiapi.web.rest
 
 import com.ritense.catalogiapi.web.rest.result.InformatieobjecttypeDto
-import com.ritense.objectenapi.service.CatalogiService
+import com.ritense.catalogiapi.service.CatalogiService
+import com.ritense.catalogiapi.web.rest.result.RoltypeDto
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -40,5 +41,18 @@ class CatalogiResource(
             )
         }
         return ResponseEntity.ok(zaakObjectTypes)
+    }
+
+    @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/roltype"])
+    fun getZaakRoltypes(
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+    ): ResponseEntity<List<RoltypeDto>> {
+        val zaakRolTypes = catalogiService.getRoltypes(caseDefinitionName).map {
+            RoltypeDto(
+                it.url,
+                it.omschrijving
+            )
+        }
+        return ResponseEntity.ok(zaakRolTypes)
     }
 }

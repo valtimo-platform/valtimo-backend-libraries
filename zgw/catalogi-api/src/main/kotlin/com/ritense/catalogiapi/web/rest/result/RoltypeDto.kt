@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.catalogiapi.service
+package com.ritense.catalogiapi.web.rest.result
 
 import java.net.URI
 
-interface ZaaktypeUrlProvider {
-    fun getZaaktypeUrl(documentDefinitionName: String): URI
-    fun getZaaktypeUrlByCaseDefinitionName(caseDefinitionName: String): URI
-}
+class RoltypeDto(
+    val url: URI,
+    val name: String
+)

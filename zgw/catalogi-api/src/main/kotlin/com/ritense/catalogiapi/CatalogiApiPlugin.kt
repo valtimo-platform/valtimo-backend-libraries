@@ -21,7 +21,9 @@ import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.zakenapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.client.RoltypeRequest
+import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.zgw.Page
 import mu.KotlinLogging
 import java.net.URI
@@ -66,6 +68,27 @@ class CatalogiApiPlugin(
                 )
                 results.add(informatieobjecttype)
             }
+        } while(currentResults?.next != null)
+
+        return results
+    }
+
+    fun getRoltypes(zaakTypeUrl: URI): List<Roltype> {
+        var currentPage = 1
+        var currentResults: Page<Roltype>?
+        val results = mutableListOf<Roltype>()
+
+        do {
+            logger.debug { "Getting page of Roltypes, page $currentPage for zaaktype $zaakTypeUrl" }
+            currentResults = client.getRoltypen(
+                authenticationPluginConfiguration,
+                url,
+                RoltypeRequest(
+                    zaaktype = zaakTypeUrl,
+                    page = currentPage++
+                )
+            )
+            results.addAll(currentResults.results)
         } while(currentResults?.next != null)
 
         return results
