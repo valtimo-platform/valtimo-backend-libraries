@@ -37,11 +37,10 @@ import javax.persistence.MappedSuperclass
 @Filter(name = TENANT_FILTER_NAME)
 @EntityListeners(TenantAwareListener::class)
 abstract class AbstractTenantAwareAggregateRoot<T : AbstractTenantAwareAggregateRoot<T>?> : AbstractAggregateRoot<T>(),
-    TenantAware
-{
+    TenantAware {
 
     @JsonIgnore
-    @Column(name = TENANT_COLUMN, columnDefinition = "VARCHAR(256)", nullable = false)
+    @Column(name = TENANT_COLUMN, columnDefinition = "VARCHAR(256)")
     override var tenantId: String = "" // TenantAwareListener will populate value
 
     companion object {
