@@ -5,7 +5,7 @@
     <changeSet author="WouterG" id="1667899385-1">
         <addColumn tableName="json_schema_document">
             <column name="tenant_id" type="VARCHAR(256)">
-                <constraints nullable="false" />
+                <constraints nullable="true"/>
             </column>
         </addColumn>
     </changeSet>
