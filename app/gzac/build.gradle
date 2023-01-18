@@ -25,6 +25,7 @@ dependencies {
     implementation(project(":process-document"))
     implementation(project(":resource:openzaak-resource"))
     implementation(project(":resource:temporary-resource-storage"))
+    implementation(project(":tenancy"))
     implementation(project(":web"))
     implementation(project(":zgw:catalogi-api"))
     implementation(project(":zgw:documenten-api"))
