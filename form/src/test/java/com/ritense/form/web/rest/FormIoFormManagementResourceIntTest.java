@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -159,6 +160,27 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
             .andExpect(status().isNoContent());
 
         assertThat(formDefinitionRepository.existsById(savedFormDefinition.getId())).isFalse();
+    }
+
+    @Test
+    void shouldGetFormExistsByName() throws Exception {
+        var name = "abcd";
+        formDefinitionRepository.save(formDefinition(UUID.randomUUID(), name));
+
+        mockMvc.perform(get("/api/v1/form-management/exists/"+name))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andExpect(jsonPath("$").isBoolean())
+            .andExpect(jsonPath("$", is(true)));
+    }
+
+    @Test
+    void shouldNotGetFormExistsByName() throws Exception {
+        mockMvc.perform(get("/api/v1/form-management/exists/does-not-exist"))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andExpect(jsonPath("$").isBoolean())
+            .andExpect(jsonPath("$", is(false)));
     }
 
 }

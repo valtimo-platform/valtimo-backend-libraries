@@ -64,6 +64,9 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     @Override
     @Transactional
     public FormIoFormDefinition createFormDefinition(CreateFormDefinitionRequest request) {
+        if(formDefinitionRepository.findByName(request.getName()).isPresent()) {
+            throw new IllegalArgumentException("Duplicate name for new form: "+request.getName());
+        }
         return formDefinitionRepository.save(
             new FormIoFormDefinition(
                 UUID.randomUUID(),
