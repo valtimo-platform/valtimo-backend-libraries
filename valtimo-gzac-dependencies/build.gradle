@@ -1,0 +1,64 @@
+/*
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+javaPlatform {
+    allowDependencies()
+}
+
+dependencies {
+    api(platform(project(":valtimo-dependencies")))
+    api("com.ritense.valtimo:besluit")
+    api("com.ritense.valtimo:contactmoment")
+    api("com.ritense.valtimo:haalcentraal-brp")
+    api("com.ritense.valtimo:klant")
+    api("com.ritense.valtimo:objects-api")
+    api("com.ritense.valtimo:openzaak")
+    api("com.ritense.valtimo:notificaties-api-authentication")
+    api("com.ritense.valtimo:objecten-api-authentication")
+    api("com.ritense.valtimo:openzaak-resource")
+
+    api("com.ritense.valtimo:catalogi-api")
+    api("com.ritense.valtimo:documenten-api")
+    api("com.ritense.valtimo:notificaties-api")
+    api("com.ritense.valtimo:object-management")
+    api("com.ritense.valtimo:objecten-api")
+    api("com.ritense.valtimo:objecttypen-api")
+    api("com.ritense.valtimo:verzoek")
+    api("com.ritense.valtimo:zaken-api")
+
+    constraints {
+        api(platform(project(":valtimo-dependencies")))
+        api("com.ritense.valtimo:besluit:${projectVersion}")
+        api("com.ritense.valtimo:contactmoment:${projectVersion}")
+        api("com.ritense.valtimo:haalcentraal-brp:${projectVersion}")
+        api("com.ritense.valtimo:klant:${projectVersion}")
+        api("com.ritense.valtimo:objects-api:${projectVersion}")
+        api("com.ritense.valtimo:openzaak:${projectVersion}")
+        api("com.ritense.valtimo:notificaties-api-authentication:${projectVersion}")
+        api("com.ritense.valtimo:objecten-api-authentication:${projectVersion}")
+        api("com.ritense.valtimo:openzaak-resource:${projectVersion}")
+
+        api("com.ritense.valtimo:catalogi-api:${projectVersion}")
+        api("com.ritense.valtimo:documenten-api:${projectVersion}")
+        api("com.ritense.valtimo:notificaties-api:${projectVersion}")
+        api("com.ritense.valtimo:object-management:${projectVersion}")
+        api("com.ritense.valtimo:objecten-api:${projectVersion}")
+        api("com.ritense.valtimo:objecttypen-api:${projectVersion}")
+        api("com.ritense.valtimo:verzoek:${projectVersion}")
+        api("com.ritense.valtimo:zaken-api:${projectVersion}")
+
+    }
+}
