@@ -18,8 +18,6 @@ package com.ritense.openzaak.form
 
 import com.ritense.openzaak.BaseTest
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.service.impl.ZaakService
@@ -27,6 +25,8 @@ import com.ritense.openzaak.service.impl.model.zaak.Eigenschap
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
 import com.ritense.valtimo.contract.form.DataResolvingContext
 import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.zakenapi.domain.ZaakInstanceLink
+import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

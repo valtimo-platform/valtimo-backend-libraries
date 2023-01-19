@@ -23,6 +23,7 @@ import com.ritense.notificatiesapi.domain.NotificatiesApiAbonnementLink
 import com.ritense.notificatiesapi.domain.NotificatiesApiConfigurationId
 import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
 import com.ritense.plugin.annotation.Plugin
+import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.PluginConfigurationId
 import java.net.URI
@@ -37,6 +38,7 @@ import mu.KotlinLogging
     title = "Notificaties API",
     description = "Enable interfacing with Notificaties API specification compliant APIs"
 )
+@PluginCategory("notificaties-api-plugin")
 class NotificatiesApiPlugin(
     val pluginConfigurationId: PluginConfigurationId,
     private val client: NotificatiesApiClient,

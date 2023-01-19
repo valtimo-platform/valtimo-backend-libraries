@@ -53,9 +53,11 @@ dependencies {
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
-    testImplementation "org.liquibase:liquibase-core"
+    testImplementation "org.liquibase:liquibase-core:${liquibaseVersion}"
     testImplementation "org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}"
-    testImplementation "com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}"
+    testImplementation("com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}") {
+        exclude(module:"liquibase-core")
+    }
 
     testImplementation "org.springframework.security:spring-security-test"
 

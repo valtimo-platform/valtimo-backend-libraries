@@ -38,4 +38,12 @@ class OpenZaakUrlProvider(
         }
         return zaakTypeLink.zaakTypeUrl
     }
+
+    override fun getZaaktypeUrlByCaseDefinitionName(caseDefinitionName: String): URI {
+        val zaakTypeLink = zaakTypeLinkService.get(caseDefinitionName)
+        requireNotNull(zaakTypeLink) {
+            "No zaak type was found for case definition with name $caseDefinitionName"
+        }
+        return zaakTypeLink.zaakTypeUrl
+    }
 }

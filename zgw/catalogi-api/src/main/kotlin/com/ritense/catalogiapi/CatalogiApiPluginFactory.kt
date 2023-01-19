@@ -18,7 +18,7 @@ package com.ritense.catalogiapi
 
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
-import com.ritense.zakenapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.client.CatalogiApiClient
 
 class CatalogiApiPluginFactory(
     pluginService: PluginService,

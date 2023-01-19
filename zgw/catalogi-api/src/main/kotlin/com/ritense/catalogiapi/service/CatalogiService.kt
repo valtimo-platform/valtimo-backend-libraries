@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.service
+package com.ritense.catalogiapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.catalogiapi.domain.Informatieobjecttype
-import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.plugin.service.PluginService
 import mu.KotlinLogging
 import java.net.URI
@@ -35,6 +35,14 @@ class CatalogiService(
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl)
 
         return catalogiApiPluginInstance.getInformatieobjecttypes(zaakTypeUrl)
+    }
+    fun getRoltypes(caseDefinitionName: String): List<Roltype> {
+        logger.debug { "Getting roltypes for case definition $caseDefinitionName" }
+        val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrlByCaseDefinitionName(caseDefinitionName)
+
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl)
+
+        return catalogiApiPluginInstance.getRoltypes(zaakTypeUrl)
     }
 
     private fun findCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin {

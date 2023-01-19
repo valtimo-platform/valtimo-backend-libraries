@@ -55,9 +55,11 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
-    implementation "org.liquibase:liquibase-core"
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
     implementation "org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}"
-    implementation "com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}"
+    implementation("com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}") {
+        exclude(module:"liquibase-core")
+    }
 
     implementation "com.vladmihalcea:hibernate-types-55:${hibernateTypesVersion}"
 

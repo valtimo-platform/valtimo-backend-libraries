@@ -23,12 +23,12 @@ import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.objecttypenapi.client.Objecttype
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
 import com.ritense.openzaak.exception.ZaakInstanceLinkNotFoundException
 import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.ZakenApiPlugin
+import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakObject
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
