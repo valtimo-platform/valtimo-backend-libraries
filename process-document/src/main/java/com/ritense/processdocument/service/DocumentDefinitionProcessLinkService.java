@@ -26,6 +26,8 @@ import java.util.Optional;
 
 public interface DocumentDefinitionProcessLinkService {
 
+    DocumentDefinitionProcess getDocumentDefinitionProcess(String documentDefinitionName);
+
     List<DocumentDefinitionProcess> getDocumentDefinitionProcessList(String documentDefinitionName);
 
     Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName, String type);
