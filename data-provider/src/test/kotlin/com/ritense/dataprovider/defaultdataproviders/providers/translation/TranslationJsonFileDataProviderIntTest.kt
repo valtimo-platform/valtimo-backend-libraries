@@ -17,19 +17,13 @@
 package com.ritense.dataprovider.defaultdataproviders.providers.translation
 
 import com.ritense.dataprovider.BaseIntegrationTest
-import com.ritense.dataprovider.defaultdataproviders.domain.DropdownList
-import com.ritense.dataprovider.defaultdataproviders.repository.DropdownListRepository
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
@@ -55,9 +49,7 @@ internal class TranslationJsonFileDataProviderIntTest : BaseIntegrationTest() {
         mockMvc.perform(get("/api/v1/data/translation/single?key=nl"))
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.menu.title").value("Titel"))
-            .andExpect(jsonPath("$.menu.back").value("Terug"))
-            .andExpect(jsonPath("$.menu.save").value("Opslaan"))
+            .andExpect(content().string("""{"menu":{"title":"Titel","back":"Terug","save":"Opslaan"}}"""))
     }
 
     @Test
@@ -65,9 +57,7 @@ internal class TranslationJsonFileDataProviderIntTest : BaseIntegrationTest() {
         mockMvc.perform(get("/api/v1/data/translation/single?key=nl&properties=menu.back,menu.save"))
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.['menu.title']").doesNotExist())
-            .andExpect(jsonPath("$.['menu.back']").value("Terug"))
-            .andExpect(jsonPath("$.['menu.save']").value("Opslaan"))
+            .andExpect(content().string("""{"menu.back":"Terug","menu.save":"Opslaan"}"""))
     }
 
     @Test
@@ -75,9 +65,7 @@ internal class TranslationJsonFileDataProviderIntTest : BaseIntegrationTest() {
         mockMvc.perform(get("/api/v1/data/translation/single?key=nl&properties=menu.back"))
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.['menu.title']").doesNotExist())
-            .andExpect(jsonPath("$.['menu.back']").value("Terug"))
-            .andExpect(jsonPath("$.['menu.save']").doesNotExist())
+            .andExpect(content().string("""{"menu.back":"Terug"}"""))
     }
 
 }
