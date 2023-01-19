@@ -65,7 +65,7 @@ configurations {
 }
 
 allprojects {
-    if (!(project.name.endsWith("-bom"))) {
+    if (!(project.name.endsWith("-dependencies"))) {
         apply plugin: "java"
         apply plugin: "org.springframework.boot"
         apply plugin: "io.spring.dependency-management"
@@ -101,7 +101,7 @@ apply from: "gradle/deployment.gradle"
 
 subprojects { subproject ->
     apply plugin: "maven-publish"
-    if (project.name.endsWith("-bom")) {
+    if (project.name.endsWith("-dependencies")) {
         apply plugin: 'java-platform'
     } else {
         apply plugin: "idea"

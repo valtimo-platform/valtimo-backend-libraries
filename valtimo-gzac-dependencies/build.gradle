@@ -19,7 +19,7 @@ javaPlatform {
 }
 
 dependencies {
-    api(platform(project(":valtimo-bom")))
+    api(platform(project(":valtimo-dependencies")))
     api("com.ritense.valtimo:besluit")
     api("com.ritense.valtimo:contactmoment")
     api("com.ritense.valtimo:haalcentraal-brp")
@@ -40,7 +40,7 @@ dependencies {
     api("com.ritense.valtimo:zaken-api")
 
     constraints {
-        api(platform(project(":valtimo-bom")))
+        api(platform(project(":valtimo-dependencies")))
         api("com.ritense.valtimo:besluit:${projectVersion}")
         api("com.ritense.valtimo:contactmoment:${projectVersion}")
         api("com.ritense.valtimo:haalcentraal-brp:${projectVersion}")
