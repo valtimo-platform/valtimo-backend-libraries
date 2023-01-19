@@ -32,7 +32,6 @@ import com.ritense.openzaak.provider.KvkProvider
 import com.ritense.openzaak.provider.ZaakBsnProvider
 import com.ritense.openzaak.provider.ZaakKvkProvider
 import com.ritense.openzaak.repository.InformatieObjectTypeLinkRepository
-import com.ritense.openzaak.repository.ZaakInstanceLinkRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
 import com.ritense.openzaak.service.DocumentenService
 import com.ritense.openzaak.service.ZaakRolService
@@ -57,6 +56,7 @@ import com.ritense.openzaak.web.rest.impl.ZaakTypeLinkResource
 import com.ritense.openzaak.web.rest.impl.ZaakTypeResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean

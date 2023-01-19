@@ -26,10 +26,16 @@ import com.ritense.plugin.domain.ActivityType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
+import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zakenapi.domain.ZaakInstanceLink
+import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.Page
+import com.ritense.zgw.Rsin
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
+import java.time.LocalDate
 import java.util.UUID
 
 @Plugin(
@@ -43,6 +49,7 @@ class ZakenApiPlugin(
     private val resourceProvider: ResourceProvider,
     private val documentService: DocumentService,
     private val storageService: TemporaryResourceStorageService,
+    private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
@@ -98,6 +105,41 @@ class ZakenApiPlugin(
             metadata["description"] as String?,
         )
         linkDocument(documentId, request, documentUrl)
+    }
+
+    @PluginAction(
+        key = "create-zaak",
+        title = "Create zaak",
+        description = "Creates a zaak in the Zaken API",
+        activityTypes = [ActivityType.SERVICE_TASK]
+    )
+    fun createZaak(
+        execution: DelegateExecution,
+        rsin: Rsin,
+        zaaktypeUrl: URI,
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+
+        val zaak = client.createZaak(
+            authenticationPluginConfiguration,
+            url,
+            CreateZaakRequest(
+                bronorganisatie = rsin,
+                zaaktype = zaaktypeUrl,
+                verantwoordelijkeOrganisatie = rsin,
+                startdatum = LocalDate.now()
+            )
+        )
+
+        zaakInstanceLinkRepository.save(
+            ZaakInstanceLink(
+                ZaakInstanceLinkId(UUID.randomUUID()),
+                zaak.url,
+                zaak.uuid,
+                documentId,
+                zaak.zaaktype
+            )
+        )
     }
 
     private fun linkDocument(documentId: UUID, request: LinkDocumentRequest, documentUrl: String) {

@@ -1,6 +1,6 @@
 /*
  *
- *  * Copyright 2015-2021 Ritense BV, the Netherlands.
+ *  * Copyright 2015-2023 Ritense BV, the Netherlands.
  *  *
  *  * Licensed under EUPL, Version 1.2 (the "License");
  *  * you may not use this file except in compliance with the License.
@@ -16,17 +16,16 @@
  *
  */
 
-package com.ritense.openzaak.domain.mapping.impl
+package com.ritense.zakenapi.domain
 
 import com.fasterxml.jackson.annotation.JsonValue
 import com.ritense.valtimo.contract.domain.AbstractId
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Embeddable
-import org.hibernate.annotations.Type
 
 @Embeddable
-class ZaakInstanceLinkId (
+class ZaakInstanceLinkId(
 
     @Column(name = "zaak_instance_link_id")
     @JsonValue
