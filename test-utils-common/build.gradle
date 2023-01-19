@@ -44,8 +44,8 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
-    implementation('org.liquibase:liquibase-core') {
-        exclude(module: 'jetty-servlet')
+    implementation("org.liquibase:liquibase-core:${liquibaseVersion}") {
+        exclude(module: "jetty-servlet")
     }
 
     implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
