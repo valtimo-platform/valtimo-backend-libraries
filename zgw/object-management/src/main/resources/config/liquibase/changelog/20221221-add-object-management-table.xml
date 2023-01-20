@@ -46,4 +46,8 @@
     <changeSet id="title unique in object_management_configuration" author="Ritense">
         <addUniqueConstraint tableName="object_management_configuration" columnNames="title"/>
     </changeSet>
+
+    <changeSet id="objecttype_id unique in object_management_configuration" author="Ritense">
+        <addUniqueConstraint tableName="object_management_configuration" columnNames="objecttype_id" constraintName="uc_object_management_configuration_objecttype"/>
+    </changeSet>
 </databaseChangeLog>
