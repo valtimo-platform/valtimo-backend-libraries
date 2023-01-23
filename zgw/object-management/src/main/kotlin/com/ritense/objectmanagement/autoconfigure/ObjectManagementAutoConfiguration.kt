@@ -16,15 +16,19 @@
 
 package com.ritense.objectmanagement.autoconfigure
 
+import com.ritense.objectmanagement.autodeployment.ObjectManagementDefinitionDeploymentService
+import com.ritense.objectmanagement.listener.ObjectManagementApplicationReadyEventListener
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.security.config.ObjectManagementHttpSecurityConfigurer
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objectmanagement.web.rest.ObjectManagementResource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
@@ -52,11 +56,33 @@ class ObjectManagementAutoConfiguration {
         )
     }
 
+    @Bean
+    @ConditionalOnMissingBean(ObjectManagementDefinitionDeploymentService::class)
+    fun objectManagementDefinitionDeploymentService(
+        resourceLoader: ResourceLoader,
+        objectManagementService: ObjectManagementService,
+        objectManagementRepository: ObjectManagementRepository,
+        applicationEventPublisher: ApplicationEventPublisher
+    ): ObjectManagementDefinitionDeploymentService {
+        return ObjectManagementDefinitionDeploymentService(
+            resourceLoader,
+            objectManagementService,
+            objectManagementRepository,
+            applicationEventPublisher
+        )
+    }
+
     @Order(301)
     @Bean
     @ConditionalOnMissingBean(ObjectManagementHttpSecurityConfigurer::class)
     fun objectManagementHttpSecurityConfigurer(): ObjectManagementHttpSecurityConfigurer {
         return ObjectManagementHttpSecurityConfigurer()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ObjectManagementApplicationReadyEventListener::class)
+    fun objectManagementApplicationReadyEventListener(objectManagementDefinitionDeploymentService: ObjectManagementDefinitionDeploymentService): ObjectManagementApplicationReadyEventListener? {
+        return ObjectManagementApplicationReadyEventListener(objectManagementDefinitionDeploymentService)
     }
 
 }
