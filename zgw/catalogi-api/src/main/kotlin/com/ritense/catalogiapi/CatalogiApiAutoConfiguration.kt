@@ -17,10 +17,10 @@
 package com.ritense.catalogiapi
 
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
-import com.ritense.objectenapi.security.CatalogiApiHttpSecurityConfigurer
-import com.ritense.objectenapi.service.CatalogiService
+import com.ritense.catalogiapi.security.CatalogiApiHttpSecurityConfigurer
+import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.plugin.service.PluginService
-import com.ritense.zakenapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.client.CatalogiApiClient
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
