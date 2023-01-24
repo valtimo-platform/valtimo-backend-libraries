@@ -27,13 +27,13 @@ class DataProviderService(
         return dataProviders.entries.filter { it.value.supportsCategory(category) }.map { it.key }
     }
 
-    fun <T> getAll(category: String, providerName: String?, query: Map<String, Any>): List<T> {
+    fun <T> getAllData(category: String, providerName: String?, query: Map<String, Any>): List<T> {
         return getDataProviders<T>(category, providerName)
             .mapNotNull { provider -> provider.get(query) }
     }
 
-    fun <T> getSingle(category: String, providerName: String?, query: Map<String, Any>): T? {
-        val dataList = getAll<T>(category, providerName, query)
+    fun <T> getData(category: String, providerName: String?, query: Map<String, Any>): T? {
+        val dataList = getAllData<T>(category, providerName, query)
         return if (dataList.isEmpty()) {
             null
         } else if (dataList.size == 1) {

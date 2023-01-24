@@ -62,7 +62,7 @@ internal class DataProviderResourceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should get data by provider name`() {
-        mockMvc.perform(get("/api/v1/data/dropdown-list/single?provider=dropdownJsonFileDataProvider&key=user-dropdown-list"))
+        mockMvc.perform(get("/api/v1/data/dropdown-list?provider=dropdownJsonFileDataProvider&key=user-dropdown-list"))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.u00007").value("Mary Johnson"))
@@ -72,7 +72,7 @@ internal class DataProviderResourceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should get error when for non existing provider`() {
-        mockMvc.perform(get("/api/v1/data/dropdown-list/single?provider=nonExistingDataProvider&key=user-dropdown-list"))
+        mockMvc.perform(get("/api/v1/data/dropdown-list?provider=nonExistingDataProvider&key=user-dropdown-list"))
             .andDo(print())
             .andExpect(status().isBadRequest)
     }

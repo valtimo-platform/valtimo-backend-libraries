@@ -38,9 +38,13 @@ class DropdownDatabaseDataProvider(
     }
 
     override fun post(query: Map<String, Any>, data: Map<String, String>?): Boolean {
-        assert(data != null)
         val key = DataProviderConstants.getQueryKey(query)
         val append = DataProviderConstants.getQueryAppend(query)
+
+        if (data.isNullOrEmpty() && !append) {
+            dropdownListRepository.deleteById(key)
+        }
+
         val dropdownList = dropdownListRepository.findByIdOrNull(key)
 
         if (dropdownList != null && append) {
@@ -62,9 +66,15 @@ class DropdownDatabaseDataProvider(
             dropdownListRepository.deleteById(key)
         } else {
             val dataEntry = dropdownListRepository.findByIdOrNull(key)
-            if (dataEntry != null) {
+            if (dataEntry == null) {
+                return false
+            } else {
                 dataEntry.values.remove(valueToDelete)
-                dropdownListRepository.save(dataEntry)
+                if (dataEntry.values.isEmpty()) {
+                    dropdownListRepository.deleteById(key)
+                } else {
+                    dropdownListRepository.save(dataEntry)
+                }
             }
 
         }

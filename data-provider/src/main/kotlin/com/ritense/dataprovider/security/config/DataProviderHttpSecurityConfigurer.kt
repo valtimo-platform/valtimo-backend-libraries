@@ -32,7 +32,7 @@ class DataProviderHttpSecurityConfigurer : HttpSecurityConfigurer {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/data/{category}/provider").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/data/{category}/all").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/data/{category}/single").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/data/{category}").hasAuthority(USER)
                 .antMatchers(POST, "/api/v1/data/{category}").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/v1/data/{category}").hasAuthority(ADMIN)
         } catch (e: Exception) {

@@ -47,16 +47,16 @@ class DataProviderResource(
         @RequestParam provider: String?,
         @RequestParam query: Map<String, Any> = emptyMap()
     ): ResponseEntity<List<Any>> {
-        return ResponseEntity.ok(dataProviderService.getAll(category, provider, query))
+        return ResponseEntity.ok(dataProviderService.getAllData(category, provider, query))
     }
 
-    @GetMapping("/v1/data/{category}/single")
-    fun getFirst(
+    @GetMapping("/v1/data/{category}")
+    fun getData(
         @PathVariable category: String,
         @RequestParam provider: String?,
         @RequestParam query: Map<String, Any> = emptyMap()
     ): ResponseEntity<Any?> {
-        return ResponseEntity.ok(dataProviderService.getSingle(category, provider, query))
+        return ResponseEntity.ok(dataProviderService.getData(category, provider, query))
     }
 
     @PostMapping("/v1/data/{category}")

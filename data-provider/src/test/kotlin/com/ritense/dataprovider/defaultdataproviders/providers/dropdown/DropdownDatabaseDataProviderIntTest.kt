@@ -67,7 +67,7 @@ internal class DropdownDatabaseDataProviderIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should get all dropdown list entries from database`() {
-        mockMvc.perform(get("/api/v1/data/dropdown-list/single?key=my-test-user-list"))
+        mockMvc.perform(get("/api/v1/data/dropdown-list?key=my-test-user-list"))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.u00001").value("James Vance"))

@@ -52,7 +52,7 @@ internal class DropdownJsonFileDataProviderIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should get all dropdown list entries from json file`() {
-        mockMvc.perform(get("/api/v1/data/dropdown-list/single?key=user-dropdown-list"))
+        mockMvc.perform(get("/api/v1/data/dropdown-list?key=user-dropdown-list"))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.u00007").value("Mary Johnson"))

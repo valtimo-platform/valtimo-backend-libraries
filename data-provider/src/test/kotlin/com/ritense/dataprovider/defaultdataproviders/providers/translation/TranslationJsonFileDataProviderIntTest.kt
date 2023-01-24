@@ -46,7 +46,7 @@ internal class TranslationJsonFileDataProviderIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should get all translations`() {
-        mockMvc.perform(get("/api/v1/data/translation/single?key=nl"))
+        mockMvc.perform(get("/api/v1/data/translation?key=nl"))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(content().string("""{"menu":{"title":"Titel","back":"Terug","save":"Opslaan"}}"""))
@@ -54,7 +54,7 @@ internal class TranslationJsonFileDataProviderIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should get translations by property list`() {
-        mockMvc.perform(get("/api/v1/data/translation/single?key=nl&properties=menu.back,menu.save"))
+        mockMvc.perform(get("/api/v1/data/translation?key=nl&properties=menu.back,menu.save"))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(content().string("""{"menu.back":"Terug","menu.save":"Opslaan"}"""))
@@ -62,7 +62,7 @@ internal class TranslationJsonFileDataProviderIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should get translation by one property`() {
-        mockMvc.perform(get("/api/v1/data/translation/single?key=nl&properties=menu.back"))
+        mockMvc.perform(get("/api/v1/data/translation?key=nl&properties=menu.back"))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(content().string("""{"menu.back":"Terug"}"""))
