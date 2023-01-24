@@ -97,12 +97,7 @@ class ObjectManagementService(
         val objectsListDto = objectsList.results.map {
             ObjectsListRowDto(it.url.toString(), listOf(
                 ObjectsListRowDto.ObjectsListItemDto("objectUrl", it.url),
-                ObjectsListRowDto.ObjectsListItemDto("recordIndex", it.record.index ?: let {
-                    logger.info {
-                        "No index available"
-                    }
-                    throw throw NotFoundException()
-                }),
+                ObjectsListRowDto.ObjectsListItemDto("recordIndex", it.record.index),
 
             ))
         }
