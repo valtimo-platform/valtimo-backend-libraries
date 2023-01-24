@@ -18,7 +18,7 @@ package com.ritense.objectmanagement.service
 
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectmanagement.domain.ObjectManagement
-import com.ritense.objectmanagement.domain.ObjectsDto
+import com.ritense.objectmanagement.domain.ObjectsListRowDto
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -68,7 +68,7 @@ class ObjectManagementService(
 
     fun deleteById(id: UUID) = objectManagementRepository.deleteById(id)
 
-    fun getObjects(id: UUID, pageable: Pageable): PageImpl<ObjectsDto> {
+    fun getObjects(id: UUID, pageable: Pageable): PageImpl<ObjectsListRowDto> {
         val objectManagement = getById(id) ?: let {
             logger.info {
                 "The requested Id is not configured as a objectnamagement configuration. " +
@@ -94,16 +94,20 @@ class ObjectManagementService(
             pageable
         )
 
-        val objectsDtoList = objectsList.results.map {
-            ObjectsDto(it.url.toString(), it.record.index ?: let {
-                logger.info {
-                    "No index available"
-                }
-                throw throw NotFoundException()
-            })
+        val objectsListDto = objectsList.results.map {
+            ObjectsListRowDto(it.url.toString(), listOf(
+                ObjectsListRowDto.ObjectsListItemDto("objectUrl", it.url),
+                ObjectsListRowDto.ObjectsListItemDto("recordIndex", it.record.index ?: let {
+                    logger.info {
+                        "No index available"
+                    }
+                    throw throw NotFoundException()
+                }),
+
+            ))
         }
 
-        return PageImpl(objectsDtoList, pageable, objectsList.count.toLong())
+        return PageImpl(objectsListDto, pageable, objectsList.count.toLong())
     }
 
     companion object {

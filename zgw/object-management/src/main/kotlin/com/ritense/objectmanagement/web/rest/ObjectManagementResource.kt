@@ -17,7 +17,7 @@
 package com.ritense.objectmanagement.web.rest
 
 import com.ritense.objectmanagement.domain.ObjectManagement
-import com.ritense.objectmanagement.domain.ObjectsDto
+import com.ritense.objectmanagement.domain.ObjectsListRowDto
 import com.ritense.objectmanagement.service.ObjectManagementService
 import java.util.UUID
 import javax.validation.Valid
@@ -64,6 +64,6 @@ class ObjectManagementResource(
     fun getObjects(
         @PathVariable id: UUID,
         @PageableDefault pageable: Pageable
-    ): ResponseEntity<PageImpl<ObjectsDto>> =
+    ): ResponseEntity<PageImpl<ObjectsListRowDto>> =
         ResponseEntity.ok(objectManagementService.getObjects(id, pageable))
 }
