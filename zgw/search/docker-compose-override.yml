@@ -1,0 +1,7 @@
+version: '3.9'
+services:
+    db:
+        ports:
+            - "3339:5432"
+        environment:
+            - POSTGRES_DB=search-api-test

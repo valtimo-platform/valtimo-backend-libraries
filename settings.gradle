@@ -71,6 +71,7 @@ include(
     "zgw:object-management",
     "zgw:objecten-api",
     "zgw:objecttypen-api",
+    "zgw:search",
     "zgw:verzoek",
     "zgw:zaken-api",
     "zgw:portaaltaak"
