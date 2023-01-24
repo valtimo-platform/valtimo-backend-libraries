@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -25,8 +26,10 @@ import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import io.netty.handler.logging.LogLevel
+import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.boot.web.reactive.function.client.WebClientCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
@@ -41,8 +44,28 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 class ZakenApiAutoConfiguration {
 
     @Bean
-    fun zakenApiClient(webclient: WebClient): ZakenApiClient {
-        return ZakenApiClient(webclient)
+    fun zakenApiClient(
+        webclient: WebClient,
+        objectMapper: ObjectMapper,
+        customizerProvider: ObjectProvider<WebClientCustomizer>
+    ): ZakenApiClient {
+
+        val testclient = WebClient.builder()
+
+        customizerProvider.orderedStream()
+            .forEach { customizer -> customizer.customize(testclient) }
+
+        testclient.clientConnector(
+            ReactorClientHttpConnector(
+                HttpClient.create().wiretap(
+                    "reactor.netty.http.client.HttpClient",
+                    LogLevel.DEBUG,
+                    AdvancedByteBufFormat.TEXTUAL
+                )
+            )
+        )
+
+        return ZakenApiClient(testclient.build())
     }
 
     @Bean

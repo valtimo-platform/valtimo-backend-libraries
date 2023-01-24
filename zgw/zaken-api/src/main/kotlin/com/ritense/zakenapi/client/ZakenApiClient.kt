@@ -22,6 +22,7 @@ import com.ritense.zakenapi.domain.CreateZaakResponse
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
@@ -94,6 +95,7 @@ class ZakenApiClient(
                     .path("zaken")
                     .build()
             }
+            .headers(this::defaultHeaders)
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(request))
             .retrieve()
@@ -101,5 +103,10 @@ class ZakenApiClient(
             .block()
 
         return result?.body!!
+    }
+
+    private fun defaultHeaders(headers: HttpHeaders) {
+        headers.set("Accept-Crs", "EPSG:4326")
+        headers.set("Content-Crs", "EPSG:4326")
     }
 }
