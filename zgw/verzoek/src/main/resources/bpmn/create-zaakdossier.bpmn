@@ -62,7 +62,7 @@
         <bpmn:outgoing>Flow_0varbh9</bpmn:outgoing>
       </bpmn:serviceTask>
     </bpmn:subProcess>
-    <bpmn:businessRuleTask id="Activity_1m2evlj" name="Parse Zaak type" camunda:decisionRef="zaakdossiers_type_decision">
+    <bpmn:businessRuleTask id="Activity_1m2evlj" name="Parse Zaak type" camunda:decisionRef="zaakdossiers_type_decision_table">
       <bpmn:incoming>Flow_1tgmdp6</bpmn:incoming>
       <bpmn:outgoing>Flow_1eu3hy4</bpmn:outgoing>
     </bpmn:businessRuleTask>
@@ -76,6 +76,10 @@
       <bpmndi:BPMNShape id="Participant_1ry53rc_di" bpmnElement="Participant_1ry53rc" isHorizontal="true">
         <dc:Bounds x="160" y="80" width="1750" height="390" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1eu3hy4_di" bpmnElement="Flow_1eu3hy4">
+        <di:waypoint x="630" y="260" />
+        <di:waypoint x="700" y="260" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1bcd206_di" bpmnElement="Flow_1bcd206">
         <di:waypoint x="1430" y="260" />
         <di:waypoint x="1532" y="260" />
@@ -100,22 +104,14 @@
         <di:waypoint x="800" y="260" />
         <di:waypoint x="880" y="260" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1eu3hy4_di" bpmnElement="Flow_1eu3hy4">
-        <di:waypoint x="630" y="260" />
-        <di:waypoint x="700" y="260" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Activity_1ahw6l0_di" bpmnElement="Activity_00mdfa7">
-        <dc:Bounds x="370" y="220" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0z7tcif_di" bpmnElement="StartEvent_1">
         <dc:Bounds x="252" y="242" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="244" y="285" width="53" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0rnm2m0_di" bpmnElement="Activity_1m2evlj">
-        <dc:Bounds x="530" y="220" width="100" height="80" />
+      <bpmndi:BPMNShape id="Activity_1ahw6l0_di" bpmnElement="Activity_00mdfa7">
+        <dc:Bounds x="370" y="220" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0049x1j_di" bpmnElement="Activity_09wc9t3">
@@ -162,6 +158,10 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0gn3lin_di" bpmnElement="Activity_0cvh05i">
         <dc:Bounds x="1010" y="220" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0rnm2m0_di" bpmnElement="Activity_1m2evlj">
+        <dc:Bounds x="530" y="220" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
