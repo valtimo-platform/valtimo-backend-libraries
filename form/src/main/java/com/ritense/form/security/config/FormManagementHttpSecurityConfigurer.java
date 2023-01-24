@@ -36,6 +36,7 @@ public class FormManagementHttpSecurityConfigurer implements HttpSecurityConfigu
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/form-management").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/form-management/{formDefinitionId}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/form-management/exists/{name}").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/v1/form-management/{formDefinitionId}").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/v1/form-management").hasAuthority(ADMIN)
                 .antMatchers(POST, "/api/v1/form-management").hasAuthority(ADMIN);

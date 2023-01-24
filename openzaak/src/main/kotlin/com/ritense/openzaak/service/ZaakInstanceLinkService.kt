@@ -18,8 +18,8 @@
 
 package com.ritense.openzaak.service
 
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
+import com.ritense.zakenapi.domain.ZaakInstanceLink
+import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import java.net.URI
 import java.util.UUID
 

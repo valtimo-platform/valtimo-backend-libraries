@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <!--
-  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -23,14 +23,6 @@
     <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
     <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
 
-    <property name="jsonType" value="JSON" dbms="mysql"/>
-    <property name="jsonType" value="JSONB" dbms="postgresql"/>
-
-    <include file="changelog/20200224-form-definitions.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/20200330-remove-name-unique-constraint-changelog.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/20200408-add-storage-type.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/20201022-remove-storage-type-column.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/20210107-add-readonly-column.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/20220123-add-name-unique-constraint-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230117-add-zaak-instance-link.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -30,9 +30,9 @@ dependencies {
     implementation project(':document')
     implementation project(':process-document')
     implementation project(':resource')
+    api project(":zgw:zaken-api")
 
     compileOnly project(':plugin')
-    compileOnly project(':zgw:zaken-api')
     compileOnly project(':zgw:documenten-api')
     compileOnly project(':zgw:catalogi-api')
 
