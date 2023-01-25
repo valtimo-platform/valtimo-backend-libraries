@@ -76,6 +76,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
             TEXT,
             SINGLE,
             EXACT,
+            null,
             0,
             "aTitle"
     );
@@ -151,7 +152,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldRespondWith400BadRequestOnSearchFieldPathValidationError() throws Exception {
-        var searchFieldDto = new SearchFieldDto("lastName", "doc:invalid.path", TEXT, SINGLE, LIKE, null);
+        var searchFieldDto = new SearchFieldDto("lastName", "doc:invalid.path", TEXT, SINGLE, LIKE, null, null);
 
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
@@ -197,6 +198,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 SEARCH_FIELD.getDataType(),
                 SearchFieldFieldType.RANGE, //This is the change
                 SEARCH_FIELD.getMatchType(),
+                SEARCH_FIELD.getDropdownDataProvider(),
                 "someTitle");
 
         mockMvc.perform(
@@ -236,8 +238,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldReturnChangeOrderingWhenUpdateSearchFields() throws Exception {
         var searchFields = List.of(
-                new SearchFieldDto("age", "doc:age", NUMBER, SINGLE, EXACT, null),
-                new SearchFieldDto("firstName", "doc:firstName", TEXT, SINGLE, LIKE, null)
+                new SearchFieldDto("age", "doc:age", NUMBER, SINGLE, EXACT, null, null),
+                new SearchFieldDto("firstName", "doc:firstName", TEXT, SINGLE, LIKE, null, null)
         );
         mockMvc.perform(
                         put("/api/v1/document-search/{documentDefinitionName}/fields",
