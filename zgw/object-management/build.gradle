@@ -33,12 +33,12 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
-
     testImplementation project(":contract")
     testImplementation project(':plugin-valtimo')
     testImplementation project(":core")
     testImplementation project(":resource:local-resource")
     testImplementation project(":test-utils-common")
+    testImplementation project(':zgw:zaken-api')
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
