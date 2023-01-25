@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="zaakdossiers_type_decision" name="Zaakdossiers Type decision" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.2.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0">
+  <decision id="zaakdossiers_type_decision_table" name="Zaakdossiers type decision_table">
+    <decisionTable id="DecisionTable_0tncu79">
+      <input id="InputClause_07vj4av">
+        <inputExpression id="LiteralExpression_1iw9q05" typeRef="string">
+          <text>initiatorType</text>
+        </inputExpression>
+      </input>
+      <output id="OutputClause_17r03h1" name="betrokkeneType" typeRef="string" />
+      <rule id="DecisionRule_1pc55d8">
+        <inputEntry id="UnaryTests_0ko4so5">
+          <text>"bsn"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_02znt9g">
+          <text>"natuurlijk_persoon"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_00hrmi9">
+        <inputEntry id="UnaryTests_04grogb">
+          <text>"kvk"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_16jzqgu">
+          <text>"niet_natuurlijk_persoon"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape id="DMNShape_1gutl9a" dmnElementRef="zaakdossiers_type_decision_table">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
