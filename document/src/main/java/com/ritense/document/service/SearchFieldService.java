@@ -117,7 +117,7 @@ public class SearchFieldService {
                 && !searchFieldDto.getMatchType().equals(SearchFieldMatchType.EXACT)) {
             throw new InvalidSearchFieldException(
                     "Match type " + searchFieldDto.getMatchType().toString()
-                            + "is invalid for data type " + searchFieldDto.getDataType(),
+                            + " is invalid for data type " + searchFieldDto.getDataType(),
                     Status.BAD_REQUEST
             );
         }
@@ -125,7 +125,7 @@ public class SearchFieldService {
                 && searchFieldDto.getFieldType().equals(SearchFieldFieldType.RANGE)) {
             throw new InvalidSearchFieldException(
                     "Field type " + searchFieldDto.getFieldType().toString()
-                            + "is invalid for data type " + searchFieldDto.getDataType(),
+                            + " is invalid for data type " + searchFieldDto.getDataType(),
                     Status.BAD_REQUEST
             );
         }
