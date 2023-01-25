@@ -19,6 +19,7 @@ package com.ritense.plugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
+import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
 
@@ -79,5 +80,25 @@ class TestPlugin(
 
     fun shouldAlsoNotBeDeployed() {
         //meant to test correct deployment of only methods annotated correctly
+    }
+
+   @PluginEvent(PluginEvent.EventType.CREATE)
+    fun shouldRunOnCreate() {
+        //meant to test correct invocation of plugin event
+    }
+
+   @PluginEvent(PluginEvent.EventType.CREATE)
+    fun shouldRunOnCreate2() {
+        //meant to test correct invocation of plugin event
+    }
+
+   @PluginEvent(PluginEvent.EventType.UPDATE)
+    fun shouldRunOnUpdate() {
+        //meant to test correct invocation of plugin event
+    }
+
+   @PluginEvent(PluginEvent.EventType.DELETE)
+    fun shouldRunOnDelete() {
+        //meant to test correct invocation of plugin event
     }
 }

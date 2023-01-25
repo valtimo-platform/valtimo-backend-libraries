@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package com.ritense.plugin
 
+import com.ritense.plugin.service.PluginService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.community.mockito.service.RuntimeServiceFluentMock
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -35,8 +35,13 @@ class TestApplication {
     @TestConfiguration
     class TestConfig {
         @Bean
-        fun testPlugin(): PluginFactory<TestPlugin> {
-            return spy(TestPluginFactory("someString", mock()))
+        fun testPlugin(pluginService: PluginService): PluginFactory<TestPlugin> {
+            return spy(TestPluginFactory("someString", pluginService))
+        }
+
+        @Bean
+        fun testCategoryPlugin(pluginService: PluginService): PluginFactory<TestCategoryPlugin> {
+            return spy(TestCategoryPluginFactory(pluginService))
         }
 
         @Bean

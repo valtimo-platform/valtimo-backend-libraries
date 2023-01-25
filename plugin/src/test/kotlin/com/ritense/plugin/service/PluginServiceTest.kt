@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.ritense.plugin.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -40,16 +41,18 @@ import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valueresolver.ValueResolverService
+import kotlin.test.assertEquals
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import kotlin.test.assertEquals
 
 internal class PluginServiceTest {
 
@@ -71,16 +74,16 @@ internal class PluginServiceTest {
         pluginFactory = mock()
         valueResolverService = mock()
         pluginConfigurationSearchRepository = mock()
-        pluginService = PluginService(
+        pluginService = spy(PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
             pluginProcessLinkRepository,
             listOf(pluginFactory),
-            Mapper.INSTANCE.get(),
+            jacksonObjectMapper(),
             valueResolverService,
             pluginConfigurationSearchRepository
-        )
+        ))
     }
 
     @Test
@@ -99,6 +102,11 @@ internal class PluginServiceTest {
         val pluginDefinition = newPluginDefinition()
         addPluginProperty(pluginDefinition)
         newPluginConfiguration(pluginDefinition)
+
+        val plugin2 = TestPlugin2()
+        plugin2.name = "whatever"
+
+        doReturn(plugin2).whenever(pluginService).createInstance(any<PluginConfiguration>())
 
         pluginService
             .createPluginConfiguration(
@@ -178,6 +186,11 @@ internal class PluginServiceTest {
 
         whenever(pluginConfigurationRepository.getById(pluginConfiguration.id)).thenReturn(pluginConfiguration)
 
+        val plugin2 = TestPlugin2()
+        plugin2.name = "whatever"
+
+        doReturn(plugin2).whenever(pluginService).createInstance(any<PluginConfiguration>())
+
         pluginService
             .updatePluginConfiguration(
                 pluginConfiguration.id, "title", newProperties
@@ -191,7 +204,17 @@ internal class PluginServiceTest {
 
     @Test
     fun `should delete plugin configuration`(){
-        val pluginConfigurationId = PluginConfigurationId.newId()
+        val pluginDefinition = newPluginDefinition()
+        addPluginProperty(pluginDefinition)
+        val pluginConfiguration = newPluginConfiguration(pluginDefinition)
+
+        val pluginConfigurationId = pluginConfiguration.id
+
+        val plugin2 = TestPlugin2()
+        plugin2.name = "whatever"
+
+        whenever(pluginConfigurationRepository.getById(pluginConfiguration.id)).thenReturn(pluginConfiguration)
+        doReturn(plugin2).whenever(pluginService).createInstance(any<PluginConfiguration>())
 
         pluginService.deletePluginConfiguration(pluginConfigurationId)
         verify(pluginConfigurationRepository).deleteById(pluginConfigurationId)
@@ -381,6 +404,11 @@ internal class PluginServiceTest {
         fun doThing(@PluginActionProperty test: Int) {
             testDependency.processInt(test)
         }
+    }
+
+    class TestPlugin2() {
+        @com.ritense.plugin.annotation.PluginProperty(key = "name", required = false, secret = false)
+        var name: String? = null
     }
 
     interface TestDependency{

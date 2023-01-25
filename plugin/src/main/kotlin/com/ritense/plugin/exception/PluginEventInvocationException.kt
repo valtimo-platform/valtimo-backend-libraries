@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.notificatiesapi.domain
+package com.ritense.plugin.exception
 
-data class Abonnement(
-    val url: String?,
-    val callbackUrl: String,
-    val auth: String?,
-    val kanalen: List<Kanaal> = listOf(),
-) {
-    data class Kanaal(
-        val filters: Map<String, String> = mapOf(),
-        val naam: String
-    )
-}
+import com.ritense.plugin.domain.PluginConfiguration
+
+class PluginEventInvocationException(
+    pluginConfiguration: PluginConfiguration,
+    throwable: Throwable,
+) : RuntimeException(
+    "Failed to run events on plugin ${pluginConfiguration.title} with id ${pluginConfiguration.id.id}",
+    throwable
+)

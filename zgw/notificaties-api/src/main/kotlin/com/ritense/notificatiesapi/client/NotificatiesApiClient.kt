@@ -58,11 +58,16 @@ class NotificatiesApiClient(
             .awaitBodilessEntity()
     }
 
-    internal suspend fun createKanaal(authentication: NotificatiesApiAuthentication, baseUrl: URI, kanaal: Kanaal): Kanaal {
+    internal suspend fun createKanaal(
+        authentication: NotificatiesApiAuthentication,
+        baseUrl: URI,
+        kanaal: Kanaal
+    ): Kanaal {
         return buildNotificatiesWebClient(authentication, baseUrl)
             .post()
             .uri("/api/v1/kanaal")
             .contentType(MediaType.APPLICATION_JSON)
+            .headers { it.setAll(mapOf("header1" to "value1", "header2" to "value2")) }
             .bodyValue(kanaal)
             .retrieve()
             .awaitBody()

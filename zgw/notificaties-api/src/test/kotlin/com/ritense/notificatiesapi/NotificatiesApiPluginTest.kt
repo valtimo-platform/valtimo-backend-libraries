@@ -45,6 +45,7 @@ internal class NotificatiesApiPluginTest {
     lateinit var abonnementLinkRepository: NotificatiesApiAbonnementLinkRepository
     lateinit var plugin: NotificatiesApiPlugin
     lateinit var pluginConfigurationId: PluginConfigurationId
+    lateinit var notificatiesApiConfigurationId: NotificatiesApiConfigurationId
 
     @BeforeEach
     fun setup() {
@@ -52,10 +53,12 @@ internal class NotificatiesApiPluginTest {
         notificatiesApiClient = mock()
         abonnementLinkRepository = mock()
         pluginConfigurationId = PluginConfigurationId(UUID.randomUUID())
+        notificatiesApiConfigurationId = NotificatiesApiConfigurationId(pluginConfigurationId.id)
 
         plugin = NotificatiesApiPlugin(pluginConfigurationId, notificatiesApiClient, abonnementLinkRepository)
             .apply {
                 url = URI("http://example.com")
+                callbackUrl = URI("http://example.com/callback")
                 authenticationPluginConfiguration = mock()
             }
     }
@@ -120,10 +123,7 @@ internal class NotificatiesApiPluginTest {
                 )
             )
 
-        plugin.createAbonnement(
-            callbackUrl = "http://example.com/callback",
-            kanaalNames = setOf("test-kanaal")
-        )
+        plugin.createAbonnement()
 
         verify(abonnementLinkRepository, times(1)).save(linkCaptor.capture())
         assertContains(linkCaptor.value.url, abonnementId.toString())
@@ -136,7 +136,7 @@ internal class NotificatiesApiPluginTest {
         val abonnementId = UUID.randomUUID()
         val notificatiesApiConfigurationIdCaptor = ArgumentCaptor.forClass(NotificatiesApiConfigurationId::class.java)
         val abonnementLink = NotificatiesApiAbonnementLink(
-            pluginConfigurationId = pluginConfigurationId,
+            notificatiesApiConfigurationId = notificatiesApiConfigurationId,
             url = "http://example.com/abonnement/$abonnementId",
             auth = "some-key"
         )
