@@ -26,6 +26,8 @@ dependencies {
     implementation project(':contract')
     implementation project(":web")
     implementation project(':zgw')
+    implementation project(':zgw:objecttypen-api')
+    implementation project(':zgw:objecten-api')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
