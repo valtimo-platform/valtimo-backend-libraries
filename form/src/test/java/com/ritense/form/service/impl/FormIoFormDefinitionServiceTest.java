@@ -18,11 +18,14 @@ package com.ritense.form.service.impl;
 
 import com.ritense.form.BaseTest;
 import com.ritense.form.domain.FormIoFormDefinition;
+import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.repository.FormDefinitionRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,5 +54,13 @@ public class FormIoFormDefinitionServiceTest extends BaseTest {
         when(formDefinitionRepository.findByNameIgnoreCase("test")).thenReturn(Optional.of(formIoFormDefinition));
         Optional<FormIoFormDefinition> formDefinition = formIoFormDefinitionService.getFormDefinitionByNameIgnoringCase("test");
         assertEquals(formIoFormDefinition, formDefinition.get());
+    }
+
+    @Test
+    public void shouldNotCreateNewCaseWhenNameExists() {
+        FormIoFormDefinition formIoFormDefinition = mock(FormIoFormDefinition.class);
+        when(formDefinitionRepository.findByName("test")).thenReturn(Optional.of(formIoFormDefinition));
+        CreateFormDefinitionRequest request = new CreateFormDefinitionRequest("test", "" ,false);
+        assertThrows(IllegalArgumentException.class, () -> formIoFormDefinitionService.createFormDefinition(request));
     }
 }

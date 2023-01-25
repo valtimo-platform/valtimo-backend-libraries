@@ -56,6 +56,11 @@ public class FormIoFormManagementResource implements FormManagementResource {
     }
 
     @Override
+    public ResponseEntity<? extends Boolean> getExistsByName(@PathVariable String name) {
+        return ResponseEntity.ok(formDefinitionService.getFormDefinitionByName(name).isPresent());
+    }
+
+    @Override
     public ResponseEntity<? extends FormDefinition> createFormDefinition(@Valid @RequestBody CreateFormDefinitionRequest request) {
         return parseResult(formDefinitionService.createFormDefinition(request));
     }

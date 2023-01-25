@@ -44,6 +44,9 @@ public interface FormManagementResource {
     @GetMapping(value = "/v1/form-management/{formDefinitionId}", consumes = MediaType.ALL_VALUE)
     ResponseEntity<? extends FormDefinition> getFormDefinitionById(String formDefinitionId);
 
+    @GetMapping(value = "/v1/form-management/exists/{name}", consumes = MediaType.ALL_VALUE)
+    ResponseEntity<? extends Boolean> getExistsByName(String name);
+
     @PostMapping(value = "/v1/form-management", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<? extends FormDefinition> createFormDefinition(CreateFormDefinitionRequest request);
 
