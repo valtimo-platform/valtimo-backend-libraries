@@ -16,11 +16,8 @@
 
 package com.ritense.openzaak.service
 
-import org.mockito.kotlin.whenever
 import com.ritense.openzaak.BaseTest
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.service.impl.ZaakService
@@ -28,6 +25,8 @@ import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.Catalogus
 import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
+import com.ritense.zakenapi.domain.ZaakInstanceLink
+import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.BeforeEach
@@ -35,6 +34,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.contains
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.whenever
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod

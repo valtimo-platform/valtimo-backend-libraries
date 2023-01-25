@@ -27,6 +27,7 @@ import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.valtimo.contract.domain.AggregateRoot
 import com.ritense.valtimo.contract.domain.DomainEvent
 import com.ritense.valtimo.contract.validation.Validatable
+import com.ritense.zakenapi.domain.ZaakInstanceLink
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.annotations.Type

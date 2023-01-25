@@ -107,8 +107,8 @@ dependencies {
         exclude(module: 'tools')
     }
 
-    implementation('org.liquibase:liquibase-core') {
-        exclude(module: 'jetty-servlet')
+    implementation("org.liquibase:liquibase-core:${liquibaseVersion}") {
+        exclude(module: "jetty-servlet")
     }
 
     implementation "io.dropwizard.metrics:metrics-core"

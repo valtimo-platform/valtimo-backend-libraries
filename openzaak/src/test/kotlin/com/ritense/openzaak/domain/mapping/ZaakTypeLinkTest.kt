@@ -22,11 +22,11 @@ import com.ritense.openzaak.domain.event.StatusSetEvent
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandler
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLinkId
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
+import com.ritense.zakenapi.domain.ZaakInstanceLink
+import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.Assertions.assertThrows

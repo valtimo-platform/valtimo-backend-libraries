@@ -17,6 +17,8 @@
 package com.ritense.zakenapi.client
 
 import com.ritense.zakenapi.ZakenApiAuthentication
+import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zakenapi.domain.CreateZaakResponse
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
@@ -72,6 +74,30 @@ class ZakenApiClient(
             }
             .retrieve()
             .toEntity(ClientTools.getTypedPage(ZaakObject::class.java))
+            .block()
+
+        return result?.body!!
+    }
+
+    fun createZaak(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        request: CreateZaakRequest,
+    ): CreateZaakResponse {
+        val result = webclient
+            .mutate()
+            .filter(authentication)
+            .build()
+            .post()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("zaken")
+                    .build()
+            }
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(request))
+            .retrieve()
+            .toEntity(CreateZaakResponse::class.java)
             .block()
 
         return result?.body!!

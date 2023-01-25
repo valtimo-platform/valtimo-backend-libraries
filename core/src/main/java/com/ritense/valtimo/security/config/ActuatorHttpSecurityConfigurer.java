@@ -49,6 +49,7 @@ public class ActuatorHttpSecurityConfigurer implements HttpSecurityConfigurer, A
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
+                .antMatchers(GET, "/management").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/configprops").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/env").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/health").hasAuthority(ACTUATOR)

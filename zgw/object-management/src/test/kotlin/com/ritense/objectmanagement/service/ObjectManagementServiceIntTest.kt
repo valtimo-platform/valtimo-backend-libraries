@@ -50,7 +50,7 @@ internal class ObjectManagementServiceIntTest: BaseIntegrationTest() {
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     fun getAll() {
         createObjectManagement("test1")
         createObjectManagement("test2")
@@ -60,7 +60,7 @@ internal class ObjectManagementServiceIntTest: BaseIntegrationTest() {
     }
 
     @Test
-    @Order(2)
+    @Order(4)
     fun deleteById() {
        val objectManagement = createObjectManagement()
 
