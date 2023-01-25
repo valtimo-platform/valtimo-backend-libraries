@@ -18,7 +18,33 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <property name="booleanFalseValue" value="0" dbms="mysql"/>
+    <property name="booleanFalseValue" value="false" dbms="postgresql"/>
+
     <changeSet id="add-search_list_column" author="Ritense">
         <createTable tableName="search_list_column"></createTable>
+    </changeSet>
+
+    <changeSet id="add-columns-to-search-list-column" author="Ritense">
+        <addColumn tableName="search_list_column">
+            <column name="ownerId" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="varchar(256)"/>
+            <column name="column_key" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="path" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="column_order" type="int"/>
+            <column name="data_type" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sortable" type="BOOLEAN" defaultValueBoolean="${booleanFalseValue}">
+            </column>
+            <column name="default_sort" type="varchar(20)"/>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>
