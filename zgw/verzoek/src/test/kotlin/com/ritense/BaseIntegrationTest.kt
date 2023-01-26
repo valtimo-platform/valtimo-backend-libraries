@@ -18,6 +18,7 @@ package com.ritense
 
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
+import com.ritense.zakenapi.ResourceProvider
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -31,6 +32,9 @@ abstract class BaseIntegrationTest{
 
     @MockBean
     lateinit var userManagementService: UserManagementService
+
+    @MockBean
+    lateinit var resourceProvider: ResourceProvider
 
     @MockBean
     lateinit var mailSender: MailSender

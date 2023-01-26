@@ -50,6 +50,9 @@ public class SearchField implements Persistable<SearchFieldId> {
     @Enumerated(EnumType.STRING)
     private SearchFieldMatchType matchType;
 
+    @Column(name = "dropdown_data_provider", length = 255, nullable = true, updatable = true)
+    private String dropdownDataProvider;
+
     @Column(name = "search_field_order", nullable = false, updatable = true)
     private int order;
 
@@ -61,6 +64,7 @@ public class SearchField implements Persistable<SearchFieldId> {
                        SearchFieldDataType dataType,
                        SearchFieldFieldType fieldType,
                        SearchFieldMatchType matchType,
+                       String dropdownDataProvider,
                        int order,
                        String title) {
         this.key = key;
@@ -68,6 +72,7 @@ public class SearchField implements Persistable<SearchFieldId> {
         this.dataType = dataType;
         this.fieldType = fieldType;
         this.matchType = matchType;
+        this.dropdownDataProvider = dropdownDataProvider;
         this.order = order;
         this.title = title;
     }
@@ -127,6 +132,14 @@ public class SearchField implements Persistable<SearchFieldId> {
 
     public void setMatchType(SearchFieldMatchType matchType) {
         this.matchType = matchType;
+    }
+
+    public String getDropdownDataProvider() {
+        return dropdownDataProvider;
+    }
+
+    public void setDropdownDataProvider(String dropdownDataProvider) {
+        this.dropdownDataProvider = dropdownDataProvider;
     }
 
     public int getOrder() {

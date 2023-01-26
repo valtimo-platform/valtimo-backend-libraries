@@ -33,8 +33,10 @@ import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.D
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.DATETIME;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TIME;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTIPLE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTI_SELECT_DROPDOWN;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.RANGE;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE_SELECT_DROPDOWN;
 import static com.ritense.document.domain.search.AssigneeFilter.MINE;
 import static com.ritense.document.domain.search.AssigneeFilter.OPEN;
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
@@ -193,14 +195,14 @@ public class SearchRequestValidator {
     }
 
     private static void validateSearchFieldType(SearchWithConfigRequest.SearchWithConfigFilter searchFilter, SearchField searchField) {
-        if ((searchField.getFieldType() == MULTIPLE || searchField.getFieldType() == SINGLE)
+        if ((searchField.getFieldType() == MULTI_SELECT_DROPDOWN || searchField.getFieldType() == MULTIPLE || searchField.getFieldType() == SINGLE || searchField.getFieldType() == SINGLE_SELECT_DROPDOWN)
             && (searchFilter.getRangeFrom() != null || searchFilter.getRangeTo() != null)) {
             throw new SearchConfigRequestException(searchField, searchField.getFieldType().toString(), "range parameters were found");
         }
-        if (searchField.getFieldType() == SINGLE && searchFilter.getValues().isEmpty()) {
+        if ((searchField.getFieldType() == SINGLE || searchField.getFieldType() == SINGLE_SELECT_DROPDOWN) && searchFilter.getValues().isEmpty()) {
             throw new SearchConfigRequestException(searchField, searchField.getFieldType().toString(), "no value was found");
         }
-        if (searchField.getFieldType() == SINGLE && searchFilter.getValues().size() >= 2) {
+        if ((searchField.getFieldType() == SINGLE || searchField.getFieldType() == SINGLE_SELECT_DROPDOWN) && searchFilter.getValues().size() >= 2) {
             throw new SearchConfigRequestException(searchField, searchField.getFieldType().toString(), "multiple values were found");
         }
         if (searchField.getFieldType() == RANGE && !searchFilter.getValues().isEmpty()) {
