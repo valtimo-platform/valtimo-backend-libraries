@@ -8,7 +8,7 @@
     </bpmn:extensionElements>
     <bpmn:participant id="Participant_1ry53rc" processRef="create-zaakdossier" />
   </bpmn:collaboration>
-  <bpmn:process id="create-zaakdossier" isExecutable="true">
+  <bpmn:process id="create-zaakdossier" name="Create Zaakdossier" isExecutable="true">
     <bpmn:sequenceFlow id="Flow_0evcldf" sourceRef="Activity_09wc9t3" targetRef="Activity_0frw42t" />
     <bpmn:sequenceFlow id="Flow_1tgmdp6" sourceRef="Activity_00mdfa7" targetRef="Activity_1m2evlj" />
     <bpmn:sequenceFlow id="Flow_1uhql59" sourceRef="Activity_0n2cgef" targetRef="Event_19l1mml" />
@@ -62,7 +62,7 @@
         <bpmn:outgoing>Flow_0varbh9</bpmn:outgoing>
       </bpmn:serviceTask>
     </bpmn:subProcess>
-    <bpmn:businessRuleTask id="Activity_1m2evlj" name="Parse Zaak type" camunda:decisionRef="zaakdossiers_type_decision_table">
+    <bpmn:businessRuleTask id="Activity_1m2evlj" name="bepaal betrokkene-type" camunda:decisionRef="betrokkene-type-mapping">
       <bpmn:incoming>Flow_1tgmdp6</bpmn:incoming>
       <bpmn:outgoing>Flow_1eu3hy4</bpmn:outgoing>
     </bpmn:businessRuleTask>
