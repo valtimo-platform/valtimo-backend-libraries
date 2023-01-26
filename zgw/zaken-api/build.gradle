@@ -37,9 +37,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
 
     testImplementation project(":process-document")
-    testImplementation project(":resource:openzaak-resource")
-    testImplementation project(":openzaak")
     testImplementation project(":plugin-valtimo")
+    testImplementation project(":resource")
 
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
