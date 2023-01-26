@@ -30,11 +30,11 @@ dependencies {
     implementation project(':document')
     implementation project(':process-document')
     implementation project(':resource')
-    api project(":zgw:zaken-api")
 
-    compileOnly project(':plugin')
-    compileOnly project(':zgw:documenten-api')
-    compileOnly project(':zgw:catalogi-api')
+    implementation project(':plugin')
+    implementation project(':zgw:documenten-api')
+    api project(':zgw:catalogi-api')
+    api project(":zgw:zaken-api")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

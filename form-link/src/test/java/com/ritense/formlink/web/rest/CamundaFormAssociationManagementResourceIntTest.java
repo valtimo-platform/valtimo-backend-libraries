@@ -120,7 +120,8 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
     public void shouldReturn200WithFormAssociationModified() throws Exception {
         final var createFormDefinitionRequest = createFormDefinitionRequest();
         formDefinition = formDefinitionService.createFormDefinition(createFormDefinitionRequest);
-        var secondFormDefinition = formDefinitionService.createFormDefinition(createFormDefinitionRequest);
+        var secondFormDefinition = formDefinitionService
+            .createFormDefinition(createFormDefinitionRequest("myOtherForm"));
 
         final var request = createUserTaskFormAssociationRequest(formDefinition.getId());
         final MvcResult result = mockMvc.perform(

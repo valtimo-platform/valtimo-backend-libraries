@@ -18,8 +18,8 @@ dependencies {
     api project(':resource')
     api project(':openzaak')
 
-    compileOnly project(':zgw:documenten-api')
-    compileOnly project(':zgw:zaken-api')
+    implementation project(':zgw:documenten-api')
+    implementation project(':zgw:zaken-api')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
