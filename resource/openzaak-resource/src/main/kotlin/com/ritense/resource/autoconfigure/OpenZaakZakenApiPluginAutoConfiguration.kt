@@ -19,12 +19,10 @@ package com.ritense.resource.autoconfigure
 import com.ritense.resource.service.OpenZaakResourceProvider
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.zakenapi.ResourceProvider
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-@ConditionalOnClass(ResourceProvider::class)
 class OpenZaakZakenApiPluginAutoConfiguration {
     @Bean
     fun openZaakResourceProvider(
