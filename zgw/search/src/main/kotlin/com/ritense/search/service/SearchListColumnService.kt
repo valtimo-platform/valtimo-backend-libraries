@@ -13,19 +13,19 @@ class SearchListColumnService(
     fun create(searchListColumn: SearchListColumn) = searchListColumnRepository.save(searchListColumn)
 
     fun update(searchListColumn: SearchListColumn) =
-        with(findByKey(searchListColumn.key)) {
+        with(findByOwnerId(searchListColumn.ownerId)) {
             if (this != null) {
-                if (searchListColumn.key != key) {
+                if (searchListColumn.ownerId != ownerId) {
                     throw ResponseStatusException(
                         HttpStatus.CONFLICT,
-                        "This key already exists. Please choose another key"
+                        "This ownerId already exists. Please choose another ownerId"
                     )
                 }
             }
             searchListColumnRepository.save(searchListColumn)
         }
 
-    fun findByKey(key: String) = searchListColumnRepository.findByIdOrNull(key)
+    fun findByOwnerId(ownerId: String) = searchListColumnRepository.findByIdOrNull(ownerId)
 
     fun getAll() = searchListColumnRepository.findAll()
 

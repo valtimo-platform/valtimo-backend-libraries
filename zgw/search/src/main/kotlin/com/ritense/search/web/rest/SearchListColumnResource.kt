@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
-@RequestMapping("/api/v1/search/field", produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api/v1/search/list-column", produces = [MediaType.APPLICATION_JSON_VALUE])
 class SearchListColumnResource(
     private val searchListColumnService: SearchListColumnService
 ) {
@@ -28,7 +28,7 @@ class SearchListColumnResource(
 
     @GetMapping("/{key}")
     fun getByKey(@PathVariable key: String) =
-        ResponseEntity.ok(searchListColumnService.findByKey(key))
+        ResponseEntity.ok(searchListColumnService.findByOwnerId(key))
 
     @GetMapping
     fun getAll() = ResponseEntity.ok(searchListColumnService.getAll())

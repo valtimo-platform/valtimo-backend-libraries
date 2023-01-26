@@ -22,24 +22,28 @@ import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.Table
+import org.hibernate.annotations.Type
 
 @Entity
-@Table(name = "case_list_column")
+@Table(name = "search_list_column")
 data class SearchListColumn(
+    @Id
     @Column(name = "owner_id")
     val ownerId: String,
-    @Id
     @Column(name = "column_key")
     val key: String,
     @Column(name = "title")
     val title: String?,
     @Column(name = "path")
     val path: String,
-    @Column(name = "data_type")
-    @Enumerated(EnumType.STRING)
-    val dataType: DataType,
+    @Column(name = "column_order")
+    val order: Int,
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "display_type")
+    val displayType: DisplayType,
     @Column(name = "sortable")
     val sortable: Boolean,
-    @Column(name = "column_order")
-    val order: Int
+    @Column(name = "default_sort")
+    @Enumerated(EnumType.STRING)
+    val defaultSort: ColumnDefaultSort? = null,
 )

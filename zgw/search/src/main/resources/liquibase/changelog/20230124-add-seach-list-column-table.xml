@@ -39,12 +39,12 @@
                 <constraints nullable="false"/>
             </column>
             <column name="column_order" type="int"/>
-            <column name="data_type" type="varchar(20)">
+            <column name="data_type" type="JSON">
                 <constraints nullable="false"/>
             </column>
             <column name="sortable" type="BOOLEAN" defaultValueBoolean="${booleanFalseValue}">
             </column>
-            <column name="default_sort" type="varchar(20)"/>
+            <column name="default_sort" type="varchar(10)"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>

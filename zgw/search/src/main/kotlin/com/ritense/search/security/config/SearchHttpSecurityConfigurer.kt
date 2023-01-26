@@ -27,15 +27,15 @@ class SearchHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/v1/search/field")
+                .antMatchers(HttpMethod.POST, "/api/v1/search/list-column")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers(HttpMethod.GET, "/api/v1/search/field/{key}")
+                .antMatchers(HttpMethod.GET, "/api/v1/search/list-column/{key}")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers(HttpMethod.GET, "/api/v1/search/field")
+                .antMatchers(HttpMethod.GET, "/api/v1/search/list-column")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers(HttpMethod.PUT, "/api/v1/search/field")
+                .antMatchers(HttpMethod.PUT, "/api/v1/search/list-column")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers(HttpMethod.DELETE, "/api/v1/search/field")
+                .antMatchers(HttpMethod.DELETE, "/api/v1/search/list-column")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

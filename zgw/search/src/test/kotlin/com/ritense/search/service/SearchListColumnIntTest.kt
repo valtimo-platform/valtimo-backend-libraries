@@ -1,7 +1,8 @@
 package com.ritense.search.service
 
 import com.ritense.search.BaseIntegrationTest
-import com.ritense.search.domain.DataType
+import com.ritense.search.domain.DisplayType
+import com.ritense.search.domain.EmptyDisplayTypeParameter
 import com.ritense.search.domain.SearchListColumn
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -25,11 +26,11 @@ internal class SearchListColumnIntTest : BaseIntegrationTest() {
         assertThat(dbUpdatedSearchListColumn.title).isNotEqualTo(searchListColumn.title)
         assertThat(dbUpdatedSearchListColumn.title).isEqualTo(updatedSearchListColumn.title)
 
-        val dbLookUpByKey = searchListColumnService.findByKey(searchListColumn.key)
-        assertThat(dbLookUpByKey).isNotNull
-        assertThat(dbLookUpByKey?.ownerId).isEqualTo(searchListColumn.ownerId)
+        val dbLookUpByOwnerId = searchListColumnService.findByOwnerId(searchListColumn.ownerId)
+        assertThat(dbLookUpByOwnerId).isNotNull
+        assertThat(dbLookUpByOwnerId?.path).isEqualTo(searchListColumn.path)
 
-        val secondSearchListColumn = createSearchListColumn("a new key")
+        val secondSearchListColumn = createSearchListColumn("a new owner id")
 
         val searchListColumnList = searchListColumnService.getAll()
         assertThat(searchListColumnList.size).isEqualTo(2)
@@ -43,14 +44,14 @@ internal class SearchListColumnIntTest : BaseIntegrationTest() {
     }
 
 
-    private fun createSearchListColumn(key: String? = null): SearchListColumn =
+    private fun createSearchListColumn(ownerId: String? = null): SearchListColumn =
         searchListColumnService.create(
             SearchListColumn(
-                ownerId = "I own this",
-                key = key ?: "the magic key",
+                ownerId = ownerId ?: "I own this",
+                key = "the magic key",
                 title = "Title",
                 path = "everywhere",
-                dataType = DataType.TEXT,
+                displayType = DisplayType("type", EmptyDisplayTypeParameter()),
                 sortable = false,
                 order = 1
             )
