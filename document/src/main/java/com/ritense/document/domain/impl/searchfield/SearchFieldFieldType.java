@@ -19,9 +19,11 @@ package com.ritense.document.domain.impl.searchfield;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum SearchFieldFieldType {
+    MULTI_SELECT_DROPDOWN("multi-select-dropdown"),
     MULTIPLE("multiple"),
     RANGE("range"),
-    SINGLE("single");
+    SINGLE("single"),
+    SINGLE_SELECT_DROPDOWN("single-select-dropdown");
 
     @JsonValue
     private final String name;

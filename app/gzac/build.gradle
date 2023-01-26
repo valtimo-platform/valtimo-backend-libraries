@@ -8,6 +8,7 @@ dependencies {
     implementation(project(":contract"))
     implementation(project(":connector"))
     implementation(project(":core"))
+    implementation(project(":data-provider"))
     implementation(project(":document"))
     implementation(project(":document-generation:smartdocuments"))
     implementation(project(":form"))
