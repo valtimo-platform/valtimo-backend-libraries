@@ -17,8 +17,9 @@
 package com.ritense.objectenapi.client
 
 import com.ritense.objectenapi.ObjectenApiAuthentication
-import org.springframework.web.reactive.function.client.WebClient
 import java.net.URI
+import org.springframework.data.domain.Pageable
+import org.springframework.web.reactive.function.client.WebClient
 
 class ObjectenApiClient(
     val webClient: WebClient
@@ -36,6 +37,33 @@ class ObjectenApiClient(
             .uri(objectUrl)
             .retrieve()
             .toEntity(ObjectWrapper::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
+    fun getObjectsByObjecttypeUrl(
+        authentication: ObjectenApiAuthentication,
+        objecttypesApiUrl: URI,
+        objectsApiUrl: URI,
+        objectypeId: String,
+        pageable: Pageable
+    ): ObjectsList {
+        val result = webClient
+            .mutate()
+            .filter(authentication)
+            .baseUrl("${objectsApiUrl}objects")
+            .build()
+            .get()
+            .uri { builder ->
+                builder
+                    .queryParam("type", "${objecttypesApiUrl}/api/v1/objecttypes/${objectypeId}")
+                    .queryParam("pageSize", pageable.pageSize)
+                    .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
+                    .build()
+            }
+            .retrieve()
+            .toEntity(ObjectsList::class.java)
             .block()
 
         return result?.body!!

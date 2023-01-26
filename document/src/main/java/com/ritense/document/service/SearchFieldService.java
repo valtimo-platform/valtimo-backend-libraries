@@ -106,6 +106,7 @@ public class SearchFieldService {
         searchField.setDataType(searchFieldDto.getDataType());
         searchField.setFieldType(searchFieldDto.getFieldType());
         searchField.setMatchType(searchFieldDto.getMatchType());
+        searchField.setDropdownDataProvider(searchFieldDto.getDropdownDataProvider());
         searchField.setOrder(order);
         searchField.setTitle(searchFieldDto.getTitle());
         return searchField;
@@ -117,7 +118,7 @@ public class SearchFieldService {
                 && !searchFieldDto.getMatchType().equals(SearchFieldMatchType.EXACT)) {
             throw new InvalidSearchFieldException(
                     "Match type " + searchFieldDto.getMatchType().toString()
-                            + "is invalid for data type " + searchFieldDto.getDataType(),
+                            + " is invalid for data type " + searchFieldDto.getDataType(),
                     Status.BAD_REQUEST
             );
         }
@@ -125,8 +126,17 @@ public class SearchFieldService {
                 && searchFieldDto.getFieldType().equals(SearchFieldFieldType.RANGE)) {
             throw new InvalidSearchFieldException(
                     "Field type " + searchFieldDto.getFieldType().toString()
-                            + "is invalid for data type " + searchFieldDto.getDataType(),
+                            + " is invalid for data type " + searchFieldDto.getDataType(),
                     Status.BAD_REQUEST
+            );
+        }
+        if ((searchFieldDto.getFieldType().equals(SearchFieldFieldType.MULTI_SELECT_DROPDOWN)
+            || searchFieldDto.getFieldType().equals(SearchFieldFieldType.SINGLE_SELECT_DROPDOWN))
+            && searchFieldDto.getDropdownDataProvider() == null) {
+            throw new InvalidSearchFieldException(
+                "Field type " + searchFieldDto.getFieldType().toString()
+                    + " must have a datasource for the dropdown list.",
+                Status.BAD_REQUEST
             );
         }
     }

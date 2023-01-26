@@ -20,6 +20,7 @@ import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.security.config.ObjectManagementHttpSecurityConfigurer
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objectmanagement.web.rest.ObjectManagementResource
+import com.ritense.plugin.service.PluginService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
@@ -35,10 +36,12 @@ class ObjectManagementAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ObjectManagementService::class)
     fun objectManagementService(
-        objectManagementRepository: ObjectManagementRepository
+        objectManagementRepository: ObjectManagementRepository,
+        pluginService: PluginService
     ): ObjectManagementService {
         return ObjectManagementService(
-            objectManagementRepository
+            objectManagementRepository,
+            pluginService
         )
     }
 
