@@ -62,7 +62,7 @@
         <bpmn:outgoing>Flow_0varbh9</bpmn:outgoing>
       </bpmn:serviceTask>
     </bpmn:subProcess>
-    <bpmn:businessRuleTask id="Activity_1m2evlj" name="bepaal betrokkene-type" camunda:decisionRef="betrokkene-type-mapping">
+    <bpmn:businessRuleTask id="Activity_1m2evlj" name="Map betrokkene type" camunda:decisionRef="betrokkene-type-mapping">
       <bpmn:incoming>Flow_1tgmdp6</bpmn:incoming>
       <bpmn:outgoing>Flow_1eu3hy4</bpmn:outgoing>
     </bpmn:businessRuleTask>
