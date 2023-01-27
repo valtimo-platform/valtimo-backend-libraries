@@ -26,6 +26,7 @@ include(
     "contactmoment",
     "contract",
     "core",
+    "data-provider",
     "document",
     "document-export",
     "document-generation",

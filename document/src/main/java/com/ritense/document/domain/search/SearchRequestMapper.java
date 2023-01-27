@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTIPLE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTI_SELECT_DROPDOWN;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.RANGE;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.EXACT;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.LIKE;
@@ -117,7 +118,7 @@ public class SearchRequestMapper {
     }
 
     private static DatabaseSearchType findDatabaseSearchType(SearchWithConfigRequest.SearchWithConfigFilter searchFilter, SearchField searchField) {
-        if (searchField.getFieldType() == MULTIPLE) {
+        if (searchField.getFieldType() == MULTIPLE || searchField.getFieldType() == MULTI_SELECT_DROPDOWN) {
             return DatabaseSearchType.IN;
         } else if (searchField.getFieldType() == RANGE) {
             if (searchFilter.getRangeFrom() != null && searchFilter.getRangeTo() != null) {

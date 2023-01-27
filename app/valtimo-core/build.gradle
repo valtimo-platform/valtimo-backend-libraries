@@ -3,6 +3,7 @@ dependencies {
     implementation(project(":app"))
     implementation(project(":contract"))
     implementation(project(":core"))
+    implementation(project(":data-provider"))
     implementation(project(":keycloak-iam"))
     implementation(project(":web"))
     implementation(project(":audit"))

@@ -40,6 +40,7 @@ public class SearchFieldMapper {
                 searchField.getDataType(),
                 searchField.getFieldType(),
                 searchField.getMatchType(),
+                searchField.getDropdownDataProvider(),
                 searchField.getTitle());
     }
 
@@ -50,6 +51,7 @@ public class SearchFieldMapper {
                 searchField.getDataType(),
                 searchField.getFieldType(),
                 searchField.getMatchType(),
+                searchField.getDropdownDataProvider(),
                 order,
                 searchField.getTitle()
         );

@@ -17,6 +17,7 @@
 package com.ritense.openzaak
 
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.zakenapi.ResourceProvider
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
@@ -33,6 +34,9 @@ abstract class BaseIntegrationTest {
 
     @MockBean
     lateinit var userManagementService: UserManagementService
+
+    @MockBean
+    lateinit var resourceProvider: ResourceProvider
 
     @BeforeEach
     fun beforeEach() {
