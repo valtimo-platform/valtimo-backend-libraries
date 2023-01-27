@@ -27,6 +27,9 @@ import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.error.DocumentModuleExceptionTranslator;
 import com.ritense.document.web.rest.impl.SearchFieldMapper;
 import com.ritense.document.web.rest.impl.SearchFieldResource;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +38,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.NUMBER;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TEXT;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
@@ -76,6 +74,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
             TEXT,
             SINGLE,
             EXACT,
+            null,
             0,
             "aTitle"
     );
@@ -145,13 +144,29 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                                 .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
-
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title", is("Field type range is invalid for data type boolean")));
     }
 
     @Test
+    void shouldRespondWith400WhenDataTypeDateAndMatchTypeLike() throws Exception {
+        var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
+        searchFieldDto.setDataType(SearchFieldDataType.DATE);
+        searchFieldDto.setMatchType(LIKE);
+        mockMvc.perform(
+                post("/api/v1/document-search/{documentDefinitionName}/fields",
+                    DOCUMENT_DEFINITION_NAME)
+                    .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.title", is("Match type like is invalid for data type date")));
+    }
+
+
+    @Test
     void shouldRespondWith400BadRequestOnSearchFieldPathValidationError() throws Exception {
-        var searchFieldDto = new SearchFieldDto("lastName", "doc:invalid.path", TEXT, SINGLE, LIKE, null);
+        var searchFieldDto = new SearchFieldDto("lastName", "doc:invalid.path", TEXT, SINGLE, LIKE, null, null);
 
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
@@ -197,6 +212,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 SEARCH_FIELD.getDataType(),
                 SearchFieldFieldType.RANGE, //This is the change
                 SEARCH_FIELD.getMatchType(),
+                SEARCH_FIELD.getDropdownDataProvider(),
                 "someTitle");
 
         mockMvc.perform(
@@ -236,8 +252,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldReturnChangeOrderingWhenUpdateSearchFields() throws Exception {
         var searchFields = List.of(
-                new SearchFieldDto("age", "doc:age", NUMBER, SINGLE, EXACT, null),
-                new SearchFieldDto("firstName", "doc:firstName", TEXT, SINGLE, LIKE, null)
+                new SearchFieldDto("age", "doc:age", NUMBER, SINGLE, EXACT, null, null),
+                new SearchFieldDto("firstName", "doc:firstName", TEXT, SINGLE, LIKE, null, null)
         );
         mockMvc.perform(
                         put("/api/v1/document-search/{documentDefinitionName}/fields",

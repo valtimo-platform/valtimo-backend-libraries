@@ -171,7 +171,11 @@ public abstract class BaseTest {
     }
 
     protected CreateFormDefinitionRequest createFormDefinitionRequest() throws IOException {
-        return new CreateFormDefinitionRequest("myForm", rawFormDefinition("form-example"), false);
+        return createFormDefinitionRequest("myForm");
+    }
+
+    protected CreateFormDefinitionRequest createFormDefinitionRequest(String formName) throws IOException {
+        return new CreateFormDefinitionRequest(formName, rawFormDefinition("form-example"), false);
     }
 
     protected String rawFormDefinition(String formDefinitionId) throws IOException {
