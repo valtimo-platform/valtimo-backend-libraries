@@ -55,7 +55,9 @@ class SseSubscriptionService {
         val relevantSubscribers = subscriberHandles.asMap().values.filter {
             subscriberFilter?.test(it) ?: true
         }
-        logger.debug { "Notify subscribers (total=${subscriberHandles.asMap().size}, relevant=${relevantSubscribers.size})" }
+        logger.debug {
+            "Notify subscribers (total=${subscriberHandles.asMap().size}, relevant=${relevantSubscribers.size})"
+        }
         try {
             relevantSubscribers.forEach { subscriber ->
                 logger.debug { "Sending notification to ${subscriber.state.subscriptionId}" }
