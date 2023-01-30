@@ -16,10 +16,19 @@
 
 package com.ritense.objectmanagement.service
 
+import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectmanagement.domain.ObjectManagement
+import com.ritense.objectmanagement.domain.ObjectsListRowDto
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
-import java.net.URL
+import com.ritense.objecttypenapi.ObjecttypenApiPlugin
+import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.plugin.service.PluginService
 import java.util.UUID
+import mu.KLogger
+import mu.KotlinLogging
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
@@ -27,7 +36,8 @@ import org.springframework.web.server.ResponseStatusException
 
 @Transactional(readOnly = true)
 class ObjectManagementService(
-    private val objectManagementRepository: ObjectManagementRepository
+    private val objectManagementRepository: ObjectManagementRepository,
+    private val pluginService: PluginService
 ) {
 
     @Transactional
@@ -61,5 +71,47 @@ class ObjectManagementService(
     @Transactional
     fun deleteById(id: UUID) = objectManagementRepository.deleteById(id)
 
+    fun getObjects(id: UUID, pageable: Pageable): PageImpl<ObjectsListRowDto> {
+        val objectManagement = getById(id) ?: let {
+            logger.info {
+                "The requested Id is not configured as a objectnamagement configuration. " +
+                    "The requested id was: $id"
+            }
+            throw NotFoundException()
+        }
+
+        val objectTypePluginInstance = pluginService
+            .createInstance(
+                PluginConfigurationId.existingId(objectManagement.objecttypenApiPluginConfigurationId)
+            ) as ObjecttypenApiPlugin
+
+        val objectenPluginInstance = pluginService
+            .createInstance(
+                PluginConfigurationId.existingId(objectManagement.objectenApiPluginConfigurationId)
+            ) as ObjectenApiPlugin
+
+        val objectsList = objectenPluginInstance.getObjectsByObjectTypeId(
+            objectTypePluginInstance.url,
+            objectenPluginInstance.url,
+            objectManagement.objecttypeId,
+            pageable
+        )
+
+        val objectsListDto = objectsList.results.map {
+            ObjectsListRowDto(it.url.toString(), listOf(
+                ObjectsListRowDto.ObjectsListItemDto("objectUrl", it.url),
+                ObjectsListRowDto.ObjectsListItemDto("recordIndex", it.record.index),
+
+            ))
+        }
+
+        return PageImpl(objectsListDto, pageable, objectsList.count.toLong())
+    }
+
     fun findByObjectTypeId(id: String) = objectManagementRepository.findByObjecttypeId(id)
+
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
+    }
 }

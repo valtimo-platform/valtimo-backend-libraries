@@ -38,4 +38,11 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="Ritense" id="4">
+        <modifyDataType tableName="search_field" columnName="fieldtype" newDataType="varchar(32)"/>
+        <addColumn tableName="search_field">
+            <column name="dropdown_data_provider" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

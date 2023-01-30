@@ -19,6 +19,7 @@ package com.ritense.zakenapi
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
+import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Tag
@@ -49,4 +50,10 @@ class BaseIntegrationTest {
 
     @MockBean
     lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
+
+    @MockBean
+    lateinit var resourceProvider: ResourceProvider
+
+    @MockBean
+    lateinit var resourceService: ResourceService
 }

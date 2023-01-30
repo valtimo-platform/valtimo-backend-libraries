@@ -122,7 +122,7 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
 
         final var savedFormAssociation = formAssociationService.createFormAssociation(createFormAssociationRequest);
 
-        final var secondFormDefinition = formDefinitionService.createFormDefinition(createFormDefinitionRequest());
+        final var secondFormDefinition = formDefinitionService.createFormDefinition(createFormDefinitionRequest("myOtherForm"));
         final var modifyFormAssociationRequest = modifyFormAssociationRequest(savedFormAssociation.getId(), secondFormDefinition.getId(), true);
 
         formAssociationService.modifyFormAssociation(modifyFormAssociationRequest);
