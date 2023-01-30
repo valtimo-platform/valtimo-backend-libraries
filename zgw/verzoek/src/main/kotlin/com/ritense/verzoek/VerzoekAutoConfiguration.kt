@@ -16,9 +16,9 @@
 
 package com.ritense.verzoek
 
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.service.DocumentService
 import com.ritense.objectmanagement.service.ObjectManagementService
-import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -42,14 +42,14 @@ class VerzoekAutoConfiguration {
         pluginService: PluginService,
         objectManagementService: ObjectManagementService,
         documentService: DocumentService,
-        zaakTypeLinkService: ZaakTypeLinkService,
+        zaaktypeUrlProvider: ZaaktypeUrlProvider,
         processDocumentService: ProcessDocumentService
     ): VerzoekPluginEventListener {
         return VerzoekPluginEventListener(
             pluginService,
             objectManagementService,
             documentService,
-            zaakTypeLinkService,
+            zaaktypeUrlProvider,
             processDocumentService
         )
     }
