@@ -21,6 +21,7 @@ import com.ritense.catalogiapi.security.CatalogiApiHttpSecurityConfigurer
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.plugin.service.PluginService
 import com.ritense.catalogiapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.web.rest.CatalogiResource
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -62,11 +63,20 @@ class CatalogiApiAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(CatalogiService::class)
     fun catalogiService(
         zaaktypeUrlProvider: ZaaktypeUrlProvider,
         pluginService : PluginService
     ): CatalogiService {
         return CatalogiService(zaaktypeUrlProvider, pluginService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CatalogiResource::class)
+    fun catalogiResource(
+        catalogiService: CatalogiService
+    ): CatalogiResource {
+        return CatalogiResource(catalogiService)
     }
 
     @Order(400)
