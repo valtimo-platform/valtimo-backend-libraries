@@ -106,9 +106,11 @@ class ApplicationReadyEventListener(
             val objectenApiPluginId = createObjectenApiPlugin(objectenApiAuthenticationPluginId)
             val objecttypenApiPluginId = createObjecttypenApiPlugin(objectenApiAuthenticationPluginId)
             val bezwaarConfigurationId = createBezwaarObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
+            val taakConfigurationId = createTaakObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
             createBomenObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
             createVerzoekPlugin(notificatiesApiPluginId, bezwaarConfigurationId)
             createSmartDocumentsPlugin()
+            createPortaalTaakPlugin(notificatiesApiPluginId, taakConfigurationId)
         } catch (ex: Exception) {
             logger.error { ex }
         }
@@ -582,6 +584,24 @@ class ApplicationReadyEventListener(
         ).id
     }
 
+    private fun createTaakObjectManagement(
+        objecttypenApiPluginConfigurationId: UUID,
+        objectenApiPluginConfigurationId: UUID
+    ): UUID {
+        return objectManagementService.update(
+            ObjectManagement(
+                id = UUID.fromString("16c69c86-0c5d-4d57-b4ac-0add8271a142"),
+                title = "Taak",
+                objecttypenApiPluginConfigurationId = objecttypenApiPluginConfigurationId,
+                objecttypeId = "3e852115-277a-4570-873a-9a64be3aeb34",
+                objectenApiPluginConfigurationId = objectenApiPluginConfigurationId,
+                showInDataMenu = false,
+                formDefinitionView = null,
+                formDefinitionEdit = null,
+            )
+        ).id
+    }
+
     private fun createBomenObjectManagement(
         objecttypenApiPluginConfigurationId: UUID,
         objectenApiPluginConfigurationId: UUID
@@ -616,6 +636,34 @@ class ApplicationReadyEventListener(
                     URI("http://localhost:8001/catalogi/api/v1/informatieobjecttypen/efc332f2-be3b-4bad-9e3c-49a6219c92ad")
                 )
             )
+        }
+    }
+
+    private fun createPortaalTaakPlugin(
+        notificatiesApiPluginConfigurationId: UUID,
+        objectManagementConfigurationId: UUID
+    ): UUID {
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "Portaaltaak",
+                pluginDefinitionKey = "portaaltaak",
+            )
+        )
+        return if (existing.isEmpty()) {
+            pluginService.createPluginConfiguration(
+                title = "Portaaltaak",
+                pluginDefinitionKey = "portaaltaak",
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "notificatiesApiPluginConfiguration": "$notificatiesApiPluginConfigurationId",
+                        "objectManagementConfigurationId": "$objectManagementConfigurationId"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
         }
     }
 
