@@ -66,7 +66,7 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
               "objectManagementId": "0b993a22-aa70-49a8-934a-79b17a70df6f",
-              "systemProcessDefinitionKey": "verzoek-process",
+              "processToStart": "verzoek-process",
               "rsin": "637549971",
               "verzoekProperties": [{
                 "type": "objection",
@@ -83,7 +83,7 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
 
         assertEquals(URI("https://example.com/my-notificatie-api-url"), plugin.notificatiesApiPluginConfiguration.url)
         assertTrue(plugin.notificatiesApiPluginConfiguration.authenticationPluginConfiguration is NotificatiesApiAuthenticationPlugin)
-        assertEquals("verzoek-process", plugin.systemProcessDefinitionKey)
+        assertEquals("verzoek-process", plugin.processToStart)
         assertEquals("637549971", plugin.rsin.toString())
         assertEquals(1, plugin.verzoekProperties.size)
         assertEquals("objection", plugin.verzoekProperties[0].type)
