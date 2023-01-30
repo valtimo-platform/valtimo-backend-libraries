@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.notificatiesapi.domain
+package com.ritense.plugin.domain
 
-data class Abonnement(
-    val url: String?,
-    val callbackUrl: String,
-    val auth: String?,
-    val kanalen: List<Kanaal> = listOf(),
-) {
-    data class Kanaal(
-        val filters: Map<String, String> = mapOf(),
-        val naam: String
-    )
+
+/**
+ * The type of Event that will trigger the function.
+ * EventTypes are unique and will only be matched once per annotation instance.
+ */
+enum class EventType {
+    CREATE, UPDATE, DELETE
 }

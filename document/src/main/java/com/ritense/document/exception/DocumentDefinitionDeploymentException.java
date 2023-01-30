@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.notificatiesapi.domain
+package com.ritense.document.exception;
 
-data class Abonnement(
-    val url: String?,
-    val callbackUrl: String,
-    val auth: String?,
-    val kanalen: List<Kanaal> = listOf(),
-) {
-    data class Kanaal(
-        val filters: Map<String, String> = mapOf(),
-        val naam: String
-    )
+public class DocumentDefinitionDeploymentException extends RuntimeException {
+
+    public DocumentDefinitionDeploymentException(String message, Exception e) {
+        super(message, e);
+    }
+
 }

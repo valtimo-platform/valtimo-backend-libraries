@@ -15,15 +15,15 @@
   ~ limitations under the License.
   -->
 
-<databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
-    <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
-
-    <include file="changelog/20230105-add-notificaties-api-abonnement-link-table.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/20230123-rename-primary-key-column-in-notificaties-api-abonnement-link-table.xml" relativeToChangelogFile="true"/>
-
+    <changeSet id="1" author="Ritense">
+        <renameColumn tableName="notificaties_api_abonnement_link"
+                      newColumnName="notificaties_api_configuration_id"
+                      oldColumnName="plugin_configuration_id"
+                      columnDataType="${uuidType}"
+        />
+    </changeSet>
 </databaseChangeLog>

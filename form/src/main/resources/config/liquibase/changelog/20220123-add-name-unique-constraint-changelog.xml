@@ -18,7 +18,38 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
-    <changeSet author="Floris Thijssen" id="Add unique constraint">
+
+    <changeSet id="1" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>
+            DELETE
+            FROM form_io_form_definition
+            WHERE CAST(id AS VARCHAR) NOT IN (
+                SELECT MIN(CAST(id AS VARCHAR))
+                FROM form_io_form_definition
+                GROUP BY name
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="2" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            DELETE
+            FROM form_io_form_definition
+            WHERE id NOT IN (
+                SELECT MIN(id)
+                FROM form_io_form_definition
+                GROUP BY name
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet author="Ritense" id="Add unique constraint">
         <addUniqueConstraint constraintName="name"
                               tableName="form_io_form_definition"
                               columnNames="name"/>

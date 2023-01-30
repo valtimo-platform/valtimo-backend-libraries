@@ -20,6 +20,7 @@ import com.ritense.objectenapi.ObjectenApiAuthentication
 import java.net.URI
 import org.springframework.data.domain.Pageable
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.util.UriComponentsBuilder
 
 class ObjectenApiClient(
     val webclientBuilder: WebClient.Builder
@@ -49,19 +50,26 @@ class ObjectenApiClient(
         objectypeId: String,
         pageable: Pageable
     ): ObjectsList {
+        val objectTypeUrl = UriComponentsBuilder.newInstance()
+            .uri(objecttypesApiUrl)
+            .pathSegment("objecttypes")
+            .pathSegment(objectypeId)
+            .toUriString()
+
         val result = webclientBuilder
             .clone()
             .filter(authentication)
-            .baseUrl("${objectsApiUrl}objects")
+            .baseUrl(objectsApiUrl.toASCIIString())
             .build()
             .get()
             .uri { builder ->
-                builder
-                    .queryParam("type", "${objecttypesApiUrl}/api/v1/objecttypes/${objectypeId}")
+                builder.path("objects")
+                    .queryParam("type", objectTypeUrl)
                     .queryParam("pageSize", pageable.pageSize)
                     .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
                     .build()
             }
+            .header("Accept-Crs", "EPSG:4326")
             .retrieve()
             .toEntity(ObjectsList::class.java)
             .block()

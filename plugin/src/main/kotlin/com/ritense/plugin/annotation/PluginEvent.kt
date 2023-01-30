@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.notificatiesapi.domain
+package com.ritense.plugin.annotation
 
-data class Abonnement(
-    val url: String?,
-    val callbackUrl: String,
-    val auth: String?,
-    val kanalen: List<Kanaal> = listOf(),
-) {
-    data class Kanaal(
-        val filters: Map<String, String> = mapOf(),
-        val naam: String
-    )
-}
+import com.ritense.plugin.domain.EventType
+
+/**
+ * Runs a function annotated by this annotation during the corresponding PluginConfiguration interaction in PluginService
+ */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class PluginEvent(
+    val invokedOn: Array<EventType>
+)
