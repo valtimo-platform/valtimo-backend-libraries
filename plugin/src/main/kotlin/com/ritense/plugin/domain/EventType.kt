@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.annotation
+package com.ritense.plugin.domain
 
-import com.ritense.plugin.domain.EventType
 
 /**
- * Runs a function annotated by this annotation during the corresponding PluginConfiguration interaction in PluginService
+ * The type of Event that will trigger the function.
+ * EventTypes are unique and will only be matched once per annotation instance.
  */
-@Target(AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class PluginEvent(
-    val invokedOn: Array<EventType>
-)
+enum class EventType {
+    CREATE, UPDATE, DELETE
+}

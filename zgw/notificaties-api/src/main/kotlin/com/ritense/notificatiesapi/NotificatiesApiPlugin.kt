@@ -23,7 +23,9 @@ import com.ritense.notificatiesapi.domain.NotificatiesApiAbonnementLink
 import com.ritense.notificatiesapi.domain.NotificatiesApiConfigurationId
 import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
 import com.ritense.plugin.annotation.Plugin
+import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginConfigurationId
 import java.net.URI
 import java.security.SecureRandom
@@ -54,7 +56,7 @@ class NotificatiesApiPlugin(
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: NotificatiesApiAuthentication
 
-    @PluginEvent(runOnEventType = EventType.CREATE)
+    @PluginEvent(invokedOn = [EventType.CREATE])
     fun createAbonnement() {
         val authKey = createRandomKey()
 
@@ -81,7 +83,7 @@ class NotificatiesApiPlugin(
         }
     }
 
-    @PluginEvent(runOnEventType = EventType.DELETE)
+    @PluginEvent(invokedOn = [EventType.DELETE])
     fun deleteAbonnement() {
 
         notificatiesApiAbonnementLinkRepository.findByIdOrNull(notificatiesApiConfigurationId)
@@ -105,6 +107,12 @@ class NotificatiesApiPlugin(
             }
     }
 
+    @PluginEvent(invokedOn = [EventType.UPDATE])
+    fun updateAbonnement() {
+        deleteAbonnement()
+        createAbonnement()
+    }
+
     fun ensureKanalenExist(kanalen: Set<String>): Unit = runBlocking {
         val existingKanalen = client.getKanalen(authenticationPluginConfiguration, url).map { kanaal -> kanaal.naam }
 
@@ -113,12 +121,6 @@ class NotificatiesApiPlugin(
             .forEach { kanaalNaam ->
                 launch { client.createKanaal(authenticationPluginConfiguration, url, Kanaal(naam = kanaalNaam)) }
             }
-    }
-
-    @PluginEvent(runOnEventType = EventType.UPDATE)
-    fun updateAbonnement() {
-        deleteAbonnement()
-        createAbonnement()
     }
 
     private fun createRandomKey(): String {

@@ -27,6 +27,7 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.domain.ActivityType
+import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -93,7 +94,7 @@ class PluginService(
         )
 
         try {
-            pluginConfiguration.runAllPluginEvents(PluginEvent.EventType.CREATE)
+            pluginConfiguration.runAllPluginEvents(EventType.CREATE)
 
         } catch (e: Exception) {
             pluginConfigurationRepository.deleteById(pluginConfiguration.id)
@@ -116,7 +117,7 @@ class PluginService(
         validateProperties(pluginConfiguration.properties!!, pluginConfiguration.pluginDefinition)
 
         try {
-            pluginConfiguration.runAllPluginEvents(PluginEvent.EventType.UPDATE)
+            pluginConfiguration.runAllPluginEvents(EventType.UPDATE)
         } catch (e: Exception) {
             throw PluginEventInvocationException(pluginConfiguration, e)
         }
@@ -130,7 +131,7 @@ class PluginService(
         pluginConfigurationRepository.findByIdOrNull(pluginConfigurationId)
             ?.let {
                 try {
-                    it.runAllPluginEvents(PluginEvent.EventType.DELETE)
+                    it.runAllPluginEvents(EventType.DELETE)
                 } catch (e: Exception) {
                     logger.warn { "Failed to run events on plugin ${it.title} with id ${it.id.id}" }
                 }
@@ -362,14 +363,17 @@ class PluginService(
         }
     }
 
-    private fun PluginConfiguration.runAllPluginEvents(eventType: PluginEvent.EventType): PluginConfiguration {
+    private fun PluginConfiguration.runAllPluginEvents(eventType: EventType): PluginConfiguration {
         val pluginInstance = createInstance(this)
         val pluginKlass = pluginInstance.javaClass.kotlin
 
         pluginKlass
             .functions
             .filter {
-                it.findAnnotation<PluginEvent>()?.runOnEventType == eventType
+                it.findAnnotation<PluginEvent>()
+                    ?.invokedOn
+                    ?.contains(eventType)
+                    ?: false
             }
             .forEach {
                 logger.debug { "Running ${eventType.name} event method [${it.name}] of plugin [${this.title}]" }

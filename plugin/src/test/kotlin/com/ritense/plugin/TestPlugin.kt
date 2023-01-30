@@ -22,6 +22,7 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
+import com.ritense.plugin.domain.EventType
 
 @Plugin(
     key = "test-plugin",
@@ -30,13 +31,16 @@ import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
 )
 class TestPlugin(
     val someObject: String
-) : TestPluginParent(), TestPluginInterface{
+) : TestPluginParent(), TestPluginInterface {
     @PluginProperty(key = "property1", secret = true)
     lateinit var property1: String
+
     @PluginProperty(key = "property2", required = false, secret = false)
     var property2: Boolean? = null
+
     @PluginProperty(key = "property3", secret = false)
     lateinit var property3: Number
+
     @PluginProperty(key = "property4", secret = false)
     lateinit var property4: TestPluginCategory
 
@@ -82,22 +86,22 @@ class TestPlugin(
         //meant to test correct deployment of only methods annotated correctly
     }
 
-   @PluginEvent(PluginEvent.EventType.CREATE)
+    @PluginEvent([EventType.CREATE])
     fun shouldRunOnCreate() {
         //meant to test correct invocation of plugin event
     }
 
-   @PluginEvent(PluginEvent.EventType.CREATE)
-    fun shouldRunOnCreate2() {
-        //meant to test correct invocation of plugin event
+    @PluginEvent([EventType.CREATE, EventType.DELETE])
+    fun shouldRunOnCreateAndDelete() {
+        //meant to test correct multiple invocation of plugin event
     }
 
-   @PluginEvent(PluginEvent.EventType.UPDATE)
+    @PluginEvent([EventType.UPDATE])
     fun shouldRunOnUpdate() {
         //meant to test correct invocation of plugin event
     }
 
-   @PluginEvent(PluginEvent.EventType.DELETE)
+    @PluginEvent([EventType.DELETE])
     fun shouldRunOnDelete() {
         //meant to test correct invocation of plugin event
     }

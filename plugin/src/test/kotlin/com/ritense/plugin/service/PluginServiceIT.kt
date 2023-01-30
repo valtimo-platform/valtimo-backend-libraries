@@ -44,6 +44,7 @@ import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -68,7 +69,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
 
     @BeforeEach
     fun init() {
-        val pluginDefinition = pluginDefinitionRepository.getById("test-plugin");
+        val pluginDefinition = pluginDefinitionRepository.getById("test-plugin")
         pluginConfiguration = pluginConfigurationRepository.save(
             PluginConfiguration(
                 PluginConfigurationId.newId(),
@@ -78,7 +79,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             )
         )
 
-        val categoryPluginDefinition = pluginDefinitionRepository.getById("test-category-plugin");
+        val categoryPluginDefinition = pluginDefinitionRepository.getById("test-category-plugin")
         categoryPluginConfiguration = pluginConfigurationRepository.save(
             PluginConfiguration(
                 PluginConfigurationId.newId(),
@@ -260,7 +261,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
         )
 
         verify(testPlugin, atLeastOnce()).shouldRunOnCreate()
-        verify(testPlugin, atLeastOnce()).shouldRunOnCreate2()
+        verify(testPlugin, times(2)).shouldRunOnCreateAndDelete()
         verify(testPlugin, atLeastOnce()).shouldRunOnUpdate()
         verify(testPlugin, atLeastOnce()).shouldRunOnDelete()
     }
