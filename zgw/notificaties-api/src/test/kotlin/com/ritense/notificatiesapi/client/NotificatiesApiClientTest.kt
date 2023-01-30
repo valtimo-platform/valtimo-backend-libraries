@@ -40,15 +40,15 @@ import reactor.core.publisher.Mono
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class NotificatiesApiClientTest {
     lateinit var mockNotificatiesApi: MockWebServer
-    lateinit var webClient: WebClient
+    lateinit var webclientBuilder: WebClient.Builder
     lateinit var client: NotificatiesApiClient
 
     @BeforeEach
     fun setup() {
         mockNotificatiesApi = MockWebServer()
         mockNotificatiesApi.start()
-        webClient = WebClient.create()
-        client = NotificatiesApiClient(webClient)
+        webclientBuilder = WebClient.builder()
+        client = NotificatiesApiClient(webclientBuilder)
     }
 
     @AfterEach

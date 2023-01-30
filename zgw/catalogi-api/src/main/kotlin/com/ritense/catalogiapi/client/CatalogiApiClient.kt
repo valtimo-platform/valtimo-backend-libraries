@@ -27,15 +27,15 @@ import org.springframework.web.util.UriBuilder
 import java.net.URI
 
 class CatalogiApiClient(
-    val webclient: WebClient
+    private val webclientBuilder: WebClient.Builder
 ) {
     fun getZaaktypeInformatieobjecttypes(
         authentication: CatalogiApiAuthentication,
         baseUrl: URI,
         request: ZaaktypeInformatieobjecttypeRequest
     ): Page<ZaaktypeInformatieobjecttype> {
-        val result = webclient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .get()
@@ -66,8 +66,8 @@ class CatalogiApiClient(
                 "Requested informatieobjecttypeUrl '$informatieobjecttypeUrl' is not valid for baseUrl '$baseUrl'"
             )
 
-        val result = webclient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .get()
@@ -90,8 +90,8 @@ class CatalogiApiClient(
             )
         }
 
-        val result = webclient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .get()

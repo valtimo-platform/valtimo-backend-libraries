@@ -29,15 +29,15 @@ import org.springframework.web.reactive.function.client.WebClient
 import java.net.URI
 
 class ZakenApiClient(
-    val webclient: WebClient
+    private val webclientBuilder: WebClient.Builder
 ) {
     fun linkDocument(
         authentication: ZakenApiAuthentication,
         baseUrl: URI,
         request: LinkDocumentRequest
     ): LinkDocumentResult {
-        val result = webclient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .post()
@@ -61,8 +61,8 @@ class ZakenApiClient(
         zaakUrl: URI,
         page: Int
     ): Page<ZaakObject> {
-        val result = webclient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .get()
@@ -85,8 +85,8 @@ class ZakenApiClient(
         baseUrl: URI,
         request: CreateZaakRequest,
     ): CreateZaakResponse {
-        val result = webclient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .post()

@@ -22,15 +22,15 @@ import org.springframework.data.domain.Pageable
 import org.springframework.web.reactive.function.client.WebClient
 
 class ObjectenApiClient(
-    val webClient: WebClient
+    val webclientBuilder: WebClient.Builder
 ) {
 
     fun getObject(
         authentication: ObjectenApiAuthentication,
         objectUrl: URI
     ): ObjectWrapper {
-        val result = webClient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .get()
@@ -49,8 +49,8 @@ class ObjectenApiClient(
         objectypeId: String,
         pageable: Pageable
     ): ObjectsList {
-        val result = webClient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .baseUrl("${objectsApiUrl}objects")
             .build()
@@ -74,8 +74,8 @@ class ObjectenApiClient(
         objectUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
-        val result = webClient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .put()

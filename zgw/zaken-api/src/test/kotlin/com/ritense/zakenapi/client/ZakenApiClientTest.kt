@@ -52,8 +52,8 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send link document request and parse response`() {
-        val webClient = WebClient.create()
-        val client = ZakenApiClient(webClient)
+        val webclientBuilder = WebClient.builder()
+        val client = ZakenApiClient(webclientBuilder)
 
         val responseBody = """
             {
@@ -104,8 +104,8 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send get zaakobjecten request and parse response`() {
-        val webClient = WebClient.create()
-        val client = ZakenApiClient(webClient)
+        val webclientBuilder = WebClient.builder()
+        val client = ZakenApiClient(webclientBuilder)
 
         val responseBody = """
             {

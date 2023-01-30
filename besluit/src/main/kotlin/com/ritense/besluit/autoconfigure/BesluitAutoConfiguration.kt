@@ -26,11 +26,9 @@ import com.ritense.besluit.web.rest.BesluitResource
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.catalogi.CatalogiClient
-import com.ritense.openzaak.service.ZaakService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.resource.service.OpenZaakService
-import io.netty.handler.logging.LogLevel
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
@@ -39,35 +37,18 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.netty.http.client.HttpClient
-import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
 class BesluitAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(WebClient::class)
-    fun besluitWebClient(): WebClient {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        ).build()
-    }
-
-    @Bean
     @ConditionalOnMissingBean(BesluitClient::class)
     fun besluitClient(
-        besluitWebClient: WebClient,
+        webclientBuilder: WebClient.Builder,
         besluitTokenGenerator: BesluitTokenGenerator,
     ): BesluitClient {
-        return BesluitClient(besluitWebClient, besluitTokenGenerator)
+        return BesluitClient(webclientBuilder, besluitTokenGenerator)
     }
 
     @Bean

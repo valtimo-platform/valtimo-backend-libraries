@@ -34,10 +34,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.netty.http.client.HttpClient
-import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
 class SmartDocumentsAutoConfiguration {
@@ -85,20 +82,6 @@ class SmartDocumentsAutoConfiguration {
             smartDocumentsWebClientBuilder,
             maxFileSize,
             temporaryResourceStorageService
-        )
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(WebClient.Builder::class)
-    fun smartDocumentsWebClientBuilder(): WebClient.Builder {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    io.netty.handler.logging.LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
         )
     }
 

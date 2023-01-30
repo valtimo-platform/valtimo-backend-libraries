@@ -45,27 +45,9 @@ class ZakenApiAutoConfiguration {
 
     @Bean
     fun zakenApiClient(
-        webclient: WebClient,
-        objectMapper: ObjectMapper,
-        customizerProvider: ObjectProvider<WebClientCustomizer>
+        webclientBuilder: WebClient.Builder
     ): ZakenApiClient {
-
-        val testclient = WebClient.builder()
-
-        customizerProvider.orderedStream()
-            .forEach { customizer -> customizer.customize(testclient) }
-
-        testclient.clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        )
-
-        return ZakenApiClient(testclient.build())
+        return ZakenApiClient(webclientBuilder)
     }
 
     @Bean
@@ -87,19 +69,5 @@ class ZakenApiAutoConfiguration {
             storageService,
             zaakInstanceLinkRepository,
         )
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(WebClient::class)
-    fun zakenApiWebClient(): WebClient {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        ).build()
     }
 }
