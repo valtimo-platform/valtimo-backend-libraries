@@ -28,7 +28,7 @@ class NotificatiesApiAuthenticationPluginAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(NotificatiesApiAuthenticationPluginFactory::class)
-    fun objectenApiAuthenticationPluginFactory(
+    fun notificatiesApiAuthenticationPluginFactory(
         pluginService: PluginService,
         tokenGeneratorService: OpenZaakTokenGeneratorService
     ): NotificatiesApiAuthenticationPluginFactory {

@@ -23,7 +23,9 @@ import com.ritense.notificatiesapi.domain.NotificatiesApiAbonnementLink
 import com.ritense.notificatiesapi.domain.NotificatiesApiConfigurationId
 import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
 import com.ritense.plugin.annotation.Plugin
+import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginConfigurationId
 import java.net.URI
 import java.security.SecureRandom
@@ -31,6 +33,7 @@ import java.util.Base64
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import org.springframework.data.repository.findByIdOrNull
 
 @Plugin(
     key = "notificatiesapi",
@@ -38,69 +41,76 @@ import mu.KotlinLogging
     description = "Enable interfacing with Notificaties API specification compliant APIs"
 )
 class NotificatiesApiPlugin(
-    val pluginConfigurationId: PluginConfigurationId,
+    pluginConfigurationId: PluginConfigurationId,
     private val client: NotificatiesApiClient,
-    private val abonnementLinkRepository: NotificatiesApiAbonnementLinkRepository
+    private val notificatiesApiAbonnementLinkRepository: NotificatiesApiAbonnementLinkRepository
 ) {
+    val notificatiesApiConfigurationId = NotificatiesApiConfigurationId(pluginConfigurationId.id)
+
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
+
+    @PluginProperty(key = "callbackUrl", secret = false)
+    lateinit var callbackUrl: URI
 
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: NotificatiesApiAuthentication
 
-    fun createAbonnement(
-        callbackUrl: String,
-        kanaalNames: Set<String> = DEFAULT_KANALEN_NAMES
-    ) {
-        ensureKanalenExist(kanaalNames)
+    @PluginEvent(invokedOn = [EventType.CREATE])
+    fun createAbonnement() {
+        val authKey = createRandomKey()
+
+        ensureKanalenExist(DEFAULT_KANALEN_NAMES)
         runBlocking {
             client.createAbonnement(
                 authenticationPluginConfiguration,
                 url,
                 Abonnement(
-                    callbackUrl = callbackUrl,
-                    auth = createRandomKey(),
+                    callbackUrl = callbackUrl.toASCIIString(),
+                    auth = authKey,
                     url = url.toASCIIString(),
-                    kanalen = kanaalNames.map { Abonnement.Kanaal(naam = it) }
+                    kanalen = DEFAULT_KANALEN_NAMES.map { Abonnement.Kanaal(naam = it) }
                 )
             )
         }.let {
-            abonnementLinkRepository.save(
+            notificatiesApiAbonnementLinkRepository.save(
                 NotificatiesApiAbonnementLink(
-                    pluginConfigurationId = pluginConfigurationId,
+                    notificatiesApiConfigurationId = notificatiesApiConfigurationId,
                     url = it.url!!,
-                    auth = it.auth
+                    auth = it.auth ?: authKey
                 )
             )
         }
     }
 
+    @PluginEvent(invokedOn = [EventType.DELETE])
     fun deleteAbonnement() {
-        val pluginId = NotificatiesApiConfigurationId(pluginConfigurationId.id)
 
-        abonnementLinkRepository.findById(pluginId)
-            .ifPresentOrElse(
-                {
-                    try {
-                        runBlocking {
-                            client.deleteAbonnement(
-                                authenticationPluginConfiguration,
-                                url,
-                                it.url.substringAfterLast("/")
-                            )
-                        }
-                    } catch (e: Exception) {
-                        logger.warn(e) { "Abonnement could not be deleted in Notificaties API" }
+        notificatiesApiAbonnementLinkRepository.findByIdOrNull(notificatiesApiConfigurationId)
+            ?.let {
+                try {
+                    runBlocking {
+                        client.deleteAbonnement(
+                            authenticationPluginConfiguration,
+                            url,
+                            it.url.substringAfterLast("/")
+                        )
                     }
-                    abonnementLinkRepository.deleteById(pluginId)
-                },
-                {
-                    logger.warn {
-                        "Abonnement link was not found in the NotificatiesApiAbonnementLinkRepository" +
-                            "for plugin configuration with id: $pluginConfigurationId"
-                    }
+                } catch (e: Exception) {
+                    logger.warn(e) { "Abonnement could not be deleted in Notificaties API" }
                 }
-            )
+                notificatiesApiAbonnementLinkRepository.deleteById(notificatiesApiConfigurationId)
+            }
+            ?: logger.warn {
+                "Abonnement link was not found in the NotificatiesApiAbonnementLinkRepository" +
+                    "for plugin configuration with id: ${notificatiesApiConfigurationId.id}"
+            }
+    }
+
+    @PluginEvent(invokedOn = [EventType.UPDATE])
+    fun updateAbonnement() {
+        deleteAbonnement()
+        createAbonnement()
     }
 
     fun ensureKanalenExist(kanalen: Set<String>): Unit = runBlocking {
@@ -112,7 +122,6 @@ class NotificatiesApiPlugin(
                 launch { client.createKanaal(authenticationPluginConfiguration, url, Kanaal(naam = kanaalNaam)) }
             }
     }
-
 
     private fun createRandomKey(): String {
         val random = SecureRandom()
