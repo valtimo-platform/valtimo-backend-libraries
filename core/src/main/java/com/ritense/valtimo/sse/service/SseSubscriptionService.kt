@@ -44,11 +44,6 @@ class SseSubscriptionService {
         } ?: registerNewSubscriber()
     }
 
-    // if connection is lost, the state can be kept, but a new Subscriber + SSE connection has to be made and bound to it
-    private fun ensureConnectedSubscriber(handle: SubscriberHandler): Subscriber {
-        return handle.subscriber ?: this.setupNewSubscriber(handle, false)
-    }
-
     fun remove(subscriptionId: UUID) {
         this.subscriberHandles.invalidate(subscriptionId)
     }
@@ -99,11 +94,13 @@ class SseSubscriptionService {
         return subscriber
     }
 
+    // if connection is lost, the state can be kept, but a new Subscriber + SSE connection has to be made and bound to it
+    private fun ensureConnectedSubscriber(handle: SubscriberHandler): Subscriber {
+        return handle.subscriber ?: this.setupNewSubscriber(handle, false)
+    }
+
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
 }
-
-
-
