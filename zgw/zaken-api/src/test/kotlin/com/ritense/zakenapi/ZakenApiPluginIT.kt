@@ -11,10 +11,8 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProcessResultSucceeded
-import com.ritense.resource.domain.OpenZaakResource
-import com.ritense.resource.domain.ResourceId
-import com.ritense.resource.repository.OpenZaakResourceRepository
 import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.resource.Resource
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -34,7 +32,6 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
-import java.net.URI
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
@@ -49,9 +46,6 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
-
-    @Autowired
-    lateinit var openZaakResourceRepository: OpenZaakResourceRepository
 
     @Autowired
     lateinit var procesDocumentService: ProcessDocumentService
@@ -125,15 +119,15 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // Make a record in the database about a document that is matched to the open zaak
-        val resource = OpenZaakResource(
-            ResourceId.newId(UUID.randomUUID()),
-            URI.create(INFORMATIE_OBJECT_URL),
-            "name",
-            "ext",
-            1L,
-            LocalDateTime.now()
-        )
-        openZaakResourceRepository.save(resource)
+        val resource = mock<Resource>()
+        whenever(resource.id()).thenReturn(UUID.randomUUID())
+        whenever(resource.name()).thenReturn("name")
+        whenever(resource.sizeInBytes()).thenReturn(1L)
+        whenever(resource.extension()).thenReturn("ext")
+        whenever(resource.createdOn()).thenReturn(LocalDateTime.now())
+
+        whenever(resourceService.getResource(resource.id())).thenReturn(resource)
+        whenever(resourceProvider.getResource(any())).thenReturn(resource)
 
         // Start the process
         val response = procesDocumentService.newDocumentAndStartProcess(request)
@@ -163,15 +157,15 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // Make a record in1 the database about a document that is matched to the open zaak
-        val resource = OpenZaakResource(
-            ResourceId.newId(UUID.randomUUID()),
-            URI.create(INFORMATIE_OBJECT_URL),
-            "name",
-            "ext",
-            1L,
-            LocalDateTime.now()
-        )
-        openZaakResourceRepository.save(resource)
+        val resource = mock<Resource>()
+        whenever(resource.id()).thenReturn(UUID.randomUUID())
+        whenever(resource.name()).thenReturn("name")
+        whenever(resource.sizeInBytes()).thenReturn(1L)
+        whenever(resource.extension()).thenReturn("ext")
+        whenever(resource.createdOn()).thenReturn(LocalDateTime.now())
+
+        whenever(resourceService.getResource(resource.id())).thenReturn(resource)
+        whenever(resourceProvider.getResource(any())).thenReturn(resource)
 
         // Start the process
         val response = procesDocumentService.newDocumentAndStartProcess(request)
