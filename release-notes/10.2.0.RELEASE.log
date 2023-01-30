@@ -1,0 +1,42 @@
+5e76f55b - Updated version to 10.2.0.RELEASE
+0089dfe6 - Merge pull request #511 from valtimo-platform/feature/rc/10.2.0.218.RC
+9aa009ec - Resolved merge conflicts
+ec227d6a - Updated version to 10.2.0.218.RC-SNAPSHOT
+2f2d3dc2 - Bugfix: bring back /demo endpoints because they are still used by frontend (#471)
+5c3b26c8 - Fixed changeset with boolean default value
+fe377435 - Updated version to 10.2.0.217.RC-SNAPSHOT
+6a4b5ecd - Bugfix: bring back /demo endpoints because they are still used by frontend (#471)
+dab25dd4 - tp-49377 add processDefinitionKey to ProcessStartedEvent and ProcessEndedEvent (#485)
+bfa3ea0d - case search sort on path (#483)
+c45f477e - fix integration test (#486)
+4de1edbc - feat: 47087 interfacing with Notificaties API (#478)
+db2490a4 - bugfix schema not accepting null in defaultSortColumn (#482)
+b389360f - Bugfix: people receive a 403 error on the process migration page (#480)
+c325e5d6 - htmlDependencyReport for all submodules (#479)
+0a4cb003 - Create CODE_OF_CONDUCT.md
+57764c70 - Changed findZakenApiPlugin to findCatalogiApiPlugin. (#475)
+8018c30e - bugfix (#474)
+60750fb8 - Plugin added for dependency report (#473)
+c31e237a - #47109 verzoek plugin plugin definition (#469)
+a4cc2d2a - #46573 move endpoints for zaakInstanceLinks after request from Thomas (#470)
+a404fdc8 - bugfix autodeployment case list columns (#468)
+7b50c678 - Load list column definitions on startup (#467)
+54fd7246 - #47152 Verzoek plugin - Gradle module (#464)
+0bafc121 - Feature/46573 rest api endpoint for zaak instance link (#465)
+10f6f1e3 - #48794 Migrate plugin actions (#459)
+fc7ea066 - #37550 Document definition validation fails (#463)
+7498c7d5 - feat: 46996 notificaties api authentication plugin (#461)
+1e04dc63 - #43549 fix sorting on case list column (#462)
+433c0269 - feat: added documentation to the readme on how to start the libraries (#460)
+e8fd17db - - Updated cast of load function in ConnectorService to a nullable Connector. (#458)
+129817b0 - Fixes missing "name" property to properly map the json data to the correct field. (#457)
+105ffd34 - #43549 Add tests (#456)
+87f0af8a - #43549 api endpoint to retrieve specific case data (#455)
+d4e97375 - removed file that survived the merge (#448)
+f86daf06 - Fix ObjectManagementResource (#454)
+f441e747 - Added SECURITY.md (#453)
+efc76070 - Fix: valtimo-core bootRun (#449)
+56941228 - Feature/43741 endpoint for deleting objecttype config
+6e6660d0 - Feature/45578 endpoint for adding objecttype configuration (#450)
+a7d46710 - fix document 'in' search (#441)
+1f0cb36c - 43738 added liquibase and domain to ObjectManagement module (#447)
