@@ -32,6 +32,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRoleId;
+import com.ritense.document.exception.DocumentDefinitionDeploymentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.repository.DocumentDefinitionRoleRepository;
@@ -138,7 +139,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                 }
             }
         } catch (Exception ex) {
-            logger.error("Error deploying document schema's", ex);
+            throw new DocumentDefinitionDeploymentException("Error deploying document schema's", ex);
         }
     }
 

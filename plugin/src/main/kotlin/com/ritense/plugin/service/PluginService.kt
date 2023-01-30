@@ -25,7 +25,6 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginCategory
-import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -46,7 +45,6 @@ import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.valueresolver.ValueResolverService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
-import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import java.util.UUID
@@ -68,7 +66,7 @@ class PluginService(
     }
 
     fun getPluginDefinitions(): List<PluginDefinition> {
-        return pluginDefinitionRepository.findAll()
+        return pluginDefinitionRepository.findAllByOrderByTitleAsc()
     }
 
     fun getPluginConfigurations(

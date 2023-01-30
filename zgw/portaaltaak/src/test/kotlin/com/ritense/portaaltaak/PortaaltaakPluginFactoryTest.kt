@@ -44,7 +44,8 @@ internal class PortaaltaakPluginFactoryTest {
 
         val portaaltaakPluginProperties: String = """
             {
-              "notificatiesApiPluginConfiguration": "4d9e7fe7-0671-4955-a106-fc71dc7527a6"
+              "notificatiesApiPluginConfiguration": "4d9e7fe7-0671-4955-a106-fc71dc7527a6",
+              "objectManagementConfigurationId": "cc713213-995d-494f-b1cd-61fecf40f86e"
             }
         """.trimIndent()
         val pluginDefinition = createPluginDefinition()
@@ -59,6 +60,7 @@ internal class PortaaltaakPluginFactoryTest {
         val plugin = factory.create(pluginConfiguration)
 
         assertEquals(notificatiesApiPluginMock, plugin.notificatiesApiPluginConfiguration)
+        assertEquals("cc713213-995d-494f-b1cd-61fecf40f86e", plugin.objectManagementConfigurationId.toString())
     }
 
     private fun createPluginDefinition(): PluginDefinition {
@@ -76,6 +78,14 @@ internal class PortaaltaakPluginFactoryTest {
                 "notificatiesApiPluginConfiguration", pluginDefinition, "title", required = true,
                 secret = false, "notificatiesApiPluginConfiguration",
                 "com.ritense.notificatiesapi.NotificatiesApiPlugin"
+            )
+        )
+
+        propertyDefinitions.add(
+            PluginProperty(
+                "objectManagementConfigurationId", pluginDefinition, "title", required = true,
+                secret = false, "objectManagementConfigurationId",
+                "java.util.UUID"
             )
         )
 

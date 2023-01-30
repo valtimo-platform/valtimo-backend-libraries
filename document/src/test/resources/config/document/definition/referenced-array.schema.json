@@ -8,7 +8,7 @@
         "addresses": {
             "type": "array",
             "items": {
-                "$ref": "address.schema.json"
+                "$ref": "address.schema.json#/definitions/streetName"
             },
             "additionalItems": false,
             "uniqueItems": false,
