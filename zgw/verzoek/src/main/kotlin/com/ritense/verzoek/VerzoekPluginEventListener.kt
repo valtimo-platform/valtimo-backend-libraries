@@ -16,20 +16,19 @@
 
 package com.ritense.verzoek
 
-import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
-import com.ritense.objectmanagement.service.ObjectManagementService
-import com.ritense.plugin.service.PluginService
-import org.springframework.context.event.EventListener
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.document.domain.impl.request.NewDocumentRequest
-import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
+import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
 import com.ritense.objectenapi.ObjectenApiPlugin
+import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import java.net.URI
+import org.springframework.context.event.EventListener
 
 class VerzoekPluginEventListener(
     private val pluginService: PluginService,
@@ -45,7 +44,8 @@ class VerzoekPluginEventListener(
 
         if (!event.kanaal.equals("objecten", ignoreCase = true) ||
             !event.actie.equals("create", ignoreCase = true) ||
-            objectType == null) {
+            objectType == null
+        ) {
 
             return
         }
@@ -55,34 +55,55 @@ class VerzoekPluginEventListener(
         pluginService.createInstance(VerzoekPlugin::class.java) { properties: JsonNode ->
             properties.get("objectManagementId").textValue().equals(objectManagement.id.toString())
         }?.run {
-            val objectenApiPlugin  = pluginService.createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
+            val objectenApiPlugin =
+                pluginService.createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
             val verzoekObjectData = objectenApiPlugin.getObject(URI(event.resourceUrl)).record.data
-                ?: throw Error("Verzoek Object data was empty!")
+                ?: throw RuntimeException("Verzoek meta data was empty!")
 
             val verzoekType = verzoekObjectData.get("type")?.textValue()
             val verzoekTypeProperties = verzoekProperties.firstOrNull { props -> props.type.equals(verzoekType, true) }
-                ?: throw Error("Could not find properties of type $verzoekType")
-
+                ?: throw RuntimeException("Could not find properties of type $verzoekType")
             val document = documentService.createDocument(
                 NewDocumentRequest(
                     verzoekTypeProperties.caseDefinitionName,
-                    verzoekObjectData
+                    verzoekObjectData.get("data") ?: throw RuntimeException("Verzoek Object data was empty!")
                 )
-            ).resultingDocument().orElseThrow()
+            ).also { documentResult ->
+                if (documentResult == null || documentResult.errors().size > 0) {
+                    throw RuntimeException(
+                        "Could not create document for case ${verzoekTypeProperties.caseDefinitionName}\nReason:\n"
+                                + documentResult.errors().map {
+                            it.asString()
+                        }.joinToString {
+                            "\n - $it"
+                        })
+                }
+            }.resultingDocument().orElseThrow()
 
             val initiatorType = if(verzoekObjectData.has("kvk")) { "kvk" } else { "bsn" }
 
             val zaakTypeUrl = zaakTypeLinkService.findBy(document.definitionId().name()).zaakTypeUrl
-            val startProcessRequest = StartProcessForDocumentRequest(document.id(), systemProcessDefinitionKey, mapOf(
-                "RSIN" to this.rsin,
-                "zaakTypeUrl" to zaakTypeUrl,
-                "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
-                "verzoekObjectUrl" to event.resourceUrl,
-                "initiatorType" to initiatorType,
-                "initiatorValue" to verzoekObjectData.get(initiatorType).textValue()
-            ))
+            val startProcessRequest = StartProcessForDocumentRequest(
+                document.id(), systemProcessDefinitionKey, mapOf(
+                    "RSIN" to this.rsin.toString(),
+                    "zaakTypeUrl" to zaakTypeUrl.toString(),
+                    "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
+                    "verzoekObjectUrl" to event.resourceUrl,
+                    "initiatorType" to initiatorType,
+                    "initiatorValue" to verzoekObjectData.get(initiatorType).textValue()
+                )
+            )
 
-            processDocumentService.startProcessForDocument(startProcessRequest)
+            val result = processDocumentService.startProcessForDocument(startProcessRequest)
+            if (result == null || result.errors().size > 0) {
+                throw RuntimeException(
+                    "Could not start process ${startProcessRequest.processDefinitionKey}\nReason:\n"
+                            + result.errors().map {
+                        it.asString()
+                    }.joinToString {
+                        "\n - $it"
+                    })
+            }
         }
 
     }
