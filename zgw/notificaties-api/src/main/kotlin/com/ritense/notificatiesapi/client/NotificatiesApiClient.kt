@@ -67,7 +67,6 @@ class NotificatiesApiClient(
             .post()
             .uri("kanaal")
             .contentType(MediaType.APPLICATION_JSON)
-            .headers { it.setAll(mapOf("header1" to "value1", "header2" to "value2")) }
             .bodyValue(kanaal)
             .retrieve()
             .awaitBody()
