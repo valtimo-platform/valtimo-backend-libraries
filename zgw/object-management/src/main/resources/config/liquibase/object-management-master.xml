@@ -24,6 +24,6 @@
     <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
 
     <include file="changelog/20221221-add-object-management-table.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/20220130-switch-configuration-id-columns.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230130-switch-configuration-id-columns.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
