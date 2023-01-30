@@ -20,11 +20,29 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="1" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
         <sql>
             DELETE
             FROM form_io_form_definition
             WHERE CAST(id AS VARCHAR) NOT IN (
                 SELECT MIN(CAST(id AS VARCHAR))
+                FROM form_io_form_definition
+                GROUP BY name
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="2" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            DELETE
+            FROM form_io_form_definition
+            WHERE id NOT IN (
+                SELECT MIN(id)
                 FROM form_io_form_definition
                 GROUP BY name
             );
