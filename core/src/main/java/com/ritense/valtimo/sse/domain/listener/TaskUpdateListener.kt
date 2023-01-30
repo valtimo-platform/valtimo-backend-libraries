@@ -29,6 +29,8 @@ class TaskUpdateListener(
         condition = "#delegateTask.eventName=='create' " +
             "|| #delegateTask.eventName=='complete' " +
             "|| #delegateTask.eventName=='delete'"
+        ,
+        fallbackExecution = true
     )
     fun handle(delegateTask: DelegateTask) {
         sseSubscriptionService.notifySubscribers(
