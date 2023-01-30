@@ -29,12 +29,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.search.repository"])
-@EntityScan("com.ritense.objectmanagement.domain")
+@EntityScan("com.ritense.search.domain")
 class SearchAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(SearchListColumnService::class)
-    fun objectManagementService(
+    fun searchListColumnService(
         searchListColumnRepository: SearchListColumnRepository
     ): SearchListColumnService {
         return SearchListColumnService(
@@ -44,7 +44,7 @@ class SearchAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(SearchListColumnResource::class)
-    fun objectManagementResource(
+    fun searchListColumnResource(
         searchListColumnService: SearchListColumnService
     ): SearchListColumnResource {
         return SearchListColumnResource(
@@ -55,7 +55,7 @@ class SearchAutoConfiguration {
     @Order(302)
     @Bean
     @ConditionalOnMissingBean(SearchHttpSecurityConfigurer::class)
-    fun objectManagementHttpSecurityConfigurer(): SearchHttpSecurityConfigurer {
+    fun searchHttpSecurityConfigurer(): SearchHttpSecurityConfigurer {
         return SearchHttpSecurityConfigurer()
     }
 

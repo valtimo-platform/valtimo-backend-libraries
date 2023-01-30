@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015-2022 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.search.web.rest
 
 import com.ritense.search.domain.SearchListColumn
@@ -18,24 +34,31 @@ class SearchListColumnResource(
     private val searchListColumnService: SearchListColumnService
 ) {
 
-    @PostMapping
-    fun create(@Valid @RequestBody searchListColumn: SearchListColumn) =
+    @PostMapping("/{ownerId}")
+    fun create(
+        @PathVariable ownerId: String,
+        @Valid @RequestBody searchListColumn: SearchListColumn
+    ) =
         ResponseEntity.ok(searchListColumnService.create(searchListColumn))
 
-    @PutMapping
-    fun update(@Valid @RequestBody searchListColumn: SearchListColumn) =
-    ResponseEntity.ok(searchListColumnService.update(searchListColumn))
+    @PutMapping("/{ownerId}/{key}")
+    fun update(
+        @PathVariable ownerId: String,
+        @PathVariable key: String,
+        @Valid @RequestBody searchListColumn: SearchListColumn
+    ) =
+        ResponseEntity.ok(searchListColumnService.update(ownerId, key, searchListColumn))
 
-    @GetMapping("/{key}")
-    fun getByKey(@PathVariable key: String) =
-        ResponseEntity.ok(searchListColumnService.findByOwnerId(key))
+    @GetMapping("/{ownerId}")
+    fun getByKey(@PathVariable ownerId: String) =
+        ResponseEntity.ok(searchListColumnService.findByOwnerId(ownerId))
 
-    @GetMapping
-    fun getAll() = ResponseEntity.ok(searchListColumnService.getAll())
-
-    @DeleteMapping
-    fun delete(@Valid @RequestBody searchListColumn: SearchListColumn): ResponseEntity<Any> {
-        searchListColumnService.delete(searchListColumn)
+    @DeleteMapping("/{ownerId}/{key}")
+    fun delete(
+        @PathVariable ownerId: String,
+        @PathVariable key: String
+    ): ResponseEntity<Any> {
+        searchListColumnService.delete(ownerId, key)
         return ResponseEntity.noContent().build()
     }
 }

@@ -23,12 +23,8 @@
     <property name="booleanFalseValue" value="false" dbms="postgresql"/>
 
     <changeSet id="add-search_list_column" author="Ritense">
-        <createTable tableName="search_list_column"></createTable>
-    </changeSet>
-
-    <changeSet id="add-columns-to-search-list-column" author="Ritense">
-        <addColumn tableName="search_list_column">
-            <column name="ownerId" type="varchar(256)">
+        <createTable tableName="search_list_column">
+            <column name="owner_id" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
             <column name="title" type="varchar(256)"/>
@@ -39,12 +35,12 @@
                 <constraints nullable="false"/>
             </column>
             <column name="column_order" type="int"/>
-            <column name="data_type" type="JSON">
+            <column name="display_type" type="JSON">
                 <constraints nullable="false"/>
             </column>
             <column name="sortable" type="BOOLEAN" defaultValueBoolean="${booleanFalseValue}">
             </column>
             <column name="default_sort" type="varchar(10)"/>
-        </addColumn>
+        </createTable>
     </changeSet>
 </databaseChangeLog>
