@@ -211,7 +211,7 @@ class PluginService(
     }
 
     fun invoke(execution: DelegateExecution, processLink: PluginProcessLink): Any? {
-        val instance = createInstance(processLink.pluginConfigurationId)
+        val instance: Any = createInstance(processLink.pluginConfigurationId)
 
         val method = getActionMethod(instance, processLink)
         val methodArguments = resolveMethodArguments(method, execution, processLink.actionProperties)

@@ -20,21 +20,17 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.BaseIntegrationTest
 import com.ritense.notificatiesapiauthentication.NotificatiesApiAuthenticationPlugin
 import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.service.PluginService
+import java.net.URI
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import java.net.URI
 
 internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var verzoekPluginFactory: VerzoekPluginFactory
-
-    @Autowired
-    lateinit var pluginService: PluginService
 
     lateinit var notificatiesApiPluginConfiguration: PluginConfiguration
 

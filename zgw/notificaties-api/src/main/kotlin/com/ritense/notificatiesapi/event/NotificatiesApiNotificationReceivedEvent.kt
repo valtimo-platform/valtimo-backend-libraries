@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.objectmanagement.repository
+package com.ritense.notificatiesapi.event
 
-import com.ritense.objectmanagement.domain.ObjectManagement
-import java.util.UUID
-import org.springframework.data.jpa.repository.JpaRepository
-
-interface ObjectManagementRepository: JpaRepository<ObjectManagement, UUID> {
-
-    fun findByTitle(title: String): ObjectManagement?
-    fun findByObjecttypeId(id: String) : ObjectManagement?
-}
+data class NotificatiesApiNotificationReceivedEvent(
+    val kanaal: String,
+    val resourceUrl: String,
+    val actie: String,
+    val kenmerken: Map<String, String>
+)
