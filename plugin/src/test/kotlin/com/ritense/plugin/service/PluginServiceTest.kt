@@ -89,7 +89,7 @@ internal class PluginServiceTest {
     @Test
     fun `should get plugin definitions from repository`(){
         pluginService.getPluginDefinitions()
-        verify(pluginDefinitionRepository).findAll()
+        verify(pluginDefinitionRepository).findAllByOrderByTitleAsc()
     }
 
     @Test

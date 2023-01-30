@@ -37,6 +37,11 @@ class PluginConfigurationSearchRepository(
         val selectRoot = query.from(PluginConfiguration::class.java)
         query.select(selectRoot)
         query.where(*createWhereClause(pluginConfigurationSearchParameters, criteriaBuilder, selectRoot, query))
+        query.orderBy(
+            criteriaBuilder.asc(
+                selectRoot.get<PluginDefinition>(PLUGIN_DEFINITION).get<String>(PLUGIN_DEFINITION_TITLE)
+            )
+        )
 
         val typedQuery: TypedQuery<PluginConfiguration> = entityManager
             .createQuery(query)
@@ -140,6 +145,7 @@ class PluginConfigurationSearchRepository(
     companion object {
         private const val PLUGIN_DEFINITION = "pluginDefinition"
         private const val PLUGIN_DEFINITION_KEY = "key"
+        private const val PLUGIN_DEFINITION_TITLE = "title"
         private const val PLUGIN_CONFIGURATION_TITLE = "title"
         private const val PLUGIN_CATEGORIES = "categories"
         private const val PLUGIN_ACTION_DEFINITIONS = "actions"

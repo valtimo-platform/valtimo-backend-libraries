@@ -1,15 +1,15 @@
-###Valtimo-
+### Valtimo
 
 This is a Valtimo for local development.
 
 Clone external git repo https://github.com/valtimo-platform/valtimo-docker-profiles
 
-####1 Docker-compose up
+####  Docker-compose up
 
 Run in terminal:
 <code>valtimo-docker-profiles/valtimo-platform% docker-compose up</code>
 
-####2 Run Spring-boot-application
+####  Run Spring-boot-application
 
 Run in IntellJ Gradle: <code>app -> valtimo -> application -> bootRun</code>
 

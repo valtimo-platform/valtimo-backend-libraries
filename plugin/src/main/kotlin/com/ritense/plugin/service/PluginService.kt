@@ -71,7 +71,7 @@ class PluginService(
     }
 
     fun getPluginDefinitions(): List<PluginDefinition> {
-        return pluginDefinitionRepository.findAll()
+        return pluginDefinitionRepository.findAllByOrderByTitleAsc()
     }
 
     fun getPluginConfigurations(
@@ -268,7 +268,8 @@ class PluginService(
         return paramValues.mapValues { (param, value) ->
             if (value != null && value.isTextual) {
                 //TODO: possible issue here. resulting placeHolderValue might be a string value of an enum or date
-                val placeHolderValue = placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
+                val placeHolderValue =
+                    placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
                 if (placeHolderValue::class.java.isAssignableFrom(param.type)) {
                     placeHolderValue
                 } else {

@@ -55,7 +55,7 @@ dependencies {
     testImplementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
 
     // Spring
-    implementation "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest"
+    implementation "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${camundaVersion}"
     implementation "org.springframework:spring-jdbc"
 
     // Mapstruct

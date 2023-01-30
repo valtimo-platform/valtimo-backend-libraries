@@ -38,7 +38,7 @@ class NotificatiesApiClient(
 
         return buildNotificatiesWebClient(authentication, baseUrl)
             .post()
-            .uri("/api/v1/abonnement")
+            .uri("abonnement")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(abonnement)
             .retrieve()
@@ -53,7 +53,7 @@ class NotificatiesApiClient(
 
         buildNotificatiesWebClient(authentication, baseUrl)
             .delete()
-            .uri("/api/v1/abonnement/$abonnementId")
+            .uri("abonnement/$abonnementId")
             .retrieve()
             .awaitBodilessEntity()
     }
@@ -65,7 +65,7 @@ class NotificatiesApiClient(
     ): Kanaal {
         return buildNotificatiesWebClient(authentication, baseUrl)
             .post()
-            .uri("/api/v1/kanaal")
+            .uri("kanaal")
             .contentType(MediaType.APPLICATION_JSON)
             .headers { it.setAll(mapOf("header1" to "value1", "header2" to "value2")) }
             .bodyValue(kanaal)
@@ -76,7 +76,7 @@ class NotificatiesApiClient(
     internal suspend fun getKanalen(authentication: NotificatiesApiAuthentication, baseUrl: URI): List<Kanaal> {
         return buildNotificatiesWebClient(authentication, baseUrl)
             .get()
-            .uri("/api/v1/kanaal")
+            .uri("kanaal")
             .retrieve()
             .awaitBody()
     }
