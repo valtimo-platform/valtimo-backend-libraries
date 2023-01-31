@@ -52,9 +52,31 @@
     </changeSet>
 
     <changeSet author="Ritense" id="Add unique constraint">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="form_io_form_definition"
+                             indexName="name" />
+            </not>
+        </preConditions>
         <addUniqueConstraint constraintName="name"
                               tableName="form_io_form_definition"
                               columnNames="name"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="Remove unique constraint">
+        <preConditions onFail="MARK_RAN">
+                <indexExists tableName="form_io_form_definition"
+                             indexName="name" />
+        </preConditions>
+        <dropUniqueConstraint constraintName="name"
+                              tableName="form_io_form_definition"
+                              uniqueColumns="name"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="Add unique constraint (2)">
+        <addUniqueConstraint constraintName="uc_form_io_form_definition_name"
+                             tableName="form_io_form_definition"
+                             columnNames="name"/>
     </changeSet>
 
 </databaseChangeLog>
