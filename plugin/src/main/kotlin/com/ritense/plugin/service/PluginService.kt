@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,15 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginCategory
+import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.domain.ActivityType
+import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
+import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
@@ -43,12 +46,15 @@ import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
 import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
 import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.valueresolver.ValueResolverService
-import mu.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import java.util.UUID
 import javax.validation.ValidationException
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.functions
+import mu.KotlinLogging
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.springframework.data.repository.findByIdOrNull
 
 class PluginService(
     private val pluginDefinitionRepository: PluginDefinitionRepository,
@@ -83,9 +89,19 @@ class PluginService(
         val pluginDefinition = pluginDefinitionRepository.getById(pluginDefinitionKey)
         validateProperties(properties, pluginDefinition)
 
-        return pluginConfigurationRepository.save(
+        val pluginConfiguration = pluginConfigurationRepository.save(
             PluginConfiguration(PluginConfigurationId.newId(), title, properties, pluginDefinition)
         )
+
+        try {
+            pluginConfiguration.runAllPluginEvents(EventType.CREATE)
+
+        } catch (e: Exception) {
+            pluginConfigurationRepository.deleteById(pluginConfiguration.id)
+            throw PluginEventInvocationException(pluginConfiguration, e)
+        }
+
+        return pluginConfiguration
     }
 
     fun updatePluginConfiguration(
@@ -100,12 +116,28 @@ class PluginService(
 
         validateProperties(pluginConfiguration.properties!!, pluginConfiguration.pluginDefinition)
 
+        try {
+            pluginConfiguration.runAllPluginEvents(EventType.UPDATE)
+        } catch (e: Exception) {
+            throw PluginEventInvocationException(pluginConfiguration, e)
+        }
+
         return pluginConfigurationRepository.save(pluginConfiguration)
     }
 
     fun deletePluginConfiguration(
         pluginConfigurationId: PluginConfigurationId
     ) {
+        pluginConfigurationRepository.findByIdOrNull(pluginConfigurationId)
+            ?.let {
+                try {
+                    it.runAllPluginEvents(EventType.DELETE)
+                } catch (e: Exception) {
+                    logger.warn { "Failed to run events on plugin ${it.title} with id ${it.id.id}" }
+                }
+            }
+            ?: logger.warn { "Plugin configuration with Id: [$pluginConfigurationId] was not found." }
+
         pluginConfigurationRepository.deleteById(pluginConfigurationId)
     }
 
@@ -116,7 +148,10 @@ class PluginService(
         val actions = if (activityType == null)
             pluginActionDefinitionRepository.findByIdPluginDefinitionKey(pluginDefinitionKey)
         else
-            pluginActionDefinitionRepository.findByIdPluginDefinitionKeyAndActivityTypes(pluginDefinitionKey, activityType)
+            pluginActionDefinitionRepository.findByIdPluginDefinitionKeyAndActivityTypes(
+                pluginDefinitionKey,
+                activityType
+            )
 
         return actions.map {
             PluginActionDefinitionDto(
@@ -164,10 +199,10 @@ class PluginService(
         val link = pluginProcessLinkRepository.getById(
             PluginProcessLinkId.existingId(processLink.id)
         ).copy(
-                actionProperties = processLink.actionProperties,
-                pluginConfigurationId = PluginConfigurationId.existingId(processLink.pluginConfigurationId),
-                pluginActionDefinitionKey = processLink.pluginActionDefinitionKey
-            )
+            actionProperties = processLink.actionProperties,
+            pluginConfigurationId = PluginConfigurationId.existingId(processLink.pluginConfigurationId),
+            pluginActionDefinitionKey = processLink.pluginActionDefinitionKey
+        )
         pluginProcessLinkRepository.save(link)
     }
 
@@ -176,30 +211,37 @@ class PluginService(
     }
 
     fun invoke(execution: DelegateExecution, processLink: PluginProcessLink): Any? {
-        val instance = createInstance(processLink.pluginConfigurationId)
+        val instance: Any = createInstance(processLink.pluginConfigurationId)
 
         val method = getActionMethod(instance, processLink)
         val methodArguments = resolveMethodArguments(method, execution, processLink.actionProperties)
         return method.invoke(instance, *methodArguments)
     }
 
-    private fun resolveMethodArguments(method: Method, execution: DelegateExecution, actionProperties: ObjectNode?): Array<Any?> {
+    private fun resolveMethodArguments(
+        method: Method,
+        execution: DelegateExecution,
+        actionProperties: ObjectNode?
+    ): Array<Any?> {
 
         val actionParamValueMap = resolveActionParamValues(execution, method, actionProperties)
 
         return method.parameters.map { param ->
             actionParamValueMap[param]
-                ?:
-                    if (param.type.isInstance(execution)) {
-                        execution
-                    } else {
-                        null
-                    }
+                ?: if (param.type.isInstance(execution)) {
+                    execution
+                } else {
+                    null
+                }
 
         }.toTypedArray()
     }
 
-    private fun resolveActionParamValues(execution: DelegateExecution, method: Method, actionProperties: ObjectNode?) : Map<Parameter, Any> {
+    private fun resolveActionParamValues(
+        execution: DelegateExecution,
+        method: Method,
+        actionProperties: ObjectNode?
+    ): Map<Parameter, Any> {
         if (actionProperties == null) {
             return mapOf()
         }
@@ -212,10 +254,10 @@ class PluginService(
 
         // We want to process all placeholder values together to improve performance if external sources are needed.
         val placeHolderValueMap = method.parameters.filter { param ->
-                param.isAnnotationPresent(PluginActionProperty::class.java)
-            }.mapNotNull { param ->
-                param to actionProperties.get(param.name)
-            }.toMap()
+            param.isAnnotationPresent(PluginActionProperty::class.java)
+        }.mapNotNull { param ->
+            param to actionProperties.get(param.name)
+        }.toMap()
             .filterValues { it != null && it.isTextual }
             .mapValues {
                 it.value.textValue()
@@ -227,7 +269,8 @@ class PluginService(
         return paramValues.mapValues { (param, value) ->
             if (value != null && value.isTextual) {
                 //TODO: possible issue here. resulting placeHolderValue might be a string value of an enum or date
-                val placeHolderValue = placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
+                val placeHolderValue =
+                    placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
                 if (placeHolderValue::class.java.isAssignableFrom(param.type)) {
                     placeHolderValue
                 } else {
@@ -238,13 +281,14 @@ class PluginService(
             }
         }
     }
+
     fun createInstance(pluginConfigurationId: PluginConfigurationId): Any {
         val configuration = pluginConfigurationRepository.getById(pluginConfigurationId)
         return createInstance(configuration)
     }
 
     fun createInstance(pluginConfiguration: PluginConfiguration): Any {
-        return  pluginFactories.first {
+        return pluginFactories.first {
             it.canCreate(pluginConfiguration)
         }.create(pluginConfiguration)!!
     }
@@ -277,7 +321,8 @@ class PluginService(
             val propertyNode = properties[pluginProperty.fieldName]
 
             if (propertyNode == null || propertyNode.isMissingNode || propertyNode.isNull ||
-                (propertyNode is TextNode && propertyNode.textValue() == "")) {
+                (propertyNode is TextNode && propertyNode.textValue() == "")
+            ) {
                 if (pluginProperty.required) {
                     errors.add(PluginPropertyRequiredException(pluginProperty.fieldName, pluginDefinition.title))
                 }
@@ -285,8 +330,10 @@ class PluginService(
                 try {
                     val propertyClass = Class.forName(pluginProperty.fieldType)
                     if (propertyClass.isAnnotationPresent(Plugin::class.java)
-                        || propertyClass.isAnnotationPresent(PluginCategory::class.java)) {
-                        val propertyConfigurationId = PluginConfigurationId.existingId(UUID.fromString(propertyNode.textValue()))
+                        || propertyClass.isAnnotationPresent(PluginCategory::class.java)
+                    ) {
+                        val propertyConfigurationId =
+                            PluginConfigurationId.existingId(UUID.fromString(propertyNode.textValue()))
                         val propertyConfiguration = pluginConfigurationRepository.findById(propertyConfigurationId)
                         assert(propertyConfiguration.isPresent) { "Plugin configuration with id ${propertyConfigurationId.id} does not exist!" }
                     } else {
@@ -305,12 +352,35 @@ class PluginService(
         }
     }
 
-    private fun findPluginConfiguration(pluginDefinitionKey: String, filter: (JsonNode) -> Boolean): PluginConfiguration? {
+    private fun findPluginConfiguration(
+        pluginDefinitionKey: String,
+        filter: (JsonNode) -> Boolean
+    ): PluginConfiguration? {
         val configurations = pluginConfigurationRepository.findByPluginDefinitionKey(pluginDefinitionKey)
         return configurations.firstOrNull { config ->
             val configProperties = config.properties
             configProperties != null && filter(configProperties)
         }
+    }
+
+    private fun PluginConfiguration.runAllPluginEvents(eventType: EventType): PluginConfiguration {
+        val pluginInstance = createInstance(this)
+        val pluginKlass = pluginInstance.javaClass.kotlin
+
+        pluginKlass
+            .functions
+            .filter {
+                it.findAnnotation<PluginEvent>()
+                    ?.invokedOn
+                    ?.contains(eventType)
+                    ?: false
+            }
+            .forEach {
+                logger.debug { "Running ${eventType.name} event method [${it.name}] of plugin [${this.title}]" }
+                it.call(pluginInstance)
+            }
+
+        return this
     }
 
     companion object {

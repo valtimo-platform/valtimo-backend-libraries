@@ -18,36 +18,18 @@ package com.ritense.objecttypenapi
 
 import com.ritense.objecttypenapi.client.ObjecttypenApiClient
 import com.ritense.plugin.service.PluginService
-import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.netty.http.client.HttpClient
-import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
 class ObjecttypenApiAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ObjecttypenApiClient::class)
-    fun objecttypenApiClient(webClient: WebClient): ObjecttypenApiClient {
-        return ObjecttypenApiClient(webClient)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(WebClient::class)
-    fun objecttypenApiWebClient(): WebClient {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        ).build()
+    fun objecttypenApiClient(webclientBuilder: WebClient.Builder): ObjecttypenApiClient {
+        return ObjecttypenApiClient(webclientBuilder)
     }
 
     @Bean

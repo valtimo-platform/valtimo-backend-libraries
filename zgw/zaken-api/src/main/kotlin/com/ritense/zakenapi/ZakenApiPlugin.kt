@@ -115,8 +115,8 @@ class ZakenApiPlugin(
     )
     fun createZaak(
         execution: DelegateExecution,
-        rsin: Rsin,
-        zaaktypeUrl: URI,
+        @PluginActionProperty rsin: Rsin,
+        @PluginActionProperty zaaktypeUrl: URI,
     ) {
         val documentId = UUID.fromString(execution.businessKey)
 

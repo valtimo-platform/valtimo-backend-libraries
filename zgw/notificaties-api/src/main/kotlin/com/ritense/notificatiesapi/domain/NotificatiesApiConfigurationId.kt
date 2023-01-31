@@ -17,7 +17,6 @@
 package com.ritense.notificatiesapi.domain
 
 import com.fasterxml.jackson.annotation.JsonValue
-import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.valtimo.contract.domain.AbstractId
 import java.util.UUID
 import javax.persistence.Column
@@ -25,19 +24,19 @@ import javax.persistence.Embeddable
 
 @Embeddable
 class NotificatiesApiConfigurationId(
-    @Column(name = "plugin_configuration_id")
+    @Column(name = "notificaties_api_configuration_id")
     @JsonValue
     val id: UUID
-): AbstractId<PluginConfigurationId>(){
+) : AbstractId<NotificatiesApiConfigurationId>() {
 
     companion object {
 
-        fun existingId(id: UUID): PluginConfigurationId {
-            return PluginConfigurationId(id)
+        fun existingId(id: UUID): NotificatiesApiConfigurationId {
+            return NotificatiesApiConfigurationId(id)
         }
 
-        fun newId(): PluginConfigurationId {
-            return PluginConfigurationId(UUID.randomUUID()).newIdentity()
+        fun newId(): NotificatiesApiConfigurationId {
+            return NotificatiesApiConfigurationId(UUID.randomUUID()).newIdentity()
         }
     }
 }

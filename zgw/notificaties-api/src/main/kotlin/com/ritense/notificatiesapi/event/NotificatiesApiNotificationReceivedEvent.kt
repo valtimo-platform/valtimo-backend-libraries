@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.notificatiesapi.event
 
-data class Verlenging(
-    val reden: String?,
-    val duur: String?,
+data class NotificatiesApiNotificationReceivedEvent(
+    val kanaal: String,
+    val resourceUrl: String,
+    val actie: String,
+    val kenmerken: Map<String, String>
 )

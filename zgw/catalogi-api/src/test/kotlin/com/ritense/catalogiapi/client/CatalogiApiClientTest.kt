@@ -82,8 +82,8 @@ internal class CatalogiApiClientTes {
 
     @Test
     fun `should send get informatieobjecttype request and parse response`() {
-        val webClient = WebClient.create()
-        val client = CatalogiApiClient(webClient)
+        val webclientBuilder = WebClient.builder()
+        val client = CatalogiApiClient(webclientBuilder)
 
         val responseBody = """
             {
@@ -122,8 +122,8 @@ internal class CatalogiApiClientTes {
 
     @Test
     fun `should not send get informatieobjecttype request when url and baseUrl dont match`() {
-        val webClient = WebClient.create()
-        val client = CatalogiApiClient(webClient)
+        val webclientBuilder = WebClient.builder()
+        val client = CatalogiApiClient(webclientBuilder)
 
         val baseUrl = "http://example.com"
         val informatieobjecttypeUrl = "http://other-domain.com/informatieobjecttypen/f3974b80-b538-48c1-b82e-3a3113fc9971"
@@ -141,8 +141,8 @@ internal class CatalogiApiClientTes {
 
     @Test
     fun `should send get roltypen request and parse response`() {
-        val webClient = WebClient.create()
-        val client = CatalogiApiClient(webClient)
+        val webclientBuilder = WebClient.builder()
+        val client = CatalogiApiClient(webclientBuilder)
         val baseUrl = mockApi.url("api").toString()
         val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
         val responseBody = """
@@ -185,8 +185,8 @@ internal class CatalogiApiClientTes {
     private fun sendGetZaaktypeInformatieobjecttypeRequest(
         request: ZaaktypeInformatieobjecttypeRequest
     ): RecordedRequest {
-        val webClient = WebClient.create()
-        val client = CatalogiApiClient(webClient)
+        val webclientBuilder = WebClient.builder()
+        val client = CatalogiApiClient(webclientBuilder)
 
         val responseBody = """
             {

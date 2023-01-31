@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.plugin.annotation
 
-data class Verlenging(
-    val reden: String?,
-    val duur: String?,
+import com.ritense.plugin.domain.EventType
+
+/**
+ * Runs a function annotated by this annotation during the corresponding PluginConfiguration interaction in PluginService
+ */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class PluginEvent(
+    val invokedOn: Array<EventType>
 )

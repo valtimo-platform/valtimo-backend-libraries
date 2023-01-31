@@ -36,8 +36,8 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 class CatalogiApiAutoConfiguration {
 
     @Bean
-    fun catalogiApiClient(webclient: WebClient): CatalogiApiClient {
-        return CatalogiApiClient(webclient)
+    fun catalogiApiClient(webclientBuilder: WebClient.Builder): CatalogiApiClient {
+        return CatalogiApiClient(webclientBuilder)
     }
 
     @Bean
@@ -46,20 +46,6 @@ class CatalogiApiAutoConfiguration {
         client: CatalogiApiClient
     ): CatalogiApiPluginFactory {
         return CatalogiApiPluginFactory(pluginService, client)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(WebClient::class)
-    fun catalogiApiWebClient(): WebClient {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        ).build()
     }
 
     @Bean

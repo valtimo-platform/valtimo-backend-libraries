@@ -51,8 +51,8 @@ internal class ObjecttypenApiClientTest {
 
     @Test
     fun `should send get single objecttype request and parse response`() {
-        val webClient = WebClient.create()
-        val client = ObjecttypenApiClient(webClient)
+        val webclientBuilder = WebClient.builder()
+        val client = ObjecttypenApiClient(webclientBuilder)
 
         val responseBody = """
             {

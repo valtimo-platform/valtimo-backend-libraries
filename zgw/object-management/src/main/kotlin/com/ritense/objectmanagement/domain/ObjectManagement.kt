@@ -32,13 +32,13 @@ data class ObjectManagement(
     @Column(name = "title", nullable = false, unique = true)
     val title: String,
 
-    @Column(name = "objecten_api_plugin_configuration_id", nullable = false)
+    @Column(name = "objecttypen_api_plugin_configuration_id", nullable = false)
     val objecttypenApiPluginConfigurationId: UUID,
 
     @Column(name = "objecttype_id", nullable = false)
     val objecttypeId: String,
 
-    @Column(name = "objecttypen_api_plugin_configuration_id", nullable = false)
+    @Column(name = "objecten_api_plugin_configuration_id", nullable = false)
     val objectenApiPluginConfigurationId: UUID,
 
     @Column(name = "show_data_in_menu", nullable = false)
