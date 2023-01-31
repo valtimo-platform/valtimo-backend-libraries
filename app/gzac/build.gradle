@@ -32,6 +32,7 @@ dependencies {
     implementation(project(":zgw:object-management"))
     implementation(project(":zgw:objecten-api"))
     implementation(project(":zgw:objecttypen-api"))
+    implementation(project(":zgw:search"))
     implementation(project(":zgw:portaaltaak"))
     implementation(project(":zgw:verzoek"))
     implementation(project(":zgw:zaken-api"))
