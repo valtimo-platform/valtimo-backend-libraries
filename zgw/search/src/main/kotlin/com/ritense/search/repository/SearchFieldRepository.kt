@@ -17,9 +17,10 @@
 package com.ritense.search.repository
 
 import com.ritense.search.domain.SearchField
-import com.ritense.search.domain.SearchListColumn
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface SearchFieldRepository: JpaRepository<SearchField, String> {
+interface SearchFieldRepository : JpaRepository<SearchField, String> {
+
+    fun findByOwnerIdAndKey(ownerId: String, key: String): SearchField?
 
 }

@@ -35,6 +35,14 @@ class SearchHttpSecurityConfigurer : HttpSecurityConfigurer {
                 .hasAuthority(AuthoritiesConstants.USER)
                 .antMatchers(HttpMethod.DELETE, "/api/v1/search/list-column/{ownerId}/{key}")
                 .hasAuthority(AuthoritiesConstants.USER)
+                .antMatchers(HttpMethod.POST, "/api/v1/search/field")
+                .hasAuthority(AuthoritiesConstants.USER)
+                .antMatchers(HttpMethod.GET, "/api/v1/search/field/{ownerId}")
+                .hasAuthority(AuthoritiesConstants.USER)
+                .antMatchers(HttpMethod.PUT, "/api/v1/search/field/{ownerId}/{key}")
+                .hasAuthority(AuthoritiesConstants.USER)
+                .antMatchers(HttpMethod.DELETE, "/api/v1/search/field/{ownerId}/{key}")
+                .hasAuthority(AuthoritiesConstants.USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

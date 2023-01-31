@@ -16,9 +16,43 @@
 
 package com.ritense.search.service
 
+import com.ritense.search.domain.SearchField
 import com.ritense.search.repository.SearchFieldRepository
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
 
 class SearchFieldService(
     private val searchFieldRepository: SearchFieldRepository
 ) {
+
+    fun create(searchField: SearchField) = searchFieldRepository.save(searchField)
+
+    fun update(ownerId: String, key: String, searchField: SearchField) =
+        with(findByOwnerIdAndKey(ownerId, key)) {
+            if (this != null) {
+                if (searchField.ownerId != ownerId) {
+                    throw ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "This ownerId already exists. Please choose another ownerId"
+                    )
+                } else if (searchField.key != key) {
+                    throw ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "This key already exists. Please choose another key"
+                    )
+                }
+            }
+            searchFieldRepository.save(searchField)
+        }
+
+    fun findByOwnerId(ownerId: String) = searchFieldRepository.findByIdOrNull(ownerId)
+
+    fun findByOwnerIdAndKey(ownerId: String, key: String) = searchFieldRepository.findByOwnerIdAndKey(ownerId, key)
+
+    fun delete(ownerId: String, key: String) =
+        with(findByOwnerIdAndKey(ownerId, key)) {
+            this?.let { searchFieldRepository.delete(it) }
+        }
+
 }

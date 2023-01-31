@@ -16,9 +16,12 @@
 
 package com.ritense.search.autoconfigure
 
+import com.ritense.search.repository.SearchFieldRepository
 import com.ritense.search.repository.SearchListColumnRepository
 import com.ritense.search.security.config.SearchHttpSecurityConfigurer
+import com.ritense.search.service.SearchFieldService
 import com.ritense.search.service.SearchListColumnService
+import com.ritense.search.web.rest.SearchFieldResource
 import com.ritense.search.web.rest.SearchListColumnResource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -49,6 +52,26 @@ class SearchAutoConfiguration {
     ): SearchListColumnResource {
         return SearchListColumnResource(
             searchListColumnService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SearchFieldService::class)
+    fun searchFieldService(
+        searchFieldRepository: SearchFieldRepository
+    ): SearchFieldService {
+        return SearchFieldService(
+            searchFieldRepository
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SearchFieldResource::class)
+    fun searchFieldResource(
+        searchFieldService: SearchFieldService
+    ): SearchFieldResource {
+        return SearchFieldResource(
+            searchFieldService
         )
     }
 
