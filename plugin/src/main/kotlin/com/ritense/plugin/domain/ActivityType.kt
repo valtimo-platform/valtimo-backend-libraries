@@ -16,6 +16,8 @@
 
 package com.ritense.plugin.domain
 
+import org.camunda.bpm.engine.delegate.ExecutionListener
+import org.camunda.bpm.engine.delegate.TaskListener
 import org.camunda.bpm.engine.ActivityTypes.BOUNDARY_CANCEL as CAMUNDA_BOUNDARY_CANCEL
 import org.camunda.bpm.engine.ActivityTypes.BOUNDARY_COMPENSATION as CAMUNDA_BOUNDARY_COMPENSATION
 import org.camunda.bpm.engine.ActivityTypes.BOUNDARY_CONDITIONAL as CAMUNDA_BOUNDARY_CONDITIONAL
@@ -84,12 +86,28 @@ enum class ActivityType(
 
     TASK("bpmn:" + CAMUNDA_TASK.replaceFirstChar { it.uppercaseChar() }),
     SCRIPT_TASK("bpmn:" + CAMUNDA_TASK_SCRIPT.replaceFirstChar { it.uppercaseChar() }),
-    SERVICE_TASK("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() }),
     BUSINESS_RULE_TASK("bpmn:" + CAMUNDA_TASK_BUSINESS_RULE.replaceFirstChar { it.uppercaseChar() }),
     MANUAL_TASK("bpmn:" + CAMUNDA_TASK_MANUAL_TASK.replaceFirstChar { it.uppercaseChar() }),
-    USER_TASK("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() }),
     SEND_TASK("bpmn:" + CAMUNDA_TASK_SEND_TASK.replaceFirstChar { it.uppercaseChar() }),
     RECEIVE_TASK("bpmn:" + CAMUNDA_TASK_RECEIVE_TASK.replaceFirstChar { it.uppercaseChar() }),
+
+    // Service task
+    @Deprecated("Marked for removal since 10.4.0")
+    SERVICE_TASK("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() } + ExecutionListener.EVENTNAME_START),
+    SERVICE_TASK_START("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() } + ExecutionListener.EVENTNAME_START),
+    SERVICE_TASK_END("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() } + ExecutionListener.EVENTNAME_END),
+
+    // User task
+    @Deprecated("Marked for removal since 10.4.0")
+    USER_TASK("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_CREATE),
+    USER_TASK_START("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + ExecutionListener.EVENTNAME_START),
+    USER_TASK_END("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + ExecutionListener.EVENTNAME_END),
+    USER_TASK_CREATE("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_CREATE),
+    USER_TASK_ASSIGNMENT("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_ASSIGNMENT),
+    USER_TASK_COMPLETE("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_COMPLETE),
+    USER_TASK_DELETE("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_DELETE),
+    USER_TASK_UPDATE("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_UPDATE),
+    USER_TASK_TIMEOUT("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_TIMEOUT),
 
     SUB_PROCESS("bpmn:" + CAMUNDA_SUB_PROCESS.replaceFirstChar { it.uppercaseChar() }),
     AD_HOC_SUB_PROCESS("bpmn:" + CAMUNDA_SUB_PROCESS_AD_HOC.replaceFirstChar { it.uppercaseChar() }),

@@ -40,5 +40,7 @@ data class PluginProcessLink(
     @Embedded
     val pluginConfigurationId: PluginConfigurationId,
     @Column(name = "plugin_action_definition_key")
-    val pluginActionDefinitionKey: String
+    val pluginActionDefinitionKey: String,
+    @Column(name = "activity_type")
+    val activityType: ActivityType? = null
 )
