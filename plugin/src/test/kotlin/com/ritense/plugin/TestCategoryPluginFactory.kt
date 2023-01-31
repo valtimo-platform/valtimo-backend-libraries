@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.plugin
 
-data class Verlenging(
-    val reden: String?,
-    val duur: String?,
-)
+import com.ritense.plugin.service.PluginService
+
+class TestCategoryPluginFactory(
+    pluginService: PluginService
+) : PluginFactory<TestCategoryPlugin>(pluginService) {
+    override fun create(): TestCategoryPlugin {
+        return TestCategoryPlugin()
+    }
+}

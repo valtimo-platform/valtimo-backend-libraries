@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.document.exception;
 
-data class Verlenging(
-    val reden: String?,
-    val duur: String?,
-)
+public class DocumentDefinitionDeploymentException extends RuntimeException {
+
+    public DocumentDefinitionDeploymentException(String message, Exception e) {
+        super(message, e);
+    }
+
+}

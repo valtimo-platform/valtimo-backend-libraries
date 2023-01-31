@@ -36,8 +36,8 @@ class VerzoekPlugin {
     @PluginProperty(key = "objectManagementId", secret = false)
     lateinit var objectManagementId: UUID
 
-    @PluginProperty(key = "systemProcessDefinitionKey", secret = false)
-    lateinit var systemProcessDefinitionKey: String
+    @PluginProperty(key = "processToStart", secret = false)
+    lateinit var processToStart: String
 
     @PluginProperty(key = "rsin", secret = false)
     lateinit var rsin: Rsin

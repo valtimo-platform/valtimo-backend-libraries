@@ -19,4 +19,6 @@ package com.ritense.plugin.repository
 import com.ritense.plugin.domain.PluginDefinition
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface PluginDefinitionRepository: JpaRepository<PluginDefinition, String>
+interface PluginDefinitionRepository: JpaRepository<PluginDefinition, String> {
+    fun findAllByOrderByTitleAsc(): List<PluginDefinition>
+}

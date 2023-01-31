@@ -28,17 +28,16 @@ import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
-import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
-import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
-import com.ritense.plugin.service.PluginService
-import com.ritense.processdocument.service.ProcessDocumentService
 import java.net.URI
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 import javax.transaction.Transactional
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
 import org.camunda.bpm.engine.RuntimeService
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,8 +45,8 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -58,18 +57,15 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
     private val initiatoRolType: String = "https://example.com/my-role-type"
     private val rsin: String = "637549971"
     private val objectType: String = "anObjectType"
-    private val zaakTypeUrl: String = "http://example.gov"
+    private val zaakTypeUrl: String = "https://example.gov"
     private val verzoekObjectType = "objection"
 
     lateinit var documentDefinition: DeployDocumentDefinitionResult
-    lateinit var pluginServiceSpy: PluginService
     lateinit var notificatiesApiPluginConfiguration: PluginConfiguration
-    lateinit var verzoekPluginEventListener: VerzoekPluginEventListener
     lateinit var objectManagement: ObjectManagement
 
-
     @Autowired
-    lateinit var processDocumentService: ProcessDocumentService
+    lateinit var verzoekPluginEventListener: VerzoekPluginEventListener
 
     @Autowired
     lateinit var objectManagementService: ObjectManagementService
@@ -78,27 +74,58 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
     lateinit var documentService: DocumentService
 
     @Autowired
-    lateinit var pluginService: PluginService
-
-    @Autowired
     lateinit var documentDefinitionService: DocumentDefinitionService
-
-    @Autowired
-    lateinit var zaakTypeLinkService: ZaakTypeLinkService
 
     @Autowired
     lateinit var processService: RuntimeService
 
+    lateinit var mockNotificatiesApi: MockWebServer
+
     @BeforeEach
     fun init() {
-        pluginServiceSpy = spy(pluginService)
-        verzoekPluginEventListener = VerzoekPluginEventListener(
-            pluginServiceSpy,
-            objectManagementService,
-            documentService,
-            zaakTypeLinkService,
-            processDocumentService
+        notificatiesApiPluginConfiguration = mock()
+        mockNotificatiesApi = MockWebServer()
+        mockNotificatiesApi.start()
+
+        mockNotificatiesApi.enqueue(
+            mockResponse(
+                """
+            [
+              {
+                "url": "http://example.com",
+                "naam": "objecten",
+                "documentatieLink": "http://example.com",
+                "filters": [
+                  "objecten"
+                ]
+              }
+            ]
+        """.trimIndent()
+            )
         )
+
+        mockNotificatiesApi.enqueue(
+            mockResponse(
+                """
+                    {
+                      "url": "http://example.com/abonnement/test-abonnement",
+                      "callbackUrl": "http://example.com/callback",
+                      "auth": "Bearer token",
+                      "kanalen": [
+                        {
+                          "filters": {
+                            "url": "http://example.com",
+                            "someid": "1234"
+                          },
+                          "naam": "objecten"
+                        }
+                      ]
+                    }
+        """.trimIndent()
+            )
+        )
+
+        pluginService
 
         documentDefinition = documentDefinitionService.deploy(
             """
@@ -111,26 +138,21 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
                             "type": "string"
                         }
                     }
-                } 
+                }
         """.trimIndent()
         )
         assert(documentDefinition.documentDefinition() != null)
 
         objectManagement = objectManagementService.create(createObjectManagement())
 
-        zaakTypeLinkService.createZaakTypeLink(
-            CreateZaakTypeLinkRequest(
-                documentDefinition.documentDefinition().id().name(),
-                URI.create(zaakTypeUrl),
-                false
-            )
-        )
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl(documentDefinition.documentDefinition().id().name()))
+            .thenReturn(URI.create(zaakTypeUrl))
 
-        val authenticationPluginConfiguration = createPluginConfiguration(
+        val notificatiesApiAuthenticationPluginConfiguration = createPluginConfiguration(
             "notificatiesapiauthentication", """
             {
               "clientId": "my-client-id",
-              "clientSecret": "my-client-secret"
+              "clientSecret": "my-extra-long-client-secret-128370192641209486239846"
             }
         """.trimIndent()
         )
@@ -138,11 +160,17 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         notificatiesApiPluginConfiguration = createPluginConfiguration(
             "notificatiesapi", """
             {
-              "url": "https://example.com/my-notificatie-api-url",
-              "authenticationPluginConfiguration": "${authenticationPluginConfiguration.id.id}"
+              "url": "${mockNotificatiesApi.url("/api/v1/").toUri()}",
+              "callbackUrl": "https://example.com/my-callback-api-endpoint",
+              "authenticationPluginConfiguration": "${notificatiesApiAuthenticationPluginConfiguration.id.id}"
             }
         """.trimIndent()
         )
+    }
+
+    @AfterEach
+    fun tearDown() {
+        mockNotificatiesApi.shutdown()
     }
 
     @Test
@@ -153,8 +181,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
               "objectManagementId": "${objectManagement.id}",
-              "systemProcessDefinitionKey": "verzoek-process",
-              "rsin": "${rsin}",
+              "processToStart": "verzoek-process",
+              "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
                 "caseDefinitionName": "${documentDefinition.documentDefinition().id().name()}",
@@ -167,30 +195,31 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         )
         //mocks
         val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
-        doCallRealMethod().whenever(pluginServiceSpy).createInstance(any<Class<VerzoekPlugin>>(), any())
+        doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
 
-        doReturn(mockObjectenApiPlugin).whenever(pluginServiceSpy).createInstance(any<PluginConfigurationId>())
+        doReturn(mockObjectenApiPlugin).whenever(pluginService).createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
         doReturn(createObjectWrapper(withMetaData = true, verzoekObjectType, true)).whenever(mockObjectenApiPlugin)
             .getObject(any())
         //tested method
-        verzoekPluginEventListener.createZaakFromNotificatie(createEvent())
+        val event = createEvent()
+        verzoekPluginEventListener.createZaakFromNotificatie(event)
 
         //assertions
         val processList = processService.createProcessInstanceQuery().processDefinitionKey("verzoek-process").list()
         assertEquals(1, processList.size)
         val processVariableMap =
             processService.createVariableInstanceQuery()
-                .processInstanceIdIn(processList[0].id).list().map { it.name to it.value }.toMap()
-        assertEquals(rsin, processVariableMap.get("RSIN"))
-        assertEquals(zaakTypeUrl, processVariableMap.get("zaakTypeUrl"))
-        assertEquals(initiatoRolType, processVariableMap.get("rolTypeUrl"))
-        assertEquals(createEvent().resourceUrl, processVariableMap.get("verzoekObjectUrl"))
-        assertEquals("bsn", processVariableMap.get("initiatorType"))
-        assertEquals(bsn, processVariableMap.get("initiatorValue"))
+                .processInstanceIdIn(processList[0].id).list().associate { it.name to it.value }
+        assertEquals(rsin, processVariableMap["RSIN"])
+        assertEquals(zaakTypeUrl, processVariableMap["zaakTypeUrl"])
+        assertEquals(initiatoRolType, processVariableMap["rolTypeUrl"])
+        assertEquals(event.resourceUrl, processVariableMap["verzoekObjectUrl"])
+        assertEquals("bsn", processVariableMap["initiatorType"])
+        assertEquals(bsn, processVariableMap["initiatorValue"])
 
         val documentInstance = documentService.get(processList[0].businessKey)
         assertEquals(
-            "Luis Suarez",
+            "John Doe",
             documentInstance.content().getValueBy(JsonPointer.valueOf("/name")).get().textValue()
         )
     }
@@ -203,8 +232,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
               "objectManagementId": "${objectManagement.id}",
-              "systemProcessDefinitionKey": "verzoek-process",
-              "rsin": "${rsin}",
+              "processToStart": "verzoek-process",
+              "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
                 "caseDefinitionName": "${documentDefinition.documentDefinition().id().name()}",
@@ -217,8 +246,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         )
         //mocks
         val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
-        doCallRealMethod().whenever(pluginServiceSpy).createInstance(any<Class<VerzoekPlugin>>(), any())
-        doReturn(mockObjectenApiPlugin).whenever(pluginServiceSpy).createInstance(any<PluginConfigurationId>())
+        doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
+        doReturn(mockObjectenApiPlugin).whenever(pluginService).createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
         doReturn(createObjectWrapper(withMetaData = false, verzoekObjectType, true)).whenever(mockObjectenApiPlugin)
             .getObject(any())
         //tested method
@@ -237,8 +266,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
               "objectManagementId": "${objectManagement.id}",
-              "systemProcessDefinitionKey": "verzoek-process",
-              "rsin": "${rsin}",
+              "processToStart": "verzoek-process",
+              "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
                 "caseDefinitionName": "${documentDefinition.documentDefinition().id().name()}",
@@ -251,8 +280,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         )
         //mocks
         val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
-        doCallRealMethod().whenever(pluginServiceSpy).createInstance(any<Class<VerzoekPlugin>>(), any())
-        doReturn(mockObjectenApiPlugin).whenever(pluginServiceSpy).createInstance(any<PluginConfigurationId>())
+        doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
+        doReturn(mockObjectenApiPlugin).whenever(pluginService).createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
         doReturn(createObjectWrapper(withMetaData = true, "otherType", true)).whenever(mockObjectenApiPlugin)
             .getObject(any())
         //tested method
@@ -271,8 +300,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
               "objectManagementId": "${objectManagement.id}",
-              "systemProcessDefinitionKey": "verzoek-process",
-              "rsin": "${rsin}",
+              "processToStart": "verzoek-process",
+              "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
                 "caseDefinitionName": "${documentDefinition.documentDefinition().id().name()}",
@@ -285,8 +314,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         )
         //mocks
         val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
-        doCallRealMethod().whenever(pluginServiceSpy).createInstance(any<Class<VerzoekPlugin>>(), any())
-        doReturn(mockObjectenApiPlugin).whenever(pluginServiceSpy).createInstance(any<PluginConfigurationId>())
+        doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
+        doReturn(mockObjectenApiPlugin).whenever(pluginService).createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
         doReturn(createObjectWrapper(withMetaData = true, verzoekObjectType, false)).whenever(mockObjectenApiPlugin)
             .getObject(any())
         //tested method
@@ -326,7 +355,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         return if (withObjectData)
             """
                     "data": {
-                          "name": "Luis Suarez"
+                          "name": "John Doe"
                     },
                 """.trimIndent()
         else
@@ -351,6 +380,12 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             objectenApiPluginConfigurationId = UUID.randomUUID(),
             showInDataMenu = false
         )
+    }
+
+    private fun mockResponse(body: String): MockResponse {
+        return MockResponse()
+            .addHeader("Content-Type", "application/json")
+            .setBody(body)
     }
 
     private fun createEvent(): NotificatiesApiNotificationReceivedEvent {

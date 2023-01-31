@@ -27,7 +27,7 @@ import org.springframework.web.reactive.function.client.awaitBody
 
 
 class NotificatiesApiClient(
-    private val webclient: WebClient
+    private val webclientBuilder: WebClient.Builder
 ) {
 
     internal suspend fun createAbonnement(
@@ -38,7 +38,7 @@ class NotificatiesApiClient(
 
         return buildNotificatiesWebClient(authentication, baseUrl)
             .post()
-            .uri("/api/v1/abonnement")
+            .uri("abonnement")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(abonnement)
             .retrieve()
@@ -53,15 +53,19 @@ class NotificatiesApiClient(
 
         buildNotificatiesWebClient(authentication, baseUrl)
             .delete()
-            .uri("/api/v1/abonnement/$abonnementId")
+            .uri("abonnement/$abonnementId")
             .retrieve()
             .awaitBodilessEntity()
     }
 
-    internal suspend fun createKanaal(authentication: NotificatiesApiAuthentication, baseUrl: URI, kanaal: Kanaal): Kanaal {
+    internal suspend fun createKanaal(
+        authentication: NotificatiesApiAuthentication,
+        baseUrl: URI,
+        kanaal: Kanaal
+    ): Kanaal {
         return buildNotificatiesWebClient(authentication, baseUrl)
             .post()
-            .uri("/api/v1/kanaal")
+            .uri("kanaal")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(kanaal)
             .retrieve()
@@ -71,14 +75,14 @@ class NotificatiesApiClient(
     internal suspend fun getKanalen(authentication: NotificatiesApiAuthentication, baseUrl: URI): List<Kanaal> {
         return buildNotificatiesWebClient(authentication, baseUrl)
             .get()
-            .uri("/api/v1/kanaal")
+            .uri("kanaal")
             .retrieve()
             .awaitBody()
     }
 
     private fun buildNotificatiesWebClient(authentication: NotificatiesApiAuthentication, baseUrl: URI): WebClient =
-        webclient
-            .mutate()
+        webclientBuilder
+            .clone()
             .filter(authentication)
             .baseUrl(baseUrl.toASCIIString())
             .build()

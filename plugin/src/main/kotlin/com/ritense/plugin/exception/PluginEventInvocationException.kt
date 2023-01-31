@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.plugin.exception
 
-data class Verlenging(
-    val reden: String?,
-    val duur: String?,
+import com.ritense.plugin.domain.PluginConfiguration
+
+class PluginEventInvocationException(
+    pluginConfiguration: PluginConfiguration,
+    throwable: Throwable,
+) : RuntimeException(
+    "Failed to run events on plugin ${pluginConfiguration.title} with id ${pluginConfiguration.id.id}",
+    throwable
 )

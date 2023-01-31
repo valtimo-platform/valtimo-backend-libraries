@@ -16,12 +16,14 @@
 
 package com.ritense.zakenapi.domain
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.ritense.zgw.Rsin
 import com.ritense.zgw.domain.Archiefnominatie
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import java.net.URI
 import java.time.LocalDate
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class CreateZaakRequest(
     val identificatie: String? = null,
     val bronorganisatie: Rsin,

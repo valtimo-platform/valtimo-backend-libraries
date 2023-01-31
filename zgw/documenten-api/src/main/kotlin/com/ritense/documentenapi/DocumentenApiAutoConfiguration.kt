@@ -33,8 +33,8 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 class DocumentenApiAutoConfiguration {
 
     @Bean
-    fun documentenApiClient(webclient: WebClient): DocumentenApiClient {
-        return DocumentenApiClient(webclient)
+    fun documentenApiClient(webclientBuilder: WebClient.Builder): DocumentenApiClient {
+        return DocumentenApiClient(webclientBuilder)
     }
 
     @Bean
@@ -47,17 +47,4 @@ class DocumentenApiAutoConfiguration {
         return DocumentenApiPluginFactory(pluginService, client, storageService, applicationEventPublisher)
     }
 
-    @Bean
-    @ConditionalOnMissingBean(WebClient::class)
-    fun documentenApiWebClient(): WebClient {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        ).build()
-    }
 }

@@ -21,6 +21,7 @@ import com.ritense.catalogiapi.security.CatalogiApiHttpSecurityConfigurer
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.plugin.service.PluginService
 import com.ritense.catalogiapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.web.rest.CatalogiResource
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -35,8 +36,8 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 class CatalogiApiAutoConfiguration {
 
     @Bean
-    fun catalogiApiClient(webclient: WebClient): CatalogiApiClient {
-        return CatalogiApiClient(webclient)
+    fun catalogiApiClient(webclientBuilder: WebClient.Builder): CatalogiApiClient {
+        return CatalogiApiClient(webclientBuilder)
     }
 
     @Bean
@@ -48,25 +49,20 @@ class CatalogiApiAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(WebClient::class)
-    fun catalogiApiWebClient(): WebClient {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        ).build()
-    }
-
-    @Bean
+    @ConditionalOnMissingBean(CatalogiService::class)
     fun catalogiService(
         zaaktypeUrlProvider: ZaaktypeUrlProvider,
         pluginService : PluginService
     ): CatalogiService {
         return CatalogiService(zaaktypeUrlProvider, pluginService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CatalogiResource::class)
+    fun catalogiResource(
+        catalogiService: CatalogiService
+    ): CatalogiResource {
+        return CatalogiResource(catalogiService)
     }
 
     @Order(400)

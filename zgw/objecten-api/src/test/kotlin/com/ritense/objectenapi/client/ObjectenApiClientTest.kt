@@ -54,8 +54,8 @@ internal class ObjectenApiClientTest {
 
     @Test
     fun `should send get single object request and parse response`() {
-        val webClient = WebClient.create()
-        val client = ObjectenApiClient(webClient)
+        val webclientBuilder = WebClient.builder()
+        val client = ObjectenApiClient(webclientBuilder)
 
         val responseBody = """
             {
@@ -122,8 +122,8 @@ internal class ObjectenApiClientTest {
 
     @Test
     fun `should get objectslist`() {
-        val webClient = WebClient.create()
-        val client = ObjectenApiClient(webClient)
+        val webclientBuilder = WebClient.builder()
+        val client = ObjectenApiClient(webclientBuilder)
 
         val responseBody = """
             {

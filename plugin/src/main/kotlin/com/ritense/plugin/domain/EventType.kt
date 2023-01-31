@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.plugin.domain
 
-data class Verlenging(
-    val reden: String?,
-    val duur: String?,
-)
+
+/**
+ * The type of Event that will trigger the function.
+ * EventTypes are unique and will only be matched once per annotation instance.
+ */
+enum class EventType {
+    CREATE, UPDATE, DELETE
+}
