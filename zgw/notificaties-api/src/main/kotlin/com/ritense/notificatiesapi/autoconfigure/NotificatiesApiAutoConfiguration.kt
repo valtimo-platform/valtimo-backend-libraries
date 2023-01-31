@@ -19,13 +19,18 @@ package com.ritense.notificatiesapi.autoconfigure
 import com.ritense.notificatiesapi.NotificatiesApiPluginFactory
 import com.ritense.notificatiesapi.client.NotificatiesApiClient
 import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
+import com.ritense.notificatiesapi.security.config.NotificatiesApiHttpSecurityConfigurer
+import com.ritense.notificatiesapi.service.NotificatiesApiService
+import com.ritense.notificatiesapi.web.rest.NotificatiesApiResource
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
 import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
@@ -55,5 +60,38 @@ class NotificatiesApiAutoConfiguration {
             client,
             abonnementLinkRepository
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(WebClient::class)
+    fun notificatiesApiWebClient(): WebClient {
+        return WebClient.builder().clientConnector(
+            ReactorClientHttpConnector(
+                HttpClient.create().wiretap(
+                    "reactor.netty.http.client.HttpClient",
+                    LogLevel.DEBUG,
+                    AdvancedByteBufFormat.TEXTUAL
+                )
+            )
+        ).build()
+    }
+
+    @Bean
+    fun notificatiesApiService(
+        applicationEventPublisher: ApplicationEventPublisher,
+        notificatiesApiAbonnementLinkRepository: NotificatiesApiAbonnementLinkRepository
+    ): NotificatiesApiService {
+        return NotificatiesApiService(applicationEventPublisher, notificatiesApiAbonnementLinkRepository)
+    }
+
+    @Bean
+    fun notificatiesApiResource(notificatiesApiService: NotificatiesApiService): NotificatiesApiResource {
+        return NotificatiesApiResource(notificatiesApiService)
+    }
+
+    @Bean
+    @Order(270)
+    fun notificatiesApiHttpSecurityConfigurer(): NotificatiesApiHttpSecurityConfigurer {
+        return NotificatiesApiHttpSecurityConfigurer()
     }
 }
