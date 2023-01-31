@@ -53,7 +53,7 @@ dependencies {
     jar {
         enabled = true
         manifest {
-            attributes("Implementation-Title": "ZGW Object management plugin spring boot starter")
+            attributes("Implementation-Title": "Search module spring boot starter")
             attributes("Implementation-Version": projectVersion)
         }
     }

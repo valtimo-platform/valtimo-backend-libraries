@@ -28,13 +28,13 @@ class SearchHttpSecurityConfigurer : HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/v1/search/list-column")
-                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .hasAuthority(AuthoritiesConstants.USER)
                 .antMatchers(HttpMethod.GET, "/api/v1/search/list-column/{ownerId}")
-                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .hasAuthority(AuthoritiesConstants.USER)
                 .antMatchers(HttpMethod.PUT, "/api/v1/search/list-column/{ownerId}/{key}")
-                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .hasAuthority(AuthoritiesConstants.USER)
                 .antMatchers(HttpMethod.DELETE, "/api/v1/search/list-column/{ownerId}/{key}")
-                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .hasAuthority(AuthoritiesConstants.USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
