@@ -24,15 +24,15 @@ import org.springframework.web.reactive.function.client.WebClient
 import java.net.URI
 
 class DocumentenApiClient(
-    val webclient: WebClient
+    val webclientBuilder: WebClient.Builder
 ) {
     fun storeDocument(
         authentication: DocumentenApiAuthentication,
         baseUrl: URI,
         request: CreateDocumentRequest
     ): CreateDocumentResult {
-        val result = webclient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .post()

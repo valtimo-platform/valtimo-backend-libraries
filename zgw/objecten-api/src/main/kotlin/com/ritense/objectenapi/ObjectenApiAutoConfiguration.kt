@@ -49,22 +49,8 @@ class ObjectenApiAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ObjectenApiClient::class)
-    fun objectenApiClient(webclient: WebClient): ObjectenApiClient {
-        return ObjectenApiClient(webclient)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(WebClient::class)
-    fun objectenApiWebClient(): WebClient {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        ).build()
+    fun objectenApiClient(webclientBuilder: WebClient.Builder): ObjectenApiClient {
+        return ObjectenApiClient(webclientBuilder)
     }
 
     @Bean

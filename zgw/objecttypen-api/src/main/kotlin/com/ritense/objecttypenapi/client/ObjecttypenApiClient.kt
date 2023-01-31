@@ -21,15 +21,16 @@ import org.springframework.web.reactive.function.client.WebClient
 import java.net.URI
 
 class ObjecttypenApiClient(
-    val webClient: WebClient
+    private val webclientBuilder: WebClient.Builder
 ) {
+
 
     fun getObjecttype(
         authentication: ObjecttypenApiAuthentication,
         objecttypeUrl: URI
     ): Objecttype {
-        val result = webClient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .get()

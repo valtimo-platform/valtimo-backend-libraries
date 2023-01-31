@@ -23,15 +23,15 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
 
 class ObjectenApiClient(
-    val webClient: WebClient
+    val webclientBuilder: WebClient.Builder
 ) {
 
     fun getObject(
         authentication: ObjectenApiAuthentication,
         objectUrl: URI
     ): ObjectWrapper {
-        val result = webClient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .get()
@@ -56,8 +56,8 @@ class ObjectenApiClient(
             .pathSegment(objectypeId)
             .toUriString()
 
-        val result = webClient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .baseUrl(objectsApiUrl.toASCIIString())
             .build()
@@ -82,8 +82,8 @@ class ObjectenApiClient(
         objectUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
-        val result = webClient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .put()

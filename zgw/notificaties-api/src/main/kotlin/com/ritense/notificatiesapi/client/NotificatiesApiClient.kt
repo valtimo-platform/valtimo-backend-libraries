@@ -27,7 +27,7 @@ import org.springframework.web.reactive.function.client.awaitBody
 
 
 class NotificatiesApiClient(
-    private val webclient: WebClient
+    private val webclientBuilder: WebClient.Builder
 ) {
 
     internal suspend fun createAbonnement(
@@ -81,8 +81,8 @@ class NotificatiesApiClient(
     }
 
     private fun buildNotificatiesWebClient(authentication: NotificatiesApiAuthentication, baseUrl: URI): WebClient =
-        webclient
-            .mutate()
+        webclientBuilder
+            .clone()
             .filter(authentication)
             .baseUrl(baseUrl.toASCIIString())
             .build()

@@ -36,6 +36,7 @@ open class ProcessLinkTaskListener(
             execution.processDefinitionId,
             execution.currentActivityId
         )
+
         pluginProcessLinks.forEach { pluginProcessLink ->
             pluginService.invoke(execution, pluginProcessLink)
         }

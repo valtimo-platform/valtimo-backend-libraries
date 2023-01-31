@@ -18,7 +18,6 @@ package com.ritense.search.service
 
 import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.repository.SearchListColumnRepository
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 
@@ -46,7 +45,7 @@ class SearchListColumnService(
             searchListColumnRepository.save(searchListColumn)
         }
 
-    fun findByOwnerId(ownerId: String) = searchListColumnRepository.findByIdOrNull(ownerId)
+    fun findByOwnerId(ownerId: String) = searchListColumnRepository.findAllByOwnerId(ownerId)
 
     fun findByOwnerIdAndKey(ownerId: String, key: String) = searchListColumnRepository.findByOwnerIdAndKey(ownerId, key)
 

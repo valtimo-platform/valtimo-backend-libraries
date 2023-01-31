@@ -35,21 +35,6 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 @Configuration
 internal class HaalCentraalAutoConfiguration {
 
-    // Webclient
-    @Bean
-    @ConditionalOnMissingBean(WebClient::class)
-    fun haalcentraalWebClient(): WebClient {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        ).build()
-    }
-
     // Connector
     @Bean
     @ConditionalOnMissingBean(HaalCentraalBrpConnector::class)
@@ -71,9 +56,9 @@ internal class HaalCentraalAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(HaalCentraalBrpClient::class)
     fun haalCentraalBrpClient(
-        haalcentraalWebClient: WebClient
+        webclientBuilder: WebClient.Builder
     ) : HaalCentraalBrpClient {
-        return HaalCentraalBrpClient(haalcentraalWebClient)
+        return HaalCentraalBrpClient(webclientBuilder)
     }
 
     // Resource
