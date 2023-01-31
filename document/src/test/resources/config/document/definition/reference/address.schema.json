@@ -4,9 +4,15 @@
     "title": "Address",
     "type": "object",
     "additionalProperties": false,
-    "properties": {
+    "definitions": {
         "streetName": {
-            "type": "string"
+            "type": "object",
+            "properties": {
+                "streetName": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
         }
     }
 }

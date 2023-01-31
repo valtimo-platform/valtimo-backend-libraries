@@ -24,5 +24,6 @@
     <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
 
     <include file="changelog/20230105-add-notificaties-api-abonnement-link-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230123-rename-primary-key-column-in-notificaties-api-abonnement-link-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

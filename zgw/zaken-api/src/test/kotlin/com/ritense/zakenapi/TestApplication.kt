@@ -16,16 +16,11 @@
 
 package com.ritense.zakenapi
 
-import com.ritense.openzaak.autoconfigure.OpenZaakPluginAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
 
-@SpringBootApplication(
-    exclude = [
-        OpenZaakPluginAutoConfiguration::class
-    ]
-)
+@SpringBootApplication
 class TestApplication {
 
     fun main(args: Array<String>) {

@@ -23,6 +23,7 @@ dockerCompose {
 
 dependencies {
     implementation project(":contract")
+    implementation project(":data-provider")
     implementation project(":resource")
     implementation project(":web")
     api project(":tenancy")

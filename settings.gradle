@@ -27,6 +27,7 @@ include(
     "contract",
     "tenancy",
     "core",
+    "data-provider",
     "document",
     "document-export",
     "document-generation",
