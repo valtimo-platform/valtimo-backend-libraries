@@ -39,6 +39,8 @@ dependencies {
     testImplementation project(":test-utils-common")
     testImplementation project(":resource:local-resource")
     testImplementation project(":zgw:zaken-api")
+    testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
+    testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "com.fasterxml.jackson.module:jackson-module-kotlin"
