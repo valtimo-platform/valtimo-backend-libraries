@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.valtimo.contract.client
 
-data class Verlenging(
-    val reden: String?,
-    val duur: String?,
-)
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+
+@Configuration
+class WebclientAutoConfiguration {
+    @Bean
+    fun loggingWebClientCustomizer(): LoggingWebClientCustomizer {
+        return LoggingWebClientCustomizer()
+    }
+}
