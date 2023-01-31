@@ -34,7 +34,10 @@ import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 import javax.transaction.Transactional
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
 import org.camunda.bpm.engine.RuntimeService
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -76,8 +79,52 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var processService: RuntimeService
 
+    lateinit var mockNotificatiesApi: MockWebServer
+
     @BeforeEach
     fun init() {
+        notificatiesApiPluginConfiguration = mock()
+        mockNotificatiesApi = MockWebServer()
+        mockNotificatiesApi.start()
+
+        mockNotificatiesApi.enqueue(
+            mockResponse(
+                """
+            [
+              {
+                "url": "http://example.com",
+                "naam": "objecten",
+                "documentatieLink": "http://example.com",
+                "filters": [
+                  "objecten"
+                ]
+              }
+            ]
+        """.trimIndent()
+            )
+        )
+
+        mockNotificatiesApi.enqueue(
+            mockResponse(
+                """
+                    {
+                      "url": "http://example.com/abonnement/test-abonnement",
+                      "callbackUrl": "http://example.com/callback",
+                      "auth": "Bearer token",
+                      "kanalen": [
+                        {
+                          "filters": {
+                            "url": "http://example.com",
+                            "someid": "1234"
+                          },
+                          "naam": "objecten"
+                        }
+                      ]
+                    }
+        """.trimIndent()
+            )
+        )
+
         pluginService
 
         documentDefinition = documentDefinitionService.deploy(
@@ -101,11 +148,11 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         whenever(zaaktypeUrlProvider.getZaaktypeUrl(documentDefinition.documentDefinition().id().name()))
             .thenReturn(URI.create(zaakTypeUrl))
 
-        val authenticationPluginConfiguration = createPluginConfiguration(
+        val notificatiesApiAuthenticationPluginConfiguration = createPluginConfiguration(
             "notificatiesapiauthentication", """
             {
               "clientId": "my-client-id",
-              "clientSecret": "my-client-secret"
+              "clientSecret": "my-extra-long-client-secret-128370192641209486239846"
             }
         """.trimIndent()
         )
@@ -113,11 +160,17 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         notificatiesApiPluginConfiguration = createPluginConfiguration(
             "notificatiesapi", """
             {
-              "url": "https://example.com/my-notificatie-api-url",
-              "authenticationPluginConfiguration": "${authenticationPluginConfiguration.id.id}"
+              "url": "${mockNotificatiesApi.url("/api/v1/").toUri()}",
+              "callbackUrl": "https://example.com/my-callback-api-endpoint",
+              "authenticationPluginConfiguration": "${notificatiesApiAuthenticationPluginConfiguration.id.id}"
             }
         """.trimIndent()
         )
+    }
+
+    @AfterEach
+    fun tearDown() {
+        mockNotificatiesApi.shutdown()
     }
 
     @Test
@@ -327,6 +380,12 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             objectenApiPluginConfigurationId = UUID.randomUUID(),
             showInDataMenu = false
         )
+    }
+
+    private fun mockResponse(body: String): MockResponse {
+        return MockResponse()
+            .addHeader("Content-Type", "application/json")
+            .setBody(body)
     }
 
     private fun createEvent(): NotificatiesApiNotificationReceivedEvent {

@@ -85,7 +85,6 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
             )
         )
 
-
         val notificatiesApiAuthenticationPluginConfiguration = createPluginConfiguration(
             "notificatiesapiauthentication", """
             {
