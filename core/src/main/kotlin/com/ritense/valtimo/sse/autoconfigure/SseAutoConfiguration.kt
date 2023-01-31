@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.sse.autoconfigure
 
+import com.ritense.valtimo.sse.domain.listener.ProcessEndListener
 import com.ritense.valtimo.sse.domain.listener.TaskUpdateListener
 import com.ritense.valtimo.sse.security.config.SseHttpSecurityConfigurer
 import com.ritense.valtimo.sse.service.SseSubscriptionService
@@ -38,6 +39,11 @@ class SseAutoConfiguration {
     fun taskUpdateListener(
         sseSubscriptionService: SseSubscriptionService
     ) = TaskUpdateListener(sseSubscriptionService)
+
+    @Bean
+    fun processEndListener(
+        sseSubscriptionService: SseSubscriptionService
+    ) = ProcessEndListener(sseSubscriptionService)
 
     @Bean
     fun camundaEventResource(

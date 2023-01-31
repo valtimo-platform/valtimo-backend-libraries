@@ -19,9 +19,5 @@ package com.ritense.valtimo.sse.event
 import java.util.UUID
 
 class EstablishedConnectionSseEvent(
-    subscriptionId: UUID
-) : BaseSseEvent(SseEventType.ESTABLISHED_CONNECTION) {
-
-    val subscriptionId: String = subscriptionId.toString()
-
-}
+    val subscriptionId: UUID
+) : BaseSseEvent("ESTABLISHED_CONNECTION")

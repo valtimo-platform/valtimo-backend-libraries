@@ -18,4 +18,4 @@ package com.ritense.valtimo.sse.event
 
 class TaskUpdateSseEvent(
     val processInstanceId: String
-) : BaseSseEvent(SseEventType.TASK_UPDATE)
+) : BaseSseEvent("TASK_UPDATE")

@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.sse.event
 
-enum class SseEventType {
-    ESTABLISHED_CONNECTION,
-    TASK_UPDATE
-}
+class ProcessEndSseEvent(
+    val processInstanceId: String
+) : BaseSseEvent("PROCESS_END")

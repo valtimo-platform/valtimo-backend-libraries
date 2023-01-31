@@ -34,12 +34,12 @@ class CamundaEventResource(
 
     @GetMapping("/api/v1/sse/{subscriptionId}")
     fun subscribeToCamundaEvents(
-        @PathVariable subscriptionId: String?
+        @PathVariable subscriptionId: UUID?
     ): Subscriber {
         subscriptionId?.let {
             logger.info { "subscribe (re-use ${subscriptionId})" }
         } ?: logger.info { "SSE Subscribe (new subscription)" }
-        return sseSubscriptionService.subscribe(subscriptionId?.let { UUID.fromString(it) })
+        return sseSubscriptionService.subscribe(subscriptionId)
     }
 
     companion object {

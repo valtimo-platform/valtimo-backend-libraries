@@ -19,10 +19,10 @@ package com.ritense.valtimo.sse.event
 import com.fasterxml.jackson.annotation.JsonProperty
 
 abstract class BaseSseEvent(
-    eventType: SseEventType
+    @JsonProperty("_t")
+    val eventType: String
 ) {
 
-    @JsonProperty("_t")
-    val eventType: String = eventType.name
+
 
 }

@@ -16,26 +16,23 @@
 
 package com.ritense.valtimo.sse.domain.listener
 
-import com.ritense.valtimo.sse.event.TaskUpdateSseEvent
+import com.ritense.valtimo.sse.event.ProcessEndSseEvent
 import com.ritense.valtimo.sse.service.SseSubscriptionService
-import org.camunda.bpm.spring.boot.starter.event.TaskEvent
+import org.camunda.bpm.spring.boot.starter.event.ExecutionEvent
 import org.springframework.transaction.event.TransactionalEventListener
 
-class TaskUpdateListener(
+class ProcessEndListener(
     private val sseSubscriptionService: SseSubscriptionService
 ) {
 
     @TransactionalEventListener(
-        condition = "#taskEvent.eventName=='create' " +
-                "|| #taskEvent.eventName=='complete' " +
-                "|| #taskEvent.eventName=='delete'"
-        ,
+        condition = "#executionEvent.eventName=='end'",
         fallbackExecution = true
     )
-    fun handle(taskEvent: TaskEvent) {
+    fun handle(executionEvent: ExecutionEvent) {
         sseSubscriptionService.notifySubscribers(
-            TaskUpdateSseEvent(
-                processInstanceId = taskEvent.processInstanceId
+            ProcessEndSseEvent(
+                processInstanceId = executionEvent.processInstanceId
             )
         )
     }
