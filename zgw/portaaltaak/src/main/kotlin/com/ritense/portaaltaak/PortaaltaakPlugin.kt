@@ -18,7 +18,10 @@ package com.ritense.portaaltaak
 
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.plugin.annotation.Plugin
+import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.domain.ActivityType
 import java.util.UUID
 
 @Plugin(
@@ -33,4 +36,14 @@ class PortaaltaakPlugin {
 
     @PluginProperty(key = "objectManagementConfigurationId", secret = false)
     lateinit var objectManagementConfigurationId: UUID
+
+    @PluginAction(
+        key = "create-portal-task",
+        title = "Create Portal task",
+        description = "Creates a task that can be completed by a portal user",
+        activityTypes = [ActivityType.SERVICE_TASK]
+    )
+    fun createPortalTask() {
+        TODO()
+    }
 }
