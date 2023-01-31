@@ -17,10 +17,12 @@
 package com.ritense.search.repository
 
 import com.ritense.search.domain.SearchListColumn
+import java.util.UUID
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface SearchListColumnRepository: JpaRepository<SearchListColumn, String> {
+interface SearchListColumnRepository: JpaRepository<SearchListColumn, UUID> {
 
     fun findByOwnerIdAndKey(ownerId: String, key: String): SearchListColumn?
+    fun findAllByOwnerId(ownerId: String): List<SearchListColumn>?
 
 }

@@ -18,7 +18,7 @@ dockerCompose {
     projectName = "search"
     isRequiredBy(integrationTesting)
     isRequiredBy(securityTesting)
-    useComposeFiles.addAll("../../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
 }
 
 dependencies {

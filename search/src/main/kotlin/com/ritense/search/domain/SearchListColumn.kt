@@ -16,6 +16,7 @@
 
 package com.ritense.search.domain
 
+import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -28,6 +29,8 @@ import org.hibernate.annotations.Type
 @Table(name = "search_list_column")
 data class SearchListColumn(
     @Id
+    @Column(name = "id")
+    val id: UUID = UUID.randomUUID(),
     @Column(name = "owner_id")
     val ownerId: String,
     @Column(name = "column_key")

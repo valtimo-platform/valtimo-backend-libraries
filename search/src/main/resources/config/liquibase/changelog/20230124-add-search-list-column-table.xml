@@ -21,9 +21,14 @@
 
     <property name="booleanFalseValue" value="0" dbms="mysql"/>
     <property name="booleanFalseValue" value="false" dbms="postgresql"/>
+    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
+    <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
 
     <changeSet id="add-search_list_column" author="Ritense">
         <createTable tableName="search_list_column">
+            <column name="id" type="${uuidType}">
+                <constraints nullable="false"/>
+            </column>
             <column name="owner_id" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
