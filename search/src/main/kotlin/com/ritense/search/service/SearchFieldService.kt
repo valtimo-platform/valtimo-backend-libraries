@@ -18,7 +18,6 @@ package com.ritense.search.service
 
 import com.ritense.search.domain.SearchField
 import com.ritense.search.repository.SearchFieldRepository
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 
@@ -46,7 +45,7 @@ class SearchFieldService(
             searchFieldRepository.save(searchField)
         }
 
-    fun findByOwnerId(ownerId: String) = searchFieldRepository.findByIdOrNull(ownerId)
+    fun findAllByOwnerId(ownerId: String) = searchFieldRepository.findAllByOwnerId(ownerId)
 
     fun findByOwnerIdAndKey(ownerId: String, key: String) = searchFieldRepository.findByOwnerIdAndKey(ownerId, key)
 

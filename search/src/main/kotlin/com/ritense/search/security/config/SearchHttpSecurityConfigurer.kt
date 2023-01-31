@@ -35,7 +35,7 @@ class SearchHttpSecurityConfigurer : HttpSecurityConfigurer {
                 .hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(HttpMethod.DELETE, "/api/v1/search/list-column/{ownerId}/{key}")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers(HttpMethod.POST, "/api/v1/search/field")
+                .antMatchers(HttpMethod.POST, "/api/v1/search/field/{ownerId")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(HttpMethod.GET, "/api/v1/search/field/{ownerId}")
                 .hasAuthority(AuthoritiesConstants.USER)

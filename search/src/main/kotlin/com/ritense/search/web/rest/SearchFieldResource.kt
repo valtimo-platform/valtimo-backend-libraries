@@ -34,8 +34,8 @@ class SearchFieldResource(
         ResponseEntity.ok(searchFieldService.update(ownerId, key, searchField))
 
     @GetMapping("/{ownerId}")
-    fun getByKey(@PathVariable ownerId: String) =
-        ResponseEntity.ok(searchFieldService.findByOwnerId(ownerId))
+    fun getAllByOwnerId(@PathVariable ownerId: String) =
+        ResponseEntity.ok(searchFieldService.findAllByOwnerId(ownerId))
 
     @DeleteMapping("/{ownerId}/{key}")
     fun delete(

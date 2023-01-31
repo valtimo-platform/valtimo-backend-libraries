@@ -17,10 +17,13 @@
 package com.ritense.search.repository
 
 import com.ritense.search.domain.SearchField
+import java.util.UUID
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface SearchFieldRepository : JpaRepository<SearchField, String> {
+interface SearchFieldRepository : JpaRepository<SearchField, UUID> {
 
     fun findByOwnerIdAndKey(ownerId: String, key: String): SearchField?
+
+    fun findAllByOwnerId(ownerId: String): List<SearchField>?
 
 }

@@ -24,6 +24,9 @@
 
     <changeSet id="add-search-field-table" author="Ritense">
         <createTable tableName="search_field">
+            <column name="id" type="${uuidType}">
+                <constraints nullable="false"/>
+            </column>
             <column name="owner_id" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>

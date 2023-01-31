@@ -16,6 +16,7 @@
 
 package com.ritense.search.domain
 
+import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -24,8 +25,9 @@ import javax.persistence.Table
 @Entity
 @Table(name = "search_field")
 data class SearchField(
-
     @Id
+    @Column(name = "id")
+    val id: UUID = UUID.randomUUID(),
     @Column(name = "owner_id")
     val ownerId: String,
     @Column(name = "column_key")
