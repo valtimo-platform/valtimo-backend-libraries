@@ -25,7 +25,6 @@ import com.ritense.valtimo.sse.event.EstablishedConnectionSseEvent
 import mu.KotlinLogging
 import java.time.Duration
 import java.util.UUID
-import java.util.function.Predicate
 
 class SseSubscriptionService {
 
@@ -48,18 +47,10 @@ class SseSubscriptionService {
         this.subscriberHandles.invalidate(subscriptionId)
     }
 
-    fun notifySubscribers(
-        event: BaseSseEvent,
-        subscriberFilter: Predicate<SubscriberHandler>? = null
-    ) {
-        val relevantSubscribers = subscriberHandles.asMap().values.filter {
-            subscriberFilter?.test(it) ?: true
-        }
-        logger.debug {
-            "Notify subscribers (total=${subscriberHandles.asMap().size}, relevant=${relevantSubscribers.size})"
-        }
+    fun notifySubscribers(event: BaseSseEvent) {
+        logger.debug { "Notify subscribers (total=${subscriberHandles.asMap().size})" }
         try {
-            relevantSubscribers.forEach { subscriber ->
+            subscriberHandles.asMap().values.forEach { subscriber ->
                 logger.debug { "Sending notification to ${subscriber.state.subscriptionId}" }
                 subscriber.enqueue(event)
             }
