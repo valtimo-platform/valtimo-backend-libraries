@@ -20,7 +20,7 @@ pluginManager.withPlugin('maven-publish') {
             maven(MavenPublication) {
                 pom {
                     name = 'Search module'
-                    description = 'The Search module contains the plugin to configure search fields'
+                    description = 'The Search module for configurable search fields'
                     developers {
                         developer {
                             id = "team-valtimo"
