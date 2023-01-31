@@ -42,9 +42,11 @@
             DELETE
             FROM form_io_form_definition
             WHERE id NOT IN (
-                SELECT MIN(id)
-                FROM form_io_form_definition
-                GROUP BY name
+                SELECT fid FROM (
+                    SELECT MIN(id) AS fid
+                    FROM form_io_form_definition
+                    GROUP BY name
+                ) AS f
             );
         </sql>
     </changeSet>
