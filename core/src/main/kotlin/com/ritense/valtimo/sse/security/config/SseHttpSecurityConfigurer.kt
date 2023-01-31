@@ -27,8 +27,8 @@ class SseHttpSecurityConfigurer : HttpSecurityConfigurer {
         try {
             http
                 .authorizeRequests()
-                .antMatchers(GET, "/api/sse").anonymous()
-                .antMatchers(GET, "/api/sse/{subscriptionId}").anonymous()
+                .antMatchers(GET, "/api/v1/sse").anonymous()
+                .antMatchers(GET, "/api/v1/sse/{subscriptionId}").anonymous()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

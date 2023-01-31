@@ -29,10 +29,10 @@ class CamundaEventResource(
     private val sseSubscriptionService: SseSubscriptionService
 ) {
 
-    @GetMapping("/api/sse")
+    @GetMapping("/api/v1/sse")
     fun subscribeToCamundaEvents() = sseSubscriptionService.subscribe()
 
-    @GetMapping("/api/sse/{subscriptionId}")
+    @GetMapping("/api/v1/sse/{subscriptionId}")
     fun subscribeToCamundaEvents(
         @PathVariable subscriptionId: String?
     ): Subscriber {
