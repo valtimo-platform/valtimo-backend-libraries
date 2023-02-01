@@ -29,6 +29,7 @@ import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.valtimo.contract.json.Mapper
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.lang.reflect.InvocationTargetException
 import java.util.UUID
 import kotlin.test.assertFailsWith
@@ -220,7 +221,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
 
         assertFailsWith<InvocationTargetException>(
             block = {
-                pluginService.invoke(mock(), processLink)
+                pluginService.invoke(mock<DelegateExecution>(), processLink)
             }
         )
     }

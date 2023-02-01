@@ -20,27 +20,27 @@ import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
 import org.camunda.bpm.engine.ActivityTypes
-import org.camunda.bpm.engine.delegate.DelegateTask
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.ExecutionListener
 import org.camunda.bpm.extension.reactor.bus.CamundaSelector
-import org.camunda.bpm.extension.reactor.spring.listener.ReactorTaskListener
+import org.camunda.bpm.extension.reactor.spring.listener.ReactorExecutionListener
 import org.springframework.transaction.annotation.Transactional
 
 @CamundaSelector(type = ActivityTypes.TASK_SERVICE, event = ExecutionListener.EVENTNAME_START)
 open class ProcessLinkServiceTaskStartListener(
     private val pluginProcessLinkRepository: PluginProcessLinkRepository,
     private val pluginService: PluginService,
-) : ReactorTaskListener() {
+) : ReactorExecutionListener() {
 
     @Transactional
-    override fun notify(task: DelegateTask) {
+    override fun notify(execution: DelegateExecution) {
         val pluginProcessLinks = pluginProcessLinkRepository.findByProcessDefinitionIdAndActivityIdAndActivityType(
-            task.processDefinitionId,
-            task.execution.currentActivityId,
+            execution.processDefinitionId,
+            execution.currentActivityId,
             ActivityType.SERVICE_TASK_START
         )
         pluginProcessLinks.forEach { pluginProcessLink ->
-            pluginService.invoke(task.execution, pluginProcessLink)
+            pluginService.invoke(execution, pluginProcessLink)
         }
     }
 }

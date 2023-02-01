@@ -76,83 +76,17 @@ import org.camunda.bpm.engine.ActivityTypes.TRANSACTION as CAMUNDA_TRANSACTION
 enum class ActivityType(
     val bpmnModelValue: String
 ) {
-    MULTI_INSTANCE_BODY("bpmn:" + CAMUNDA_MULTI_INSTANCE_BODY.replaceFirstChar { it.uppercaseChar() }),
-
-    EXCLUSIVE_GATEWAY("bpmn:" + CAMUNDA_GATEWAY_EXCLUSIVE.replaceFirstChar { it.uppercaseChar() }),
-    INCLUSIVE_GATEWAY("bpmn:" + CAMUNDA_GATEWAY_INCLUSIVE.replaceFirstChar { it.uppercaseChar() }),
-    PARALLEL_GATEWAY("bpmn:" + CAMUNDA_GATEWAY_PARALLEL.replaceFirstChar { it.uppercaseChar() }),
-    COMPLEX_GATEWAY("bpmn:" + CAMUNDA_GATEWAY_COMPLEX.replaceFirstChar { it.uppercaseChar() }),
-    EVENT_BASED_GATEWAY("bpmn:" + CAMUNDA_GATEWAY_EVENT_BASED.replaceFirstChar { it.uppercaseChar() }),
-
-    TASK("bpmn:" + CAMUNDA_TASK.replaceFirstChar { it.uppercaseChar() }),
-    SCRIPT_TASK("bpmn:" + CAMUNDA_TASK_SCRIPT.replaceFirstChar { it.uppercaseChar() }),
-    BUSINESS_RULE_TASK("bpmn:" + CAMUNDA_TASK_BUSINESS_RULE.replaceFirstChar { it.uppercaseChar() }),
-    MANUAL_TASK("bpmn:" + CAMUNDA_TASK_MANUAL_TASK.replaceFirstChar { it.uppercaseChar() }),
-    SEND_TASK("bpmn:" + CAMUNDA_TASK_SEND_TASK.replaceFirstChar { it.uppercaseChar() }),
-    RECEIVE_TASK("bpmn:" + CAMUNDA_TASK_RECEIVE_TASK.replaceFirstChar { it.uppercaseChar() }),
-
     // Service task
     @Deprecated("Marked for removal since 10.4.0")
-    SERVICE_TASK("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() } + ExecutionListener.EVENTNAME_START),
-    SERVICE_TASK_START("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() } + ExecutionListener.EVENTNAME_START),
-    SERVICE_TASK_END("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() } + ExecutionListener.EVENTNAME_END),
+    SERVICE_TASK("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() } + ":" + ExecutionListener.EVENTNAME_START),
+    @Deprecated("Marked for removal since 10.4.0")
+    OLD_SERVICE_TASK("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() }),
+    SERVICE_TASK_START("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() } + ":" + ExecutionListener.EVENTNAME_START),
 
     // User task
     @Deprecated("Marked for removal since 10.4.0")
-    USER_TASK("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_CREATE),
-    USER_TASK_START("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + ExecutionListener.EVENTNAME_START),
-    USER_TASK_END("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + ExecutionListener.EVENTNAME_END),
-    USER_TASK_CREATE("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_CREATE),
-    USER_TASK_ASSIGNMENT("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_ASSIGNMENT),
-    USER_TASK_COMPLETE("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_COMPLETE),
-    USER_TASK_DELETE("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_DELETE),
-    USER_TASK_UPDATE("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_UPDATE),
-    USER_TASK_TIMEOUT("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + TaskListener.EVENTNAME_TIMEOUT),
-
-    SUB_PROCESS("bpmn:" + CAMUNDA_SUB_PROCESS.replaceFirstChar { it.uppercaseChar() }),
-    AD_HOC_SUB_PROCESS("bpmn:" + CAMUNDA_SUB_PROCESS_AD_HOC.replaceFirstChar { it.uppercaseChar() }),
-    CALL_ACTIVITY("bpmn:" + CAMUNDA_CALL_ACTIVITY.replaceFirstChar { it.uppercaseChar() }),
-    TRANSACTION("bpmn:" + CAMUNDA_TRANSACTION.replaceFirstChar { it.uppercaseChar() }),
-
-    BOUNDARY_TIMER("bpmn:" + CAMUNDA_BOUNDARY_TIMER.replaceFirstChar { it.uppercaseChar() }),
-    BOUNDARY_MESSAGE("bpmn:" + CAMUNDA_BOUNDARY_MESSAGE.replaceFirstChar { it.uppercaseChar() }),
-    BOUNDARY_SIGNAL("bpmn:" + CAMUNDA_BOUNDARY_SIGNAL.replaceFirstChar { it.uppercaseChar() }),
-    COMPENSATION_BOUNDARY_CATCH("bpmn:" + CAMUNDA_BOUNDARY_COMPENSATION.replaceFirstChar { it.uppercaseChar() }),
-    BOUNDARY_ERROR("bpmn:" + CAMUNDA_BOUNDARY_ERROR.replaceFirstChar { it.uppercaseChar() }),
-    BOUNDARY_ESCALATION("bpmn:" + CAMUNDA_BOUNDARY_ESCALATION.replaceFirstChar { it.uppercaseChar() }),
-    CANCEL_BOUNDARY_CATCH("bpmn:" + CAMUNDA_BOUNDARY_CANCEL.replaceFirstChar { it.uppercaseChar() }),
-    BOUNDARY_CONDITIONAL("bpmn:" + CAMUNDA_BOUNDARY_CONDITIONAL.replaceFirstChar { it.uppercaseChar() }),
-
-    START_EVENT("bpmn:" + CAMUNDA_START_EVENT.replaceFirstChar { it.uppercaseChar() }),
-    START_TIMER_EVENT("bpmn:" + CAMUNDA_START_EVENT_TIMER.replaceFirstChar { it.uppercaseChar() }),
-    MESSAGE_START_EVENT("bpmn:" + CAMUNDA_START_EVENT_MESSAGE.replaceFirstChar { it.uppercaseChar() }),
-    SIGNAL_START_EVENT("bpmn:" + CAMUNDA_START_EVENT_SIGNAL.replaceFirstChar { it.uppercaseChar() }),
-    ESCALATION_START_EVENT("bpmn:" + CAMUNDA_START_EVENT_ESCALATION.replaceFirstChar { it.uppercaseChar() }),
-    COMPENSATION_START_EVENT("bpmn:" + CAMUNDA_START_EVENT_COMPENSATION.replaceFirstChar { it.uppercaseChar() }),
-    ERROR_START_EVENT("bpmn:" + CAMUNDA_START_EVENT_ERROR.replaceFirstChar { it.uppercaseChar() }),
-    CONDITIONAL_START_EVENT("bpmn:" + CAMUNDA_START_EVENT_CONDITIONAL.replaceFirstChar { it.uppercaseChar() }),
-
-    INTERMEDIATE_CATCH_EVENT("bpmn:" + CAMUNDA_INTERMEDIATE_EVENT_CATCH.replaceFirstChar { it.uppercaseChar() }),
-    INTERMEDIATE_MESSAGE_CATCH("bpmn:" + CAMUNDA_INTERMEDIATE_EVENT_MESSAGE.replaceFirstChar { it.uppercaseChar() }),
-    INTERMEDIATE_TIMER("bpmn:" + CAMUNDA_INTERMEDIATE_EVENT_TIMER.replaceFirstChar { it.uppercaseChar() }),
-    INTERMEDIATE_LINK_CATCH("bpmn:" + CAMUNDA_INTERMEDIATE_EVENT_LINK.replaceFirstChar { it.uppercaseChar() }),
-    INTERMEDIATE_SIGNAL_CATCH("bpmn:" + CAMUNDA_INTERMEDIATE_EVENT_SIGNAL.replaceFirstChar { it.uppercaseChar() }),
-    INTERMEDIATE_CONDITIONAL("bpmn:" + CAMUNDA_INTERMEDIATE_EVENT_CONDITIONAL.replaceFirstChar { it.uppercaseChar() }),
-    INTERMEDIATE_THROW_EVENT("bpmn:" + CAMUNDA_INTERMEDIATE_EVENT_THROW.replaceFirstChar { it.uppercaseChar() }),
-    INTERMEDIATE_SIGNAL_THROW("bpmn:" + CAMUNDA_INTERMEDIATE_EVENT_SIGNAL_THROW.replaceFirstChar { it.uppercaseChar() }),
-    INTERMEDIATE_COMPENSATION_THROW_EVENT("bpmn:" + CAMUNDA_INTERMEDIATE_EVENT_COMPENSATION_THROW.replaceFirstChar { it.uppercaseChar() }),
-    INTERMEDIATE_MESSAGE_THROW_EVENT("bpmn:" + CAMUNDA_INTERMEDIATE_EVENT_MESSAGE_THROW.replaceFirstChar { it.uppercaseChar() }),
-    INTERMEDIATE_NONE_THROW_EVENT("bpmn:" + CAMUNDA_INTERMEDIATE_EVENT_NONE_THROW.replaceFirstChar { it.uppercaseChar() }),
-    INTERMEDIATE_ESCALATION_THROW_EVENT("bpmn:" + CAMUNDA_INTERMEDIATE_EVENT_ESCALATION_THROW.replaceFirstChar { it.uppercaseChar() }),
-
-    ERROR_END_EVENT("bpmn:" + CAMUNDA_END_EVENT_ERROR.replaceFirstChar { it.uppercaseChar() }),
-    CANCEL_END_EVENT("bpmn:" + CAMUNDA_END_EVENT_CANCEL.replaceFirstChar { it.uppercaseChar() }),
-    TERMINATE_END_EVENT("bpmn:" + CAMUNDA_END_EVENT_TERMINATE.replaceFirstChar { it.uppercaseChar() }),
-    MESSAGE_END_EVENT("bpmn:" + CAMUNDA_END_EVENT_MESSAGE.replaceFirstChar { it.uppercaseChar() }),
-    SIGNAL_END_EVENT("bpmn:" + CAMUNDA_END_EVENT_SIGNAL.replaceFirstChar { it.uppercaseChar() }),
-    COMPENSATION_END_EVENT("bpmn:" + CAMUNDA_END_EVENT_COMPENSATION.replaceFirstChar { it.uppercaseChar() }),
-    ESCALATION_END_EVENT("bpmn:" + CAMUNDA_END_EVENT_ESCALATION.replaceFirstChar { it.uppercaseChar() }),
-    NONE_END_EVENT("bpmn:" + CAMUNDA_END_EVENT_NONE.replaceFirstChar { it.uppercaseChar() });
+    OLD_USER_TASK("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } ),
+    USER_TASK_CREATE("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + ":" + TaskListener.EVENTNAME_CREATE);
 
     companion object {
         private val mapping = values().associateBy(ActivityType::bpmnModelValue)

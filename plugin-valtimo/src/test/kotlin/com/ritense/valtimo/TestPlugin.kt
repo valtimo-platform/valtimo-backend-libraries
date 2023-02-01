@@ -18,7 +18,7 @@ package com.ritense.valtimo
 
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
-import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
+import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
 
 @Plugin(
     key = "test-plugin",
@@ -30,7 +30,7 @@ class TestPlugin() {
         key = "test-action",
         title = "Test action",
         description = "This is a test action",
-        activityTypes = [SERVICE_TASK]
+        activityTypes = [SERVICE_TASK_START]
     )
     fun testAction() {
         //do nothing

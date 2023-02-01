@@ -232,7 +232,7 @@ internal class PluginServiceTest {
                     "title",
                     "description",
                     "method",
-                    listOf(ActivityType.SERVICE_TASK)
+                    listOf(ActivityType.SERVICE_TASK_START)
                 )
             )
         )
@@ -249,7 +249,7 @@ internal class PluginServiceTest {
 
     @Test
     fun `should get plugin action definitions from repository by key and activityType`(){
-        whenever(pluginActionDefinitionRepository.findByIdPluginDefinitionKeyAndActivityTypes("test", ActivityType.SERVICE_TASK)).thenReturn(
+        whenever(pluginActionDefinitionRepository.findByIdPluginDefinitionKeyAndActivityTypes("test", ActivityType.SERVICE_TASK_START)).thenReturn(
             listOf(
                 PluginActionDefinition(
                     PluginActionDefinitionId(
@@ -259,15 +259,15 @@ internal class PluginServiceTest {
                     "title",
                     "description",
                     "method",
-                    listOf(ActivityType.SERVICE_TASK)
+                    listOf(ActivityType.SERVICE_TASK_START)
                 )
             )
         )
 
-        val actions = pluginService.getPluginDefinitionActions("test", ActivityType.SERVICE_TASK)
+        val actions = pluginService.getPluginDefinitionActions("test", ActivityType.SERVICE_TASK_START)
 
         verify(pluginActionDefinitionRepository).findByIdPluginDefinitionKeyAndActivityTypes("test",
-            ActivityType.SERVICE_TASK)
+            ActivityType.SERVICE_TASK_START)
 
         assertEquals(1, actions.size)
         assertEquals("some-key", actions[0].key)
@@ -399,7 +399,7 @@ internal class PluginServiceTest {
             key = "test-action",
             title = "Test action",
             description = "This is an action used to verify plugin framework functionality",
-            activityTypes = [ActivityType.SERVICE_TASK]
+            activityTypes = [ActivityType.SERVICE_TASK_START]
         )
         fun doThing(@PluginActionProperty test: Int) {
             testDependency.processInt(test)

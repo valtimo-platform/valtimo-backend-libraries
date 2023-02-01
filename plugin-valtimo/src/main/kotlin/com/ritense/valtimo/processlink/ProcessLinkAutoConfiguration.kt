@@ -36,7 +36,7 @@ class ProcessLinkAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ProcessLinkServiceTaskStartListener::class)
+    @ConditionalOnMissingBean(ProcessLinkUserTaskCreateListener::class)
     fun processLinkUserTaskCreateListener(
         pluginProcessLinkRepository: PluginProcessLinkRepository?,
         pluginService: PluginService?
