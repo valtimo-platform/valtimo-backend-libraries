@@ -90,7 +90,7 @@ class PortaaltaakPlugin(
             getTaakData(delegateTask, sendData),
             delegateTask.name,
             TaakStatus.OPEN,
-            getTaakForm(),
+            getTaakForm(formType, formTypeId, formTypeUrl),
             delegateTask.id
         )
 
@@ -140,11 +140,23 @@ class PortaaltaakPlugin(
 
         //get zaakrol with type iniator
 
-        //build
+        //build response based on zaakrol record
     }
 
-    private fun getTaakForm(): TaakForm {
-        //TODO: not specified in story
+    private fun getTaakForm(
+        formType: TaakFormType,
+        formTypeId: String?,
+        formTypeUrl: String?
+    ): TaakForm {
+        return TaakForm(
+            formType,
+            when (formType) {
+                TaakFormType.ID -> formTypeId
+                    ?: throw IllegalStateException("formTypeId can not be null when formType ID has been chosen")
+                TaakFormType.URL -> formTypeUrl
+                    ?: throw IllegalStateException("formTypeUrl can not be null when formType URL has been chosen")
+            }
+        )
     }
 
     private fun getTaakData(delegateTask: DelegateTask, sendData: List<DataBindingConfig>): Map<String, Any> {
