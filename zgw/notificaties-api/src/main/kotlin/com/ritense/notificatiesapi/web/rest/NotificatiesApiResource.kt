@@ -33,7 +33,7 @@ class NotificatiesApiResource(
     private val notificatiesApiService: NotificatiesApiService
 ) {
 
-    @PostMapping("/v1/notificaties")
+    @PostMapping("/v1/notificatiesapi/callback")
     fun handleNotification(
         @RequestBody notification: NotificatiesApiNotificationReceivedEvent,
         @RequestHeader("Authorization") authHeader: String?
