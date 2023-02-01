@@ -24,7 +24,10 @@ import com.ritense.valtimo.contract.json.patch.operation.JsonPatchOperation;
 import com.ritense.valtimo.contract.json.patch.operation.MoveOperation;
 import com.ritense.valtimo.contract.json.patch.operation.RemoveOperation;
 import com.ritense.valtimo.contract.json.patch.operation.ReplaceOperation;
+
 import java.util.LinkedHashSet;
+
+import static com.fasterxml.jackson.module.kotlin.ExtensionsKt.jacksonObjectMapper;
 
 /**
  * A builder for constructing a JSON Patch by adding
@@ -43,7 +46,6 @@ import java.util.LinkedHashSet;
  *    {"op" = "add", "path" = "/John/phones/office", "value" = "1234-567"},
  *    {"op" = "remove", "path" = "/Amy/age"}
  * ] </pre>
- *
  */
 public final class JsonPatchBuilder {
 
@@ -79,6 +81,28 @@ public final class JsonPatchBuilder {
 
     public JsonPatchBuilder copy(JsonPointer from, JsonPointer to) {
         operations.add(new CopyOperation(from, to));
+        return this;
+    }
+
+    /** Adds a JsonNode value to a json at the specified location. */
+    public JsonPatchBuilder addJsonNodeValue(JsonNode destination, JsonPointer path, JsonNode value) {
+        if (destination.at(path.head()).isMissingNode()) {
+            var propertyName = path.last().getMatchingProperty();
+            JsonNode newValue;
+            if ("-".equals(propertyName) || "0".equals(propertyName))
+                newValue = jacksonObjectMapper().createArrayNode().add(value);
+            else
+                newValue = jacksonObjectMapper().createObjectNode().set(path.last().getMatchingProperty(), value);
+
+            addJsonNodeValue(destination, path.head(), newValue);
+        } else {
+            var currentValue = destination.at(path);
+            if (currentValue.isMissingNode() || currentValue.isArray()) {
+                add(path, value);
+            } else {
+                replace(path, value);
+            }
+        }
         return this;
     }
 
