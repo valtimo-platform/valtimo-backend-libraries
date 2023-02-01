@@ -21,6 +21,8 @@ import org.hibernate.annotations.Type
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.Table
 
@@ -42,5 +44,6 @@ data class PluginProcessLink(
     @Column(name = "plugin_action_definition_key")
     val pluginActionDefinitionKey: String,
     @Column(name = "activity_type")
+    @Enumerated(EnumType.STRING)
     val activityType: ActivityType? = null
 )
