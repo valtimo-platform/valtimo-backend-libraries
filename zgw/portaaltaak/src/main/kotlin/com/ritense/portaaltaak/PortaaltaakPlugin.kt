@@ -34,10 +34,11 @@ import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valueresolver.ValueResolverService
+import com.ritense.zakenapi.ZakenApiPlugin
 import org.camunda.bpm.engine.delegate.DelegateTask
 import java.util.UUID
 
-@Plugin(`
+@Plugin(
     key = "portaaltaak",
     title = "Portaaltaak",
     description = "Enable interfacing with Portaaltaak specification compliant APIs"
@@ -90,7 +91,7 @@ class PortaaltaakPlugin(
             delegateTask.id
         )
 
-        //TODO: create eactual object
+        //TODO: create actual object
         //objectenApiPlugin.create
     }
 
