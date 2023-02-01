@@ -2,13 +2,14 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:3333/object-management-api-test
+    url: jdbc:postgresql://localhost:3341/search-test
     username: valtimo
     password: password
     hikari:
       auto-commit: false
   liquibase:
     enabled: false
+    change-log: classpath:/config/liquibase/search-master.xml
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
