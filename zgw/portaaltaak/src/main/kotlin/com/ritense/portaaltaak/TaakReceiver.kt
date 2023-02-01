@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-
 package com.ritense.portaaltaak
 
-import com.ritense.objectmanagement.service.ObjectManagementService
-import com.ritense.plugin.PluginFactory
-import com.ritense.plugin.service.PluginService
+import com.fasterxml.jackson.annotation.JsonValue
 
-class PortaaltaakPluginFactory(
-    pluginService: PluginService,
-    private val objectManagementService: ObjectManagementService
-) : PluginFactory<PortaaltaakPlugin>(pluginService) {
-
-    override fun create(): PortaaltaakPlugin {
-        return PortaaltaakPlugin(objectManagementService, pluginService)
-    }
+enum class TaakReceiver(@JsonValue val key: String) {
+    ZAAK_INITIATO("zaakInitiator"),
+    OTHER("other")
 }

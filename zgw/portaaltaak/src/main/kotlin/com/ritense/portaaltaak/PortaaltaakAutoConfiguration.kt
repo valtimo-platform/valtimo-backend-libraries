@@ -16,6 +16,7 @@
 
 package com.ritense.portaaltaak
 
+import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.service.PluginService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -27,8 +28,9 @@ class PortaaltaakAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(PortaaltaakPluginFactory::class)
     fun portaaltaakPluginFactory(
-        pluginService: PluginService
+        pluginService: PluginService,
+        objectManagementService: ObjectManagementService
     ): PortaaltaakPluginFactory {
-        return PortaaltaakPluginFactory(pluginService)
+        return PortaaltaakPluginFactory(pluginService, objectManagementService)
     }
 }
