@@ -19,6 +19,11 @@ package com.ritense.portaaltaak
 import com.fasterxml.jackson.annotation.JsonValue
 
 enum class TaakReceiver(@JsonValue val key: String) {
-    ZAAK_INITIATO("zaakInitiator"),
+    ZAAK_INITIATOR("zaakInitiator"),
     OTHER("other")
+}
+
+enum class OtherTaakReceiver(@JsonValue val key: String) {
+    KVK("kvk"),
+    BSN("bsn")
 }

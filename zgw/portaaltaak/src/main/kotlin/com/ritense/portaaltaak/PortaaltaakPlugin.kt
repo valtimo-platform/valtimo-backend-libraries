@@ -26,8 +26,10 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.lang.IllegalStateException
 import java.util.UUID
+import kotlin.IllegalStateException
 
 @Plugin(
     key = "portaaltaak",
@@ -52,13 +54,14 @@ class PortaaltaakPlugin(
         activityTypes = [ActivityType.USER_TASK]
     )
     fun createPortaalTaak(
+        execution: DelegateExecution,
         @PluginActionProperty formType: TaakFormType,
         @PluginActionProperty formTypeId: String?,
         @PluginActionProperty formTypeUrl: String?,
         @PluginActionProperty sendData: List<DataBindingConfig>,
         @PluginActionProperty receiveData: List<DataBindingConfig>,
         @PluginActionProperty receiver: TaakReceiver,
-        @PluginActionProperty otherReceiver: String?,
+        @PluginActionProperty otherReceiver: OtherTaakReceiver?,
         @PluginActionProperty kvk: String?,
         @PluginActionProperty bsn: String?
     ) {
@@ -69,14 +72,45 @@ class PortaaltaakPlugin(
             .existingId(objectManagement.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
 
         val portaalTaak = TaakObject(
-            listOf(getIdentification())
+            listOf(getTaakIdentification(receiver, otherReceiver, kvk, bsn)),
+            getTaakData(sendData),
+            "title",
+            TaakStatus.OPEN,
+            getTaakForm(),
+            execution.currentActivityId
         )
 
+        //TODO: create eactual object
         //objectenApiPlugin.create
     }
 
-    private fun getIdentification(): TaakIndentificatie {
-        TODO("Not yet implemented")
+    private fun getTaakIdentification(
+        receiver: TaakReceiver,
+        otherReceiver: OtherTaakReceiver?,
+        kvk: String?,
+        bsn: String?
+    ): TaakIndentificatie {
+        when (receiver){
+            TaakReceiver.ZAAK_INITIATOR -> {
+                //TODO: get zaak initiator
+            }
+            TaakReceiver.OTHER -> {
+                val identificationValue = when (otherReceiver) {
+                    OtherTaakReceiver.BSN -> bsn
+                    OtherTaakReceiver.KVK -> kvk
+                    null ->  throw IllegalStateException("Other was chosen as taak receiver, but no identification type was chosen.")
+                }?: throw IllegalStateException("Could not find identification value in configuration for type ${otherReceiver.key}")
+
+                TaakIndentificatie(
+                    otherReceiver.key,
+                    identificationValue
+                )
+            }
+        }
+    }
+
+    private fun getTaakForm(): TaakForm {
+
     }
 
     private fun getTaakData(sendData: List<DataBindingConfig>): Map<String, Any> {

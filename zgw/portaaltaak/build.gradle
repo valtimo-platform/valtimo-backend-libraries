@@ -22,10 +22,12 @@ dockerCompose {
 }
 
 dependencies {
+    implementation project(':core')
     implementation project(':plugin')
     implementation project(':zgw:object-management')
     implementation project(':zgw:objecten-api')
     implementation project(':zgw:notificaties-api')
+    implementation project(':zgw:zaken-api')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
