@@ -35,6 +35,7 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.ZakenApiPlugin
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.delegate.DelegateTask
 import java.util.UUID
 
@@ -48,6 +49,7 @@ class PortaaltaakPlugin(
     private val pluginService: PluginService,
     private val valueResolverService: ValueResolverService,
     private val processDocumentService: ProcessDocumentService,
+    private val zaakInstanceLinkService: ZaakInstanceLinkService
 ) {
 
     @PluginProperty(key = "notificatiesApiPluginConfiguration", secret = false)
@@ -60,6 +62,7 @@ class PortaaltaakPlugin(
         key = "create-portaaltaak",
         title = "Create portal task",
         description = "Create a task for a portal by storing it in the Objecten-API",
+        //TODO: change to ActivityType.USER_TASK_CREATE when the user task support has been merged
         activityTypes = [ActivityType.USER_TASK]
     )
     fun createPortaalTaak(
@@ -83,7 +86,7 @@ class PortaaltaakPlugin(
         ) as ObjectenApiPlugin
 
         val portaalTaak = TaakObject(
-            listOf(getTaakIdentification(receiver, otherReceiver, kvk, bsn)),
+            listOf(getTaakIdentification(delegateTask, receiver, otherReceiver, kvk, bsn)),
             getTaakData(delegateTask, sendData),
             delegateTask.name,
             TaakStatus.OPEN,
@@ -96,13 +99,14 @@ class PortaaltaakPlugin(
     }
 
     private fun getTaakIdentification(
+        delegateTask: DelegateTask
         receiver: TaakReceiver,
         otherReceiver: OtherTaakReceiver?,
         kvk: String?,
         bsn: String?
     ): TaakIdentificatie {
         when (receiver){
-            TaakReceiver.ZAAK_INITIATOR -> getZaakinitiator()
+            TaakReceiver.ZAAK_INITIATOR -> getZaakinitiator(delegateTask)
             TaakReceiver.OTHER -> {
                 val identificationValue = when (otherReceiver) {
                     OtherTaakReceiver.BSN -> bsn
@@ -118,11 +122,18 @@ class PortaaltaakPlugin(
         }
     }
 
-    private fun getZaakinitiator(): TaakIdentificatie {
+    private fun getZaakinitiator(delegateTask: DelegateTask): TaakIdentificatie {
         //TODO: this method
-        //get zaak link by not using the openzaak module
+        val processInstanceId = CamundaProcessInstanceId(delegateTask.processInstanceId)
+        val documentId = processDocumentService.getDocumentId(processInstanceId, delegateTask)
 
-        val zakenPlugin = pluginService.createInstance() as ZakenApiPlugin
+        val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId.id).zaakInstanceUrl
+        val zakenApiPluginInstance = pluginService
+            .createInstance(ZakenApiPlugin::class.java) { properties: JsonNode ->
+                zaakUrl.toString().startsWith(properties.get("url").textValue())
+            }
+
+        requireNotNull(zakenApiPluginInstance) { "No plugin configuration was found for zaak with URL $zaakUrl" }
 
         //get all zaakrollen for zaak
         //zakenPlugin.getZaakRollen

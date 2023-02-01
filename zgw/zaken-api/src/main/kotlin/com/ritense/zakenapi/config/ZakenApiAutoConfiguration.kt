@@ -24,6 +24,7 @@ import com.ritense.zakenapi.ResourceProvider
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import io.netty.handler.logging.LogLevel
 import org.springframework.beans.factory.ObjectProvider
@@ -69,5 +70,13 @@ class ZakenApiAutoConfiguration {
             storageService,
             zaakInstanceLinkRepository,
         )
+    }
+
+    //TODO: make sure this does not cause a conflict with the existing bean in the openzaak module
+    @Bean
+    fun zakenApiZaakInstanceLinkService(
+        zaakInstanceLinkRepository: ZaakInstanceLinkRepository
+    ): ZaakInstanceLinkService {
+        return ZaakInstanceLinkService(zaakInstanceLinkRepository)
     }
 }
