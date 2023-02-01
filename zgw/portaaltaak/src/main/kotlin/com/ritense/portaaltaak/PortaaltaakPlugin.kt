@@ -99,7 +99,7 @@ class PortaaltaakPlugin(
     }
 
     private fun getTaakIdentification(
-        delegateTask: DelegateTask
+        delegateTask: DelegateTask,
         receiver: TaakReceiver,
         otherReceiver: OtherTaakReceiver?,
         kvk: String?,
@@ -141,6 +141,7 @@ class PortaaltaakPlugin(
         //get zaakrol with type iniator
 
         //build response based on zaakrol record
+        return TaakIdentificatie()
     }
 
     private fun getTaakForm(
