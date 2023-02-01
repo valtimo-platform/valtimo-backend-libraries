@@ -170,6 +170,24 @@ class ZakenApiPlugin(
         return results
     }
 
+    fun getZaakRollen(zaakUrl: URI): List<ZaakObject> {
+        var currentPage = 1
+        var currentResults: Page<ZaakObject>?
+        val results = mutableListOf<ZaakObject>()
+
+        do {
+            currentResults = client.getZaakObjecten(
+                authenticationPluginConfiguration,
+                url,
+                zaakUrl,
+                currentPage++
+            )
+            results.addAll(currentResults.results)
+        } while (currentResults?.next != null)
+
+        return results
+    }
+
     companion object {
         const val PLUGIN_KEY = "zakenapi"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"

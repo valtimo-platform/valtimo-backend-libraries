@@ -26,7 +26,7 @@ import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import java.net.URI
 import java.util.UUID
 
-class ZaakInstanceLinkService(
+class  ZaakInstanceLinkService(
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
 ) : ZaakInstanceLinkService {
 

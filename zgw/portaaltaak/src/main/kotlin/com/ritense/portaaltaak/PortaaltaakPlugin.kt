@@ -26,10 +26,9 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import java.lang.IllegalStateException
+import com.ritense.zakenapi.ZakenApiPlugin
+import org.camunda.bpm.engine.delegate.DelegateTask
 import java.util.UUID
-import kotlin.IllegalStateException
 
 @Plugin(
     key = "portaaltaak",
@@ -54,7 +53,7 @@ class PortaaltaakPlugin(
         activityTypes = [ActivityType.USER_TASK]
     )
     fun createPortaalTaak(
-        execution: DelegateExecution,
+        task: DelegateTask,
         @PluginActionProperty formType: TaakFormType,
         @PluginActionProperty formTypeId: String?,
         @PluginActionProperty formTypeUrl: String?,
@@ -74,10 +73,10 @@ class PortaaltaakPlugin(
         val portaalTaak = TaakObject(
             listOf(getTaakIdentification(receiver, otherReceiver, kvk, bsn)),
             getTaakData(sendData),
-            "title",
+            task.name,
             TaakStatus.OPEN,
             getTaakForm(),
-            execution.currentActivityId
+            task.id
         )
 
         //TODO: create eactual object
@@ -89,11 +88,9 @@ class PortaaltaakPlugin(
         otherReceiver: OtherTaakReceiver?,
         kvk: String?,
         bsn: String?
-    ): TaakIndentificatie {
+    ): TaakIdentificatie {
         when (receiver){
-            TaakReceiver.ZAAK_INITIATOR -> {
-                //TODO: get zaak initiator
-            }
+            TaakReceiver.ZAAK_INITIATOR -> getZaakinitiator()
             TaakReceiver.OTHER -> {
                 val identificationValue = when (otherReceiver) {
                     OtherTaakReceiver.BSN -> bsn
@@ -101,7 +98,7 @@ class PortaaltaakPlugin(
                     null ->  throw IllegalStateException("Other was chosen as taak receiver, but no identification type was chosen.")
                 }?: throw IllegalStateException("Could not find identification value in configuration for type ${otherReceiver.key}")
 
-                TaakIndentificatie(
+                TaakIdentificatie(
                     otherReceiver.key,
                     identificationValue
                 )
@@ -109,8 +106,22 @@ class PortaaltaakPlugin(
         }
     }
 
-    private fun getTaakForm(): TaakForm {
+    private fun getZaakinitiator(): TaakIdentificatie {
+        //TODO: this method
+        //get zaak link by not using the openzaak module
 
+        val zakenPlugin = pluginService.createInstance() as ZakenApiPlugin
+
+        //get all zaakrollen for zaak
+        //zakenPlugin.getZaakRollen
+
+        //get zaakrol with type iniator
+
+        //build
+    }
+
+    private fun getTaakForm(): TaakForm {
+        //TODO: not specified in story
     }
 
     private fun getTaakData(sendData: List<DataBindingConfig>): Map<String, Any> {
