@@ -62,6 +62,7 @@ include(
     "resource:local-resource",
     "resource:openzaak-resource",
     "resource:temporary-resource-storage",
+    "search",
     "test-utils-common",
     "value-resolver",
     "valtimo-dependencies",
@@ -77,3 +78,5 @@ include(
     "zgw:zaken-api",
     "zgw:portaaltaak"
 )
+
+
