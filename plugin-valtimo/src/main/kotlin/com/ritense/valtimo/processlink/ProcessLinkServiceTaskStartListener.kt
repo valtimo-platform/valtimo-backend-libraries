@@ -20,11 +20,9 @@ import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
 import org.camunda.bpm.engine.ActivityTypes
-import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.camunda.bpm.engine.delegate.ExecutionListener
 import org.camunda.bpm.extension.reactor.bus.CamundaSelector
-import org.camunda.bpm.extension.reactor.spring.listener.ReactorExecutionListener
 import org.camunda.bpm.extension.reactor.spring.listener.ReactorTaskListener
 import org.springframework.transaction.annotation.Transactional
 
