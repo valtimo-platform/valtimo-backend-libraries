@@ -16,18 +16,4 @@
 
 package com.ritense.notificatiesapi.exception
 
-import org.zalando.problem.AbstractThrowableProblem
-import org.zalando.problem.Exceptional
-import org.zalando.problem.Status
-
-class AuthorizationException(message: String?, status: Status) : AbstractThrowableProblem(
-    null,
-    message,
-    status
-) {
-    override fun getCause(): Exceptional? {
-        return null
-    }
-
-
-}
+class AuthorizationException : RuntimeException()

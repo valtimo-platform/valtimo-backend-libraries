@@ -37,9 +37,14 @@ class NotificatiesApiResource(
         @RequestHeader("Authorization") authHeader: String?
     ): ResponseEntity<Void> {
         return if (authHeader != null) {
-            notificatiesApiService.findAbonnementSubscription(authHeader)
-            notificatiesApiService.handle(notification)
-            ResponseEntity.noContent().build()
+            try {
+                notificatiesApiService.findAbonnementSubscription(authHeader)
+                notificatiesApiService.handle(notification)
+                ResponseEntity.noContent().build()
+            } catch (ex: RuntimeException) {
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+            }
+
         } else {
             ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }

@@ -68,7 +68,7 @@ class NotificatiesApiResourceTest {
 
     @Test
     fun `send notification with invalid auth`() {
-        doThrow(AuthorizationException::class).whenever(notificatiesApiService.findAbonnementSubscription(any()))
+        doThrow(AuthorizationException::class).whenever(notificatiesApiService).findAbonnementSubscription(any())
         val result = notificatiesApiResource.handleNotification(createNotication(), "anInvalidHeader")
         assertEquals(HttpStatus.UNAUTHORIZED, result.statusCode)
     }

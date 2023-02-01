@@ -22,7 +22,6 @@ import com.ritense.notificatiesapi.exception.AuthorizationException
 import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
-import org.zalando.problem.Status
 
 class NotificatiesApiService(
     private val applicationEventPublisher: ApplicationEventPublisher,
@@ -38,7 +37,7 @@ class NotificatiesApiService(
 
     fun findAbonnementSubscription(authHeader: String): NotificatiesApiAbonnementLink {
         return notificatiesApiAbonnementLinkRepository.findByAuth(authHeader)
-            ?: throw AuthorizationException("", Status.UNAUTHORIZED)
+            ?: throw AuthorizationException()
     }
 
     companion object {
