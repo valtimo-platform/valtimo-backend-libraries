@@ -86,7 +86,7 @@ class ZakenApiClient(
                       baseUrl: URI,
                       zaakUrl: URI,
                       page: Int,
-                      roleType: RolType): Page<Rol> {
+                      roleType: RolType? = null): Page<Rol> {
         val result = webclientBuilder
             .clone()
             .filter(authentication)
@@ -97,7 +97,11 @@ class ZakenApiClient(
                     .path("rollen")
                     .queryParam("page", page)
                     .queryParam("zaak", zaakUrl)
-                    .queryParam("omschrijvingGeneriek", roleType.getApiValue())
+                    .apply {
+                        if(roleType != null) {
+                            queryParam("omschrijvingGeneriek", roleType.getApiValue())
+                        }
+                    }
                     .build()
             }
             .retrieve()

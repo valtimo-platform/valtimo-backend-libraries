@@ -16,4 +16,11 @@
 
 package com.ritense.zakenapi.domain.rol
 
+import com.fasterxml.jackson.annotation.JsonSubTypes
+
+@JsonSubTypes(
+    value = [
+        JsonSubTypes.Type(value = RolNatuurlijkPersoon::class, name = "natuurlijk_persoon"),
+        JsonSubTypes.Type(value = RolNietNatuurlijkPersoon::class, name = "niet_natuurlijk_persoon")
+    ])
 sealed class BetrokkeneIdentificatie()

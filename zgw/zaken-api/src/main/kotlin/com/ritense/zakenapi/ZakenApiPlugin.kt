@@ -172,7 +172,7 @@ class ZakenApiPlugin(
         return results
     }
 
-    fun getZaakRollen(zaakUrl: URI, roleType: RolType): List<Rol> {
+    fun getZaakRollen(zaakUrl: URI, roleType: RolType? = null): List<Rol> {
         var next = true
 
         return generateSequence(1) { i -> if (next) i + 1 else null }

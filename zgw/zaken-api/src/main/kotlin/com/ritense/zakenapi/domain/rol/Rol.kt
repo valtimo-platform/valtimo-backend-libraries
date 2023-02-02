@@ -34,10 +34,5 @@ data class Rol(
         property = "betrokkeneType",
         visible = true
     )
-    @JsonSubTypes(
-        value = [
-            JsonSubTypes.Type(value = RolNatuurlijkPersoon::class, name = "natuurlijk_persoon"),
-            JsonSubTypes.Type(value = RolNietNatuurlijkPersoon::class, name = "niet_natuurlijk_persoon")
-    ])
     val betrokkeneIdentificatie: BetrokkeneIdentificatie?
 )
