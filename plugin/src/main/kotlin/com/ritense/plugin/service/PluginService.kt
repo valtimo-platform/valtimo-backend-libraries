@@ -191,7 +191,8 @@ class PluginService(
             activityId = processLink.activityId,
             actionProperties = processLink.actionProperties,
             pluginConfigurationId = PluginConfigurationId.existingId(processLink.pluginConfigurationId),
-            pluginActionDefinitionKey = processLink.pluginActionDefinitionKey
+            pluginActionDefinitionKey = processLink.pluginActionDefinitionKey,
+            activityType = ActivityType.mapOldActivityTypeToCurrent(ActivityType.fromValue(processLink.activityType))
         )
         pluginProcessLinkRepository.save(newProcessLink)
     }

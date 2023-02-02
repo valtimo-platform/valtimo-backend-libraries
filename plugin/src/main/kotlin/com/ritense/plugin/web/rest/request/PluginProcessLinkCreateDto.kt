@@ -24,5 +24,6 @@ data class PluginProcessLinkCreateDto(
     val activityId: String,
     val pluginConfigurationId: UUID,
     val pluginActionDefinitionKey: String,
-    val actionProperties: ObjectNode? = null
+    val actionProperties: ObjectNode? = null,
+    val activityType: String,
 )

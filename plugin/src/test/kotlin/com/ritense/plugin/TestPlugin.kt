@@ -21,6 +21,7 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
 import com.ritense.plugin.domain.EventType
 
@@ -51,6 +52,16 @@ class TestPlugin(
         activityTypes = [SERVICE_TASK_START]
     )
     fun testAction() {
+        //do nothing
+    }
+
+    @PluginAction(
+        key = "test-action-task",
+        title = "Test action task",
+        description = "This is an action used to verify plugin framework functionality",
+        activityTypes = [ActivityType.USER_TASK_CREATE]
+    )
+    fun testActionTask() {
         //do nothing
     }
 

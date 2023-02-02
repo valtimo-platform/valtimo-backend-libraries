@@ -55,20 +55,10 @@ class PluginConfigurationResource(
                     pluginDefinitionKey = pluginDefinitionKey,
                     pluginConfigurationTitle = pluginConfigurationTitle,
                     category = category,
-                    activityType = mapOldActivityTypeToCurrent(activityType)
+                    activityType = ActivityType.mapOldActivityTypeToCurrent(activityType)
                 )
             )
             .map { PluginConfigurationDto(it) })
-    }
-
-    private fun mapOldActivityTypeToCurrent(activityType: ActivityType?): ActivityType? {
-        if (ActivityType.OLD_SERVICE_TASK == activityType) {
-            return ActivityType.SERVICE_TASK_START
-        }
-        if (ActivityType.OLD_USER_TASK == activityType) {
-            return ActivityType.USER_TASK_CREATE
-        }
-        return activityType
     }
 
     @PostMapping(value = ["/v1/plugin/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])

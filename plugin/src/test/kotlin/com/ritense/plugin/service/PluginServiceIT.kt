@@ -21,6 +21,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.TestPlugin
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
@@ -35,6 +36,7 @@ import java.util.UUID
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
+import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -152,13 +154,35 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "test-action",
-            actionProperties = Mapper.INSTANCE.get().readTree("{}") as ObjectNode
+            actionProperties = Mapper.INSTANCE.get().readTree("{}") as ObjectNode,
+            activityType = ActivityType.SERVICE_TASK_START
         )
 
         val execution = DelegateExecutionFake.of()
             .withProcessInstanceId(UUID.randomUUID().toString())
 
         pluginService.invoke(execution, processLink)
+    }
+
+    @Test
+    @Transactional
+    fun `should invoke a user task create action on the plugin with void return type`() {
+        val processLink = PluginProcessLink(
+            PluginProcessLinkId.newId(),
+            processDefinitionId = UUID.randomUUID().toString(),
+            activityId = "test",
+            pluginConfigurationId = pluginConfiguration.id,
+            pluginActionDefinitionKey = "test-action-task",
+            actionProperties = Mapper.INSTANCE.get().readTree("{}") as ObjectNode,
+            activityType = ActivityType.USER_TASK_CREATE
+        )
+
+        val execution = DelegateExecutionFake.of()
+            .withProcessInstanceId(UUID.randomUUID().toString())
+
+        val task = DelegateTaskFake().withProcessInstanceId(execution.processInstanceId).withExecution(execution)
+
+        pluginService.invoke(task, processLink)
     }
 
     @Test
@@ -170,7 +194,8 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "other-test-action",
-            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "test123"}""") as ObjectNode
+            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "test123"}""") as ObjectNode,
+            activityType = ActivityType.SERVICE_TASK_START
         )
 
         val execution = DelegateExecutionFake.of()
@@ -190,7 +215,8 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "other-test-action",
-            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "pv:placeholder"}""") as ObjectNode
+            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "pv:placeholder"}""") as ObjectNode,
+            activityType = ActivityType.SERVICE_TASK_START
         )
 
         val testPlugin = spy(TestPlugin("someString"))
@@ -216,7 +242,8 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             processDefinitionId = UUID.randomUUID().toString(),
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
-            pluginActionDefinitionKey = "other-test-action"
+            pluginActionDefinitionKey = "other-test-action",
+            activityType = ActivityType.SERVICE_TASK_START
         )
 
         assertFailsWith<InvocationTargetException>(
