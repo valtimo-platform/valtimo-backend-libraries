@@ -35,6 +35,9 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.ZakenApiPlugin
+import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
+import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
+import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.delegate.DelegateTask
 import java.util.UUID
@@ -94,6 +97,8 @@ class PortaaltaakPlugin(
             delegateTask.id
         )
 
+        val node: JsonNode = jacksonObjectMapper().convertValue(portaalTaak)
+
         //TODO: create actual object
         //objectenApiPlugin.create
     }
@@ -105,14 +110,15 @@ class PortaaltaakPlugin(
         kvk: String?,
         bsn: String?
     ): TaakIdentificatie {
-        when (receiver){
+        return when (receiver) {
             TaakReceiver.ZAAK_INITIATOR -> getZaakinitiator(delegateTask)
             TaakReceiver.OTHER -> {
                 val identificationValue = when (otherReceiver) {
                     OtherTaakReceiver.BSN -> bsn
                     OtherTaakReceiver.KVK -> kvk
-                    null ->  throw IllegalStateException("Other was chosen as taak receiver, but no identification type was chosen.")
-                }?: throw IllegalStateException("Could not find identification value in configuration for type ${otherReceiver.key}")
+                    null -> throw IllegalStateException("Other was chosen as taak receiver, but no identification type was chosen.")
+                }
+                    ?: throw IllegalStateException("Could not find identification value in configuration for type ${otherReceiver.key}")
 
                 TaakIdentificatie(
                     otherReceiver.key,
@@ -123,25 +129,29 @@ class PortaaltaakPlugin(
     }
 
     private fun getZaakinitiator(delegateTask: DelegateTask): TaakIdentificatie {
-        //TODO: this method
         val processInstanceId = CamundaProcessInstanceId(delegateTask.processInstanceId)
         val documentId = processDocumentService.getDocumentId(processInstanceId, delegateTask)
 
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId.id).zaakInstanceUrl
-        val zakenApiPluginInstance = pluginService
-            .createInstance(ZakenApiPlugin::class.java) { properties: JsonNode ->
+        val zakenPlugin = requireNotNull(
+            pluginService.createInstance(ZakenApiPlugin::class.java) { properties: JsonNode ->
                 zaakUrl.toString().startsWith(properties.get("url").textValue())
             }
+        ) { "No plugin configuration was found for zaak with URL $zaakUrl" }
 
-        requireNotNull(zakenApiPluginInstance) { "No plugin configuration was found for zaak with URL $zaakUrl" }
+        val initiator = requireNotNull(
+            zakenPlugin.getZaakRollen(zaakUrl, RolType.INITIATOR).firstOrNull()
+        ) { "No initiator role found for zaak with URL $zaakUrl" }
 
-        //get all zaakrollen for zaak
-        //zakenPlugin.getZaakRollen
-
-        //get zaakrol with type iniator
-
-        //build response based on zaakrol record
-        return TaakIdentificatie()
+        return requireNotNull(
+            initiator.betrokkeneIdentificatie.let {
+                when (it) {
+                    is RolNatuurlijkPersoon -> TaakIdentificatie(OtherTaakReceiver.BSN.name, it.inpBsn)
+                    is RolNietNatuurlijkPersoon -> TaakIdentificatie(OtherTaakReceiver.KVK.name, it.annIdentificatie)
+                    else -> null
+                }
+            }
+        ) { "Could not map initiator identificatie (value=${initiator.betrokkeneIdentificatie}) for zaak with URL $zaakUrl to TaakIdentificatie" }
     }
 
     private fun getTaakForm(
@@ -154,6 +164,7 @@ class PortaaltaakPlugin(
             when (formType) {
                 TaakFormType.ID -> formTypeId
                     ?: throw IllegalStateException("formTypeId can not be null when formType ID has been chosen")
+
                 TaakFormType.URL -> formTypeUrl
                     ?: throw IllegalStateException("formTypeUrl can not be null when formType URL has been chosen")
             }
