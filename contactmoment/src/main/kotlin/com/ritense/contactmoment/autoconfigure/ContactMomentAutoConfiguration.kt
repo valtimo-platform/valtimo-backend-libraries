@@ -48,26 +48,12 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 class ContactMomentAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(WebClient::class)
-    fun contactMomentWebClientBuilder(): WebClient {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        ).build()
-    }
-
-    @Bean
     @ConditionalOnMissingBean(ContactMomentClient::class)
     fun contactMomentClient(
-        contactMomentWebClient: WebClient,
+        webclientBuilder: WebClient.Builder,
         contactMomentTokenGenerator: ContactMomentTokenGenerator,
     ): ContactMomentClient {
-        return ContactMomentClient(contactMomentWebClient, contactMomentTokenGenerator)
+        return ContactMomentClient(webclientBuilder, contactMomentTokenGenerator)
     }
 
     @Bean
