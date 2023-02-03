@@ -25,9 +25,8 @@ class ObjectManagementInfoProviderImpl(
 ) : ObjectManagementInfoProvider {
 
     override fun getObjectManagementInfo(objectManagementId: UUID): ObjectManagementInfo {
-        val objectManagement = objectManagementService.getById(objectManagementId)
-            ?: throw Exception("No UUID defined!")
-
-        return objectManagement
+        return requireNotNull(objectManagementService.getById(objectManagementId)) {
+            "Could not find objectManagement by uuid $objectManagementId"
+        }
     }
 }
