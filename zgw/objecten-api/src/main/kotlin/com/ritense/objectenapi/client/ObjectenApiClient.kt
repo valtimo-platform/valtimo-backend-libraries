@@ -77,7 +77,7 @@ class ObjectenApiClient(
         return result?.body!!
     }
 
-    fun updateObject(
+    fun objectUpdate(
         authentication: ObjectenApiAuthentication,
         objectUrl: URI,
         objectRequest: ObjectRequest

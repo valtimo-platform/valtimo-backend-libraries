@@ -144,26 +144,24 @@ class ZaakObjectService(
     fun createObject(objectManagementId: UUID, data: JsonNode) : URI {
         val result = objectManagementProvider.getObjectManagementInfo(objectManagementId)
 
-        val objectManagementProviderDTO = ObjectManagementProviderDTO(
-                objectPluginId = result["objectenApiPluginConfigurationId"] as UUID,
-                objectTypePluginId = result["objecttypenApiPluginConfigurationId"] as UUID,
-                objectTypeId = result["objecttypeId"] as String,
-                version = result["version"] as Int
-        )
+        val objectenApiPlugin = pluginService.createInstance(
+            PluginConfigurationId(result["objectenApiPluginConfigurationId"] as UUID)
+        ) as ObjectenApiPlugin
 
-        val objectenApiPlugin = pluginService.createInstance(PluginConfigurationId(objectManagementProviderDTO.objectPluginId)) as ObjectenApiPlugin
-        val objecttypeApiPlugin = pluginService.createInstance(PluginConfigurationId(objectManagementProviderDTO.objectTypePluginId)) as ObjecttypenApiPlugin
+        val objecttypeApiPlugin = pluginService.createInstance(
+            PluginConfigurationId(result["objecttypenApiPluginConfigurationId"] as UUID)
+        ) as ObjecttypenApiPlugin
 
         val objectTypeUrl = UriComponentsBuilder.fromUri(objecttypeApiPlugin.url)
             .pathSegment("objecttypes")
-            .pathSegment(objectManagementProviderDTO.objectTypeId)
+            .pathSegment(result["objecttypeId"] as String)
             .build()
             .toUri()
 
         val createdObject = ObjectRequest(
             objectTypeUrl,
             ObjectRecord(
-                typeVersion = objectManagementProviderDTO.version,
+                typeVersion = result["version"] as Int,
                 data = data,
                 startAt = LocalDate.now()
             )
@@ -177,10 +175,4 @@ class ZaakObjectService(
         val logger = KotlinLogging.logger {}
     }
 
-    data class ObjectManagementProviderDTO(
-        val objectPluginId: UUID,
-        val objectTypePluginId: UUID,
-        val objectTypeId: String,
-        val version: Int
-    )
 }
