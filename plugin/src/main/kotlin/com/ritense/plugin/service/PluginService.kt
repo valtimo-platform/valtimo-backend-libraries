@@ -290,7 +290,7 @@ class PluginService(
     fun createInstance(pluginConfiguration: PluginConfiguration): Any {
         return pluginFactories.first {
             it.canCreate(pluginConfiguration)
-        }.create(pluginConfiguration)!!
+        }.create(pluginConfiguration)
     }
 
     fun <T> createInstance(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): T? {

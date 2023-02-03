@@ -16,23 +16,18 @@
 
 package com.ritense.objectmanagement.service
 
-import com.ritense.objectenapi.web.rest.ObjectManagementProvider
+import com.ritense.objectenapi.management.ObjectManagementInfo
+import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import java.util.UUID
 
-class ObjectManagementProviderImpl(
+class ObjectManagementInfoProviderImpl(
     private val objectManagementService: ObjectManagementService
-) : ObjectManagementProvider {
+) : ObjectManagementInfoProvider {
 
-    override fun getObjectManagementInfo(objectManagementId: UUID): Map<String, Any> {
+    override fun getObjectManagementInfo(objectManagementId: UUID): ObjectManagementInfo {
         val objectManagement = objectManagementService.getById(objectManagementId)
             ?: throw Exception("No UUID defined!")
 
-        return mapOf(
-            "objectenApiPluginConfigurationId" to objectManagement.objectenApiPluginConfigurationId,
-            "objecttypenApiPluginConfigurationId" to objectManagement.objecttypenApiPluginConfigurationId,
-            "objecttypeId" to objectManagement.objecttypeId,
-            "version" to objectManagement.version
-        )
+        return objectManagement
     }
-
 }

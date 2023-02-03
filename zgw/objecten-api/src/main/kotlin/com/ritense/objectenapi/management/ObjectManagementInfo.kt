@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.web.rest
+package com.ritense.objectenapi.management
 
 import java.util.UUID
 
-interface ObjectManagementProvider {
-    fun getObjectManagementInfo(objectManagementId: UUID): Map<String, Any>
+interface ObjectManagementInfo {
+    val id: UUID
+    val title: String
+    val objecttypenApiPluginConfigurationId: UUID
+    val objecttypeId: String
+    val objecttypeVersion: Int
+    val objectenApiPluginConfigurationId: UUID
+    val showInDataMenu: Boolean
+    val formDefinitionView: String?
+    val formDefinitionEdit: String?
 }

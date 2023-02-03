@@ -77,7 +77,7 @@ class ObjectenApiClient(
         return result?.body!!
     }
 
-    fun updateObject(
+    fun objectUpdate(
         authentication: ObjectenApiAuthentication,
         objectUrl: URI,
         objectRequest: ObjectRequest
@@ -99,15 +99,16 @@ class ObjectenApiClient(
 
     fun createObject(
         authentication: ObjectenApiAuthentication,
-        objectUrl: URI,
+        objectsApiUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
         val result = webclientBuilder
             .clone()
             .filter(authentication)
+            .baseUrl(objectsApiUrl.toASCIIString())
             .build()
             .post()
-            .uri(objectUrl)
+            .uri("objects")
             .header("Content-Crs", "EPSG:4326")
             .bodyValue(objectRequest)
             .retrieve()

@@ -18,7 +18,7 @@ package com.ritense.objectmanagement.autoconfigure
 
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.security.config.ObjectManagementHttpSecurityConfigurer
-import com.ritense.objectmanagement.service.ObjectManagementProviderImpl
+import com.ritense.objectmanagement.service.ObjectManagementInfoProviderImpl
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objectmanagement.web.rest.ObjectManagementResource
 import com.ritense.plugin.service.PluginService
@@ -47,9 +47,9 @@ class ObjectManagementAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ObjectManagementProviderImpl::class)
-    fun objectManagementProvider(objectManagementService: ObjectManagementService): ObjectManagementProviderImpl {
-        return ObjectManagementProviderImpl(
+    @ConditionalOnMissingBean(ObjectManagementInfoProviderImpl::class)
+    fun objectManagementInfoProvider(objectManagementService: ObjectManagementService): ObjectManagementInfoProviderImpl {
+        return ObjectManagementInfoProviderImpl(
             objectManagementService
         )
     }
