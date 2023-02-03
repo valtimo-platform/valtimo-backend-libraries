@@ -17,12 +17,10 @@
 package com.ritense.objectenapi.web.rest
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
-import com.ritense.objectenapi.service.ZaakObjectDto
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.plugin.service.PluginService
@@ -198,9 +196,9 @@ internal class ZaakObjectResourceTest {
 
         val actualObj: JsonNode = jacksonObjectMapper().readTree(data)
 
-        val objectDto = ZaakObjectDto(url = URI("http://example.com/object/123"))
+        val url = URI("http://example.com/object/123")
 
-        whenever(zaakObjectService.createObject(objectManagementId, actualObj)).thenReturn(objectDto)
+        whenever(zaakObjectService.createObject(objectManagementId, actualObj)).thenReturn(url)
 
         mockMvc.perform(
             post("/api/v1/object?objectManagementId=$objectManagementId")

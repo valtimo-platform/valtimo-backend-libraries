@@ -141,7 +141,7 @@ class ZaakObjectService(
         return zakenApiPluginInstance
     }
 
-    fun createObject(objectManagementId: UUID, data: JsonNode) : ZaakObjectDto {
+    fun createObject(objectManagementId: UUID, data: JsonNode) : URI {
         val result = objectManagementProvider.getObjectManagementInfo(objectManagementId)
 
         val objectManagementProviderDTO = ObjectManagementProviderDTO(
@@ -169,12 +169,8 @@ class ZaakObjectService(
             )
         )
 
-        return ZaakObjectDto(objectenApiPlugin.objectCreate(objectTypeUrl, createdObject).url)
+        return objectenApiPlugin.createObject(objectTypeUrl, createdObject).url
     }
-
-    // create
-    // exception.
-    // ver dos Copyrights.
 
     companion object {
         const val FORM_SUFFIX = ".editform"

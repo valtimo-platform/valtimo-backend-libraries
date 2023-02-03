@@ -66,7 +66,7 @@ class ZaakObjectListener(
         }
 
         findObjectenApiPlugin(objectUrl)
-            .objectUpdate(
+            .updateObject(
                 objectUrl,
                 ObjectRequest(
                     objectType.url,

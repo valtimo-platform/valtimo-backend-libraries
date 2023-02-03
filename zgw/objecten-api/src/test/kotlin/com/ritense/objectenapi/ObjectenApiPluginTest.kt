@@ -56,12 +56,12 @@ internal class ObjectenApiPluginTest{
         val objectUrl = URI("http://example.com")
         val objectMock = mock<ObjectWrapper>()
         val objectRequest = mock<ObjectRequest>()
-        whenever(client.objectUpdate(plugin.authenticationPluginConfiguration, objectUrl, objectRequest)).thenReturn(objectMock)
+        whenever(client.updateObject(plugin.authenticationPluginConfiguration, objectUrl, objectRequest)).thenReturn(objectMock)
 
-        val result = plugin.objectUpdate(objectUrl,  objectRequest)
+        val result = plugin.updateObject(objectUrl,  objectRequest)
 
         assertEquals(objectMock, result)
-        verify(client).objectUpdate(any(), any(), any())
+        verify(client).updateObject(any(), any(), any())
     }
 
 }

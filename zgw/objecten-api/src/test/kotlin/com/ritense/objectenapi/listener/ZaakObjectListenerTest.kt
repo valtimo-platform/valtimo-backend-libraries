@@ -95,13 +95,13 @@ class ZaakObjectListenerTest {
         whenever(zaakObjectService.getZaakObjectOfTypeByName(documentId, "objecttype")).thenReturn(objectWrapper)
         whenever(zaakObjectService.getZaakObjectTypes(documentId)).thenReturn(listOf(objectType))
         whenever(pluginService.createInstance(eq(ObjectenApiPlugin::class.java), any())).thenReturn(objectenApiPlugin)
-        whenever(objectenApiClient.objectUpdate(any(), any(), any())).thenReturn(objectWrapper)
+        whenever(objectenApiClient.updateObject(any(), any(), any())).thenReturn(objectWrapper)
 
         zaakObjectListener.handle(event)
 
         // Verify the object is updated using the objectenApiPlugin and it contains the new values for firstname and lastname
         val objectRequestCaptor = argumentCaptor<ObjectRequest>()
-        verify(objectenApiPlugin).objectUpdate(any(), objectRequestCaptor.capture())
+        verify(objectenApiPlugin).updateObject(any(), objectRequestCaptor.capture())
 
         val capturedObjectRequest = objectRequestCaptor.firstValue
         assertEquals(objecttypeUrl, capturedObjectRequest.type)

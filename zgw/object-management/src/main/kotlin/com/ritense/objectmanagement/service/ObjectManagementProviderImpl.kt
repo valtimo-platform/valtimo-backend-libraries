@@ -23,11 +23,11 @@ class ObjectManagementProviderImpl(
     private val objectManagementService: ObjectManagementService
 ) : ObjectManagementProvider {
 
-    override fun getObjectManagementInfo(objectManagementId: UUID): HashMap<String, Any> {
+    override fun getObjectManagementInfo(objectManagementId: UUID): Map<String, Any> {
         val objectManagement = objectManagementService.getById(objectManagementId)
-            ?: throw Exception("No uuid defined!")
+            ?: throw Exception("No UUID defined!")
 
-        return hashMapOf(
+        return mapOf(
             "objectenApiPluginConfigurationId" to objectManagement.objectenApiPluginConfigurationId,
             "objecttypenApiPluginConfigurationId" to objectManagement.objecttypenApiPluginConfigurationId,
             "objecttypeId" to objectManagement.objecttypeId,

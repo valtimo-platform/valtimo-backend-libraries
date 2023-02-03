@@ -47,6 +47,7 @@ class ObjectManagementAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ObjectManagementProviderImpl::class)
     fun objectManagementProvider(objectManagementService: ObjectManagementService): ObjectManagementProviderImpl {
         return ObjectManagementProviderImpl(
             objectManagementService

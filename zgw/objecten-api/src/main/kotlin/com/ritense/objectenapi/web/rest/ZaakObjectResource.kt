@@ -18,12 +18,12 @@ package com.ritense.objectenapi.web.rest
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.form.domain.FormDefinition
-import com.ritense.objectenapi.service.ZaakObjectDto
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.web.rest.result.ObjectDto
 import com.ritense.objectenapi.web.rest.result.ObjecttypeDto
 import com.ritense.plugin.service.PluginService
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -37,7 +37,7 @@ import java.util.UUID
 
 
 @RestController
-@RequestMapping(value = ["/api"])
+@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class ZaakObjectResource(
     val zaakObjectService: ZaakObjectService,
     val pluginService: PluginService
@@ -71,14 +71,17 @@ class ZaakObjectResource(
     }
 
     @PostMapping(value = ["/v1/object"])
-    fun createZaakObjecten(
+    fun createZaakObject(
         @RequestParam(name = "objectManagementId") objectManagementId: UUID,
         @RequestBody data: JsonNode
-    ): ResponseEntity<ZaakObjectDto> {
+    ): ResponseEntity<Any> {
         val objectDto = zaakObjectService.createObject(objectManagementId, data)
         return objectDto.let {
-            ResponseEntity.status(HttpStatus.CREATED).body(it)
+            ResponseEntity.status(HttpStatus.CREATED).body(
+                mapOf(
+                    "url" to it
+                )
+            )
         } ?: ResponseEntity.notFound().build()
     }
-
 }
