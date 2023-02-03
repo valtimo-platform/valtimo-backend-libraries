@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0v1ejyk" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.0.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0v1ejyk" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0">
   <bpmn:collaboration id="Collaboration_1hhep9j">
+    <bpmn:extensionElements>
+      <camunda:properties>
+        <camunda:property name="systemProcess" value="true" />
+      </camunda:properties>
+    </bpmn:extensionElements>
     <bpmn:participant id="Participant_0q24bm9" name="Process Portaaltaak uploaded Documents" processRef="Process_1y4t658" />
   </bpmn:collaboration>
   <bpmn:process id="Process_1y4t658" isExecutable="true">
@@ -26,13 +31,13 @@
       <bpmndi:BPMNShape id="Participant_0q24bm9_di" bpmnElement="Participant_0q24bm9" isHorizontal="true">
         <dc:Bounds x="160" y="100" width="400" height="160" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_125lm4p_di" bpmnElement="Flow_125lm4p">
-        <di:waypoint x="265" y="177" />
-        <di:waypoint x="320" y="177" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ti0bgp_di" bpmnElement="Flow_1ti0bgp">
         <di:waypoint x="420" y="177" />
         <di:waypoint x="482" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_125lm4p_di" bpmnElement="Flow_125lm4p">
+        <di:waypoint x="265" y="177" />
+        <di:waypoint x="320" y="177" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="229" y="159" width="36" height="36" />
