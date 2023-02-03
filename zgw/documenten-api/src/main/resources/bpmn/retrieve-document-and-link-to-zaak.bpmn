@@ -9,6 +9,11 @@
     <bpmn:participant id="Participant_0ca37p9" name="Retrieve Document and link to Zaak" processRef="retrieve-document-and-link-to-zaak" />
   </bpmn:collaboration>
   <bpmn:process id="retrieve-document-and-link-to-zaak" name="Retrieve Document and link to Zaak" isExecutable="true">
+    <bpmn:extensionElements>
+      <camunda:properties>
+        <camunda:property name="systemProcess" value="true" />
+      </camunda:properties>
+    </bpmn:extensionElements>
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_0kp32hm</bpmn:outgoing>
     </bpmn:startEvent>
