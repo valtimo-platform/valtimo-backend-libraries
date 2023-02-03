@@ -23,18 +23,14 @@ import com.ritense.objectenapi.listener.ZaakObjectListener
 import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
 import com.ritense.objectenapi.service.ZaakObjectDataResolver
 import com.ritense.objectenapi.service.ZaakObjectService
+import com.ritense.objectenapi.web.rest.ObjectManagementProvider
 import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
-import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.netty.http.client.HttpClient
-import reactor.netty.transport.logging.AdvancedByteBufFormat
-
 @Configuration
 class ObjectenApiAutoConfiguration {
 
@@ -68,9 +64,14 @@ class ObjectenApiAutoConfiguration {
     fun zaakObjectService(
         zaakInstanceLinkService: ZaakInstanceLinkService,
         pluginService : PluginService,
-        formDefinitionService : FormDefinitionService
+        formDefinitionService : FormDefinitionService,
+        objectManagementProvider : ObjectManagementProvider
     ): ZaakObjectService {
-        return ZaakObjectService(zaakInstanceLinkService, pluginService, formDefinitionService)
+        return ZaakObjectService(zaakInstanceLinkService,
+            pluginService,
+            formDefinitionService,
+            objectManagementProvider
+        )
     }
 
     @Order(400)

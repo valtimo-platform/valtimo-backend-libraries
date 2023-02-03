@@ -48,5 +48,8 @@ data class ObjectManagement(
     val formDefinitionView: String? = null,
 
     @Column(name = "form_definition_edit")
-    val formDefinitionEdit: String? = null
+    val formDefinitionEdit: String? = null,
+
+    @Column(name = "version")
+    val version: Int = 0
 )

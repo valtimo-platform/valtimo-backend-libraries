@@ -20,20 +20,27 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.form.domain.FormDefinition
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.ObjectenApiPlugin
+import com.ritense.objectenapi.client.ObjectRecord
+import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
+import com.ritense.objectenapi.web.rest.ObjectManagementProvider
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.openzaak.service.ZaakInstanceLinkService
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZakenApiPlugin
 import mu.KotlinLogging
+import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
+import java.time.LocalDate
 import java.util.UUID
 
 class ZaakObjectService(
     val zaakInstanceLinkService: ZaakInstanceLinkService,
     val pluginService : PluginService,
-    val formDefinitionService : FormDefinitionService
+    val formDefinitionService : FormDefinitionService,
+    val objectManagementProvider: ObjectManagementProvider
 ) {
     fun getZaakObjectTypes(documentId: UUID): List<Objecttype> {
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
@@ -134,8 +141,50 @@ class ZaakObjectService(
         return zakenApiPluginInstance
     }
 
+    fun createObject(objectManagementId: UUID, data: JsonNode) : ZaakObjectDto {
+        val result = objectManagementProvider.getObjectManagementInfo(objectManagementId)
+
+        val objectManagementProviderDTO = ObjectManagementProviderDTO(
+                objectPluginId = result["objectenApiPluginConfigurationId"] as UUID,
+                objectTypePluginId = result["objecttypenApiPluginConfigurationId"] as UUID,
+                objectTypeId = result["objecttypeId"] as String,
+                version = result["version"] as Int
+        )
+
+        val objectenApiPlugin = pluginService.createInstance(PluginConfigurationId(objectManagementProviderDTO.objectPluginId)) as ObjectenApiPlugin
+        val objecttypeApiPlugin = pluginService.createInstance(PluginConfigurationId(objectManagementProviderDTO.objectTypePluginId)) as ObjecttypenApiPlugin
+
+        val objectTypeUrl = UriComponentsBuilder.fromUri(objecttypeApiPlugin.url)
+            .pathSegment("objecttypes")
+            .pathSegment(objectManagementProviderDTO.objectTypeId)
+            .build()
+            .toUri()
+
+        val createdObject = ObjectRequest(
+            objectTypeUrl,
+            ObjectRecord(
+                typeVersion = objectManagementProviderDTO.version,
+                data = data,
+                startAt = LocalDate.now()
+            )
+        )
+
+        return ZaakObjectDto(objectenApiPlugin.objectCreate(objectTypeUrl, createdObject).url)
+    }
+
+    // create
+    // exception.
+    // ver dos Copyrights.
+
     companion object {
         const val FORM_SUFFIX = ".editform"
         val logger = KotlinLogging.logger {}
     }
+
+    data class ObjectManagementProviderDTO(
+        val objectPluginId: UUID,
+        val objectTypePluginId: UUID,
+        val objectTypeId: String,
+        val version: Int
+    )
 }

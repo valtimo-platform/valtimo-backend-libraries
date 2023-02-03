@@ -16,21 +16,28 @@
 
 package com.ritense.objectenapi.web.rest
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
+import com.ritense.objectenapi.service.ZaakObjectDto
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objecttypenapi.client.Objecttype
+import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.json.Mapper
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -40,16 +47,19 @@ import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.util.UUID
 
+
 internal class ZaakObjectResourceTest {
 
     lateinit var mockMvc: MockMvc
     lateinit var zaakObjectService: ZaakObjectService
     lateinit var zaakObjectResource: ZaakObjectResource
+    lateinit var pluginService: PluginService
 
     @BeforeEach
     fun init() {
         zaakObjectService = mock()
-        zaakObjectResource = ZaakObjectResource(zaakObjectService)
+        pluginService = mock()
+        zaakObjectResource = ZaakObjectResource(zaakObjectService, pluginService)
 
         mockMvc = MockMvcBuilders
             .standaloneSetup(zaakObjectResource)
@@ -177,6 +187,47 @@ internal class ZaakObjectResourceTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
             )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `should return 200 when object is created successfully`() {
+        val objectManagementId = UUID.randomUUID()
+        val data = """{"key": 1, "value":1}"""
+
+        val actualObj: JsonNode = jacksonObjectMapper().readTree(data)
+
+        val objectDto = ZaakObjectDto(url = URI("http://example.com/object/123"))
+
+        whenever(zaakObjectService.createObject(objectManagementId, actualObj)).thenReturn(objectDto)
+
+        mockMvc.perform(
+            post("/api/v1/object?objectManagementId=$objectManagementId")
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(data)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isCreated)
+    }
+
+    @Test
+    fun `should return 404 when objectManagementId is not found`() {
+        val objectManagementId = UUID.randomUUID()
+        val data = """{"key": "value"}"""
+
+        whenever(zaakObjectService.createObject(any(), any())
+        ).thenReturn(null)
+
+        mockMvc.perform(
+            post("/v1/object?objectManagementId=$objectManagementId")
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(data)
+        )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isNotFound)
     }

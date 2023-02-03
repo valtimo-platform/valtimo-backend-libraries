@@ -16,13 +16,19 @@
 
 package com.ritense.objectenapi.web.rest
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.form.domain.FormDefinition
+import com.ritense.objectenapi.service.ZaakObjectDto
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.web.rest.result.ObjectDto
 import com.ritense.objectenapi.web.rest.result.ObjecttypeDto
+import com.ritense.plugin.service.PluginService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -34,6 +40,7 @@ import java.util.UUID
 @RequestMapping(value = ["/api"])
 class ZaakObjectResource(
     val zaakObjectService: ZaakObjectService,
+    val pluginService: PluginService
 ) {
     @GetMapping(value = ["/v1/document/{documentId}/zaak/objecttype"])
     fun getZaakObjecttypes(
@@ -61,6 +68,17 @@ class ZaakObjectResource(
     ): ResponseEntity<FormDefinition>{
         val form = zaakObjectService.getZaakObjectForm(objectUrl)
         return form?.let { ResponseEntity.ok(it) } ?: ResponseEntity.notFound().build()
+    }
+
+    @PostMapping(value = ["/v1/object"])
+    fun createZaakObjecten(
+        @RequestParam(name = "objectManagementId") objectManagementId: UUID,
+        @RequestBody data: JsonNode
+    ): ResponseEntity<ZaakObjectDto> {
+        val objectDto = zaakObjectService.createObject(objectManagementId, data)
+        return objectDto.let {
+            ResponseEntity.status(HttpStatus.CREATED).body(it)
+        } ?: ResponseEntity.notFound().build()
     }
 
 }

@@ -20,6 +20,7 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.GET
+import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
 class ObjectenApiHttpSecurityConfigurer: HttpSecurityConfigurer {
@@ -30,6 +31,7 @@ class ObjectenApiHttpSecurityConfigurer: HttpSecurityConfigurer {
                 .antMatchers(GET, "/api/v1/document/{documentId}/zaak/objecttype").hasAuthority(USER)
                 .antMatchers(GET, "/api/v1/document/{documentId}/zaak/object").hasAuthority(USER)
                 .antMatchers(GET, "/api/v1/document/{documentId}/zaak/object/form").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/object").hasAuthority(USER)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

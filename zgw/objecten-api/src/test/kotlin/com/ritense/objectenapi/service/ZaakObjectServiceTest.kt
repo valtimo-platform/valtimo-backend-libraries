@@ -21,6 +21,7 @@ import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
+import com.ritense.objectenapi.web.rest.ObjectManagementProvider
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.openzaak.exception.ZaakInstanceLinkNotFoundException
@@ -50,7 +51,8 @@ internal class ZaakObjectServiceTest {
     val zaakInstanceLinkService = mock<ZaakInstanceLinkService>()
     val pluginService = mock<PluginService>()
     val formDefinitionService = mock<FormDefinitionService>()
-    val zaakObjectService = ZaakObjectService(zaakInstanceLinkService, pluginService, formDefinitionService)
+    val objectManagementProvider = mock<ObjectManagementProvider>()
+    val zaakObjectService = ZaakObjectService(zaakInstanceLinkService, pluginService, formDefinitionService, objectManagementProvider)
 
     var zaakPlugin: ZakenApiPlugin? = null
     var objectenApiPlugin: ObjectenApiPlugin? = null
