@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0v1ejyk" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0">
   <bpmn:collaboration id="Collaboration_1hhep9j">
+    <bpmn:extensionElements />
+    <bpmn:participant id="Participant_0q24bm9" name="Process Portaaltaak uploaded Documents" processRef="Process_1y4t658" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_1y4t658" isExecutable="true">
     <bpmn:extensionElements>
       <camunda:properties>
         <camunda:property name="systemProcess" value="true" />
       </camunda:properties>
     </bpmn:extensionElements>
-    <bpmn:participant id="Participant_0q24bm9" name="Process Portaaltaak uploaded Documents" processRef="Process_1y4t658" />
-  </bpmn:collaboration>
-  <bpmn:process id="Process_1y4t658" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_125lm4p</bpmn:outgoing>
     </bpmn:startEvent>
