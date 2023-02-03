@@ -53,7 +53,7 @@
 
     <changeSet id="add version column to object_management_configuration" author="Ritense">
         <addColumn tableName="object_management_configuration">
-            <column name="version" type="INT" defaultValue="0">
+            <column name="object_type_version" type="INT" defaultValue="1">
                 <constraints nullable="false"/>
             </column>
         </addColumn>

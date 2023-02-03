@@ -40,7 +40,7 @@ data class ObjectManagement(
     override val objecttypeId: String,
 
     @Column(name = "object_type_version")
-    override val objecttypeVersion: Int = 0,
+    override val objecttypeVersion: Int = 1,
 
     @Column(name = "objecten_api_plugin_configuration_id", nullable = false)
     override val objectenApiPluginConfigurationId: UUID,
