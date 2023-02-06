@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-package com.ritense.notificatiesapi.repository
+package com.ritense.notificatiesapi.exception
 
-import com.ritense.notificatiesapi.domain.NotificatiesApiAbonnementLink
-import com.ritense.notificatiesapi.domain.NotificatiesApiConfigurationId
-import org.springframework.data.jpa.repository.JpaRepository
-
-interface NotificatiesApiAbonnementLinkRepository :
-    JpaRepository<NotificatiesApiAbonnementLink, NotificatiesApiConfigurationId> {
-    fun findByAuth(authHeader: String): NotificatiesApiAbonnementLink?
-}
+class AuthorizationException : RuntimeException()
