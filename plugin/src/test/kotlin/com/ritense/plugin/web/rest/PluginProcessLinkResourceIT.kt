@@ -88,7 +88,8 @@ internal class PluginProcessLinkResourceIT : BaseIntegrationTest() {
             processDefinitionId = PROCESS_DEF_ID,
             activityId = ACTIVITY_ID,
             pluginConfigurationId = pluginConfiguration.id.id,
-            pluginActionDefinitionKey = ACTION_KEY
+            pluginActionDefinitionKey = ACTION_KEY,
+            activityType = "bpmn:ServiceTask:start"
         )
 
         mockMvc.perform(

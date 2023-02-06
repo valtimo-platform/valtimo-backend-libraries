@@ -189,8 +189,8 @@ public class ProcessDocumentAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(DocumentJsonValueResolverFactory.class)
-    public DocumentTableValueResolver documentTableValueResolver(
+    @ConditionalOnMissingBean(DocumentTableValueResolver.class)
+    public ValueResolverFactory documentTableValueResolver(
         ProcessDocumentService processDocumentService,
         DocumentService documentService
     ) {
