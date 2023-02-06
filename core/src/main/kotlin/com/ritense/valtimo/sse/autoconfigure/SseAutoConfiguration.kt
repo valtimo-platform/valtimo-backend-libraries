@@ -21,6 +21,7 @@ import com.ritense.valtimo.sse.domain.listener.TaskUpdateListener
 import com.ritense.valtimo.sse.security.config.SseHttpSecurityConfigurer
 import com.ritense.valtimo.sse.service.SseSubscriptionService
 import com.ritense.valtimo.sse.web.rest.CamundaEventResource
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -30,22 +31,27 @@ class SseAutoConfiguration {
 
     @Bean
     @Order(270)
+    @ConditionalOnMissingBean(SseHttpSecurityConfigurer::class)
     fun sseHttpSecurityConfigurer() = SseHttpSecurityConfigurer()
 
     @Bean
+    @ConditionalOnMissingBean(SseSubscriptionService::class)
     fun sseSubscriptionService() = SseSubscriptionService()
 
     @Bean
+    @ConditionalOnMissingBean(TaskUpdateListener::class)
     fun taskUpdateListener(
         sseSubscriptionService: SseSubscriptionService
     ) = TaskUpdateListener(sseSubscriptionService)
 
     @Bean
+    @ConditionalOnMissingBean(ProcessEndListener::class)
     fun processEndListener(
         sseSubscriptionService: SseSubscriptionService
     ) = ProcessEndListener(sseSubscriptionService)
 
     @Bean
+    @ConditionalOnMissingBean(CamundaEventResource::class)
     fun camundaEventResource(
         sseSubscriptionService: SseSubscriptionService
     ) = CamundaEventResource(sseSubscriptionService)
