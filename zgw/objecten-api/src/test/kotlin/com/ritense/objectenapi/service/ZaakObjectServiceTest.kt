@@ -62,7 +62,7 @@ internal class ZaakObjectServiceTest {
     lateinit var zaakObjecten: MutableList<ZaakObject>
 
     @BeforeEach
-    fun before() {
+    fun init() {
         zaakInstanceLinkService = mock()
         pluginService = mock()
         formDefinitionService = mock()
