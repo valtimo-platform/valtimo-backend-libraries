@@ -16,7 +16,7 @@
 
 package com.ritense.search.web.rest
 
-import com.ritense.search.domain.SearchField
+import com.ritense.search.domain.SearchFields
 import com.ritense.search.service.SearchFieldService
 import javax.validation.Valid
 import org.springframework.http.MediaType
@@ -37,17 +37,17 @@ class SearchFieldResource(
     @PostMapping("/{ownerId}")
     fun create(
         @PathVariable ownerId: String,
-        @Valid @RequestBody searchField: SearchField
+        @Valid @RequestBody searchFields: SearchFields
     ) =
-        ResponseEntity.ok(searchFieldService.create(searchField))
+        ResponseEntity.ok(searchFieldService.create(searchFields))
 
     @PutMapping("/{ownerId}/{key}")
     fun update(
         @PathVariable ownerId: String,
         @PathVariable key: String,
-        @Valid @RequestBody searchField: SearchField
+        @Valid @RequestBody searchFields: SearchFields
     ) =
-        ResponseEntity.ok(searchFieldService.update(ownerId, key, searchField))
+        ResponseEntity.ok(searchFieldService.update(ownerId, key, searchFields))
 
     @GetMapping("/{ownerId}")
     fun getAllByOwnerId(@PathVariable ownerId: String) =
