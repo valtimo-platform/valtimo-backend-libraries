@@ -18,6 +18,7 @@ package com.ritense.objectmanagement.web.rest
 
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.domain.ObjectsListRowDto
+import com.ritense.objectmanagement.domain.search.SearchWithConfigRequest
 import com.ritense.objectmanagement.service.ObjectManagementService
 import java.util.UUID
 import javax.validation.Valid
@@ -64,6 +65,14 @@ class ObjectManagementResource(
     fun getObjects(
         @PathVariable id: UUID,
         @PageableDefault pageable: Pageable
+    ): ResponseEntity<PageImpl<ObjectsListRowDto>> =
+        ResponseEntity.ok(objectManagementService.getObjects(id, pageable))
+
+    @GetMapping("/{id}/object")
+    fun getObjectsWithSearchFields(
+        @PathVariable id: UUID,
+        @PageableDefault pageable: Pageable,
+        @RequestBody searchRequest: SearchWithConfigRequest
     ): ResponseEntity<PageImpl<ObjectsListRowDto>> =
         ResponseEntity.ok(objectManagementService.getObjects(id, pageable))
 }

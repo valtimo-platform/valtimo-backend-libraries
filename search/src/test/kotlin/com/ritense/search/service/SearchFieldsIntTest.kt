@@ -19,14 +19,14 @@ package com.ritense.search.service
 import com.ritense.search.BaseIntegrationTest
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
-import com.ritense.search.domain.SearchField
+import com.ritense.search.domain.SearchFields
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-internal class SearchFieldIntTest : BaseIntegrationTest() {
+internal class SearchFieldsIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var searchFieldService: SearchFieldService
@@ -57,9 +57,9 @@ internal class SearchFieldIntTest : BaseIntegrationTest() {
     }
 
 
-    private fun createSearchField(ownerId: String? = null): SearchField =
+    private fun createSearchField(ownerId: String? = null): SearchFields =
         searchFieldService.create(
-            SearchField(
+            SearchFields(
                 ownerId = ownerId ?: "I own this",
                 key = "the magic key",
                 title = "Title",
