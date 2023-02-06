@@ -23,7 +23,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "search_fields")
+@Table(name = "search_field-v1")
 data class SearchFields(
     @Id
     @Column(name = "id")
