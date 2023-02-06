@@ -61,7 +61,7 @@ class ZakenApiPlugin(
         key = "link-document-to-zaak",
         title = "Link Documenten API document to Zaak",
         description = "Stores a link to an existing document in the Documenten API with a Zaak",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun linkDocumentToZaak(
         execution: DelegateExecution,
@@ -86,7 +86,7 @@ class ZakenApiPlugin(
         key = "link-uploaded-document-to-zaak",
         title = "Link Uploaded Documenten API document to Zaak",
         description = "Stores a link to an uploaded document in the Documenten API with a Zaak",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun linkUploadedDocumentToZaak(
         execution: DelegateExecution
@@ -111,13 +111,14 @@ class ZakenApiPlugin(
         key = "create-zaak",
         title = "Create zaak",
         description = "Creates a zaak in the Zaken API",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun createZaak(
         execution: DelegateExecution,
         @PluginActionProperty rsin: Rsin,
         @PluginActionProperty zaaktypeUrl: URI,
     ) {
+        execution.activityInstanceId
         val documentId = UUID.fromString(execution.businessKey)
 
         val zaak = client.createZaak(
