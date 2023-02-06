@@ -79,13 +79,15 @@ enum class ActivityType(
     // Service task
     @Deprecated("Marked for removal since 10.4.0")
     SERVICE_TASK("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() } + ":" + ExecutionListener.EVENTNAME_START),
+
     @Deprecated("Marked for removal since 10.4.0")
     OLD_SERVICE_TASK("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() }),
     SERVICE_TASK_START("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() } + ":" + ExecutionListener.EVENTNAME_START),
 
     // User task
     @Deprecated("Marked for removal since 10.4.0")
-    OLD_USER_TASK("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } ),
+    OLD_USER_TASK("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() }),
+
     @Deprecated("Marked for removal since 10.4.0")
     USER_TASK("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() }),
     USER_TASK_CREATE("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + ":" + TaskListener.EVENTNAME_CREATE),
@@ -152,18 +154,19 @@ enum class ActivityType(
     ESCALATION_END_EVENT("bpmn:" + CAMUNDA_END_EVENT_ESCALATION.replaceFirstChar { it.uppercaseChar() }),
     NONE_END_EVENT("bpmn:" + CAMUNDA_END_EVENT_NONE.replaceFirstChar { it.uppercaseChar() });
 
+    @Deprecated("Marked for removal since 10.4.0")
+    fun mapOldActivityTypeToCurrent(): ActivityType {
+        if (OLD_SERVICE_TASK == this || SERVICE_TASK == this) {
+            return SERVICE_TASK_START
+        }
+        if (OLD_USER_TASK == this || USER_TASK == this) {
+            return USER_TASK_CREATE
+        }
+        return this
+    }
+
     companion object {
         private val mapping = values().associateBy(ActivityType::bpmnModelValue)
         fun fromValue(value: String) = mapping[value] ?: error("Can't find ActivityType with value $value")
-
-        fun mapOldActivityTypeToCurrent(activityType: ActivityType?): ActivityType? {
-            if (OLD_SERVICE_TASK == activityType || SERVICE_TASK == activityType) {
-                return SERVICE_TASK_START
-            }
-            if (OLD_USER_TASK == activityType || USER_TASK == activityType) {
-                return USER_TASK_CREATE
-            }
-            return activityType
-        }
     }
 }

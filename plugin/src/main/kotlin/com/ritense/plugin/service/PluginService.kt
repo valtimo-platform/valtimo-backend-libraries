@@ -46,16 +46,16 @@ import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
 import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
 import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.valueresolver.ValueResolverService
+import mu.KotlinLogging
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.camunda.bpm.engine.delegate.DelegateTask
+import org.springframework.data.repository.findByIdOrNull
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import java.util.UUID
 import javax.validation.ValidationException
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
-import mu.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.engine.delegate.DelegateTask
-import org.springframework.data.repository.findByIdOrNull
 
 class PluginService(
     private val pluginDefinitionRepository: PluginDefinitionRepository,
@@ -192,7 +192,7 @@ class PluginService(
             actionProperties = processLink.actionProperties,
             pluginConfigurationId = PluginConfigurationId.existingId(processLink.pluginConfigurationId),
             pluginActionDefinitionKey = processLink.pluginActionDefinitionKey,
-            activityType = ActivityType.mapOldActivityTypeToCurrent(ActivityType.fromValue(processLink.activityType))
+            activityType = ActivityType.fromValue(processLink.activityType).mapOldActivityTypeToCurrent()
         )
         pluginProcessLinkRepository.save(newProcessLink)
     }
