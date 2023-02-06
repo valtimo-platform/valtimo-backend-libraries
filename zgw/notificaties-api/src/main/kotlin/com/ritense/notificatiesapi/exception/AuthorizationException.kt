@@ -14,25 +14,6 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo
+package com.ritense.notificatiesapi.exception
 
-import com.ritense.plugin.annotation.Plugin
-import com.ritense.plugin.annotation.PluginAction
-import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
-
-@Plugin(
-    key = "test-plugin",
-    title = "Test plugin",
-    description = "This is a test plugin only available in tests"
-)
-class TestPlugin() {
-    @PluginAction(
-        key = "test-action",
-        title = "Test action",
-        description = "This is a test action",
-        activityTypes = [SERVICE_TASK_START]
-    )
-    fun testAction() {
-        //do nothing
-    }
-}
+class AuthorizationException : RuntimeException()

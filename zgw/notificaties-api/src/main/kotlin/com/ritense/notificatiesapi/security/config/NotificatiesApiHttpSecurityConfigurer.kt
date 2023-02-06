@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.security
+package com.ritense.notificatiesapi.security.config
 
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
-import org.springframework.http.HttpMethod.GET
-import org.springframework.http.HttpMethod.POST
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
-class ObjectenApiHttpSecurityConfigurer: HttpSecurityConfigurer {
-
+class NotificatiesApiHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/objecttype").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/object").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/object/form").hasAuthority(USER)
-                .antMatchers(POST, "/api/v1/object").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/object/form").hasAuthority(USER)
-        } catch(e: Exception) {
+                .antMatchers(HttpMethod.POST, "/api/v1/notificatiesapi/callback")
+                .permitAll()
+        } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
     }

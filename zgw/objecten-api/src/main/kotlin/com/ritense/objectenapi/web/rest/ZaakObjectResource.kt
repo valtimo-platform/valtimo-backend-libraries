@@ -16,13 +16,19 @@
 
 package com.ritense.objectenapi.web.rest
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.form.domain.FormDefinition
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.web.rest.result.ObjectDto
 import com.ritense.objectenapi.web.rest.result.ObjecttypeDto
+import com.ritense.plugin.service.PluginService
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -31,9 +37,10 @@ import java.util.UUID
 
 
 @RestController
-@RequestMapping(value = ["/api"])
+@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class ZaakObjectResource(
     val zaakObjectService: ZaakObjectService,
+    val pluginService: PluginService
 ) {
     @GetMapping(value = ["/v1/document/{documentId}/zaak/objecttype"])
     fun getZaakObjecttypes(
@@ -55,6 +62,10 @@ class ZaakObjectResource(
         return ResponseEntity.ok(objectDtos)
     }
 
+    @Deprecated(
+        message = "The documentId is not mandatory anymore",
+        replaceWith = ReplaceWith("api/v1/object/form")
+    )
     @GetMapping(value = ["/v1/document/{documentId}/zaak/object/form"])
     fun getZaakObjecten(
         @RequestParam(name = "objectUrl") objectUrl: URI
@@ -63,4 +74,18 @@ class ZaakObjectResource(
         return form?.let { ResponseEntity.ok(it) } ?: ResponseEntity.notFound().build()
     }
 
+    @PostMapping(value = ["/v1/object"])
+    fun createZaakObject(
+        @RequestParam(name = "objectManagementId") objectManagementId: UUID,
+        @RequestBody data: JsonNode
+    ): ResponseEntity<Any> {
+        val objectUrl = zaakObjectService.createObject(objectManagementId, data)
+        return objectUrl.let {
+            ResponseEntity.status(HttpStatus.CREATED).body(
+                mapOf(
+                    "url" to it
+                )
+            )
+        } ?: ResponseEntity.notFound().build()
+    }
 }

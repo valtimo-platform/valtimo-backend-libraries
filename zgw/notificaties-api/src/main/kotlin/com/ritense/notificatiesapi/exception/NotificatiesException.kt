@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.notificatiesapi.exception
 
-import com.ritense.plugin.annotation.PluginAction
-import com.ritense.plugin.annotation.PluginCategory
-import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
+import org.springframework.http.HttpStatus
 
-@PluginCategory("test-interface")
-interface TestPluginInterface {
-    @PluginAction(
-        key = "interface-action",
-        title = "Interface test action",
-        description = "This is an action that should be implemented in a plugin",
-        activityTypes = [SERVICE_TASK_START]
-    )
-    fun interfaceAction();
+class NotificatiesException(message: String?, val status: HttpStatus) : RuntimeException(message) {
 }

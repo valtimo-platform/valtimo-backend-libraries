@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo
+package com.ritense.objectmanagement.service
 
-import com.ritense.plugin.annotation.Plugin
-import com.ritense.plugin.annotation.PluginAction
-import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
+import com.ritense.objectenapi.management.ObjectManagementInfo
+import com.ritense.objectenapi.management.ObjectManagementInfoProvider
+import java.util.UUID
 
-@Plugin(
-    key = "test-plugin",
-    title = "Test plugin",
-    description = "This is a test plugin only available in tests"
-)
-class TestPlugin() {
-    @PluginAction(
-        key = "test-action",
-        title = "Test action",
-        description = "This is a test action",
-        activityTypes = [SERVICE_TASK_START]
-    )
-    fun testAction() {
-        //do nothing
+class ObjectManagementInfoProviderImpl(
+    private val objectManagementService: ObjectManagementService
+) : ObjectManagementInfoProvider {
+
+    override fun getObjectManagementInfo(objectManagementId: UUID): ObjectManagementInfo {
+        return requireNotNull(objectManagementService.getById(objectManagementId)) {
+            "Could not find objectManagement by uuid $objectManagementId"
+        }
     }
 }
