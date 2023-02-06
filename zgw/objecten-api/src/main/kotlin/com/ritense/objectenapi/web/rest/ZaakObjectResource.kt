@@ -62,6 +62,10 @@ class ZaakObjectResource(
         return ResponseEntity.ok(objectDtos)
     }
 
+    @Deprecated(
+        message = "The documentId is not mandatory anymore",
+        replaceWith = ReplaceWith("api/v1/object/form")
+    )
     @GetMapping(value = ["/v1/document/{documentId}/zaak/object/form"])
     fun getZaakObjecten(
         @RequestParam(name = "objectUrl") objectUrl: URI

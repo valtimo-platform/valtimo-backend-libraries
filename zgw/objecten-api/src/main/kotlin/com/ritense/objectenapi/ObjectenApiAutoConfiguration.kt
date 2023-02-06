@@ -23,6 +23,7 @@ import com.ritense.objectenapi.listener.ZaakObjectListener
 import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
 import com.ritense.objectenapi.service.ZaakObjectDataResolver
 import com.ritense.objectenapi.service.ZaakObjectService
+import com.ritense.objectenapi.web.rest.ObjectResource
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.web.reactive.function.client.WebClient
+
 @Configuration
 class ObjectenApiAutoConfiguration {
 
@@ -86,5 +88,11 @@ class ObjectenApiAutoConfiguration {
         objectMapper: ObjectMapper
     ): ZaakObjectDataResolver {
         return ZaakObjectDataResolver(zaakObjectService, objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ObjectResource::class)
+    fun objectResource(zaakObjectService: ZaakObjectService): ObjectResource {
+        return ObjectResource(zaakObjectService)
     }
 }

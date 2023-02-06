@@ -32,5 +32,6 @@
     <include file="changelog/20220706-add-plugin-process-link.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220705-add-plugin-property.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220801-add-plugin-categories.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230131-add-activity-type-to-process-links.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
