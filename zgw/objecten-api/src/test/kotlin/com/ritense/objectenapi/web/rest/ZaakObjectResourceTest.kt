@@ -209,6 +209,7 @@ internal class ZaakObjectResourceTest {
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isCreated)
+            .andExpect(jsonPath("$.url").value("http://example.com/object/123"))
     }
 
     @Test

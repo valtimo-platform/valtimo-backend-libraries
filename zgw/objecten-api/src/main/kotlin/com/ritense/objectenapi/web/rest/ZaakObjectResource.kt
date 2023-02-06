@@ -75,8 +75,8 @@ class ZaakObjectResource(
         @RequestParam(name = "objectManagementId") objectManagementId: UUID,
         @RequestBody data: JsonNode
     ): ResponseEntity<Any> {
-        val objectDto = zaakObjectService.createObject(objectManagementId, data)
-        return objectDto.let {
+        val objectUrl = zaakObjectService.createObject(objectManagementId, data)
+        return objectUrl.let {
             ResponseEntity.status(HttpStatus.CREATED).body(
                 mapOf(
                     "url" to it

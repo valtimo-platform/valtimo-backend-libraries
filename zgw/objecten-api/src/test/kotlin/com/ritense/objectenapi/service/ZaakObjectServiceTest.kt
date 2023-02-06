@@ -45,20 +45,35 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.BeforeEach
 
 internal class ZaakObjectServiceTest {
 
-    val zaakInstanceLinkService = mock<ZaakInstanceLinkService>()
-    val pluginService = mock<PluginService>()
-    val formDefinitionService = mock<FormDefinitionService>()
-    val objectManagementInfoProvider = mock<ObjectManagementInfoProvider>()
-    val zaakObjectService = ZaakObjectService(zaakInstanceLinkService, pluginService, formDefinitionService, objectManagementInfoProvider)
+    lateinit var zaakInstanceLinkService:ZaakInstanceLinkService
+    lateinit var pluginService:PluginService
+    lateinit var formDefinitionService:FormDefinitionService
+    lateinit var objectManagementInfoProvider:ObjectManagementInfoProvider
+    lateinit var zaakObjectService:ZaakObjectService
 
     var zaakPlugin: ZakenApiPlugin? = null
     var objectenApiPlugin: ObjectenApiPlugin? = null
     var objecttypenApiPlugin: ObjecttypenApiPlugin? = null
 
-    var zaakObjecten = mutableListOf<ZaakObject>()
+    lateinit var zaakObjecten: MutableList<ZaakObject>
+
+    @BeforeEach
+    fun before() {
+        zaakInstanceLinkService = mock()
+        pluginService = mock()
+        formDefinitionService = mock()
+        objectManagementInfoProvider = mock()
+        zaakObjectService = ZaakObjectService(zaakInstanceLinkService, pluginService, formDefinitionService, objectManagementInfoProvider)
+
+        zaakPlugin = null
+        objectenApiPlugin = null
+        objecttypenApiPlugin = null
+        zaakObjecten = mutableListOf()
+    }
 
     @Test
     fun `should get objecttypes for document`() {
