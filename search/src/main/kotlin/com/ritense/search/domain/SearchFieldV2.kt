@@ -24,7 +24,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "search_field_v2")
-data class SearchFields(
+data class SearchFieldV2(
     @Id
     @Column(name = "id")
     val id: UUID = UUID.randomUUID(),

@@ -19,17 +19,17 @@ package com.ritense.search.service
 import com.ritense.search.BaseIntegrationTest
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
-import com.ritense.search.domain.SearchFields
+import com.ritense.search.domain.SearchFieldV2
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-internal class SearchFieldsIntTest : BaseIntegrationTest() {
+internal class SearchFieldV2IntTest : BaseIntegrationTest() {
 
     @Autowired
-    lateinit var searchFieldService: SearchFieldService
+    lateinit var searchFieldV2Service: SearchFieldV2Service
 
     @Test
     fun `CRUD test`() {
@@ -37,7 +37,7 @@ internal class SearchFieldsIntTest : BaseIntegrationTest() {
         assertThat(searchField).isNotNull
 
         val updatedSearchField = searchField.copy(title = "New Title")
-        val dbUpdatedSearchField = searchFieldService.update(
+        val dbUpdatedSearchField = searchFieldV2Service.update(
             updatedSearchField.ownerId,
             updatedSearchField.key,
             updatedSearchField
@@ -45,21 +45,21 @@ internal class SearchFieldsIntTest : BaseIntegrationTest() {
 
         assertThat(dbUpdatedSearchField.title).isEqualTo(updatedSearchField.title)
 
-        val dbLookUpByOwnerId = searchFieldService.findAllByOwnerId(searchField.ownerId)
+        val dbLookUpByOwnerId = searchFieldV2Service.findAllByOwnerId(searchField.ownerId)
         assertThat(dbLookUpByOwnerId).isNotNull
         assertThat(dbLookUpByOwnerId?.first()?.path).isEqualTo(searchField.path)
 
-        searchFieldService.delete(dbUpdatedSearchField.ownerId, dbUpdatedSearchField.key)
+        searchFieldV2Service.delete(dbUpdatedSearchField.ownerId, dbUpdatedSearchField.key)
 
-        val list = searchFieldService.findAllByOwnerId(searchField.ownerId)
+        val list = searchFieldV2Service.findAllByOwnerId(searchField.ownerId)
 
         assertThat(list).isEmpty()
     }
 
 
-    private fun createSearchField(ownerId: String? = null): SearchFields =
-        searchFieldService.create(
-            SearchFields(
+    private fun createSearchField(ownerId: String? = null): SearchFieldV2 =
+        searchFieldV2Service.create(
+            SearchFieldV2(
                 ownerId = ownerId ?: "I own this",
                 key = "the magic key",
                 title = "Title",
