@@ -58,7 +58,7 @@ internal class PluginDefinitionResourceIT: BaseIntegrationTest() {
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$").isArray)
-            .andExpect(jsonPath("$.*", hasSize<Int>(4)))
+            .andExpect(jsonPath("$.*", hasSize<Int>(5)))
             .andExpectActionInResponse("test-action", "Test action",
                 "This is an action used to verify plugin framework functionality")
             .andExpectActionInResponse("other-test-action", "Test action 2",
@@ -71,7 +71,7 @@ internal class PluginDefinitionResourceIT: BaseIntegrationTest() {
 
     @Test
     fun `should get plugin action definitions by key and activity type`() {
-        mockMvc.perform(get("/api/v1/plugin/definition/test-plugin/action?activityType=SERVICE_TASK")
+        mockMvc.perform(get("/api/v1/plugin/definition/test-plugin/action?activityType=SERVICE_TASK_START")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)
