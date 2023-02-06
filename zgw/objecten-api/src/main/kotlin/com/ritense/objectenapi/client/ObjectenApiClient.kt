@@ -96,4 +96,24 @@ class ObjectenApiClient(
 
         return result?.body!!
     }
+
+    fun createObject(
+        authentication: ObjectenApiAuthentication,
+        objectsApiUrl: URI,
+        objectRequest: ObjectRequest
+    ): ObjectWrapper {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .baseUrl(objectsApiUrl.toASCIIString())
+            .build()
+            .post()
+            .uri("objects")
+            .header("Content-Crs", "EPSG:4326")
+            .bodyValue(objectRequest)
+            .retrieve()
+            .toEntity(ObjectWrapper::class.java)
+            .block()
+        return result?.body!!
+    }
 }

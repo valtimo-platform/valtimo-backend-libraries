@@ -61,4 +61,8 @@ class ObjectenApiPlugin(
     fun objectUpdate(objectUrl: URI, objectRequest: ObjectRequest): ObjectWrapper {
         return objectenApiClient.objectUpdate(authenticationPluginConfiguration, objectUrl, objectRequest)
     }
+
+    fun createObject(objectRequest: ObjectRequest): ObjectWrapper {
+        return objectenApiClient.createObject(authenticationPluginConfiguration, url, objectRequest)
+    }
 }

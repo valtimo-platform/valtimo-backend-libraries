@@ -17,14 +17,14 @@
 package com.ritense.plugin
 
 import com.ritense.plugin.annotation.PluginAction
-import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
+import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
 
 open class TestPluginParent {
     @PluginAction(
         key = "parent-test-action",
         title = "Parent test action",
         description = "This is an action used to test method inheritance",
-        activityTypes = [SERVICE_TASK]
+        activityTypes = [SERVICE_TASK_START]
     )
     fun testAction(someInt: Int){
         //do nothing
@@ -34,7 +34,7 @@ open class TestPluginParent {
         key = "parent-override-test-action",
         title = "Override test action",
         description = "This is an action used to test method inheritance",
-        activityTypes = [SERVICE_TASK]
+        activityTypes = [SERVICE_TASK_START]
     )
     open fun overrideAction(){
         //do nothing
