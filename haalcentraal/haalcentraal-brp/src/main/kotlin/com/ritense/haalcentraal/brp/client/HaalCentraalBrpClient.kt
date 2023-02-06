@@ -22,7 +22,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 
 class HaalCentraalBrpClient(
-    private val haalcentraalWebClient: WebClient
+    private val webclientBuilder: WebClient.Builder
 ) {
     suspend fun findPeople(
         geboortedatum: String?,
@@ -52,8 +52,8 @@ class HaalCentraalBrpClient(
     }
 
     private fun webClient(haalCentraalBrpProperties: HaalCentraalBrpProperties): WebClient {
-        return haalcentraalWebClient
-            .mutate()
+        return webclientBuilder
+            .clone()
             .baseUrl(haalCentraalBrpProperties.url!!)
             .defaultHeader("X-API-KEY", haalCentraalBrpProperties.apiKey!!)
             .build()

@@ -16,28 +16,31 @@
 
 package com.ritense.valtimo.processlink
 
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.engine.delegate.ExecutionListener
+import org.camunda.bpm.engine.ActivityTypes
+import org.camunda.bpm.engine.delegate.DelegateTask
+import org.camunda.bpm.engine.delegate.TaskListener
 import org.camunda.bpm.extension.reactor.bus.CamundaSelector
-import org.camunda.bpm.extension.reactor.spring.listener.ReactorExecutionListener
+import org.camunda.bpm.extension.reactor.spring.listener.ReactorTaskListener
 import org.springframework.transaction.annotation.Transactional
 
-@CamundaSelector(type = "serviceTask", event = ExecutionListener.EVENTNAME_START)
-open class ProcessLinkTaskListener(
+@CamundaSelector(type = ActivityTypes.TASK_USER_TASK, event = TaskListener.EVENTNAME_CREATE)
+open class ProcessLinkUserTaskCreateListener(
     private val pluginProcessLinkRepository: PluginProcessLinkRepository,
     private val pluginService: PluginService,
-) : ReactorExecutionListener() {
+) : ReactorTaskListener() {
 
     @Transactional
-    override fun notify(execution: DelegateExecution) {
-        val pluginProcessLinks = pluginProcessLinkRepository.findByProcessDefinitionIdAndActivityId(
-            execution.processDefinitionId,
-            execution.currentActivityId
+    override fun notify(task: DelegateTask) {
+        val pluginProcessLinks = pluginProcessLinkRepository.findByProcessDefinitionIdAndActivityIdAndActivityType(
+            task.processDefinitionId,
+            task.execution.currentActivityId,
+            ActivityType.USER_TASK_CREATE
         )
         pluginProcessLinks.forEach { pluginProcessLink ->
-            pluginService.invoke(execution, pluginProcessLink)
+            pluginService.invoke(task, pluginProcessLink)
         }
     }
 }

@@ -56,20 +56,6 @@ class WordpressMailAutoConfiguration {
         return WordpressMailClient(wordpressMailConnectorProperties, wordpressMailWebClientBuilder)
     }
 
-    @Bean
-    @ConditionalOnMissingBean(WebClient.Builder::class)
-    fun wordpressMailWebClientBuilder(): WebClient.Builder {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    io.netty.handler.logging.LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        )
-    }
-
     //Connector
 
     @Bean

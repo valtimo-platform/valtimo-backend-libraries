@@ -52,7 +52,7 @@ class ObjectManagementResource(
         ResponseEntity.ok(objectManagementService.getById(id))
 
     @GetMapping
-    fun getAll(): ResponseEntity<MutableList<ObjectManagement>> = ResponseEntity.ok(objectManagementService.getAll())
+    fun getAll() = ResponseEntity.ok(objectManagementService.getAll())
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: UUID): ResponseEntity<Any> {

@@ -49,8 +49,8 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should send request and parse response`() {
-        val webClient = WebClient.create()
-        val client = DocumentenApiClient(webClient)
+        val webclientBuilder = WebClient.builder()
+        val client = DocumentenApiClient(webclientBuilder)
 
         val responseBody = """
             {

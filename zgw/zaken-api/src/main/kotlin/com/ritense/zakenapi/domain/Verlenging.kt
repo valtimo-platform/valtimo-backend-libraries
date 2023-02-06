@@ -17,6 +17,6 @@
 package com.ritense.zakenapi.domain
 
 data class Verlenging(
-    val reden: String,
-    val duur: String,
+    val reden: String?,
+    val duur: String?,
 )

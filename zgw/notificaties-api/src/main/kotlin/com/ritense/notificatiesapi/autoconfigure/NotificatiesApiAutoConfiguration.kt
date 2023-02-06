@@ -38,8 +38,8 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 class NotificatiesApiAutoConfiguration {
 
     @Bean
-    fun notificatiesApiClient(webclient: WebClient): NotificatiesApiClient {
-        return NotificatiesApiClient(webclient)
+    fun notificatiesApiClient(webclientBuilder: WebClient.Builder): NotificatiesApiClient {
+        return NotificatiesApiClient(webclientBuilder)
     }
 
     @Bean
@@ -55,19 +55,5 @@ class NotificatiesApiAutoConfiguration {
             client,
             abonnementLinkRepository
         )
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(WebClient::class)
-    fun notificatiesApiWebClient(): WebClient {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        ).build()
     }
 }

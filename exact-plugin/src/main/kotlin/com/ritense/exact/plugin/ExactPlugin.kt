@@ -82,7 +82,7 @@ class ExactPlugin(
         key = "exact-get-request",
         title = "A GET call to Exact",
         description = "Make a GET call to Exact",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun getCallExact(execution: DelegateExecution, @PluginActionProperty properties: ExactCallProperties) {
         val token = exactService.refreshAccessTokens(exactService.getPluginConfiguration(this))
@@ -106,7 +106,7 @@ class ExactPlugin(
         key = "exact-post-request",
         title = "A POST call to Exact",
         description = "Make a POST call to Exact",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun postCallExact(execution: DelegateExecution, @PluginActionProperty properties: ExactCallProperties) {
         val token = exactService.refreshAccessTokens(exactService.getPluginConfiguration(this))
@@ -131,7 +131,7 @@ class ExactPlugin(
         key = "exact-put-request",
         title = "A PUT call to Exact",
         description = "Make a PUT call to Exact",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun putCallExact(execution: DelegateExecution, @PluginActionProperty properties: ExactCallProperties) {
         val token = exactService.refreshAccessTokens(exactService.getPluginConfiguration(this))

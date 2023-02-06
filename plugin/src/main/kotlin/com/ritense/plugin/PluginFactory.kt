@@ -36,7 +36,7 @@ import org.apache.commons.lang3.reflect.FieldUtils
  *  configuration. The class extending this factory has to be registered as a bean of type PluginFactory<T>.
  */
 abstract class PluginFactory<T : Any>(
-    var pluginService: PluginService,
+    protected var pluginService: PluginService,
 ) {
     private var fullyQualifiedClassName: String = ""
     lateinit var pluginConfigurationId: PluginConfigurationId

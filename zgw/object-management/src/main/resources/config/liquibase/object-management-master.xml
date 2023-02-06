@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <!--
-  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -24,5 +24,6 @@
     <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
 
     <include file="changelog/20221221-add-object-management-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230130-switch-configuration-id-columns.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

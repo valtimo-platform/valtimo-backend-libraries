@@ -19,7 +19,7 @@ package com.ritense.notificatiesapi.domain
 data class Abonnement(
     val url: String?,
     val callbackUrl: String,
-    val auth: String,
+    val auth: String?,
     val kanalen: List<Kanaal> = listOf(),
 ) {
     data class Kanaal(
