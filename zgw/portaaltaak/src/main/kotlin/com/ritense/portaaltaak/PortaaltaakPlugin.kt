@@ -39,8 +39,8 @@ import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import java.util.*
 import org.camunda.bpm.engine.delegate.DelegateTask
-import java.util.UUID
 
 @Plugin(
     key = "portaaltaak",
@@ -98,12 +98,12 @@ class PortaaltaakPlugin(
         )
 
         val node: JsonNode = jacksonObjectMapper().convertValue(portaalTaak)
-
+        val x = true
         //TODO: create actual object
         //objectenApiPlugin.create
     }
 
-    private fun getTaakIdentification(
+    internal fun getTaakIdentification(
         delegateTask: DelegateTask,
         receiver: TaakReceiver,
         otherReceiver: OtherTaakReceiver?,
@@ -121,14 +121,14 @@ class PortaaltaakPlugin(
                     ?: throw IllegalStateException("Could not find identification value in configuration for type ${otherReceiver.key}")
 
                 TaakIdentificatie(
-                    otherReceiver.key,
+                    otherReceiver.name,
                     identificationValue
                 )
             }
         }
     }
 
-    private fun getZaakinitiator(delegateTask: DelegateTask): TaakIdentificatie {
+    internal fun getZaakinitiator(delegateTask: DelegateTask): TaakIdentificatie {
         val processInstanceId = CamundaProcessInstanceId(delegateTask.processInstanceId)
         val documentId = processDocumentService.getDocumentId(processInstanceId, delegateTask)
 
@@ -154,7 +154,7 @@ class PortaaltaakPlugin(
         ) { "Could not map initiator identificatie (value=${initiator.betrokkeneIdentificatie}) for zaak with URL $zaakUrl to TaakIdentificatie" }
     }
 
-    private fun getTaakForm(
+    internal fun getTaakForm(
         formType: TaakFormType,
         formTypeId: String?,
         formTypeUrl: String?
@@ -171,7 +171,7 @@ class PortaaltaakPlugin(
         )
     }
 
-    private fun getTaakData(delegateTask: DelegateTask, sendData: List<DataBindingConfig>): Map<String, Any> {
+    internal fun getTaakData(delegateTask: DelegateTask, sendData: List<DataBindingConfig>): Map<String, Any> {
         val processInstanceId = CamundaProcessInstanceId(delegateTask.processInstanceId)
         val documentId = processDocumentService.getDocumentId(processInstanceId, delegateTask).toString()
         val sendDataValuesResolvedMap = valueResolverService.resolveValues(documentId, sendData.map { it.value })

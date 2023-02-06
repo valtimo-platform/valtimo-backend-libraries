@@ -30,12 +30,15 @@ import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
+import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import java.net.URI
 import java.util.*
+import kotlin.test.assertEquals
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -44,12 +47,18 @@ import org.mockito.kotlin.whenever
 
 
 internal class PortaaltaakPluginTest {
+
     lateinit var objectManagementService: ObjectManagementService
     lateinit var pluginService: PluginService
     lateinit var valueResolverService: ValueResolverService
     lateinit var processDocumentService: ProcessDocumentService
     lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
     lateinit var portaaltaakPlugin: PortaaltaakPlugin
+    lateinit var zakenApiPlugin: ZakenApiPlugin
+    val delegateTask = mock<DelegateTask>()
+    val bsn = "688223436"
+    val kvk = "12345678"
+    val jsonSchemaDocumentId = mock<JsonSchemaDocumentId>()
 
     @BeforeEach
     fun init() {
@@ -58,6 +67,7 @@ internal class PortaaltaakPluginTest {
         valueResolverService = mock()
         processDocumentService = mock()
         zaakInstanceLinkService = mock()
+        zakenApiPlugin = mock()
         portaaltaakPlugin = PortaaltaakPlugin(
             objectManagementService,
             pluginService,
@@ -70,9 +80,8 @@ internal class PortaaltaakPluginTest {
     }
 
     @Test
-    fun `should create taak object`() {
+    fun `should create taak object in objects api`() {
         //todo incomplete
-        val delegateTask = mock<DelegateTask>()
         val formType = TaakFormType.ID
         val formTypeId = "formTypeId"
         val formTypeUrl = "formTypeUrl"
@@ -81,10 +90,8 @@ internal class PortaaltaakPluginTest {
         val receiver = TaakReceiver.ZAAK_INITIATOR
         val otherReceiver = OtherTaakReceiver.BSN
         val kvk = null
-        val bsn = "9999999999"
         val zakenApiPlugin = mock<ZakenApiPlugin>()
         val objectenApiPlugin = mock<ObjectenApiPlugin>()
-        val jsonSchemaDocumentId = mock<JsonSchemaDocumentId>()
 
         whenever(objectManagementService.getById(any())).thenReturn(getObjectManagement())
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(objectenApiPlugin)
@@ -93,7 +100,7 @@ internal class PortaaltaakPluginTest {
         whenever(zaakInstanceLinkService.getByDocumentId(any())).thenReturn(getZaakInstanceLink())
         whenever(jsonSchemaDocumentId.id).thenReturn(UUID.randomUUID())
         whenever(processDocumentService.getDocumentId(any(), any<DelegateTask>())).thenReturn(jsonSchemaDocumentId)
-        whenever(zakenApiPlugin.getZaakRollen(any(), any())).thenReturn(createRol())
+        whenever(zakenApiPlugin.getZaakRollen(any(), any())).thenReturn(getRol(BetrokkeneType.NATUURLIJK_PERSOON))
         whenever(delegateTask.name).thenReturn("delegateTaskName")
         whenever(delegateTask.id).thenReturn("delegateTaskId")
         whenever(jsonSchemaDocumentId.toString()).thenReturn("documentId")
@@ -125,6 +132,153 @@ internal class PortaaltaakPluginTest {
 
     }
 
+    @Test
+    fun `should get the correct identification for case initiated by a citizen`() {
+        val result =
+            portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, OtherTaakReceiver.BSN, null, bsn)
+        assertEquals("bsn", result.type)
+        assertEquals(bsn, result.value)
+    }
+
+    @Test
+    fun `should get the correct task identification for task initiated by other with a citizen service number`() {
+        val result =
+            portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, OtherTaakReceiver.BSN, null, bsn)
+        assertEquals("bsn", result.type)
+        assertEquals(bsn, result.value)
+    }
+
+    @Test
+    fun `should get the correct task identification for task initiated by other with a kvk number`() {
+        val result =
+            portaaltaakPlugin.getTaakIdentification(
+                delegateTask,
+                TaakReceiver.OTHER,
+                OtherTaakReceiver.KVK,
+                kvk,
+                null
+            )
+        assertEquals("kvk", result.type)
+        assertEquals(kvk, result.value)
+    }
+
+    @Test
+    fun `should throw exception when no task sender is available`() {
+        val result =
+            assertThrows<IllegalStateException> {
+                portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, null, null, null)
+            }
+        assertEquals(
+            "Other was chosen as taak receiver, but no identification type was chosen.",
+            result.message
+        )
+    }
+
+    @Test
+    fun `should throw exception when no task sender value is available`() {
+        val result =
+            assertThrows<IllegalStateException> {
+                portaaltaakPlugin.getTaakIdentification(
+                    delegateTask,
+                    TaakReceiver.OTHER,
+                    OtherTaakReceiver.KVK,
+                    null,
+                    bsn
+                )
+            }
+        assertEquals(
+            "Could not find identification value in configuration for type ${OtherTaakReceiver.KVK.key}",
+            result.message
+        )
+        //todo
+    }
+
+    @Test
+    fun `should get a correct taak identification`() {
+        val processInstanceId = UUID.randomUUID().toString()
+        whenever(delegateTask.processInstanceId).thenReturn(processInstanceId)
+        whenever(processDocumentService.getDocumentId(any(), any())).thenReturn(jsonSchemaDocumentId)
+        whenever(jsonSchemaDocumentId.id).thenReturn(UUID.randomUUID())
+        whenever(zaakInstanceLinkService.getByDocumentId(jsonSchemaDocumentId.id)).thenReturn(getZaakInstanceLink())
+        whenever(pluginService.createInstance(any<Class<ZakenApiPlugin>>(), any())).thenReturn(zakenApiPlugin)
+        whenever(
+            zakenApiPlugin.getZaakRollen(any(), any())
+        ).thenReturn(getRol(BetrokkeneType.NATUURLIJK_PERSOON))
+
+
+        val result =
+            portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.ZAAK_INITIATOR, null, null, null)
+
+        assertEquals("BSN", result.type)
+        assertEquals(
+            (getRol(BetrokkeneType.NATUURLIJK_PERSOON)[0].betrokkeneIdentificatie as RolNatuurlijkPersoon).inpBsn,
+            result.value
+        )
+    }
+
+    @Test
+    fun `should throw exception when getting zaak initiator with invalid zaakUrl`() {
+        val processInstanceId = UUID.randomUUID().toString()
+        whenever(delegateTask.processInstanceId).thenReturn(processInstanceId)
+        whenever(processDocumentService.getDocumentId(any(), any())).thenReturn(jsonSchemaDocumentId)
+        whenever(jsonSchemaDocumentId.id).thenReturn(UUID.randomUUID())
+        whenever(zaakInstanceLinkService.getByDocumentId(jsonSchemaDocumentId.id)).thenReturn(getZaakInstanceLink())
+        whenever(pluginService.createInstance(any<Class<ZakenApiPlugin>>(), any())).thenReturn(null)
+
+        val result = assertThrows<IllegalArgumentException> {
+            portaaltaakPlugin.getZaakinitiator(delegateTask)
+        }
+        assertEquals(
+            "No plugin configuration was found for zaak with URL ${getZaakInstanceLink().zaakInstanceUrl}",
+            result.message
+        )
+    }
+
+    @Test
+    fun `should throw exception when no rol was found for zaak url`() {
+        val processInstanceId = UUID.randomUUID().toString()
+        whenever(delegateTask.processInstanceId).thenReturn(processInstanceId)
+        whenever(processDocumentService.getDocumentId(any(), any())).thenReturn(jsonSchemaDocumentId)
+        whenever(jsonSchemaDocumentId.id).thenReturn(UUID.randomUUID())
+        whenever(zaakInstanceLinkService.getByDocumentId(jsonSchemaDocumentId.id)).thenReturn(getZaakInstanceLink())
+        whenever(pluginService.createInstance(any<Class<ZakenApiPlugin>>(), any())).thenReturn(zakenApiPlugin)
+        whenever(
+            zakenApiPlugin.getZaakRollen(any(), any())
+        ).thenReturn(emptyList())
+
+        val result = assertThrows<IllegalArgumentException> {
+            portaaltaakPlugin.getZaakinitiator(delegateTask)
+        }
+        assertEquals(
+            "No initiator role found for zaak with URL ${getZaakInstanceLink().zaakInstanceUrl}",
+            result.message
+        )
+    }
+
+    @Test
+    fun `should get a correct zaak initiator`() {
+        val processInstanceId = UUID.randomUUID().toString()
+        whenever(delegateTask.processInstanceId).thenReturn(processInstanceId)
+        whenever(processDocumentService.getDocumentId(any(), any())).thenReturn(jsonSchemaDocumentId)
+        whenever(jsonSchemaDocumentId.id).thenReturn(UUID.randomUUID())
+        whenever(zaakInstanceLinkService.getByDocumentId(jsonSchemaDocumentId.id)).thenReturn(getZaakInstanceLink())
+        whenever(pluginService.createInstance(any<Class<ZakenApiPlugin>>(), any())).thenReturn(zakenApiPlugin)
+        whenever(
+            zakenApiPlugin.getZaakRollen(any(), any())
+        ).thenReturn(getRol(BetrokkeneType.MEDEWERKER))
+
+        val result = assertThrows<IllegalArgumentException> {
+            portaaltaakPlugin.getZaakinitiator(delegateTask)
+        }
+        assertEquals(
+            "Could not map initiator identificatie (value=${
+                getRol(BetrokkeneType.MEDEWERKER)[0].betrokkeneIdentificatie
+            }) for zaak with URL ${getZaakInstanceLink().zaakInstanceUrl} to TaakIdentificatie",
+            result.message
+        )
+
+    }
+
     private fun getZaakInstanceLink(): ZaakInstanceLink {
         return ZaakInstanceLink(
             zaakInstanceLinkId = ZaakInstanceLinkId.newId(UUID.randomUUID()),
@@ -135,17 +289,25 @@ internal class PortaaltaakPluginTest {
         )
     }
 
-    private fun createRol(): List<Rol> {
+    private fun getRol(betrokkeneType: BetrokkeneType): List<Rol> {
         return listOf(
             Rol(
                 zaak = URI.create("zaakUri"),
                 betrokkene = URI.create("betrokkeneUri"),
-                betrokkeneType = BetrokkeneType.NATUURLIJK_PERSOON,
+                betrokkeneType = betrokkeneType,
                 roltype = URI.create("roltype"),
                 roltoelichting = "",
-                betrokkeneIdentificatie = RolNatuurlijkPersoon(
-                    inpBsn = "inpBsn"
-                )
+                betrokkeneIdentificatie = when (betrokkeneType) {
+                    BetrokkeneType.NATUURLIJK_PERSOON -> RolNatuurlijkPersoon(
+                        inpBsn = "inpBsn"
+                    )
+
+                    BetrokkeneType.NIET_NATUURLIJK_PERSOON -> RolNietNatuurlijkPersoon(
+                        "annIdentificatie"
+                    )
+
+                    else -> null
+                }
             )
         )
     }
