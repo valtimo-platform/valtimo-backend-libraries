@@ -45,5 +45,5 @@ data class PluginProcessLink(
     val pluginActionDefinitionKey: String,
     @Column(name = "activity_type")
     @Enumerated(EnumType.STRING)
-    val activityType: ActivityType? = null
+    val activityType: ActivityType
 )

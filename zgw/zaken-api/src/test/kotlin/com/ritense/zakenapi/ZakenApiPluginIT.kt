@@ -3,6 +3,7 @@ package com.ritense.zakenapi
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
@@ -108,7 +109,8 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
                 "LinkDocument",
                 Mapper.INSTANCE.get().readTree(actionPropertiesJson) as ObjectNode,
                 configuration.id,
-                "link-document-to-zaak"
+                "link-document-to-zaak",
+                ActivityType.SERVICE_TASK_START
             )
         )
     }
