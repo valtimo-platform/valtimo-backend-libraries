@@ -27,7 +27,6 @@ dependencies {
     implementation project(":process-document")
     implementation project(":plugin")
     implementation project(":plugin-authentication:notificaties-api-authentication")
-    implementation project(":openzaak")
     implementation project(":zgw")
     implementation project(":zgw:catalogi-api")
     implementation project(":zgw:notificaties-api")
