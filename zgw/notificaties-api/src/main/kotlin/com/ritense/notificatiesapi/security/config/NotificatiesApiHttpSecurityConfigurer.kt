@@ -25,7 +25,7 @@ class NotificatiesApiHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "api/v1/notificatiesapi/callback")
+                .antMatchers(HttpMethod.POST, "/api/v1/notificatiesapi/callback")
                 .permitAll()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
