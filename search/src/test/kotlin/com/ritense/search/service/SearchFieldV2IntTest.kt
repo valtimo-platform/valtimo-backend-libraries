@@ -43,13 +43,13 @@ internal class SearchFieldV2IntTest : BaseIntegrationTest() {
             updatedSearchField
         )
 
-        assertThat(dbUpdatedSearchField.title).isEqualTo(updatedSearchField.title)
+        assertThat(dbUpdatedSearchField?.title).isEqualTo(updatedSearchField.title)
 
         val dbLookUpByOwnerId = searchFieldV2Service.findAllByOwnerId(searchField.ownerId)
         assertThat(dbLookUpByOwnerId).isNotNull
         assertThat(dbLookUpByOwnerId?.first()?.path).isEqualTo(searchField.path)
 
-        searchFieldV2Service.delete(dbUpdatedSearchField.ownerId, dbUpdatedSearchField.key)
+        dbUpdatedSearchField?.ownerId?.let { searchFieldV2Service.delete(it, dbUpdatedSearchField.key) }
 
         val list = searchFieldV2Service.findAllByOwnerId(searchField.ownerId)
 

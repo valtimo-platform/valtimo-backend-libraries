@@ -21,6 +21,8 @@
 
     <property name="booleanFalseValue" value="0" dbms="mysql"/>
     <property name="booleanFalseValue" value="false" dbms="postgresql"/>
+    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
+    <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
 
     <changeSet id="add-search-field-v2-table" author="Ritense">
         <createTable tableName="search_field_v2">
@@ -45,5 +47,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+    </changeSet>
+    <changeSet author="Ritense" id="add-unique-constraint-search-field-v2">
+        <addUniqueConstraint constraintName="unique-owner_id-column_key-constraint"
+                             columnNames="owner_id, column_key"
+                             tableName="search_field_v2"/>
     </changeSet>
 </databaseChangeLog>

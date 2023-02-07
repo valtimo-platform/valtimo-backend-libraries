@@ -42,7 +42,15 @@ class SearchFieldV2Service(
                     )
                 }
             }
-            searchFieldV2Repository.save(searchFieldV2)
+            searchFieldV2Repository.save(this?.copy(
+                ownerId = searchFieldV2.ownerId,
+                key = searchFieldV2.key,
+                path = searchFieldV2.path,
+                title = searchFieldV2.title,
+                order = searchFieldV2.order,
+                dataType = searchFieldV2.dataType,
+                fieldType = searchFieldV2.fieldType
+            ))
         }
 
     fun findAllByOwnerId(ownerId: String) = searchFieldV2Repository.findAllByOwnerId(ownerId)
