@@ -57,7 +57,7 @@ class DocumentenApiPlugin(
         key = "store-temp-document",
         title = "Store temporary document",
         description = "Store a temporary document in the Documenten API",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun storeTemporaryDocument(
         execution: DelegateExecution,
@@ -95,7 +95,7 @@ class DocumentenApiPlugin(
         key = "store-uploaded-document",
         title = "Store uploaded document",
         description = "Store an uploaded document in the Documenten API",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun storeUploadedDocument(
         execution: DelegateExecution

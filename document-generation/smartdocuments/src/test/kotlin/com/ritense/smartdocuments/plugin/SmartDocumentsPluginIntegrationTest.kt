@@ -18,6 +18,7 @@ package com.ritense.smartdocuments.plugin
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
@@ -222,7 +223,8 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
                 "GenerateDocument",
                 Mapper.INSTANCE.get().readTree(generateDocumentActionProperties) as ObjectNode,
                 pluginConfiguration.id,
-                "generate-document"
+                "generate-document",
+                ActivityType.SERVICE_TASK_START
             )
         )
     }

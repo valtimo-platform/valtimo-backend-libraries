@@ -18,6 +18,7 @@ package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
@@ -211,7 +212,8 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
                 "StoreDocument",
                 Mapper.INSTANCE.get().readTree(generateDocumentActionProperties) as ObjectNode,
                 pluginConfiguration.id,
-                "store-temp-document"
+                "store-temp-document",
+                ActivityType.SERVICE_TASK_START
             )
         )
     }

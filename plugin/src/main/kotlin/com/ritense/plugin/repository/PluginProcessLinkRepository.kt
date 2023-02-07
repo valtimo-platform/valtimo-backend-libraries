@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.repository
 
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
 import org.springframework.data.jpa.repository.JpaRepository
@@ -23,4 +24,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface PluginProcessLinkRepository: JpaRepository<PluginProcessLink, PluginProcessLinkId> {
     fun findByProcessDefinitionId(processDefinitionId: String): List<PluginProcessLink>
     fun findByProcessDefinitionIdAndActivityId(processDefinitionId: String, activityId: String): List<PluginProcessLink>
+    fun findByProcessDefinitionIdAndActivityIdAndActivityType(processDefinitionId: String, activityId: String, activityType: ActivityType): List<PluginProcessLink>
 }

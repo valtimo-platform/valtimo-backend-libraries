@@ -21,6 +21,7 @@ import com.ritense.objecttypenapi.client.ObjecttypenApiClient
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import java.net.URI
+import org.springframework.web.util.UriComponentsBuilder
 
 @Plugin(
    key = "objecttypenapi",
@@ -37,5 +38,13 @@ class ObjecttypenApiPlugin(
 
     fun getObjecttype(typeUrl: URI): Objecttype {
         return objecttypenApiClient.getObjecttype(authenticationPluginConfiguration, typeUrl)
+    }
+
+    fun getObjectTypeUrlById(id:String): URI {
+        return UriComponentsBuilder.fromUri(url)
+            .pathSegment("objecttypes")
+            .pathSegment(id)
+            .build()
+            .toUri()
     }
 }
