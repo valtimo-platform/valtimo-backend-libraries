@@ -32,9 +32,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-webflux"
 
     testImplementation project(':document')
+    testImplementation project(':resource')
     testImplementation project(':process-document')
-    testImplementation project(':resource:openzaak-resource')
-    testImplementation project(':openzaak')
     testImplementation project(':plugin-valtimo')
     testImplementation project(':test-utils-common')
 
