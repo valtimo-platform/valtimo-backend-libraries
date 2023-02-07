@@ -16,6 +16,7 @@
 
 package com.ritense.portaaltaak
 
+import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -31,6 +32,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.service.CamundaProcessService
+import java.net.MalformedURLException
 import java.net.URI
 import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity
@@ -81,57 +83,91 @@ class PortaalTaakEventListener(
 
                 else -> throw NotificatiesException("", HttpStatus.INTERNAL_SERVER_ERROR)
             }
-
             //todo create service to Complete the camunda task
         }
     }
 
-    private fun saveDataInDocument(taakObject: TaakObject, processInstanceId: String, task: Task) {
+    internal fun saveDataInDocument(taakObject: TaakObject, processInstanceId: String, task: Task) {
         val document =
             processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), task as TaskEntity)
-        val result = documentService.modifyDocument(
+        documentService.modifyDocument(
             ModifyDocumentRequest(
                 document.id().toString(),
                 jacksonObjectMapper().valueToTree(taakObject.verzondenData),
                 document.version().toString()
             )
-        )
-        //evaluate result
-        TODO("Not yet implemented")
+        ).also { result ->
+            if (result.errors().size > 0) {
+                throw NotificatiesException(
+                    "Could not update document" +
+                            "Reason:\n" +
+                            result.errors().joinToString(separator = "\n - "),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                )
+            }
+        }
     }
 
-    private fun getDocumentenUrls(verzondenData: Map<String, Any>?): List<String> {
-        TODO("Not yet implemented")
+    internal fun getDocumentenUrls(verzondenData: JsonNode): List<String> {
+        if (verzondenData.isMissingNode || verzondenData.isNull) {
+            return emptyList()
+        }
+        if (!verzondenData.isArray) {
+            throw RuntimeException("Not an array: '/documenten'")
+        }
+        val documentenUris = mutableListOf<String>()
+        for (documentPathNode in verzondenData) {
+            val documentUrlNode = verzondenData.at(JsonPointer.valueOf(documentPathNode.textValue()))
+            if (!documentUrlNode.isMissingNode && !documentUrlNode.isNull) {
+                try {
+                    if (documentUrlNode.isTextual) {
+                        documentenUris.add(documentUrlNode.textValue())
+                    } else if (documentUrlNode.isArray) {
+                        documentUrlNode.forEach { documentenUris.add(it.textValue()) }
+                    } else {
+                        throw RuntimeException("Invalid URL in '/documenten'. ${documentUrlNode.toPrettyString()}")
+                    }
+                } catch (e: MalformedURLException) {
+                    throw RuntimeException("Malformed URL in: '/documenten'", e)
+                }
+            }
+        }
+        return documentenUris
     }
 
-    private fun startProcessToUploadDocuments(
+    internal fun startProcessToUploadDocuments(
         taakObject: TaakObject,
         processDefinitionKey: String,
         businessKey: String
     ) {
         val variables = mapOf<String, Any>(
             "verwerkerTaakId" to taakObject.verwerkerTaakId,
-            "documentUrls" to getDocumentenUrls(taakObject.verzondenData)
+            "documentUrls" to getDocumentenUrls(jacksonObjectMapper().valueToTree(taakObject.verzondenData))
         )
-        //todo start process this.uploadedDocumentsHandlerProcess
-        processService.startProcess(
-            processDefinitionKey,
-            businessKey,
-            variables
-        )
-        TODO("Not yet implemented")
+        try {
+            processService.startProcess(
+                processDefinitionKey,
+                businessKey,
+                variables
+            )
+        } catch (ex: RuntimeException) {
+            throw NotificatiesException(
+                "Could not start process with definition: $processDefinitionKey and businessKey: $businessKey.\n " +
+                        "Reason: ${ex.message}",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
+        }
     }
 
-    private fun getPortaalTaakObjectData(
+    internal fun getPortaalTaakObjectData(
         objectManagement: ObjectManagement,
         event: NotificatiesApiNotificationReceivedEvent
     ): JsonNode {
         val objectenApiPlugin =
             pluginService
                 .createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
-        val portaalTaakObjectData = objectenApiPlugin.getObject(URI(event.resourceUrl)).record.data
+        return objectenApiPlugin.getObject(URI(event.resourceUrl)).record.data
             ?: throw NotificatiesException("Portaaltaak meta data was empty!", HttpStatus.INTERNAL_SERVER_ERROR)
-        return portaalTaakObjectData
     }
 
 }
