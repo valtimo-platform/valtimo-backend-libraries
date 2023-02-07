@@ -39,6 +39,9 @@ class NotificatiesApiResource(
         @RequestHeader("Authorization") authHeader: String?
     ): ResponseEntity<Void> {
         return if (authHeader != null) {
+            if (notification.kanaal == "test") {
+                return ResponseEntity.noContent().build()
+            }
             try {
                 notificatiesApiService.findAbonnementSubscription(authHeader)
                 notificatiesApiService.handle(notification)
