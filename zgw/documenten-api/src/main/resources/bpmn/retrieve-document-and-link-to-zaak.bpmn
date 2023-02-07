@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_01zmhvo" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.5.1">
+  <bpmn:collaboration id="Collaboration_0bnzp1o">
+    <bpmn:extensionElements>
+      <camunda:properties>
+        <camunda:property name="systemProcess" value="true" />
+      </camunda:properties>
+    </bpmn:extensionElements>
+    <bpmn:participant id="Participant_0ca37p9" name="Retrieve Document and link to Zaak" processRef="retrieve-document-and-link-to-zaak" />
+  </bpmn:collaboration>
+  <bpmn:process id="retrieve-document-and-link-to-zaak" name="Retrieve Document and link to Zaak" isExecutable="true">
+    <bpmn:extensionElements>
+      <camunda:properties>
+        <camunda:property name="systemProcess" value="true" />
+      </camunda:properties>
+    </bpmn:extensionElements>
+    <bpmn:startEvent id="start-event">
+      <bpmn:outgoing>Flow_0kp32hm</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0kp32hm" sourceRef="start-event" targetRef="retrieve-document-and-store-local-reference" />
+    <bpmn:sequenceFlow id="Flow_1agyj3x" sourceRef="retrieve-document-and-store-local-reference" targetRef="link-document-to-zaak" />
+    <bpmn:endEvent id="end-event">
+      <bpmn:incoming>Flow_1ikx01k</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1ikx01k" sourceRef="link-document-to-zaak" targetRef="end-event" />
+    <bpmn:serviceTask id="retrieve-document-and-store-local-reference" name="Retrieve Document and store local reference" camunda:expression="${true}">
+      <bpmn:incoming>Flow_0kp32hm</bpmn:incoming>
+      <bpmn:outgoing>Flow_1agyj3x</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="link-document-to-zaak" name="Link Document to Zaak" camunda:expression="${true}">
+      <bpmn:incoming>Flow_1agyj3x</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ikx01k</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0bnzp1o">
+      <bpmndi:BPMNShape id="Participant_0ca37p9_di" bpmnElement="Participant_0ca37p9" isHorizontal="true">
+        <dc:Bounds x="120" y="90" width="550" height="170" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start-event">
+        <dc:Bounds x="179" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1k38s7e_di" bpmnElement="end-event">
+        <dc:Bounds x="592" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0dggm7t_di" bpmnElement="retrieve-document-and-store-local-reference">
+        <dc:Bounds x="270" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0mwnh3s_di" bpmnElement="link-document-to-zaak">
+        <dc:Bounds x="430" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0kp32hm_di" bpmnElement="Flow_0kp32hm">
+        <di:waypoint x="215" y="177" />
+        <di:waypoint x="270" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1agyj3x_di" bpmnElement="Flow_1agyj3x">
+        <di:waypoint x="370" y="177" />
+        <di:waypoint x="430" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ikx01k_di" bpmnElement="Flow_1ikx01k">
+        <di:waypoint x="530" y="177" />
+        <di:waypoint x="592" y="177" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

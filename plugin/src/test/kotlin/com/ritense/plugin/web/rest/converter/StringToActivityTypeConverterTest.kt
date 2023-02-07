@@ -25,7 +25,7 @@ internal class StringToActivityTypeConverterTest {
 
     @Test
     fun `should return SERVICE_TASK`() {
-        assertEquals(ActivityType.SERVICE_TASK, ActivityType.fromValue("bpmn:ServiceTask"))
+        assertEquals(ActivityType.SERVICE_TASK_START, ActivityType.fromValue("bpmn:ServiceTask:start"))
     }
 
     @Test()

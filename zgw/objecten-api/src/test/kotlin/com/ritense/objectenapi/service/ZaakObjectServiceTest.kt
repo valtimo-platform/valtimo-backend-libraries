@@ -21,6 +21,7 @@ import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
+import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.openzaak.exception.ZaakInstanceLinkNotFoundException
@@ -44,19 +45,35 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.BeforeEach
 
 internal class ZaakObjectServiceTest {
 
-    val zaakInstanceLinkService = mock<ZaakInstanceLinkService>()
-    val pluginService = mock<PluginService>()
-    val formDefinitionService = mock<FormDefinitionService>()
-    val zaakObjectService = ZaakObjectService(zaakInstanceLinkService, pluginService, formDefinitionService)
+    lateinit var zaakInstanceLinkService:ZaakInstanceLinkService
+    lateinit var pluginService:PluginService
+    lateinit var formDefinitionService:FormDefinitionService
+    lateinit var objectManagementInfoProvider:ObjectManagementInfoProvider
+    lateinit var zaakObjectService:ZaakObjectService
 
     var zaakPlugin: ZakenApiPlugin? = null
     var objectenApiPlugin: ObjectenApiPlugin? = null
     var objecttypenApiPlugin: ObjecttypenApiPlugin? = null
 
-    var zaakObjecten = mutableListOf<ZaakObject>()
+    lateinit var zaakObjecten: MutableList<ZaakObject>
+
+    @BeforeEach
+    fun init() {
+        zaakInstanceLinkService = mock()
+        pluginService = mock()
+        formDefinitionService = mock()
+        objectManagementInfoProvider = mock()
+        zaakObjectService = ZaakObjectService(zaakInstanceLinkService, pluginService, formDefinitionService, objectManagementInfoProvider)
+
+        zaakPlugin = null
+        objectenApiPlugin = null
+        objecttypenApiPlugin = null
+        zaakObjecten = mutableListOf()
+    }
 
     @Test
     fun `should get objecttypes for document`() {

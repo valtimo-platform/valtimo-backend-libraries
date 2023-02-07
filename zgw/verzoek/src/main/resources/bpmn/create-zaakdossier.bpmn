@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0wh3h0k" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0">
   <bpmn:collaboration id="Collaboration_134xj6j">
+    <bpmn:extensionElements />
+    <bpmn:participant id="Participant_1ry53rc" processRef="create-zaakdossier" />
+  </bpmn:collaboration>
+  <bpmn:process id="create-zaakdossier" name="Create Zaakdossier" isExecutable="true">
     <bpmn:extensionElements>
       <camunda:properties>
         <camunda:property name="systemProcess" value="true" />
       </camunda:properties>
     </bpmn:extensionElements>
-    <bpmn:participant id="Participant_1ry53rc" processRef="create-zaakdossier" />
-  </bpmn:collaboration>
-  <bpmn:process id="create-zaakdossier" name="Create Zaakdossier" isExecutable="true">
     <bpmn:sequenceFlow id="Flow_0evcldf" sourceRef="Activity_09wc9t3" targetRef="Activity_0frw42t" />
     <bpmn:sequenceFlow id="Flow_1tgmdp6" sourceRef="Activity_00mdfa7" targetRef="Activity_1m2evlj" />
     <bpmn:sequenceFlow id="Flow_1uhql59" sourceRef="Activity_0n2cgef" targetRef="Event_19l1mml" />
