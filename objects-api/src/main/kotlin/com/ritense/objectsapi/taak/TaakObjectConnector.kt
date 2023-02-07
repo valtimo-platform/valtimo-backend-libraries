@@ -128,9 +128,19 @@ class TaakObjectConnector(
         formulierId: String?,
         formulierUrl: String?,
     ): TaakObjectDto {
+        val bsn = bsnProvider?.getBurgerServiceNummer(task)
+        val kvk = kvkProvider?.getKvkNummer(task)
+        val identificaties = mutableListOf<TaakIdentificatie>()
+        if (bsn != null) {
+            identificaties += TaakIdentificatie("bsn", bsn)
+        }
+        if (kvk != null) {
+            identificaties += TaakIdentificatie("kvk", kvk)
+        }
         val taakObject = TaakObjectDto(
-            bsn = bsnProvider?.getBurgerServiceNummer(task),
-            kvk = kvkProvider?.getKvkNummer(task),
+            bsn = bsn,
+            kvk = kvk,
+            identificatie = identificaties,
             verwerkerTaakId = UUID.fromString(task.id),
             formulierId = formulierId,
             formulierUrl = formulierUrl,
