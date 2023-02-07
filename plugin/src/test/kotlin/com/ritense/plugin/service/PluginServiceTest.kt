@@ -285,7 +285,8 @@ internal class PluginServiceTest {
             "activity",
             Mapper.INSTANCE.get().readTree("{\"test\":123}") as ObjectNode,
             PluginConfigurationId.newId(),
-            "test-action"
+            "test-action",
+            ActivityType.SERVICE_TASK_START
         )
 
         val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
@@ -312,7 +313,8 @@ internal class PluginServiceTest {
             "activity",
             Mapper.INSTANCE.get().readTree("{\"test\":\"test:some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
-            "test-action"
+            "test-action",
+            ActivityType.SERVICE_TASK_START
         )
 
         val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
@@ -339,7 +341,8 @@ internal class PluginServiceTest {
             "activity",
             Mapper.INSTANCE.get().readTree("{\"test\":\"some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
-            "test-action"
+            "test-action",
+            ActivityType.SERVICE_TASK_START
         )
 
         val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
@@ -366,7 +369,8 @@ internal class PluginServiceTest {
             "activity",
             Mapper.INSTANCE.get().readTree("{\"test\":123}") as ObjectNode,
             PluginConfigurationId.newId(),
-            "test-action-task"
+            "test-action-task",
+            ActivityType.SERVICE_TASK_START
         )
 
         val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
@@ -396,7 +400,8 @@ internal class PluginServiceTest {
             "activity",
             Mapper.INSTANCE.get().readTree("{\"test\":\"test:some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
-            "test-action-task"
+            "test-action-task",
+            ActivityType.SERVICE_TASK_START
         )
 
         val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
@@ -426,7 +431,8 @@ internal class PluginServiceTest {
             "activity",
             Mapper.INSTANCE.get().readTree("{\"test\":\"some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
-            "test-action-task"
+            "test-action-task",
+            ActivityType.SERVICE_TASK_START
         )
 
         val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)

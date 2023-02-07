@@ -55,7 +55,7 @@ class PluginConfigurationResource(
                     pluginDefinitionKey = pluginDefinitionKey,
                     pluginConfigurationTitle = pluginConfigurationTitle,
                     category = category,
-                    activityType = (activityType?:ActivityType.SERVICE_TASK).mapOldActivityTypeToCurrent()
+                    activityType = activityType?.mapOldActivityTypeToCurrent()
                 )
             )
             .map { PluginConfigurationDto(it) })
