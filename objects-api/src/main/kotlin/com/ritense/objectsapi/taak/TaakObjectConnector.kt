@@ -137,6 +137,9 @@ class TaakObjectConnector(
         if (kvk != null) {
             identificaties += TaakIdentificatie("kvk", kvk)
         }
+        if (kvk == null && bsn == null) {
+            throw IllegalStateException("Unable to find the 'Initiator' of task '${task.id}'")
+        }
         val taakObject = TaakObjectDto(
             bsn = bsn,
             kvk = kvk,

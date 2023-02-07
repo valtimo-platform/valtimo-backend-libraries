@@ -17,7 +17,6 @@
 package com.ritense.documentenapi
 
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
-import com.ritense.documentenapi.com.ritense.documentenapi.TestApplication
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.authentication.UserManagementService
