@@ -26,7 +26,9 @@ class TaakObject(
     val status: TaakStatus,
     val formulier: TaakForm,
     @JsonProperty("verwerker_taak_id")
-    val verwerkerTaakId: String
+    val verwerkerTaakId: String,
+    @JsonProperty("verzonden_data")
+    val verzondenData: Map<String, Any>? = null
 )
 
 class TaakIdentificatie(
@@ -34,13 +36,15 @@ class TaakIdentificatie(
     val value: String
 )
 
-class TaakForm (
+class TaakForm(
     val type: TaakFormType,
     val value: String
 )
 
 enum class TaakStatus(@JsonValue val key: String) {
-    OPEN("open")
+    OPEN("open"),
+    INGEDIEND("ingediend"),
+    VERWERKT("verwerkt")
 }
 
 enum class TaakFormType(@JsonValue val key: String) {

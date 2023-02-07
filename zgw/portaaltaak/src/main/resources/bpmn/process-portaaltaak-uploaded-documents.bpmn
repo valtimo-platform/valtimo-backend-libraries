@@ -18,27 +18,36 @@
         <camunda:in businessKey="#{execution.processBusinessKey}" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_125lm4p</bpmn:incoming>
-      <bpmn:outgoing>Flow_1ti0bgp</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1w3ub30</bpmn:outgoing>
       <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:collection="documentUrls" camunda:elementVariable="documentUrl" />
     </bpmn:callActivity>
-    <bpmn:endEvent id="Event_0oj65uu">
-      <bpmn:incoming>Flow_1ti0bgp</bpmn:incoming>
-    </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_125lm4p" sourceRef="StartEvent_1" targetRef="Activity_1jwe8rk" />
-    <bpmn:sequenceFlow id="Flow_1ti0bgp" sourceRef="Activity_1jwe8rk" targetRef="Event_0oj65uu" />
+    <bpmn:sequenceFlow id="Flow_1w3ub30" sourceRef="Activity_1jwe8rk" targetRef="Activity_0fbmp5w" />
+    <bpmn:sequenceFlow id="Flow_0rntl8d" sourceRef="Activity_0fbmp5w" targetRef="Event_0oj65uu" />
+    <bpmn:endEvent id="Event_0oj65uu">
+      <bpmn:incoming>Flow_0rntl8d</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Activity_0fbmp5w" name="Complete Camunda Task" camunda:expression="${true}">
+      <bpmn:incoming>Flow_1w3ub30</bpmn:incoming>
+      <bpmn:outgoing>Flow_0rntl8d</bpmn:outgoing>
+    </bpmn:serviceTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1hhep9j">
       <bpmndi:BPMNShape id="Participant_0q24bm9_di" bpmnElement="Participant_0q24bm9" isHorizontal="true">
-        <dc:Bounds x="160" y="100" width="400" height="160" />
+        <dc:Bounds x="160" y="100" width="530" height="170" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_1ti0bgp_di" bpmnElement="Flow_1ti0bgp">
-        <di:waypoint x="420" y="177" />
-        <di:waypoint x="482" y="177" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_125lm4p_di" bpmnElement="Flow_125lm4p">
         <di:waypoint x="265" y="177" />
         <di:waypoint x="320" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1w3ub30_di" bpmnElement="Flow_1w3ub30">
+        <di:waypoint x="420" y="177" />
+        <di:waypoint x="470" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rntl8d_di" bpmnElement="Flow_0rntl8d">
+        <di:waypoint x="570" y="177" />
+        <di:waypoint x="622" y="177" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="229" y="159" width="36" height="36" />
@@ -47,7 +56,11 @@
         <dc:Bounds x="320" y="137" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0oj65uu_di" bpmnElement="Event_0oj65uu">
-        <dc:Bounds x="482" y="159" width="36" height="36" />
+        <dc:Bounds x="622" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_03z3icf_di" bpmnElement="Activity_0fbmp5w">
+        <dc:Bounds x="470" y="137" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

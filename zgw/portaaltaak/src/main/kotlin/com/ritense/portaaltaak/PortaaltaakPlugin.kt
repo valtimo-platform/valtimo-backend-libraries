@@ -61,6 +61,9 @@ class PortaaltaakPlugin(
     @PluginProperty(key = "objectManagementConfigurationId", secret = false)
     lateinit var objectManagementConfigurationId: UUID
 
+    @PluginProperty(key = "uploadedDocumentsHandlerProcess", secret = false)
+    lateinit var uploadedDocumentsHandlerProcess: String
+
     @PluginAction(
         key = "create-portaaltaak",
         title = "Create portal task",
