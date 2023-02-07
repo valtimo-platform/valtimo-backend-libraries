@@ -19,10 +19,13 @@ package com.ritense.objectmanagement.service
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.domain.ObjectsListRowDto
+import com.ritense.objectmanagement.domain.search.SearchWithConfigRequest
+import com.ritense.objectenapi.dto.ObjectsApiSearchDTO
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
+import com.ritense.search.service.SearchFieldService
 import java.util.UUID
 import mu.KLogger
 import mu.KotlinLogging
@@ -37,7 +40,8 @@ import org.springframework.web.server.ResponseStatusException
 @Transactional(readOnly = true)
 class ObjectManagementService(
     private val objectManagementRepository: ObjectManagementRepository,
-    private val pluginService: PluginService
+    private val pluginService: PluginService,
+    private val searchFieldService: SearchFieldService
 ) {
 
     @Transactional
@@ -80,15 +84,9 @@ class ObjectManagementService(
             throw NotFoundException()
         }
 
-        val objectTypePluginInstance = pluginService
-            .createInstance(
-                PluginConfigurationId.existingId(objectManagement.objecttypenApiPluginConfigurationId)
-            ) as ObjecttypenApiPlugin
+        val objectTypePluginInstance = getObjectTypenApiPlugin(objectManagement.objecttypenApiPluginConfigurationId)
 
-        val objectenPluginInstance = pluginService
-            .createInstance(
-                PluginConfigurationId.existingId(objectManagement.objectenApiPluginConfigurationId)
-            ) as ObjectenApiPlugin
+        val objectenPluginInstance = getObjectenApiPlugin(objectManagement.objectenApiPluginConfigurationId)
 
         val objectsList = objectenPluginInstance.getObjectsByObjectTypeId(
             objectTypePluginInstance.url,
@@ -98,15 +96,81 @@ class ObjectManagementService(
         )
 
         val objectsListDto = objectsList.results.map {
-            ObjectsListRowDto(it.url.toString(), listOf(
-                ObjectsListRowDto.ObjectsListItemDto("objectUrl", it.url),
-                ObjectsListRowDto.ObjectsListItemDto("recordIndex", it.record.index),
+            ObjectsListRowDto(
+                it.url.toString(), listOf(
+                    ObjectsListRowDto.ObjectsListItemDto("objectUrl", it.url),
+                    ObjectsListRowDto.ObjectsListItemDto("recordIndex", it.record.index),
 
-            ))
+                    )
+            )
         }
 
         return PageImpl(objectsListDto, pageable, objectsList.count.toLong())
     }
+
+    fun getObjectsWithSearchParams(searchWithConfigRequest: SearchWithConfigRequest, id: UUID, pageable: Pageable): PageImpl<ObjectsListRowDto> {
+        val objectManagement = getById(id) ?: let {
+            logger.info {
+                "The requested Id is not configured as a objectnamagement configuration. " +
+                    "The requested id was: $id"
+            }
+            throw NotFoundException()
+        }
+
+        val searchFieldList = searchFieldService.findAllByOwnerId(id.toString())
+
+        val searchDtoList = listOf<ObjectsApiSearchDTO>()
+
+        searchFieldList?.forEach {
+            searchWithConfigRequest.otherFilters.forEach { searchWithConfigFilter ->
+                if (searchWithConfigFilter.key == it.key) {
+                    val values = searchWithConfigFilter.values
+                    if (values.size > 1) {
+                        values.forEach { value ->
+                            searchDtoList + ObjectsApiSearchDTO(it.key, it.dataType, value, it.fieldType)
+                        }
+                    }
+                    if (values.size == 1){
+                        searchDtoList + ObjectsApiSearchDTO(it.key, it.dataType, values[0], it.fieldType)
+                    }
+                }
+            }
+        }
+
+        val objectTypePluginInstance = getObjectTypenApiPlugin(objectManagement.objecttypenApiPluginConfigurationId)
+
+        val objectenPluginInstance = getObjectenApiPlugin(objectManagement.objectenApiPluginConfigurationId)
+
+        val objectsList = objectenPluginInstance.getObjectsByObjectTypeIdWithSearchParams(
+            objectTypePluginInstance.url,
+            objectenPluginInstance.url,
+            objectManagement.objecttypeId,
+            searchDtoList,
+            pageable
+        )
+
+        val objectsListDto = objectsList.results.map {
+            ObjectsListRowDto(
+                it.url.toString(), listOf(
+                    ObjectsListRowDto.ObjectsListItemDto("objectUrl", it.url),
+                    ObjectsListRowDto.ObjectsListItemDto("recordIndex", it.record.index),
+
+                    )
+            )
+        }
+
+        return PageImpl(objectsListDto, pageable, objectsList.count.toLong())
+    }
+
+    private fun getObjectenApiPlugin(id: UUID) = pluginService
+            .createInstance(
+                PluginConfigurationId.existingId(id)
+            ) as ObjectenApiPlugin
+
+    private fun getObjectTypenApiPlugin(id: UUID) = pluginService
+        .createInstance(
+            PluginConfigurationId.existingId(id)
+        ) as ObjecttypenApiPlugin
 
     fun findByObjectTypeId(id: String) = objectManagementRepository.findByObjecttypeId(id)
 
