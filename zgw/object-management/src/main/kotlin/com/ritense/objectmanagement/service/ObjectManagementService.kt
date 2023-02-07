@@ -17,6 +17,8 @@
 package com.ritense.objectmanagement.service
 
 import com.ritense.objectenapi.ObjectenApiPlugin
+import com.ritense.objectenapi.client.Comparator
+import com.ritense.objectenapi.client.ObjectSearchParameter
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.domain.ObjectsListRowDto
 import com.ritense.objectmanagement.domain.search.SearchWithConfigRequest
@@ -25,6 +27,8 @@ import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
+import com.ritense.search.domain.DataType
+import com.ritense.search.domain.FieldType
 import com.ritense.search.service.SearchFieldService
 import java.util.UUID
 import mu.KLogger
@@ -119,7 +123,7 @@ class ObjectManagementService(
 
         val searchFieldList = searchFieldService.findAllByOwnerId(id.toString())
 
-        val searchDtoList = listOf<ObjectsApiSearchDTO>()
+        val searchDtoList = listOf<ObjectSearchParameter>()
 
         searchFieldList?.forEach {
             searchWithConfigRequest.otherFilters.forEach { searchWithConfigFilter ->
@@ -127,11 +131,11 @@ class ObjectManagementService(
                     val values = searchWithConfigFilter.values
                     if (values.size > 1) {
                         values.forEach { value ->
-                            searchDtoList + ObjectsApiSearchDTO(it.key, it.dataType, value, it.fieldType)
+                            searchDtoList + mapToObjectSearchParameter(it.key, it.dataType, value.toString())
                         }
                     }
                     if (values.size == 1){
-                        searchDtoList + ObjectsApiSearchDTO(it.key, it.dataType, values[0], it.fieldType)
+                        searchDtoList + mapToObjectSearchParameter(it.key, it.dataType, values[0].toString())
                     }
                 }
             }
@@ -160,6 +164,18 @@ class ObjectManagementService(
         }
 
         return PageImpl(objectsListDto, pageable, objectsList.count.toLong())
+    }
+
+    fun mapToObjectSearchParameter(key: String, fieldType: FieldType, value: Any) {
+        when (fieldType) {
+            FieldType.TEXT_CONTAINS -> listOf(ObjectSearchParameter(key, Comparator.STRING_CONTAINS, value.toString()))
+            FieldType.RANGE -> listOf(
+                ObjectSearchParameter(key, Comparator.GREATER_THAN_OR_EQUAL_TO, value.toString()),
+                ObjectSearchParameter(key, Comparator.LOWER_THAN_OR_EQUAL_TO, value.toString())
+            )
+            FieldType.MULTI_SELECT_DROPDOWN -> value as List<*>
+            else -> value
+        }
     }
 
     private fun getObjectenApiPlugin(id: UUID) = pluginService
