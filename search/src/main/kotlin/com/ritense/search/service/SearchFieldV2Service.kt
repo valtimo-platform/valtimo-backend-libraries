@@ -16,49 +16,50 @@
 
 package com.ritense.search.service
 
-import com.ritense.search.domain.SearchListColumn
-import com.ritense.search.repository.SearchListColumnRepository
+import com.ritense.search.domain.SearchFieldV2
+import com.ritense.search.repository.SearchFieldV2Repository
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 
-class SearchListColumnService(
-    private val searchListColumnRepository: SearchListColumnRepository
+class SearchFieldV2Service(
+    private val searchFieldV2Repository: SearchFieldV2Repository
 ) {
 
-    fun create(searchListColumn: SearchListColumn) = searchListColumnRepository.save(searchListColumn)
+    fun create(searchFieldV2: SearchFieldV2) = searchFieldV2Repository.save(searchFieldV2)
 
-    fun update(ownerId: String, key: String, searchListColumn: SearchListColumn) =
+    fun update(ownerId: String, key: String, searchFieldV2: SearchFieldV2) =
         with(findByOwnerIdAndKey(ownerId, key)) {
             if (this != null) {
-                if (searchListColumn.ownerId != ownerId) {
+                if (searchFieldV2.ownerId != ownerId) {
                     throw ResponseStatusException(
                         HttpStatus.CONFLICT,
                         "This ownerId already exists. Please choose another ownerId"
                     )
-                } else if (searchListColumn.key != key) {
+                } else if (searchFieldV2.key != key) {
                     throw ResponseStatusException(
                         HttpStatus.CONFLICT,
                         "This key already exists. Please choose another key"
                     )
                 }
             }
-            searchListColumnRepository.save(this?.copy(
-                 ownerId = searchListColumn.ownerId,
-                key = searchListColumn.key,
-                title = searchListColumn.title,
-                path = searchListColumn.path,
-                order = searchListColumn.order,
-                displayType = searchListColumn.displayType,
-                sortable = searchListColumn.sortable
+            searchFieldV2Repository.save(this?.copy(
+                ownerId = searchFieldV2.ownerId,
+                key = searchFieldV2.key,
+                path = searchFieldV2.path,
+                title = searchFieldV2.title,
+                order = searchFieldV2.order,
+                dataType = searchFieldV2.dataType,
+                fieldType = searchFieldV2.fieldType
             ))
         }
 
-    fun findByOwnerId(ownerId: String) = searchListColumnRepository.findAllByOwnerId(ownerId)
+    fun findAllByOwnerId(ownerId: String) = searchFieldV2Repository.findAllByOwnerId(ownerId)
 
-    fun findByOwnerIdAndKey(ownerId: String, key: String) = searchListColumnRepository.findByOwnerIdAndKey(ownerId, key)
+    fun findByOwnerIdAndKey(ownerId: String, key: String) = searchFieldV2Repository.findByOwnerIdAndKey(ownerId, key)
 
     fun delete(ownerId: String, key: String) =
         with(findByOwnerIdAndKey(ownerId, key)) {
-            this?.let { searchListColumnRepository.delete(it) }
+            this?.let { searchFieldV2Repository.delete(it) }
         }
+
 }
