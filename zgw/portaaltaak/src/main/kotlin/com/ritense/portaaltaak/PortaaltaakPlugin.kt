@@ -20,12 +20,14 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectmanagement.service.ObjectManagementService
+import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -48,6 +50,7 @@ import java.util.*
 import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
+import java.time.LocalDate
 
 @Plugin(
     key = "portaaltaak",
@@ -107,10 +110,20 @@ class PortaaltaakPlugin(
             delegateTask.id
         )
 
-        val node: JsonNode = jacksonObjectMapper().convertValue(portaalTaak)
-        val x = true
-        //TODO: create actual object
-        //objectenApiPlugin.create
+        val objecttypenApiPlugin = pluginService
+            .createInstance(PluginConfigurationId(objectManagement.objecttypenApiPluginConfigurationId)) as ObjecttypenApiPlugin
+        val objectTypeUrl = objecttypenApiPlugin.getObjectTypeUrlById(objectManagement.objecttypeId)
+
+        val createObjectRequest = ObjectRequest(
+            objectTypeUrl,
+            ObjectRecord(
+                typeVersion = objectManagement.objecttypeVersion,
+                data = pluginService.getObjectMapper().convertValue(portaalTaak),
+                startAt = LocalDate.now()
+            )
+        )
+
+        objectenApiPlugin.createObject(createObjectRequest)
     }
 
     @PluginAction(
@@ -238,6 +251,8 @@ class PortaaltaakPlugin(
             val valueNode = jacksonObjectMapper().valueToTree<JsonNode>(it.value)
             jsonPatchBuilder.addJsonNodeValue(taakData, path, valueNode)
         }
+
+        JsonPatchService.apply(jsonPatchBuilder.build(), taakData)
 
         return jacksonObjectMapper().convertValue(taakData)
     }

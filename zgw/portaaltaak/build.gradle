@@ -41,6 +41,8 @@ dependencies {
     testImplementation project(":contract")
     testImplementation project(":test-utils-common")
     testImplementation project(":resource")
+    testImplementation project(":zgw:catalogi-api")
+    testImplementation project(':plugin-valtimo')
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
@@ -48,6 +50,8 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
+    testImplementation "com.jayway.jsonpath:json-path-assert:${jaywayJsonpathVersion}"
+
     //Kotlin
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
