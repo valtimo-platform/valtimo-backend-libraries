@@ -137,7 +137,7 @@ internal class PortaaltaakPluginTest {
     fun `should get the correct identification for case initiated by a citizen`() {
         val result =
             portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, OtherTaakReceiver.BSN, null, bsn)
-        assertEquals("bsn", result.type)
+        assertEquals("BSN", result.type)
         assertEquals(bsn, result.value)
     }
 
@@ -145,7 +145,7 @@ internal class PortaaltaakPluginTest {
     fun `should get the correct task identification for task initiated by other with a citizen service number`() {
         val result =
             portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, OtherTaakReceiver.BSN, null, bsn)
-        assertEquals("bsn", result.type)
+        assertEquals("BSN", result.type)
         assertEquals(bsn, result.value)
     }
 
@@ -159,7 +159,7 @@ internal class PortaaltaakPluginTest {
                 kvk,
                 null
             )
-        assertEquals("kvk", result.type)
+        assertEquals("KVK", result.type)
         assertEquals(kvk, result.value)
     }
 
@@ -191,7 +191,6 @@ internal class PortaaltaakPluginTest {
             "Could not find identification value in configuration for type ${OtherTaakReceiver.KVK.key}",
             result.message
         )
-        //todo
     }
 
     @Test
