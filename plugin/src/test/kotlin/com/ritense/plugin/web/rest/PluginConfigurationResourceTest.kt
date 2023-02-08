@@ -124,7 +124,7 @@ internal class PluginConfigurationResourceTest {
     }
 
     @Test
-    fun `should filter on plugins for rare activityType`() {
+    fun `should not filter on plugins for rare activityType`() {
         whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
 
         mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:IntermediateLinkCatch")

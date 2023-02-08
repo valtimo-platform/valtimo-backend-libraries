@@ -24,12 +24,24 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class ProcessLinkAutoConfiguration {
     @Bean
-    @ConditionalOnMissingBean(ProcessLinkTaskListener::class)
-    fun pluginServiceTaskListener(
+    @ConditionalOnMissingBean(ProcessLinkServiceTaskStartListener::class)
+    fun pluginLinkServiceTaskStartListener(
         pluginProcessLinkRepository: PluginProcessLinkRepository?,
         pluginService: PluginService?
-    ): ProcessLinkTaskListener {
-        return ProcessLinkTaskListener(
+    ): ProcessLinkServiceTaskStartListener {
+        return ProcessLinkServiceTaskStartListener(
+            pluginProcessLinkRepository!!,
+            pluginService!!
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessLinkUserTaskCreateListener::class)
+    fun processLinkUserTaskCreateListener(
+        pluginProcessLinkRepository: PluginProcessLinkRepository?,
+        pluginService: PluginService?
+    ): ProcessLinkUserTaskCreateListener {
+        return ProcessLinkUserTaskCreateListener(
             pluginProcessLinkRepository!!,
             pluginService!!
         )
