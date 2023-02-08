@@ -70,8 +70,7 @@ class PortaaltaakPlugin(
         key = "create-portaaltaak",
         title = "Create portal task",
         description = "Create a task for a portal by storing it in the Objecten-API",
-        //TODO: change to ActivityType.USER_TASK_CREATE when the user task support has been merged
-        activityTypes = [ActivityType.USER_TASK]
+        activityTypes = [ActivityType.USER_TASK_CREATE]
     )
     fun createPortaalTaak(
         delegateTask: DelegateTask,
