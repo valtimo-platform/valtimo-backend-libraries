@@ -210,7 +210,8 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
         val pluginPropertiesJson = """
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPlugin.id.id}",
-              "objectManagementConfigurationId": "${objectManagement.id}"
+              "objectManagementConfigurationId": "${objectManagement.id}",
+              "uploadedDocumentsHandlerProcess": "process-portaaltaak-uploaded-documents"
             }
         """.trimIndent()
 
