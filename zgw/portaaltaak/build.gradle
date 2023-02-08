@@ -41,6 +41,8 @@ dependencies {
     testImplementation project(":contract")
     testImplementation project(":test-utils-common")
     testImplementation project(":resource")
+    testImplementation project(":zgw:catalogi-api")
+    testImplementation project(':plugin-valtimo')
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"

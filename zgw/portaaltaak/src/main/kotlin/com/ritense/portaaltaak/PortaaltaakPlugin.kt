@@ -20,9 +20,13 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.objectenapi.ObjectenApiPlugin
+import com.ritense.objectenapi.client.ObjectRecord
+import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectmanagement.service.ObjectManagementService
+import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -41,6 +45,7 @@ import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import java.util.*
 import org.camunda.bpm.engine.delegate.DelegateTask
+import java.time.LocalDate
 
 @Plugin(
     key = "portaaltaak",
@@ -97,10 +102,20 @@ class PortaaltaakPlugin(
             delegateTask.id
         )
 
-        val node: JsonNode = jacksonObjectMapper().convertValue(portaalTaak)
-        val x = true
-        //TODO: create actual object
-        //objectenApiPlugin.create
+        val objecttypeApiPlugin = pluginService
+            .createInstance(PluginConfigurationId(objectManagement.objecttypenApiPluginConfigurationId)) as ObjecttypenApiPlugin
+        val objectTypeUrl = objecttypeApiPlugin.getObjectTypeUrlById(objectManagement.objecttypeId)
+
+        val createObjectRequest = ObjectRequest(
+            objectTypeUrl,
+            ObjectRecord(
+                typeVersion = objectManagement.objecttypeVersion,
+                data = pluginService.getObjectMapper().convertValue(portaalTaak),
+                startAt = LocalDate.now()
+            )
+        )
+
+        objectenApiPlugin.createObject(createObjectRequest)
     }
 
     internal fun getTaakIdentification(
@@ -121,7 +136,7 @@ class PortaaltaakPlugin(
                     ?: throw IllegalStateException("Could not find identification value in configuration for type ${otherReceiver.key}")
 
                 TaakIdentificatie(
-                    otherReceiver.name,
+                    otherReceiver.key,
                     identificationValue
                 )
             }
@@ -197,6 +212,8 @@ class PortaaltaakPlugin(
             val valueNode = jacksonObjectMapper().valueToTree<JsonNode>(it.value)
             jsonPatchBuilder.addJsonNodeValue(taakData, path, valueNode)
         }
+
+        JsonPatchService.apply(jsonPatchBuilder.build(), taakData)
 
         return jacksonObjectMapper().convertValue(taakData)
     }

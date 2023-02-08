@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.service
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -49,9 +50,12 @@ import com.ritense.valueresolver.ValueResolverService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.data.repository.findByIdOrNull
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 import java.util.UUID
 import javax.validation.ValidationException
 import kotlin.reflect.full.findAnnotation
@@ -324,6 +328,8 @@ class PluginService(
             param.isAnnotationPresent(PluginActionProperty::class.java)
         }.mapNotNull { param ->
             param to actionProperties.get(param.name)
+        }.filter {
+            pair -> pair.second != null
         }.toMap()
 
         // We want to process all placeholder values together to improve performance if external sources are needed.
@@ -352,11 +358,19 @@ class PluginService(
                 if (placeHolderValue::class.java.isAssignableFrom(param.type)) {
                     placeHolderValue
                 } else {
-                    objectMapper.treeToValue(value, param.type)
+                    objectMapper.convertValue(value, ConversionTypeReference(param.parameterizedType))
                 }
             } else {
-                objectMapper.treeToValue(value, param.type)
+                objectMapper.convertValue(value, ConversionTypeReference(param.parameterizedType))
             }
+        }
+    }
+
+    class ConversionTypeReference(
+        private val theType: Type
+    ): TypeReference<Any>() {
+        override fun getType(): Type {
+            return theType
         }
     }
 
