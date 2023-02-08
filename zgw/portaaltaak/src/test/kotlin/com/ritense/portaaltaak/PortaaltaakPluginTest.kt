@@ -156,7 +156,7 @@ internal class PortaaltaakPluginTest {
     fun `should get the correct identification for case initiated by a citizen`() {
         val result =
             portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, OtherTaakReceiver.BSN, null, bsn)
-        assertEquals("BSN", result.type)
+        assertEquals("bsn", result.type)
         assertEquals(bsn, result.value)
     }
 
@@ -164,7 +164,7 @@ internal class PortaaltaakPluginTest {
     fun `should get the correct task identification for task initiated by other with a citizen service number`() {
         val result =
             portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, OtherTaakReceiver.BSN, null, bsn)
-        assertEquals("BSN", result.type)
+        assertEquals("bsn", result.type)
         assertEquals(bsn, result.value)
     }
 
@@ -178,7 +178,7 @@ internal class PortaaltaakPluginTest {
                 kvk,
                 null
             )
-        assertEquals("KVK", result.type)
+        assertEquals("kvk", result.type)
         assertEquals(kvk, result.value)
     }
 
