@@ -86,7 +86,6 @@ internal class PortaaltaakPluginTest {
 
     @Test
     fun `should create taak object in objects api`() {
-        //todo incomplete
         val formType = TaakFormType.ID
         val formTypeId = "formTypeId"
         val formTypeUrl = "formTypeUrl"
