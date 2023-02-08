@@ -1,12 +1,12 @@
 [
     {
-        "formName": "form-portal-voornaam",
-        "formLinkElementId": "view-portal-case",
-        "formAssociationType": "user-task"
+        "formName": "start-form-portal-person",
+        "formLinkElementId": "start-event",
+        "formAssociationType": "start-event"
     },
     {
-        "formName": "form-portal-voornaam",
-        "formLinkElementId": "verify-name",
+        "formName": "user-task-portal-person",
+        "formLinkElementId": "valtimo-task",
         "formAssociationType": "user-task"
     }
 ]
