@@ -73,7 +73,8 @@ internal class PortaaltaakPluginTest {
             pluginService,
             valueResolverService,
             processDocumentService,
-            zaakInstanceLinkService
+            zaakInstanceLinkService,
+            mock()
         )
         portaaltaakPlugin.notificatiesApiPluginConfiguration = mock()
         portaaltaakPlugin.objectManagementConfigurationId = mock()
