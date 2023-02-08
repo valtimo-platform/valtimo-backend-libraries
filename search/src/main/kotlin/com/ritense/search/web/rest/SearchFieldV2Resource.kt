@@ -16,8 +16,8 @@
 
 package com.ritense.search.web.rest
 
-import com.ritense.search.domain.SearchFields
-import com.ritense.search.service.SearchFieldService
+import com.ritense.search.domain.SearchFieldV2
+import com.ritense.search.service.SearchFieldV2Service
 import javax.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -30,35 +30,35 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @RequestMapping("/api/v1/search/field", produces = [MediaType.APPLICATION_JSON_VALUE])
-class SearchFieldResource(
-    private val searchFieldService: SearchFieldService
+class SearchFieldV2Resource(
+    private val searchFieldV2Service: SearchFieldV2Service
 ) {
 
     @PostMapping("/{ownerId}")
     fun create(
         @PathVariable ownerId: String,
-        @Valid @RequestBody searchFields: SearchFields
+        @Valid @RequestBody searchFieldV2: SearchFieldV2
     ) =
-        ResponseEntity.ok(searchFieldService.create(searchFields))
+        ResponseEntity.ok(searchFieldV2Service.create(searchFieldV2))
 
     @PutMapping("/{ownerId}/{key}")
     fun update(
         @PathVariable ownerId: String,
         @PathVariable key: String,
-        @Valid @RequestBody searchFields: SearchFields
+        @Valid @RequestBody searchFieldV2: SearchFieldV2
     ) =
-        ResponseEntity.ok(searchFieldService.update(ownerId, key, searchFields))
+        ResponseEntity.ok(searchFieldV2Service.update(ownerId, key, searchFieldV2))
 
     @GetMapping("/{ownerId}")
     fun getAllByOwnerId(@PathVariable ownerId: String) =
-        ResponseEntity.ok(searchFieldService.findAllByOwnerId(ownerId))
+        ResponseEntity.ok(searchFieldV2Service.findAllByOwnerId(ownerId))
 
     @DeleteMapping("/{ownerId}/{key}")
     fun delete(
         @PathVariable ownerId: String,
         @PathVariable key: String
     ): ResponseEntity<Any> {
-        searchFieldService.delete(ownerId, key)
+        searchFieldV2Service.delete(ownerId, key)
         return ResponseEntity.noContent().build()
     }
 }

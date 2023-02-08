@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <!--
-  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -21,9 +21,11 @@
 
     <property name="booleanFalseValue" value="0" dbms="mysql"/>
     <property name="booleanFalseValue" value="false" dbms="postgresql"/>
+    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
+    <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
 
-    <changeSet id="add-search-field-table" author="Ritense">
-        <createTable tableName="search_field">
+    <changeSet id="add-search-field-v2-table" author="Ritense">
+        <createTable tableName="search_field_v2">
             <column name="id" type="${uuidType}">
                 <constraints nullable="false"/>
             </column>
@@ -45,5 +47,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+    </changeSet>
+    <changeSet author="Ritense" id="add-unique-constraint-search-field-v2">
+        <addUniqueConstraint constraintName="unique-owner_id-column_key-constraint"
+                             columnNames="owner_id, column_key"
+                             tableName="search_field_v2"/>
     </changeSet>
 </databaseChangeLog>

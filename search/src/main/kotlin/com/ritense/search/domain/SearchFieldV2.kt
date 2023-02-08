@@ -23,8 +23,8 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "search_fields")
-data class SearchFields(
+@Table(name = "search_field_v2")
+data class SearchFieldV2(
     @Id
     @Column(name = "id")
     val id: UUID = UUID.randomUUID(),

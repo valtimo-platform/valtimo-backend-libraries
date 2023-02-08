@@ -22,14 +22,12 @@ import com.ritense.objectenapi.client.ObjectSearchParameter
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.domain.ObjectsListRowDto
 import com.ritense.objectmanagement.domain.search.SearchWithConfigRequest
-import com.ritense.objectenapi.dto.ObjectsApiSearchDTO
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
-import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
-import com.ritense.search.service.SearchFieldService
+import com.ritense.search.service.SearchFieldV2Service
 import java.util.UUID
 import mu.KLogger
 import mu.KotlinLogging
@@ -45,7 +43,7 @@ import org.springframework.web.server.ResponseStatusException
 class ObjectManagementService(
     private val objectManagementRepository: ObjectManagementRepository,
     private val pluginService: PluginService,
-    private val searchFieldService: SearchFieldService
+    private val searchFieldV2Service: SearchFieldV2Service
 ) {
 
     @Transactional
@@ -112,7 +110,11 @@ class ObjectManagementService(
         return PageImpl(objectsListDto, pageable, objectsList.count.toLong())
     }
 
-    fun getObjectsWithSearchParams(searchWithConfigRequest: SearchWithConfigRequest, id: UUID, pageable: Pageable): PageImpl<ObjectsListRowDto> {
+    fun getObjectsWithSearchParams(
+        searchWithConfigRequest: SearchWithConfigRequest,
+        id: UUID,
+        pageable: Pageable
+    ): PageImpl<ObjectsListRowDto> {
         val objectManagement = getById(id) ?: let {
             logger.info {
                 "The requested Id is not configured as a objectnamagement configuration. " +
@@ -121,7 +123,7 @@ class ObjectManagementService(
             throw NotFoundException()
         }
 
-        val searchFieldList = searchFieldService.findAllByOwnerId(id.toString())
+        val searchFieldList = searchFieldV2Service.findAllByOwnerId(id.toString())
 
         val searchDtoList = listOf<ObjectSearchParameter>()
 
@@ -131,15 +133,17 @@ class ObjectManagementService(
                     val values = searchWithConfigFilter.values
                     if (values.size > 1) {
                         values.forEach { value ->
-                            searchDtoList + mapToObjectSearchParameter(it.key, it.dataType, value.toString())
+                            searchDtoList + mapToObjectSearchParameter(it.key, it.fieldType, value.toString())
                         }
                     }
-                    if (values.size == 1){
-                        searchDtoList + mapToObjectSearchParameter(it.key, it.dataType, values[0].toString())
+                    if (values.size == 1) {
+                        searchDtoList + mapToObjectSearchParameter(it.key, it.fieldType, values[0].toString())
                     }
                 }
             }
         }
+
+        val searchString = concatenateObjectSearchParameter(searchDtoList)
 
         val objectTypePluginInstance = getObjectTypenApiPlugin(objectManagement.objecttypenApiPluginConfigurationId)
 
@@ -149,7 +153,7 @@ class ObjectManagementService(
             objectTypePluginInstance.url,
             objectenPluginInstance.url,
             objectManagement.objecttypeId,
-            searchDtoList,
+            searchString,
             pageable
         )
 
@@ -166,22 +170,48 @@ class ObjectManagementService(
         return PageImpl(objectsListDto, pageable, objectsList.count.toLong())
     }
 
-    fun mapToObjectSearchParameter(key: String, fieldType: FieldType, value: Any) {
-        when (fieldType) {
+    private fun mapToObjectSearchParameter(key: String, fieldType: FieldType, value: Any): List<ObjectSearchParameter> {
+        return when (fieldType) {
             FieldType.TEXT_CONTAINS -> listOf(ObjectSearchParameter(key, Comparator.STRING_CONTAINS, value.toString()))
             FieldType.RANGE -> listOf(
                 ObjectSearchParameter(key, Comparator.GREATER_THAN_OR_EQUAL_TO, value.toString()),
                 ObjectSearchParameter(key, Comparator.LOWER_THAN_OR_EQUAL_TO, value.toString())
             )
-            FieldType.MULTI_SELECT_DROPDOWN -> value as List<*>
-            else -> value
+
+            FieldType.MULTI_SELECT_DROPDOWN -> {
+                val returnList = listOf<ObjectSearchParameter>()
+                val list = listOf<String>()
+                list + value as List<String>
+                list.forEach {
+                    returnList + ObjectSearchParameter(key, Comparator.EQUAL_TO, it)
+                }
+                return returnList
+            }
+            FieldType.SINGLE_SELECT_DROPDOWN -> listOf(
+                ObjectSearchParameter(key, Comparator.EQUAL_TO, value.toString())
+            )
+            FieldType.SINGLE -> listOf(
+                ObjectSearchParameter(key, Comparator.STRING_CONTAINS, value.toString())
+            )
         }
     }
 
+    private fun concatenateObjectSearchParameter(searchParameterList: List<ObjectSearchParameter>): String {
+        var searchList = ""
+        searchParameterList.forEach {
+            if (searchList == "") {
+                searchList.plus(it.toQueryParameter())
+            } else {
+                searchList.plus(",${it.toQueryParameter()}")
+            }
+        }
+        return searchList
+    }
+
     private fun getObjectenApiPlugin(id: UUID) = pluginService
-            .createInstance(
-                PluginConfigurationId.existingId(id)
-            ) as ObjectenApiPlugin
+        .createInstance(
+            PluginConfigurationId.existingId(id)
+        ) as ObjectenApiPlugin
 
     private fun getObjectTypenApiPlugin(id: UUID) = pluginService
         .createInstance(

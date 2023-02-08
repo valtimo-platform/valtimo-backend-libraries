@@ -20,7 +20,6 @@ import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.objectenapi.client.ObjectsList
-import com.ritense.objectenapi.dto.ObjectsApiSearchDTO
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import java.net.URI
@@ -63,7 +62,7 @@ class ObjectenApiPlugin(
         objecttypesApiUrl: URI,
         objectsApiUrl: URI,
         objecttypeId: String,
-        searchDtoList: List<ObjectsApiSearchDTO>,
+        searchString: String,
         pageable: Pageable
     ): ObjectsList {
         return objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(
@@ -71,7 +70,7 @@ class ObjectenApiPlugin(
             objecttypesApiUrl,
             objectsApiUrl,
             objecttypeId,
-            searchDtoList,
+            searchString,
             pageable
         )
     }

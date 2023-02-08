@@ -48,4 +48,9 @@
             <column name="default_sort" type="varchar(10)"/>
         </createTable>
     </changeSet>
+    <changeSet author="Ritense" id="add-unique-constraint-search_list_column">
+        <addUniqueConstraint constraintName="unique-owner_id-column_key-constraint-list"
+                             columnNames="owner_id, column_key"
+                             tableName="search_list_column"/>
+    </changeSet>
 </databaseChangeLog>

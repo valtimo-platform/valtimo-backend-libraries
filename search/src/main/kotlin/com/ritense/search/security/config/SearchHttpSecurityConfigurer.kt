@@ -27,7 +27,7 @@ class SearchHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/v1/search/list-column{ownerId}")
+                .antMatchers(HttpMethod.POST, "/api/v1/search/list-column/{ownerId}")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(HttpMethod.GET, "/api/v1/search/list-column/{ownerId}")
                 .hasAuthority(AuthoritiesConstants.USER)

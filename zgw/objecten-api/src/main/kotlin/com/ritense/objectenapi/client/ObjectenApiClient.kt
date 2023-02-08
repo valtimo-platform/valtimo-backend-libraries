@@ -17,7 +17,6 @@
 package com.ritense.objectenapi.client
 
 import com.ritense.objectenapi.ObjectenApiAuthentication
-import com.ritense.objectenapi.dto.ObjectsApiSearchDTO
 import java.net.URI
 import org.springframework.data.domain.Pageable
 import org.springframework.web.reactive.function.client.WebClient
@@ -83,7 +82,7 @@ class ObjectenApiClient(
         objecttypesApiUrl: URI,
         objectsApiUrl: URI,
         objectypeId: String,
-        searchDtoList: List<ObjectsApiSearchDTO>,
+        searchString: String,
         pageable: Pageable
     ): ObjectsList {
         val objectTypeUrl = UriComponentsBuilder.newInstance()
@@ -103,6 +102,7 @@ class ObjectenApiClient(
                     .queryParam("type", objectTypeUrl)
                     .queryParam("pageSize", pageable.pageSize)
                     .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
+                    .queryParam("data_attrs", searchString)
                     .build()
             }
             .header("Accept-Crs", "EPSG:4326")

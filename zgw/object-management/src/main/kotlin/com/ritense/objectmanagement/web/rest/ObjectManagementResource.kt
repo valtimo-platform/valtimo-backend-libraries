@@ -68,11 +68,11 @@ class ObjectManagementResource(
     ): ResponseEntity<PageImpl<ObjectsListRowDto>> =
         ResponseEntity.ok(objectManagementService.getObjects(id, pageable))
 
-    @GetMapping("/{id}/object")
+    @PostMapping("/{id}/object")
     fun getObjectsWithSearchFields(
         @PathVariable id: UUID,
         @PageableDefault pageable: Pageable,
         @RequestBody searchRequest: SearchWithConfigRequest
     ): ResponseEntity<PageImpl<ObjectsListRowDto>> =
-        ResponseEntity.ok(objectManagementService.getObjects(id, pageable))
+        ResponseEntity.ok(objectManagementService.getObjectsWithSearchParams(searchRequest, id, pageable))
 }
