@@ -18,7 +18,10 @@ package com.ritense
 
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
+import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.mail.MailSender
+import com.ritense.zakenapi.ResourceProvider
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -38,5 +41,14 @@ abstract class BaseIntegrationTest {
     lateinit var pluginConfigurationRepository: PluginConfigurationRepository
 
     @MockBean
+    lateinit var resourceService: ResourceService
+
+    @MockBean
     lateinit var userManagementService: UserManagementService
+
+    @MockBean
+    lateinit var mailSender: MailSender
+
+    @MockBean
+    lateinit var resourceProvider: ResourceProvider
 }
