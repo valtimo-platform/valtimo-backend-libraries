@@ -302,7 +302,7 @@ class PluginService(
         task: DelegateTask,
         method: Method,
         actionProperties: ObjectNode?
-    ): Map<Parameter, Any> {
+    ): Map<Parameter, Any?> {
         if (actionProperties == null) {
             return mapOf()
         }
@@ -330,7 +330,7 @@ class PluginService(
         return mapActionParamValues(paramValues, placeHolderValueMap)
     }
 
-    private fun mapActionParamValues(paramValues: Map<Parameter, JsonNode>, placeHolderValueMap: Map<String, Any>): Map<Parameter, Any> {
+    private fun mapActionParamValues(paramValues: Map<Parameter, JsonNode>, placeHolderValueMap: Map<String, Any>): Map<Parameter, Any?> {
         return paramValues.mapValues { (param, value) ->
             if (value == null) {
                 null
