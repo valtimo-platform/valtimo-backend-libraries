@@ -18,6 +18,7 @@ package com.ritense.portaaltaak
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
+import com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath
 import com.ritense.BaseIntegrationTest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
@@ -141,7 +142,7 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
         val body = recordedRequest.body.readUtf8()
 
         assertThat(body, hasJsonPath("$.type", equalTo("${server.url("/objecttypes/object-type-id")}")))
-        assertThat(body, hasJsonPath("$.record.index", nullValue()))
+        assertThat(body, hasNoJsonPath(("$.record.index")))
         assertThat(body, hasJsonPath("$.record.typeVersion", equalTo(1)))
         assertThat(body, hasJsonPath("$.record.data.identificatie[0].type", equalTo("kvk")))
         assertThat(body, hasJsonPath("$.record.data.identificatie[0].value", equalTo("569312863")))
@@ -151,12 +152,12 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
         assertThat(body, hasJsonPath("$.record.data.formulier.type", equalTo("id")))
         assertThat(body, hasJsonPath("$.record.data.formulier.value", equalTo("some-form")))
         assertThat(body, hasJsonPath("$.record.data.verwerker_taak_id", equalTo(task.id)))
-        assertThat(body, hasJsonPath("$.record.geometry", nullValue()))
+        assertThat(body, hasNoJsonPath(("$.record.geometry")))
         assertThat(body, hasJsonPath("$.record.startAt", equalTo(LocalDate.now().toString())))
-        assertThat(body, hasJsonPath("$.record.endAt", nullValue()))
-        assertThat(body, hasJsonPath("$.record.registrationAt", nullValue()))
-        assertThat(body, hasJsonPath("$.record.correctionFor", nullValue()))
-        assertThat(body, hasJsonPath("$.record.correctedBy", nullValue()))
+        assertThat(body, hasNoJsonPath(("$.record.endAt")))
+        assertThat(body, hasNoJsonPath(("$.record.registrationAt")))
+        assertThat(body, hasNoJsonPath(("$.record.correctionFor")))
+        assertThat(body, hasNoJsonPath(("$.record.correctedBy")))
     }
 
     private fun startPortaalTaakProcess(content: String): Task {
