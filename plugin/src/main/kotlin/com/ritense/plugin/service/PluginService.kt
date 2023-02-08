@@ -279,6 +279,8 @@ class PluginService(
             param.isAnnotationPresent(PluginActionProperty::class.java)
         }.mapNotNull { param ->
             param to actionProperties.get(param.name)
+        }.filter { pair ->
+            pair.second != null
         }.toMap()
 
         // We want to process all placeholder values together to improve performance if external sources are needed.
