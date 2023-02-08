@@ -17,9 +17,9 @@
 package com.ritense.portaaltaak
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.ritense.BaseIntegrationTest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
-import com.ritense.document.service.DocumentService
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import com.ritense.objectmanagement.domain.ObjectManagement
@@ -39,6 +39,11 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.camunda.bpm.engine.RepositoryService
+import org.camunda.bpm.engine.TaskService
+import org.camunda.bpm.engine.task.Task
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.nullValue
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -46,15 +51,15 @@ import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpMethod
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
+import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
-import kotlin.test.assertEquals
 
 class PortaaltaakPluginIT: BaseIntegrationTest() {
 
@@ -71,13 +76,15 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
     lateinit var procesDocumentService: ProcessDocumentService
 
     @Autowired
-    lateinit var documentService: DocumentService
+    lateinit var taskService: TaskService
 
     lateinit var server: MockWebServer
 
     lateinit var processDefinitionId: String
 
     lateinit var portaalTaakPlugin: PluginConfiguration
+
+    protected var executedRequests: MutableList<RecordedRequest> = mutableListOf()
 
     @BeforeEach
     internal fun setUp() {
@@ -127,18 +134,40 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
             }
         """.trimIndent()
 
-        val recordedRequest = server.takeRequest()
 
-        startPortaalTaakProcess(documentContent)
+        val task = startPortaalTaakProcess(documentContent)
 
-        assertEquals("POST", recordedRequest.method)
+        val recordedRequest = findRequest(HttpMethod.POST, "/objects")!!
+        val body = recordedRequest.body.readUtf8()
 
+        assertThat(body, hasJsonPath("$.type", equalTo("${server.url("/objecttypes/object-type-id")}")))
+        assertThat(body, hasJsonPath("$.record.index", nullValue()))
+        assertThat(body, hasJsonPath("$.record.typeVersion", equalTo(1)))
+        assertThat(body, hasJsonPath("$.record.data.identificatie[0].type", equalTo("kvk")))
+        assertThat(body, hasJsonPath("$.record.data.identificatie[0].value", equalTo("569312863")))
+        assertThat(body, hasJsonPath("$.record.data.data.lastname", equalTo("test")))
+        assertThat(body, hasJsonPath("$.record.data.title", equalTo("user_task")))
+        assertThat(body, hasJsonPath("$.record.data.status", equalTo("open")))
+        assertThat(body, hasJsonPath("$.record.data.formulier.type", equalTo("id")))
+        assertThat(body, hasJsonPath("$.record.data.formulier.value", equalTo("some-form")))
+        assertThat(body, hasJsonPath("$.record.data.verwerker_taak_id", equalTo(task.id)))
+        assertThat(body, hasJsonPath("$.record.geometry", nullValue()))
+        assertThat(body, hasJsonPath("$.record.startAt", equalTo(LocalDate.now().toString())))
+        assertThat(body, hasJsonPath("$.record.endAt", nullValue()))
+        assertThat(body, hasJsonPath("$.record.registrationAt", nullValue()))
+        assertThat(body, hasJsonPath("$.record.correctionFor", nullValue()))
+        assertThat(body, hasJsonPath("$.record.correctedBy", nullValue()))
     }
 
-    private fun startPortaalTaakProcess(content: String) {
+    private fun startPortaalTaakProcess(content: String): Task {
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().readTree(content))
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
-        val response = procesDocumentService.newDocumentAndStartProcess(request)
+        val processResult = procesDocumentService.newDocumentAndStartProcess(request)
+        return taskService
+            .createTaskQuery()
+            .active()
+            .processInstanceId(processResult.resultingProcessInstanceId().get().toString())
+            .singleResult()
     }
 
     private fun createObjectManagement(
@@ -149,7 +178,7 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
             title = "Henk",
             objectenApiPluginConfigurationId = objectenApiPluginConfigurationId,
             objecttypenApiPluginConfigurationId = objecttypenApiPluginConfigurationId,
-            objecttypeId = "test"
+            objecttypeId = "object-type-id"
         )
         return objectManagementService.create(objectManagement)
     }
@@ -256,6 +285,7 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
         val dispatcher: Dispatcher = object: Dispatcher() {
             @Throws(InterruptedException::class)
             override fun dispatch(request: RecordedRequest): MockResponse {
+                executedRequests.add(request)
                 val path = request.path?.substringBefore('?')
                 val response = when(path) {
                     "/kanaal" -> getKanaalResponse()
@@ -329,6 +359,12 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
             .setBody(body)
     }
 
+    fun findRequest(method: HttpMethod, path: String): RecordedRequest? {
+        return executedRequests
+            .filter { method.matches(it.method!!) }
+            .firstOrNull { it.path?.substringBefore('?').equals(path) }
+    }
+
     class TestAuthentication: ObjectenApiAuthentication, ObjecttypenApiAuthentication, NotificatiesApiAuthentication {
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
@@ -338,7 +374,6 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
     companion object {
         private const val PROCESS_DEFINITION_KEY = "portaaltaak-process"
         private const val DOCUMENT_DEFINITION_KEY = "profile"
-        private const val INFORMATIE_OBJECT_URL = "http://informatie.object.url"
         private const val ZAAK_URL = "http://zaak.url"
     }
 
