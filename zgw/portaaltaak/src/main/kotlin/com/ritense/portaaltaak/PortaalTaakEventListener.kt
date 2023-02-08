@@ -50,7 +50,7 @@ class PortaalTaakEventListener(
 ) {
 
     @EventListener(NotificatiesApiNotificationReceivedEvent::class)
-    fun somthing(event: NotificatiesApiNotificationReceivedEvent) {
+    fun processCompletePortaalTaakEvent(event: NotificatiesApiNotificationReceivedEvent) {
         val objectType = event.kenmerken["objectType"]
 
         if (!event.kanaal.equals("objecten", ignoreCase = true) ||
