@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.com.ritense.documentenapi
+package com.ritense.documentenapi
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
