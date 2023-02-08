@@ -241,7 +241,7 @@ class PluginService(
         execution: DelegateExecution,
         method: Method,
         actionProperties: ObjectNode?
-    ): Map<Parameter, Any> {
+    ): Map<Parameter, Any?> {
         if (actionProperties == null) {
             return mapOf()
         }
@@ -267,19 +267,25 @@ class PluginService(
             }
 
         return paramValues.mapValues { (param, value) ->
-            if (value != null && value.isTextual) {
+            if (value == null) {
+                null
+            } else if (value.isTextual) {
                 //TODO: possible issue here. resulting placeHolderValue might be a string value of an enum or date
                 val placeHolderValue =
-                    placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
+                    placeHolderValueMap.getOrDefault(value.textValue(), toValue(value, param))
                 if (placeHolderValue::class.java.isAssignableFrom(param.type)) {
                     placeHolderValue
                 } else {
-                    objectMapper.treeToValue(value, param.type)
+                    toValue(value, param)
                 }
             } else {
-                objectMapper.treeToValue(value, param.type)
+                toValue(value, param)
             }
         }
+    }
+
+    private fun <T> toValue(value: JsonNode, param: Parameter): T {
+        return objectMapper.treeToValue(value, objectMapper.constructType(param.parameterizedType))
     }
 
     fun createInstance(pluginConfigurationId: PluginConfigurationId): Any {
