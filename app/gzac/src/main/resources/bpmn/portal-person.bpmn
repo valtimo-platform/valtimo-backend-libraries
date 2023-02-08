@@ -1,133 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0gpytzt" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.6.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0gpytzt" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0">
   <bpmn:process id="portal-person" name="Portal person" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_1" camunda:asyncBefore="true">
+    <bpmn:startEvent id="start-event" camunda:asyncBefore="true">
       <bpmn:outgoing>SequenceFlow_1v7yjor</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:userTask id="verify-name" name="Verify name" camunda:candidateGroups="ROLE_USER">
-      <bpmn:incoming>SequenceFlow_04wt9jh</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0anvpl2</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:sequenceFlow id="SequenceFlow_1v7yjor" sourceRef="StartEvent_1" targetRef="externalIdUpdatedConfirmation" />
-    <bpmn:sequenceFlow id="SequenceFlow_0anvpl2" sourceRef="verify-name" targetRef="external-portal-task" />
-    <bpmn:sequenceFlow id="SequenceFlow_04wt9jh" sourceRef="setStatusPortal" targetRef="verify-name" />
-    <bpmn:serviceTask id="setStatusPortal" name="set status Portal" camunda:asyncBefore="true" camunda:expression="${externalCaseService.publishCaseStatus(&#34;d&#34;, execution)}">
-      <bpmn:incoming>Flow_01trfep</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_04wt9jh</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="SequenceFlow_1662oow" sourceRef="view-portal-case" targetRef="update-case-portal" />
-    <bpmn:userTask id="view-portal-case" name="View Portal case" camunda:candidateGroups="ROLE_USER">
-      <bpmn:incoming>SequenceFlow_0b96cdm</bpmn:incoming>
+    <bpmn:sequenceFlow id="SequenceFlow_1v7yjor" sourceRef="start-event" targetRef="valtimo-task" />
+    <bpmn:sequenceFlow id="SequenceFlow_1662oow" sourceRef="valtimo-task" targetRef="portal-task" />
+    <bpmn:userTask id="valtimo-task" name="Valtimo task" camunda:asyncBefore="true" camunda:candidateGroups="ROLE_USER">
+      <bpmn:incoming>SequenceFlow_1v7yjor</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1662oow</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_0l7qo89" sourceRef="external-portal-task" targetRef="create-public-task-portal" />
-    <bpmn:userTask id="external-portal-task" name="External portal task">
-      <bpmn:extensionElements>
-        <camunda:taskListener expression="${externalTaskService.publishPortalTask(&#39;wizard-portal-voornaam&#39;, task)}" event="create" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>SequenceFlow_0anvpl2</bpmn:incoming>
-      <bpmn:outgoing>Flow_0l7qo89</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:serviceTask id="update-case-portal" name="Update Portal Voornaam" camunda:asyncBefore="true" camunda:expression="${caseMessageSender.execution(execution).put(&#34;/firstName&#34;, &#34;/firstName&#34;).send()}">
+    <bpmn:sequenceFlow id="Flow_01trfep" sourceRef="portal-task" targetRef="end-event-portal-person" />
+    <bpmn:endEvent id="end-event-portal-person">
+      <bpmn:incoming>Flow_01trfep</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="portal-task" name="Portal task" camunda:asyncBefore="true">
       <bpmn:incoming>SequenceFlow_1662oow</bpmn:incoming>
       <bpmn:outgoing>Flow_01trfep</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_01trfep" sourceRef="update-case-portal" targetRef="setStatusPortal" />
-    <bpmn:userTask id="create-public-task-portal" name="Create Public task portal">
-      <bpmn:extensionElements>
-        <camunda:taskListener expression="${taskMessageSender.task(task).form(&#39;wizard-portal-voornaam&#39;).mailTo(&#39;/email&#39;).firstName(&#39;/firstName&#39;).lastName(&#39;/firstName&#39;).languageKey(&#39;nl&#39;).public().sendEmail().publishTask()}" event="create" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0l7qo89</bpmn:incoming>
-      <bpmn:outgoing>Flow_15ap17g</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="SequenceFlow_0b96cdm" sourceRef="externalIdUpdatedConfirmation" targetRef="view-portal-case" />
-    <bpmn:intermediateCatchEvent id="externalIdUpdatedConfirmation" name="External Id Updated Confirmation" camunda:asyncAfter="true">
-      <bpmn:incoming>SequenceFlow_1v7yjor</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0b96cdm</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_0e7wsde" />
-    </bpmn:intermediateCatchEvent>
-    <bpmn:sequenceFlow id="Flow_15ap17g" sourceRef="create-public-task-portal" targetRef="set-status-finished" />
-    <bpmn:serviceTask id="set-status-finished" name="Set status afgerond" camunda:expression="${externalCaseService.publishCaseStatus(&#34;e&#34;, execution)}">
-      <bpmn:incoming>Flow_15ap17g</bpmn:incoming>
-      <bpmn:outgoing>Flow_107v44t</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:endEvent id="end-event-portal-person">
-      <bpmn:incoming>Flow_107v44t</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_107v44t" sourceRef="set-status-finished" targetRef="end-event-portal-person" />
   </bpmn:process>
   <bpmn:message id="Message_0upgj53" name="task-1-completed" />
   <bpmn:message id="Message_0e7wsde" name="externalIdUpdatedConfirmation" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="portal-person">
-      <bpmndi:BPMNEdge id="SequenceFlow_0b96cdm_di" bpmnElement="SequenceFlow_0b96cdm">
-        <di:waypoint x="257" y="121" />
-        <di:waypoint x="297" y="121" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_01trfep_di" bpmnElement="Flow_01trfep">
-        <di:waypoint x="537" y="121" />
-        <di:waypoint x="587" y="121" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0l7qo89_di" bpmnElement="Flow_0l7qo89">
-        <di:waypoint x="1007" y="121" />
-        <di:waypoint x="1057" y="121" />
+        <di:waypoint x="477" y="121" />
+        <di:waypoint x="522" y="121" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1662oow_di" bpmnElement="SequenceFlow_1662oow">
-        <di:waypoint x="397" y="121" />
-        <di:waypoint x="437" y="121" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_04wt9jh_di" bpmnElement="SequenceFlow_04wt9jh">
-        <di:waypoint x="687" y="121" />
-        <di:waypoint x="737" y="121" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0anvpl2_di" bpmnElement="SequenceFlow_0anvpl2">
-        <di:waypoint x="837" y="121" />
-        <di:waypoint x="907" y="121" />
+        <di:waypoint x="337" y="121" />
+        <di:waypoint x="377" y="121" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1v7yjor_di" bpmnElement="SequenceFlow_1v7yjor">
-        <di:waypoint x="192" y="121" />
-        <di:waypoint x="221" y="121" />
+        <di:waypoint x="188" y="121" />
+        <di:waypoint x="237" y="121" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_15ap17g_di" bpmnElement="Flow_15ap17g">
-        <di:waypoint x="1157" y="121" />
-        <di:waypoint x="1210" y="121" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_107v44t_di" bpmnElement="Flow_107v44t">
-        <di:waypoint x="1310" y="121" />
-        <di:waypoint x="1362" y="121" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds x="156" y="103" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_1itfkjy_di" bpmnElement="verify-name">
-        <dc:Bounds x="737" y="81" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_1eme6bt_di" bpmnElement="setStatusPortal">
-        <dc:Bounds x="587" y="81" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_065lf1p_di" bpmnElement="view-portal-case">
-        <dc:Bounds x="297" y="81" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0li4wjb_di" bpmnElement="external-portal-task">
-        <dc:Bounds x="907" y="81" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_06l0mvu_di" bpmnElement="update-case-portal">
-        <dc:Bounds x="437" y="81" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0q8ubag_di" bpmnElement="create-public-task-portal">
-        <dc:Bounds x="1057" y="81" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="IntermediateCatchEvent_0krnkho_di" bpmnElement="externalIdUpdatedConfirmation">
-        <dc:Bounds x="221" y="103" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="208" y="146" width="63" height="40" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1y40pqv_di" bpmnElement="set-status-finished">
-        <dc:Bounds x="1210" y="81" width="100" height="80" />
+      <bpmndi:BPMNShape id="UserTask_065lf1p_di" bpmnElement="valtimo-task">
+        <dc:Bounds x="237" y="81" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_0xv1fp3_di" bpmnElement="end-event-portal-person">
-        <dc:Bounds x="1362" y="103" width="36" height="36" />
+        <dc:Bounds x="522" y="103" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start-event">
+        <dc:Bounds x="152" y="103" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_18p7isb_di" bpmnElement="portal-task">
+        <dc:Bounds x="377" y="81" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
