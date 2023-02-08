@@ -16,10 +16,13 @@
 
 package com.ritense.portaaltaak
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.objectenapi.ObjectenApiPlugin
+import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
+import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -32,18 +35,19 @@ import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import java.net.URI
-import java.util.*
-import kotlin.test.assertEquals
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.net.URI
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 
 internal class PortaaltaakPluginTest {
@@ -92,10 +96,16 @@ internal class PortaaltaakPluginTest {
         val kvk = null
         val zakenApiPlugin = mock<ZakenApiPlugin>()
         val objectenApiPlugin = mock<ObjectenApiPlugin>()
+        val objecttypenApiPlugin = mock<ObjecttypenApiPlugin>()
 
-        whenever(objectManagementService.getById(any())).thenReturn(getObjectManagement())
-        whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(objectenApiPlugin)
+        val objectManagement = getObjectManagement()
+        val objectTypeUrl = URI("https://example.com/")
+
+        whenever(objectManagementService.getById(any())).thenReturn(objectManagement)
+        whenever(pluginService.createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId))).thenReturn(objectenApiPlugin)
+        whenever(pluginService.createInstance(PluginConfigurationId(objectManagement.objecttypenApiPluginConfigurationId))).thenReturn(objecttypenApiPlugin)
         whenever(pluginService.createInstance(any<Class<ZakenApiPlugin>>(), any())).thenReturn(zakenApiPlugin)
+        whenever(objecttypenApiPlugin.getObjectTypeUrlById(any())).thenReturn(objectTypeUrl)
         whenever(delegateTask.processInstanceId).thenReturn(UUID.randomUUID().toString())
         whenever(zaakInstanceLinkService.getByDocumentId(any())).thenReturn(getZaakInstanceLink())
         whenever(jsonSchemaDocumentId.id).thenReturn(UUID.randomUUID())
@@ -105,6 +115,7 @@ internal class PortaaltaakPluginTest {
         whenever(delegateTask.id).thenReturn("delegateTaskId")
         whenever(jsonSchemaDocumentId.toString()).thenReturn("documentId")
         whenever(valueResolverService.resolveValues(any(), any())).thenReturn(emptyMap())
+        whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
 
         portaaltaakPlugin.createPortaalTaak(
             delegateTask,
@@ -118,17 +129,25 @@ internal class PortaaltaakPluginTest {
             kvk,
             bsn
         )
-        verify(pluginService, times(1)).createInstance(any<PluginConfigurationId>())
-        verify(pluginService, times(1)).createInstance(any<Class<ZakenApiPlugin>>(), any())
-        verify(objectManagementService, times(1)).getById(any())
-        verify(delegateTask, times(2)).processInstanceId
-        verify(delegateTask, times(1)).id
-        verify(delegateTask, times(1)).name
-        verify(zaakInstanceLinkService, times(1)).getByDocumentId(any())
-        verify(jsonSchemaDocumentId, times(1)).id
-        verify(processDocumentService, times(2)).getDocumentId(any(), any<DelegateTask>())
-        verify(zakenApiPlugin, times(1)).getZaakRollen(any(), any())
-        verify(valueResolverService, times(1)).resolveValues(any(), any())
+
+        val captor = argumentCaptor<ObjectRequest>()
+
+        verify(objectenApiPlugin).createObject(captor.capture())
+
+        val objectRequest = captor.firstValue
+        assertEquals(objectTypeUrl, objectRequest.type)
+        assertEquals(objectManagement.objecttypeVersion, objectRequest.record.typeVersion)
+
+        val taakObject = jacksonObjectMapper()
+            .treeToValue(objectRequest.record.data, TaakObject::class.java)
+
+        assertNotNull(taakObject.identificatie)
+        assertNotNull(taakObject.data)
+        assertEquals(delegateTask.name, taakObject.title)
+        assertEquals(TaakStatus.OPEN, taakObject.status)
+        assertNotNull(taakObject.formulier)
+        assertEquals(delegateTask.id, taakObject.verwerkerTaakId)
+        assertNotNull(objectRequest.record.startAt)
 
     }
 
