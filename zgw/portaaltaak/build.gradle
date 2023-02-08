@@ -30,6 +30,7 @@ dependencies {
     implementation project(":value-resolver")
     implementation project(':zgw:object-management')
     implementation project(':zgw:objecten-api')
+    implementation project(':zgw:objecttypen-api')
     implementation project(':zgw:notificaties-api')
     implementation project(':zgw:zaken-api')
 
@@ -42,6 +43,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     //Kotlin
