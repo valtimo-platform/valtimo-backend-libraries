@@ -24,13 +24,18 @@ import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import java.net.URI
-import java.util.UUID
+import java.util.*
 
-class  ZaakInstanceLinkService(
+class ZaakInstanceLinkService(
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
 ) : ZaakInstanceLinkService {
 
-    override fun createZaakInstanceLink(zaakInstanceUrl: URI, zaakInstanceId: UUID, documentId: UUID, zaakTypeUrl: URI): ZaakInstanceLink {
+    override fun createZaakInstanceLink(
+        zaakInstanceUrl: URI,
+        zaakInstanceId: UUID,
+        documentId: UUID,
+        zaakTypeUrl: URI
+    ): ZaakInstanceLink {
         val zaakInstanceLink = ZaakInstanceLink(
             ZaakInstanceLinkId.newId(UUID.randomUUID()),
             zaakInstanceUrl,

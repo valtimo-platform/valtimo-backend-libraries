@@ -23,7 +23,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
-import com.ritense.notificatiesapi.exception.NotificatiesException
+import com.ritense.notificatiesapi.exception.NotificatiesNotifcationEventException
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
@@ -83,7 +83,7 @@ class PortaalTaakEventListener(
                     )
                 }
 
-                else -> throw NotificatiesException("", HttpStatus.INTERNAL_SERVER_ERROR)
+                else -> throw NotificatiesNotifcationEventException("", HttpStatus.INTERNAL_SERVER_ERROR)
             }
         }
     }
@@ -99,7 +99,7 @@ class PortaalTaakEventListener(
             )
         ).also { result ->
             if (result.errors().size > 0) {
-                throw NotificatiesException(
+                throw NotificatiesNotifcationEventException(
                     "Could not update document" +
                             "Reason:\n" +
                             result.errors().joinToString(separator = "\n - "),
@@ -110,15 +110,19 @@ class PortaalTaakEventListener(
     }
 
     internal fun getDocumentenUrls(verzondenData: JsonNode): List<String> {
-        if (verzondenData.isMissingNode || verzondenData.isNull) {
+        val documentPathsNode = verzondenData.at(JsonPointer.valueOf("/documenten"))
+        if (documentPathsNode.isMissingNode || documentPathsNode.isNull) {
             return emptyList()
         }
-        if (!verzondenData.isArray) {
-            throw RuntimeException("Not an array: '/documenten'")
+        if (!documentPathsNode.isArray) {
+            throw NotificatiesNotifcationEventException(
+                "Could not retrieve document Urls.'/documenten' is not an array",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
         }
         val documentenUris = mutableListOf<String>()
-        for (documentPathNode in verzondenData) {
-            val documentUrlNode = verzondenData.at(JsonPointer.valueOf(documentPathNode.textValue()))
+        for (documentPathNode in documentPathsNode) {
+            val documentUrlNode = documentPathsNode.at(JsonPointer.valueOf(documentPathNode.textValue()))
             if (!documentUrlNode.isMissingNode && !documentUrlNode.isNull) {
                 try {
                     if (documentUrlNode.isTextual) {
@@ -126,10 +130,16 @@ class PortaalTaakEventListener(
                     } else if (documentUrlNode.isArray) {
                         documentUrlNode.forEach { documentenUris.add(it.textValue()) }
                     } else {
-                        throw RuntimeException("Invalid URL in '/documenten'. ${documentUrlNode.toPrettyString()}")
+                        throw NotificatiesNotifcationEventException(
+                            "Could not retrieve document Urls. Found invalid URL in '/documenten'. ${documentUrlNode.toPrettyString()}",
+                            HttpStatus.INTERNAL_SERVER_ERROR
+                        )
                     }
                 } catch (e: MalformedURLException) {
-                    throw RuntimeException("Malformed URL in: '/documenten'", e)
+                    throw NotificatiesNotifcationEventException(
+                        "Could not retrieve document Urls. Malformed URL in: '/documenten'",
+                        HttpStatus.INTERNAL_SERVER_ERROR
+                    )
                 }
             }
         }
@@ -156,7 +166,7 @@ class PortaalTaakEventListener(
                 variables
             )
         } catch (ex: RuntimeException) {
-            throw NotificatiesException(
+            throw NotificatiesNotifcationEventException(
                 "Could not start process with definition: $processDefinitionKey and businessKey: $businessKey.\n " +
                         "Reason: ${ex.message}",
                 HttpStatus.INTERNAL_SERVER_ERROR
@@ -172,7 +182,10 @@ class PortaalTaakEventListener(
             pluginService
                 .createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
         return objectenApiPlugin.getObject(URI(event.resourceUrl)).record.data
-            ?: throw NotificatiesException("Portaaltaak meta data was empty!", HttpStatus.INTERNAL_SERVER_ERROR)
+            ?: throw NotificatiesNotifcationEventException(
+                "Portaaltaak meta data was empty!",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
     }
 
 }

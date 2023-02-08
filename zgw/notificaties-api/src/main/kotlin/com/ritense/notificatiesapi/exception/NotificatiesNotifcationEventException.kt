@@ -18,5 +18,5 @@ package com.ritense.notificatiesapi.exception
 
 import org.springframework.http.HttpStatus
 
-class NotificatiesException(message: String?, val status: HttpStatus) : RuntimeException(message) {
+class NotificatiesNotifcationEventException(message: String?, val status: HttpStatus) : RuntimeException(message) {
 }

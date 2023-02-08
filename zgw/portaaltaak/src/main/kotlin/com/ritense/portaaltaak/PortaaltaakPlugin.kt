@@ -33,6 +33,7 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
+import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundException
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
@@ -119,21 +120,27 @@ class PortaaltaakPlugin(
         activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun completePortaalTaak(delegateExecution: DelegateExecution) {
-        val verwerkerTaakId = delegateExecution.getVariable("verwerkerTaakId") as String
-        val objectenApiPluginId = delegateExecution.getVariable("objectenApiPluginConfigurationId") as String
-        val portaalTaakObjectResourceUrl =
-            URI(delegateExecution.getVariable("portaalTaakObjectResourceUrl") as String)
+        val verwerkerTaakId = (delegateExecution.getVariable("verwerkerTaakId")
+            ?: throw CompleteTaakProcessVariableNotFoundException("verwerkerTaakId is required but was not provided")) as String
+        val objectenApiPluginId = (delegateExecution.getVariable("objectenApiPluginConfigurationId")
+            ?: throw CompleteTaakProcessVariableNotFoundException("objectenApiPluginConfigurationId is required but was not provided")) as String
+        val portaalTaakObjectResourceUrl = URI(
+            (delegateExecution.getVariable("portaalTaakObjectResourceUrl")
+                ?: throw CompleteTaakProcessVariableNotFoundException("portaalTaakObjectResourceUrl is required but was not provided")) as String
+        )
+
+
         taskService.complete(verwerkerTaakId)
         val objectenApiPlugin =
             pluginService.createInstance(PluginConfigurationId(UUID.fromString(objectenApiPluginId))) as ObjectenApiPlugin
-        val portaalTaakMetaObject = objectenApiPlugin.getObject(portaalTaakObjectResourceUrl)
+        val portaalTaakMetaDataObject = objectenApiPlugin.getObject(portaalTaakObjectResourceUrl)
         var taakObject: TaakObject = jacksonObjectMapper()
             .convertValue(
-                portaalTaakMetaObject.record.data ?: throw RuntimeException("Portaaltaak meta data was empty!")
+                portaalTaakMetaDataObject.record.data ?: throw RuntimeException("Portaaltaak meta data was empty!")
             )
         taakObject = changeStatus(taakObject, TaakStatus.VERWERKT)
         val portaalTaakMetaObjectUpdated =
-            changeDataInPortalTaakObject(portaalTaakMetaObject, jacksonObjectMapper().convertValue(taakObject))
+            changeDataInPortalTaakObject(portaalTaakMetaDataObject, jacksonObjectMapper().convertValue(taakObject))
         objectenApiPlugin.objectPatch(portaalTaakObjectResourceUrl, portaalTaakMetaObjectUpdated)
     }
 
