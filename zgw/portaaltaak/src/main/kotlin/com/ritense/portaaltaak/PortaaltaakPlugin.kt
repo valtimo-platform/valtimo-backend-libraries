@@ -102,9 +102,9 @@ class PortaaltaakPlugin(
             delegateTask.id
         )
 
-        val objecttypeApiPlugin = pluginService
+        val objecttypenApiPlugin = pluginService
             .createInstance(PluginConfigurationId(objectManagement.objecttypenApiPluginConfigurationId)) as ObjecttypenApiPlugin
-        val objectTypeUrl = objecttypeApiPlugin.getObjectTypeUrlById(objectManagement.objecttypeId)
+        val objectTypeUrl = objecttypenApiPlugin.getObjectTypeUrlById(objectManagement.objecttypeId)
 
         val createObjectRequest = ObjectRequest(
             objectTypeUrl,
