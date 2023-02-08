@@ -16,7 +16,6 @@
 
 package com.ritense.plugin.service
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -50,12 +49,9 @@ import com.ritense.valueresolver.ValueResolverService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
-import org.springframework.core.ParameterizedTypeReference
 import org.springframework.data.repository.findByIdOrNull
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
-import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
 import java.util.UUID
 import javax.validation.ValidationException
 import kotlin.reflect.full.findAnnotation
@@ -299,20 +295,7 @@ class PluginService(
                 valueResolverService.resolveValues(execution.processInstanceId, execution, values.toList())
             }
 
-        return paramValues.mapValues { (param, value) ->
-            if (value.isTextual) {
-                //TODO: possible issue here. resulting placeHolderValue might be a string value of an enum or date
-                val placeHolderValue =
-                    placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
-                if (placeHolderValue::class.java.isAssignableFrom(param.type)) {
-                    placeHolderValue
-                } else {
-                    objectMapper.treeToValue(value, param.type)
-                }
-            } else {
-                objectMapper.treeToValue(value, param.type)
-            }
-        }
+        return mapActionParamValues(paramValues, placeHolderValueMap)
     }
 
     private fun resolveActionParamValues(
@@ -354,24 +337,20 @@ class PluginService(
             if (value.isTextual) {
                 //TODO: possible issue here. resulting placeHolderValue might be a string value of an enum or date
                 val placeHolderValue =
-                    placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
+                    placeHolderValueMap.getOrDefault(value.textValue(), toValue(value, param))
                 if (placeHolderValue::class.java.isAssignableFrom(param.type)) {
                     placeHolderValue
                 } else {
-                    objectMapper.convertValue(value, ConversionTypeReference(param.parameterizedType))
+                    toValue(value, param)
                 }
             } else {
-                objectMapper.convertValue(value, ConversionTypeReference(param.parameterizedType))
+                toValue(value, param)
             }
         }
     }
 
-    class ConversionTypeReference(
-        private val theType: Type
-    ): TypeReference<Any>() {
-        override fun getType(): Type {
-            return theType
-        }
+    private fun <T> toValue(value: JsonNode, param: Parameter): T {
+        return objectMapper.treeToValue(value, objectMapper.constructType(param.parameterizedType))
     }
 
     fun createInstance(pluginConfigurationId: PluginConfigurationId): Any {
