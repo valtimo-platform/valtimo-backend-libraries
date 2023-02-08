@@ -52,7 +52,7 @@ class PortaaltaakAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(PortaaltaakPluginFactory::class)
+    @ConditionalOnMissingBean(PortaalTaakEventListener::class)
     fun portaalTaakEventListener(
         pluginService: PluginService,
         objectManagementService: ObjectManagementService,

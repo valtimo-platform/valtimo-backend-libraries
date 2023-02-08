@@ -175,7 +175,7 @@ class PortaaltaakPlugin(
                     ?: throw IllegalStateException("Could not find identification value in configuration for type ${otherReceiver.key}")
 
                 TaakIdentificatie(
-                    otherReceiver.key,
+                    otherReceiver.name,
                     identificationValue
                 )
             }
