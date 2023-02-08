@@ -77,13 +77,14 @@ class PortaalTaakEventListener(
                     startProcessToUploadDocuments(
                         taakObject,
                         this.uploadedDocumentsHandlerProcess,
-                        task.processInstanceId
+                        task.processInstanceId,
+                        objectManagement.objectenApiPluginConfigurationId.toString(),
+                        event.resourceUrl
                     )
                 }
 
                 else -> throw NotificatiesException("", HttpStatus.INTERNAL_SERVER_ERROR)
             }
-            //todo create service to Complete the camunda task
         }
     }
 
@@ -138,9 +139,13 @@ class PortaalTaakEventListener(
     internal fun startProcessToUploadDocuments(
         taakObject: TaakObject,
         processDefinitionKey: String,
-        businessKey: String
+        businessKey: String,
+        objectenApiPluginConfigurationId: String,
+        portaalTaakObjectResourceUrl: String
     ) {
-        val variables = mapOf<String, Any>(
+        val variables = mapOf(
+            "portaalTaakObjectResourceUrl" to portaalTaakObjectResourceUrl,
+            "objectenApiPluginConfigurationId" to objectenApiPluginConfigurationId,
             "verwerkerTaakId" to taakObject.verwerkerTaakId,
             "documentUrls" to getDocumentenUrls(jacksonObjectMapper().valueToTree(taakObject.verzondenData))
         )

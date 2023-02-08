@@ -38,14 +38,16 @@ class PortaaltaakAutoConfiguration {
         objectManagementService: ObjectManagementService,
         valueResolverService: ValueResolverService,
         processDocumentService: ProcessDocumentService,
-        zaakInstanceLinkService: ZaakInstanceLinkService
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        taskService: TaskService
     ): PortaaltaakPluginFactory {
         return PortaaltaakPluginFactory(
             pluginService,
             objectManagementService,
             valueResolverService,
             processDocumentService,
-            zaakInstanceLinkService
+            zaakInstanceLinkService,
+            taskService
         )
     }
 

@@ -22,6 +22,9 @@ import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.objectenapi.ObjectenApiPlugin
+import com.ritense.objectenapi.client.ObjectRecord
+import com.ritense.objectenapi.client.ObjectRequest
+import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
@@ -39,7 +42,10 @@ import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import java.net.URI
 import java.util.*
+import org.camunda.bpm.engine.TaskService
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
 
 @Plugin(
@@ -52,7 +58,8 @@ class PortaaltaakPlugin(
     private val pluginService: PluginService,
     private val valueResolverService: ValueResolverService,
     private val processDocumentService: ProcessDocumentService,
-    private val zaakInstanceLinkService: ZaakInstanceLinkService
+    private val zaakInstanceLinkService: ZaakInstanceLinkService,
+    private val taskService: TaskService
 ) {
 
     @PluginProperty(key = "notificatiesApiPluginConfiguration", secret = false)
@@ -68,8 +75,7 @@ class PortaaltaakPlugin(
         key = "create-portaaltaak",
         title = "Create portal task",
         description = "Create a task for a portal by storing it in the Objecten-API",
-        //TODO: change to ActivityType.USER_TASK_CREATE when the user task support has been merged
-        activityTypes = [ActivityType.USER_TASK]
+        activityTypes = [ActivityType.USER_TASK_CREATE]
     )
     fun createPortaalTaak(
         delegateTask: DelegateTask,
@@ -104,6 +110,31 @@ class PortaaltaakPlugin(
         val x = true
         //TODO: create actual object
         //objectenApiPlugin.create
+    }
+
+    @PluginAction(
+        key = "complete-portaaltaak",
+        title = "Complete Portaaltaak",
+        description = "Complete portal task and update status on Objects Api",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun completePortaalTaak(delegateExecution: DelegateExecution) {
+        val verwerkerTaakId = delegateExecution.getVariable("verwerkerTaakId") as String
+        val objectenApiPluginId = delegateExecution.getVariable("objectenApiPluginConfigurationId") as String
+        val portaalTaakObjectResourceUrl =
+            URI(delegateExecution.getVariable("portaalTaakObjectResourceUrl") as String)
+        taskService.complete(verwerkerTaakId)
+        val objectenApiPlugin =
+            pluginService.createInstance(PluginConfigurationId(UUID.fromString(objectenApiPluginId))) as ObjectenApiPlugin
+        val portaalTaakMetaObject = objectenApiPlugin.getObject(portaalTaakObjectResourceUrl)
+        var taakObject: TaakObject = jacksonObjectMapper()
+            .convertValue(
+                portaalTaakMetaObject.record.data ?: throw RuntimeException("Portaaltaak meta data was empty!")
+            )
+        taakObject = changeStatus(taakObject, TaakStatus.VERWERKT)
+        val portaalTaakMetaObjectUpdated =
+            changeDataInPortalTaakObject(portaalTaakMetaObject, jacksonObjectMapper().convertValue(taakObject))
+        objectenApiPlugin.objectPatch(portaalTaakObjectResourceUrl, portaalTaakMetaObjectUpdated)
     }
 
     internal fun getTaakIdentification(
@@ -202,5 +233,37 @@ class PortaaltaakPlugin(
         }
 
         return jacksonObjectMapper().convertValue(taakData)
+    }
+
+    internal fun changeStatus(taakObject: TaakObject, status: TaakStatus): TaakObject {
+        return TaakObject(
+            taakObject.identificatie,
+            taakObject.data,
+            taakObject.title,
+            status,
+            taakObject.formulier,
+            taakObject.verwerkerTaakId,
+            taakObject.verzondenData
+        )
+    }
+
+    private fun changeDataInPortalTaakObject(
+        portaalTaakMetaObject: ObjectWrapper,
+        convertValue: JsonNode
+    ): ObjectRequest {
+        return ObjectRequest(
+            type = portaalTaakMetaObject.type,
+            record = ObjectRecord(
+                data = convertValue,
+                correctedBy = portaalTaakMetaObject.record.correctedBy,
+                endAt = portaalTaakMetaObject.record.endAt,
+                index = portaalTaakMetaObject.record.index,
+                geometry = portaalTaakMetaObject.record.geometry,
+                correctionFor = portaalTaakMetaObject.record.correctionFor,
+                registrationAt = portaalTaakMetaObject.record.registrationAt,
+                startAt = portaalTaakMetaObject.record.startAt,
+                typeVersion = portaalTaakMetaObject.record.typeVersion
+            )
+        )
     }
 }
