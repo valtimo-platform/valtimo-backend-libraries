@@ -13,7 +13,7 @@
     <bpmn:startEvent id="start-event">
       <bpmn:outgoing>Flow_125lm4p</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:callActivity id="retrieve-document-and-link-to-zaak" name="Retrieve Document and link to Zaak" calledElement="retrieve-document-and-link-to-zaak">
+    <bpmn:callActivity id="call-retrieve-document-and-link-to-zaak" name="Retrieve Document and link to Zaak" calledElement="retrieve-document-and-link-to-zaak">
       <bpmn:extensionElements>
         <camunda:in businessKey="#{execution.processBusinessKey}" />
       </bpmn:extensionElements>
@@ -24,8 +24,8 @@
     <bpmn:endEvent id="end-event">
       <bpmn:incoming>Flow_1ti0bgp</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_125lm4p" sourceRef="start-event" targetRef="retrieve-document-and-link-to-zaak" />
-    <bpmn:sequenceFlow id="Flow_1ti0bgp" sourceRef="retrieve-document-and-link-to-zaak" targetRef="end-event" />
+    <bpmn:sequenceFlow id="Flow_125lm4p" sourceRef="start-event" targetRef="call-retrieve-document-and-link-to-zaak" />
+    <bpmn:sequenceFlow id="Flow_1ti0bgp" sourceRef="call-retrieve-document-and-link-to-zaak" targetRef="end-event" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1hhep9j">
@@ -38,7 +38,7 @@
           <dc:Bounds x="235" y="202" width="24" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1vsn7i8_di" bpmnElement="retrieve-document-and-link-to-zaak">
+      <bpmndi:BPMNShape id="Activity_1vsn7i8_di" bpmnElement="call-retrieve-document-and-link-to-zaak">
         <dc:Bounds x="320" y="137" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0oj65uu_di" bpmnElement="end-event">

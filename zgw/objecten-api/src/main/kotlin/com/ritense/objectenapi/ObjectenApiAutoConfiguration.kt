@@ -25,8 +25,8 @@ import com.ritense.objectenapi.service.ZaakObjectDataResolver
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.web.rest.ObjectResource
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
-import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
+import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -64,12 +64,12 @@ class ObjectenApiAutoConfiguration {
 
     @Bean
     fun zaakObjectService(
-        zaakInstanceLinkService: ZaakInstanceLinkService,
+        zaakUrlProvider: ZaakUrlProvider,
         pluginService : PluginService,
         formDefinitionService : FormDefinitionService,
         objectManagementInfoProvider : ObjectManagementInfoProvider
     ): ZaakObjectService {
-        return ZaakObjectService(zaakInstanceLinkService,
+        return ZaakObjectService(zaakUrlProvider,
             pluginService,
             formDefinitionService,
             objectManagementInfoProvider
