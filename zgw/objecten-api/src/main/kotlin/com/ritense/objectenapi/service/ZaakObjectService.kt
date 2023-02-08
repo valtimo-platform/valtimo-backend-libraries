@@ -20,23 +20,29 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.form.domain.FormDefinition
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.ObjectenApiPlugin
+import com.ritense.objectenapi.client.ObjectRecord
+import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
+import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.objecttypenapi.client.Objecttype
-import com.ritense.openzaak.service.ZaakInstanceLinkService
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
+import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
 import mu.KotlinLogging
 import java.net.URI
+import java.time.LocalDate
 import java.util.UUID
 
 class ZaakObjectService(
-    val zaakInstanceLinkService: ZaakInstanceLinkService,
+    val zaakUrlProvider: ZaakUrlProvider,
     val pluginService : PluginService,
-    val formDefinitionService : FormDefinitionService
+    val formDefinitionService : FormDefinitionService,
+    val objectManagementInfoProvider: ObjectManagementInfoProvider
 ) {
     fun getZaakObjectTypes(documentId: UUID): List<Objecttype> {
-        val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
+        val zaakUrl = URI(zaakUrlProvider.getZaak(documentId))
         val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
 
         return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
@@ -67,7 +73,7 @@ class ZaakObjectService(
     }
 
     fun getZaakObjectenOfType(documentId: UUID, typeUrl: URI): List<ObjectWrapper> {
-        val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
+        val zaakUrl = URI(zaakUrlProvider.getZaak(documentId))
         val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
 
         return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
@@ -80,7 +86,7 @@ class ZaakObjectService(
 
     fun getZaakObjectOfTypeByName(documentId: UUID, objecttypeName: String): ObjectWrapper {
         logger.debug { "Getting zaakobject for documentId $documentId and objecttypeName '$objecttypeName'" }
-        val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
+        val zaakUrl = URI(zaakUrlProvider.getZaak(documentId))
         val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
 
         val listOfObjecttypeWithCorrectName = zakenApiPluginInstance.getZaakObjecten(zaakUrl)
@@ -132,6 +138,25 @@ class ZaakObjectService(
         requireNotNull(zakenApiPluginInstance) { "No plugin configuration was found for zaak with URL $zaakUrl" }
 
         return zakenApiPluginInstance
+    }
+
+    fun createObject(objectManagementId: UUID, data: JsonNode) : URI {
+        val objectManagementInfo = objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
+
+        val objecttypeApiPlugin = pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objecttypenApiPluginConfigurationId)) as ObjecttypenApiPlugin
+        val objectTypeUrl = objecttypeApiPlugin.getObjectTypeUrlById(objectManagementInfo.objecttypeId)
+
+        val createObjectRequest = ObjectRequest(
+            objectTypeUrl,
+            ObjectRecord(
+                typeVersion = objectManagementInfo.objecttypeVersion,
+                data = data,
+                startAt = LocalDate.now()
+            )
+        )
+
+        val objectenApiPlugin = pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
+        return objectenApiPlugin.createObject(createObjectRequest).url
     }
 
     companion object {

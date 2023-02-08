@@ -46,15 +46,16 @@ import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
 import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
 import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.valueresolver.ValueResolverService
+import mu.KotlinLogging
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.camunda.bpm.engine.delegate.DelegateTask
+import org.springframework.data.repository.findByIdOrNull
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import java.util.UUID
 import javax.validation.ValidationException
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
-import mu.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.springframework.data.repository.findByIdOrNull
 
 class PluginService(
     private val pluginDefinitionRepository: PluginDefinitionRepository,
@@ -190,7 +191,8 @@ class PluginService(
             activityId = processLink.activityId,
             actionProperties = processLink.actionProperties,
             pluginConfigurationId = PluginConfigurationId.existingId(processLink.pluginConfigurationId),
-            pluginActionDefinitionKey = processLink.pluginActionDefinitionKey
+            pluginActionDefinitionKey = processLink.pluginActionDefinitionKey,
+            activityType = ActivityType.fromValue(processLink.activityType).mapOldActivityTypeToCurrent()
         )
         pluginProcessLinkRepository.save(newProcessLink)
     }
@@ -218,6 +220,14 @@ class PluginService(
         return method.invoke(instance, *methodArguments)
     }
 
+    fun invoke(task: DelegateTask, processLink: PluginProcessLink): Any? {
+        val instance: Any = createInstance(processLink.pluginConfigurationId)
+
+        val method = getActionMethod(instance, processLink)
+        val methodArguments = resolveMethodArguments(method, task, processLink.actionProperties)
+        return method.invoke(instance, *methodArguments)
+    }
+
     private fun resolveMethodArguments(
         method: Method,
         execution: DelegateExecution,
@@ -230,6 +240,25 @@ class PluginService(
             actionParamValueMap[param]
                 ?: if (param.type.isInstance(execution)) {
                     execution
+                } else {
+                    null
+                }
+
+        }.toTypedArray()
+    }
+
+    private fun resolveMethodArguments(
+        method: Method,
+        task: DelegateTask,
+        actionProperties: ObjectNode?
+    ): Array<Any?> {
+
+        val actionParamValueMap = resolveActionParamValues(task, method, actionProperties)
+
+        return method.parameters.map { param ->
+            actionParamValueMap[param]
+                ?: if (param.type.isInstance(task)) {
+                    task
                 } else {
                     null
                 }
@@ -266,6 +295,42 @@ class PluginService(
                 valueResolverService.resolveValues(execution.processInstanceId, execution, values.toList())
             }
 
+        return mapActionParamValues(paramValues, placeHolderValueMap)
+    }
+
+    private fun resolveActionParamValues(
+        task: DelegateTask,
+        method: Method,
+        actionProperties: ObjectNode?
+    ): Map<Parameter, Any> {
+        if (actionProperties == null) {
+            return mapOf()
+        }
+
+        val paramValues = method.parameters.filter { param ->
+            param.isAnnotationPresent(PluginActionProperty::class.java)
+        }.mapNotNull { param ->
+            param to actionProperties.get(param.name)
+        }.toMap()
+
+        // We want to process all placeholder values together to improve performance if external sources are needed.
+        val placeHolderValueMap = method.parameters.filter { param ->
+            param.isAnnotationPresent(PluginActionProperty::class.java)
+        }.mapNotNull { param ->
+            param to actionProperties.get(param.name)
+        }.toMap()
+            .filterValues { it != null && it.isTextual }
+            .mapValues {
+                it.value.textValue()
+            }.run {
+                // Resolve all string values, which might or might not be placeholders.
+                valueResolverService.resolveValues(task.execution.processInstanceId, task.execution, values.toList())
+            }
+
+        return mapActionParamValues(paramValues, placeHolderValueMap)
+    }
+
+    private fun mapActionParamValues(paramValues: Map<Parameter, JsonNode>, placeHolderValueMap: Map<String, Any>): Map<Parameter, Any> {
         return paramValues.mapValues { (param, value) ->
             if (value == null) {
                 null
@@ -296,7 +361,7 @@ class PluginService(
     fun createInstance(pluginConfiguration: PluginConfiguration): Any {
         return pluginFactories.first {
             it.canCreate(pluginConfiguration)
-        }.create(pluginConfiguration)!!
+        }.create(pluginConfiguration)
     }
 
     fun <T> createInstance(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): T? {

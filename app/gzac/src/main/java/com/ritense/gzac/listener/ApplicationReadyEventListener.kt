@@ -54,6 +54,7 @@ import org.camunda.bpm.engine.RepositoryService
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import java.lang.RuntimeException
 import java.net.URI
 import java.util.UUID
 
@@ -116,7 +117,7 @@ class ApplicationReadyEventListener(
             val protaalTaakPluginId = createPortaalTaakPlugin(notificatiesApiPluginId, taakConfigurationId)
             createPortalPersonToPortaalTaakLink(protaalTaakPluginId)
         } catch (ex: Exception) {
-            logger.error { ex }
+            throw RuntimeException("Failed to deploy plugin configurations for development", ex)
         }
     }
 
@@ -349,6 +350,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createZakenApiAuthenticationPlugin(): UUID {
+        logger.debug { "Creating OpenZaak Authentication plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "OpenZaak Authentication",
@@ -374,6 +376,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createNotificatiesApiAuthenticationPlugin(): UUID {
+        logger.debug { "Creating OpenNotificaties Authentication plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "OpenNotificaties Authentication",
@@ -402,6 +405,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createNotificatiesApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        logger.debug { "Creating Notificaties API plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "Notificaties API",
@@ -416,6 +420,7 @@ class ApplicationReadyEventListener(
                     """
                     {
                         "url": "http://localhost:8002/api/v1/",
+                        "callbackUrl": "http://host.docker.internal:8080/api/v1/notificatiesapi/callback",
                         "authenticationPluginConfiguration": "$authenticationPluginConfigurationId"
                     }
                     """
@@ -427,6 +432,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createObjectenApiAuthenticationPlugin(): UUID {
+        logger.debug { "Creating Objecten API Authentication plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "Objecten API Authentication",
@@ -451,6 +457,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createObjectenApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        logger.debug { "Creating Objecten API plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "Objecten API",
@@ -476,6 +483,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createObjecttypenApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        logger.debug { "Creating Objecttypen API plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "Objecttypen API",
@@ -501,6 +509,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createZakenApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        logger.debug { "Creating Zaken API plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "Zaken API",
@@ -526,6 +535,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createCatalogiApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        logger.debug { "Creating Catalogi API plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "Catalogi API",
@@ -551,6 +561,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createVerzoekPlugin(notificatiesApiPluginConfiguration: UUID, objectManagementId: UUID): UUID {
+        logger.debug { "Creating Verzoek lening plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "Verzoek lening",
@@ -585,6 +596,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createSmartDocumentsPlugin(): UUID {
+        logger.debug { "Creating SmartDocuments plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "SmartDocuments",

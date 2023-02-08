@@ -124,7 +124,8 @@ internal class PluginProcessLinkResourceTest {
             pluginConfigurationId = UUID.randomUUID(),
             activityId = "someActivity",
             pluginActionDefinitionKey = "some-plugin-action",
-            actionProperties = properties
+            actionProperties = properties,
+            activityType = "bpmn:ServiceTask:start"
         )
 
         mockMvc.perform(
