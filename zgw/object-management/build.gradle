@@ -39,6 +39,7 @@ dependencies {
     testImplementation project(":core")
     testImplementation project(":resource:local-resource")
     testImplementation project(":test-utils-common")
+    testImplementation project(":zgw:catalogi-api")
     testImplementation project(':zgw:zaken-api')
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
