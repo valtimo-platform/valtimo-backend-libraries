@@ -23,7 +23,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
-import com.ritense.notificatiesapi.exception.NotificatiesNotifcationEventException
+import com.ritense.notificatiesapi.exception.NotificatiesNotificationEventException
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
@@ -73,13 +73,14 @@ class PortaalTaakEventListener(
                 jacksonObjectMapper().convertValue(getPortaalTaakObjectData(objectManagement, event))
             when (taakObject.status) {
                 TaakStatus.INGEDIEND -> {
+                    val task = taskService.createTaskQuery().taskId(taakObject.verwerkerTaakId).singleResult() ?: return
                     if (!pluginService
-                            .processLinkExists(this.id, taakObject.verwerkerTaakId, ActivityType.USER_TASK_CREATE)
+                            .processLinkExists(this.id, task.taskDefinitionKey, ActivityType.USER_TASK_CREATE)
                     ) {
                         return
                     }
 
-                    val task = taskService.createTaskQuery().taskId(taakObject.verwerkerTaakId).singleResult()
+
                     val instance = pluginService.createInstance(this) as PortaaltaakPlugin
                     saveDataInDocument(taakObject, task.processInstanceId, task)
                     startProcessToUploadDocuments(
@@ -91,7 +92,7 @@ class PortaalTaakEventListener(
                     )
                 }
 
-                else -> throw NotificatiesNotifcationEventException("", HttpStatus.INTERNAL_SERVER_ERROR)
+                else -> throw NotificatiesNotificationEventException("", HttpStatus.INTERNAL_SERVER_ERROR)
             }
         }
     }
@@ -107,7 +108,7 @@ class PortaalTaakEventListener(
             )
         ).also { result ->
             if (result.errors().size > 0) {
-                throw NotificatiesNotifcationEventException(
+                throw NotificatiesNotificationEventException(
                     "Could not update document" +
                             "Reason:\n" +
                             result.errors().joinToString(separator = "\n - "),
@@ -123,7 +124,7 @@ class PortaalTaakEventListener(
             return emptyList()
         }
         if (!documentPathsNode.isArray) {
-            throw NotificatiesNotifcationEventException(
+            throw NotificatiesNotificationEventException(
                 "Could not retrieve document Urls.'/documenten' is not an array",
                 HttpStatus.INTERNAL_SERVER_ERROR
             )
@@ -138,13 +139,13 @@ class PortaalTaakEventListener(
                     } else if (documentUrlNode.isArray) {
                         documentUrlNode.forEach { documentenUris.add(it.textValue()) }
                     } else {
-                        throw NotificatiesNotifcationEventException(
+                        throw NotificatiesNotificationEventException(
                             "Could not retrieve document Urls. Found invalid URL in '/documenten'. ${documentUrlNode.toPrettyString()}",
                             HttpStatus.INTERNAL_SERVER_ERROR
                         )
                     }
                 } catch (e: MalformedURLException) {
-                    throw NotificatiesNotifcationEventException(
+                    throw NotificatiesNotificationEventException(
                         "Could not retrieve document Urls. Malformed URL in: '/documenten'",
                         HttpStatus.INTERNAL_SERVER_ERROR
                     )
@@ -174,7 +175,7 @@ class PortaalTaakEventListener(
                 variables
             )
         } catch (ex: RuntimeException) {
-            throw NotificatiesNotifcationEventException(
+            throw NotificatiesNotificationEventException(
                 "Could not start process with definition: $processDefinitionKey and businessKey: $businessKey.\n " +
                         "Reason: ${ex.message}",
                 HttpStatus.INTERNAL_SERVER_ERROR
@@ -190,7 +191,7 @@ class PortaalTaakEventListener(
             pluginService
                 .createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
         return objectenApiPlugin.getObject(URI(event.resourceUrl)).record.data
-            ?: throw NotificatiesNotifcationEventException(
+            ?: throw NotificatiesNotificationEventException(
                 "Portaaltaak meta data was empty!",
                 HttpStatus.INTERNAL_SERVER_ERROR
             )
