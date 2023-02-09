@@ -148,11 +148,12 @@ class ApplicationReadyEventListener(
                             ],
                             "receiveData": [
                                 {
-                                    "key": "doc:firstName",
+                                    "key": "doc:/firstName",
                                     "value": "/firstName"
                                 }
                             ],
-                            "receiver": "zaakInitiator"
+                            "receiver": "other",
+                            "bsn": "569312863"
                         }
                         """.trimIndent()
                     ),
