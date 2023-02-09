@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi
+package com.ritense.catalogiapi.exception
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
-import org.springframework.boot.test.context.TestConfiguration
-
-@SpringBootApplication
-class TestApplication {
-
-    fun main(args: Array<String>) {
-        runApplication<TestApplication>(*args)
-    }
-
-    @TestConfiguration
-    class TestConfig
-}
+class ZaakTypeLinkNotFoundException(message: String) : RuntimeException("No zaak type was found. $message")
