@@ -139,7 +139,7 @@ class ApplicationReadyEventListener(
                         """
                         {
                             "formType": "id",
-                            "formTypeId": " form-portal-task",
+                            "formTypeId": "person",
                             "sendData": [
                                 {
                                     "key": "/firstName",
