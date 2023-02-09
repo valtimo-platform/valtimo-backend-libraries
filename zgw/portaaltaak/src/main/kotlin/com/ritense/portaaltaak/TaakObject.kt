@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 
 class TaakObject(
-    val identificatie: List<TaakIdentificatie>,
+    val identificatie: TaakIdentificatie,
     val data: Map<String, Any>,
     val title: String,
     val status: TaakStatus,

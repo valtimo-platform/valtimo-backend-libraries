@@ -93,7 +93,7 @@ class PortaaltaakPlugin(
         ) as ObjectenApiPlugin
 
         val portaalTaak = TaakObject(
-            listOf(getTaakIdentification(delegateTask, receiver, otherReceiver, kvk, bsn)),
+            getTaakIdentification(delegateTask, receiver, otherReceiver, kvk, bsn),
             getTaakData(delegateTask, sendData),
             delegateTask.name,
             TaakStatus.OPEN,
