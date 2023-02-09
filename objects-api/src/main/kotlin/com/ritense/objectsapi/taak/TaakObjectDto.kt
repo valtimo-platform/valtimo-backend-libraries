@@ -22,7 +22,6 @@ import java.util.UUID
 data class TaakObjectDto(
     val bsn: String?,
     val kvk: String?,
-    val identificatie: List<TaakIdentificatie> = listOf(),
     @JsonProperty("verwerker_taak_id") val verwerkerTaakId: UUID,
     @JsonProperty("formulier_id") val formulierId: String?,
     @JsonProperty("formulier_url") val formulierUrl: String?,
@@ -40,8 +39,3 @@ data class TaakObjectDto(
 enum class TaakObjectStatus {
     open, ingediend, verwerkt, gesloten
 }
-
-data class TaakIdentificatie(
-    val type: String,
-    val value: String,
-)
