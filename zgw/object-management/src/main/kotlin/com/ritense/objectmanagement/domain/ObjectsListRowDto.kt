@@ -18,7 +18,7 @@ package com.ritense.objectmanagement.domain
 
 data class ObjectsListRowDto(
     val id: String,
-    val items: List<ObjectsListItemDto>,
+    var items: List<ObjectsListItemDto>,
 ) {
 
     data class ObjectsListItemDto(
