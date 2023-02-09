@@ -27,6 +27,7 @@ import com.ritense.notificatiesapi.exception.NotificatiesNotifcationEventExcepti
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
@@ -63,20 +64,27 @@ class PortaalTaakEventListener(
         val objectManagement =
             objectManagementService.findByObjectTypeId(objectType.substringAfterLast("/")) ?: return
 
-        // todo need clarification why this is really needed
-        pluginService.createInstance(PortaaltaakPlugin::class.java) { properties: JsonNode
+        pluginService.findPluginConfiguration(PortaaltaakPlugin::class.java) { properties: JsonNode
             ->
             properties.get("objectManagementConfigurationId").textValue().equals(objectManagement.id.toString())
         }?.run {
+
             val taakObject: TaakObject =
                 jacksonObjectMapper().convertValue(getPortaalTaakObjectData(objectManagement, event))
             when (taakObject.status) {
                 TaakStatus.INGEDIEND -> {
+                    if (!pluginService
+                            .processLinkExists(this.id, taakObject.verwerkerTaakId, ActivityType.USER_TASK_CREATE)
+                    ) {
+                        return
+                    }
+
                     val task = taskService.createTaskQuery().taskId(taakObject.verwerkerTaakId).singleResult()
+                    val instance = pluginService.createInstance(this) as PortaaltaakPlugin
                     saveDataInDocument(taakObject, task.processInstanceId, task)
                     startProcessToUploadDocuments(
                         taakObject,
-                        this.uploadedDocumentsHandlerProcess,
+                        instance.uploadedDocumentsHandlerProcess,
                         task.processInstanceId,
                         objectManagement.objectenApiPluginConfigurationId.toString(),
                         event.resourceUrl
