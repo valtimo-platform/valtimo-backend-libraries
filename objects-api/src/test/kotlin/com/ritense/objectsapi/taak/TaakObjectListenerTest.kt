@@ -80,12 +80,11 @@ internal class TaakObjectListenerTest {
             GenericObject(
                 UUID.randomUUID(), "http://example.com", "taak", ObjectRecord(
                     1, "2022-01-01", TaakObjectDto(
-                        bsn = "bsn",
-                        kvk = "kvk",
                         verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
                         formulierId = "some-form",
                         formulierUrl = "some-url",
-                        status = TaakObjectStatus.ingediend
+                        status = TaakObjectStatus.ingediend,
+                        identificatie = TaakIdentificatie("bsn", "0123456789")
                     )
                 )
             )
@@ -222,12 +221,11 @@ internal class TaakObjectListenerTest {
             GenericObject(
                 UUID.randomUUID(), "http://example.com", "taak", ObjectRecord(
                     1, "2022-01-01", TaakObjectDto(
-                        bsn = "bsn",
-                        kvk = "kvk",
                         verwerkerTaakId = UUID.fromString("0155b054-ceb1-42ab-888b-c522b203685e"),
                         formulierId = "some-form",
                         formulierUrl = "some-url",
-                        status = TaakObjectStatus.ingediend
+                        status = TaakObjectStatus.ingediend,
+                        identificatie = TaakIdentificatie("bsn", "0123456789")
                     )
                 )
             )

@@ -20,9 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.UUID
 
 data class TaakObjectDto(
-    val bsn: String?,
-    val kvk: String?,
-    val identificatie: List<TaakIdentificatie> = listOf(),
+    val identificatie: TaakIdentificatie,
     @JsonProperty("verwerker_taak_id") val verwerkerTaakId: UUID,
     @JsonProperty("formulier_id") val formulierId: String?,
     @JsonProperty("formulier_url") val formulierUrl: String?,
@@ -32,7 +30,6 @@ data class TaakObjectDto(
     val title: String? = null
 ) {
     init {
-        require(kvk != null || bsn != null) { "BSN and/or KvK number is required!" }
         require(formulierId != null || formulierUrl != null) { "Form ID or Form URL is required!" }
     }
 }

@@ -94,7 +94,7 @@ internal class TaakObjectConnectorTest {
         val capturedObjectRequest = captor.firstValue
         Assertions.assertThat(capturedObjectRequest.record.data).containsAllEntriesOf(
             mapOf(
-                "bsn" to "my-bsn",
+                "identificatie" to mapOf("type" to "bsn", "value" to "my-bsn"),
                 "data" to mapOf("my-var" to "somevalue"),
                 "formulier_id" to "my-form-id",
                 "title" to "my-task-name"
@@ -126,7 +126,7 @@ internal class TaakObjectConnectorTest {
         val capturedObjectRequest = captor.firstValue
         Assertions.assertThat(capturedObjectRequest.record.data).containsAllEntriesOf(
             mapOf(
-                "bsn" to "my-bsn",
+                "identificatie" to mapOf("type" to "bsn", "value" to "my-bsn"),
                 "data" to mapOf("my-var" to "somevalue"),
                 "formulier_url" to "http://localhost:8000/api/v2/objects/7d5f985a-a0c4-4b4b-8550-2be98160e777",
                 "title" to "my-task-name"
