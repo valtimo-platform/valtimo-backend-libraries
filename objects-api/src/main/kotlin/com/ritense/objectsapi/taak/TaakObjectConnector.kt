@@ -128,22 +128,9 @@ class TaakObjectConnector(
         formulierId: String?,
         formulierUrl: String?,
     ): TaakObjectDto {
-        val bsn = bsnProvider?.getBurgerServiceNummer(task)
-        val kvk = kvkProvider?.getKvkNummer(task)
-        val identificaties = mutableListOf<TaakIdentificatie>()
-        if (bsn != null) {
-            identificaties += TaakIdentificatie("bsn", bsn)
-        }
-        if (kvk != null) {
-            identificaties += TaakIdentificatie("kvk", kvk)
-        }
-        if (kvk == null && bsn == null) {
-            throw IllegalStateException("Unable to find the 'Initiator' of task '${task.id}'")
-        }
         val taakObject = TaakObjectDto(
-            bsn = bsn,
-            kvk = kvk,
-            identificatie = identificaties,
+            bsn = bsnProvider?.getBurgerServiceNummer(task),
+            kvk = kvkProvider?.getKvkNummer(task),
             verwerkerTaakId = UUID.fromString(task.id),
             formulierId = formulierId,
             formulierUrl = formulierUrl,
