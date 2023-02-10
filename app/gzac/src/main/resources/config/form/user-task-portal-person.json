@@ -8,19 +8,12 @@
     },
     "components": [
         {
-            "label": "HTML",
-            "attrs": [
-                {
-                    "attr": "",
-                    "value": ""
-                }
-            ],
-            "content": "Click 'Submit' to complete the task.",
-            "refreshOnChange": false,
-            "key": "html",
-            "type": "htmlelement",
-            "input": false,
-            "tableView": false
+            "label": "Voornaam",
+            "tableView": true,
+            "key": "firstName",
+            "defaultValue": "John",
+            "type": "textfield",
+            "input": true
         },
         {
             "type": "button",

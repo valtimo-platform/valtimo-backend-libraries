@@ -115,13 +115,14 @@ class ApplicationReadyEventListener(
             createVerzoekPlugin(notificatiesApiPluginId, bezwaarConfigurationId)
             createSmartDocumentsPlugin()
             val protaalTaakPluginId = createPortaalTaakPlugin(notificatiesApiPluginId, taakConfigurationId)
-            createPortalPersonToPortaalTaakLink(protaalTaakPluginId)
+            createPortaalTaakLink(protaalTaakPluginId)
+            completePortaalTaakLink(protaalTaakPluginId)
         } catch (ex: Exception) {
             throw RuntimeException("Failed to deploy plugin configurations for development", ex)
         }
     }
 
-    private fun createPortalPersonToPortaalTaakLink(protaalTaakPluginId: UUID) {
+    private fun createPortaalTaakLink(protaalTaakPluginId: UUID) {
         val portalPersonProcessDefinitionId = repositoryService.createProcessDefinitionQuery()
             .processDefinitionKey("portal-person")
             .latestVersion()
@@ -143,7 +144,7 @@ class ApplicationReadyEventListener(
                             "sendData": [
                                 {
                                     "key": "/firstName",
-                                    "value": "John"
+                                    "value": "doc:/firstName"
                                 }
                             ],
                             "receiveData": [
@@ -157,6 +158,26 @@ class ApplicationReadyEventListener(
                         }
                         """.trimIndent()
                     ),
+                )
+            )
+        }
+    }
+
+    private fun completePortaalTaakLink(protaalTaakPluginId: UUID) {
+        val portaaltaakUploadedProcessDefinitionId = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("process-portaaltaak-uploaded-documents")
+            .latestVersion()
+            .singleResult()
+            .id
+        if (pluginService.getProcessLinks(portaaltaakUploadedProcessDefinitionId, "complete-portaaltaak").isEmpty()) {
+            pluginService.createProcessLink(
+                PluginProcessLinkCreateDto(
+                    processDefinitionId = portaaltaakUploadedProcessDefinitionId,
+                    activityId = "complete-portaaltaak",
+                    activityType = "bpmn:ServiceTask:start",
+                    pluginConfigurationId = protaalTaakPluginId,
+                    pluginActionDefinitionKey = "complete-portaaltaak",
+                    actionProperties = jacksonObjectMapper().createObjectNode(),
                 )
             )
         }

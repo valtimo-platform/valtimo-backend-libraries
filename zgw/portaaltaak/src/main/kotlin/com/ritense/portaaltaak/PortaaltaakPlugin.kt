@@ -281,7 +281,6 @@ class PortaaltaakPlugin(
                 endAt = portaalTaakMetaObject.record.endAt,
                 index = portaalTaakMetaObject.record.index,
                 geometry = portaalTaakMetaObject.record.geometry,
-                correctionFor = portaalTaakMetaObject.record.correctionFor,
                 registrationAt = portaalTaakMetaObject.record.registrationAt,
                 startAt = portaalTaakMetaObject.record.startAt,
                 typeVersion = portaalTaakMetaObject.record.typeVersion

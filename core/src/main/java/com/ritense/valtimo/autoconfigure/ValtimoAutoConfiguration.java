@@ -39,7 +39,6 @@ import com.ritense.valtimo.security.permission.TaskAccessPermission;
 import com.ritense.valtimo.security.permission.ValtimoPermissionEvaluator;
 import com.ritense.valtimo.service.AuthorizedUsersService;
 import com.ritense.valtimo.service.BpmnModelService;
-import com.ritense.valtimo.service.BpmnTaskService;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
@@ -183,14 +182,6 @@ public class ValtimoAutoConfiguration {
             runtimeService,
             userManagementService
         );
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(BpmnTaskService.class)
-    public BpmnTaskService bpmnTaskService(
-        final TaskService taskService
-    ) {
-        return new BpmnTaskService(taskService);
     }
 
     @Bean
