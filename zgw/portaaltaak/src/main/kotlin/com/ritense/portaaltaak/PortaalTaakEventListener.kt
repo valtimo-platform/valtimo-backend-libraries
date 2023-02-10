@@ -88,7 +88,7 @@ class PortaalTaakEventListener(
                     val receiveData = getReceiveDataActionProperty(task, it.id.id) ?: return
 
                     val instance = pluginService.createInstance(it) as PortaaltaakPlugin
-                    saveDataInDocument(taakObject, task.processInstanceId, task, receiveData)
+                    saveDataInDocument(taakObject, task, receiveData)
                     startProcessToUploadDocuments(
                         taakObject,
                         instance.uploadedDocumentsHandlerProcess,
@@ -119,35 +119,15 @@ class PortaalTaakEventListener(
 
     internal fun saveDataInDocument(
         taakObject: TaakObject,
-        processInstanceId: String,
         task: Task,
         receiveData: List<DataBindingConfig>
     ) {
-        val document =
-            processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), task as TaskEntity)
-        val task = camundaTaskService.findTaskById(taakObject.verwerkerTaakId)
         if (!taakObject.verzondenData.isNullOrEmpty()) {
             val processInstanceId = CamundaProcessInstanceId(task.processInstanceId)
             val variableScope = getVariableScope(task)
-            val taakObjectData = jacksonObjectMapper().valueToTree<JsonNode>(taakObject.verzondenData)
+            val taakObjectData = objectMapper.valueToTree<JsonNode>(taakObject.verzondenData)
             val resolvedValues = getResolvedValues(receiveData, taakObjectData)
             handleTaakObjectData(processInstanceId, variableScope, resolvedValues)
-        }
-        documentService.modifyDocument(
-            ModifyDocumentRequest(
-                document.id().toString(),
-                jacksonObjectMapper().valueToTree(taakObject.verzondenData),
-                document.version().toString()
-            )
-        ).also { result ->
-            if (result.errors().size > 0) {
-                throw NotificatiesNotificationEventException(
-                    "Could not update document" +
-                            "Reason:\n" +
-                            result.errors().joinToString(separator = "\n - "),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-                )
-            }
         }
     }
 
@@ -197,7 +177,7 @@ class PortaalTaakEventListener(
         }
         val documentenUris = mutableListOf<String>()
         for (documentPathNode in documentPathsNode) {
-            val documentUrlNode = documentPathsNode.at(JsonPointer.valueOf(documentPathNode.textValue()))
+            val documentUrlNode = verzondenData.at(JsonPointer.valueOf(documentPathNode.textValue()))
             if (!documentUrlNode.isMissingNode && !documentUrlNode.isNull) {
                 try {
                     if (documentUrlNode.isTextual) {
