@@ -88,7 +88,7 @@ class PortaalTaakEventListener(
                     val receiveData = getReceiveDataActionProperty(task, it.id.id) ?: return
 
                     val instance = pluginService.createInstance(it) as PortaaltaakPlugin
-                    saveDataInDocument(taakObject, task.processInstanceId, task, receiveData)
+                    saveDataInDocument(taakObject, task, receiveData)
                     startProcessToUploadDocuments(
                         taakObject,
                         instance.uploadedDocumentsHandlerProcess,
@@ -119,7 +119,6 @@ class PortaalTaakEventListener(
 
     internal fun saveDataInDocument(
         taakObject: TaakObject,
-        processInstanceId: String,
         task: Task,
         receiveData: List<DataBindingConfig>
     ) {
@@ -178,7 +177,7 @@ class PortaalTaakEventListener(
         }
         val documentenUris = mutableListOf<String>()
         for (documentPathNode in documentPathsNode) {
-            val documentUrlNode = documentPathsNode.at(JsonPointer.valueOf(documentPathNode.textValue()))
+            val documentUrlNode = verzondenData.at(JsonPointer.valueOf(documentPathNode.textValue()))
             if (!documentUrlNode.isMissingNode && !documentUrlNode.isNull) {
                 try {
                     if (documentUrlNode.isTextual) {
