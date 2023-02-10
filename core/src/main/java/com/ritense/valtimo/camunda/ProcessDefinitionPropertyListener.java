@@ -20,13 +20,10 @@ import com.ritense.valtimo.domain.processdefinition.ProcessDefinitionProperties;
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent;
 import com.ritense.valtimo.processdefinition.repository.ProcessDefinitionPropertiesRepository;
 import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty;
 import org.camunda.bpm.model.xml.ModelInstance;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-
-import java.io.ByteArrayInputStream;
 
 public class ProcessDefinitionPropertyListener {
 
@@ -55,9 +52,8 @@ public class ProcessDefinitionPropertyListener {
 
     @EventListener(ProcessDefinitionDeployedEvent.class)
     public void onProcessDefinitionParsedEvent(ProcessDefinitionDeployedEvent event) {
-        var processDefinitionResource = event.getDeployment().getResource(event.getProcessDefinition().getResourceName());
-        var bpmnModelInstance = Bpmn.readModelFromStream(new ByteArrayInputStream(processDefinitionResource.getBytes()));
-        saveProcessDefinitionProperties(event.getProcessDefinition().getKey(), isSystemProcess(bpmnModelInstance));
+        var bpmnModelInstance = event.getProcessDefinitionModelInstance();
+        saveProcessDefinitionProperties(event.getProcessDefinitionKey(), isSystemProcess(bpmnModelInstance));
     }
 
     private void saveProcessDefinitionProperties(String processDefinitionKey, boolean systemProcess) {
