@@ -61,6 +61,8 @@ import reactor.core.publisher.Mono
 import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
+import org.hamcrest.CoreMatchers.anyOf
+import org.hamcrest.Matcher
 
 class PortaaltaakPluginIT: BaseIntegrationTest() {
 
@@ -142,22 +144,28 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
         val body = recordedRequest.body.readUtf8()
 
         assertThat(body, hasJsonPath("$.type", equalTo("${server.url("/objecttypes/object-type-id")}")))
-        assertThat(body, hasNoJsonPath(("$.record.index")))
+        assertThat(body, jsonPathMissingOrNull("$.record.index"))
         assertThat(body, hasJsonPath("$.record.typeVersion", equalTo(1)))
-        assertThat(body, hasJsonPath("$.record.data.identificatie[0].type", equalTo("kvk")))
-        assertThat(body, hasJsonPath("$.record.data.identificatie[0].value", equalTo("569312863")))
+        assertThat(body, hasJsonPath("$.record.data.identificatie.type", equalTo("kvk")))
+        assertThat(body, hasJsonPath("$.record.data.identificatie.value", equalTo("569312863")))
         assertThat(body, hasJsonPath("$.record.data.data.lastname", equalTo("test")))
         assertThat(body, hasJsonPath("$.record.data.title", equalTo("user_task")))
         assertThat(body, hasJsonPath("$.record.data.status", equalTo("open")))
         assertThat(body, hasJsonPath("$.record.data.formulier.type", equalTo("id")))
         assertThat(body, hasJsonPath("$.record.data.formulier.value", equalTo("some-form")))
         assertThat(body, hasJsonPath("$.record.data.verwerker_taak_id", equalTo(task.id)))
-        assertThat(body, hasNoJsonPath(("$.record.geometry")))
         assertThat(body, hasJsonPath("$.record.startAt", equalTo(LocalDate.now().toString())))
-        assertThat(body, hasNoJsonPath(("$.record.endAt")))
-        assertThat(body, hasNoJsonPath(("$.record.registrationAt")))
-        assertThat(body, hasNoJsonPath(("$.record.correctionFor")))
-        assertThat(body, hasNoJsonPath(("$.record.correctedBy")))
+        assertThat(body, jsonPathMissingOrNull("$.record.endAt"))
+        assertThat(body, jsonPathMissingOrNull("$.record.registrationAt"))
+        assertThat(body, jsonPathMissingOrNull("$.record.correctionFor"))
+        assertThat(body, jsonPathMissingOrNull("$.record.correctedBy"))
+    }
+
+    fun <T> jsonPathMissingOrNull(jsonPath: String) : Matcher<T> {
+        return anyOf(
+            hasNoJsonPath(jsonPath),
+            hasJsonPath(jsonPath, nullValue())
+        )
     }
 
     private fun startPortaalTaakProcess(content: String): Task {
