@@ -154,6 +154,7 @@ class ApplicationReadyEventListener(
                                 }
                             ],
                             "receiver": "other",
+                            "otherReceiver": "bsn",
                             "bsn": "569312863"
                         }
                         """.trimIndent()
