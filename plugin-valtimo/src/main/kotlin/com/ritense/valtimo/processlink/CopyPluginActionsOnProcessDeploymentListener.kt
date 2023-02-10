@@ -20,27 +20,27 @@ import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
 import mu.KotlinLogging
+import org.camunda.bpm.model.bpmn.instance.FlowNode
 import org.springframework.context.event.EventListener
 
 class CopyPluginActionsOnProcessDeploymentListener(
-    private val pluginProcessLinkRepository: PluginProcessLinkRepository,
+    private val pluginProcessLinkRepository: PluginProcessLinkRepository
 ) {
 
     @EventListener(ProcessDefinitionDeployedEvent::class)
     fun copyPluginLinks(event: ProcessDefinitionDeployedEvent) {
-        val previousProcessDefinitionId = event.processDefinition.previousProcessDefinitionId
+        val previousProcessDefinitionId = event.previousProcessDefinitionId
 
         if (previousProcessDefinitionId != null) {
-            val newProcessDefinitionId = event.processDefinition.id
-            val newActivities = event.processDefinition.activities
+            val modelInstance = event.processDefinitionModelInstance
 
             val newLinks = pluginProcessLinkRepository.findByProcessDefinitionId(previousProcessDefinitionId)
-                .filter { link -> newActivities.any { newActivity -> newActivity.id == link.activityId } }
-                .map { link -> link.copy(id = PluginProcessLinkId.newId(), processDefinitionId = newProcessDefinitionId) }
-
-            newLinks.forEach { newLink ->
-                logger.debug { "Copying plugin action link to newly deployed process. Process: '${newLink.processDefinitionId}', activity: '${newLink.activityId}', plugin action: '${newLink.pluginActionDefinitionKey}'." }
-            }
+                .filter { link -> modelInstance.getModelElementById<FlowNode>(link.activityId) != null }
+                .onEach { link ->
+                    logger.debug { "Copying plugin action link to newly deployed process with id ${event.processDefinitionId}. Activity: '${link.activityId}', plugin action: '${link.pluginActionDefinitionKey}'." }
+                }.map { link ->
+                    link.copy(id = PluginProcessLinkId.newId(), processDefinitionId = event.processDefinitionId)
+                }
 
             pluginProcessLinkRepository.saveAll(newLinks)
         }
