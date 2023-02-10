@@ -22,8 +22,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ritense.document.domain.impl.request.ModifyDocumentRequest
-import com.ritense.document.service.DocumentService
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
 import com.ritense.notificatiesapi.exception.NotificatiesNotificationEventException
 import com.ritense.objectenapi.ObjectenApiPlugin
@@ -35,11 +33,10 @@ import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.service.CamundaProcessService
-import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import java.net.MalformedURLException
 import java.net.URI
-import java.util.*
+import java.util.UUID
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.delegate.VariableScope
@@ -54,8 +51,6 @@ class PortaalTaakEventListener(
     private val processDocumentService: ProcessDocumentService,
     private val processService: CamundaProcessService,
     private val taskService: TaskService,
-    private val camundaTaskService: CamundaTaskService,
-    private val documentService: DocumentService,
     private val runtimeService: RuntimeService,
     private val valueResolverService: ValueResolverService,
     private val objectMapper: ObjectMapper
@@ -87,12 +82,14 @@ class PortaalTaakEventListener(
                     val task = getTaskById(taakObject.verwerkerTaakId) ?: return
                     val receiveData = getReceiveDataActionProperty(task, it.id.id) ?: return
 
-                    val instance = pluginService.createInstance(it) as PortaaltaakPlugin
+                    val portaaltaakPlugin = pluginService.createInstance(it) as PortaaltaakPlugin
+                    val processInstanceId = CamundaProcessInstanceId(task.processInstanceId)
+                    val document = processDocumentService.getDocument(processInstanceId, task as TaskEntity)
                     saveDataInDocument(taakObject, task, receiveData)
                     startProcessToUploadDocuments(
                         taakObject,
-                        instance.uploadedDocumentsHandlerProcess,
-                        task.processInstanceId,
+                        portaaltaakPlugin.uploadedDocumentsHandlerProcess,
+                        document.id().id.toString(),
                         objectManagement.objectenApiPluginConfigurationId.toString(),
                         event.resourceUrl
                     )

@@ -62,8 +62,6 @@ class PortaaltaakAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         processService: CamundaProcessService,
         taskService: TaskService,
-        camundaTaskService: CamundaTaskService,
-        documentService: DocumentService,
         runtimeService: RuntimeService,
         valueResolverService: ValueResolverService,
         objectMapper: ObjectMapper
@@ -74,8 +72,6 @@ class PortaaltaakAutoConfiguration {
             processDocumentService,
             processService,
             taskService,
-            camundaTaskService,
-            documentService,
             runtimeService,
             valueResolverService,
             objectMapper
