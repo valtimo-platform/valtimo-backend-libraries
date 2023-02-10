@@ -123,31 +123,12 @@ class PortaalTaakEventListener(
         task: Task,
         receiveData: List<DataBindingConfig>
     ) {
-        val document =
-            processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), task as TaskEntity)
-        val task = camundaTaskService.findTaskById(taakObject.verwerkerTaakId)
         if (!taakObject.verzondenData.isNullOrEmpty()) {
             val processInstanceId = CamundaProcessInstanceId(task.processInstanceId)
             val variableScope = getVariableScope(task)
-            val taakObjectData = jacksonObjectMapper().valueToTree<JsonNode>(taakObject.verzondenData)
+            val taakObjectData = objectMapper.valueToTree<JsonNode>(taakObject.verzondenData)
             val resolvedValues = getResolvedValues(receiveData, taakObjectData)
             handleTaakObjectData(processInstanceId, variableScope, resolvedValues)
-        }
-        documentService.modifyDocument(
-            ModifyDocumentRequest(
-                document.id().toString(),
-                jacksonObjectMapper().valueToTree(taakObject.verzondenData),
-                document.version().toString()
-            )
-        ).also { result ->
-            if (result.errors().size > 0) {
-                throw NotificatiesNotificationEventException(
-                    "Could not update document" +
-                            "Reason:\n" +
-                            result.errors().joinToString(separator = "\n - "),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-                )
-            }
         }
     }
 
