@@ -16,11 +16,15 @@
 
 package com.ritense.portaaltaak
 
+import com.ritense.document.domain.impl.Mapper
+import com.ritense.document.service.DocumentService
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -46,6 +50,30 @@ class PortaaltaakAutoConfiguration {
             processDocumentService,
             zaakInstanceLinkService,
             taskService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PortaalTaakEventListener::class)
+    fun portaalTaakEventListener(
+        pluginService: PluginService,
+        objectManagementService: ObjectManagementService,
+        processDocumentService: ProcessDocumentService,
+        processService: CamundaProcessService,
+        taskService: TaskService,
+        documentService: DocumentService,
+        runtimeService: RuntimeService,
+        valueResolverService: ValueResolverService
+    ): PortaalTaakEventListener {
+        return PortaalTaakEventListener(
+            objectManagementService,
+            pluginService,
+            processDocumentService,
+            processService,
+            taskService,
+            runtimeService,
+            valueResolverService,
+            Mapper.INSTANCE.get()
         )
     }
 }
