@@ -200,8 +200,8 @@ class PortaaltaakPlugin(
         return requireNotNull(
             initiator.betrokkeneIdentificatie.let {
                 when (it) {
-                    is RolNatuurlijkPersoon -> TaakIdentificatie(OtherTaakReceiver.BSN.name, it.inpBsn)
-                    is RolNietNatuurlijkPersoon -> TaakIdentificatie(OtherTaakReceiver.KVK.name, it.annIdentificatie)
+                    is RolNatuurlijkPersoon -> TaakIdentificatie(OtherTaakReceiver.BSN.key, it.inpBsn)
+                    is RolNietNatuurlijkPersoon -> TaakIdentificatie(OtherTaakReceiver.KVK.key, it.annIdentificatie)
                     else -> null
                 }
             }
