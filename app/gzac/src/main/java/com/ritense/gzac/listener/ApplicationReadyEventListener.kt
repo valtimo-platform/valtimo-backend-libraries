@@ -724,7 +724,8 @@ class ApplicationReadyEventListener(
                     """
                     {
                         "notificatiesApiPluginConfiguration": "$notificatiesApiPluginConfigurationId",
-                        "objectManagementConfigurationId": "$objectManagementConfigurationId"
+                        "objectManagementConfigurationId": "$objectManagementConfigurationId",
+                        "uploadedDocumentsHandlerProcess": "process-portaaltaak-uploaded-documents"
                     }
                     """
                 )
