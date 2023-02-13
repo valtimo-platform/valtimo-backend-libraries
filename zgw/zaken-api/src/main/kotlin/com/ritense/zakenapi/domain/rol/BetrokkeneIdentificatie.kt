@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.exception
+package com.ritense.zakenapi.domain.rol
 
-import org.zalando.problem.AbstractThrowableProblem
-import org.zalando.problem.Exceptional
-import org.zalando.problem.Status
+import com.fasterxml.jackson.annotation.JsonSubTypes
 
-class ZaakInstanceLinkNotFoundException(message: String?) : AbstractThrowableProblem
-    (
-    null,
-    message,
-    Status.NOT_FOUND
-) {
-    override fun getCause(): Exceptional? {
-        return null
-    }
-}
+@JsonSubTypes(
+    value = [
+        JsonSubTypes.Type(value = RolNatuurlijkPersoon::class, name = "natuurlijk_persoon"),
+        JsonSubTypes.Type(value = RolNietNatuurlijkPersoon::class, name = "niet_natuurlijk_persoon")
+    ])
+sealed class BetrokkeneIdentificatie()
