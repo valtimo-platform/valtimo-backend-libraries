@@ -195,7 +195,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         val delegateExecution = DelegateExecutionFake()
         delegateExecution.setVariable("verwerkerTaakId",task.id)
         delegateExecution.setVariable("objectenApiPluginConfigurationId",objectenPlugin.id.id.toString())
-        delegateExecution.setVariable("portaalTaakObjectResourceUrl","http://some.resource/url")
+        delegateExecution.setVariable("portaalTaakObjectUrl","http://some.resource/url")
         val objectenApiPlugin: ObjectenApiPlugin = mock()
         val objectWrapperCaptor = argumentCaptor<ObjectWrapper>()
         val jsonNodeCaptor = argumentCaptor<JsonNode>()
@@ -253,7 +253,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should throw exception due to missing portaalTaakObjectResourceUrl`() {
+    fun `should throw exception due to missing portaalTaakObjectUrl`() {
         val task = startPortaalTaakProcess("""
             {
                 "lastname": "test"
@@ -266,7 +266,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
 
         val result =
             assertThrows<CompleteTaakProcessVariableNotFoundException>{ portaaltaakPlugin.completePortaalTaak(delegateExecution) }
-        assertEquals("portaalTaakObjectResourceUrl is required but was not provided",result.message)
+        assertEquals("portaalTaakObjectUrl is required but was not provided",result.message)
     }
 
 

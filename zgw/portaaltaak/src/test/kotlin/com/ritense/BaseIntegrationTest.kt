@@ -22,6 +22,8 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
+import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.ResourceProvider
 import com.ritense.zakenapi.ZaakUrlProvider
 import org.junit.jupiter.api.Tag
@@ -41,6 +43,12 @@ abstract class BaseIntegrationTest {
 
     @SpyBean
     lateinit var pluginConfigurationRepository: PluginConfigurationRepository
+
+    @SpyBean
+    lateinit var valueResolverService: ValueResolverService
+
+    @SpyBean
+    lateinit var camundaProcessService: CamundaProcessService
 
     @MockBean
     lateinit var resourceService: ResourceService
