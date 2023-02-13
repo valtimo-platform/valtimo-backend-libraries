@@ -43,7 +43,7 @@ import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import java.util.*
+import java.util.UUID
 import org.camunda.bpm.engine.delegate.DelegateTask
 import java.time.LocalDate
 
@@ -57,7 +57,7 @@ class PortaaltaakPlugin(
     private val pluginService: PluginService,
     private val valueResolverService: ValueResolverService,
     private val processDocumentService: ProcessDocumentService,
-    private val zaakInstanceLinkService: ZaakInstanceLinkService
+    private val zaakInstanceLinkService: ZaakInstanceLinkService,
 ) {
 
     @PluginProperty(key = "notificatiesApiPluginConfiguration", secret = false)

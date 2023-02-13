@@ -115,13 +115,13 @@ class ApplicationReadyEventListener(
             createVerzoekPlugin(notificatiesApiPluginId, bezwaarConfigurationId)
             createSmartDocumentsPlugin()
             val protaalTaakPluginId = createPortaalTaakPlugin(notificatiesApiPluginId, taakConfigurationId)
-            createPortalPersonToPortaalTaakLink(protaalTaakPluginId)
+            createPortaalTaakLink(protaalTaakPluginId)
         } catch (ex: Exception) {
             throw RuntimeException("Failed to deploy plugin configurations for development", ex)
         }
     }
 
-    private fun createPortalPersonToPortaalTaakLink(protaalTaakPluginId: UUID) {
+    private fun createPortaalTaakLink(protaalTaakPluginId: UUID) {
         val portalPersonProcessDefinitionId = repositoryService.createProcessDefinitionQuery()
             .processDefinitionKey("portal-person")
             .latestVersion()
@@ -143,7 +143,7 @@ class ApplicationReadyEventListener(
                             "sendData": [
                                 {
                                     "key": "/firstName",
-                                    "value": "John"
+                                    "value": "doc:/firstName"
                                 }
                             ],
                             "receiveData": [
@@ -153,6 +153,7 @@ class ApplicationReadyEventListener(
                                 }
                             ],
                             "receiver": "other",
+                            "otherReceiver": "bsn",
                             "bsn": "569312863"
                         }
                         """.trimIndent()
@@ -237,7 +238,7 @@ class ApplicationReadyEventListener(
             )
         )
         if (result.errors().isEmpty()) {
-            val configResult = objectSyncService.createObjectSyncConfig(
+            objectSyncService.createObjectSyncConfig(
                 request = CreateObjectSyncConfigRequest(
                     connectorInstanceId = result.connectorTypeInstance()!!.id.id,
                     enabled = true,
@@ -386,7 +387,7 @@ class ApplicationReadyEventListener(
         )
         val mapper = JsonMapper.builder()
             .enable(JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER)
-            .build();
+            .build()
         return if (existing.isEmpty()) {
             pluginService.createPluginConfiguration(
                 title = "OpenNotificaties Authentication",
@@ -723,8 +724,7 @@ class ApplicationReadyEventListener(
                     """
                     {
                         "notificatiesApiPluginConfiguration": "$notificatiesApiPluginConfigurationId",
-                        "objectManagementConfigurationId": "$objectManagementConfigurationId",
-                        "uploadedDocumentsHandlerProcess": "process-portaaltaak-uploaded-documents"
+                        "objectManagementConfigurationId": "$objectManagementConfigurationId"
                     }
                     """
                 )

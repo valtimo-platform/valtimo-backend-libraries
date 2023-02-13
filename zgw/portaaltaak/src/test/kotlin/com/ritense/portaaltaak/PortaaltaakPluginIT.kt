@@ -63,8 +63,10 @@ import java.util.Optional
 import java.util.UUID
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.Matcher
+import org.springframework.transaction.annotation.Transactional
 
-class PortaaltaakPluginIT: BaseIntegrationTest() {
+@Transactional
+class PortaaltaakPluginIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var repositoryService: RepositoryService
@@ -85,7 +87,15 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
 
     lateinit var processDefinitionId: String
 
-    lateinit var portaalTaakPlugin: PluginConfiguration
+    lateinit var portaalTaakPluginDefinition: PluginConfiguration
+
+    lateinit var notificatiesApiPlugin: PluginConfiguration
+
+    lateinit var objectenPlugin: PluginConfiguration
+
+    lateinit var objecttypenPlugin: PluginConfiguration
+
+    lateinit var objectManagement: ObjectManagement
 
     protected var executedRequests: MutableList<RecordedRequest> = mutableListOf()
 
@@ -101,11 +111,11 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
         doReturn(TestAuthentication()).whenever(pluginService).createInstance(mockedId)
         doCallRealMethod().whenever(pluginService).createPluginConfiguration(any(), any(), any())
 
-        val notificatiesApiPlugin = createNotificatiesApiPlugin()
-        val objectenPlugin = createObjectenApiPlugin()
-        val objecttypenPlugin = createObjectTypenApiPlugin()
-        val objectManagement = createObjectManagement(objectenPlugin.id.id, objecttypenPlugin.id.id)
-        portaalTaakPlugin = createPortaalTaakPlugin(notificatiesApiPlugin, objectManagement)
+        notificatiesApiPlugin = createNotificatiesApiPlugin()
+        objectenPlugin = createObjectenApiPlugin()
+        objecttypenPlugin = createObjectTypenApiPlugin()
+        objectManagement = createObjectManagement(objectenPlugin.id.id, objecttypenPlugin.id.id)
+        portaalTaakPluginDefinition = createPortaalTaakPlugin(notificatiesApiPlugin, objectManagement)
 
         whenever(zaakUrlProvider.getZaak(any())).thenReturn(ZAAK_URL)
     }
@@ -161,7 +171,7 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
         assertThat(body, jsonPathMissingOrNull("$.record.correctedBy"))
     }
 
-    fun <T> jsonPathMissingOrNull(jsonPath: String) : Matcher<T> {
+    fun <T> jsonPathMissingOrNull(jsonPath: String): Matcher<T> {
         return anyOf(
             hasNoJsonPath(jsonPath),
             hasJsonPath(jsonPath, nullValue())
@@ -269,7 +279,7 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
         return configuration
     }
 
-    private fun createProcessLink(propertiesConfig: String, ) {
+    private fun createProcessLink(propertiesConfig: String) {
         processDefinitionId = repositoryService.createProcessDefinitionQuery()
             .processDefinitionKey(PROCESS_DEFINITION_KEY)
             .latestVersion()
@@ -282,7 +292,7 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
                 processDefinitionId,
                 "user_task",
                 Mapper.INSTANCE.get().readTree(propertiesConfig) as ObjectNode,
-                portaalTaakPlugin.id,
+                portaalTaakPluginDefinition.id,
                 "create-portaaltaak",
                 activityType = ActivityType.USER_TASK_CREATE
             )
@@ -291,12 +301,12 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
 
 
     private fun setupMockObjectenApiServer() {
-        val dispatcher: Dispatcher = object: Dispatcher() {
+        val dispatcher: Dispatcher = object : Dispatcher() {
             @Throws(InterruptedException::class)
             override fun dispatch(request: RecordedRequest): MockResponse {
                 executedRequests.add(request)
                 val path = request.path?.substringBefore('?')
-                val response = when(path) {
+                val response = when (path) {
                     "/kanaal" -> getKanaalResponse()
                     "/abonnement" -> createAbonnementResponse()
                     "/objects" -> createObjectResponse()
@@ -374,7 +384,7 @@ class PortaaltaakPluginIT: BaseIntegrationTest() {
             .firstOrNull { it.path?.substringBefore('?').equals(path) }
     }
 
-    class TestAuthentication: ObjectenApiAuthentication, ObjecttypenApiAuthentication, NotificatiesApiAuthentication {
+    class TestAuthentication : ObjectenApiAuthentication, ObjecttypenApiAuthentication, NotificatiesApiAuthentication {
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
         }

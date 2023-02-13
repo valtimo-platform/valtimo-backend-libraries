@@ -17,11 +17,11 @@
 package com.ritense.openzaak.web.rest.impl
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.web.rest.ZaakInstanceLinkResource
 import com.ritense.openzaak.web.rest.response.ZaakInstanceLinkDTO
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito

@@ -85,7 +85,6 @@ internal class PortaaltaakPluginTest {
 
     @Test
     fun `should create taak object in objects api`() {
-        //todo incomplete
         val formType = TaakFormType.ID
         val formTypeId = "formTypeId"
         val formTypeUrl = "formTypeUrl"
@@ -209,7 +208,6 @@ internal class PortaaltaakPluginTest {
             "Could not find identification value in configuration for type ${OtherTaakReceiver.KVK.key}",
             result.message
         )
-        //todo
     }
 
     @Test

@@ -2,7 +2,6 @@ package com.ritense.zakenapi.domain.rol
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.net.URI
 import kotlin.test.assertEquals
@@ -18,7 +17,7 @@ internal class RolTest {
             URI("http://betrokkene.uri"),
             BetrokkeneType.NATUURLIJK_PERSOON,
             URI("http://role.type"),
-            "role description",
+            "role-description",
             RolNatuurlijkPersoon(
                 inpBsn = "bsn"
             )
@@ -26,13 +25,18 @@ internal class RolTest {
 
         val result = mapper.writeValueAsString(rol)
 
-        val expectation =  "{" +
-            "\"zaak\":\"http://zaak.uri\"," +
-            "\"betrokkene\":\"http://betrokkene.uri\"," +
-            "\"betrokkeneType\":\"natuurlijk_persoon\"," +
-            "\"roltype\":\"http://role.type\"," +
-            "\"roltoelichting\":\"role description\"," +
-            "\"betrokkeneIdentificatie\":{\"inpBsn\":\"bsn\"}}"
+        val expectation =  """
+            {
+                "zaak": "http://zaak.uri",
+                "betrokkene": "http://betrokkene.uri",
+                "betrokkeneType": "natuurlijk_persoon",
+                "roltype": "http://role.type",
+                "roltoelichting": "role-description",
+                "betrokkeneIdentificatie": {
+                    "inpBsn": "bsn"
+                }
+            }
+            """.replace("[ \n]".toRegex(), "")
 
         assertEquals(expectation, result)
     }
@@ -44,7 +48,7 @@ internal class RolTest {
             URI("http://betrokkene.uri"),
             BetrokkeneType.NIET_NATUURLIJK_PERSOON,
             URI("http://role.type"),
-            "role description",
+            "role-description",
             RolNietNatuurlijkPersoon(
                 annIdentificatie = "kvk"
             )
@@ -52,27 +56,35 @@ internal class RolTest {
 
         val result = mapper.writeValueAsString(rol)
 
-        val expectation =  "{" +
-            "\"zaak\":\"http://zaak.uri\"," +
-            "\"betrokkene\":\"http://betrokkene.uri\"," +
-            "\"betrokkeneType\":\"niet_natuurlijk_persoon\"," +
-            "\"roltype\":\"http://role.type\"," +
-            "\"roltoelichting\":\"role description\"," +
-            "\"betrokkeneIdentificatie\":{\"annIdentificatie\":\"kvk\"}}"
-
+        val expectation =  """
+            {
+                "zaak": "http://zaak.uri",
+                "betrokkene": "http://betrokkene.uri",
+                "betrokkeneType": "niet_natuurlijk_persoon",
+                "roltype": "http://role.type",
+                "roltoelichting": "role-description",
+                "betrokkeneIdentificatie": {
+                    "annIdentificatie": "kvk"
+                }
+            }
+            """.replace("[ \n]".toRegex(), "")
         assertEquals(expectation, result)
     }
 
     @Test
     fun `should deserialize natuurlijk persoon`() {
-        val json =   "{" +
-            "\"zaak\":\"http://zaak.uri\"," +
-            "\"betrokkene\":\"http://betrokkene.uri\"," +
-            "\"betrokkeneType\":\"natuurlijk_persoon\"," +
-            "\"roltype\":\"http://role.type\"," +
-            "\"roltoelichting\":\"role description\"," +
-            "\"betrokkeneIdentificatie\":{\"inpBsn\":\"bsn\"}}"
-
+        val json =  """
+            {
+                "zaak": "http://zaak.uri",
+                "betrokkene": "http://betrokkene.uri",
+                "betrokkeneType": "natuurlijk_persoon",
+                "roltype": "http://role.type",
+                "roltoelichting": "role description",
+                "betrokkeneIdentificatie": {
+                    "inpBsn": "bsn"
+                }
+            }
+            """.replace("[ \n]".toRegex(), "")
 
         val result = mapper.readValue(json, Rol::class.java)
 
@@ -82,14 +94,18 @@ internal class RolTest {
 
     @Test
     fun `should deserialize niet natuurlijk persoon`() {
-        val json =   "{" +
-            "\"zaak\":\"http://zaak.uri\"," +
-            "\"betrokkene\":\"http://betrokkene.uri\"," +
-            "\"betrokkeneType\":\"niet_natuurlijk_persoon\"," +
-            "\"roltype\":\"http://role.type\"," +
-            "\"roltoelichting\":\"role description\"," +
-            "\"betrokkeneIdentificatie\":{\"annIdentificatie\":\"kvk\"}}"
-
+        val json =  """
+            {
+                "zaak": "http://zaak.uri",
+                "betrokkene": "http://betrokkene.uri",
+                "betrokkeneType": "niet_natuurlijk_persoon",
+                "roltype": "http://role.type",
+                "roltoelichting": "role description",
+                "betrokkeneIdentificatie": {
+                    "annIdentificatie": "kvk"
+                }
+            }
+            """.replace("[ \n]".toRegex(), "")
 
         val result = mapper.readValue(json, Rol::class.java)
 

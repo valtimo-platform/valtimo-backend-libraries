@@ -23,11 +23,11 @@ import com.ritense.klant.service.BedrijfService
 import com.ritense.klant.service.BurgerService
 import com.ritense.objectsapi.domain.ProductAanvraag
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
-import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.OpenZaakResource
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import mu.KotlinLogging
 import java.net.URI
 
