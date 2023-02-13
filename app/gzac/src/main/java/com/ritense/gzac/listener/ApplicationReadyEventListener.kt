@@ -47,8 +47,10 @@ import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import mu.KotlinLogging
+import org.camunda.bpm.engine.RepositoryService
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
@@ -65,6 +67,7 @@ class ApplicationReadyEventListener(
     private val documentDefinitionService: DocumentDefinitionService,
     private val pluginService: PluginService,
     private val objectManagementService: ObjectManagementService,
+    private val repositoryService: RepositoryService,
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
@@ -111,9 +114,52 @@ class ApplicationReadyEventListener(
             createBomenObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
             createVerzoekPlugin(notificatiesApiPluginId, bezwaarConfigurationId)
             createSmartDocumentsPlugin()
-            createPortaalTaakPlugin(notificatiesApiPluginId, taakConfigurationId)
+            val protaalTaakPluginId = createPortaalTaakPlugin(notificatiesApiPluginId, taakConfigurationId)
+            createPortaalTaakLink(protaalTaakPluginId)
         } catch (ex: Exception) {
             throw RuntimeException("Failed to deploy plugin configurations for development", ex)
+        }
+    }
+
+    private fun createPortaalTaakLink(protaalTaakPluginId: UUID) {
+        val portalPersonProcessDefinitionId = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("portal-person")
+            .latestVersion()
+            .singleResult()
+            .id
+        if (pluginService.getProcessLinks(portalPersonProcessDefinitionId, "portal-task").isEmpty()) {
+            pluginService.createProcessLink(
+                PluginProcessLinkCreateDto(
+                    processDefinitionId = portalPersonProcessDefinitionId,
+                    activityId = "portal-task",
+                    activityType = "bpmn:UserTask:create",
+                    pluginConfigurationId = protaalTaakPluginId,
+                    pluginActionDefinitionKey = "create-portaaltaak",
+                    actionProperties = jacksonObjectMapper().readValue(
+                        """
+                        {
+                            "formType": "id",
+                            "formTypeId": "person",
+                            "sendData": [
+                                {
+                                    "key": "/firstName",
+                                    "value": "doc:/firstName"
+                                }
+                            ],
+                            "receiveData": [
+                                {
+                                    "key": "doc:/firstName",
+                                    "value": "/firstName"
+                                }
+                            ],
+                            "receiver": "other",
+                            "otherReceiver": "bsn",
+                            "bsn": "569312863"
+                        }
+                        """.trimIndent()
+                    ),
+                )
+            )
         }
     }
 
@@ -192,7 +238,7 @@ class ApplicationReadyEventListener(
             )
         )
         if (result.errors().isEmpty()) {
-            val configResult = objectSyncService.createObjectSyncConfig(
+            objectSyncService.createObjectSyncConfig(
                 request = CreateObjectSyncConfigRequest(
                     connectorInstanceId = result.connectorTypeInstance()!!.id.id,
                     enabled = true,
@@ -341,7 +387,7 @@ class ApplicationReadyEventListener(
         )
         val mapper = JsonMapper.builder()
             .enable(JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER)
-            .build();
+            .build()
         return if (existing.isEmpty()) {
             pluginService.createPluginConfiguration(
                 title = "OpenNotificaties Authentication",
@@ -646,6 +692,15 @@ class ApplicationReadyEventListener(
                     "leningen",
                     URI("http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"),
                     URI("http://localhost:8001/catalogi/api/v1/informatieobjecttypen/efc332f2-be3b-4bad-9e3c-49a6219c92ad")
+                )
+            )
+        }
+        if (event.documentDefinition().id().name().equals("portal-person")) {
+            zaakTypeLinkService.createZaakTypeLink(
+                CreateZaakTypeLinkRequest(
+                    "portal-person",
+                    URI("http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"),
+                    true
                 )
             )
         }

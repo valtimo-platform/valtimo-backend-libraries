@@ -20,8 +20,8 @@ import com.ritense.openzaak.plugin.OpenZaakPluginFactory
 import com.ritense.openzaak.plugin.OpenZaakUrlProvider
 import com.ritense.openzaak.service.TokenGeneratorService
 import com.ritense.openzaak.service.ZaakTypeLinkService
-import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

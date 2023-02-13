@@ -18,6 +18,9 @@ package com.ritense.zakenapi.client
 
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.ZakenApiAuthentication
+import com.ritense.zakenapi.domain.rol.BetrokkeneType
+import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
+import com.ritense.zakenapi.domain.rol.RolType
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
@@ -57,10 +60,10 @@ internal class ZakenApiClientTest {
 
         val responseBody = """
             {
-              "url": "http://example.com",
+              "url": "https://example.com",
               "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
-              "informatieobject": "http://example.com",
-              "zaak": "http://example.com",
+              "informatieobject": "https://example.com",
+              "zaak": "https://example.com",
               "aardRelatieWeergave": "Hoort bij, omgekeerd: kent",
               "titel": "string",
               "beschrijving": "string",
@@ -74,8 +77,8 @@ internal class ZakenApiClientTest {
             TestAuthentication(),
             URI(mockApi.url("/").toString()),
             LinkDocumentRequest(
-                "http://example.com",
-                "http://example.com",
+                "https://example.com",
+                "https://example.com",
                 "title",
                 "description"
             )
@@ -87,14 +90,14 @@ internal class ZakenApiClientTest {
 
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
 
-        assertEquals("http://example.com", parsedOutput["informatieobject"])
-        assertEquals("http://example.com", parsedOutput["zaak"])
+        assertEquals("https://example.com", parsedOutput["informatieobject"])
+        assertEquals("https://example.com", parsedOutput["zaak"])
         assertEquals("title", parsedOutput["titel"])
         assertEquals("description", parsedOutput["beschrijving"])
 
-        assertEquals("http://example.com", result.url)
-        assertEquals("http://example.com", result.informatieobject)
-        assertEquals("http://example.com", result.zaak)
+        assertEquals("https://example.com", result.url)
+        assertEquals("https://example.com", result.informatieobject)
+        assertEquals("https://example.com", result.zaak)
         assertEquals(UUID.fromString("095be615-a8ad-4c33-8e9c-c7612fbf6c9f"), result.uuid)
         assertEquals("string", result.titel)
         assertEquals("string", result.beschrijving)
@@ -110,14 +113,14 @@ internal class ZakenApiClientTest {
         val responseBody = """
             {
               "count": 1,
-              "next": "http://example.com",
-              "previous": "http://example.com",
+              "next": "https://example.com",
+              "previous": "https://example.com",
               "results": [
                 {
-                  "url": "http://example.com",
+                  "url": "https://example.com",
                   "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
-                  "zaak": "http://example.com",
-                  "object": "http://example.com",
+                  "zaak": "https://example.com",
+                  "object": "https://example.com",
                   "objectType": "adres",
                   "objectTypeOverige": "string",
                   "relatieomschrijving": "string"
@@ -131,7 +134,7 @@ internal class ZakenApiClientTest {
         val result = client.getZaakObjecten(
             TestAuthentication(),
             URI(mockApi.url("/").toString()),
-            URI("http://example.org"),
+            URI("https://example.org"),
             1
         )
 
@@ -139,19 +142,73 @@ internal class ZakenApiClientTest {
         val requestUrl = recordedRequest.requestUrl
 
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
-        assertEquals("http://example.org", requestUrl?.queryParameter("zaak"))
+        assertEquals("https://example.org", requestUrl?.queryParameter("zaak"))
         assertEquals("1", requestUrl?.queryParameter("page"))
 
         assertEquals(1, result.count)
-        assertEquals(URI("http://example.com"), result.next)
-        assertEquals(URI("http://example.com"), result.previous)
-        assertEquals(URI("http://example.com"), result.results[0].url)
+        assertEquals(URI("https://example.com"), result.next)
+        assertEquals(URI("https://example.com"), result.previous)
+        assertEquals(URI("https://example.com"), result.results[0].url)
         assertEquals(UUID.fromString("095be615-a8ad-4c33-8e9c-c7612fbf6c9f"), result.results[0].uuid)
-        assertEquals(URI("http://example.com"), result.results[0].zaakUrl)
-        assertEquals(URI("http://example.com"), result.results[0].objectUrl)
+        assertEquals(URI("https://example.com"), result.results[0].zaakUrl)
+        assertEquals(URI("https://example.com"), result.results[0].objectUrl)
         assertEquals("adres", result.results[0].objectType)
         assertEquals("string", result.results[0].objectTypeOverige)
         assertEquals("string", result.results[0].relatieomschrijving)
+    }
+
+    @Test
+    fun `should send get zaakrollen request and parse response`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ZakenApiClient(webclientBuilder)
+
+        val responseBody = """
+            {
+              "count": 1,
+              "next": "https://example.com/next",
+              "previous": "https://example.com/previous",
+              "results": [
+                {
+                  "zaak": "https://example.com/zaak",
+                  "betrokkene": "https://example.com/betrokkene",
+                  "betrokkeneType": "natuurlijk_persoon",
+                  "roltype": "https://example.com/roltype",
+                  "roltoelichting": "initiator",
+                  "betrokkeneIdentificatie": {
+                    "inpBsn": "059861095"
+                  },
+                  "unknownProperty": "value"
+                }
+              ]
+            }
+        """.trimIndent()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val result = client.getZaakRollen(
+            TestAuthentication(),
+            URI(mockApi.url("/").toString()),
+            URI("https://example.com"),
+            1,
+            RolType.INITIATOR
+        )
+
+        val recordedRequest = mockApi.takeRequest()
+        val requestUrl = recordedRequest.requestUrl
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+        assertEquals("https://example.com", requestUrl?.queryParameter("zaak"))
+        assertEquals("1", requestUrl?.queryParameter("page"))
+
+        assertEquals(1, result.count)
+        assertEquals(URI("https://example.com/next"), result.next)
+        assertEquals(URI("https://example.com/previous"), result.previous)
+        assertEquals(URI("https://example.com/betrokkene"), result.results.first().betrokkene)
+        assertEquals(BetrokkeneType.NATUURLIJK_PERSOON, result.results.first().betrokkeneType)
+        assertEquals(URI("https://example.com/zaak"), result.results.first().zaak)
+        assertEquals(URI("https://example.com/roltype"), result.results.first().roltype)
+        assertEquals("initiator", result.results.first().roltoelichting)
+        assertEquals(RolNatuurlijkPersoon("059861095"), result.results.first().betrokkeneIdentificatie)
     }
 
     private fun mockResponse(body: String): MockResponse {

@@ -16,11 +16,11 @@
 
 package com.ritense.openzaak.provider
 
-import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.openzaak.service.impl.model.zaak.betrokkene.RolNatuurlijkPersoon
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.delegate.DelegateTask
 import kotlin.contracts.ExperimentalContracts
 

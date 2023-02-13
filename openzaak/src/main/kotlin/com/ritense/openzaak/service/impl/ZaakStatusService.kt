@@ -18,11 +18,11 @@ package com.ritense.openzaak.service.impl
 
 import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
-import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.openzaak.service.ZaakStatusService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.StatusType
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import java.net.URI
 import org.springframework.web.client.RestTemplate
 
@@ -44,8 +44,8 @@ class ZaakStatusService(
             .executeWrapped(StatusType::class.java)
     }
 
-    override fun getStatusType(statusTypeUrl: URI): StatusType? {
-        val statusTypePath = openZaakConfigService.getOpenZaakConfig()?.let { statusTypeUrl.toString().replace(it.url, "") }
+    override fun getStatusType(statusType: URI): StatusType? {
+        val statusTypePath = openZaakConfigService.getOpenZaakConfig()?.let { statusType.toString().replace(it.url, "") }
         return statusTypePath?.let {
             OpenZaakRequestBuilder(restTemplate, openZaakConfigService, tokenGeneratorService)
                 .path(it)

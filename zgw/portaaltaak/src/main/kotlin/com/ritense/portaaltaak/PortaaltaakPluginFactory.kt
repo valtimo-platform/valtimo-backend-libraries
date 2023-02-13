@@ -17,14 +17,28 @@
 
 package com.ritense.portaaltaak
 
+import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valueresolver.ValueResolverService
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 
 class PortaaltaakPluginFactory(
-    pluginService: PluginService
+    pluginService: PluginService,
+    private val objectManagementService: ObjectManagementService,
+    private val valueResolverService: ValueResolverService,
+    private val processDocumentService: ProcessDocumentService,
+    private val zaakInstanceLinkService: ZaakInstanceLinkService
 ) : PluginFactory<PortaaltaakPlugin>(pluginService) {
 
     override fun create(): PortaaltaakPlugin {
-        return PortaaltaakPlugin()
+        return PortaaltaakPlugin(
+            objectManagementService,
+            pluginService,
+            valueResolverService,
+            processDocumentService,
+            zaakInstanceLinkService
+        )
     }
 }
