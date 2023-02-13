@@ -131,31 +131,20 @@ class ObjectManagementService(
 
         val searchFieldList = searchFieldV2Service.findAllByOwnerId(id.toString())!!
 
-        val searchDtoList = mutableListOf<ObjectSearchParameter>()
-
-        searchFieldList.forEach {
-            searchWithConfigRequest.otherFilters.forEach { otherFilter ->
-                if (otherFilter.key == it.key) {
-                    if (otherFilter.rangeTo == null) {
-                        val values = otherFilter.values
-                        if (values.size > 1) {
-                            values.forEach { value ->
-                                searchDtoList +=
-                                    mapToObjectSearchParameter(it.key, it.fieldType, value.value, it.dataType)
-                            }
-                        }
-                        if (values.size == 1) {
-                            searchDtoList +=
-                                mapToObjectSearchParameter(
-                                    it.key, it.fieldType, values[0].value, it.dataType
-                                )
+        val searchDtoList = searchFieldList.flatMap { searchField ->
+            searchWithConfigRequest.otherFilters
+                .filter { otherFilter -> otherFilter.key == searchField.key }
+                .flatMap { otherFilter ->
+                    if (searchField.fieldType != FieldType.RANGE) {
+                        otherFilter.values.flatMap { value ->
+                            mapToObjectSearchParameter(searchField.key, searchField.fieldType, value.value, searchField.dataType)
                         }
                     } else {
-                        searchDtoList += mapToObjectSearchParameter(
-                            it.key,
-                            it.fieldType,
-                            listOf(otherFilter.rangeFrom?.value, otherFilter.rangeTo.value),
-                            it.dataType
+                        mapToObjectSearchParameter(
+                            searchField.key,
+                            searchField.fieldType,
+                            listOf(otherFilter.rangeFrom?.value, otherFilter.rangeTo?.value),
+                            searchField.dataType
                         )
                     }
                 }
@@ -184,13 +173,19 @@ class ObjectManagementService(
     private fun mapToObjectListRowDto(
         objectsList: ObjectsList,
         objectManagementId: UUID
-    ): MutableList<ObjectsListRowDto> {
+    ): List<ObjectsListRowDto> {
         val listColumns = searchListColumnService.findByOwnerId(objectManagementId.toString())
+        objectsList.results.map {
+
+        }
         val objectsListRowDtoList = mutableListOf<ObjectsListRowDto>()
         objectsList.results.forEach { objects ->
             val objectsListItemDto = mutableListOf<ObjectsListRowDto.ObjectsListItemDto>()
             listColumns?.forEach { listColumn ->
-                objectsListItemDto += ObjectsListRowDto.ObjectsListItemDto(listColumn.key, objects.record.data?.at(listColumn.path))
+                objectsListItemDto += ObjectsListRowDto.ObjectsListItemDto(
+                    listColumn.key,
+                    objects.record.data?.at(listColumn.path)
+                )
             }
             val objectsListRowDto = ObjectsListRowDto(objects.uuid.toString(), objectsListItemDto)
             objectsListRowDtoList.add(objectsListRowDto)
@@ -214,21 +209,24 @@ class ObjectManagementService(
             )
 
             FieldType.RANGE -> {
-                value as List<Any>
-                listOf(
-                    ObjectSearchParameter(key, Comparator.GREATER_THAN_OR_EQUAL_TO, castValueToDataType(dataType, value[0])),
-                    ObjectSearchParameter(key, Comparator.LOWER_THAN_OR_EQUAL_TO, castValueToDataType(dataType, value[1]))
-                )
+                (value as List<Any?>).mapIndexed { index, rangeValue ->
+                    if (rangeValue != null) {
+                        ObjectSearchParameter(
+                            key,
+                            if(index == 0) Comparator.GREATER_THAN_OR_EQUAL_TO else Comparator.LOWER_THAN_OR_EQUAL_TO,
+                            castValueToDataType(dataType, rangeValue)
+                        )
+                    } else {
+                        null
+                    }
+                }.filterNotNull()
             }
 
             FieldType.MULTI_SELECT_DROPDOWN -> {
-                val returnList = mutableListOf<ObjectSearchParameter>()
-                val list = mutableListOf<String>()
-                list += value as List<String>
-                list.forEach {
-                    returnList += ObjectSearchParameter(key, Comparator.EQUAL_TO, it)
+                value as List<String>
+                return value.map {
+                    ObjectSearchParameter(key, Comparator.EQUAL_TO, it)
                 }
-                return returnList
             }
 
             FieldType.SINGLE_SELECT_DROPDOWN -> listOf(
@@ -268,15 +266,7 @@ class ObjectManagementService(
     }
 
     private fun concatenateObjectSearchParameter(searchParameterList: List<ObjectSearchParameter>): String {
-        var searchList = ""
-        searchParameterList.forEach {
-            if (searchList == "") {
-                searchList += it.toQueryParameter()
-            } else {
-                searchList += ",${it.toQueryParameter()}"
-            }
-        }
-        return searchList
+        return searchParameterList.joinToString(separator = ",")
     }
 
     private fun getObjectenApiPlugin(id: UUID) = pluginService

@@ -86,7 +86,7 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
 
     @Test
     @Order(2)
-    fun getById() {
+    fun `should get by id`() {
         val objectManagement = createObjectManagement()
         val toReviewObjectManagement = objectManagementService.getById(objectManagement.id)
         assertThat(objectManagement.id).isEqualTo(toReviewObjectManagement?.id)
@@ -97,7 +97,7 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
 
     @Test
     @Order(3)
-    fun getAll() {
+    fun `should get all`() {
         createObjectManagement("test1")
         createObjectManagement("test2")
 
@@ -107,7 +107,7 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
 
     @Test
     @Order(4)
-    fun deleteById() {
+    fun `delete by id`() {
         val objectManagement = createObjectManagement()
 
         objectManagementService.deleteById(objectManagement.id)
