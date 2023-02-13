@@ -30,8 +30,12 @@ internal class ObjectManagementDefinitionDeploymentServiceIntTest: BaseIntegrati
     @Autowired
     lateinit var objectManagementService: ObjectManagementService
 
+    @Autowired
+    lateinit var objectManagementDefinitionDeploymentService: ObjectManagementDefinitionDeploymentService
+
     @Test
     fun getById() {
+        objectManagementDefinitionDeploymentService.deployAllFromResourceFiles()
         val objectManagement = objectManagementService.findByObjectTypeId("4416cbef-dda3-41f4-bf5c-633f7fe14847")
         assertThat(objectManagement).isNotNull
         assertThat(objectManagement?.title).isEqualTo("My Object Management")
