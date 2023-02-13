@@ -30,7 +30,7 @@ import org.springframework.data.domain.Pageable
     title = "Objecten API",
     description = "Connects to the Objecten API"
 )
-class ObjectenApiPlugin(
+open class ObjectenApiPlugin(
     val objectenApiClient: ObjectenApiClient
 ) {
     @PluginProperty(key = "url", secret = false)

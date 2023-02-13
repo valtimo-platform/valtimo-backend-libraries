@@ -28,7 +28,7 @@ import org.springframework.web.util.UriComponentsBuilder
    title = "Objecttypen API",
    description = "Connects to the Objecttypen API"
 )
-class ObjecttypenApiPlugin(
+open class ObjecttypenApiPlugin(
     val objecttypenApiClient: ObjecttypenApiClient
 ) {
     @PluginProperty(key = "url", secret = false)

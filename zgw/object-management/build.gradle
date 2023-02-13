@@ -26,6 +26,7 @@ dependencies {
     implementation project(':contract')
     implementation project(":web")
     implementation project(":search")
+    implementation project(":plugin-authentication:objecten-api-authentication")
     implementation project(':zgw')
     implementation project(':zgw:objecttypen-api')
     implementation project(':zgw:objecten-api')

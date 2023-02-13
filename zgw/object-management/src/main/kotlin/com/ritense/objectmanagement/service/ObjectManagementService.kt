@@ -186,12 +186,11 @@ class ObjectManagementService(
         objectManagementId: UUID
     ): MutableList<ObjectsListRowDto> {
         val listColumns = searchListColumnService.findByOwnerId(objectManagementId.toString())
-        val paths = listColumns?.map { it.path }
         val objectsListRowDtoList = mutableListOf<ObjectsListRowDto>()
         objectsList.results.forEach { objects ->
             val objectsListRowDto = ObjectsListRowDto(objects.uuid.toString(), mutableListOf())
-            paths?.forEach { path ->
-                objectsListRowDto.items += ObjectsListRowDto.ObjectsListItemDto(path, objects.record.data?.at(path))
+            listColumns?.forEach { listColumn ->
+                objectsListRowDto.items += ObjectsListRowDto.ObjectsListItemDto(listColumn.key, objects.record.data?.at(listColumn.path))
             }
             objectsListRowDtoList.add(objectsListRowDto)
         }
