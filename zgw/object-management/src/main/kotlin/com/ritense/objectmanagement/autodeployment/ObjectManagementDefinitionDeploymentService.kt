@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,8 @@ class ObjectManagementDefinitionDeploymentService(
 
                 if (objectManagementRepository.findByObjecttypeId(objectManagement.objecttypeId) == null && objectManagementRepository.findByTitle(objectManagement.title) == null) {
                     objectManagementService.create(objectManagement)
+                } else {
+                    objectManagementService.update(objectManagement)
                 }
 
                logger.info("Deployed object management configuration {}", objectManagement.title)
