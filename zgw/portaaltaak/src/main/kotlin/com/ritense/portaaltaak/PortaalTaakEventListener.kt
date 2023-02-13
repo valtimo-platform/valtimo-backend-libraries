@@ -34,9 +34,6 @@ import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valueresolver.ValueResolverService
-import java.net.MalformedURLException
-import java.net.URI
-import java.util.UUID
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.delegate.VariableScope
@@ -44,6 +41,9 @@ import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity
 import org.camunda.bpm.engine.task.Task
 import org.springframework.context.event.EventListener
 import org.springframework.http.HttpStatus
+import java.net.MalformedURLException
+import java.net.URI
+import java.util.UUID
 
 class PortaalTaakEventListener(
     private val objectManagementService: ObjectManagementService,
@@ -203,10 +203,10 @@ class PortaalTaakEventListener(
         processDefinitionKey: String,
         businessKey: String,
         objectenApiPluginConfigurationId: String,
-        portaalTaakObjectResourceUrl: String
+        portaalTaakObjectUrl: String
     ) {
         val variables = mapOf(
-            "portaalTaakObjectResourceUrl" to portaalTaakObjectResourceUrl,
+            "portaalTaakObjectUrl" to portaalTaakObjectUrl,
             "objectenApiPluginConfigurationId" to objectenApiPluginConfigurationId,
             "verwerkerTaakId" to taakObject.verwerkerTaakId,
             "documentUrls" to getDocumentenUrls(jacksonObjectMapper().valueToTree(taakObject.verzondenData))

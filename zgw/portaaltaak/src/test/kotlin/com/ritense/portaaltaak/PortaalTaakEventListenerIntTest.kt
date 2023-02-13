@@ -32,13 +32,9 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginProcessLinkRepository
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.Mapper
-import java.net.URI
-import java.util.*
-import kotlin.test.assertEquals
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -46,14 +42,19 @@ import okhttp3.mockwebserver.RecordedRequest
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
-import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity
+import org.camunda.bpm.engine.delegate.VariableScope
 import org.camunda.bpm.engine.task.Task
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.containsInAnyOrder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
@@ -61,6 +62,10 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
+import java.net.URI
+import java.util.*
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @Transactional
 internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
@@ -95,6 +100,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
     lateinit var notificatiesApiPluginConfiguration: PluginConfiguration
     lateinit var objectenApiPluginConfiguration: PluginConfiguration
     var task: Task? = null
+    var documentId: UUID? = null
 
 
     @BeforeEach
@@ -127,13 +133,17 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
                         "value": "test"
                     }
                 ],
-                "receiveData": [],
+                "receiveData": [
+                    {
+                        "key": "doc:/name",
+                        "value": "/name"
+                    }
+                ],
                 "receiver": "${TaakReceiver.OTHER.key}",
                 "otherReceiver": "${OtherTaakReceiver.KVK.key}",
                 "kvk": "569312863"
             }
         """.trimIndent()
-
         createProcessLink(actionPropertiesJson)
 
         val documentContent = """
@@ -146,16 +156,50 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
         task = startPortaalTaakProcess(documentContent)
 
         doCallRealMethod().whenever(pluginService).createInstance(any<Class<PortaaltaakPlugin>>(), any())
-        portaalTaakEventListener.processCompletePortaalTaakEvent(getEvent())
 
-        val document =
-            processDocumentService.getDocument(CamundaProcessInstanceId(task!!.processInstanceId), task as TaskEntity)
-        assertEquals(
-            "{\"lastname\":\"test\",\"documenten\":[\"/some/uri\",\"/some/uri/somewhere\"]}",
-            document.content().asJson().toString()
+        val processInstanceIdCaptor = argumentCaptor<String>()
+        val variableScopeCaptor = argumentCaptor<VariableScope>()
+        val mapCaptor = argumentCaptor<Map<String, Any>>()
+        doReturn(null).whenever(camundaProcessService).startProcess(any(), any(), any())
+
+        val event = getEvent()
+        portaalTaakEventListener.processCompletePortaalTaakEvent(event)
+
+        verify(valueResolverService).handleValues(
+            processInstanceIdCaptor.capture(),
+            variableScopeCaptor.capture(),
+            mapCaptor.capture()
         )
 
-        //how to get the uploadDocumentsProcess instance to get the variables
+        val processDefinitionKeyCaptor = argumentCaptor<String>()
+        val businessKeyCaptor = argumentCaptor<String>()
+        val processVariableCaptor = argumentCaptor<Map<String, Any>>()
+
+        verify(camundaProcessService, times(2)).startProcess(
+            processDefinitionKeyCaptor.capture(),
+            businessKeyCaptor.capture(),
+            processVariableCaptor.capture()
+        )
+
+        // assert call to valueResolverService where data is saved
+        assertEquals(task!!.processInstanceId, processInstanceIdCaptor.firstValue)
+        assertNotNull(variableScopeCaptor.firstValue)
+        val mapOfValuesToUpdate = mapCaptor.firstValue
+        assertEquals(1, mapOfValuesToUpdate.size)
+        assertEquals("Luis", mapOfValuesToUpdate["doc:/name"])
+
+        // assert second call to camundaProcessService.startProcess() where handling process is started
+        assertEquals("process-portaaltaak-uploaded-documents-mock", processDefinitionKeyCaptor.secondValue)
+        assertEquals(documentId!!.toString(), businessKeyCaptor.secondValue)
+        val processVariables = processVariableCaptor.secondValue
+        assertEquals(event.resourceUrl, processVariables["portaalTaakObjectUrl"])
+        assertEquals(objectenApiPluginConfiguration.id.id.toString(), processVariables["objectenApiPluginConfigurationId"])
+        assertEquals(task!!.id, processVariables["verwerkerTaakId"])
+        assertThat(processVariables["documentUrls"] as List<*>, containsInAnyOrder(
+            "http://documenten-api.com/api/v1/documenten/393ba68f-0bd6-43d7-9c1c-cb33d4d2aa6e",
+            "http://documenten-api.com/api/v1/documenten/205107b1-261f-4042-925a-e300cdc6d2ab",
+            "http://documenten-api.com/api/v1/documenten/8c9dc2e4-db3b-4314-8e2e-76f38943d8fc"
+        ))
     }
 
     private fun getEvent(): NotificatiesApiNotificationReceivedEvent {
@@ -328,26 +372,30 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
 
     private fun getTaakObject(): TaakObject {
         return TaakObject(
-            identificatie = listOf(TaakIdentificatie("aType", "aValue")),
+            identificatie = TaakIdentificatie("aType", "aValue"),
             data = emptyMap(),
             title = "aTitle",
             status = TaakStatus.INGEDIEND,
             formulier = TaakForm(TaakFormType.ID, "anId"),
             verwerkerTaakId = getTaskId(),
             verzondenData = mapOf(
-                "documenten" to listOf(URI.create("/name"), URI.create("/phone"),
+                "documenten" to listOf(URI.create("/some-document"), URI.create("/some-document-array")),
                 "name" to "Luis",
-                "phone" to "999999999"
+                "phone" to "999999999",
+                "some-document" to "http://documenten-api.com/api/v1/documenten/393ba68f-0bd6-43d7-9c1c-cb33d4d2aa6e",
+                "some-document-array" to arrayOf(
+                    "http://documenten-api.com/api/v1/documenten/205107b1-261f-4042-925a-e300cdc6d2ab",
+                    "http://documenten-api.com/api/v1/documenten/8c9dc2e4-db3b-4314-8e2e-76f38943d8fc"
+                )
             )
-
         )
-
     }
 
     private fun startPortaalTaakProcess(content: String): Task {
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().readTree(content))
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
         val processResult = processDocumentService.newDocumentAndStartProcess(request)
+        documentId = processResult.resultingDocument().get().id().id
         return taskService
             .createTaskQuery()
             .active()
@@ -394,7 +442,6 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
     companion object {
         private const val PROCESS_DEFINITION_KEY = "portaaltaak-process"
         private const val DOCUMENT_DEFINITION_KEY = "profile"
-        private const val ZAAK_URL = "http://zaak.url"
     }
 
 }

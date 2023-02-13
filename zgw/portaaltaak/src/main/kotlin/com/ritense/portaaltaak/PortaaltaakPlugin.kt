@@ -137,16 +137,16 @@ class PortaaltaakPlugin(
             ?: throw CompleteTaakProcessVariableNotFoundException("verwerkerTaakId is required but was not provided")) as String
         val objectenApiPluginId = (delegateExecution.getVariable("objectenApiPluginConfigurationId")
             ?: throw CompleteTaakProcessVariableNotFoundException("objectenApiPluginConfigurationId is required but was not provided")) as String
-        val portaalTaakObjectResourceUrl = URI(
-            (delegateExecution.getVariable("portaalTaakObjectResourceUrl")
-                ?: throw CompleteTaakProcessVariableNotFoundException("portaalTaakObjectResourceUrl is required but was not provided")) as String
+        val portaalTaakObjectUrl = URI(
+            (delegateExecution.getVariable("portaalTaakObjectUrl")
+                ?: throw CompleteTaakProcessVariableNotFoundException("portaalTaakObjectUrl is required but was not provided")) as String
         )
 
 
         taskService.complete(verwerkerTaakId)
         val objectenApiPlugin =
             pluginService.createInstance(PluginConfigurationId(UUID.fromString(objectenApiPluginId))) as ObjectenApiPlugin
-        val portaalTaakMetaDataObject = objectenApiPlugin.getObject(portaalTaakObjectResourceUrl)
+        val portaalTaakMetaDataObject = objectenApiPlugin.getObject(portaalTaakObjectUrl)
         var taakObject: TaakObject = jacksonObjectMapper()
             .convertValue(
                 portaalTaakMetaDataObject.record.data ?: throw RuntimeException("Portaaltaak meta data was empty!")
@@ -154,7 +154,7 @@ class PortaaltaakPlugin(
         taakObject = changeStatus(taakObject, TaakStatus.VERWERKT)
         val portaalTaakMetaObjectUpdated =
             changeDataInPortalTaakObject(portaalTaakMetaDataObject, jacksonObjectMapper().convertValue(taakObject))
-        objectenApiPlugin.objectPatch(portaalTaakObjectResourceUrl, portaalTaakMetaObjectUpdated)
+        objectenApiPlugin.objectPatch(portaalTaakObjectUrl, portaalTaakMetaObjectUpdated)
     }
 
     internal fun getTaakIdentification(
