@@ -25,9 +25,11 @@ import com.ritense.plugin.service.PluginService
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -87,5 +89,30 @@ class ZaakObjectResource(
                 )
             )
         } ?: ResponseEntity.notFound().build()
+    }
+
+    @PutMapping(value = ["/v1/object"])
+    fun updateZaakObject(
+        @RequestParam(name = "objectManagementId") objectManagementId: UUID,
+        @RequestParam(name = "objectUrl") objectUrl: URI,
+        @RequestBody data: JsonNode
+    ): ResponseEntity<Any> {
+        val updateObjectUrl = zaakObjectService.updateObject(objectManagementId, objectUrl, data)
+        return updateObjectUrl.let {
+            ResponseEntity.status(HttpStatus.CREATED).body(
+                mapOf(
+                    "url" to it
+                )
+            )
+        } ?: ResponseEntity.notFound().build()
+    }
+
+    @DeleteMapping(value = ["/v1/object"])
+    fun deleteZaakObject(
+        @RequestParam(name = "objectManagementId") objectManagementId: UUID,
+        @RequestParam(name = "objectUrl") objectUrl: URI
+    ): ResponseEntity<Any> {
+        val status = zaakObjectService.deleteObject(objectManagementId, objectUrl)
+        return ResponseEntity.status(status).build()
     }
 }
