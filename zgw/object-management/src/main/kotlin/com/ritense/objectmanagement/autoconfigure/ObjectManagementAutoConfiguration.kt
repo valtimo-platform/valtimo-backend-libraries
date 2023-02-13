@@ -17,7 +17,6 @@
 package com.ritense.objectmanagement.autoconfigure
 
 import com.ritense.objectmanagement.autodeployment.ObjectManagementDefinitionDeploymentService
-import com.ritense.objectmanagement.listener.ObjectManagementApplicationReadyEventListener
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.security.config.ObjectManagementHttpSecurityConfigurer
 import com.ritense.objectmanagement.service.ObjectManagementInfoProviderImpl
@@ -89,12 +88,6 @@ class ObjectManagementAutoConfiguration {
     @ConditionalOnMissingBean(ObjectManagementHttpSecurityConfigurer::class)
     fun objectManagementHttpSecurityConfigurer(): ObjectManagementHttpSecurityConfigurer {
         return ObjectManagementHttpSecurityConfigurer()
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(ObjectManagementApplicationReadyEventListener::class)
-    fun objectManagementApplicationReadyEventListener(objectManagementDefinitionDeploymentService: ObjectManagementDefinitionDeploymentService): ObjectManagementApplicationReadyEventListener? {
-        return ObjectManagementApplicationReadyEventListener(objectManagementDefinitionDeploymentService)
     }
 
 }
