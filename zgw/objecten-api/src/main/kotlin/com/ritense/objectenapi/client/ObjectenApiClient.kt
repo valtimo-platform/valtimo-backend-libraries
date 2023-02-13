@@ -50,8 +50,14 @@ class ObjectenApiClient(
         objectypeId: String,
         pageable: Pageable
     ): ObjectsList {
+        val host = if (objecttypesApiUrl.host == "localhost") {
+            "host.docker.internal"
+        } else {
+            objecttypesApiUrl.host
+        }
         val objectTypeUrl = UriComponentsBuilder.newInstance()
             .uri(objecttypesApiUrl)
+            .host(host)
             .pathSegment("objecttypes")
             .pathSegment(objectypeId)
             .toUriString()
@@ -85,8 +91,14 @@ class ObjectenApiClient(
         searchString: String,
         pageable: Pageable
     ): ObjectsList {
+        val host = if (objecttypesApiUrl.host == "localhost") {
+            "host.docker.internal"
+        } else {
+            objecttypesApiUrl.host
+        }
         val objectTypeUrl = UriComponentsBuilder.newInstance()
             .uri(objecttypesApiUrl)
+            .host(host)
             .pathSegment("objecttypes")
             .pathSegment(objectypeId)
             .toUriString()
