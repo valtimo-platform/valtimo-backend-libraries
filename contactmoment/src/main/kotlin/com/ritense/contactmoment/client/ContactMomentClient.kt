@@ -24,7 +24,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 
 open class ContactMomentClient(
-    private val contactMomentWebClient: WebClient,
+    private val webclientBuilder: WebClient.Builder,
     private val contactMomentTokenGenerator: ContactMomentTokenGenerator,
 ) {
 
@@ -65,8 +65,8 @@ open class ContactMomentClient(
             contactMomentProperties!!.clientId
         )
 
-        return contactMomentWebClient
-            .mutate()
+        return webclientBuilder
+            .clone()
             .baseUrl(contactMomentProperties!!.url)
             .defaultHeader("Authorization", "Bearer $token")
             .defaultHeader("Accept-Crs", "EPSG:4326")

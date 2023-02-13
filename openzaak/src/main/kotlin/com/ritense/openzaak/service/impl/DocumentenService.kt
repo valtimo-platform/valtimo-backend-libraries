@@ -20,6 +20,7 @@ import com.ritense.openzaak.service.DocumentenService
 import com.ritense.openzaak.service.impl.model.documenten.DocumentCreatedResult
 import com.ritense.openzaak.service.impl.model.documenten.ZaakInformatieObjectCreatedResult
 import com.ritense.valtimo.contract.utils.SecurityUtils
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import java.net.URI
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

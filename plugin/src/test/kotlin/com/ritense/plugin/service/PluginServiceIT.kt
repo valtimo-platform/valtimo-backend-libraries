@@ -17,34 +17,44 @@
 package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.TestPlugin
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
+import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.valtimo.contract.json.Mapper
-import org.camunda.community.mockito.delegate.DelegateExecutionFake
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.transaction.annotation.Transactional
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.lang.reflect.InvocationTargetException
 import java.util.UUID
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
+import org.camunda.community.mockito.delegate.DelegateExecutionFake
+import org.camunda.community.mockito.delegate.DelegateTaskFake
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.mockito.Mockito.doReturn
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 
 
-internal class PluginServiceIT: BaseIntegrationTest() {
+internal class PluginServiceIT : BaseIntegrationTest() {
     @Autowired
     lateinit var pluginService: PluginService
 
@@ -62,21 +72,25 @@ internal class PluginServiceIT: BaseIntegrationTest() {
 
     @BeforeEach
     fun init() {
-        val pluginDefinition = pluginDefinitionRepository.getById("test-plugin");
-        pluginConfiguration = pluginConfigurationRepository.save(PluginConfiguration(
-            PluginConfigurationId.newId(),
-            "title",
-            null,
-            pluginDefinition
-        ))
+        val pluginDefinition = pluginDefinitionRepository.getById("test-plugin")
+        pluginConfiguration = pluginConfigurationRepository.save(
+            PluginConfiguration(
+                PluginConfigurationId.newId(),
+                "title",
+                null,
+                pluginDefinition
+            )
+        )
 
-        val categoryPluginDefinition = pluginDefinitionRepository.getById("test-category-plugin");
-        categoryPluginConfiguration = pluginConfigurationRepository.save(PluginConfiguration(
-            PluginConfigurationId.newId(),
-            "title",
-            null,
-            categoryPluginDefinition
-        ))
+        val categoryPluginDefinition = pluginDefinitionRepository.getById("test-category-plugin")
+        categoryPluginConfiguration = pluginConfigurationRepository.save(
+            PluginConfiguration(
+                PluginConfigurationId.newId(),
+                "title",
+                null,
+                categoryPluginDefinition
+            )
+        )
     }
 
     @Test
@@ -118,7 +132,11 @@ internal class PluginServiceIT: BaseIntegrationTest() {
                 "property4": "${categoryConfiguration.id.id}"
             }
         """.trimMargin()
-        pluginService.updatePluginConfiguration(configurationFromDatabase.id,"test" ,Mapper.INSTANCE.get().readTree(update) as ObjectNode)
+        pluginService.updatePluginConfiguration(
+            configurationFromDatabase.id,
+            "test",
+            Mapper.INSTANCE.get().readTree(update) as ObjectNode
+        )
 
         val configurations2 = pluginService.getPluginConfigurations(PluginConfigurationSearchParameters())
         val configurationFromDatabase2 = configurations2.filter { it.id.id == configuration.id.id }.first()
@@ -136,13 +154,35 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "test-action",
-            actionProperties = Mapper.INSTANCE.get().readTree("{}") as ObjectNode
+            actionProperties = Mapper.INSTANCE.get().readTree("{}") as ObjectNode,
+            activityType = ActivityType.SERVICE_TASK_START
         )
 
         val execution = DelegateExecutionFake.of()
             .withProcessInstanceId(UUID.randomUUID().toString())
 
         pluginService.invoke(execution, processLink)
+    }
+
+    @Test
+    @Transactional
+    fun `should invoke a user task create action on the plugin with void return type`() {
+        val processLink = PluginProcessLink(
+            PluginProcessLinkId.newId(),
+            processDefinitionId = UUID.randomUUID().toString(),
+            activityId = "test",
+            pluginConfigurationId = pluginConfiguration.id,
+            pluginActionDefinitionKey = "test-action-task",
+            actionProperties = Mapper.INSTANCE.get().readTree("{}") as ObjectNode,
+            activityType = ActivityType.USER_TASK_CREATE
+        )
+
+        val execution = DelegateExecutionFake.of()
+            .withProcessInstanceId(UUID.randomUUID().toString())
+
+        val task = DelegateTaskFake().withProcessInstanceId(execution.processInstanceId).withExecution(execution)
+
+        pluginService.invoke(task, processLink)
     }
 
     @Test
@@ -154,7 +194,8 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "other-test-action",
-            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "test123"}""") as ObjectNode
+            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "test123"}""") as ObjectNode,
+            activityType = ActivityType.SERVICE_TASK_START
         )
 
         val execution = DelegateExecutionFake.of()
@@ -174,7 +215,8 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "other-test-action",
-            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "pv:placeholder"}""") as ObjectNode
+            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "pv:placeholder"}""") as ObjectNode,
+            activityType = ActivityType.SERVICE_TASK_START
         )
 
         val testPlugin = spy(TestPlugin("someString"))
@@ -200,13 +242,82 @@ internal class PluginServiceIT: BaseIntegrationTest() {
             processDefinitionId = UUID.randomUUID().toString(),
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
-            pluginActionDefinitionKey = "other-test-action"
+            pluginActionDefinitionKey = "other-test-action",
+            activityType = ActivityType.SERVICE_TASK_START
         )
 
         assertFailsWith<InvocationTargetException>(
             block = {
-                pluginService.invoke(mock(), processLink)
+                pluginService.invoke(mock<DelegateExecution>(), processLink)
             }
         )
+    }
+
+    @Test
+    @Transactional
+    fun `should invoke all plugin events on a plugin configuration creation, update and deletion`() {
+        val pluginServiceSpy = spy(pluginService)
+
+        val pluginProperties = jacksonObjectMapper().readTree(
+            """
+            {
+                "property1": "test123",
+                "property2": false,
+                "property3": 123,
+                "property4": "${categoryPluginConfiguration.id.id}"
+            }
+        """.trimMargin()
+        ) as ObjectNode
+        val testPlugin = spy(TestPlugin("someString"))
+
+        doReturn(testPlugin).whenever(pluginServiceSpy).createInstance(any<PluginConfiguration>())
+
+        pluginConfiguration = pluginServiceSpy.createPluginConfiguration(
+            "title",
+            pluginProperties,
+            "test-plugin",
+        )
+
+        pluginServiceSpy.updatePluginConfiguration(
+            pluginConfiguration.id,
+            "title",
+            pluginProperties
+        )
+
+        pluginServiceSpy.deletePluginConfiguration(
+            pluginConfiguration.id
+        )
+
+        verify(testPlugin, atLeastOnce()).shouldRunOnCreate()
+        verify(testPlugin, times(2)).shouldRunOnCreateAndDelete()
+        verify(testPlugin, atLeastOnce()).shouldRunOnUpdate()
+        verify(testPlugin, atLeastOnce()).shouldRunOnDelete()
+    }
+
+    @Test
+    @Transactional
+    fun `should throw informative exception on failure of a plugin event`() {
+        val pluginServiceSpy = spy(pluginService)
+
+        val input = """
+            {
+                "property1": "test123",
+                "property2": false,
+                "property3": 123,
+                "property4": "${categoryPluginConfiguration.id.id}"
+            }
+        """.trimMargin()
+        val testPlugin = spy(TestPlugin("someString"))
+
+        doReturn(testPlugin).whenever(pluginServiceSpy).createInstance(any<PluginConfiguration>())
+        doThrow(IllegalArgumentException("Wrong argument")).whenever(testPlugin).shouldRunOnCreate()
+
+        assertFailsWith<PluginEventInvocationException> {
+            pluginServiceSpy.createPluginConfiguration(
+                "title",
+                jacksonObjectMapper().readTree(input) as ObjectNode,
+                "test-plugin",
+            )
+        }
     }
 }

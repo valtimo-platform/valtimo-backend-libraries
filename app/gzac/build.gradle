@@ -25,6 +25,7 @@ dependencies {
     implementation(project(":process-document"))
     implementation(project(":resource:openzaak-resource"))
     implementation(project(":resource:temporary-resource-storage"))
+    implementation(project(":search"))
     implementation(project(":web"))
     implementation(project(":zgw:catalogi-api"))
     implementation(project(":zgw:documenten-api"))
@@ -57,6 +58,12 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+
+    implementation("io.netty:netty-resolver-dns-native-macos:4.1.86.Final") {
+        artifact {
+            classifier = "osx-aarch_64"
+        }
+    }
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"

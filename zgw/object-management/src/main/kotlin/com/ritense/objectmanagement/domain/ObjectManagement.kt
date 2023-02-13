@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.objectmanagement.domain
 
+import com.ritense.objectenapi.management.ObjectManagementInfo
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -27,26 +28,29 @@ import javax.persistence.Table
 data class ObjectManagement(
     @Id
     @Column(name = "id", nullable = false, updatable = false)
-    val id: UUID = UUID.randomUUID(),
+    override val id: UUID = UUID.randomUUID(),
 
     @Column(name = "title", nullable = false, unique = true)
-    val title: String,
-
-    @Column(name = "objecten_api_plugin_configuration_id", nullable = false)
-    val objecttypenApiPluginConfigurationId: UUID,
-
-    @Column(name = "objecttype_id", nullable = false)
-    val objecttypeId: String,
+    override val title: String,
 
     @Column(name = "objecttypen_api_plugin_configuration_id", nullable = false)
-    val objectenApiPluginConfigurationId: UUID,
+    override val objecttypenApiPluginConfigurationId: UUID,
+
+    @Column(name = "objecttype_id", nullable = false)
+    override val objecttypeId: String,
+
+    @Column(name = "object_type_version")
+    override val objecttypeVersion: Int = 1,
+
+    @Column(name = "objecten_api_plugin_configuration_id", nullable = false)
+    override val objectenApiPluginConfigurationId: UUID,
 
     @Column(name = "show_data_in_menu", nullable = false)
-    val showInDataMenu: Boolean = false,
+    override val showInDataMenu: Boolean = false,
 
     @Column(name = "form_definition_view")
-    val formDefinitionView: String? = null,
+    override val formDefinitionView: String? = null,
 
     @Column(name = "form_definition_edit")
-    val formDefinitionEdit: String? = null
-)
+    override val formDefinitionEdit: String? = null
+) : ObjectManagementInfo

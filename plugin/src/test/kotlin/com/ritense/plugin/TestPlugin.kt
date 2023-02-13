@@ -19,8 +19,11 @@ package com.ritense.plugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
+import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
+import com.ritense.plugin.domain.ActivityType
+import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
+import com.ritense.plugin.domain.EventType
 
 @Plugin(
     key = "test-plugin",
@@ -29,13 +32,16 @@ import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
 )
 class TestPlugin(
     val someObject: String
-) : TestPluginParent(), TestPluginInterface{
+) : TestPluginParent(), TestPluginInterface {
     @PluginProperty(key = "property1", secret = true)
     lateinit var property1: String
+
     @PluginProperty(key = "property2", required = false, secret = false)
     var property2: Boolean? = null
+
     @PluginProperty(key = "property3", secret = false)
     lateinit var property3: Number
+
     @PluginProperty(key = "property4", secret = false)
     lateinit var property4: TestPluginCategory
 
@@ -43,9 +49,19 @@ class TestPlugin(
         key = "test-action",
         title = "Test action",
         description = "This is an action used to verify plugin framework functionality",
-        activityTypes = [SERVICE_TASK]
+        activityTypes = [SERVICE_TASK_START]
     )
     fun testAction() {
+        //do nothing
+    }
+
+    @PluginAction(
+        key = "test-action-task",
+        title = "Test action task",
+        description = "This is an action used to verify plugin framework functionality",
+        activityTypes = [ActivityType.USER_TASK_CREATE]
+    )
+    fun testActionTask() {
         //do nothing
     }
 
@@ -53,7 +69,7 @@ class TestPlugin(
         key = "other-test-action",
         title = "Test action 2",
         description = "This is an action used to test method overloading",
-        activityTypes = [SERVICE_TASK]
+        activityTypes = [SERVICE_TASK_START]
     )
     fun testAction(@PluginActionProperty someString: String): String {
         return someString
@@ -79,5 +95,25 @@ class TestPlugin(
 
     fun shouldAlsoNotBeDeployed() {
         //meant to test correct deployment of only methods annotated correctly
+    }
+
+    @PluginEvent([EventType.CREATE])
+    fun shouldRunOnCreate() {
+        //meant to test correct invocation of plugin event
+    }
+
+    @PluginEvent([EventType.CREATE, EventType.DELETE])
+    fun shouldRunOnCreateAndDelete() {
+        //meant to test correct multiple invocation of plugin event
+    }
+
+    @PluginEvent([EventType.UPDATE])
+    fun shouldRunOnUpdate() {
+        //meant to test correct invocation of plugin event
+    }
+
+    @PluginEvent([EventType.DELETE])
+    fun shouldRunOnDelete() {
+        //meant to test correct invocation of plugin event
     }
 }

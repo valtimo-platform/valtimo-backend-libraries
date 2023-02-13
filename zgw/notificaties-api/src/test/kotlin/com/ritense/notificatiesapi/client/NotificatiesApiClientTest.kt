@@ -40,15 +40,15 @@ import reactor.core.publisher.Mono
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class NotificatiesApiClientTest {
     lateinit var mockNotificatiesApi: MockWebServer
-    lateinit var webClient: WebClient
+    lateinit var webclientBuilder: WebClient.Builder
     lateinit var client: NotificatiesApiClient
 
     @BeforeEach
     fun setup() {
         mockNotificatiesApi = MockWebServer()
         mockNotificatiesApi.start()
-        webClient = WebClient.create()
-        client = NotificatiesApiClient(webClient)
+        webclientBuilder = WebClient.builder()
+        client = NotificatiesApiClient(webclientBuilder)
     }
 
     @AfterEach
@@ -88,7 +88,7 @@ class NotificatiesApiClientTest {
         )
 
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
-        assertEquals("/api/v1/kanaal", recordedRequest.path)
+        assertEquals("/kanaal", recordedRequest.path)
 
         assertNull(requestBody["url"])
         assertEquals("Test Kanaal", requestBody.get("naam"))
@@ -139,7 +139,7 @@ class NotificatiesApiClientTest {
         val recordedRequest = mockNotificatiesApi.takeRequest()
 
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
-        assertEquals("/api/v1/kanaal", recordedRequest.path)
+        assertEquals("/kanaal", recordedRequest.path)
 
         assertEquals("http://example.com", result[0].url)
         assertEquals("string", result[0].naam)
@@ -203,7 +203,7 @@ class NotificatiesApiClientTest {
         )
 
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
-        assertEquals("/api/v1/abonnement", recordedRequest.path)
+        assertEquals("/abonnement", recordedRequest.path)
 
         assertEquals("http://example.com", requestBody["url"])
         assertEquals("http://example.com/callback", requestBody.get("callbackUrl"))
@@ -251,7 +251,7 @@ class NotificatiesApiClientTest {
         val recordedRequest = mockNotificatiesApi.takeRequest()
 
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
-        assertEquals("/api/v1/abonnement/$abonnementId", recordedRequest.path)
+        assertEquals("/abonnement/$abonnementId", recordedRequest.path)
     }
 
     private fun mockResponse(body: String): MockResponse {

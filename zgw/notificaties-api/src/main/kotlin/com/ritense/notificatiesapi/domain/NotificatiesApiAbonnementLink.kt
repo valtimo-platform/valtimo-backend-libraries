@@ -16,7 +16,6 @@
 
 package com.ritense.notificatiesapi.domain
 
-import com.ritense.plugin.domain.PluginConfigurationId
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
@@ -26,7 +25,7 @@ import javax.persistence.Table
 @Table(name = "notificaties_api_abonnement_link")
 class NotificatiesApiAbonnementLink(
     @EmbeddedId
-    val pluginConfigurationId: PluginConfigurationId,
+    val notificatiesApiConfigurationId: NotificatiesApiConfigurationId,
 
     @Column(name = "abonnement_url")
     val url: String,

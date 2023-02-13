@@ -18,6 +18,7 @@ package com.ritense.plugin.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.BaseIntegrationTest
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
@@ -88,7 +89,8 @@ internal class PluginProcessLinkResourceIT : BaseIntegrationTest() {
             processDefinitionId = PROCESS_DEF_ID,
             activityId = ACTIVITY_ID,
             pluginConfigurationId = pluginConfiguration.id.id,
-            pluginActionDefinitionKey = ACTION_KEY
+            pluginActionDefinitionKey = ACTION_KEY,
+            activityType = "bpmn:ServiceTask:start"
         )
 
         mockMvc.perform(
@@ -152,7 +154,8 @@ internal class PluginProcessLinkResourceIT : BaseIntegrationTest() {
                 processDefinitionId = PROCESS_DEF_ID,
                 activityId = ACTIVITY_ID,
                 pluginConfigurationId = pluginConfiguration.id,
-                pluginActionDefinitionKey = ACTION_KEY
+                pluginActionDefinitionKey = ACTION_KEY,
+                activityType = ActivityType.SERVICE_TASK_START
             )
         ).id
     }

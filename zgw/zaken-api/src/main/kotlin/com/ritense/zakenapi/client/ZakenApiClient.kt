@@ -20,23 +20,26 @@ import com.ritense.zakenapi.ZakenApiAuthentication
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResponse
 import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.rol.Rol
+import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import java.net.URI
 
 class ZakenApiClient(
-    val webclient: WebClient
+    private val webclientBuilder: WebClient.Builder
 ) {
     fun linkDocument(
         authentication: ZakenApiAuthentication,
         baseUrl: URI,
         request: LinkDocumentRequest
     ): LinkDocumentResult {
-        val result = webclient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .post()
@@ -60,8 +63,8 @@ class ZakenApiClient(
         zaakUrl: URI,
         page: Int
     ): Page<ZaakObject> {
-        val result = webclient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .get()
@@ -79,13 +82,42 @@ class ZakenApiClient(
         return result?.body!!
     }
 
+    fun getZaakRollen(authentication: ZakenApiAuthentication,
+                      baseUrl: URI,
+                      zaakUrl: URI,
+                      page: Int,
+                      roleType: RolType? = null): Page<Rol> {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("rollen")
+                    .queryParam("page", page)
+                    .queryParam("zaak", zaakUrl)
+                    .apply {
+                        if(roleType != null) {
+                            queryParam("omschrijvingGeneriek", roleType.getApiValue())
+                        }
+                    }
+                    .build()
+            }
+            .retrieve()
+            .toEntity(ClientTools.getTypedPage(Rol::class.java))
+            .block()
+
+        return result?.body!!
+    }
+
     fun createZaak(
         authentication: ZakenApiAuthentication,
         baseUrl: URI,
         request: CreateZaakRequest,
     ): CreateZaakResponse {
-        val result = webclient
-            .mutate()
+        val result = webclientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .post()
@@ -94,6 +126,7 @@ class ZakenApiClient(
                     .path("zaken")
                     .build()
             }
+            .headers(this::defaultHeaders)
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(request))
             .retrieve()
@@ -101,5 +134,10 @@ class ZakenApiClient(
             .block()
 
         return result?.body!!
+    }
+
+    private fun defaultHeaders(headers: HttpHeaders) {
+        headers.set("Accept-Crs", "EPSG:4326")
+        headers.set("Content-Crs", "EPSG:4326")
     }
 }

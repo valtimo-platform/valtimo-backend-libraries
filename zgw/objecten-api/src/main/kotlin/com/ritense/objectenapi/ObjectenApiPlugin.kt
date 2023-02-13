@@ -19,9 +19,11 @@ package com.ritense.objectenapi
 import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectenApiClient
+import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import java.net.URI
+import org.springframework.data.domain.Pageable
 
 @Plugin(
     key = "objectenapi",
@@ -33,6 +35,7 @@ class ObjectenApiPlugin(
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
+
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: ObjectenApiAuthentication
 
@@ -40,7 +43,26 @@ class ObjectenApiPlugin(
         return objectenApiClient.getObject(authenticationPluginConfiguration, objectUrl)
     }
 
+    fun getObjectsByObjectTypeId(
+        objecttypesApiUrl: URI,
+        objectsApiUrl: URI,
+        objecttypeId: String,
+        pageable: Pageable
+    ): ObjectsList {
+        return objectenApiClient.getObjectsByObjecttypeUrl(
+            authenticationPluginConfiguration,
+            objecttypesApiUrl,
+            objectsApiUrl,
+            objecttypeId,
+            pageable
+        )
+    }
+
     fun objectUpdate(objectUrl: URI, objectRequest: ObjectRequest): ObjectWrapper {
         return objectenApiClient.objectUpdate(authenticationPluginConfiguration, objectUrl, objectRequest)
+    }
+
+    fun createObject(objectRequest: ObjectRequest): ObjectWrapper {
+        return objectenApiClient.createObject(authenticationPluginConfiguration, url, objectRequest)
     }
 }

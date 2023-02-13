@@ -52,6 +52,7 @@ class OpenZaakResourceAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(OpenZaakUploadResource::class)
     fun openZaakUploadResource(openZaakService: OpenZaakService): OpenZaakUploadResource {
         return OpenZaakUploadResource(openZaakService)
     }

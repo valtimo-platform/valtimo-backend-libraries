@@ -22,15 +22,26 @@ dockerCompose {
 }
 
 dependencies {
+    implementation project(":contract")
+    implementation project(":document")
+    implementation project(":process-document")
     implementation project(":plugin")
     implementation project(":plugin-authentication:notificaties-api-authentication")
     implementation project(":zgw")
+    implementation project(":zgw:catalogi-api")
     implementation project(":zgw:notificaties-api")
+    implementation project(":zgw:object-management")
+    implementation project(":zgw:objecten-api")
     implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
     testImplementation project(":core")
     testImplementation project(":test-utils-common")
     testImplementation project(":resource:local-resource")
+    testImplementation project(":zgw:zaken-api")
+    testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
+    testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "com.fasterxml.jackson.module:jackson-module-kotlin"

@@ -23,17 +23,13 @@ import com.ritense.zakenapi.ResourceProvider
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
-import io.netty.handler.logging.LogLevel
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.netty.http.client.HttpClient
-import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.zakenapi.repository"])
@@ -41,8 +37,10 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 class ZakenApiAutoConfiguration {
 
     @Bean
-    fun zakenApiClient(webclient: WebClient): ZakenApiClient {
-        return ZakenApiClient(webclient)
+    fun zakenApiClient(
+        webclientBuilder: WebClient.Builder
+    ): ZakenApiClient {
+        return ZakenApiClient(webclientBuilder)
     }
 
     @Bean
@@ -67,16 +65,9 @@ class ZakenApiAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(WebClient::class)
-    fun zakenApiWebClient(): WebClient {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        ).build()
+    fun zakenApiZaakInstanceLinkService(
+        zaakInstanceLinkRepository: ZaakInstanceLinkRepository
+    ): ZaakInstanceLinkService {
+        return ZaakInstanceLinkService(zaakInstanceLinkRepository)
     }
 }

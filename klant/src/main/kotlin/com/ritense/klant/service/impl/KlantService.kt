@@ -20,8 +20,8 @@ import com.ritense.klant.client.OpenKlantClient
 import com.ritense.klant.client.OpenKlantClientProperties
 import com.ritense.klant.domain.Klant
 import com.ritense.klant.service.KlantService
-import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.openzaak.service.ZaakRolService
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import java.net.URI
 import java.util.UUID
 

@@ -46,3 +46,5 @@ services:
 #   url: jdbc:postgresql://localhost:3336/plugin-valtimo-test
 #   url: jdbc:postgresql://localhost:3337/verzoek-test
 #   url: jdbc:postgresql://localhost:3338/portaaltaak-test
+#   url: jdbc:postgresql://localhost:3339/dataprovider-test
+#   url: jdbc:postgresql://localhost:3341/search-test

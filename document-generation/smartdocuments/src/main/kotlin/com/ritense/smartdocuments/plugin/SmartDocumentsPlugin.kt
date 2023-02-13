@@ -64,7 +64,7 @@ class SmartDocumentsPlugin(
         key = "generate-document",
         title = "Generate document",
         description = "Generates a document of a given type based on a template with data from a case.",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun generate(
         execution: DelegateExecution,

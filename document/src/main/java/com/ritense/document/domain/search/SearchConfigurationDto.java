@@ -40,6 +40,7 @@ public class SearchConfigurationDto {
         private SearchFieldDataType dataType;
         private SearchFieldFieldType fieldType;
         private SearchFieldMatchType matchType;
+        private String dropdownDataProvider;
         private String title;
 
         public SearchConfigurationFieldJson() {
@@ -47,7 +48,7 @@ public class SearchConfigurationDto {
         }
 
         public SearchField toEntity(String documentDefinitionName, int order) {
-            var searchField = new SearchField(key, path, dataType, fieldType, matchType, order, title);
+            var searchField = new SearchField(key, path, dataType, fieldType, matchType, dropdownDataProvider, order, title);
             searchField.setId(SearchFieldId.newId(documentDefinitionName));
             return searchField;
         }
@@ -92,6 +93,13 @@ public class SearchConfigurationDto {
             this.matchType = matchType;
         }
 
+        public String getDropdownDataProvider() {
+            return dropdownDataProvider;
+        }
+
+        public void setDropdownDataProvider(String dropdownDataProvider) {
+            this.dropdownDataProvider = dropdownDataProvider;
+        }
 
         public String getTitle() {
             return title;

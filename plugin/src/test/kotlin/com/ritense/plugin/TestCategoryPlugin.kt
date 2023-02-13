@@ -20,7 +20,7 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType.SERVICE_TASK
+import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
 
 @Plugin(
     key = "test-category-plugin",
@@ -32,7 +32,7 @@ class TestCategoryPlugin(): TestPluginCategory {
         key = "test-category action",
         title = "Test category action",
         description = "This is an action used to verify category plugin framework functionality",
-        activityTypes = [SERVICE_TASK]
+        activityTypes = [SERVICE_TASK_START]
     )
     fun testAction() {
         //do nothing

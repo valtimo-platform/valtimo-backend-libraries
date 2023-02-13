@@ -73,6 +73,7 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
                 TEXT,
                 SINGLE,
                 EXACT,
+                null,
                 0,
                 null
         ));
@@ -82,6 +83,7 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
                 TEXT,
                 SINGLE,
                 LIKE,
+            null,
                 1,
                 null
         ));
@@ -98,6 +100,7 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
                 TEXT,
                 SINGLE,
                 LIKE,
+            null,
                 0,
                 null);
         searchFieldService.addSearchField("person", searchField);

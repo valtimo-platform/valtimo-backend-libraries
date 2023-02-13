@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.gzac.listener
 
 import com.fasterxml.jackson.core.json.JsonReadFeature
@@ -31,14 +47,16 @@ import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import mu.KotlinLogging
+import org.camunda.bpm.engine.RepositoryService
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import java.lang.RuntimeException
 import java.net.URI
 import java.util.UUID
-
 
 @Component
 class ApplicationReadyEventListener(
@@ -49,6 +67,7 @@ class ApplicationReadyEventListener(
     private val documentDefinitionService: DocumentDefinitionService,
     private val pluginService: PluginService,
     private val objectManagementService: ObjectManagementService,
+    private val repositoryService: RepositoryService,
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
@@ -83,6 +102,7 @@ class ApplicationReadyEventListener(
     fun createPlugins() {
         try {
             val zakenApiAuthenticationPluginId = createZakenApiAuthenticationPlugin()
+            createZakenApiPlugin(zakenApiAuthenticationPluginId)
             createCatalogiApiPlugin(zakenApiAuthenticationPluginId)
             val notificatiesApiAuthenticationPluginId = createNotificatiesApiAuthenticationPlugin()
             val notificatiesApiPluginId = createNotificatiesApiPlugin(notificatiesApiAuthenticationPluginId)
@@ -90,11 +110,56 @@ class ApplicationReadyEventListener(
             val objectenApiPluginId = createObjectenApiPlugin(objectenApiAuthenticationPluginId)
             val objecttypenApiPluginId = createObjecttypenApiPlugin(objectenApiAuthenticationPluginId)
             val bezwaarConfigurationId = createBezwaarObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
+            val taakConfigurationId = createTaakObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
             createBomenObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
             createVerzoekPlugin(notificatiesApiPluginId, bezwaarConfigurationId)
             createSmartDocumentsPlugin()
+            val protaalTaakPluginId = createPortaalTaakPlugin(notificatiesApiPluginId, taakConfigurationId)
+            createPortaalTaakLink(protaalTaakPluginId)
         } catch (ex: Exception) {
-            logger.error { ex }
+            throw RuntimeException("Failed to deploy plugin configurations for development", ex)
+        }
+    }
+
+    private fun createPortaalTaakLink(protaalTaakPluginId: UUID) {
+        val portalPersonProcessDefinitionId = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("portal-person")
+            .latestVersion()
+            .singleResult()
+            .id
+        if (pluginService.getProcessLinks(portalPersonProcessDefinitionId, "portal-task").isEmpty()) {
+            pluginService.createProcessLink(
+                PluginProcessLinkCreateDto(
+                    processDefinitionId = portalPersonProcessDefinitionId,
+                    activityId = "portal-task",
+                    activityType = "bpmn:UserTask:create",
+                    pluginConfigurationId = protaalTaakPluginId,
+                    pluginActionDefinitionKey = "create-portaaltaak",
+                    actionProperties = jacksonObjectMapper().readValue(
+                        """
+                        {
+                            "formType": "id",
+                            "formTypeId": "person",
+                            "sendData": [
+                                {
+                                    "key": "/firstName",
+                                    "value": "doc:/firstName"
+                                }
+                            ],
+                            "receiveData": [
+                                {
+                                    "key": "doc:/firstName",
+                                    "value": "/firstName"
+                                }
+                            ],
+                            "receiver": "other",
+                            "otherReceiver": "bsn",
+                            "bsn": "569312863"
+                        }
+                        """.trimIndent()
+                    ),
+                )
+            )
         }
     }
 
@@ -173,7 +238,7 @@ class ApplicationReadyEventListener(
             )
         )
         if (result.errors().isEmpty()) {
-            val configResult = objectSyncService.createObjectSyncConfig(
+            objectSyncService.createObjectSyncConfig(
                 request = CreateObjectSyncConfigRequest(
                     connectorInstanceId = result.connectorTypeInstance()!!.id.id,
                     enabled = true,
@@ -287,6 +352,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createZakenApiAuthenticationPlugin(): UUID {
+        logger.debug { "Creating OpenZaak Authentication plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "OpenZaak Authentication",
@@ -312,6 +378,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createNotificatiesApiAuthenticationPlugin(): UUID {
+        logger.debug { "Creating OpenNotificaties Authentication plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "OpenNotificaties Authentication",
@@ -320,7 +387,7 @@ class ApplicationReadyEventListener(
         )
         val mapper = JsonMapper.builder()
             .enable(JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER)
-            .build();
+            .build()
         return if (existing.isEmpty()) {
             pluginService.createPluginConfiguration(
                 title = "OpenNotificaties Authentication",
@@ -340,6 +407,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createNotificatiesApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        logger.debug { "Creating Notificaties API plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "Notificaties API",
@@ -354,6 +422,7 @@ class ApplicationReadyEventListener(
                     """
                     {
                         "url": "http://localhost:8002/api/v1/",
+                        "callbackUrl": "http://host.docker.internal:8080/api/v1/notificatiesapi/callback",
                         "authenticationPluginConfiguration": "$authenticationPluginConfigurationId"
                     }
                     """
@@ -365,6 +434,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createObjectenApiAuthenticationPlugin(): UUID {
+        logger.debug { "Creating Objecten API Authentication plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "Objecten API Authentication",
@@ -389,6 +459,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createObjectenApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        logger.debug { "Creating Objecten API plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "Objecten API",
@@ -414,6 +485,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createObjecttypenApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        logger.debug { "Creating Objecttypen API plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "Objecttypen API",
@@ -438,7 +510,34 @@ class ApplicationReadyEventListener(
         }
     }
 
+    private fun createZakenApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        logger.debug { "Creating Zaken API plugin" }
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "Zaken API",
+                pluginDefinitionKey = "zakenapi",
+            )
+        )
+        return if (existing.isEmpty()) {
+            pluginService.createPluginConfiguration(
+                title = "Zaken API",
+                pluginDefinitionKey = "zakenapi",
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "url": "http://localhost:8001/zaken/api/v1/",
+                        "authenticationPluginConfiguration": "$authenticationPluginConfigurationId"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
     private fun createCatalogiApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        logger.debug { "Creating Catalogi API plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "Catalogi API",
@@ -464,6 +563,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createVerzoekPlugin(notificatiesApiPluginConfiguration: UUID, objectManagementId: UUID): UUID {
+        logger.debug { "Creating Verzoek lening plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "Verzoek lening",
@@ -479,7 +579,7 @@ class ApplicationReadyEventListener(
                     {
                         "notificatiesApiPluginConfiguration": "$notificatiesApiPluginConfiguration",
                         "objectManagementId": "$objectManagementId",
-                        "systemProcessDefinitionKey": "verzoek",
+                        "processToStart": "create-zaakdossier",
                         "rsin": "051845623",
                         "verzoekProperties": [{
                             "type": "lening",
@@ -498,6 +598,7 @@ class ApplicationReadyEventListener(
     }
 
     private fun createSmartDocumentsPlugin(): UUID {
+        logger.debug { "Creating SmartDocuments plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 pluginConfigurationTitle = "SmartDocuments",
@@ -541,6 +642,24 @@ class ApplicationReadyEventListener(
         ).id
     }
 
+    private fun createTaakObjectManagement(
+        objecttypenApiPluginConfigurationId: UUID,
+        objectenApiPluginConfigurationId: UUID
+    ): UUID {
+        return objectManagementService.update(
+            ObjectManagement(
+                id = UUID.fromString("16c69c86-0c5d-4d57-b4ac-0add8271a142"),
+                title = "Taak",
+                objecttypenApiPluginConfigurationId = objecttypenApiPluginConfigurationId,
+                objecttypeId = "3e852115-277a-4570-873a-9a64be3aeb34",
+                objectenApiPluginConfigurationId = objectenApiPluginConfigurationId,
+                showInDataMenu = false,
+                formDefinitionView = null,
+                formDefinitionEdit = null,
+            )
+        ).id
+    }
+
     private fun createBomenObjectManagement(
         objecttypenApiPluginConfigurationId: UUID,
         objectenApiPluginConfigurationId: UUID
@@ -575,6 +694,43 @@ class ApplicationReadyEventListener(
                     URI("http://localhost:8001/catalogi/api/v1/informatieobjecttypen/efc332f2-be3b-4bad-9e3c-49a6219c92ad")
                 )
             )
+        }
+        if (event.documentDefinition().id().name().equals("portal-person")) {
+            zaakTypeLinkService.createZaakTypeLink(
+                CreateZaakTypeLinkRequest(
+                    "portal-person",
+                    URI("http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"),
+                    true
+                )
+            )
+        }
+    }
+
+    private fun createPortaalTaakPlugin(
+        notificatiesApiPluginConfigurationId: UUID,
+        objectManagementConfigurationId: UUID
+    ): UUID {
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "Portaaltaak",
+                pluginDefinitionKey = "portaaltaak",
+            )
+        )
+        return if (existing.isEmpty()) {
+            pluginService.createPluginConfiguration(
+                title = "Portaaltaak",
+                pluginDefinitionKey = "portaaltaak",
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "notificatiesApiPluginConfiguration": "$notificatiesApiPluginConfigurationId",
+                        "objectManagementConfigurationId": "$objectManagementConfigurationId"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
         }
     }
 

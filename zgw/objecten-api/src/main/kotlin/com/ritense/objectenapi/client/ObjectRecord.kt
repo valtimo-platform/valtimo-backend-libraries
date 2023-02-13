@@ -17,9 +17,11 @@
 package com.ritense.objectenapi.client
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.JsonNode
 import java.time.LocalDate
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class ObjectRecord(
     val index: Int? = null,
     val typeVersion: Int,
