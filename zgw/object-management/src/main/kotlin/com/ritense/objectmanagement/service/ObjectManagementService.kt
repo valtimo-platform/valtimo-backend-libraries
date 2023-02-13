@@ -188,10 +188,11 @@ class ObjectManagementService(
         val listColumns = searchListColumnService.findByOwnerId(objectManagementId.toString())
         val objectsListRowDtoList = mutableListOf<ObjectsListRowDto>()
         objectsList.results.forEach { objects ->
-            val objectsListRowDto = ObjectsListRowDto(objects.uuid.toString(), mutableListOf())
+            val objectsListItemDto = mutableListOf<ObjectsListRowDto.ObjectsListItemDto>()
             listColumns?.forEach { listColumn ->
-                objectsListRowDto.items += ObjectsListRowDto.ObjectsListItemDto(listColumn.key, objects.record.data?.at(listColumn.path))
+                objectsListItemDto += ObjectsListRowDto.ObjectsListItemDto(listColumn.key, objects.record.data?.at(listColumn.path))
             }
+            val objectsListRowDto = ObjectsListRowDto(objects.uuid.toString(), objectsListItemDto)
             objectsListRowDtoList.add(objectsListRowDto)
         }
         return objectsListRowDtoList
