@@ -269,7 +269,7 @@ class PortaaltaakPlugin(
         )
     }
 
-    private fun changeDataInPortalTaakObject(
+    internal fun changeDataInPortalTaakObject(
         portaalTaakMetaObject: ObjectWrapper,
         convertValue: JsonNode
     ): ObjectRequest {
