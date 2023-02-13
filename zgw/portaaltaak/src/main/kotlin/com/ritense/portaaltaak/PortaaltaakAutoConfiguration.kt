@@ -16,6 +16,7 @@
 
 package com.ritense.portaaltaak
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.service.DocumentService
 import com.ritense.objectmanagement.service.ObjectManagementService
@@ -63,7 +64,8 @@ class PortaaltaakAutoConfiguration {
         taskService: TaskService,
         documentService: DocumentService,
         runtimeService: RuntimeService,
-        valueResolverService: ValueResolverService
+        valueResolverService: ValueResolverService,
+        objectMapper: ObjectMapper
     ): PortaalTaakEventListener {
         return PortaalTaakEventListener(
             objectManagementService,
@@ -73,7 +75,7 @@ class PortaaltaakAutoConfiguration {
             taskService,
             runtimeService,
             valueResolverService,
-            Mapper.INSTANCE.get()
+            objectMapper
         )
     }
 }

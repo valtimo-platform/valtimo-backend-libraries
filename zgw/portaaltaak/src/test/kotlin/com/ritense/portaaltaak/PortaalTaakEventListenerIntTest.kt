@@ -122,7 +122,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun something() {
+    fun `should complete task with data on event`() {
         val actionPropertiesJson = """
             {
                 "formType" : "${TaakFormType.ID.key}",
