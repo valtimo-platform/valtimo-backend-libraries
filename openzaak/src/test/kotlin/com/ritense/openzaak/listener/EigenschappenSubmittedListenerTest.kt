@@ -18,13 +18,13 @@ package com.ritense.openzaak.listener
 
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.service.impl.EigenschapService
-import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.EigenschapType
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.zakenapi.domain.ZaakInstanceLink
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks

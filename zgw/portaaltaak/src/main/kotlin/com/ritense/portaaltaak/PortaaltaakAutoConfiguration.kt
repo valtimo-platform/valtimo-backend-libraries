@@ -16,17 +16,11 @@
 
 package com.ritense.portaaltaak
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.document.service.DocumentService
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.service.CamundaProcessService
-import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -41,40 +35,14 @@ class PortaaltaakAutoConfiguration {
         objectManagementService: ObjectManagementService,
         valueResolverService: ValueResolverService,
         processDocumentService: ProcessDocumentService,
-        zaakInstanceLinkService: ZaakInstanceLinkService,
-        taskService: TaskService
+        zaakInstanceLinkService: ZaakInstanceLinkService
     ): PortaaltaakPluginFactory {
         return PortaaltaakPluginFactory(
             pluginService,
             objectManagementService,
             valueResolverService,
             processDocumentService,
-            zaakInstanceLinkService,
-            taskService
-        )
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(PortaalTaakEventListener::class)
-    fun portaalTaakEventListener(
-        objectManagementService: ObjectManagementService,
-        pluginService: PluginService,
-        processDocumentService: ProcessDocumentService,
-        processService: CamundaProcessService,
-        taskService: TaskService,
-        runtimeService: RuntimeService,
-        valueResolverService: ValueResolverService,
-        objectMapper: ObjectMapper
-    ): PortaalTaakEventListener {
-        return PortaalTaakEventListener(
-            objectManagementService,
-            pluginService,
-            processDocumentService,
-            processService,
-            taskService,
-            runtimeService,
-            valueResolverService,
-            objectMapper
+            zaakInstanceLinkService
         )
     }
 }

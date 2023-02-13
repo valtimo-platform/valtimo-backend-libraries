@@ -30,12 +30,13 @@ import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
-import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
-import com.ritense.plugin.service.PluginService
 import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundException
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import java.net.URI
+import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
@@ -46,11 +47,9 @@ import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.TaskService
-import org.camunda.bpm.engine.delegate.DelegateExecution
+import java.util.UUID
 import org.camunda.bpm.engine.delegate.DelegateTask
-import java.net.URI
 import java.time.LocalDate
-import java.util.*
 
 @Plugin(
     key = "portaaltaak",
@@ -64,7 +63,7 @@ class PortaaltaakPlugin(
     private val processDocumentService: ProcessDocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
     private val taskService: TaskService
-) {
+    ) {
 
     @PluginProperty(key = "notificatiesApiPluginConfiguration", secret = false)
     lateinit var notificatiesApiPluginConfiguration: NotificatiesApiPlugin
@@ -175,7 +174,7 @@ class PortaaltaakPlugin(
                     ?: throw IllegalStateException("Could not find identification value in configuration for type ${otherReceiver.key}")
 
                 TaakIdentificatie(
-                    otherReceiver.name,
+                    otherReceiver.key,
                     identificationValue
                 )
             }
