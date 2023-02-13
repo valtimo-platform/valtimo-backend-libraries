@@ -169,7 +169,7 @@ class ZaakObjectService(
     }
 
     fun updateObject(objectManagementId: UUID, objectUrl : URI, data: JsonNode) : URI {
-        val (createdObjectRequest, objectManagementInfo) = getObjectRequestAndInfo(objectManagementId, data)
+        val (updateObjectRequest, objectManagementInfo) = getObjectRequestAndInfo(objectManagementId, data)
 
         val objectenApiPlugin = pluginService.createInstance(
             PluginConfigurationId(
@@ -178,7 +178,7 @@ class ZaakObjectService(
 
         return objectenApiPlugin.objectUpdate(
             objectUrl,
-            createdObjectRequest
+            updateObjectRequest
         ).url
     }
 

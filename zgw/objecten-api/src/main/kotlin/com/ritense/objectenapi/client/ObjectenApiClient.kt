@@ -127,7 +127,7 @@ class ObjectenApiClient(
             .uri(objectUrl)
             .header("Content-Crs", "EPSG:4326")
             .retrieve()
-            .toEntity(ObjectWrapper::class.java)
+            .toBodilessEntity()
             .block()
 
         return result?.statusCode!!
