@@ -30,6 +30,7 @@ import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId

@@ -21,6 +21,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -35,14 +36,16 @@ class PortaaltaakAutoConfiguration {
         objectManagementService: ObjectManagementService,
         valueResolverService: ValueResolverService,
         processDocumentService: ProcessDocumentService,
-        zaakInstanceLinkService: ZaakInstanceLinkService
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        taskService: TaskService
     ): PortaaltaakPluginFactory {
         return PortaaltaakPluginFactory(
             pluginService,
             objectManagementService,
             valueResolverService,
             processDocumentService,
-            zaakInstanceLinkService
+            zaakInstanceLinkService,
+            taskService
         )
     }
 }
