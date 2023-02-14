@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-package com.ritense.notificatiesapi.exception
+package com.ritense.portaaltaak.exception
 
-import org.springframework.http.HttpStatus
-
-class NotificatiesException(message: String?, val status: HttpStatus) : RuntimeException(message) {
-}
+class CompleteTaakProcessVariableNotFoundException(message: String) : RuntimeException(message)

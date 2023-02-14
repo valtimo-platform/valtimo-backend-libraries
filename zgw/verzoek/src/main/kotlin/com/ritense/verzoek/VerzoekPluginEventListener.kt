@@ -22,7 +22,7 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
-import com.ritense.notificatiesapi.exception.NotificatiesException
+import com.ritense.notificatiesapi.exception.NotificatiesNotificationEventException
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
@@ -92,14 +92,17 @@ class VerzoekPluginEventListener(
         val objectenApiPlugin =
             pluginService.createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
         val verzoekObjectData = objectenApiPlugin.getObject(URI(event.resourceUrl)).record.data
-            ?: throw NotificatiesException("Verzoek meta data was empty!", HttpStatus.INTERNAL_SERVER_ERROR)
+            ?: throw NotificatiesNotificationEventException(
+                "Verzoek meta data was empty!",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
         return verzoekObjectData
     }
 
     private fun VerzoekPlugin.getVerzoekTypeProperties(verzoekObjectData: JsonNode): VerzoekProperties {
         val verzoekType = verzoekObjectData.get("type")?.textValue()
         val verzoekTypeProperties = verzoekProperties.firstOrNull { props -> props.type.equals(verzoekType, true) }
-            ?: throw NotificatiesException(
+            ?: throw NotificatiesNotificationEventException(
                 "Could not find properties of type $verzoekType",
                 HttpStatus.INTERNAL_SERVER_ERROR
             )
@@ -113,14 +116,14 @@ class VerzoekPluginEventListener(
         return documentService.createDocument(
             NewDocumentRequest(
                 verzoekTypeProperties.caseDefinitionName,
-                verzoekObjectData.get("data") ?: throw NotificatiesException(
+                verzoekObjectData.get("data") ?: throw NotificatiesNotificationEventException(
                     "Verzoek Object data was empty!",
                     HttpStatus.INTERNAL_SERVER_ERROR
                 )
             )
         ).also { result ->
             if (result.errors().size > 0) {
-                throw NotificatiesException(
+                throw NotificatiesNotificationEventException(
                     "Could not create document for case ${verzoekTypeProperties.caseDefinitionName}\n" +
                             "Reason:\n" +
                             result.errors().joinToString(separator = "\n - "),
@@ -133,7 +136,7 @@ class VerzoekPluginEventListener(
     private fun startProcess(startProcessRequest: StartProcessForDocumentRequest) {
         val result = processDocumentService.startProcessForDocument(startProcessRequest)
         if (result == null || result.errors().size > 0) {
-            throw NotificatiesException(
+            throw NotificatiesNotificationEventException(
                 "Could not start process ${startProcessRequest.processDefinitionKey}\n" +
                         "Reason:\n" +
                         result.errors().joinToString(separator = "\n - "),

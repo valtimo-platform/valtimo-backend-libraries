@@ -18,7 +18,7 @@ package com.ritense.notificatiesapi.web.rest
 
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
 import com.ritense.notificatiesapi.exception.AuthorizationException
-import com.ritense.notificatiesapi.exception.NotificatiesException
+import com.ritense.notificatiesapi.exception.NotificatiesNotificationEventException
 import com.ritense.notificatiesapi.service.NotificatiesApiService
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -46,7 +46,7 @@ class NotificatiesApiResource(
                 notificatiesApiService.findAbonnementSubscription(authHeader)
                 notificatiesApiService.handle(notification)
                 ResponseEntity.noContent().build()
-            } catch (ex: NotificatiesException) {
+            } catch (ex: NotificatiesNotificationEventException) {
                 ResponseEntity.status(ex.status).build()
             } catch (ex: AuthorizationException) {
                 ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
