@@ -125,12 +125,12 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
         val authenticationPlugin = pluginService.createPluginConfiguration(
             title = "Objecten authentication",
             properties = ObjectMapper().readTree(
-                "{\"token\":\"some-secret-token\"}," +
-                    "\"pluginDefinition\": {" +
-                    "\"key\": \"objecttokenauthentication\"," +
-                    "\"title\": \"Object Token Authentication\"," +
-                    "\"description\": \"Plugin used to provide authentication based on a token\"" +
-                    "}"
+                """{"token":"some-secret-token"},
+                    "pluginDefinition": {
+                    "key": "objecttokenauthentication",
+                    "title": "Object Token Authentication",
+                    "description": "Plugin used to provide authentication based on a token"
+                    }"""
             ) as ObjectNode,
             pluginDefinitionKey = "objecttokenauthentication"
         )
@@ -138,16 +138,16 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
         val objectApiPlugin = pluginService.createPluginConfiguration(
             title = "objectsApi",
             properties = ObjectMapper().readTree(
-                "{" +
-                    "\"url\":\"$objectUrl\"," +
-                    "\"authenticationPluginConfiguration\":\"${authenticationPlugin.id.id}\"}," +
-                    "\"pluginDefinition\":" +
-                    "{" +
-                    "\"key\":\"objectenapi\"," +
-                    "\"title\":\"Objecten API\"," +
-                    "\"description\":\"Connects to the Objecten API\"" +
-                    "}" +
-                    "}"
+                """{
+                    "url":"$objectUrl",
+                    "authenticationPluginConfiguration":"${authenticationPlugin.id.id}"},
+                    "pluginDefinition":
+                    {
+                    "key":"objectenapi",
+                    "title":"Objecten API",
+                    "description":"Connects to the Objecten API"
+                    }
+                    }"""
             ) as ObjectNode,
             pluginDefinitionKey = "objectenapi"
         )
@@ -155,16 +155,16 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
         val objectTypeApiPlugin = pluginService.createPluginConfiguration(
             title = "objectTypenApi",
             properties = ObjectMapper().readTree(
-                "{" +
-                    "\"url\":\"$objectTypesApiUrl\"," +
-                    "\"authenticationPluginConfiguration\":\"${authenticationPlugin.id.id}\"}," +
-                    "\"pluginDefinition\":" +
-                    "{" +
-                    "\"key\":\"objecttypenapi\"," +
-                    "\"title\":\"Objecttypen API\"," +
-                    "\"description\":\"Connects to the Objecttypen API\"" +
-                    "}" +
-                    "}"
+                """{
+                    "url":"$objectTypesApiUrl",
+                    "authenticationPluginConfiguration":"${authenticationPlugin.id.id}"},
+                    "pluginDefinition":
+                    {
+                    "key":"objecttypenapi",
+                    "title":"Objecttypen API",
+                    "description":"Connects to the Objecttypen API"
+                    }
+                    }"""
             ) as ObjectNode,
             pluginDefinitionKey = "objecttypenapi"
         )

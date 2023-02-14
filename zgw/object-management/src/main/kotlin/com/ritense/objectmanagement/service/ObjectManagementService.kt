@@ -259,7 +259,7 @@ class ObjectManagementService(
     }
 
     private fun concatenateObjectSearchParameter(searchParameterList: List<ObjectSearchParameter>): String {
-        return searchParameterList.joinToString(separator = ",")
+        return searchParameterList.joinToString(separator = ",") { it.toQueryParameter() }
     }
 
     private fun getObjectenApiPlugin(id: UUID) = pluginService
