@@ -163,6 +163,15 @@ class PluginService(
         }
     }
 
+    fun processLinkExists(pluginConfigurationId: PluginConfigurationId, activityId: String, activityType: ActivityType): Boolean {
+        return pluginProcessLinkRepository
+            .findByPluginConfigurationIdAndActivityIdAndActivityType(
+                pluginConfigurationId,
+                activityId,
+                activityType
+            ).size == 1
+    }
+
     fun getProcessLinks(
         processDefinitionId: String,
         activityId: String
@@ -367,12 +376,16 @@ class PluginService(
     }
 
     fun <T> createInstance(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): T? {
+        val pluginConfiguration = findPluginConfiguration(clazz, configurationFilter)
+
+        return pluginConfiguration?.let { createInstance(it) as T }
+    }
+
+    fun <T> findPluginConfiguration(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): PluginConfiguration? {
         val annotation = clazz.getAnnotation(Plugin::class.java)
             ?: throw IllegalArgumentException("Requested plugin for class ${clazz.name}, but class is not annotated as plugin")
 
-        val pluginConfiguration = findPluginConfiguration(annotation.key, configurationFilter)
-
-        return pluginConfiguration?.let { createInstance(it) as T }
+        return findPluginConfiguration(annotation.key, configurationFilter)
     }
 
     private fun getActionMethod(
@@ -425,7 +438,7 @@ class PluginService(
         }
     }
 
-    private fun findPluginConfiguration(
+    fun findPluginConfiguration(
         pluginDefinitionKey: String,
         filter: (JsonNode) -> Boolean
     ): PluginConfiguration? {
