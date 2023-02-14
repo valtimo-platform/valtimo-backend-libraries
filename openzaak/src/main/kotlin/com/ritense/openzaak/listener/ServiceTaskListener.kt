@@ -21,18 +21,18 @@ import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.service.ZaakTypeLinkService
-import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.annotation.Transactional
 
 open class ServiceTaskListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
-    private val documentService: DocumentService,
+    documentService: DocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
     private val zaakService: ZaakService,
-    private val repositoryService: RepositoryService
+    repositoryService: RepositoryService
 ) : BaseServiceTaskListener(
     zaakTypeLinkService,
     documentService,

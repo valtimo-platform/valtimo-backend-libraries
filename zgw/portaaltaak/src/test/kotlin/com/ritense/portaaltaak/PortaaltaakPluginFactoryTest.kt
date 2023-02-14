@@ -40,7 +40,7 @@ internal class PortaaltaakPluginFactoryTest {
         val notificatiesApiPluginMock = mock<NotificatiesApiPlugin>()
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(notificatiesApiPluginMock)
 
-        val factory = PortaaltaakPluginFactory(pluginService)
+        val factory = PortaaltaakPluginFactory(pluginService, mock(), mock(), mock(), mock())
 
         val portaaltaakPluginProperties: String = """
             {

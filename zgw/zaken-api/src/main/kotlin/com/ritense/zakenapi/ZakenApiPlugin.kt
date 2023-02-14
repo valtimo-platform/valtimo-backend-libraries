@@ -30,7 +30,9 @@ import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
+import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -169,6 +171,25 @@ class ZakenApiPlugin(
         } while (currentResults?.next != null)
 
         return results
+    }
+
+    fun getZaakRollen(zaakUrl: URI, roleType: RolType? = null): List<Rol> {
+        var next = true
+
+        return generateSequence(1) { i -> if (next) i + 1 else null }
+            .flatMap { pageNumber ->
+                val result = client.getZaakRollen(authenticationPluginConfiguration,
+                    url,
+                    zaakUrl,
+                    pageNumber,
+                    roleType)
+
+                if (result.next == null) {
+                    next = false
+                }
+
+                result.results
+            }.toList()
     }
 
     companion object {

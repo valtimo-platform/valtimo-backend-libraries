@@ -16,8 +16,8 @@
 
 package com.ritense.openzaak.web.rest
 
-import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.openzaak.web.rest.response.ZaakInstanceLinkDTO
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
