@@ -16,13 +16,19 @@
 
 package com.ritense.portaaltaak
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.convertValue
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath
 import com.ritense.BaseIntegrationTest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
 import com.ritense.objectenapi.ObjectenApiAuthentication
+import com.ritense.objectenapi.ObjectenApiPlugin
+import com.ritense.objectenapi.client.ObjectRecord
+import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
@@ -32,9 +38,12 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundException
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.Mapper
+import java.time.LocalDate
+import java.util.*
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -42,34 +51,36 @@ import okhttp3.mockwebserver.RecordedRequest
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.task.Task
+import org.camunda.community.mockito.delegate.DelegateExecutionFake
+import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.nullValue
+import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doCallRealMethod
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
+import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
-import java.time.LocalDate
-import java.util.Optional
-import java.util.UUID
-import org.hamcrest.CoreMatchers.anyOf
-import org.hamcrest.Matcher
-import org.springframework.transaction.annotation.Transactional
+import java.net.URI
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 @Transactional
 class PortaaltaakPluginIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var repositoryService: RepositoryService
+
+    @Autowired
+    lateinit var processDocumentService: ProcessDocumentService
 
     @Autowired
     lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
@@ -171,6 +182,94 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         assertThat(body, jsonPathMissingOrNull("$.record.correctedBy"))
     }
 
+    @Test
+    fun `should complete Camunda Task`() {
+        val task = startPortaalTaakProcess("""
+            {
+                "lastname": "test"
+            }
+        """.trimIndent())
+        assertNotNull(taskService.createTaskQuery().taskId(task.id).singleResult())
+
+        val portaaltaakPlugin = spy(pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin)
+        val delegateExecution = DelegateExecutionFake()
+        delegateExecution.setVariable("verwerkerTaakId",task.id)
+        delegateExecution.setVariable("objectenApiPluginConfigurationId",objectenPlugin.id.id.toString())
+        delegateExecution.setVariable("portaalTaakObjectUrl","http://some.resource/url")
+        val objectenApiPlugin: ObjectenApiPlugin = mock()
+        val objectWrapperCaptor = argumentCaptor<ObjectWrapper>()
+        val jsonNodeCaptor = argumentCaptor<JsonNode>()
+        val objectWrapper = getObjectWrapper()
+
+        doReturn(objectenApiPlugin).whenever(pluginService).createInstance(any<PluginConfigurationId>())
+        whenever(objectenApiPlugin.getObject(any())).thenReturn(objectWrapper)
+        whenever(objectenApiPlugin.objectPatch(any(), any())).thenReturn(null)
+
+        portaaltaakPlugin.completePortaalTaak(delegateExecution)
+
+        verify(portaaltaakPlugin).changeDataInPortalTaakObject(objectWrapperCaptor.capture(),jsonNodeCaptor.capture())
+
+        val sentTaakObject: TaakObject = jacksonObjectMapper().treeToValue(jsonNodeCaptor.firstValue,TaakObject::class.java)
+        assertEquals(TaakStatus.VERWERKT, sentTaakObject.status)
+        assertNull(taskService.createTaskQuery().taskId(task.id).singleResult())
+    }
+
+    private fun getObjectWrapper(): ObjectWrapper {
+        return ObjectWrapper(
+            URI.create("http://objects/"),
+            UUID.randomUUID(),
+            URI.create("http://objectType/aType"),
+            ObjectRecord(
+                typeVersion = 1,
+                data = jacksonObjectMapper().valueToTree(getTaakObject()),
+                startAt = LocalDate.now()
+            )
+        )
+
+    }
+
+    @Test
+    fun `should throw exception due to missing verwerkerTaakId`() {
+        val portaaltaakPlugin = pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin
+        val delegateExecution = DelegateExecutionFake()
+        val result =
+            assertThrows<CompleteTaakProcessVariableNotFoundException>{ portaaltaakPlugin.completePortaalTaak(delegateExecution) }
+        assertEquals("verwerkerTaakId is required but was not provided",result.message)
+    }
+
+    @Test
+    fun `should throw exception due to missing objectenApiPluginConfigurationId`() {
+        val task = startPortaalTaakProcess("""
+            {
+                "lastname": "test"
+            }
+        """.trimIndent())
+        val portaaltaakPlugin = pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin
+        val delegateExecution = DelegateExecutionFake()
+        delegateExecution.setVariable("verwerkerTaakId",task.id)
+        val result =
+            assertThrows<CompleteTaakProcessVariableNotFoundException>{ portaaltaakPlugin.completePortaalTaak(delegateExecution) }
+        assertEquals("objectenApiPluginConfigurationId is required but was not provided",result.message)
+    }
+
+    @Test
+    fun `should throw exception due to missing portaalTaakObjectUrl`() {
+        val task = startPortaalTaakProcess("""
+            {
+                "lastname": "test"
+            }
+        """.trimIndent())
+        val portaaltaakPlugin = pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin
+        val delegateExecution = DelegateExecutionFake()
+        delegateExecution.setVariable("verwerkerTaakId",task.id)
+        delegateExecution.setVariable("objectenApiPluginConfigurationId",objectenPlugin.id.id.toString())
+
+        val result =
+            assertThrows<CompleteTaakProcessVariableNotFoundException>{ portaaltaakPlugin.completePortaalTaak(delegateExecution) }
+        assertEquals("portaalTaakObjectUrl is required but was not provided",result.message)
+    }
+
+
     fun <T> jsonPathMissingOrNull(jsonPath: String): Matcher<T> {
         return anyOf(
             hasNoJsonPath(jsonPath),
@@ -229,7 +328,8 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         val pluginPropertiesJson = """
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPlugin.id.id}",
-              "objectManagementConfigurationId": "${objectManagement.id}"
+              "objectManagementConfigurationId": "${objectManagement.id}",
+              "uploadedDocumentsHandlerProcess": "process-portaaltaak-uploaded-documents"
             }
         """.trimIndent()
 
@@ -382,6 +482,26 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         return executedRequests
             .filter { method.matches(it.method!!) }
             .firstOrNull { it.path?.substringBefore('?').equals(path) }
+    }
+
+    private fun getTaakObject(): TaakObject {
+        return TaakObject(
+            identificatie = TaakIdentificatie("aType", "aValue"),
+            data = emptyMap(),
+            title = "aTitle",
+            status = TaakStatus.INGEDIEND,
+            formulier = TaakForm(TaakFormType.ID, "anId"),
+            verwerkerTaakId = UUID.randomUUID().toString(),
+            verzondenData = mapOf(
+                "documenten" to listOf(
+                    URI.create("/name"), URI.create("/phone"),
+                    "name" to "Luis",
+                    "phone" to "999999999"
+                )
+
+            )
+        )
+
     }
 
     class TestAuthentication : ObjectenApiAuthentication, ObjecttypenApiAuthentication, NotificatiesApiAuthentication {

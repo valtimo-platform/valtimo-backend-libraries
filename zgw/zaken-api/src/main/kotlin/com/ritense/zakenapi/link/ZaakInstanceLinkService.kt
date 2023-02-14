@@ -22,7 +22,7 @@ import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import java.net.URI
 import java.util.UUID
 
-class ZaakInstanceLinkService(
+class  ZaakInstanceLinkService(
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
 ) {
     fun createZaakInstanceLink(zaakInstanceUrl: URI, zaakInstanceId: UUID, documentId: UUID, zaakTypeUrl: URI): ZaakInstanceLink {
