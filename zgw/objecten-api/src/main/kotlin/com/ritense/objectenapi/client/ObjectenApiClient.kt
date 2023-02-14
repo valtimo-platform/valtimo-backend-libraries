@@ -19,6 +19,7 @@ package com.ritense.objectenapi.client
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import java.net.URI
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
 
@@ -77,23 +78,23 @@ class ObjectenApiClient(
         return result?.body!!
     }
 
-    fun objectUpdate(
+    fun createObject(
         authentication: ObjectenApiAuthentication,
-        objectUrl: URI,
+        objectsApiUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
         val result = webclientBuilder
             .clone()
             .filter(authentication)
+            .baseUrl(objectsApiUrl.toASCIIString())
             .build()
-            .put()
-            .uri(objectUrl)
+            .post()
+            .uri("objects")
             .header("Content-Crs", "EPSG:4326")
             .bodyValue(objectRequest)
             .retrieve()
             .toEntity(ObjectWrapper::class.java)
             .block()
-
         return result?.body!!
     }
 
@@ -117,23 +118,39 @@ class ObjectenApiClient(
         return result?.body!!
     }
 
-    fun createObject(
+    fun objectUpdate(
         authentication: ObjectenApiAuthentication,
-        objectsApiUrl: URI,
+        objectUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
         val result = webclientBuilder
             .clone()
             .filter(authentication)
-            .baseUrl(objectsApiUrl.toASCIIString())
             .build()
-            .post()
-            .uri("objects")
+            .put()
+            .uri(objectUrl)
             .header("Content-Crs", "EPSG:4326")
             .bodyValue(objectRequest)
             .retrieve()
             .toEntity(ObjectWrapper::class.java)
             .block()
+
         return result?.body!!
     }
+
+    fun deleteObject(authentication: ObjectenApiAuthentication, objectUrl: URI): HttpStatus {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .delete()
+            .uri(objectUrl)
+            .header("Content-Crs", "EPSG:4326")
+            .retrieve()
+            .toBodilessEntity()
+            .block()
+
+        return result?.statusCode!!
+    }
+
 }
