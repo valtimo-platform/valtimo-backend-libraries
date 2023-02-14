@@ -24,6 +24,7 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import java.net.URI
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpStatus
 
 @Plugin(
     key = "objectenapi",
@@ -79,7 +80,15 @@ class ObjectenApiPlugin(
         return objectenApiClient.objectUpdate(authenticationPluginConfiguration, objectUrl, objectRequest)
     }
 
+    fun objectPatch(objectUrl: URI, objectRequest: ObjectRequest): ObjectWrapper {
+        return objectenApiClient.objectPatch(authenticationPluginConfiguration, objectUrl, objectRequest)
+    }
+
     fun createObject(objectRequest: ObjectRequest): ObjectWrapper {
         return objectenApiClient.createObject(authenticationPluginConfiguration, url, objectRequest)
+    }
+
+    fun deleteObject(objectUrl: URI): HttpStatus {
+        return objectenApiClient.deleteObject(authenticationPluginConfiguration, objectUrl)
     }
 }

@@ -25,6 +25,7 @@ import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectRequest
+import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.annotation.Plugin
@@ -33,6 +34,9 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundException
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import java.net.URI
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -43,6 +47,7 @@ import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import org.camunda.bpm.engine.TaskService
 import java.util.UUID
 import org.camunda.bpm.engine.delegate.DelegateTask
 import java.time.LocalDate
@@ -58,13 +63,17 @@ class PortaaltaakPlugin(
     private val valueResolverService: ValueResolverService,
     private val processDocumentService: ProcessDocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
-) {
+    private val taskService: TaskService
+    ) {
 
     @PluginProperty(key = "notificatiesApiPluginConfiguration", secret = false)
     lateinit var notificatiesApiPluginConfiguration: NotificatiesApiPlugin
 
     @PluginProperty(key = "objectManagementConfigurationId", secret = false)
     lateinit var objectManagementConfigurationId: UUID
+
+    @PluginProperty(key = "uploadedDocumentsHandlerProcess", secret = false)
+    lateinit var uploadedDocumentsHandlerProcess: String
 
     @PluginAction(
         key = "create-portaaltaak",
@@ -117,6 +126,37 @@ class PortaaltaakPlugin(
         objectenApiPlugin.createObject(createObjectRequest)
     }
 
+    @PluginAction(
+        key = "complete-portaaltaak",
+        title = "Complete Portaaltaak",
+        description = "Complete portal task and update status on Objects Api",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun completePortaalTaak(delegateExecution: DelegateExecution) {
+        val verwerkerTaakId = (delegateExecution.getVariable("verwerkerTaakId")
+            ?: throw CompleteTaakProcessVariableNotFoundException("verwerkerTaakId is required but was not provided")) as String
+        val objectenApiPluginId = (delegateExecution.getVariable("objectenApiPluginConfigurationId")
+            ?: throw CompleteTaakProcessVariableNotFoundException("objectenApiPluginConfigurationId is required but was not provided")) as String
+        val portaalTaakObjectUrl = URI(
+            (delegateExecution.getVariable("portaalTaakObjectUrl")
+                ?: throw CompleteTaakProcessVariableNotFoundException("portaalTaakObjectUrl is required but was not provided")) as String
+        )
+
+
+        taskService.complete(verwerkerTaakId)
+        val objectenApiPlugin =
+            pluginService.createInstance(PluginConfigurationId(UUID.fromString(objectenApiPluginId))) as ObjectenApiPlugin
+        val portaalTaakMetaDataObject = objectenApiPlugin.getObject(portaalTaakObjectUrl)
+        var taakObject: TaakObject = jacksonObjectMapper()
+            .convertValue(
+                portaalTaakMetaDataObject.record.data ?: throw RuntimeException("Portaaltaak meta data was empty!")
+            )
+        taakObject = changeStatus(taakObject, TaakStatus.VERWERKT)
+        val portaalTaakMetaObjectUpdated =
+            changeDataInPortalTaakObject(portaalTaakMetaDataObject, jacksonObjectMapper().convertValue(taakObject))
+        objectenApiPlugin.objectPatch(portaalTaakObjectUrl, portaalTaakMetaObjectUpdated)
+    }
+
     internal fun getTaakIdentification(
         delegateTask: DelegateTask,
         receiver: TaakReceiver,
@@ -160,8 +200,8 @@ class PortaaltaakPlugin(
         return requireNotNull(
             initiator.betrokkeneIdentificatie.let {
                 when (it) {
-                    is RolNatuurlijkPersoon -> TaakIdentificatie(OtherTaakReceiver.BSN.name, it.inpBsn)
-                    is RolNietNatuurlijkPersoon -> TaakIdentificatie(OtherTaakReceiver.KVK.name, it.annIdentificatie)
+                    is RolNatuurlijkPersoon -> TaakIdentificatie(OtherTaakReceiver.BSN.key, it.inpBsn)
+                    is RolNietNatuurlijkPersoon -> TaakIdentificatie(OtherTaakReceiver.KVK.key, it.annIdentificatie)
                     else -> null
                 }
             }
@@ -215,5 +255,36 @@ class PortaaltaakPlugin(
         JsonPatchService.apply(jsonPatchBuilder.build(), taakData)
 
         return jacksonObjectMapper().convertValue(taakData)
+    }
+
+    internal fun changeStatus(taakObject: TaakObject, status: TaakStatus): TaakObject {
+        return TaakObject(
+            taakObject.identificatie,
+            taakObject.data,
+            taakObject.title,
+            status,
+            taakObject.formulier,
+            taakObject.verwerkerTaakId,
+            taakObject.verzondenData
+        )
+    }
+
+    internal fun changeDataInPortalTaakObject(
+        portaalTaakMetaObject: ObjectWrapper,
+        convertValue: JsonNode
+    ): ObjectRequest {
+        return ObjectRequest(
+            type = portaalTaakMetaObject.type,
+            record = ObjectRecord(
+                data = convertValue,
+                correctedBy = portaalTaakMetaObject.record.correctedBy,
+                endAt = portaalTaakMetaObject.record.endAt,
+                index = portaalTaakMetaObject.record.index,
+                geometry = portaalTaakMetaObject.record.geometry,
+                registrationAt = portaalTaakMetaObject.record.registrationAt,
+                startAt = portaalTaakMetaObject.record.startAt,
+                typeVersion = portaalTaakMetaObject.record.typeVersion
+            )
+        )
     }
 }

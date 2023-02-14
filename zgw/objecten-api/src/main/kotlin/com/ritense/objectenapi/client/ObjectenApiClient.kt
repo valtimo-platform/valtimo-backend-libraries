@@ -19,6 +19,7 @@ package com.ritense.objectenapi.client
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import java.net.URI
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
 
@@ -125,6 +126,46 @@ class ObjectenApiClient(
         return result?.body!!
     }
 
+    fun createObject(
+        authentication: ObjectenApiAuthentication,
+        objectsApiUrl: URI,
+        objectRequest: ObjectRequest
+    ): ObjectWrapper {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .baseUrl(objectsApiUrl.toASCIIString())
+            .build()
+            .post()
+            .uri("objects")
+            .header("Content-Crs", "EPSG:4326")
+            .bodyValue(objectRequest)
+            .retrieve()
+            .toEntity(ObjectWrapper::class.java)
+            .block()
+        return result?.body!!
+    }
+
+    fun objectPatch(
+        authentication: ObjectenApiAuthentication,
+        objectUrl: URI,
+        objectRequest: ObjectRequest
+    ): ObjectWrapper {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .patch()
+            .uri(objectUrl)
+            .header("Content-Crs", "EPSG:4326")
+            .bodyValue(objectRequest)
+            .retrieve()
+            .toEntity(ObjectWrapper::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
     fun objectUpdate(
         authentication: ObjectenApiAuthentication,
         objectUrl: URI,
@@ -145,23 +186,19 @@ class ObjectenApiClient(
         return result?.body!!
     }
 
-    fun createObject(
-        authentication: ObjectenApiAuthentication,
-        objectsApiUrl: URI,
-        objectRequest: ObjectRequest
-    ): ObjectWrapper {
+    fun deleteObject(authentication: ObjectenApiAuthentication, objectUrl: URI): HttpStatus {
         val result = webclientBuilder
             .clone()
             .filter(authentication)
-            .baseUrl(objectsApiUrl.toASCIIString())
             .build()
-            .post()
-            .uri("objects")
+            .delete()
+            .uri(objectUrl)
             .header("Content-Crs", "EPSG:4326")
-            .bodyValue(objectRequest)
             .retrieve()
-            .toEntity(ObjectWrapper::class.java)
+            .toBodilessEntity()
             .block()
-        return result?.body!!
+
+        return result?.statusCode!!
     }
+
 }
