@@ -42,8 +42,6 @@ class ObjectManagementDefinitionDeploymentService(
     @EventListener(ApplicationReadyEvent::class)
     fun deployAllFromResourceFiles() {
         logger.info("Deploying all object management configurations from {}", PATH)
-        val objectManagementConfigurations: ArrayList<ObjectManagement> =
-            ArrayList<ObjectManagement>()
         val resources = loadResources()
 
         for (resource in resources) {
