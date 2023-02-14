@@ -120,7 +120,6 @@ class ZakenApiPlugin(
         @PluginActionProperty rsin: Rsin,
         @PluginActionProperty zaaktypeUrl: URI,
     ) {
-        execution.activityInstanceId
         val documentId = UUID.fromString(execution.businessKey)
 
         val zaak = client.createZaak(
@@ -143,6 +142,23 @@ class ZakenApiPlugin(
                 zaak.zaaktype
             )
         )
+    }
+
+    @PluginAction(
+        key = "create-natuurlijk-persoon-zaak-rol",
+        title = "Create natuurlijk persoon zaakrol",
+        description = "Adds a zaakrol to the zaak in the Zaken API",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun createNatuurlijkPersoonZaakRol(
+        execution: DelegateExecution,
+        @PluginActionProperty roltypeUrl: String,
+        @PluginActionProperty rolToelichting: String,
+        @PluginActionProperty inpBsn: String?,
+        @PluginActionProperty anpIdentificatie: String?,
+        @PluginActionProperty inpA_nummer: String?
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
     }
 
     private fun linkDocument(documentId: UUID, request: LinkDocumentRequest, documentUrl: String) {
