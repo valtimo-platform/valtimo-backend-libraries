@@ -174,22 +174,16 @@ class ObjectManagementService(
         objectManagementId: UUID
     ): List<ObjectsListRowDto> {
         val listColumns = searchListColumnService.findByOwnerId(objectManagementId.toString())
-        objectsList.results.map {
-
-        }
-        val objectsListRowDtoList = mutableListOf<ObjectsListRowDto>()
-        objectsList.results.forEach { objects ->
-            val objectsListItemDto = mutableListOf<ObjectsListRowDto.ObjectsListItemDto>()
-            listColumns?.forEach { listColumn ->
-                objectsListItemDto += ObjectsListRowDto.ObjectsListItemDto(
+        return objectsList.results.map {objects ->
+            val listRowDto = listColumns?.map {
+                listColumn ->
+                ObjectsListRowDto.ObjectsListItemDto(
                     listColumn.key,
                     objects.record.data?.at(listColumn.path)
                 )
             }
-            val objectsListRowDto = ObjectsListRowDto(objects.uuid.toString(), objectsListItemDto)
-            objectsListRowDtoList.add(objectsListRowDto)
+            ObjectsListRowDto(objects.uuid.toString(), listRowDto!!)
         }
-        return objectsListRowDtoList
     }
 
     private fun mapToObjectSearchParameter(
