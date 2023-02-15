@@ -69,6 +69,8 @@ class ZaakObjectService(
             .createInstance(ObjecttypenApiPlugin::class.java) { properties: JsonNode ->
                 objectTypeUrl.toString().startsWith(properties.get("url").textValue())
             } ?: return null
+        //to allow local testing
+        val objectTypeUrl = URI.create(objectTypeUrl.toString().replace("host.docker.internal", "localhost", true))
 
         return objectTypePluginInstance.getObjecttype(objectTypeUrl)
     }
@@ -138,9 +140,11 @@ class ZaakObjectService(
             val formName = if (formType == null) {
                 "${it.name}$FORM_SUFFIX"
             } else if (formType == FormType.EDITFORM) {
-                objectManagementInfoProvider.getObjectManagementInfo(objectManagementId!!).formDefinitionEdit
+                objectManagementInfoProvider.getObjectManagementInfo(objectManagementId!!).formDefinitionEdit?:
+                throw IllegalStateException("The form definition edit value is not configured")
             } else {
-                objectManagementInfoProvider.getObjectManagementInfo(objectManagementId!!).formDefinitionView
+                objectManagementInfoProvider.getObjectManagementInfo(objectManagementId!!).formDefinitionView?:
+                throw IllegalStateException("The form definition summary value is not configured")
             }
             logger.trace { "Getting form for objecttype $it with formName $formName" }
             formDefinitionService.getFormDefinitionByNameIgnoringCase(formName)
@@ -154,7 +158,7 @@ class ZaakObjectService(
             objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
         val objectsApiPlugin =
             pluginService.createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
-        val objectUrl = "${objectsApiPlugin.url}/objects/$objectId"
+        val objectUrl = "${objectsApiPlugin.url}objects/$objectId"
         logger.debug { "Getting object for url $objectUrl" }
         return getObjectByObjectUrl(URI.create(objectUrl))
     }
