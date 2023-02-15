@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,9 @@
 package com.ritense.plugin
 
 import com.ritense.plugin.annotation.PluginCategory
-import io.github.classgraph.ClassGraph
 
-class PluginCategoryResolver {
+class PluginCategoryResolver: AnnotatedClassResolver() {
     internal fun findPluginCategoryClasses() : Map<Class<*>, PluginCategory> {
-        val pluginCategoryClasses = ClassGraph()
-            .enableClassInfo()
-            .enableAnnotationInfo()
-            .scan()
-            .getClassesWithAnnotation(PluginCategory::class.java)
-
-        return pluginCategoryClasses.associate {
-            it.loadClass() to it.getAnnotationInfo(PluginCategory::class.java).loadClassAndInstantiate() as PluginCategory
-        }
+        return findAnnotatedClasses()
     }
 }
