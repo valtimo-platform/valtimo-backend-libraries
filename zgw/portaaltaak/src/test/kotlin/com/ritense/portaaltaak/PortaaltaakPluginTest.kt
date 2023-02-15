@@ -77,7 +77,8 @@ internal class PortaaltaakPluginTest {
             pluginService,
             valueResolverService,
             processDocumentService,
-            zaakInstanceLinkService
+            zaakInstanceLinkService,
+            mock()
         )
         portaaltaakPlugin.notificatiesApiPluginConfiguration = mock()
         portaaltaakPlugin.objectManagementConfigurationId = mock()
@@ -226,7 +227,7 @@ internal class PortaaltaakPluginTest {
         val result =
             portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.ZAAK_INITIATOR, null, null, null)
 
-        assertEquals("BSN", result.type)
+        assertEquals("bsn", result.type)
         assertEquals(
             (getRol(BetrokkeneType.NATUURLIJK_PERSOON)[0].betrokkeneIdentificatie as RolNatuurlijkPersoon).inpBsn,
             result.value

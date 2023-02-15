@@ -23,6 +23,7 @@ import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
+import com.ritense.objectenapi.management.ObjectManagementInfo
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.objectenapi.web.rest.result.FormType
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
@@ -31,6 +32,7 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
+import org.springframework.http.HttpStatus
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
@@ -174,14 +176,13 @@ class ZaakObjectService(
         return zakenApiPluginInstance
     }
 
-    fun createObject(objectManagementId: UUID, data: JsonNode): URI {
+    private fun getObjectRequestAndInfo(objectManagementId: UUID, data: JsonNode): Pair<ObjectRequest, ObjectManagementInfo> {
         val objectManagementInfo = objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
 
-        val objecttypeApiPlugin =
-            pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objecttypenApiPluginConfigurationId)) as ObjecttypenApiPlugin
+        val objecttypeApiPlugin = pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objecttypenApiPluginConfigurationId)) as ObjecttypenApiPlugin
         val objectTypeUrl = objecttypeApiPlugin.getObjectTypeUrlById(objectManagementInfo.objecttypeId)
 
-        val createObjectRequest = ObjectRequest(
+        val objectRequest = ObjectRequest(
             objectTypeUrl,
             ObjectRecord(
                 typeVersion = objectManagementInfo.objecttypeVersion,
@@ -190,9 +191,40 @@ class ZaakObjectService(
             )
         )
 
-        val objectenApiPlugin =
-            pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
+        return Pair(objectRequest, objectManagementInfo)
+    }
+
+
+    fun createObject(objectManagementId: UUID, data: JsonNode) : URI {
+        val (createObjectRequest, objectManagementInfo) = getObjectRequestAndInfo(objectManagementId, data)
+
+        val objectenApiPlugin = pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
         return objectenApiPlugin.createObject(createObjectRequest).url
+    }
+
+    fun updateObject(objectManagementId: UUID, objectUrl : URI, data: JsonNode) : URI {
+        val (updateObjectRequest, objectManagementInfo) = getObjectRequestAndInfo(objectManagementId, data)
+
+        val objectenApiPlugin = pluginService.createInstance(
+            PluginConfigurationId(
+                objectManagementInfo.objectenApiPluginConfigurationId)
+        ) as ObjectenApiPlugin
+
+        return objectenApiPlugin.objectUpdate(
+            objectUrl,
+            updateObjectRequest
+        ).url
+    }
+
+    fun deleteObject(objectManagementId: UUID, objectUrl : URI): HttpStatus {
+        val objectManagementInfo = objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
+
+        val objectenApiPlugin = pluginService.createInstance(
+            PluginConfigurationId(
+                objectManagementInfo.objectenApiPluginConfigurationId)
+        ) as ObjectenApiPlugin
+
+        return objectenApiPlugin.deleteObject(objectUrl)
     }
 
     companion object {

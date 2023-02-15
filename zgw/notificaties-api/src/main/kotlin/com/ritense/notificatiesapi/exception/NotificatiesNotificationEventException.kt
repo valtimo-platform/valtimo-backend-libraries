@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.notificatiesapi.exception
 
-import com.ritense.plugin.annotation.PluginCategory
+import org.springframework.http.HttpStatus
 
-class PluginCategoryResolver: AnnotatedClassResolver() {
-    internal fun findPluginCategoryClasses() : Map<Class<*>, PluginCategory> {
-        return findAnnotatedClasses()
-    }
+class NotificatiesNotificationEventException(message: String?, val status: HttpStatus) : RuntimeException(message) {
 }
