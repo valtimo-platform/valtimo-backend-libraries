@@ -23,7 +23,7 @@ class ObjectManagementConfigurationAutoDeploymentFinishedEvent {
     private var objectManagementConfigurations: List<ObjectManagement>? = null
 
     @JsonCreator
-    fun objectManagementAutoDeploymentFinishedEvent(objectManagementConfigurations: ArrayList<ObjectManagement>?) {
+    fun objectManagementAutoDeploymentFinishedEvent(objectManagementConfigurations: List<ObjectManagement>?) {
         this.objectManagementConfigurations = objectManagementConfigurations
     }
 

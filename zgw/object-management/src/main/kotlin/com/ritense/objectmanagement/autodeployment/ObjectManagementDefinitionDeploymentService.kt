@@ -21,17 +21,15 @@ import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.domain.ObjectManagementConfigurationAutoDeploymentFinishedEvent
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.service.ObjectManagementService
-import org.apache.commons.io.IOUtils
-import org.slf4j.LoggerFactory
+import java.io.IOException
+import java.util.*
+import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
-import java.io.IOException
-import java.util.*
-import kotlin.text.Charsets.UTF_8
 
 class ObjectManagementDefinitionDeploymentService(
     private val resourceLoader: ResourceLoader,
@@ -44,38 +42,43 @@ class ObjectManagementDefinitionDeploymentService(
         logger.info("Deploying all object management configurations from {}", PATH)
         val resources = loadResources()
 
-        for (resource in resources) {
+        val objectManagementList = resources.map { resource ->
             try {
-                val objectManagement = jacksonObjectMapper().readValue<ObjectManagement>(IOUtils.toString(resource!!.getInputStream(), UTF_8))
-
-                if (objectManagementRepository.findByObjecttypeId(objectManagement.objecttypeId) == null && objectManagementRepository.findByTitle(objectManagement.title) == null) {
+                require(resource != null)
+                val objectManagement = jacksonObjectMapper().readValue<ObjectManagement>(resource.inputStream )
+                if (
+                    objectManagementRepository.findByObjecttypeId(objectManagement.objecttypeId) == null &&
+                    objectManagementRepository.findByTitle(objectManagement.title) == null
+                ) {
                     objectManagementService.create(objectManagement)
                 } else {
                     objectManagementService.update(objectManagement)
+                }.also {
+                    logger.info("Deployed object management configuration {}", objectManagement.title)
                 }
 
-               logger.info("Deployed object management configuration {}", objectManagement.title)
             } catch (e: IOException) {
-                logger.error("Error while deploying object management configurations", e)
+                throw RuntimeException("Error while deploying object management configurations", e)
             }
         }
 
-        applicationEventPublisher.publishEvent(ObjectManagementConfigurationAutoDeploymentFinishedEvent())
+        applicationEventPublisher.publishEvent(
+            ObjectManagementConfigurationAutoDeploymentFinishedEvent().objectManagementAutoDeploymentFinishedEvent(
+                objectManagementList
+            )
+        )
     }
 
     private fun loadResources(): Array<Resource?> {
         return try {
             ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH)
         } catch (ioe: IOException) {
-            logger.error("Failed to load resources from " + PATH, ioe)
-            arrayOfNulls(0)
+            throw RuntimeException("Failed to load resources from " + PATH, ioe)
         }
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(
-            ObjectManagementDefinitionDeploymentService::class.java
-        )
+        private val logger = KotlinLogging.logger {}
         const val PATH = "classpath*:config/objectmanagement/*.json"
     }
 }
