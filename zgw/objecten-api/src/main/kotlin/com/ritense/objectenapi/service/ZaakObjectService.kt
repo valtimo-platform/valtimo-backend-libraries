@@ -31,10 +31,10 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
-import mu.KotlinLogging
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
+import mu.KotlinLogging
 
 class ZaakObjectService(
     val zaakUrlProvider: ZaakUrlProvider,
@@ -122,7 +122,11 @@ class ZaakObjectService(
         formType: FormType? = null
     ): FormDefinition? {
         val theObject = if (objectUrl == null) {
-            getObjectByManagementIdAndObjectId(objectManagementId!!, objectId!!)
+            if (objectManagementId == null || objectId == null || formType == null) {
+                throw IllegalStateException("If the objectUrl is null you need to provide all of the following values: objectManagementId, objectId and formType")
+            } else {
+                getObjectByManagementIdAndObjectId(objectManagementId, objectId)
+            }
         } else {
             logger.debug { "Getting object for url $objectUrl" }
             getObjectByObjectUrl(objectUrl)
