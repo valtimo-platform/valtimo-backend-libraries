@@ -32,11 +32,11 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
-import org.springframework.http.HttpStatus
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 import mu.KotlinLogging
+import org.springframework.http.HttpStatus
 
 class ZaakObjectService(
     val zaakUrlProvider: ZaakUrlProvider,
@@ -126,8 +126,10 @@ class ZaakObjectService(
         formType: FormType? = null
     ): FormDefinition? {
         val theObject = if (objectUrl == null) {
-            if (objectManagementId == null || objectId == null || formType == null) {
-                throw IllegalStateException("If the objectUrl is null you need to provide all of the following values: objectManagementId, objectId and formType")
+            if (objectManagementId == null || formType == null) {
+                throw IllegalStateException("If the objectUrl is null you need to provide all of the following values: objectManagementId and formType")
+            } else if (objectId == null) {
+                null
             } else {
                 getObjectByManagementIdAndObjectId(objectManagementId, objectId)
             }
@@ -135,24 +137,33 @@ class ZaakObjectService(
             logger.debug { "Getting object for url $objectUrl" }
             getObjectByObjectUrl(objectUrl)
         }
-        return theObject?.let {
+
+        val formDefinition = theObject?.let {
             logger.trace { "Getting objecttype for object $theObject" }
             getObjectTypeByUrl(it.type)
         }?.let {
             val formName = if (formType == null) {
                 "${it.name}$FORM_SUFFIX"
             } else if (formType == FormType.EDITFORM) {
-                objectManagementInfoProvider.getObjectManagementInfo(objectManagementId!!).formDefinitionEdit?:
-                throw IllegalStateException("The form definition edit value is not configured")
+                objectManagementInfoProvider.getObjectManagementInfo(objectManagementId!!).formDefinitionEdit
+                    ?: throw IllegalStateException("The form definition edit value is not configured")
             } else {
-                objectManagementInfoProvider.getObjectManagementInfo(objectManagementId!!).formDefinitionView?:
-                throw IllegalStateException("The form definition summary value is not configured")
+                objectManagementInfoProvider.getObjectManagementInfo(objectManagementId!!).formDefinitionView
+                    ?: throw IllegalStateException("The form definition summary value is not configured")
             }
             logger.trace { "Getting form for objecttype $it with formName $formName" }
             formDefinitionService.getFormDefinitionByNameIgnoringCase(formName)
         }
             ?.orElse(null)
             ?.preFill(theObject.record.data)
+
+        return if (theObject == null && objectManagementId != null) {
+            formDefinitionService.getFormDefinitionByNameIgnoringCase(
+                objectManagementInfoProvider.getObjectManagementInfo(objectManagementId).formDefinitionEdit
+            )?.orElse(null)
+        } else {
+            formDefinition
+        }
     }
 
     private fun getObjectByManagementIdAndObjectId(objectManagementId: UUID, objectId: UUID): ObjectWrapper? {
@@ -176,10 +187,14 @@ class ZaakObjectService(
         return zakenApiPluginInstance
     }
 
-    private fun getObjectRequestAndInfo(objectManagementId: UUID, data: JsonNode): Pair<ObjectRequest, ObjectManagementInfo> {
+    private fun getObjectRequestAndInfo(
+        objectManagementId: UUID,
+        data: JsonNode
+    ): Pair<ObjectRequest, ObjectManagementInfo> {
         val objectManagementInfo = objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
 
-        val objecttypeApiPlugin = pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objecttypenApiPluginConfigurationId)) as ObjecttypenApiPlugin
+        val objecttypeApiPlugin =
+            pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objecttypenApiPluginConfigurationId)) as ObjecttypenApiPlugin
         val objectTypeUrl = objecttypeApiPlugin.getObjectTypeUrlById(objectManagementInfo.objecttypeId)
 
         val objectRequest = ObjectRequest(
@@ -195,19 +210,21 @@ class ZaakObjectService(
     }
 
 
-    fun createObject(objectManagementId: UUID, data: JsonNode) : URI {
+    fun createObject(objectManagementId: UUID, data: JsonNode): URI {
         val (createObjectRequest, objectManagementInfo) = getObjectRequestAndInfo(objectManagementId, data)
 
-        val objectenApiPlugin = pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
+        val objectenApiPlugin =
+            pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
         return objectenApiPlugin.createObject(createObjectRequest).url
     }
 
-    fun updateObject(objectManagementId: UUID, objectUrl : URI, data: JsonNode) : URI {
+    fun updateObject(objectManagementId: UUID, objectUrl: URI, data: JsonNode): URI {
         val (updateObjectRequest, objectManagementInfo) = getObjectRequestAndInfo(objectManagementId, data)
 
         val objectenApiPlugin = pluginService.createInstance(
             PluginConfigurationId(
-                objectManagementInfo.objectenApiPluginConfigurationId)
+                objectManagementInfo.objectenApiPluginConfigurationId
+            )
         ) as ObjectenApiPlugin
 
         return objectenApiPlugin.objectUpdate(
@@ -216,12 +233,13 @@ class ZaakObjectService(
         ).url
     }
 
-    fun deleteObject(objectManagementId: UUID, objectUrl : URI): HttpStatus {
+    fun deleteObject(objectManagementId: UUID, objectUrl: URI): HttpStatus {
         val objectManagementInfo = objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
 
         val objectenApiPlugin = pluginService.createInstance(
             PluginConfigurationId(
-                objectManagementInfo.objectenApiPluginConfigurationId)
+                objectManagementInfo.objectenApiPluginConfigurationId
+            )
         ) as ObjectenApiPlugin
 
         return objectenApiPlugin.deleteObject(objectUrl)
