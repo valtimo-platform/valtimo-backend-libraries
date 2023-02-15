@@ -21,8 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.objectmanagement.BaseIntegrationTest
 import com.ritense.objectmanagement.domain.ObjectManagement
-import com.ritense.objectmanagement.domain.search.AssigneeFilter
-import com.ritense.objectmanagement.domain.search.SearchOperator
 import com.ritense.objectmanagement.domain.search.SearchRequestValue
 import com.ritense.objectmanagement.domain.search.SearchWithConfigFilter
 import com.ritense.objectmanagement.domain.search.SearchWithConfigRequest
@@ -242,7 +240,7 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
         )
 
         val searchWithConfigRequest =
-            SearchWithConfigRequest(SearchOperator.AND, AssigneeFilter.ALL, listOf(otherFilters))
+            SearchWithConfigRequest(listOf(otherFilters))
 
         val objects = objectManagementService.getObjectsWithSearchParams(
             searchWithConfigRequest, objectManagement.id, PageRequest.of(0, 10)

@@ -61,7 +61,6 @@ class ObjectenApiPlugin(
 
     fun getObjectsByObjectTypeIdWithSearchParams(
         objecttypesApiUrl: URI,
-        objectsApiUrl: URI,
         objecttypeId: String,
         searchString: String,
         pageable: Pageable
@@ -69,7 +68,7 @@ class ObjectenApiPlugin(
         return objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(
             authenticationPluginConfiguration,
             objecttypesApiUrl,
-            objectsApiUrl,
+            url,
             objecttypeId,
             searchString,
             pageable

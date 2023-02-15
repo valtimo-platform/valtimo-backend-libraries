@@ -136,6 +136,9 @@ class ObjectManagementService(
                 .filter { otherFilter -> otherFilter.key == searchField.key }
                 .flatMap { otherFilter ->
                     if (searchField.fieldType != FieldType.RANGE) {
+                        if (otherFilter.values.size > 1) {
+                            throw IllegalArgumentException("The objects api does not support the multiselect options")
+                        }
                         otherFilter.values.flatMap { value ->
                             mapToObjectSearchParameter(searchField.key, searchField.fieldType, value.value, searchField.dataType)
                         }
@@ -150,7 +153,7 @@ class ObjectManagementService(
                 }
         }
 
-        val searchString = concatenateObjectSearchParameter(searchDtoList)
+        val searchString = ObjectSearchParameter.toQueryParameter(searchDtoList)
 
         val objectTypePluginInstance = getObjectTypenApiPlugin(objectManagement.objecttypenApiPluginConfigurationId)
 
@@ -158,7 +161,6 @@ class ObjectManagementService(
 
         val objectsList = objectenPluginInstance.getObjectsByObjectTypeIdWithSearchParams(
             objectTypePluginInstance.url,
-            objectenPluginInstance.url,
             objectManagement.objecttypeId,
             searchString,
             pageable
@@ -216,10 +218,7 @@ class ObjectManagementService(
             }
 
             FieldType.MULTI_SELECT_DROPDOWN -> {
-                value as List<String>
-                return value.map {
-                    ObjectSearchParameter(key, Comparator.EQUAL_TO, it)
-                }
+                throw IllegalArgumentException("The objects api does not support the multiselect options")
             }
 
             FieldType.SINGLE_SELECT_DROPDOWN -> listOf(
@@ -249,17 +248,16 @@ class ObjectManagementService(
                 value as Date
                 return value.toString()
             }
-
-            else -> {
+            DataType.DATE_TIME -> {
+                value as Date
+                return value.toString()
+            }
+            DataType.TIME -> {
                 value as Time
                 return value.toString()
             }
         }
 
-    }
-
-    private fun concatenateObjectSearchParameter(searchParameterList: List<ObjectSearchParameter>): String {
-        return searchParameterList.joinToString(separator = ",") { it.toQueryParameter() }
     }
 
     private fun getObjectenApiPlugin(id: UUID) = pluginService
