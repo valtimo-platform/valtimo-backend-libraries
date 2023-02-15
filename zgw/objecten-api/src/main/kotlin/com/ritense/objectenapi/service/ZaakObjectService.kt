@@ -39,8 +39,8 @@ import java.util.UUID
 
 class ZaakObjectService(
     val zaakUrlProvider: ZaakUrlProvider,
-    val pluginService : PluginService,
-    val formDefinitionService : FormDefinitionService,
+    val pluginService: PluginService,
+    val formDefinitionService: FormDefinitionService,
     val objectManagementInfoProvider: ObjectManagementInfoProvider
 ) {
     fun getZaakObjectTypes(documentId: UUID): List<Objecttype> {
@@ -57,11 +57,11 @@ class ZaakObjectService(
             }
     }
 
-    private fun getObjectByObjectUrl(objectUrl: URI) : ObjectWrapper? {
+    private fun getObjectByObjectUrl(objectUrl: URI): ObjectWrapper? {
         val objectenApiPlugin = pluginService
             .createInstance(ObjectenApiPlugin::class.java) { properties: JsonNode ->
                 objectUrl.toString().startsWith(properties.get("url").textValue())
-            }?: return null
+            } ?: return null
         return objectenApiPlugin.getObject(objectUrl)
     }
 
@@ -69,7 +69,7 @@ class ZaakObjectService(
         val objectTypePluginInstance = pluginService
             .createInstance(ObjecttypenApiPlugin::class.java) { properties: JsonNode ->
                 objectTypeUrl.toString().startsWith(properties.get("url").textValue())
-            }?: return null
+            } ?: return null
 
         return objectTypePluginInstance.getObjecttype(objectTypeUrl)
     }
@@ -127,8 +127,8 @@ class ZaakObjectService(
             logger.trace { "Getting form for objecttype $it with formName $formName" }
             formDefinitionService.getFormDefinitionByNameIgnoringCase(formName)
         }
-        ?.orElse(null)
-        ?.preFill(theObject.record.data)
+            ?.orElse(null)
+            ?.preFill(theObject.record.data)
     }
 
     private fun findZakenApiPlugin(zaakUrl: URI): ZakenApiPlugin {
@@ -142,10 +142,14 @@ class ZaakObjectService(
         return zakenApiPluginInstance
     }
 
-    private fun getObjectRequestAndInfo(objectManagementId: UUID, data: JsonNode): Pair<ObjectRequest, ObjectManagementInfo> {
+    private fun getObjectRequestAndInfo(
+        objectManagementId: UUID,
+        data: JsonNode
+    ): Pair<ObjectRequest, ObjectManagementInfo> {
         val objectManagementInfo = objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
 
-        val objecttypeApiPlugin = pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objecttypenApiPluginConfigurationId)) as ObjecttypenApiPlugin
+        val objecttypeApiPlugin =
+            pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objecttypenApiPluginConfigurationId)) as ObjecttypenApiPlugin
         val objectTypeUrl = objecttypeApiPlugin.getObjectTypeUrlById(objectManagementInfo.objecttypeId)
 
         val objectRequest = ObjectRequest(
@@ -161,19 +165,21 @@ class ZaakObjectService(
     }
 
 
-    fun createObject(objectManagementId: UUID, data: JsonNode) : URI {
+    fun createObject(objectManagementId: UUID, data: JsonNode): URI {
         val (createObjectRequest, objectManagementInfo) = getObjectRequestAndInfo(objectManagementId, data)
 
-        val objectenApiPlugin = pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
+        val objectenApiPlugin =
+            pluginService.createInstance(PluginConfigurationId(objectManagementInfo.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
         return objectenApiPlugin.createObject(createObjectRequest).url
     }
 
-    fun updateObject(objectManagementId: UUID, objectUrl : URI, data: JsonNode) : URI {
+    fun updateObject(objectManagementId: UUID, objectUrl: URI, data: JsonNode): URI {
         val (updateObjectRequest, objectManagementInfo) = getObjectRequestAndInfo(objectManagementId, data)
 
         val objectenApiPlugin = pluginService.createInstance(
             PluginConfigurationId(
-                objectManagementInfo.objectenApiPluginConfigurationId)
+                objectManagementInfo.objectenApiPluginConfigurationId
+            )
         ) as ObjectenApiPlugin
 
         return objectenApiPlugin.objectUpdate(
@@ -182,15 +188,41 @@ class ZaakObjectService(
         ).url
     }
 
-    fun deleteObject(objectManagementId: UUID, objectUrl : URI): HttpStatus {
+    fun deleteObject(objectManagementId: UUID, objectUrl: URI): HttpStatus {
         val objectManagementInfo = objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
 
         val objectenApiPlugin = pluginService.createInstance(
             PluginConfigurationId(
-                objectManagementInfo.objectenApiPluginConfigurationId)
+                objectManagementInfo.objectenApiPluginConfigurationId
+            )
         ) as ObjectenApiPlugin
 
         return objectenApiPlugin.deleteObject(objectUrl)
+    }
+
+    fun patchObjectFromManagementId(objectManagementId: UUID, objectId: UUID, jsonNode: JsonNode): URI {
+        val objectManagement = objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
+
+        val objectenApiPlugin = pluginService.createInstance(
+            PluginConfigurationId.existingId(objectManagement.objectenApiPluginConfigurationId)
+        ) as ObjectenApiPlugin
+
+        val objectTypenApiPlugin = pluginService.createInstance(
+            PluginConfigurationId.existingId(objectManagement.objectenApiPluginConfigurationId)
+        ) as ObjecttypenApiPlugin
+
+        val objectRequest = ObjectRequest(
+            objectTypenApiPlugin.url,
+            ObjectRecord(
+                typeVersion = objectManagement.objecttypeVersion,
+                data = jsonNode,
+                startAt = LocalDate.now()
+            )
+        )
+
+        val objectUrl = URI.create("${objectenApiPlugin.url}objects/$objectId")
+
+        return objectenApiPlugin.patchObject(objectUrl, objectRequest).url
     }
 
     companion object {

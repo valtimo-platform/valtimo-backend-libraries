@@ -23,6 +23,7 @@ import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.http.HttpMethod.DELETE
+import org.springframework.http.HttpMethod.PATCH
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
 class ObjectenApiHttpSecurityConfigurer: HttpSecurityConfigurer {
@@ -37,6 +38,7 @@ class ObjectenApiHttpSecurityConfigurer: HttpSecurityConfigurer {
                 .antMatchers(PUT, "/api/v1/object").hasAuthority(USER)
                 .antMatchers(DELETE, "/api/v1/object").hasAuthority(USER)
                 .antMatchers(GET, "/api/v1/object/form").hasAuthority(USER)
+                .antMatchers(PATCH, "/api/v1/object").hasAuthority(USER)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
