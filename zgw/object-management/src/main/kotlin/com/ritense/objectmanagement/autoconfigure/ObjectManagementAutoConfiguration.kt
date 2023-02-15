@@ -16,6 +16,7 @@
 
 package com.ritense.objectmanagement.autoconfigure
 
+import com.ritense.objectmanagement.autodeployment.ObjectManagementDefinitionDeploymentService
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.security.config.ObjectManagementHttpSecurityConfigurer
 import com.ritense.objectmanagement.service.ObjectManagementInfoProviderImpl
@@ -24,9 +25,11 @@ import com.ritense.objectmanagement.web.rest.ObjectManagementResource
 import com.ritense.plugin.service.PluginService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
@@ -61,6 +64,22 @@ class ObjectManagementAutoConfiguration {
     ): ObjectManagementResource {
         return ObjectManagementResource(
             objectManagementService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ObjectManagementDefinitionDeploymentService::class)
+    fun objectManagementDefinitionDeploymentService(
+        resourceLoader: ResourceLoader,
+        objectManagementService: ObjectManagementService,
+        objectManagementRepository: ObjectManagementRepository,
+        applicationEventPublisher: ApplicationEventPublisher
+    ): ObjectManagementDefinitionDeploymentService {
+        return ObjectManagementDefinitionDeploymentService(
+            resourceLoader,
+            objectManagementService,
+            objectManagementRepository,
+            applicationEventPublisher
         )
     }
 
