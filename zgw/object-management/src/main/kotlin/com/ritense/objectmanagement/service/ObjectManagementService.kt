@@ -69,12 +69,10 @@ class ObjectManagementService(
     fun update(objectManagement: ObjectManagement): ObjectManagement =
         with(objectManagementRepository.findByTitle(objectManagement.title)) {
             if (this != null && objectManagement.id != id) {
-                throw ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "This title already exists. Please choose another title"
-                )
+                objectManagementRepository.save(objectManagement.copy(id = this.id))
+            } else {
+                objectManagementRepository.save(objectManagement)
             }
-            objectManagementRepository.save(objectManagement)
         }
 
     fun getById(id: UUID): ObjectManagement? = objectManagementRepository.findByIdOrNull(id)
