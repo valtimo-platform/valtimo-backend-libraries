@@ -96,11 +96,11 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
     @Test
     @Order(3)
     fun `should get all`() {
-        createObjectManagement("test1")
-        createObjectManagement("test2")
+        val test1 = createObjectManagement("test1")
+        val test2 = createObjectManagement("test2")
 
         val objectManagementList = objectManagementService.getAll()
-        assertThat(objectManagementList.size).isEqualTo(2)
+        assertThat(objectManagementList).contains(test1, test2)
     }
 
     @Test
