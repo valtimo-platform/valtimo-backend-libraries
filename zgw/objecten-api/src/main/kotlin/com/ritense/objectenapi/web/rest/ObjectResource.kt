@@ -18,7 +18,9 @@ package com.ritense.objectenapi.web.rest
 
 import com.ritense.form.domain.FormDefinition
 import com.ritense.objectenapi.service.ZaakObjectService
+import com.ritense.objectenapi.web.rest.result.FormType
 import java.net.URI
+import java.util.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -31,9 +33,12 @@ class ObjectResource(
 
     @GetMapping(value = ["/v1/object/form"])
     fun getPrefilledObjectFromObjectUrl(
-        @RequestParam(name = "objectUrl") objectUrl: URI
+        @RequestParam(name = "objectUrl") objectUrl: URI? = null,
+        @RequestParam(name = "objectManagementId") objectManagementId: UUID? = null,
+        @RequestParam(name = "objectId") objectId: UUID? = null,
+        @RequestParam(name = "formType") formType: FormType? = null
     ): ResponseEntity<FormDefinition> {
-        val form = zaakObjectService.getZaakObjectForm(objectUrl)
+        val form = zaakObjectService.getZaakObjectForm(objectUrl, objectManagementId, objectId, formType)
         return form?.let { ResponseEntity.ok(it) } ?: ResponseEntity.notFound().build()
     }
 }
