@@ -71,8 +71,6 @@ class ZaakObjectService(
             .createInstance(ObjecttypenApiPlugin::class.java) { properties: JsonNode ->
                 objectTypeUrl.toString().startsWith(properties.get("url").textValue())
             } ?: return null
-        //to allow local testing
-        val objectTypeUrl = URI.create(objectTypeUrl.toString().replace("host.docker.internal", "localhost", true))
 
         return objectTypePluginInstance.getObjecttype(objectTypeUrl)
     }
