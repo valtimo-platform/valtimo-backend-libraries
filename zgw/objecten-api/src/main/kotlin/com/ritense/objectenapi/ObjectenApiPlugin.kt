@@ -74,12 +74,4 @@ class ObjectenApiPlugin(
     fun deleteObject(objectUrl: URI): HttpStatus {
         return objectenApiClient.deleteObject(authenticationPluginConfiguration, objectUrl)
     }
-
-    fun patchObject(objectUrl: URI, objectRequest: ObjectRequest): ObjectWrapper {
-        return objectenApiClient.objectPatch(
-            authenticationPluginConfiguration,
-            objectUrl,
-            objectRequest
-        )
-    }
 }

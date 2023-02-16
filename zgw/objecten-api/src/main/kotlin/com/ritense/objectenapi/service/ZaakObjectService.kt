@@ -36,6 +36,7 @@ import org.springframework.http.HttpStatus
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
+import org.springframework.web.util.UriComponentsBuilder
 
 class ZaakObjectService(
     val zaakUrlProvider: ZaakUrlProvider,
@@ -220,9 +221,15 @@ class ZaakObjectService(
             )
         )
 
-        val objectUrl = URI.create("${objectenApiPlugin.url}objects/$objectId")
+        val objectUrl = URI.create(
+            UriComponentsBuilder.newInstance()
+                .uri(objectenApiPlugin.url)
+                .pathSegment("objects")
+                .pathSegment(objectId.toString())
+                .toUriString()
+        )
 
-        return objectenApiPlugin.patchObject(objectUrl, objectRequest).url
+        return objectenApiPlugin.objectPatch(objectUrl, objectRequest).url
     }
 
     companion object {
