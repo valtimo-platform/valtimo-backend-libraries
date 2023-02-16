@@ -63,6 +63,8 @@ import org.springframework.data.domain.Pageable;
 
 public class CamundaTaskService {
 
+    private static final String CONTEXT = "context";
+
     private static final String NO_USER = null;
     private final TaskService taskService;
     private final FormService formService;
@@ -182,7 +184,7 @@ public class CamundaTaskService {
         var parameters = buildTaskFilterParameters(taskFilter);
         Page<TaskExtended> tasks = camundaTaskRepository.findTasks(pageable, parameters);
         if (!tasks.isEmpty()) {
-            tasks.forEach(task -> task.setContext(taskService.getVariable(task.getId(), "context")));
+            tasks.forEach(task -> task.setContext(taskService.getVariable(task.getId(), CONTEXT)));
 
             final var tasksGroupedByAssignee = tasks
                 .stream()
