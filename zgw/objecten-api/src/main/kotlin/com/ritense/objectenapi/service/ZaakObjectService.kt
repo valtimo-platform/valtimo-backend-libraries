@@ -25,17 +25,18 @@ import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.management.ObjectManagementInfo
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
+import com.ritense.objectenapi.web.rest.result.FormType
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
-import mu.KotlinLogging
-import org.springframework.http.HttpStatus
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
+import mu.KotlinLogging
+import org.springframework.http.HttpStatus
 import org.springframework.web.util.UriComponentsBuilder
 
 class ZaakObjectService(
@@ -117,19 +118,61 @@ class ZaakObjectService(
         }
     }
 
-    fun getZaakObjectForm(objectUrl: URI): FormDefinition? {
-        logger.debug { "Getting object for url $objectUrl" }
-        val theObject = getObjectByObjectUrl(objectUrl)
-        return theObject?.let {
+    fun getZaakObjectForm(
+        objectUrl: URI? = null,
+        objectManagementId: UUID? = null,
+        objectId: UUID? = null,
+        formType: FormType? = null
+    ): FormDefinition? {
+        val theObject = if (objectUrl == null) {
+            if (objectManagementId == null || formType == null) {
+                throw IllegalStateException("If the objectUrl is null you need to provide all of the following values: objectManagementId and formType")
+            } else if (objectId == null) {
+                null
+            } else {
+                getObjectByManagementIdAndObjectId(objectManagementId, objectId)
+            }
+        } else {
+            logger.debug { "Getting object for url $objectUrl" }
+            getObjectByObjectUrl(objectUrl)
+        }
+
+        val formDefinition = theObject?.let {
             logger.trace { "Getting objecttype for object $theObject" }
             getObjectTypeByUrl(it.type)
         }?.let {
-            val formName = "${it.name}$FORM_SUFFIX"
+            val formName = if (formType == null) {
+                "${it.name}$FORM_SUFFIX"
+            } else if (formType == FormType.EDITFORM) {
+                objectManagementInfoProvider.getObjectManagementInfo(objectManagementId!!).formDefinitionEdit
+                    ?: throw IllegalStateException("The form definition edit value is not configured")
+            } else {
+                objectManagementInfoProvider.getObjectManagementInfo(objectManagementId!!).formDefinitionView
+                    ?: throw IllegalStateException("The form definition summary value is not configured")
+            }
             logger.trace { "Getting form for objecttype $it with formName $formName" }
             formDefinitionService.getFormDefinitionByNameIgnoringCase(formName)
         }
             ?.orElse(null)
             ?.preFill(theObject.record.data)
+
+        return if (theObject == null && objectManagementId != null) {
+            formDefinitionService.getFormDefinitionByNameIgnoringCase(
+                objectManagementInfoProvider.getObjectManagementInfo(objectManagementId).formDefinitionEdit
+            )?.orElse(null)
+        } else {
+            formDefinition
+        }
+    }
+
+    private fun getObjectByManagementIdAndObjectId(objectManagementId: UUID, objectId: UUID): ObjectWrapper? {
+        val objectManagement =
+            objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
+        val objectsApiPlugin =
+            pluginService.createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
+        val objectUrl = "${objectsApiPlugin.url}objects/$objectId"
+        logger.debug { "Getting object for url $objectUrl" }
+        return getObjectByObjectUrl(URI.create(objectUrl))
     }
 
     private fun findZakenApiPlugin(zaakUrl: URI): ZakenApiPlugin {
