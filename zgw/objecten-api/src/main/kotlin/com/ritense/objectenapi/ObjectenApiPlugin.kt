@@ -59,6 +59,22 @@ class ObjectenApiPlugin(
         )
     }
 
+    fun getObjectsByObjectTypeIdWithSearchParams(
+        objecttypesApiUrl: URI,
+        objecttypeId: String,
+        searchString: String,
+        pageable: Pageable
+    ): ObjectsList {
+        return objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(
+            authenticationPluginConfiguration,
+            objecttypesApiUrl,
+            url,
+            objecttypeId,
+            searchString,
+            pageable
+        )
+    }
+
     fun objectUpdate(objectUrl: URI, objectRequest: ObjectRequest): ObjectWrapper {
         return objectenApiClient.objectUpdate(authenticationPluginConfiguration, objectUrl, objectRequest)
     }
