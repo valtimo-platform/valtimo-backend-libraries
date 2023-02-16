@@ -37,6 +37,7 @@ import java.time.LocalDate
 import java.util.UUID
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
+import org.springframework.web.util.UriComponentsBuilder
 
 class ZaakObjectService(
     val zaakUrlProvider: ZaakUrlProvider,
@@ -241,6 +242,37 @@ class ZaakObjectService(
         ) as ObjectenApiPlugin
 
         return objectenApiPlugin.deleteObject(objectUrl)
+    }
+
+    fun patchObjectFromManagementId(objectManagementId: UUID, objectId: UUID, jsonNode: JsonNode): URI {
+        val objectManagement = objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
+
+        val objectenApiPlugin = pluginService.createInstance(
+            PluginConfigurationId.existingId(objectManagement.objectenApiPluginConfigurationId)
+        ) as ObjectenApiPlugin
+
+        val objectTypenApiPlugin = pluginService.createInstance(
+            PluginConfigurationId.existingId(objectManagement.objectenApiPluginConfigurationId)
+        ) as ObjecttypenApiPlugin
+
+        val objectRequest = ObjectRequest(
+            objectTypenApiPlugin.url,
+            ObjectRecord(
+                typeVersion = objectManagement.objecttypeVersion,
+                data = jsonNode,
+                startAt = LocalDate.now()
+            )
+        )
+
+        val objectUrl = URI.create(
+            UriComponentsBuilder.newInstance()
+                .uri(objectenApiPlugin.url)
+                .pathSegment("objects")
+                .pathSegment(objectId.toString())
+                .toUriString()
+        )
+
+        return objectenApiPlugin.objectPatch(objectUrl, objectRequest).url
     }
 
     companion object {
