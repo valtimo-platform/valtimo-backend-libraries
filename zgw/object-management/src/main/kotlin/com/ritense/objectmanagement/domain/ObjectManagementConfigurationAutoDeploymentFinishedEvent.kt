@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.objectmanagement.domain
 
-import com.ritense.plugin.annotation.PluginCategory
+import com.fasterxml.jackson.annotation.JsonCreator
 
-class PluginCategoryResolver: AnnotatedClassResolver() {
-    internal fun findPluginCategoryClasses() : Map<Class<*>, PluginCategory> {
-        return findAnnotatedClasses()
+class ObjectManagementConfigurationAutoDeploymentFinishedEvent {
+
+    private var objectManagementConfigurations: List<ObjectManagement>? = null
+
+    @JsonCreator
+    fun objectManagementAutoDeploymentFinishedEvent(objectManagementConfigurations: List<ObjectManagement>?) {
+        this.objectManagementConfigurations = objectManagementConfigurations
     }
+
+    fun getObjectManagementConfigurations(): List<ObjectManagement>? {
+        return objectManagementConfigurations
+    }
+
 }

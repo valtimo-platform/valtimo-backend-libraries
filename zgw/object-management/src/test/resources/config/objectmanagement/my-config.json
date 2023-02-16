@@ -1,0 +1,9 @@
+{
+    "title": "My Object Management",
+    "objecttypenApiPluginConfigurationId": "5f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c",
+    "objecttypeId": "4416cbef-dda3-41f4-bf5c-633f7fe14847",
+    "objectenApiPluginConfigurationId": "8f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c",
+    "showInDataMenu": true,
+    "formDefinitionView": "view_form",
+    "formDefinitionEdit": "edit_form"
+}
