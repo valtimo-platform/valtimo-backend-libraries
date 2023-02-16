@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.client.zaakrol
+package com.ritense.zakenapi.domain.rol
 
 import com.fasterxml.jackson.annotation.JsonValue
 
-enum class BetrokkeneType(@JsonValue val key: String) {
-    NATUURLIJK_PERSOON("natuurlijk_persoon"),
-    NIET_NATUURLIJK_PERSOON("niet_natuurlijk_persoon"),
-    VESTIGING("vestiging"),
-    ORGANISATORISCHE_EENHEID("organisatorische_eenheid"),
-    MEDEWERKER("medewerker")
+enum class IndicatieMachtiging(@JsonValue val key: String) {
+    GEMACHTIGDE("gemachtigde"),
+    MACHTIGINGGEVER("machtiginggever")
 }

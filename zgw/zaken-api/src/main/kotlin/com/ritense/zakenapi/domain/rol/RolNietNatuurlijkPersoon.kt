@@ -16,6 +16,9 @@
 
 package com.ritense.zakenapi.domain.rol
 
+import com.fasterxml.jackson.annotation.JsonInclude
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class RolNietNatuurlijkPersoon(
     val annIdentificatie: String
 ) : BetrokkeneIdentificatie()

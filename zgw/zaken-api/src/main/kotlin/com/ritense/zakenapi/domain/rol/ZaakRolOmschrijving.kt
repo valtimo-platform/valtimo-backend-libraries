@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.client.zaakrol
+package com.ritense.zakenapi.domain.rol
 
-class CreateZaakRolRequest {
+import com.fasterxml.jackson.annotation.JsonValue
+
+enum class ZaakRolOmschrijving(@JsonValue val key: String) {
+    ADVISEUR("adviseur"),
+    BEHANDELAAR("behandelaar"),
+    BELANGHEBBENDE("belanghebbende"),
+    BESLISSER("beslisser"),
+    INITIATOR("initiator"),
+    KLANTCONTACTER("klantcontacter"),
+    ZAAKCOORDINATOR("zaakcoordinator"),
+    MEDE_INITIATOR("mede_initiator")
 }

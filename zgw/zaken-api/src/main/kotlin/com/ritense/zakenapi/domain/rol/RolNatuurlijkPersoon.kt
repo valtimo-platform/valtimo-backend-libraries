@@ -16,6 +16,17 @@
 
 package com.ritense.zakenapi.domain.rol
 
+import com.fasterxml.jackson.annotation.JsonInclude
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class RolNatuurlijkPersoon(
-    val inpBsn: String
+    val inpBsn: String? = null,
+    val anpIdentificatie: String? = null,
+    val inpA_nummer: String? = null,
+    val geslachtsnaam: String? = null,
+    val voorvoegselGeslachtsnaam: String? = null,
+    val voorletters: String? = null,
+    val voornamen: String? = null,
+    val geslachtsaanduiding: String? = null,
+    val geboortedatum: String? = null
 ) : BetrokkeneIdentificatie()

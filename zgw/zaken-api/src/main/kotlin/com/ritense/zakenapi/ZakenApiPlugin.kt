@@ -30,7 +30,9 @@ import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
+import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zgw.Page
@@ -159,6 +161,24 @@ class ZakenApiPlugin(
         @PluginActionProperty inpA_nummer: String?
     ) {
         val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaak(documentId)
+
+        client.createZaakRol(
+            authenticationPluginConfiguration,
+            url,
+            Rol(
+                zaak = URI(zaakUrl),
+                roltype = URI(roltypeUrl),
+                roltoelichting = rolToelichting,
+                betrokkeneType = BetrokkeneType.NATUURLIJK_PERSOON,
+                betrokkeneIdentificatie = RolNatuurlijkPersoon(
+                    inpBsn = inpBsn,
+                    anpIdentificatie = anpIdentificatie,
+                    inpA_nummer = inpA_nummer
+                )
+            )
+        )
+
     }
 
     private fun linkDocument(documentId: UUID, request: LinkDocumentRequest, documentUrl: String) {
