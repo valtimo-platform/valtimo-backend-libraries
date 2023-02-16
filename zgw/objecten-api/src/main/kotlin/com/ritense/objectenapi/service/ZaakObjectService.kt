@@ -232,7 +232,7 @@ class ZaakObjectService(
         ).url
     }
 
-    fun deleteObject(objectManagementId: UUID, objectUrl: URI): HttpStatus {
+    fun deleteObject(objectManagementId: UUID, objectId: UUID? = null, objectUrl: URI? = null): HttpStatus {
         val objectManagementInfo = objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
 
         val objectenApiPlugin = pluginService.createInstance(
@@ -241,7 +241,19 @@ class ZaakObjectService(
             )
         ) as ObjectenApiPlugin
 
-        return objectenApiPlugin.deleteObject(objectUrl)
+        if (objectId == null && objectUrl == null) {
+            throw IllegalStateException("The objectUrl and objectId can not both be null.")
+        }
+
+        val objectUri = objectUrl ?: URI.create(
+                    UriComponentsBuilder.newInstance()
+                        .uri(objectenApiPlugin.url)
+                        .pathSegment("objects")
+                        .pathSegment(objectId.toString())
+                        .toUriString()
+                )
+
+        return objectenApiPlugin.deleteObject(objectUri)
     }
 
     fun patchObjectFromManagementId(objectManagementId: UUID, objectId: UUID, jsonNode: JsonNode): URI {
