@@ -51,8 +51,14 @@ class ObjectenApiClient(
         objectypeId: String,
         pageable: Pageable
     ): ObjectsList {
+        val host = if (objecttypesApiUrl.host == "localhost") {
+            "host.docker.internal"
+        } else {
+            objecttypesApiUrl.host
+        }
         val objectTypeUrl = UriComponentsBuilder.newInstance()
             .uri(objecttypesApiUrl)
+            .host(host)
             .pathSegment("objecttypes")
             .pathSegment(objectypeId)
             .toUriString()
@@ -68,6 +74,48 @@ class ObjectenApiClient(
                     .queryParam("type", objectTypeUrl)
                     .queryParam("pageSize", pageable.pageSize)
                     .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
+                    .build()
+            }
+            .header("Accept-Crs", "EPSG:4326")
+            .retrieve()
+            .toEntity(ObjectsList::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
+    fun getObjectsByObjecttypeUrlWithSearchParams(
+        authentication: ObjectenApiAuthentication,
+        objecttypesApiUrl: URI,
+        objectsApiUrl: URI,
+        objectypeId: String,
+        searchString: String,
+        pageable: Pageable
+    ): ObjectsList {
+        val host = if (objecttypesApiUrl.host == "localhost") {
+            "host.docker.internal"
+        } else {
+            objecttypesApiUrl.host
+        }
+        val objectTypeUrl = UriComponentsBuilder.newInstance()
+            .uri(objecttypesApiUrl)
+            .host(host)
+            .pathSegment("objecttypes")
+            .pathSegment(objectypeId)
+            .toUriString()
+
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .baseUrl(objectsApiUrl.toASCIIString())
+            .build()
+            .get()
+            .uri { builder ->
+                builder.path("objects")
+                    .queryParam("type", objectTypeUrl)
+                    .queryParam("pageSize", pageable.pageSize)
+                    .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
+                    .queryParam("data_attrs", searchString)
                     .build()
             }
             .header("Accept-Crs", "EPSG:4326")

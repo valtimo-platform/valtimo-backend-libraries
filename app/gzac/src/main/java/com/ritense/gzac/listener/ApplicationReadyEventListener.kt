@@ -525,7 +525,7 @@ class ApplicationReadyEventListener(
                 properties = jacksonObjectMapper().readValue(
                     """
                     {
-                        "url": "http://host.docker.internal:8011/api/v1/",
+                        "url": "http://localhost:8011/api/v1/",
                         "authenticationPluginConfiguration": "$authenticationPluginConfigurationId"
                     }
                     """
