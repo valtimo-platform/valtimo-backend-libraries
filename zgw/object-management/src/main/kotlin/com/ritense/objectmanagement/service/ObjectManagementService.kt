@@ -31,8 +31,9 @@ import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.search.service.SearchListColumnService
-import java.sql.Time
-import java.util.Date
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.UUID
 import mu.KLogger
 import mu.KotlinLogging
@@ -245,15 +246,15 @@ class ObjectManagementService(
             }
 
             DataType.DATE -> {
-                value as Date
+                value as LocalDate
                 return value.toString()
             }
             DataType.DATE_TIME -> {
-                value as Date
+                value as LocalDateTime
                 return value.toString()
             }
             DataType.TIME -> {
-                value as Time
+                value as LocalTime
                 return value.toString()
             }
         }
