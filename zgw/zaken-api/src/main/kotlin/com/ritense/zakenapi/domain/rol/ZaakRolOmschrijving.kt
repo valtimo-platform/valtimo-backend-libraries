@@ -16,9 +16,15 @@
 
 package com.ritense.zakenapi.domain.rol
 
-import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonValue
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class RolNietNatuurlijkPersoon(
-    val annIdentificatie: String
-) : BetrokkeneIdentificatie()
+enum class ZaakRolOmschrijving(@JsonValue val key: String) {
+    ADVISEUR("adviseur"),
+    BEHANDELAAR("behandelaar"),
+    BELANGHEBBENDE("belanghebbende"),
+    BESLISSER("beslisser"),
+    INITIATOR("initiator"),
+    KLANTCONTACTER("klantcontacter"),
+    ZAAKCOORDINATOR("zaakcoordinator"),
+    MEDE_INITIATOR("mede_initiator")
+}
