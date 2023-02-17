@@ -27,6 +27,7 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.domain.ZaakObject
@@ -153,6 +154,10 @@ class ZakenApiPlugin(
             resource.id(),
             mapOf("createInformatieObject" to false)
         )
+    }
+
+    fun getZaakInformatieObjecten(zaakUrl: URI): List<ZaakInformatieObject> {
+        return client.getZaakInformatieObjecten(authenticationPluginConfiguration, url, zaakUrl)
     }
 
     fun getZaakObjecten(zaakUrl: URI): List<ZaakObject> {

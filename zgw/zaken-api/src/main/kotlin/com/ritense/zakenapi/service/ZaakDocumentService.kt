@@ -36,14 +36,11 @@ class ZaakDocumentService(
             zaakUri.toString().startsWith(jsonNode.get(ZakenApiPlugin.URL_PROPERTY).textValue())
         }) { "Could not find ${ZakenApiPlugin::class.simpleName} configuration for zaak with url: $zaakUri" }
 
-        return zakenApiPlugin.getZaakObjecten(zaakUri).mapNotNull { zaakObject ->
+        return zakenApiPlugin.getZaakInformatieObjecten(zaakUri).mapNotNull { zaakInformatieObject ->
             pluginService.createInstance(DocumentenApiPlugin::class.java) { jsonNode ->
-                zaakObject.zaakUrl.toString().startsWith(jsonNode.get(DocumentenApiPlugin.URL_PROPERTY).textValue())
-            }?.let {
-                it to zaakObject
-            }
-        }.map { (plugin, zaakObject) ->
-            plugin.getInformatieObject(zaakObject.objectUrl)
+                zaakInformatieObject.informatieobject.toString()
+                    .startsWith(jsonNode.get(DocumentenApiPlugin.URL_PROPERTY).textValue())
+            }?.getInformatieObject(zaakInformatieObject.informatieobject)
         }
     }
 

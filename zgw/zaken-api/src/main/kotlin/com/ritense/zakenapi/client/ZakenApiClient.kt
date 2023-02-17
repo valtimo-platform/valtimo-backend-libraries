@@ -19,6 +19,7 @@ package com.ritense.zakenapi.client
 import com.ritense.zakenapi.ZakenApiAuthentication
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResponse
+import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolType
@@ -77,6 +78,29 @@ class ZakenApiClient(
             }
             .retrieve()
             .toEntity(ClientTools.getTypedPage(ZaakObject::class.java))
+            .block()
+
+        return result?.body!!
+    }
+
+    fun getZaakInformatieObjecten(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        zaakUrl: URI
+    ): List<ZaakInformatieObject> {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("zaakinformatieobjecten")
+                    .queryParam("zaak", zaakUrl)
+                    .build()
+            }
+            .retrieve()
+            .toEntityList(ZaakInformatieObject::class.java)
             .block()
 
         return result?.body!!
