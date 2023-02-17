@@ -23,27 +23,27 @@ import java.time.LocalDateTime
 
 class DocumentInformatieObject (
     val uri: URI,
-    val identificatie:String?,
+    val identificatie:String? = null,
     val bronorganisatie:String,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val creatiedatum:LocalDate,
     val titel:String,
-    val vertrouwelijkheidaanduiding:ConfidentialityLevel?,
+    val vertrouwelijkheidaanduiding:ConfidentialityLevel? = null,
     val auteur:String,
-    val status:DocumentStatusType?,
-    val formaat:String?,
+    val status:DocumentStatusType? = null,
+    val formaat:String? = null,
     val taal:String,
     val versie:Int,
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     val beginRegistratie:LocalDateTime,
-    val bestandsnaam:String?,
-    val bestandsomvang:Long?,
-    val link:URI?,
-    val beschrijving:String?,
+    val bestandsnaam:String? = null,
+    val bestandsomvang:Long? = null,
+    val link:URI? = null,
+    val beschrijving:String? = null,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val ontvangstdatum:LocalDate?,
+    val ontvangstdatum:LocalDate? = null,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val verzenddatum:LocalDate?,
-    val indicatieGebruiksrecht:Boolean?,
-    val verschijningsvorm:String?,
+    val verzenddatum:LocalDate? = null,
+    val indicatieGebruiksrecht:Boolean? = null,
+    val verschijningsvorm:String? = null,
 )

@@ -27,11 +27,11 @@ data class ZaakInformatieObject(
     val informatieobject: URI,
     val zaak: URI,
     val aardRelatieWeergave: String,
-    val titel: String?,
-    val beschrijving: String?,
+    val titel: String? = null,
+    val beschrijving: String? = null,
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     val registratiedatum: LocalDateTime,
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    val vernietigingsdatum: LocalDateTime?,
-    val status: URI?
+    val vernietigingsdatum: LocalDateTime? = null,
+    val status: URI? = null
 )

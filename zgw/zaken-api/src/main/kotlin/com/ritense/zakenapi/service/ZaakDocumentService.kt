@@ -16,7 +16,6 @@
 
 package com.ritense.zakenapi.service
 
-import com.ritense.document.domain.RelatedFile
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.plugin.service.PluginService
@@ -29,7 +28,7 @@ class ZaakDocumentService(
     val pluginService: PluginService
 ) {
 
-    fun getFiles(documentId: UUID): List<DocumentInformatieObject> {
+    fun getInformatieObjecten(documentId: UUID): List<DocumentInformatieObject> {
         val zaakUri = zaakUrlProvider.getZaakUrl(documentId)
 
         val zakenApiPlugin = checkNotNull(

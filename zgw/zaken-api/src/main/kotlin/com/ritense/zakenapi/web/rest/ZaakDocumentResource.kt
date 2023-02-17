@@ -17,7 +17,6 @@
 package com.ritense.zakenapi.web.rest
 
 import com.ritense.document.domain.RelatedFile
-import com.ritense.document.domain.impl.JsonSchemaRelatedFile
 import com.ritense.zakenapi.service.ZaakDocumentService
 import com.ritense.zakenapi.web.rest.value.RelatedFileDto
 import java.awt.print.Pageable
@@ -36,7 +35,7 @@ class ZaakDocumentResource(
 
     @GetMapping("/files")
     fun getFiles(@PathVariable(name = "documentId") documentId: UUID, pageable: Pageable): List<RelatedFile> {
-        return zaakDocumentService.getFiles(documentId).map {
+        return zaakDocumentService.getInformatieObjecten(documentId).map {
             RelatedFileDto(
                 it.uri,
                 it.bestandsnaam,
