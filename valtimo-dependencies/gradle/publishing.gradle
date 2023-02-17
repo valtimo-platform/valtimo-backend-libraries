@@ -20,7 +20,7 @@ pluginManager.withPlugin('maven-publish') {
             maven(MavenPublication) {
                 pom {
                     name = 'Valtimo dependencies module'
-                    description = 'Valtimo dependencies module contains all modules that are part of Valtimo'
+                    description = 'Valtimo dependencies module contains all mandatory modules for Valtimo. This module also contains dependency version constraints.'
                     developers {
                         developer {
                             id = "team-valtimo"
