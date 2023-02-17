@@ -32,16 +32,20 @@ class ZaakDocumentService(
     fun getFiles(documentId: UUID): List<DocumentInformatieObject> {
         val zaakUri = zaakUrlProvider.getZaakUrl(documentId)
 
-        val zakenApiPlugin = checkNotNull(pluginService.createInstance(ZakenApiPlugin::class.java) { jsonNode ->
-            zaakUri.toString().startsWith(jsonNode.get(ZakenApiPlugin.URL_PROPERTY).textValue())
-        }) { "Could not find ${ZakenApiPlugin::class.simpleName} configuration for zaak with url: $zaakUri" }
+        val zakenApiPlugin = checkNotNull(
+            pluginService.createInstance(
+                ZakenApiPlugin::class.java,
+                ZakenApiPlugin.findConfigurationByUrl(zaakUri)
+            )
+        ) { "Could not find ${ZakenApiPlugin::class.simpleName} configuration for zaak with url: $zaakUri" }
 
-        return zakenApiPlugin.getZaakInformatieObjecten(zaakUri).mapNotNull { zaakInformatieObject ->
-            pluginService.createInstance(DocumentenApiPlugin::class.java) { jsonNode ->
-                zaakInformatieObject.informatieobject.toString()
-                    .startsWith(jsonNode.get(DocumentenApiPlugin.URL_PROPERTY).textValue())
-            }?.getInformatieObject(zaakInformatieObject.informatieobject)
-        }
+        return zakenApiPlugin.getZaakInformatieObjecten(zaakUri)
+            .mapNotNull { zaakInformatieObject ->
+                pluginService.createInstance(
+                    DocumentenApiPlugin::class.java,
+                    DocumentenApiPlugin.findConfigurationByUrl(zaakInformatieObject.informatieobject)
+                )?.getInformatieObject(zaakInformatieObject.informatieobject)
+            }
     }
 
 }
