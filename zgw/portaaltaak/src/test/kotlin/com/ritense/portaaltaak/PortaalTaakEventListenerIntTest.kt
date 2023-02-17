@@ -140,7 +140,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
                     }
                 ],
                 "receiver": "${TaakReceiver.OTHER.key}",
-                "identificationKey": "${OtherTaakReceiver.KVK.key}",
+                "identificationKey": "${TaakIdentificatie.TYPE_KVK}",
                 "identificationValue": "569312863"
             }
         """.trimIndent()

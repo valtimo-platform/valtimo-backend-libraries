@@ -92,7 +92,7 @@ internal class PortaaltaakPluginTest {
         val sendData = emptyList<DataBindingConfig>()
         val receiveData = emptyList<DataBindingConfig>()
         val receiver = TaakReceiver.ZAAK_INITIATOR
-        val identificationKey = OtherTaakReceiver.BSN.key
+        val identificationKey = TaakIdentificatie.TYPE_BSN
         val zakenApiPlugin = mock<ZakenApiPlugin>()
         val objectenApiPlugin = mock<ObjectenApiPlugin>()
         val objecttypenApiPlugin = mock<ObjecttypenApiPlugin>()
@@ -152,7 +152,7 @@ internal class PortaaltaakPluginTest {
     @Test
     fun `should get the correct identification for case initiated by a citizen`() {
         val result =
-            portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, OtherTaakReceiver.BSN.key, bsn)
+            portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, TaakIdentificatie.TYPE_BSN, bsn)
         assertEquals("bsn", result.type)
         assertEquals(bsn, result.value)
     }
@@ -160,7 +160,7 @@ internal class PortaaltaakPluginTest {
     @Test
     fun `should get the correct task identification for task initiated by other with a citizen service number`() {
         val result =
-            portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, OtherTaakReceiver.BSN.key, bsn)
+            portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, TaakIdentificatie.TYPE_BSN, bsn)
         assertEquals("bsn", result.type)
         assertEquals(bsn, result.value)
     }
@@ -171,7 +171,7 @@ internal class PortaaltaakPluginTest {
             portaaltaakPlugin.getTaakIdentification(
                 delegateTask,
                 TaakReceiver.OTHER,
-                OtherTaakReceiver.KVK.key,
+                TaakIdentificatie.TYPE_KVK,
                 kvk
             )
         assertEquals("kvk", result.type)
@@ -197,7 +197,7 @@ internal class PortaaltaakPluginTest {
                 portaaltaakPlugin.getTaakIdentification(
                     delegateTask,
                     TaakReceiver.OTHER,
-                    OtherTaakReceiver.KVK.key,
+                    TaakIdentificatie.TYPE_KVK,
                     null
                 )
             }
