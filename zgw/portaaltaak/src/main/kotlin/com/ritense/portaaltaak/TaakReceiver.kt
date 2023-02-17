@@ -22,8 +22,3 @@ enum class TaakReceiver(@JsonValue val key: String) {
     ZAAK_INITIATOR("zaakInitiator"),
     OTHER("other")
 }
-
-enum class OtherTaakReceiver(@JsonValue val key: String) {
-    KVK("kvk"),
-    BSN("bsn")
-}

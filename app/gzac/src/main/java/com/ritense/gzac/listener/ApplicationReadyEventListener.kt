@@ -117,6 +117,7 @@ class ApplicationReadyEventListener(
             createSmartDocumentsPlugin()
             val protaalTaakPluginId = createPortaalTaakPlugin(notificatiesApiPluginId, taakConfigurationId)
             createPortaalTaakLink(protaalTaakPluginId)
+            completePortaalTaakLink(protaalTaakPluginId)
         } catch (ex: Exception) {
             throw RuntimeException("Failed to deploy plugin configurations for development", ex)
         }
@@ -154,11 +155,31 @@ class ApplicationReadyEventListener(
                                 }
                             ],
                             "receiver": "other",
-                            "otherReceiver": "bsn",
-                            "bsn": "569312863"
+                            "identificationKey": "bsn",
+                            "identificationValue": "569312863"
                         }
                         """.trimIndent()
                     ),
+                )
+            )
+        }
+    }
+
+    private fun completePortaalTaakLink(protaalTaakPluginId: UUID) {
+        val portaaltaakUploadedProcessDefinitionId = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("process-portaaltaak-uploaded-documents")
+            .latestVersion()
+            .singleResult()
+            .id
+        if (pluginService.getProcessLinks(portaaltaakUploadedProcessDefinitionId, "update_portaal_taak_status").isEmpty()) {
+            pluginService.createProcessLink(
+                PluginProcessLinkCreateDto(
+                    processDefinitionId = portaaltaakUploadedProcessDefinitionId,
+                    activityId = "update_portaal_taak_status",
+                    activityType = "bpmn:ServiceTask:start",
+                    pluginConfigurationId = protaalTaakPluginId,
+                    pluginActionDefinitionKey = "complete-portaaltaak",
+                    actionProperties = jacksonObjectMapper().createObjectNode(),
                 )
             )
         }
