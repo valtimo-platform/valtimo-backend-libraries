@@ -17,18 +17,19 @@
 package com.ritense.zakenapi.web.rest.value
 
 import com.ritense.document.domain.RelatedFile
+import java.net.URI
 import java.time.LocalDateTime
 import java.util.UUID
 
 class RelatedFileDto(
-    private val fileId: UUID,
+    val fileUrl: URI,
     private val fileName: String?,
     private val sizeInBytes: Long?,
     private val createdOn: LocalDateTime,
     private val createdBy: String
 ):  RelatedFile {
     override fun getFileId(): UUID {
-        return fileId
+        return UUID.fromString(fileUrl.path.substringAfterLast("/"))
     }
 
     override fun getFileName(): String? {
