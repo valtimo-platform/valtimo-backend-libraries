@@ -26,12 +26,12 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 @Embeddable
 public class CamundaProcessDefinitionKey implements ProcessDefinitionKey {
 
-    @Column(name = "camunda_process_definition_key", columnDefinition = "VARCHAR(64)")
+    @Column(name = "camunda_process_definition_key", columnDefinition = "VARCHAR(255)")
     private String key;
 
     public CamundaProcessDefinitionKey(final String key) {
         assertArgumentNotNull(key, "key is required");
-        assertArgumentLength(key, 64, "key max length is 64");
+        assertArgumentLength(key, 255, "key max length is 255");
         this.key = key;
     }
 
