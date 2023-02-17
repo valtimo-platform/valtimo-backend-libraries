@@ -22,23 +22,42 @@ dockerCompose {
 }
 
 dependencies {
+    implementation project(":contract")
+    implementation project(':core')
+    implementation project(":document")
     implementation project(':plugin')
+    implementation(project(":process-document"))
+    implementation project(":value-resolver")
     implementation project(':zgw:object-management')
+    implementation project(':zgw:objecten-api')
+    implementation project(':zgw:objecttypen-api')
     implementation project(':zgw:notificaties-api')
+    implementation project(':zgw:zaken-api')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
     testImplementation project(":contract")
+    testImplementation project(":test-utils-common")
+    testImplementation project(":resource")
+    testImplementation project(":zgw:catalogi-api")
+    testImplementation project(':plugin-valtimo')
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
+    testImplementation "com.jayway.jsonpath:json-path-assert:${jaywayJsonpathVersion}"
+
     //Kotlin
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+
+    testImplementation project(":test-utils-common")
+    testImplementation("org.camunda.community.mockito:camunda-platform-7-mockito:6.18.0")
+
 
     jar {
         enabled = true

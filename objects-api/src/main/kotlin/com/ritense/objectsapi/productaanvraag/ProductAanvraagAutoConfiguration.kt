@@ -22,9 +22,9 @@ import com.ritense.document.service.DocumentService
 import com.ritense.klant.service.BedrijfService
 import com.ritense.klant.service.BurgerService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
-import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean

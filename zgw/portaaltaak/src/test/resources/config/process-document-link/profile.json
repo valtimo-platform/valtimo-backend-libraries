@@ -1,0 +1,7 @@
+[
+    {
+        "processDefinitionKey": "portaaltaak-process",
+        "canInitializeDocument": true,
+        "startableByUser": true
+    }
+]

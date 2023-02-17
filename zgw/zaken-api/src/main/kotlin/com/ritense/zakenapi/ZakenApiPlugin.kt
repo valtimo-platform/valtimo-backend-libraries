@@ -30,7 +30,11 @@ import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.rol.BetrokkeneType
+import com.ritense.zakenapi.domain.rol.Rol
+import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
+import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -61,7 +65,7 @@ class ZakenApiPlugin(
         key = "link-document-to-zaak",
         title = "Link Documenten API document to Zaak",
         description = "Stores a link to an existing document in the Documenten API with a Zaak",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun linkDocumentToZaak(
         execution: DelegateExecution,
@@ -86,7 +90,7 @@ class ZakenApiPlugin(
         key = "link-uploaded-document-to-zaak",
         title = "Link Uploaded Documenten API document to Zaak",
         description = "Stores a link to an uploaded document in the Documenten API with a Zaak",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun linkUploadedDocumentToZaak(
         execution: DelegateExecution
@@ -111,7 +115,7 @@ class ZakenApiPlugin(
         key = "create-zaak",
         title = "Create zaak",
         description = "Creates a zaak in the Zaken API",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun createZaak(
         execution: DelegateExecution,
@@ -142,6 +146,41 @@ class ZakenApiPlugin(
         )
     }
 
+    @PluginAction(
+        key = "create-natuurlijk-persoon-zaak-rol",
+        title = "Create natuurlijk persoon zaakrol",
+        description = "Adds a zaakrol to the zaak in the Zaken API",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun createNatuurlijkPersoonZaakRol(
+        execution: DelegateExecution,
+        @PluginActionProperty roltypeUrl: String,
+        @PluginActionProperty rolToelichting: String,
+        @PluginActionProperty inpBsn: String?,
+        @PluginActionProperty anpIdentificatie: String?,
+        @PluginActionProperty inpA_nummer: String?
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaak(documentId)
+
+        client.createZaakRol(
+            authenticationPluginConfiguration,
+            url,
+            Rol(
+                zaak = URI(zaakUrl),
+                roltype = URI(roltypeUrl),
+                roltoelichting = rolToelichting,
+                betrokkeneType = BetrokkeneType.NATUURLIJK_PERSOON,
+                betrokkeneIdentificatie = RolNatuurlijkPersoon(
+                    inpBsn = inpBsn,
+                    anpIdentificatie = anpIdentificatie,
+                    inpA_nummer = inpA_nummer
+                )
+            )
+        )
+
+    }
+
     private fun linkDocument(documentId: UUID, request: LinkDocumentRequest, documentUrl: String) {
         client.linkDocument(authenticationPluginConfiguration, url, request)
         val resource = resourceProvider.getResource(documentUrl)
@@ -168,6 +207,25 @@ class ZakenApiPlugin(
         } while (currentResults?.next != null)
 
         return results
+    }
+
+    fun getZaakRollen(zaakUrl: URI, roleType: RolType? = null): List<Rol> {
+        var next = true
+
+        return generateSequence(1) { i -> if (next) i + 1 else null }
+            .flatMap { pageNumber ->
+                val result = client.getZaakRollen(authenticationPluginConfiguration,
+                    url,
+                    zaakUrl,
+                    pageNumber,
+                    roleType)
+
+                if (result.next == null) {
+                    next = false
+                }
+
+                result.results
+            }.toList()
     }
 
     companion object {

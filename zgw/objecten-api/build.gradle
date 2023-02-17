@@ -25,7 +25,6 @@ dependencies {
     implementation project(':plugin')
     implementation project(':contract')
     implementation project(':form')
-    implementation project(':openzaak')
     implementation project(':zgw:zaken-api')
     implementation project(':zgw:objecttypen-api')
 
@@ -42,6 +41,7 @@ dependencies {
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     //Kotlin
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation "org.skyscreamer:jsonassert:${jsonassertVersion}"
 
     jar {
         enabled = true
