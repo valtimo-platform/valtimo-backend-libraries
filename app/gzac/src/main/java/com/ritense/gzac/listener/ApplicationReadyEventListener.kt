@@ -108,7 +108,8 @@ class ApplicationReadyEventListener(
             val notificatiesApiPluginId = createNotificatiesApiPlugin(notificatiesApiAuthenticationPluginId)
             val objectenApiAuthenticationPluginId = createObjectenApiAuthenticationPlugin()
             val objectenApiPluginId = createObjectenApiPlugin(objectenApiAuthenticationPluginId)
-            val objecttypenApiPluginId = createObjecttypenApiPlugin(objectenApiAuthenticationPluginId)
+            val objecttypenApiAuthenticationPluginId = createObjecttypenApiAuthenticationPlugin()
+            val objecttypenApiPluginId = createObjecttypenApiPlugin(objecttypenApiAuthenticationPluginId)
             val bezwaarConfigurationId = createBezwaarObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
             val taakConfigurationId = createTaakObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
             createBomenObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
@@ -458,6 +459,31 @@ class ApplicationReadyEventListener(
         }
     }
 
+    private fun createObjecttypenApiAuthenticationPlugin(): UUID {
+        logger.debug { "Creating Objecttypen API Authentication plugin" }
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "Objecttypen API Authentication",
+                pluginDefinitionKey = "objecttokenauthentication",
+            )
+        )
+        return if (existing.isEmpty()) {
+            pluginService.createPluginConfiguration(
+                title = "Objecttypen API Authentication",
+                pluginDefinitionKey = "objecttokenauthentication",
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "token": "cd63e158f3aca276ef284e3033d020a22899c728"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
     private fun createObjectenApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
         logger.debug { "Creating Objecten API plugin" }
         val existing = pluginService.getPluginConfigurations(
@@ -670,9 +696,10 @@ class ApplicationReadyEventListener(
                 title = "Bomen",
                 objecttypenApiPluginConfigurationId = objecttypenApiPluginConfigurationId,
                 objecttypeId = "feeaa795-d212-4fa2-bb38-2c34996e5702",
+                objecttypeVersion = 2,
                 objectenApiPluginConfigurationId = objectenApiPluginConfigurationId,
                 showInDataMenu = true,
-                formDefinitionView = "boom.editform",
+                formDefinitionView = "boom.summary",
                 formDefinitionEdit = "boom.editform",
             )
         ).id
@@ -724,7 +751,8 @@ class ApplicationReadyEventListener(
                     """
                     {
                         "notificatiesApiPluginConfiguration": "$notificatiesApiPluginConfigurationId",
-                        "objectManagementConfigurationId": "$objectManagementConfigurationId"
+                        "objectManagementConfigurationId": "$objectManagementConfigurationId",
+                        "uploadedDocumentsHandlerProcess": "process-portaaltaak-uploaded-documents"
                     }
                     """
                 )

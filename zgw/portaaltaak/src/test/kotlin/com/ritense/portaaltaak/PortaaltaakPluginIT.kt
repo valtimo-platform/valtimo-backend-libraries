@@ -18,7 +18,6 @@ package com.ritense.portaaltaak
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath
@@ -42,8 +41,6 @@ import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundExce
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.Mapper
-import java.time.LocalDate
-import java.util.*
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -53,6 +50,7 @@ import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.task.Task
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.hamcrest.CoreMatchers.anyOf
+import org.hamcrest.CoreMatchers.endsWith
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.nullValue
 import org.hamcrest.Matcher
@@ -60,7 +58,14 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doCallRealMethod
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
 import org.springframework.transaction.annotation.Transactional
@@ -69,6 +74,9 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
 import java.net.URI
+import java.time.LocalDate
+import java.util.Optional
+import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -164,7 +172,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         val recordedRequest = findRequest(HttpMethod.POST, "/objects")!!
         val body = recordedRequest.body.readUtf8()
 
-        assertThat(body, hasJsonPath("$.type", equalTo("${server.url("/objecttypes/object-type-id")}")))
+        assertThat(body, hasJsonPath("$.type", endsWith("/objecttypes/object-type-id")))
         assertThat(body, jsonPathMissingOrNull("$.record.index"))
         assertThat(body, hasJsonPath("$.record.typeVersion", equalTo(1)))
         assertThat(body, hasJsonPath("$.record.data.identificatie.type", equalTo("kvk")))
@@ -305,7 +313,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         val pluginPropertiesJson = """
             {
               "url": "${server.url("/")}",
-              "callbackUrl": "http://localhost",
+              "callbackUrl": "http://host.docker.internal:8080/api/v1/notificatiesapi/callback",
               "authenticationPluginConfiguration": "27a399c7-9d70-4833-a651-57664e2e9e09"
             }
         """.trimIndent()

@@ -34,10 +34,8 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
-import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundException
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import java.net.URI
 import com.ritense.plugin.service.PluginService
+import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundException
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
@@ -48,9 +46,11 @@ import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.TaskService
-import java.util.UUID
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
+import java.net.URI
 import java.time.LocalDate
+import java.util.UUID
 
 @Plugin(
     key = "portaaltaak",
