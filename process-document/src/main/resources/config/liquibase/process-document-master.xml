@@ -33,5 +33,6 @@
     <include file="changelog/20201008-update-document-definition-id.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20210506-add-column-startable-by-user-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220920-create-link-process-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230217-process-definition-key-type-resize.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
