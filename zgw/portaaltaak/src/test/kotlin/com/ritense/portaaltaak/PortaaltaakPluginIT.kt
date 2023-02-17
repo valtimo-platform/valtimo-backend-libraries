@@ -153,8 +153,8 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
                 ],
                 "receiveData": [],
                 "receiver": "${TaakReceiver.OTHER.key}",
-                "otherReceiver": "${OtherTaakReceiver.KVK.key}",
-                "kvk": "569312863"
+                "identificationKey": "${OtherTaakReceiver.KVK.key}",
+                "identificationValue": "569312863"
             }
         """.trimIndent()
 
