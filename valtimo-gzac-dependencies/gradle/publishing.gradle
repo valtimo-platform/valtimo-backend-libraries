@@ -19,7 +19,7 @@ pluginManager.withPlugin('maven-publish') {
         publications {
             maven(MavenPublication) {
                 pom {
-                    name = 'Valtimo GZAC dependencies module'
+                    name = 'Valtimo GZAC dependencies'
                     description = 'Valtimo GZAC dependencies module contains all mandatory modules for Valtimo (GZAC edition). This module also contains dependency version constraints.'
                     developers {
                         developer {
