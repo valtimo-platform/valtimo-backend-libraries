@@ -19,6 +19,7 @@ package com.ritense.zakenapi.web.rest
 import com.ritense.document.domain.RelatedFile
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile
 import com.ritense.zakenapi.service.ZaakDocumentService
+import com.ritense.zakenapi.web.rest.value.RelatedFileDto
 import java.util.UUID
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
@@ -35,7 +36,7 @@ class ZaakDocumentResource(
     @GetMapping("/files")
     fun getFiles(@PathVariable(name = "documentId") documentId: UUID): List<RelatedFile> {
         return zaakDocumentService.getFiles(documentId).map {
-            JsonSchemaRelatedFile(
+            RelatedFileDto(
                 UUID.fromString(it.uri.path.substringAfterLast("/")),
                 it.bestandsnaam,
                 it.bestandsomvang,
