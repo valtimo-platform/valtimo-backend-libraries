@@ -49,4 +49,23 @@ class DocumentenApiClient(
 
         return result?.body!!
     }
+
+    fun getInformatieObject(
+        authentication: DocumentenApiAuthentication,
+        objectUrl: URI
+    ): DocumentInformatieObject {
+        return checkNotNull(
+            webclientBuilder
+                .clone()
+                .filter(authentication)
+                .build()
+                .get()
+                .uri(objectUrl)
+                .retrieve()
+                .toEntity(DocumentInformatieObject::class.java)
+                .block()?.body
+        ) {
+            "Could not retrieve ${DocumentInformatieObject::class.simpleName} at $objectUrl"
+        }
+    }
 }

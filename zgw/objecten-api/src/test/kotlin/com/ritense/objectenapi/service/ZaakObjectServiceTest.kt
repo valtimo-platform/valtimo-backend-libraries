@@ -108,7 +108,7 @@ internal class ZaakObjectServiceTest {
     @Test
     fun `should throw exception if zaak instance link is not found`() {
         val documentId = UUID.randomUUID()
-        whenever(zaakUrlProvider.getZaak(documentId))
+        whenever(zaakUrlProvider.getZaakUrl(documentId))
             .thenThrow(RuntimeException::class.java)
 
         assertThrows(RuntimeException::class.java) {
@@ -410,7 +410,7 @@ internal class ZaakObjectServiceTest {
 
     private fun setupZaakInstanceLink(documentId: UUID): URI {
         val zaakInstanceUrl = URI("http://example.com/zaak/${UUID.randomUUID()}")
-        whenever(zaakUrlProvider.getZaak(documentId)).thenReturn(zaakInstanceUrl.toString())
+        whenever(zaakUrlProvider.getZaakUrl(documentId)).thenReturn(zaakInstanceUrl)
         return zaakInstanceUrl
     }
 

@@ -85,9 +85,6 @@ internal class DocumentenApiPluginFactoryTest {
         assertEquals(URI("http://some-url"), plugin.url)
         assertEquals("123456789", plugin.bronorganisatie)
         assertEquals(authentication, plugin.authenticationPluginConfiguration)
-        assertEquals(applicationEventPublisher, plugin.applicationEventPublisher)
-        assertEquals(client, plugin.client)
-        assertEquals(storageService, plugin.storageService)
     }
 
 }

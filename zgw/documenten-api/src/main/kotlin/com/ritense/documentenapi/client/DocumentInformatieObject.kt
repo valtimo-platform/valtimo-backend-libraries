@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,33 @@
 package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import java.io.InputStream
+import java.net.URI
 import java.time.LocalDate
+import java.time.LocalDateTime
 
-class CreateDocumentRequest(
-    val bronorganisatie: String,
+class DocumentInformatieObject (
+    val uri: URI,
+    val identificatie:String?,
+    val bronorganisatie:String,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val creatiedatum: LocalDate,
-    val titel: String,
-    val vertrouwelijkheidaanduiding: ConfidentialityLevel? = null,
-    val auteur: String,
-    val status: DocumentStatusType? = null,
-    val taal: String,
-    val bestandsnaam: String? = null,
-    @JsonSerialize(using = Base64StreamSerializer::class)
-    val inhoud: InputStream,
-    val beschrijving: String? = null,
+    val creatiedatum:LocalDate,
+    val titel:String,
+    val vertrouwelijkheidaanduiding:ConfidentialityLevel?,
+    val auteur:String,
+    val status:DocumentStatusType?,
+    val formaat:String?,
+    val taal:String,
+    val versie:Int,
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    val beginRegistratie:LocalDateTime,
+    val bestandsnaam:String?,
+    val bestandsomvang:Long?,
+    val link:URI?,
+    val beschrijving:String?,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val ontvangstdatum: LocalDate? = null,
+    val ontvangstdatum:LocalDate?,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val verzenddatum: LocalDate? = null,
-    val indicatieGebruiksrecht: Boolean? = false,
-    val informatieobjecttype: String,
+    val verzenddatum:LocalDate?,
+    val indicatieGebruiksrecht:Boolean?,
+    val verschijningsvorm:String?,
 )

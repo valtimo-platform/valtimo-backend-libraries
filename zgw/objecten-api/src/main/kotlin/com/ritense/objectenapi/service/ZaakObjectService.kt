@@ -45,7 +45,7 @@ class ZaakObjectService(
     val objectManagementInfoProvider: ObjectManagementInfoProvider
 ) {
     fun getZaakObjectTypes(documentId: UUID): List<Objecttype> {
-        val zaakUrl = URI(zaakUrlProvider.getZaak(documentId))
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
         val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
 
         return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
@@ -76,7 +76,7 @@ class ZaakObjectService(
     }
 
     fun getZaakObjectenOfType(documentId: UUID, typeUrl: URI): List<ObjectWrapper> {
-        val zaakUrl = URI(zaakUrlProvider.getZaak(documentId))
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
         val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
 
         return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
@@ -89,7 +89,7 @@ class ZaakObjectService(
 
     fun getZaakObjectOfTypeByName(documentId: UUID, objecttypeName: String): ObjectWrapper {
         logger.debug { "Getting zaakobject for documentId $documentId and objecttypeName '$objecttypeName'" }
-        val zaakUrl = URI(zaakUrlProvider.getZaak(documentId))
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
         val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
 
         val listOfObjecttypeWithCorrectName = zakenApiPluginInstance.getZaakObjecten(zaakUrl)

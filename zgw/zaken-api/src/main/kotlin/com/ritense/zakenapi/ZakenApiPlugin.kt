@@ -53,7 +53,7 @@ class ZakenApiPlugin(
     private val storageService: TemporaryResourceStorageService,
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
 ) {
-    @PluginProperty(key = "url", secret = false)
+    @PluginProperty(key = URL_PROPERTY, secret = false)
     lateinit var url: URI
 
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
@@ -72,11 +72,11 @@ class ZakenApiPlugin(
         @PluginActionProperty beschrijving: String?
     ) {
         val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaak(documentId)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
         val request = LinkDocumentRequest(
             documentUrl,
-            zaakUrl,
+            zaakUrl.toString(),
             titel,
             beschrijving
         )
@@ -98,11 +98,11 @@ class ZakenApiPlugin(
         val metadata = storageService.getResourceMetadata(resourceId)
 
         val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaak(documentId)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
         val request = LinkDocumentRequest(
             documentUrl,
-            zaakUrl,
+            zaakUrl.toString(),
             metadata["title"] as String?,
             metadata["description"] as String?,
         )
@@ -194,6 +194,7 @@ class ZakenApiPlugin(
 
     companion object {
         const val PLUGIN_KEY = "zakenapi"
+        const val URL_PROPERTY = "url"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
     }

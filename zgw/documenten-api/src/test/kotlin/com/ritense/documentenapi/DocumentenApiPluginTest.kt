@@ -95,6 +95,7 @@ internal class DocumentenApiPluginTest {
         assertEquals("title", request.titel)
         assertEquals("GZAC", request.auteur)
         assertEquals("test.ext", request.bestandsnaam)
+        assertEquals(ConfidentialityLevel.ZAAKVERTROUWELIJK, request.vertrouwelijkheidaanduiding)
         assertEquals("taal", request.taal)
         assertEquals(fileStream, request.inhoud)
         assertEquals("type", request.informatieobjecttype)
@@ -168,7 +169,7 @@ internal class DocumentenApiPluginTest {
         assertEquals("type", request.informatieobjecttype)
         assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
         assertEquals(false, request.indicatieGebruiksrecht)
-        assertEquals(ConfidentialityLevel.ZAAKVERTROUWELIJK.key, request.vertrouwelijkheidaanduiding)
+        assertEquals(ConfidentialityLevel.ZAAKVERTROUWELIJK, request.vertrouwelijkheidaanduiding)
     }
 
     @Test

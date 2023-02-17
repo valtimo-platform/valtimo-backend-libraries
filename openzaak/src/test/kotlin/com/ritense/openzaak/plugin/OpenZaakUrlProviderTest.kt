@@ -49,9 +49,9 @@ internal class OpenZaakUrlProviderTest {
         ))
 
         val documentId = UUID.randomUUID()
-        val zaakUrl = openZaakUrlProvider.getZaak(documentId)
+        val zaakUrl = openZaakUrlProvider.getZaakUrl(documentId)
 
-        assertEquals("http://some.url", zaakUrl)
+        assertEquals("http://some.url", zaakUrl.toString())
         verify(zaakInstanceLinkService).getByDocumentId(documentId)
     }
 
