@@ -16,7 +16,6 @@
 
 package com.ritense.zakenapi
 
-import com.ritense.document.service.DocumentService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -27,8 +26,6 @@ class ZakenApiPluginFactory(
     pluginService: PluginService,
     private val client: ZakenApiClient,
     private val zaakUrlProvider: ZaakUrlProvider,
-    private val resourceProvider: ResourceProvider,
-    private val documentService: DocumentService,
     private val storageService: TemporaryResourceStorageService,
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
 ) : PluginFactory<ZakenApiPlugin>(pluginService) {
@@ -37,8 +34,6 @@ class ZakenApiPluginFactory(
         return ZakenApiPlugin(
             client,
             zaakUrlProvider,
-            resourceProvider,
-            documentService,
             storageService,
             zaakInstanceLinkRepository
         )
