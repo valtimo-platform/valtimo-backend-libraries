@@ -75,6 +75,7 @@ class VerzoekPluginEventListener(
                     "RSIN" to this.rsin.toString(),
                     "zaakTypeUrl" to zaakTypeUrl.toString(),
                     "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
+                    "rolDescription" to verzoekTypeProperties.initiatorRolDescription,
                     "verzoekObjectUrl" to event.resourceUrl,
                     "initiatorType" to initiatorType,
                     "initiatorValue" to verzoekObjectData.get(initiatorType).textValue()

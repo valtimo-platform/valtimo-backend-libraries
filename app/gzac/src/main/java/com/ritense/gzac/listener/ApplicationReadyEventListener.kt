@@ -102,7 +102,7 @@ class ApplicationReadyEventListener(
     fun createPlugins() {
         try {
             val zakenApiAuthenticationPluginId = createZakenApiAuthenticationPlugin()
-            createZakenApiPlugin(zakenApiAuthenticationPluginId)
+            val zakenApiPluginId = createZakenApiPlugin(zakenApiAuthenticationPluginId)
             createCatalogiApiPlugin(zakenApiAuthenticationPluginId)
             val notificatiesApiAuthenticationPluginId = createNotificatiesApiAuthenticationPlugin()
             val notificatiesApiPluginId = createNotificatiesApiPlugin(notificatiesApiAuthenticationPluginId)
@@ -117,6 +117,9 @@ class ApplicationReadyEventListener(
             createSmartDocumentsPlugin()
             val protaalTaakPluginId = createPortaalTaakPlugin(notificatiesApiPluginId, taakConfigurationId)
             createPortaalTaakLink(protaalTaakPluginId)
+            completePortaalTaakLink(protaalTaakPluginId)
+            createZaakdossierCreateZaak(zakenApiPluginId)
+            createZaakdossierCreateZaakRol(zakenApiPluginId)
         } catch (ex: Exception) {
             throw RuntimeException("Failed to deploy plugin configurations for development", ex)
         }
@@ -154,11 +157,90 @@ class ApplicationReadyEventListener(
                                 }
                             ],
                             "receiver": "other",
-                            "otherReceiver": "bsn",
-                            "bsn": "569312863"
+                            "identificationKey": "bsn",
+                            "identificationValue": "569312863"
                         }
                         """.trimIndent()
                     ),
+                )
+            )
+        }
+    }
+
+    private fun completePortaalTaakLink(protaalTaakPluginId: UUID) {
+        val portaaltaakUploadedProcessDefinitionId = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("process-portaaltaak-uploaded-documents")
+            .latestVersion()
+            .singleResult()
+            .id
+        if (pluginService.getProcessLinks(portaaltaakUploadedProcessDefinitionId, "update_portaal_taak_status")
+                .isEmpty()
+        ) {
+            pluginService.createProcessLink(
+                PluginProcessLinkCreateDto(
+                    processDefinitionId = portaaltaakUploadedProcessDefinitionId,
+                    activityId = "update_portaal_taak_status",
+                    activityType = "bpmn:ServiceTask:start",
+                    pluginConfigurationId = protaalTaakPluginId,
+                    pluginActionDefinitionKey = "complete-portaaltaak",
+                    actionProperties = jacksonObjectMapper().createObjectNode(),
+                )
+            )
+        }
+    }
+
+    private fun createZaakdossierCreateZaak(zakenApiPluginId: UUID) {
+        val createZaakdossierProcessDefinitionId = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("create-zaakdossier")
+            .latestVersion()
+            .singleResult()
+            .id
+        if (pluginService.getProcessLinks(createZaakdossierProcessDefinitionId, "create-zaak").isEmpty()) {
+            pluginService.createProcessLink(
+                PluginProcessLinkCreateDto(
+                    processDefinitionId = createZaakdossierProcessDefinitionId,
+                    activityId = "create-zaak",
+                    activityType = "bpmn:ServiceTask:start",
+                    pluginConfigurationId = zakenApiPluginId,
+                    pluginActionDefinitionKey = "create-zaak",
+                    actionProperties = jacksonObjectMapper().readValue(
+                        """
+                        {
+                            "rsin": "051845623",
+                            "zaaktypeUrl": "http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"
+                        }
+                        """.trimIndent()
+                    )
+                )
+            )
+        }
+    }
+
+    private fun createZaakdossierCreateZaakRol(zakenApiPluginId: UUID) {
+        val createZaakdossierProcessDefinitionId = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("create-zaakdossier")
+            .latestVersion()
+            .singleResult()
+            .id
+        if (pluginService.getProcessLinks(createZaakdossierProcessDefinitionId, "create-initiator-zaak-rol")
+                .isEmpty()
+        ) {
+            pluginService.createProcessLink(
+                PluginProcessLinkCreateDto(
+                    processDefinitionId = createZaakdossierProcessDefinitionId,
+                    activityId = "create-initiator-zaak-rol",
+                    activityType = "bpmn:ServiceTask:start",
+                    pluginConfigurationId = zakenApiPluginId,
+                    pluginActionDefinitionKey = "create-natuurlijk-persoon-zaak-rol",
+                    actionProperties = jacksonObjectMapper().readValue(
+                        """
+                        {
+                            "roltypeUrl": "pv:rolTypeUrl",
+                            "rolToelichting": "pv:rolDescription",
+                            "inpBsn": "pv:initiatorValue"
+                        }
+                        """.trimIndent()
+                    )
                 )
             )
         }
