@@ -26,10 +26,7 @@ import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
-import org.assertj.core.api.Assertions
-import org.hamcrest.Matchers
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -63,7 +60,7 @@ class ZaakDocumentServiceTest {
             .doReturn(zakenApiPlugin)
 
 
-        val zaakInformatieObjects = createZaakInformatieObjecten(zaakUrl, 5)
+        val zaakInformatieObjects = createZaakInformatieObjecten(zaakUrl)
         whenever(zakenApiPlugin.getZaakInformatieObjecten(zaakUrl)).thenReturn(
             zaakInformatieObjects
         )
@@ -85,7 +82,7 @@ class ZaakDocumentServiceTest {
         }
     }
 
-    private fun createZaakInformatieObjecten(zaakUrl:URI, count:Int): List<ZaakInformatieObject> {
+    private fun createZaakInformatieObjecten(zaakUrl:URI, count:Int = 5): List<ZaakInformatieObject> {
         return IntRange(0, count-1)
             .map { index ->
                 ZaakInformatieObject(

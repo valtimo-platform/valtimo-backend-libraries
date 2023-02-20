@@ -19,7 +19,6 @@ package com.ritense.zakenapi.web.rest
 import com.ritense.document.domain.RelatedFile
 import com.ritense.zakenapi.service.ZaakDocumentService
 import com.ritense.zakenapi.web.rest.value.RelatedFileDto
-import java.awt.print.Pageable
 import java.util.UUID
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
@@ -34,7 +33,7 @@ class ZaakDocumentResource(
 ) {
 
     @GetMapping("/files")
-    fun getFiles(@PathVariable(name = "documentId") documentId: UUID, pageable: Pageable): List<RelatedFile> {
+    fun getFiles(@PathVariable(name = "documentId") documentId: UUID): List<RelatedFile> {
         return zaakDocumentService.getInformatieObjecten(documentId).map {
             RelatedFileDto(
                 it.uri,
