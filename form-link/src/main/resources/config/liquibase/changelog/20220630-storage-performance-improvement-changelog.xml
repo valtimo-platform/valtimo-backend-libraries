@@ -135,4 +135,10 @@
         </sql>
     </changeSet>
 
+    <changeSet author="Ritense" id="5">
+        <modifyDataType tableName="process_form_association_v2"
+                        columnName="process_definition_key"
+                        newDataType="varchar(255)"/>
+    </changeSet>
+
 </databaseChangeLog>

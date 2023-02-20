@@ -110,9 +110,10 @@ class ZaakObjectResource(
     @DeleteMapping(value = ["/v1/object"])
     fun deleteZaakObject(
         @RequestParam(name = "objectManagementId") objectManagementId: UUID,
-        @RequestParam(name = "objectUrl") objectUrl: URI
+        @RequestParam(name = "objectId") objectId: UUID? = null,
+        @RequestParam(name = "objectUrl") objectUrl: URI? = null,
     ): ResponseEntity<Any> {
-        val status = zaakObjectService.deleteObject(objectManagementId, objectUrl)
+        val status = zaakObjectService.deleteObject(objectManagementId, objectId, objectUrl)
         return ResponseEntity.status(status).build()
     }
 }

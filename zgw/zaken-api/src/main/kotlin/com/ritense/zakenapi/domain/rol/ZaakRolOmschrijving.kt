@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.client
+package com.ritense.zakenapi.domain.rol
 
-import java.net.URI
+import com.fasterxml.jackson.annotation.JsonValue
 
-data class ObjectRequest(
-    val type: URI,
-    val record: ObjectRecord
-) {
+enum class ZaakRolOmschrijving(@JsonValue val key: String) {
+    ADVISEUR("adviseur"),
+    BEHANDELAAR("behandelaar"),
+    BELANGHEBBENDE("belanghebbende"),
+    BESLISSER("beslisser"),
+    INITIATOR("initiator"),
+    KLANTCONTACTER("klantcontacter"),
+    ZAAKCOORDINATOR("zaakcoordinator"),
+    MEDE_INITIATOR("mede_initiator")
 }

@@ -34,10 +34,8 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
-import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundException
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import java.net.URI
 import com.ritense.plugin.service.PluginService
+import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundException
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
@@ -48,9 +46,11 @@ import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.TaskService
-import java.util.UUID
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
+import java.net.URI
 import java.time.LocalDate
+import java.util.UUID
 
 @Plugin(
     key = "portaaltaak",
@@ -89,9 +89,8 @@ class PortaaltaakPlugin(
         @PluginActionProperty sendData: List<DataBindingConfig>,
         @PluginActionProperty receiveData: List<DataBindingConfig>,
         @PluginActionProperty receiver: TaakReceiver,
-        @PluginActionProperty otherReceiver: OtherTaakReceiver?,
-        @PluginActionProperty kvk: String?,
-        @PluginActionProperty bsn: String?
+        @PluginActionProperty identificationKey: String?,
+        @PluginActionProperty identificationValue: String?,
     ) {
         val objectManagement = objectManagementService.getById(objectManagementConfigurationId)
             ?: throw IllegalStateException("Object management not found for portaal taak")
@@ -102,7 +101,7 @@ class PortaaltaakPlugin(
         ) as ObjectenApiPlugin
 
         val portaalTaak = TaakObject(
-            getTaakIdentification(delegateTask, receiver, otherReceiver, kvk, bsn),
+            getTaakIdentification(delegateTask, receiver, identificationKey, identificationValue),
             getTaakData(delegateTask, sendData),
             delegateTask.name,
             TaakStatus.OPEN,
@@ -160,22 +159,20 @@ class PortaaltaakPlugin(
     internal fun getTaakIdentification(
         delegateTask: DelegateTask,
         receiver: TaakReceiver,
-        otherReceiver: OtherTaakReceiver?,
-        kvk: String?,
-        bsn: String?
+        identificationKey: String?,
+        identificationValue: String?,
     ): TaakIdentificatie {
         return when (receiver) {
             TaakReceiver.ZAAK_INITIATOR -> getZaakinitiator(delegateTask)
             TaakReceiver.OTHER -> {
-                val identificationValue = when (otherReceiver) {
-                    OtherTaakReceiver.BSN -> bsn
-                    OtherTaakReceiver.KVK -> kvk
-                    null -> throw IllegalStateException("Other was chosen as taak receiver, but no identification type was chosen.")
+                if (identificationKey == null) {
+                    throw IllegalStateException("Other was chosen as taak receiver, but no identification key was chosen.")
                 }
-                    ?: throw IllegalStateException("Could not find identification value in configuration for type ${otherReceiver.key}")
-
+                if (identificationValue == null) {
+                    throw IllegalStateException("Other was chosen as taak receiver, but no identification value was chosen.")
+                }
                 TaakIdentificatie(
-                    otherReceiver.key,
+                    identificationKey,
                     identificationValue
                 )
             }
@@ -200,8 +197,13 @@ class PortaaltaakPlugin(
         return requireNotNull(
             initiator.betrokkeneIdentificatie.let {
                 when (it) {
-                    is RolNatuurlijkPersoon -> TaakIdentificatie(OtherTaakReceiver.BSN.key, it.inpBsn)
-                    is RolNietNatuurlijkPersoon -> TaakIdentificatie(OtherTaakReceiver.KVK.key, it.annIdentificatie)
+                    is RolNatuurlijkPersoon -> TaakIdentificatie(
+                        TaakIdentificatie.TYPE_BSN,
+                        requireNotNull(it.inpBsn) {
+                            "Zaak initiator did not have valid inpBsn BSN"
+                        }
+                    )
+                    is RolNietNatuurlijkPersoon -> TaakIdentificatie(TaakIdentificatie.TYPE_KVK, it.annIdentificatie)
                     else -> null
                 }
             }

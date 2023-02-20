@@ -16,6 +16,7 @@
 
 package com.ritense.objectenapi.web.rest
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.form.domain.FormDefinition
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.web.rest.result.FormType
@@ -23,15 +24,17 @@ import java.net.URI
 import java.util.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
-@RequestMapping(value = ["/api"])
+@RequestMapping(value = ["/api/v1/object"])
 class ObjectResource(
     val zaakObjectService: ZaakObjectService
 ) {
 
-    @GetMapping(value = ["/v1/object/form"])
+    @GetMapping(value = ["/form"])
     fun getPrefilledObjectFromObjectUrl(
         @RequestParam(name = "objectUrl") objectUrl: URI? = null,
         @RequestParam(name = "objectManagementId") objectManagementId: UUID? = null,
@@ -40,5 +43,14 @@ class ObjectResource(
     ): ResponseEntity<FormDefinition> {
         val form = zaakObjectService.getZaakObjectForm(objectUrl, objectManagementId, objectId, formType)
         return form?.let { ResponseEntity.ok(it) } ?: ResponseEntity.notFound().build()
+    }
+
+    @PatchMapping
+    fun patchObject(
+        @RequestParam(name = "objectManagementId") objectManagementId: UUID,
+        @RequestParam(name = "objectId") objectId: UUID,
+        @RequestBody jsonNode: JsonNode
+    ): ResponseEntity<URI> {
+        return ResponseEntity.ok(zaakObjectService.patchObjectFromManagementId(objectManagementId, objectId, jsonNode))
     }
 }

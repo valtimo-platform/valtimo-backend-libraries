@@ -17,17 +17,26 @@
 package com.ritense.zakenapi.domain.rol
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.net.URI
+import java.time.LocalDateTime
+import java.util.UUID
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Rol(
+    val url: URI? = null,
+    val uuid: UUID? = null,
     val zaak: URI,
-    val betrokkene: URI?,
+    val betrokkene: URI? = null,
     val betrokkeneType: BetrokkeneType,
     val roltype: URI,
+    val omschrijving: String? = null,
+    val omschrijvingGeneriek: ZaakRolOmschrijving? = null,
     val roltoelichting: String,
+    val registratiedatum: LocalDateTime? = null,
+    @JsonProperty("indicatieMachtiging")
+    private val indicatieMachtigingString: String? = null,
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
@@ -35,4 +44,8 @@ data class Rol(
         visible = true
     )
     val betrokkeneIdentificatie: BetrokkeneIdentificatie?
-)
+) {
+    val indicatieMachtiging = indicatieMachtigingString?.let {indicatieMachtiging ->
+        IndicatieMachtiging.values().find {it.key == indicatieMachtiging}
+    }
+}

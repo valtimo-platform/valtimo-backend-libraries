@@ -283,7 +283,7 @@ internal class ZaakObjectResourceTest {
         val objectManagementId = UUID.randomUUID()
         val objectUrl = URI("http://example.com/object/123")
 
-        whenever(zaakObjectService.deleteObject(objectManagementId, objectUrl)).thenReturn(HttpStatus.NO_CONTENT)
+        whenever(zaakObjectService.deleteObject(objectManagementId = objectManagementId, objectUrl = objectUrl)).thenReturn(HttpStatus.NO_CONTENT)
 
         mockMvc.perform(
             delete("/v1/object?objectManagementId=$objectManagementId&objectUrl=$objectUrl")

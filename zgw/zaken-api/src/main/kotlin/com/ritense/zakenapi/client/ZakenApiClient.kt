@@ -135,6 +135,27 @@ class ZakenApiClient(
         return result?.body!!
     }
 
+    fun createZaakRol(authentication: ZakenApiAuthentication,
+                      baseUrl: URI,
+                      rol: Rol): Rol {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .post()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("rollen")
+                    .build()
+            }
+            .body(BodyInserters.fromValue(rol))
+            .retrieve()
+            .toEntity(Rol::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
     fun createZaak(
         authentication: ZakenApiAuthentication,
         baseUrl: URI,

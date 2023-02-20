@@ -32,7 +32,9 @@ import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
+import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zgw.Page
@@ -122,7 +124,6 @@ class ZakenApiPlugin(
         @PluginActionProperty rsin: Rsin,
         @PluginActionProperty zaaktypeUrl: URI,
     ) {
-        execution.activityInstanceId
         val documentId = UUID.fromString(execution.businessKey)
 
         val zaak = client.createZaak(
@@ -145,6 +146,41 @@ class ZakenApiPlugin(
                 zaak.zaaktype
             )
         )
+    }
+
+    @PluginAction(
+        key = "create-natuurlijk-persoon-zaak-rol",
+        title = "Create natuurlijk persoon zaakrol",
+        description = "Adds a zaakrol to the zaak in the Zaken API",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun createNatuurlijkPersoonZaakRol(
+        execution: DelegateExecution,
+        @PluginActionProperty roltypeUrl: String,
+        @PluginActionProperty rolToelichting: String,
+        @PluginActionProperty inpBsn: String?,
+        @PluginActionProperty anpIdentificatie: String?,
+        @PluginActionProperty inpA_nummer: String?
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaak(documentId)
+
+        client.createZaakRol(
+            authenticationPluginConfiguration,
+            url,
+            Rol(
+                zaak = URI(zaakUrl),
+                roltype = URI(roltypeUrl),
+                roltoelichting = rolToelichting,
+                betrokkeneType = BetrokkeneType.NATUURLIJK_PERSOON,
+                betrokkeneIdentificatie = RolNatuurlijkPersoon(
+                    inpBsn = inpBsn,
+                    anpIdentificatie = anpIdentificatie,
+                    inpA_nummer = inpA_nummer
+                )
+            )
+        )
+
     }
 
     private fun linkDocument(documentId: UUID, request: LinkDocumentRequest, documentUrl: String) {

@@ -41,7 +41,17 @@ class ObjectenApiClient(
             .toEntity(ObjectWrapper::class.java)
             .block()
 
-        return result?.body!!
+        val responseBody = result?.body!!
+
+        return if (responseBody.type.host == "host.docker.internal") {
+            responseBody.copy(
+                type = URI.create(
+                    responseBody.url.toString().replace("host.docker.internal", "localhost")
+                )
+            )
+        } else {
+            responseBody
+        }
     }
 
     fun getObjectsByObjecttypeUrl(
@@ -131,6 +141,18 @@ class ObjectenApiClient(
         objectsApiUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
+        val objectRequestCorrectedHost = if (objectRequest.type.host == "localhost") {
+            objectRequest.copy(
+                type = UriComponentsBuilder
+                    .fromUri(objectRequest.type)
+                    .host("host.docker.internal")
+                    .build()
+                    .toUri()
+            )
+        } else {
+            objectRequest
+        }
+
         val result = webclientBuilder
             .clone()
             .filter(authentication)
@@ -138,8 +160,9 @@ class ObjectenApiClient(
             .build()
             .post()
             .uri("objects")
+            .header("Accept-Crs", "EPSG:4326")
             .header("Content-Crs", "EPSG:4326")
-            .bodyValue(objectRequest)
+            .bodyValue(objectRequestCorrectedHost)
             .retrieve()
             .toEntity(ObjectWrapper::class.java)
             .block()
@@ -151,6 +174,17 @@ class ObjectenApiClient(
         objectUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
+        val objectRequestCorrectedHost = if (objectRequest.type.host == "localhost") {
+            objectRequest.copy(
+                type = UriComponentsBuilder
+                    .fromUri(objectRequest.type)
+                    .host("host.docker.internal")
+                    .build()
+                    .toUri()
+            )
+        } else {
+            objectRequest
+        }
         val result = webclientBuilder
             .clone()
             .filter(authentication)
@@ -158,7 +192,7 @@ class ObjectenApiClient(
             .patch()
             .uri(objectUrl)
             .header("Content-Crs", "EPSG:4326")
-            .bodyValue(objectRequest)
+            .bodyValue(objectRequestCorrectedHost)
             .retrieve()
             .toEntity(ObjectWrapper::class.java)
             .block()
