@@ -228,4 +228,27 @@ internal class DocumentenApiPluginTest {
         assertNull(request.vertrouwelijkheidaanduiding)
     }
 
+    @Test
+    fun `should call client to get document`() {
+        val client: DocumentenApiClient = mock()
+        val storageService: TemporaryResourceStorageService = mock()
+        val applicationEventPublisher: ApplicationEventPublisher= mock()
+        val authenticationMock = mock<DocumentenApiAuthentication>()
+
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher)
+        plugin.url = URI("http://some-url")
+        plugin.bronorganisatie = "123456789"
+        plugin.authenticationPluginConfiguration = authenticationMock
+
+        val informatieObjectUrl = URI("http://some-url/informatie-object/123")
+        plugin.getInformatieObject(informatieObjectUrl)
+
+        val informatieObjectUrlCaptor = argumentCaptor<URI>()
+        val authorizationCaptor = argumentCaptor<DocumentenApiAuthentication>()
+        verify(client).getInformatieObject(authorizationCaptor.capture(), informatieObjectUrlCaptor.capture())
+
+        assertEquals(informatieObjectUrl, informatieObjectUrlCaptor.firstValue)
+        assertEquals(authenticationMock, authorizationCaptor.firstValue)
+    }
+
 }

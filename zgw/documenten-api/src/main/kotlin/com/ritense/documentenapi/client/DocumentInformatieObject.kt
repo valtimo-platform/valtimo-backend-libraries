@@ -22,28 +22,28 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class DocumentInformatieObject (
-    val uri: URI,
-    val identificatie:String? = null,
-    val bronorganisatie:String,
+    val url: URI,
+    val identificatie: String? = null,
+    val bronorganisatie: String,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val creatiedatum:LocalDate,
-    val titel:String,
-    val vertrouwelijkheidaanduiding:ConfidentialityLevel? = null,
-    val auteur:String,
-    val status:DocumentStatusType? = null,
-    val formaat:String? = null,
-    val taal:String,
-    val versie:Int,
+    val creatiedatum: LocalDate,
+    val titel: String,
+    val vertrouwelijkheidaanduiding: ConfidentialityLevel? = null,
+    val auteur: String,
+    val status: DocumentStatusType? = null,
+    val formaat: String? = null,
+    val taal: String,
+    val versie: Int,
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    val beginRegistratie:LocalDateTime,
-    val bestandsnaam:String? = null,
-    val bestandsomvang:Long? = null,
-    val link:URI? = null,
-    val beschrijving:String? = null,
+    val beginRegistratie: LocalDateTime,
+    val bestandsnaam: String? = null,
+    val bestandsomvang: Long? = null,
+    val link: URI? = null,
+    val beschrijving: String? = null,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val ontvangstdatum:LocalDate? = null,
+    val ontvangstdatum: LocalDate? = null,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val verzenddatum:LocalDate? = null,
-    val indicatieGebruiksrecht:Boolean? = null,
-    val verschijningsvorm:String? = null,
+    val verzenddatum: LocalDate? = null,
+    val indicatieGebruiksrecht: Boolean? = null,
+    val verschijningsvorm: String? = null,
 )

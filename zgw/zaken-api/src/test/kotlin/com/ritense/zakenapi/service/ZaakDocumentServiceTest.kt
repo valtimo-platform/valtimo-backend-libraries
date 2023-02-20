@@ -22,10 +22,6 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.ZaakInformatieObject
-import java.net.URI
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -35,6 +31,10 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.net.URI
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.UUID
 
 class ZaakDocumentServiceTest {
 
@@ -78,7 +78,7 @@ class ZaakDocumentServiceTest {
 
         assertEquals(5, informatieObjecten.size)
         informatieObjecten.forEachIndexed { index, informatieObject ->
-            assertEquals(createUrl(zaakUrl,"/$index/informatieobject"), informatieObject.uri)
+            assertEquals(createUrl(zaakUrl,"/$index/informatieobject"), informatieObject.url)
         }
     }
 
@@ -101,7 +101,7 @@ class ZaakDocumentServiceTest {
     }
 
     private fun createDocumentInformatieObject(uri: URI) = DocumentInformatieObject(
-        uri = uri,
+        url = uri,
         bronorganisatie = "x",
         auteur = "y",
         beginRegistratie = LocalDateTime.now(),

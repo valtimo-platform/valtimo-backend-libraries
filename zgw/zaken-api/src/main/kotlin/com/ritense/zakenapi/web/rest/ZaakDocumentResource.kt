@@ -36,7 +36,7 @@ class ZaakDocumentResource(
     fun getFiles(@PathVariable(name = "documentId") documentId: UUID): List<RelatedFile> {
         return zaakDocumentService.getInformatieObjecten(documentId).map {
             RelatedFileDto(
-                it.uri,
+                it.url,
                 it.bestandsnaam,
                 it.bestandsomvang,
                 it.creatiedatum.atStartOfDay(),

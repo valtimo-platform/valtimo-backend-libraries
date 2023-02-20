@@ -28,7 +28,9 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import java.net.URI
 import java.time.LocalDate
+import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -112,6 +114,78 @@ internal class DocumentenApiClientTest {
 
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
         assertEquals("http://example.com", result.url)
+    }
+
+    @Test
+    fun `should send get document request and parse response`() {
+        val webclientBuilder = WebClient.builder()
+        val client = DocumentenApiClient(webclientBuilder)
+
+        val responseBody = """
+            {
+              "url": "http://example.com/informatie-object/123",
+              "identificatie": "identificatie",
+              "bronorganisatie": "bronorganisatie",
+              "creatiedatum": "2019-08-24",
+              "titel": "titel",
+              "vertrouwelijkheidaanduiding": "openbaar",
+              "auteur": "auteur",
+              "status": "in_bewerking",
+              "formaat": "formaat",
+              "taal": "nl",
+              "versie": 4,
+              "beginRegistratie": "2019-08-24T14:15:22Z",
+              "bestandsnaam": "bestandsnaam",
+              "inhoud": "http://example.com/inhoud",
+              "bestandsomvang": 123,
+              "link": "http://example.com/link",
+              "beschrijving": "beschrijving",
+              "ontvangstdatum": "2019-08-23",
+              "verzenddatum": "2019-08-22",
+              "indicatieGebruiksrecht": true,
+              "ondertekening": {
+                "soort": "analoog",
+                "datum": "2019-08-21"
+              },
+              "integriteit": {
+                "algoritme": "crc_16",
+                "waarde": "waarde",
+                "datum": "2019-08-20"
+              },
+              "informatieobjecttype": "http://example.com",
+              "locked": true
+            }
+        """.trimIndent()
+
+        mockDocumentenApi.enqueue(mockResponse(responseBody))
+
+        val result = client.getInformatieObject(
+            TestAuthentication(),
+            mockDocumentenApi.url("/zaakobjects").toUri(),
+        )
+
+        val recordedRequest = mockDocumentenApi.takeRequest()
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+        assertEquals(URI("http://example.com/informatie-object/123"), result.url)
+        assertEquals("identificatie", result.identificatie)
+        assertEquals("bronorganisatie", result.bronorganisatie)
+        assertEquals(LocalDate.of(2019, 8, 24), result.creatiedatum)
+        assertEquals("titel", result.titel)
+        assertEquals(ConfidentialityLevel.OPENBAAR, result.vertrouwelijkheidaanduiding)
+        assertEquals("auteur", result.auteur)
+        assertEquals(DocumentStatusType.IN_BEWERKING, result.status)
+        assertEquals("formaat", result.formaat)
+        assertEquals("nl", result.taal)
+        assertEquals(4, result.versie)
+        assertEquals(LocalDateTime.of(2019, 8, 24, 14, 15, 22), result.beginRegistratie)
+        assertEquals("bestandsnaam", result.bestandsnaam)
+        assertEquals(123, result.bestandsomvang)
+        assertEquals(URI("http://example.com/link"), result.link)
+        assertEquals("beschrijving", result.beschrijving)
+        assertEquals(LocalDate.of(2019, 8, 23), result.ontvangstdatum)
+        assertEquals(LocalDate.of(2019, 8, 22), result.verzenddatum)
+        assertEquals(true, result.indicatieGebruiksrecht)
     }
 
     private fun mockResponse(body: String): MockResponse {
