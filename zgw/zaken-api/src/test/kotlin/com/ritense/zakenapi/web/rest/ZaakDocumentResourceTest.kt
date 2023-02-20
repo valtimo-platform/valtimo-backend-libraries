@@ -75,7 +75,7 @@ class ZaakDocumentResourceTest: BaseIntegrationTest() {
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$.*", hasSize<Int>(1)))
-            .andExpect(jsonPath("$.[0].fileUrl").value(informatieObject.uri.toString()))
+            .andExpect(jsonPath("$.[0].fileUrl").value(informatieObject.url.toString()))
             .andExpect(jsonPath("$.[0].fileName").value(Matchers.nullValue()))
             .andExpect(jsonPath("$.[0].sizeInBytes").value(informatieObject.bestandsomvang))
             .andExpect(jsonPath("$.[0].createdOn").value(startsWith(informatieObject.creatiedatum.atStartOfDay().toString())))
@@ -84,7 +84,7 @@ class ZaakDocumentResourceTest: BaseIntegrationTest() {
     }
 
     private fun createDocumentInformatieObject(uri: URI) = DocumentInformatieObject(
-        uri = uri,
+        url = uri,
         bronorganisatie = "x",
         auteur = "y",
         beginRegistratie = LocalDateTime.now(),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -276,7 +276,6 @@ internal class ZaakObjectServiceTest {
     fun `should throw exception when getting object by type and there are no objects`() {
         val documentId = UUID.randomUUID()
         val objecttypeName = "test"
-        val objecttypeUrl = URI("http://example.com/objecttype")
 
         val zaakInstanceUrl = setupZaakInstanceLink(documentId)
         setupPlugins(zaakInstanceUrl)
