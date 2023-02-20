@@ -235,7 +235,7 @@ internal class ObjectenApiClientTest {
         mockApi.enqueue(mockResponse(responseBody))
 
         val objectUrl = mockApi.url("/some-object").toString()
-        val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString()
+        val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString().replace("localhost","host")
 
         val result = client.objectPatch(
             TestAuthentication(),
