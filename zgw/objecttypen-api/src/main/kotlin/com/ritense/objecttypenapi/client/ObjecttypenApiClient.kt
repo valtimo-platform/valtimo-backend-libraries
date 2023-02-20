@@ -29,12 +29,17 @@ class ObjecttypenApiClient(
         authentication: ObjecttypenApiAuthentication,
         objecttypeUrl: URI
     ): Objecttype {
+        val url = if (objecttypeUrl.host == "host.docker.internal") {
+            URI.create(objecttypeUrl.toString().replace("host.docker.internal", "localhost"))
+        } else {
+            objecttypeUrl
+        }
         val result = webclientBuilder
             .clone()
             .filter(authentication)
             .build()
             .get()
-            .uri(objecttypeUrl)
+            .uri(url)
             .retrieve()
             .toEntity(Objecttype::class.java)
             .block()
