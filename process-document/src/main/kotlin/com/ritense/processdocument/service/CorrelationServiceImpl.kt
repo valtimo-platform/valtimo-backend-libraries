@@ -20,20 +20,21 @@ class CorrelationServiceImpl(
     val associationService: ProcessDocumentAssociationService
 ) : CorrelationService{
 
-    override fun sendStartMessage(message: String) {
+    override fun sendStartMessage(message: String): MessageCorrelationResult {
         return sendStartMessage(message,null,null)
     }
 
-    override fun sendStartMessage(message: String,businessKey: String?) {
+    override fun sendStartMessage(message: String,businessKey: String?): MessageCorrelationResult {
         return sendStartMessage(message,businessKey,null)
     }
 
-    override fun sendStartMessage(message: String, businessKey: String?, variables: Map<String, Any>?){
+    override fun sendStartMessage(message: String, businessKey: String?, variables: Map<String, Any>?): MessageCorrelationResult {
         val result = correlate(message, businessKey,variables)
-        val correlationResultProcess = result.processInstance
+        val correlationResultProcessInstance = result.processInstance
         val processName =
-            camundaProcessService.findProcessDefinitionById(correlationResultProcess.processDefinitionId).name
-        associateDocumentToProcess(correlationResultProcess.id, processName, businessKey)
+            camundaProcessService.findProcessDefinitionById(correlationResultProcessInstance.processDefinitionId).name
+        associateDocumentToProcess(correlationResultProcessInstance.id, processName, businessKey)
+        return result
     }
 
     override fun sendStartMessage(

@@ -17,13 +17,14 @@
       <bpmn:outgoing>Flow_0tdgxe1</bpmn:outgoing>
       <bpmn:outgoing>Flow_09ag5pd</bpmn:outgoing>
       <bpmn:outgoing>Flow_04q08ak</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0zsmg0l</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_0v7tm6z" sourceRef="StartEvent_1" targetRef="Gateway_1xw5kxz" />
     <bpmn:sequenceFlow id="Flow_0tdgxe1" sourceRef="Gateway_1xw5kxz" targetRef="Event_1pza1q9">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "start-event-test"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_09ag5pd" sourceRef="Gateway_1xw5kxz" targetRef="Event_1eogthm">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "intermediate-catch-event-test"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "intermediate-catch-event-test-with-no-business-key"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:intermediateThrowEvent id="Event_1eogthm">
       <bpmn:incoming>Flow_09ag5pd</bpmn:incoming>
@@ -42,12 +43,22 @@
       <bpmn:incoming>Flow_06sure7</bpmn:incoming>
       <bpmn:incoming>Flow_0hh3aco</bpmn:incoming>
       <bpmn:incoming>Flow_1120gfp</bpmn:incoming>
+      <bpmn:incoming>Flow_1tso983</bpmn:incoming>
       <bpmn:outgoing>Flow_1pd2la6</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_06sure7" sourceRef="Event_1pza1q9" targetRef="Gateway_0l777sa" />
     <bpmn:sequenceFlow id="Flow_0hh3aco" sourceRef="Event_1eogthm" targetRef="Gateway_0l777sa" />
     <bpmn:sequenceFlow id="Flow_1120gfp" sourceRef="Event_14n21hy" targetRef="Gateway_0l777sa" />
     <bpmn:sequenceFlow id="Flow_1pd2la6" sourceRef="Gateway_0l777sa" targetRef="Event_1nbl6u9" />
+    <bpmn:sequenceFlow id="Flow_0zsmg0l" sourceRef="Gateway_1xw5kxz" targetRef="Event_18mjng7">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "intermediate-catch-event-test-with-business-key"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:intermediateThrowEvent id="Event_18mjng7">
+      <bpmn:incoming>Flow_0zsmg0l</bpmn:incoming>
+      <bpmn:outgoing>Flow_1tso983</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1tib12v" camunda:expression="${correlationService.sendMessageToAll(&#34;intermediate-catch-event-ref&#34;,businessKey)}" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_1tso983" sourceRef="Event_18mjng7" targetRef="Gateway_0l777sa" />
   </bpmn:process>
   <bpmn:message id="Message_2j1vsbp" name="Message_2j1vsbp" />
   <bpmn:message id="Message_0ifogp4" name="message-start-event" />
@@ -89,6 +100,16 @@
         <di:waypoint x="188" y="210" />
         <di:waypoint x="255" y="210" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zsmg0l_di" bpmnElement="Flow_0zsmg0l">
+        <di:waypoint x="280" y="235" />
+        <di:waypoint x="280" y="430" />
+        <di:waypoint x="392" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tso983_di" bpmnElement="Flow_1tso983">
+        <di:waypoint x="428" y="430" />
+        <di:waypoint x="540" y="430" />
+        <di:waypoint x="540" y="235" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="152" y="192" width="36" height="36" />
       </bpmndi:BPMNShape>
@@ -109,6 +130,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0l777sa_di" bpmnElement="Gateway_0l777sa" isMarkerVisible="true">
         <dc:Bounds x="515" y="185" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ewcsue_di" bpmnElement="Event_18mjng7">
+        <dc:Bounds x="392" y="412" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

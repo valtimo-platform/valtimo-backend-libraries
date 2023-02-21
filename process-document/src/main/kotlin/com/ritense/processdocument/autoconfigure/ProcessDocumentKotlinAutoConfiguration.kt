@@ -22,6 +22,7 @@ import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.CorrelationServiceImpl
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.RepositoryService
@@ -47,6 +48,7 @@ class ProcessDocumentKotlinAutoConfiguration {
         )
     }
 
+    @ProcessBean
     @Bean
     @ConditionalOnMissingBean(CorrelationService::class)
     fun correlationService(
