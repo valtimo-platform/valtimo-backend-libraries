@@ -10,3 +10,18 @@ repositories {
     mavenCentral()
     mavenLocal()
 }
+
+subprojects { subproject ->
+
+    tasks.register("bootRunMysql") {
+        group = "application"
+        description = "Runs the Spring Boot application on a mysql database"
+        doFirst {
+            tasks.bootRun.configure {
+                systemProperty("spring.profiles.active", "mysql")
+            }
+        }
+        finalizedBy("bootRun")
+    }
+
+}
