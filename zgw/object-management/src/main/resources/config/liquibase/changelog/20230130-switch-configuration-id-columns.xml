@@ -19,19 +19,25 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
     <changeSet id="1" author="Ritense">
+        <validCheckSum>8:006ad988501bf41c07a7d1c03de998b3</validCheckSum>
         <renameColumn tableName="object_management_configuration"
                       oldColumnName="objecttypen_api_plugin_configuration_id"
-                      newColumnName="objecten_api_plugin_configuration_id_tmp" />
+                      newColumnName="objecten_api_plugin_configuration_id_tmp"
+                      columnDataType="${uuidType}"/>
     </changeSet>
 
     <changeSet id="2" author="Ritense">
+        <validCheckSum>8:db144fdd7bb4264c32f7866306ad295b</validCheckSum>
         <renameColumn tableName="object_management_configuration"
                       oldColumnName="objecten_api_plugin_configuration_id"
-                      newColumnName="objecttypen_api_plugin_configuration_id" />
+                      newColumnName="objecttypen_api_plugin_configuration_id"
+                      columnDataType="${uuidType}"/>
     </changeSet>
     <changeSet id="3" author="Ritense">
+        <validCheckSum>8:b16baf1cf517c3cc5b096cd2457617fc</validCheckSum>
         <renameColumn tableName="object_management_configuration"
                       oldColumnName="objecten_api_plugin_configuration_id_tmp"
-                      newColumnName="objecten_api_plugin_configuration_id" />
+                      newColumnName="objecten_api_plugin_configuration_id"
+                      columnDataType="${uuidType}"/>
     </changeSet>
 </databaseChangeLog>
