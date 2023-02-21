@@ -69,7 +69,7 @@ class JdbcProcessFormAssociationRepository(
         val result = namedParameterJdbcTemplate.update(
             sql,
             mapOf(
-                ID_COLUMN to SqlParameterValue(Types.BINARY, UUID.nameUUIDFromBytes(processDefinitionKey.toByteArray()).asBytes()),
+                ID_COLUMN to toUuidParameterValue(UUID.randomUUID()),
                 PROCESS_DEFINITION_KEY_COLUMN to SqlParameterValue(Types.VARCHAR, processDefinitionKey),
                 FORM_ASSOCIATION_ID to SqlParameterValue(Types.BINARY, camundaFormAssociation.id.asBytes()),
                 FORM_ASSOCIATION_TYPE to SqlParameterValue(Types.VARCHAR, camundaFormAssociation.asType()),
@@ -231,6 +231,18 @@ class JdbcProcessFormAssociationRepository(
             is StartEventFormAssociation -> FormAssociationType.START_EVENT.toString()
             else -> FormAssociationType.USER_TASK.toString()
         }
+    }
+
+    private fun toUuidParameterValue(uuid: UUID): SqlParameterValue {
+        return if (isMySQL()) {
+            SqlParameterValue(Types.BINARY, uuid.asBytes())
+        } else {
+            SqlParameterValue(Types.OTHER, uuid)
+        }
+    }
+
+    private fun isMySQL() : Boolean {
+        return namedParameterJdbcTemplate.jdbcTemplate.dataSource.connection.metaData.databaseProductName == "MySQL"
     }
 
 }
