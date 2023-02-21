@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <!--
-  ~ Copyright 2015-2022 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -30,5 +30,14 @@
             <column name="activity_type" value="bpmn:ServiceTask:start"/>
         </update>
     </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <sql>
+            UPDATE plugin_process_link
+            SET activity_type = 'SERVICE_TASK_START'
+            WHERE activity_type = 'bpmn:ServiceTask:start'
+        </sql>
+    </changeSet>
+
 
 </databaseChangeLog>

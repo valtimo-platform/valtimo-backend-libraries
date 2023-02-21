@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.objectenapi.listener.ZaakObjectListener
+import com.ritense.objectenapi.management.ErrorObjectManagementInfoProvider
 import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
 import com.ritense.objectenapi.service.ZaakObjectDataResolver
 import com.ritense.objectenapi.service.ZaakObjectService
@@ -30,6 +31,7 @@ import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.web.reactive.function.client.WebClient
 
@@ -94,5 +96,12 @@ class ObjectenApiAutoConfiguration {
     @ConditionalOnMissingBean(ObjectResource::class)
     fun objectResource(zaakObjectService: ZaakObjectService): ObjectResource {
         return ObjectResource(zaakObjectService)
+    }
+
+    @Order(Ordered.LOWEST_PRECEDENCE)
+    @Bean
+    @ConditionalOnMissingBean(ObjectManagementInfoProvider::class)
+    fun errorObjectManagementInfoProvider(): ObjectManagementInfoProvider {
+        return ErrorObjectManagementInfoProvider()
     }
 }
