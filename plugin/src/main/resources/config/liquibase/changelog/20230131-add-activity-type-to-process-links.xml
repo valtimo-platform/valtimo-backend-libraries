@@ -31,4 +31,13 @@
         </update>
     </changeSet>
 
+    <changeSet id="3" author="Ritense">
+        <sql>
+            UPDATE plugin_process_link
+            SET activity_type = 'SERVICE_TASK_START'
+            WHERE activity_type = 'bpmn:ServiceTask:start'
+        </sql>
+    </changeSet>
+
+
 </databaseChangeLog>
