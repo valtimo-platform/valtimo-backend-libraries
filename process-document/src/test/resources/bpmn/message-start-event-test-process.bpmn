@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_05y5rt6" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="message-start-event" name="message-start-event-name" isExecutable="true">
+    <bpmn:startEvent id="message-start-event-ref-id" name="message-start-event-ref">
+      <bpmn:outgoing>Flow_1wcr4hc</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0t2l33x" messageRef="Message_1jd1s4q" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1wcr4hc" sourceRef="message-start-event-ref-id" targetRef="message-start-event-user-task-id" />
+    <bpmn:userTask id="message-start-event-user-task-id" name="message-start-event-user-task">
+      <bpmn:incoming>Flow_1wcr4hc</bpmn:incoming>
+      <bpmn:outgoing>Flow_1l7hgb2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_0mb32an">
+      <bpmn:incoming>Flow_1l7hgb2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1l7hgb2" sourceRef="message-start-event-user-task-id" targetRef="Event_0mb32an" />
+  </bpmn:process>
+  <bpmn:message id="Message_1jd1s4q" name="message-start-event" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="message-start-event">
+      <bpmndi:BPMNEdge id="Flow_1l7hgb2_di" bpmnElement="Flow_1l7hgb2">
+        <di:waypoint x="370" y="117" />
+        <di:waypoint x="432" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1wcr4hc_di" bpmnElement="Flow_1wcr4hc">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="270" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0fmvybv_di" bpmnElement="message-start-event-ref-id">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="162" y="142" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1co542w_di" bpmnElement="message-start-event-user-task-id">
+        <dc:Bounds x="270" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0mb32an_di" bpmnElement="Event_0mb32an">
+        <dc:Bounds x="432" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
