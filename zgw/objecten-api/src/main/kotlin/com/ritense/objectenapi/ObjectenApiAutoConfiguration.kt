@@ -21,7 +21,7 @@ import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.objectenapi.listener.ZaakObjectListener
 import com.ritense.objectenapi.management.ErrorObjectManagementInfoProvider
-import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
+import com.ritense.zakenapi.security.ZakenApiHttpSecurityConfigurer
 import com.ritense.objectenapi.service.ZaakObjectDataResolver
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.web.rest.ObjectResource
@@ -80,8 +80,8 @@ class ObjectenApiAutoConfiguration {
 
     @Order(400)
     @Bean
-    fun objectenApiHttpSecurityConfigurer(): ObjectenApiHttpSecurityConfigurer {
-        return ObjectenApiHttpSecurityConfigurer()
+    fun objectenApiHttpSecurityConfigurer(): ZakenApiHttpSecurityConfigurer {
+        return ZakenApiHttpSecurityConfigurer()
     }
 
     @Bean
