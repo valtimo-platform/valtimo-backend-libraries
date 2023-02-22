@@ -28,6 +28,7 @@ import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlL
 import com.ritense.formlink.repository.ProcessFormAssociationRepository
 import mu.KotlinLogging
 import org.hibernate.type.descriptor.java.UUIDTypeDescriptor
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.SqlParameterValue
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
@@ -38,10 +39,16 @@ import java.util.UUID
 
 @Transactional
 class JdbcProcessFormAssociationRepository(
-    private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
+    private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate,
+    private val valtimoDatabase: String,
 ) : ProcessFormAssociationRepository {
 
     override fun add(processDefinitionKey: String, camundaFormAssociation: CamundaFormAssociation) {
+
+        if (findByCamundaFormAssociationId(camundaFormAssociation.id) != null) {
+            throw DuplicateKeyException("Form process_form_association with form_association_id '${camundaFormAssociation.id}' already exists.")
+        }
+
         val sql = """
             INSERT  INTO $TABLE_NAME (
                 $ID_COLUMN,
@@ -234,15 +241,11 @@ class JdbcProcessFormAssociationRepository(
     }
 
     private fun toUuidParameterValue(uuid: UUID): SqlParameterValue {
-        return if (isMySQL()) {
+        return if (valtimoDatabase == "mysql") {
             SqlParameterValue(Types.BINARY, uuid.asBytes())
         } else {
             SqlParameterValue(Types.OTHER, uuid)
         }
-    }
-
-    private fun isMySQL() : Boolean {
-        return namedParameterJdbcTemplate.jdbcTemplate.dataSource.connection.metaData.databaseProductName == "MySQL"
     }
 
 }
