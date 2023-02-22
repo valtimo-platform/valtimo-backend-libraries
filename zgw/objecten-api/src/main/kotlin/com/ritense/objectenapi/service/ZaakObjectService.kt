@@ -59,7 +59,7 @@ class ZaakObjectService(
             }
     }
 
-    private fun getObjectByObjectUrl(objectUrl: URI): ObjectWrapper? {
+    fun getObjectByObjectUrl(objectUrl: URI): ObjectWrapper? {
         val objectenApiPlugin = pluginService
             .createInstance(ObjectenApiPlugin::class.java) { properties: JsonNode ->
                 objectUrl.toString().startsWith(properties.get("url").textValue())

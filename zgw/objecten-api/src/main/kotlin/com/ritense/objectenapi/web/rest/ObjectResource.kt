@@ -18,6 +18,7 @@ package com.ritense.objectenapi.web.rest
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.form.domain.FormDefinition
+import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.web.rest.result.FormType
 import java.net.URI
@@ -53,4 +54,10 @@ class ObjectResource(
     ): ResponseEntity<URI> {
         return ResponseEntity.ok(zaakObjectService.patchObjectFromManagementId(objectManagementId, objectId, jsonNode))
     }
+
+    @GetMapping
+    fun getObjectByUrl(
+        @RequestParam(name = "objectUrl") objectUrl: URI): ResponseEntity<ObjectWrapper?> =
+         ResponseEntity.ok(zaakObjectService.getObjectByObjectUrl(objectUrl))
+
 }
