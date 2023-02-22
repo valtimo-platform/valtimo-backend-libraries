@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+
 package com.ritense.processdocument.autoconfigure
 
 import com.ritense.document.service.DocumentService
