@@ -25,10 +25,13 @@ import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
+import com.ritense.zakenapi.security.ZakenApiHttpSecurityConfigurer
 import com.ritense.zakenapi.service.ZaakDocumentService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.web.reactive.function.client.WebClient
 
@@ -71,5 +74,12 @@ class ZakenApiAutoConfiguration {
     @Bean
     fun zaakDocumentService(zaakUrlProvider: ZaakUrlProvider, pluginService: PluginService): ZaakDocumentService {
         return ZaakDocumentService(zaakUrlProvider, pluginService)
+    }
+
+    @Order(300)
+    @Bean
+    @ConditionalOnMissingBean(ZakenApiHttpSecurityConfigurer::class)
+    fun zakenApiHttpSecurityConfigurer(): ZakenApiHttpSecurityConfigurer {
+        return ZakenApiHttpSecurityConfigurer()
     }
 }
