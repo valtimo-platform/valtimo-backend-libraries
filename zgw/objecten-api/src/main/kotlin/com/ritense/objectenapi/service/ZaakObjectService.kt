@@ -172,7 +172,7 @@ class ZaakObjectService(
             pluginService.createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
         val objectUrl = "${objectsApiPlugin.url}objects/$objectId"
         logger.debug { "Getting object for url $objectUrl" }
-        return getObjectByObjectUrl(URI.create(objectUrl))
+        return objectsApiPlugin.getObject(URI.create(objectUrl))
     }
 
     private fun findZakenApiPlugin(zaakUrl: URI): ZakenApiPlugin {
