@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -25,6 +26,7 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.domain.ZaakObject
@@ -51,7 +53,7 @@ class ZakenApiPlugin(
     private val storageService: TemporaryResourceStorageService,
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
 ) {
-    @PluginProperty(key = "url", secret = false)
+    @PluginProperty(key = URL_PROPERTY, secret = false)
     lateinit var url: URI
 
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
@@ -70,11 +72,11 @@ class ZakenApiPlugin(
         @PluginActionProperty beschrijving: String?
     ) {
         val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaak(documentId)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
         val request = LinkDocumentRequest(
             documentUrl,
-            zaakUrl,
+            zaakUrl.toString(),
             titel,
             beschrijving
         )
@@ -96,11 +98,11 @@ class ZakenApiPlugin(
         val metadata = storageService.getResourceMetadata(resourceId)
 
         val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaak(documentId)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
         val request = LinkDocumentRequest(
             documentUrl,
-            zaakUrl,
+            zaakUrl.toString(),
             metadata["title"] as String?,
             metadata["description"] as String?,
         )
@@ -177,6 +179,10 @@ class ZakenApiPlugin(
 
     }
 
+    fun getZaakInformatieObjecten(zaakUrl: URI): List<ZaakInformatieObject> {
+        return client.getZaakInformatieObjecten(authenticationPluginConfiguration, url, zaakUrl)
+    }
+
     fun getZaakObjecten(zaakUrl: URI): List<ZaakObject> {
         var currentPage = 1
         var currentResults: Page<ZaakObject>?
@@ -216,7 +222,9 @@ class ZakenApiPlugin(
 
     companion object {
         const val PLUGIN_KEY = "zakenapi"
+        const val URL_PROPERTY = "url"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
+        fun findConfigurationByUrl(url:URI) = { properties:JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
     }
 }

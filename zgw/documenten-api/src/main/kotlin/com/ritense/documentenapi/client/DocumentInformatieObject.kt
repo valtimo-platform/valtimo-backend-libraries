@@ -17,11 +17,13 @@
 package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import java.io.InputStream
+import java.net.URI
 import java.time.LocalDate
+import java.time.LocalDateTime
 
-class CreateDocumentRequest(
+class DocumentInformatieObject (
+    val url: URI,
+    val identificatie: String? = null,
     val bronorganisatie: String,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val creatiedatum: LocalDate,
@@ -29,15 +31,19 @@ class CreateDocumentRequest(
     val vertrouwelijkheidaanduiding: ConfidentialityLevel? = null,
     val auteur: String,
     val status: DocumentStatusType? = null,
+    val formaat: String? = null,
     val taal: String,
+    val versie: Int,
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    val beginRegistratie: LocalDateTime,
     val bestandsnaam: String? = null,
-    @JsonSerialize(using = Base64StreamSerializer::class)
-    val inhoud: InputStream,
+    val bestandsomvang: Long? = null,
+    val link: URI? = null,
     val beschrijving: String? = null,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val ontvangstdatum: LocalDate? = null,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val verzenddatum: LocalDate? = null,
-    val indicatieGebruiksrecht: Boolean? = false,
-    val informatieobjecttype: String,
+    val indicatieGebruiksrecht: Boolean? = null,
+    val verschijningsvorm: String? = null,
 )
