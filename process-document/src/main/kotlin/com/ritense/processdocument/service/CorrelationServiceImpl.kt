@@ -87,11 +87,12 @@ class CorrelationServiceImpl(
         return correlationResultProcessList
     }
 
-    internal fun getLatestProcessDefinitionIdByKey(processDefinitionKey: String): ProcessDefinition {
-        return camundaProcessService.getProcessDefinition(processDefinitionKey)?: throw RuntimeException()
+    private fun getLatestProcessDefinitionIdByKey(processDefinitionKey: String): ProcessDefinition {
+        return camundaProcessService.getProcessDefinition(processDefinitionKey)
+            ?: throw RuntimeException("Failed to get process definition with key $processDefinitionKey")
     }
 
-    internal fun associateDocumentToProcess(
+    private fun associateDocumentToProcess(
         processInstanceId: String?,
         processName: String?,
         businessKey: String?
@@ -103,10 +104,10 @@ class CorrelationServiceImpl(
                     UUID.fromString(document.id().toString()),
                     processName
                 )
-            }) { throw DocumentNotFoundException("Document not found!") }
+            }) { throw DocumentNotFoundException("No Document found with id $businessKey") }
     }
 
-    internal fun correlate(
+    private fun correlate(
         message: String,businessKey: String?,variables: Map<String, Any>?):MessageCorrelationResult{
         val builder = runtimeService.createMessageCorrelation(message)
         businessKey?.run {
@@ -118,7 +119,7 @@ class CorrelationServiceImpl(
         return builder.correlateWithResult()
 
     }
-    internal fun correlateWithProcessDefinitionId(
+    private fun correlateWithProcessDefinitionId(
         message: String,
         businessKey: String,
         processDefinitionId: String,
@@ -132,7 +133,7 @@ class CorrelationServiceImpl(
             .correlateStartMessage()
     }
 
-    internal fun correlateAll(message: String, businessKey: String?, variables: Map<String, Any>?): List<MessageCorrelationResult> {
+    private fun correlateAll(message: String, businessKey: String?, variables: Map<String, Any>?): List<MessageCorrelationResult> {
         val builder = runtimeService.createMessageCorrelation(message)
         businessKey?.run {
             builder.processInstanceBusinessKey(businessKey)
