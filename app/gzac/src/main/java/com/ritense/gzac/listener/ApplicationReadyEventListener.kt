@@ -104,6 +104,7 @@ class ApplicationReadyEventListener(
             val zakenApiAuthenticationPluginId = createZakenApiAuthenticationPlugin()
             val zakenApiPluginId = createZakenApiPlugin(zakenApiAuthenticationPluginId)
             createCatalogiApiPlugin(zakenApiAuthenticationPluginId)
+            createDocumentenApiPlugin(zakenApiAuthenticationPluginId)
             val notificatiesApiAuthenticationPluginId = createNotificatiesApiAuthenticationPlugin()
             val notificatiesApiPluginId = createNotificatiesApiPlugin(notificatiesApiAuthenticationPluginId)
             val objectenApiAuthenticationPluginId = createObjectenApiAuthenticationPlugin()
@@ -118,6 +119,7 @@ class ApplicationReadyEventListener(
             val protaalTaakPluginId = createPortaalTaakPlugin(notificatiesApiPluginId, taakConfigurationId)
             createPortaalTaakLink(protaalTaakPluginId)
             completePortaalTaakLink(protaalTaakPluginId)
+            portalTaskLinkDocumentToZaak(zakenApiPluginId)
             createZaakdossierCreateZaak(zakenApiPluginId)
             createZaakdossierCreateZaakRol(zakenApiPluginId)
         } catch (ex: Exception) {
@@ -184,6 +186,34 @@ class ApplicationReadyEventListener(
                     pluginConfigurationId = protaalTaakPluginId,
                     pluginActionDefinitionKey = "complete-portaaltaak",
                     actionProperties = jacksonObjectMapper().createObjectNode(),
+                )
+            )
+        }
+    }
+
+    private fun portalTaskLinkDocumentToZaak(zakenApiPluginId: UUID) {
+        val processDefinitionId = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("link-document-to-zaak")
+            .latestVersion()
+            .singleResult()
+            .id
+        if (pluginService.getProcessLinks(processDefinitionId, "link-document-to-zaak-task").isEmpty()) {
+            pluginService.createProcessLink(
+                PluginProcessLinkCreateDto(
+                    processDefinitionId = processDefinitionId,
+                    activityId = "link-document-to-zaak-task",
+                    activityType = "bpmn:ServiceTask:start",
+                    pluginConfigurationId = zakenApiPluginId,
+                    pluginActionDefinitionKey = "link-document-to-zaak",
+                    actionProperties = jacksonObjectMapper().readValue(
+                        """
+                        {
+                            "documentUrl": "pv:documentUrl",
+                            "titel": "Portal document",
+                            "beschrijving": "This document was uploaded in the portal"
+                        }
+                        """.trimIndent()
+                    )
                 )
             )
         }
@@ -660,6 +690,33 @@ class ApplicationReadyEventListener(
                     """
                     {
                         "url": "http://localhost:8001/catalogi/api/v1/",
+                        "authenticationPluginConfiguration": "$authenticationPluginConfigurationId"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
+    private fun createDocumentenApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        logger.debug { "Creating Documenten API plugin" }
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = "Documenten API",
+                pluginDefinitionKey = "documentenapi",
+            )
+        )
+        return if (existing.isEmpty()) {
+            pluginService.createPluginConfiguration(
+                title = "Documenten API",
+                pluginDefinitionKey = "documentenapi",
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "url": "http://localhost:8001/documenten/api/v1/",
+                        "bronorganisatie": "051845623",
                         "authenticationPluginConfiguration": "$authenticationPluginConfigurationId"
                     }
                     """

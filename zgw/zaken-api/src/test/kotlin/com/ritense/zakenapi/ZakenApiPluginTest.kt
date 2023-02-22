@@ -16,10 +16,7 @@
 
 package com.ritense.zakenapi
 
-import com.ritense.document.domain.impl.JsonSchemaDocumentId
-import com.ritense.document.service.DocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.valtimo.contract.resource.Resource
 import com.ritense.zakenapi.ZakenApiPlugin.Companion.DOCUMENT_URL_PROCESS_VAR
 import com.ritense.zakenapi.ZakenApiPlugin.Companion.RESOURCE_ID_PROCESS_VAR
 import com.ritense.zakenapi.client.LinkDocumentRequest
@@ -53,8 +50,6 @@ internal class ZakenApiPluginTest {
     fun `should link document to zaak`() {
         val zakenApiClient: ZakenApiClient = mock()
         val zaakUrlProvider: ZaakUrlProvider = mock()
-        val resourceProvider: ResourceProvider = mock()
-        val documentService: DocumentService = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
         val executionMock = mock<DelegateExecution>()
@@ -63,16 +58,10 @@ internal class ZakenApiPluginTest {
         val documentId = UUID.randomUUID()
         whenever(executionMock.businessKey).thenReturn(documentId.toString())
         whenever(zaakUrlProvider.getZaakUrl(any())).thenReturn(URI("https://zaak.url"))
-        val mockResoure = mock<Resource>()
-        whenever(resourceProvider.getResource(any())).thenReturn(mockResoure)
-        val resourceId = UUID.randomUUID()
-        whenever(mockResoure.id()).thenReturn(resourceId)
 
         val plugin = ZakenApiPlugin(
             zakenApiClient,
             zaakUrlProvider,
-            resourceProvider,
-            documentService,
             storageService,
             zaakInstanceLinkRepository
         )
@@ -83,11 +72,6 @@ internal class ZakenApiPluginTest {
 
         val captor = argumentCaptor<LinkDocumentRequest>()
         verify(zakenApiClient).linkDocument(any(), any(), captor.capture())
-        verify(documentService).assignResource(
-            JsonSchemaDocumentId.existingId(documentId),
-            resourceId,
-            mapOf("createInformatieObject" to false)
-        )
 
         val request = captor.firstValue
         assertEquals("https://document.url", request.informatieobject)
@@ -100,8 +84,6 @@ internal class ZakenApiPluginTest {
     fun `should link uploaded document to zaak`() {
         val zakenApiClient: ZakenApiClient = mock()
         val zaakUrlProvider: ZaakUrlProvider = mock()
-        val resourceProvider: ResourceProvider = mock()
-        val documentService: DocumentService = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
         val executionMock = mock<DelegateExecution>()
@@ -118,16 +100,10 @@ internal class ZakenApiPluginTest {
                 "description" to "beschrijving",
             )
         )
-        val mockResoure = mock<Resource>()
-        whenever(resourceProvider.getResource(any())).thenReturn(mockResoure)
-        val resourceId = UUID.randomUUID()
-        whenever(mockResoure.id()).thenReturn(resourceId)
 
         val plugin = ZakenApiPlugin(
             zakenApiClient,
             zaakUrlProvider,
-            resourceProvider,
-            documentService,
             storageService,
             zaakInstanceLinkRepository
         )
@@ -138,11 +114,6 @@ internal class ZakenApiPluginTest {
 
         val captor = argumentCaptor<LinkDocumentRequest>()
         verify(zakenApiClient).linkDocument(any(), any(), captor.capture())
-        verify(documentService).assignResource(
-            JsonSchemaDocumentId.existingId(documentId),
-            resourceId,
-            mapOf("createInformatieObject" to false)
-        )
 
         val request = captor.firstValue
         assertEquals("https://document.url", request.informatieobject)
@@ -155,8 +126,6 @@ internal class ZakenApiPluginTest {
     fun `should return list of zaakobjecten`() {
         val zakenApiClient: ZakenApiClient = mock()
         val zaakUrlProvider: ZaakUrlProvider = mock()
-        val resourceProvider: ResourceProvider = mock()
-        val documentService: DocumentService = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
         val authenticationMock = mock<ZakenApiAuthentication>()
@@ -183,8 +152,6 @@ internal class ZakenApiPluginTest {
         val plugin = ZakenApiPlugin(
             zakenApiClient,
             zaakUrlProvider,
-            resourceProvider,
-            documentService,
             storageService,
             zaakInstanceLinkRepository
         )
@@ -201,8 +168,6 @@ internal class ZakenApiPluginTest {
     fun `should return full list of zaakobjecten when multiple pages are found`() {
         val zakenApiClient: ZakenApiClient = mock()
         val zaakUrlProvider: ZaakUrlProvider = mock()
-        val resourceProvider: ResourceProvider = mock()
-        val documentService: DocumentService = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
         val authenticationMock = mock<ZakenApiAuthentication>()
@@ -245,8 +210,6 @@ internal class ZakenApiPluginTest {
         val plugin = ZakenApiPlugin(
             zakenApiClient,
             zaakUrlProvider,
-            resourceProvider,
-            documentService,
             storageService,
             zaakInstanceLinkRepository
         )
@@ -264,8 +227,6 @@ internal class ZakenApiPluginTest {
     fun `should return full list of zaakrollen when multiple pages are found`() {
         val zakenApiClient: ZakenApiClient = mock()
         val zaakUrlProvider: ZaakUrlProvider = mock()
-        val resourceProvider: ResourceProvider = mock()
-        val documentService: DocumentService = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
         val authenticationMock = mock<ZakenApiAuthentication>()
@@ -308,8 +269,6 @@ internal class ZakenApiPluginTest {
         val plugin = ZakenApiPlugin(
             zakenApiClient,
             zaakUrlProvider,
-            resourceProvider,
-            documentService,
             storageService,
             zaakInstanceLinkRepository
         )
@@ -327,8 +286,6 @@ internal class ZakenApiPluginTest {
     fun `should create zaakrol`() {
         val zakenApiClient: ZakenApiClient = mock()
         val zaakUrlProvider: ZaakUrlProvider = mock()
-        val resourceProvider: ResourceProvider = mock()
-        val documentService: DocumentService = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
         val authenticationMock = mock<ZakenApiAuthentication>()
@@ -341,8 +298,6 @@ internal class ZakenApiPluginTest {
         val plugin = ZakenApiPlugin(
             zakenApiClient,
             zaakUrlProvider,
-            resourceProvider,
-            documentService,
             storageService,
             zaakInstanceLinkRepository
         )
@@ -378,8 +333,6 @@ internal class ZakenApiPluginTest {
     fun `should create zaak`() {
         val zakenApiClient: ZakenApiClient = mock()
         val zaakUrlProvider: ZaakUrlProvider = mock()
-        val resourceProvider: ResourceProvider = mock()
-        val documentService: DocumentService = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
         val executionMock = mock<DelegateExecution>()
@@ -410,8 +363,6 @@ internal class ZakenApiPluginTest {
         val plugin = ZakenApiPlugin(
             zakenApiClient,
             zaakUrlProvider,
-            resourceProvider,
-            documentService,
             storageService,
             zaakInstanceLinkRepository
         )

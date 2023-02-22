@@ -28,4 +28,11 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet author="Ritense" id="2">
+        <update tableName="process_definition_properties">
+            <column name="system_process" valueBoolean="false" type="BOOLEAN"/>
+            <where>process_definition_key = 'retrieve-document-and-link-to-zaak'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>

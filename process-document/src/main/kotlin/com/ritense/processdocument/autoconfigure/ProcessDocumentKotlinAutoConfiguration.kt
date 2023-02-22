@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
+
 package com.ritense.processdocument.autoconfigure
 
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.delegate.DocumentDelegate
+import com.ritense.processdocument.service.CorrelationService
+import com.ritense.processdocument.service.CorrelationServiceImpl
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.service.CamundaProcessService
+import org.camunda.bpm.engine.RepositoryService
+import org.camunda.bpm.engine.RuntimeService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -38,6 +46,25 @@ class ProcessDocumentKotlinAutoConfiguration {
             processDocumentService,
             userManagementService,
             documentService,
+        )
+    }
+
+    @ProcessBean
+    @Bean
+    @ConditionalOnMissingBean(CorrelationService::class)
+    fun correlationService(
+        runtimeService: RuntimeService,
+        documentService: DocumentService,
+        processDocumentAssociationService: ProcessDocumentAssociationService,
+        camundaProcessService: CamundaProcessService,
+        repositoryService: RepositoryService
+    ): CorrelationService {
+        return CorrelationServiceImpl(
+            runtimeService = runtimeService,
+            documentService = documentService,
+            camundaProcessService = camundaProcessService,
+            repositoryService= repositoryService,
+            associationService = processDocumentAssociationService
         )
     }
 }

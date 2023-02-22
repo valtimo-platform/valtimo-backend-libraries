@@ -49,8 +49,6 @@ class ZakenApiAutoConfiguration {
         pluginService: PluginService,
         zakenApiClient: ZakenApiClient,
         urlProvider: ZaakUrlProvider,
-        resourceProvider: ResourceProvider,
-        documentService: DocumentService,
         storageService: TemporaryResourceStorageService,
         zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
     ): ZakenApiPluginFactory {
@@ -58,8 +56,6 @@ class ZakenApiAutoConfiguration {
             pluginService,
             zakenApiClient,
             urlProvider,
-            resourceProvider,
-            documentService,
             storageService,
             zaakInstanceLinkRepository,
         )
