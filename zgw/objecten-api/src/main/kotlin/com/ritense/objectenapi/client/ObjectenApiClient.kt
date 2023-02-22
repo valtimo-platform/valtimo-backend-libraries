@@ -46,7 +46,7 @@ class ObjectenApiClient(
         return if (responseBody.type.host == "host.docker.internal") {
             responseBody.copy(
                 type = URI.create(
-                    responseBody.url.toString().replace("host.docker.internal", "localhost")
+                    responseBody.type.toString().replace("host.docker.internal", "localhost")
                 )
             )
         } else {

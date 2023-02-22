@@ -47,6 +47,7 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.TaskService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -180,9 +181,10 @@ public class FormLinkAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ProcessFormAssociationRepository.class)
     public JdbcProcessFormAssociationRepository processFormAssociationRepository(
-        final NamedParameterJdbcTemplate namedParameterJdbcTemplate
+        final NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+        final @Value("${valtimo.database:mysql}") String valtimoDatabase
     ) {
-        return new JdbcProcessFormAssociationRepository(namedParameterJdbcTemplate);
+        return new JdbcProcessFormAssociationRepository(namedParameterJdbcTemplate, valtimoDatabase);
     }
 
 }

@@ -25,6 +25,7 @@ import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
+import com.ritense.zakenapi.service.ZaakDocumentService
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -48,8 +49,6 @@ class ZakenApiAutoConfiguration {
         pluginService: PluginService,
         zakenApiClient: ZakenApiClient,
         urlProvider: ZaakUrlProvider,
-        resourceProvider: ResourceProvider,
-        documentService: DocumentService,
         storageService: TemporaryResourceStorageService,
         zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
     ): ZakenApiPluginFactory {
@@ -57,8 +56,6 @@ class ZakenApiAutoConfiguration {
             pluginService,
             zakenApiClient,
             urlProvider,
-            resourceProvider,
-            documentService,
             storageService,
             zaakInstanceLinkRepository,
         )
@@ -69,5 +66,10 @@ class ZakenApiAutoConfiguration {
         zaakInstanceLinkRepository: ZaakInstanceLinkRepository
     ): ZaakInstanceLinkService {
         return ZaakInstanceLinkService(zaakInstanceLinkRepository)
+    }
+
+    @Bean
+    fun zaakDocumentService(zaakUrlProvider: ZaakUrlProvider, pluginService: PluginService): ZaakDocumentService {
+        return ZaakDocumentService(zaakUrlProvider, pluginService)
     }
 }

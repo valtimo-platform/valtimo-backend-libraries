@@ -39,6 +39,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import java.net.URI
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.util.UUID
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -159,6 +160,59 @@ internal class ZakenApiClientTest {
         assertEquals("adres", result.results[0].objectType)
         assertEquals("string", result.results[0].objectTypeOverige)
         assertEquals("string", result.results[0].relatieomschrijving)
+    }
+
+    @Test
+    fun `should send get zaakinformatieobjecten request and parse response`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ZakenApiClient(webclientBuilder)
+
+        val informatieObjectJson = """
+            {
+                "url": "http://example.com",
+                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                "informatieobject": "http://example.com",
+                "zaak": "http://example.com",
+                "aardRelatieWeergave": "Hoort bij, omgekeerd: kent",
+                "titel": "test",
+                "beschrijving": "test omschrijving",
+                "registratiedatum": "2019-08-24T14:15:22Z",
+                "vernietigingsdatum": "2019-08-24T14:15:22Z",
+                "status": "http://example.com"
+            }
+        """.trimIndent()
+        val responseBody = """
+            [
+                $informatieObjectJson, $informatieObjectJson
+            ]
+        """.trimIndent()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val result = client.getZaakInformatieObjecten(
+            TestAuthentication(),
+            URI(mockApi.url("/").toString()),
+            URI("https://example.com")
+        )
+
+        val recordedRequest = mockApi.takeRequest()
+        val requestUrl = recordedRequest.requestUrl
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+        assertEquals("https://example.com", requestUrl?.queryParameter("zaak"))
+        assertEquals(2, result.size)
+
+        val value = result.first()
+        assertEquals(URI("http://example.com"), value.url)
+        assertEquals(UUID.fromString("095be615-a8ad-4c33-8e9c-c7612fbf6c9f"), value.uuid)
+        assertEquals(URI("http://example.com"), value.informatieobject)
+        assertEquals(URI("http://example.com"), value.zaak)
+        assertEquals("Hoort bij, omgekeerd: kent", value.aardRelatieWeergave)
+        assertEquals("test", value.titel)
+        assertEquals("test omschrijving", value.beschrijving)
+        assertEquals(ZonedDateTime.parse("2019-08-24T14:15:22Z").toLocalDateTime(), value.registratiedatum)
+        assertEquals(ZonedDateTime.parse("2019-08-24T14:15:22Z").toLocalDateTime(), value.vernietigingsdatum)
+        assertEquals(URI("http://example.com"), value.status)
     }
 
     @Test
