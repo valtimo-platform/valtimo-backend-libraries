@@ -17,8 +17,6 @@
 package com.ritense.zakenapi
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.ritense.document.domain.impl.JsonSchemaDocumentId
-import com.ritense.document.service.DocumentService
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -52,8 +50,6 @@ import java.util.UUID
 class ZakenApiPlugin(
     private val client: ZakenApiClient,
     private val zaakUrlProvider: ZaakUrlProvider,
-    private val resourceProvider: ResourceProvider,
-    private val documentService: DocumentService,
     private val storageService: TemporaryResourceStorageService,
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
 ) {
@@ -85,7 +81,7 @@ class ZakenApiPlugin(
             beschrijving
         )
 
-        linkDocument(documentId, request, documentUrl)
+        client.linkDocument(authenticationPluginConfiguration, url, request)
     }
 
     @PluginAction(
@@ -110,7 +106,7 @@ class ZakenApiPlugin(
             metadata["title"] as String?,
             metadata["description"] as String?,
         )
-        linkDocument(documentId, request, documentUrl)
+        client.linkDocument(authenticationPluginConfiguration, url, request)
     }
 
     @PluginAction(
@@ -181,16 +177,6 @@ class ZakenApiPlugin(
             )
         )
 
-    }
-
-    private fun linkDocument(documentId: UUID, request: LinkDocumentRequest, documentUrl: String) {
-        client.linkDocument(authenticationPluginConfiguration, url, request)
-        val resource = resourceProvider.getResource(documentUrl)
-        documentService.assignResource(
-            JsonSchemaDocumentId.existingId(documentId),
-            resource.id(),
-            mapOf("createInformatieObject" to false)
-        )
     }
 
     fun getZaakInformatieObjecten(zaakUrl: URI): List<ZaakInformatieObject> {

@@ -45,8 +45,6 @@ internal class ZakenApiPluginFactoryTest {
 
         val client: ZakenApiClient = mock()
         val zaakUrlProvider: ZaakUrlProvider = mock()
-        val documentService: DocumentService = mock()
-        val resourceProvider: ResourceProvider = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
 
@@ -54,8 +52,6 @@ internal class ZakenApiPluginFactoryTest {
             pluginService,
             client,
             zaakUrlProvider,
-            resourceProvider,
-            documentService,
             storageService,
             zaakInstanceLinkRepository,
         )

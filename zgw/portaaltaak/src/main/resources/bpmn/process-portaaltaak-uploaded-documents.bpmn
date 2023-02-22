@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0v1ejyk" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0v1ejyk" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0">
   <bpmn:collaboration id="Collaboration_1hhep9j">
     <bpmn:extensionElements />
     <bpmn:participant id="Participant_0q24bm9" name="Process Portaaltaak uploaded Documents" processRef="process-portaaltaak-uploaded-documents" />
@@ -13,23 +13,29 @@
     <bpmn:startEvent id="start-event">
       <bpmn:outgoing>Flow_125lm4p</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:callActivity id="call-retrieve-document-and-link-to-zaak" name="Retrieve Document and link to Zaak" calledElement="retrieve-document-and-link-to-zaak">
+    <bpmn:callActivity id="call-link-document-to-zaak" name="Link document to zaak" camunda:asyncBefore="true" calledElement="link-document-to-zaak">
       <bpmn:extensionElements>
         <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in source="documentUrl" target="documentUrl" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_125lm4p</bpmn:incoming>
       <bpmn:outgoing>Flow_14ouebs</bpmn:outgoing>
-      <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:collection="documentUrls" camunda:elementVariable="documentUrl" />
+      <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:asyncBefore="true" camunda:collection="documentUrls" camunda:elementVariable="documentUrl" />
     </bpmn:callActivity>
     <bpmn:endEvent id="end-event">
       <bpmn:incoming>Flow_1gm4977</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:serviceTask id="update_portaal_taak_status" name="Update Portaal Taak Status" camunda:expression="${true}">
+    <bpmn:serviceTask id="update_portaal_taak_status" name="Update Portaal Taak Status" camunda:asyncBefore="true" camunda:expression="${true}">
+      <bpmn:extensionElements>
+        <camunda:field>
+          <camunda:string></camunda:string>
+        </camunda:field>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_14ouebs</bpmn:incoming>
       <bpmn:outgoing>Flow_1gm4977</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_125lm4p" sourceRef="start-event" targetRef="call-retrieve-document-and-link-to-zaak" />
-    <bpmn:sequenceFlow id="Flow_14ouebs" sourceRef="call-retrieve-document-and-link-to-zaak" targetRef="update_portaal_taak_status" />
+    <bpmn:sequenceFlow id="Flow_125lm4p" sourceRef="start-event" targetRef="call-link-document-to-zaak" />
+    <bpmn:sequenceFlow id="Flow_14ouebs" sourceRef="call-link-document-to-zaak" targetRef="update_portaal_taak_status" />
     <bpmn:sequenceFlow id="Flow_1gm4977" sourceRef="update_portaal_taak_status" targetRef="end-event" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
@@ -55,7 +61,7 @@
           <dc:Bounds x="235" y="202" width="24" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1vsn7i8_di" bpmnElement="call-retrieve-document-and-link-to-zaak">
+      <bpmndi:BPMNShape id="Activity_1vsn7i8_di" bpmnElement="call-link-document-to-zaak">
         <dc:Bounds x="320" y="107" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0oj65uu_di" bpmnElement="end-event">
