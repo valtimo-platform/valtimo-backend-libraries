@@ -30,6 +30,7 @@ dependencies {
     implementation project(":resource:temporary-resource-storage")
     implementation project(":zgw")
     implementation project(':zgw:catalogi-api')
+    implementation project(':zgw:documenten-api')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"

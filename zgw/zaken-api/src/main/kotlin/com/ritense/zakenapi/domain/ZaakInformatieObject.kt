@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi
+package com.ritense.zakenapi.domain
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.net.URI
+import java.time.LocalDateTime
 import java.util.UUID
 
-interface ZaakUrlProvider {
-
-    @Deprecated("Marked for removal since 10.5.0")
-    fun getZaak(documentId: UUID): String
-
-    fun getZaakUrl(documentId: UUID): URI = URI(getZaak(documentId))
-}
+data class ZaakInformatieObject(
+    val url: URI,
+    val uuid: UUID,
+    val informatieobject: URI,
+    val zaak: URI,
+    val aardRelatieWeergave: String,
+    val titel: String? = null,
+    val beschrijving: String? = null,
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    val registratiedatum: LocalDateTime,
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    val vernietigingsdatum: LocalDateTime? = null,
+    val status: URI? = null
+)

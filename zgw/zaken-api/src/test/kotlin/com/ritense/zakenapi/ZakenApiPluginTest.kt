@@ -62,7 +62,7 @@ internal class ZakenApiPluginTest {
 
         val documentId = UUID.randomUUID()
         whenever(executionMock.businessKey).thenReturn(documentId.toString())
-        whenever(zaakUrlProvider.getZaak(any())).thenReturn("https://zaak.url")
+        whenever(zaakUrlProvider.getZaakUrl(any())).thenReturn(URI("https://zaak.url"))
         val mockResoure = mock<Resource>()
         whenever(resourceProvider.getResource(any())).thenReturn(mockResoure)
         val resourceId = UUID.randomUUID()
@@ -111,7 +111,7 @@ internal class ZakenApiPluginTest {
         whenever(executionMock.businessKey).thenReturn(documentId.toString())
         whenever(executionMock.getVariable(DOCUMENT_URL_PROCESS_VAR)).thenReturn("https://document.url")
         whenever(executionMock.getVariable(RESOURCE_ID_PROCESS_VAR)).thenReturn("myResourceId")
-        whenever(zaakUrlProvider.getZaak(any())).thenReturn("https://zaak.url")
+        whenever(zaakUrlProvider.getZaakUrl(any())).thenReturn(URI("https://zaak.url"))
         whenever(storageService.getResourceMetadata("myResourceId")).thenReturn(
             mapOf(
                 "title" to "titel",
