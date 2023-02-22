@@ -114,8 +114,8 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
         }
 
         contextService.findAll(Pageable.unpaged()).forEach(context -> {
-            context.getProcesses().removeIf(contextProcess -> contextProcess.getProcessDefinitionKey().equals(item.getProcessDefinitionKey()));
             if (Boolean.TRUE.equals(item.getProcessIsVisibleInMenu())) {
+                context.getProcesses().removeIf(contextProcess -> contextProcess.getProcessDefinitionKey().equals(item.getProcessDefinitionKey()));
                 context.addProcess(new ContextProcess(item.getProcessDefinitionKey(), true));
             }
             contextService.save(context);
