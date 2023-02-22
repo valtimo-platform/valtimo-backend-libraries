@@ -18,18 +18,19 @@
       <bpmn:outgoing>Flow_09ag5pd</bpmn:outgoing>
       <bpmn:outgoing>Flow_04q08ak</bpmn:outgoing>
       <bpmn:outgoing>Flow_0zsmg0l</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0wa3ax5</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_0v7tm6z" sourceRef="StartEvent_1" targetRef="Gateway_1xw5kxz" />
     <bpmn:sequenceFlow id="Flow_0tdgxe1" sourceRef="Gateway_1xw5kxz" targetRef="Event_1pza1q9">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "start-event-test"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_09ag5pd" sourceRef="Gateway_1xw5kxz" targetRef="Event_1eogthm">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "intermediate-catch-event-test-with-no-business-key"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "multiple-intermediate-catch-event-test-with-no-business-key"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:intermediateThrowEvent id="Event_1eogthm">
       <bpmn:incoming>Flow_09ag5pd</bpmn:incoming>
       <bpmn:outgoing>Flow_0hh3aco</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_10lsqp2" camunda:expression="${correlationService.sendMessageToAll(&#34;intermediate-catch-event-ref&#34;)}" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_10lsqp2" camunda:expression="${correlationService.sendCatchEventMessageToAll(&#34;intermediate-catch-event-ref&#34;)}" />
     </bpmn:intermediateThrowEvent>
     <bpmn:sequenceFlow id="Flow_04q08ak" sourceRef="Gateway_1xw5kxz" targetRef="Event_14n21hy">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "process-definition-start-event-test"}</bpmn:conditionExpression>
@@ -44,6 +45,7 @@
       <bpmn:incoming>Flow_0hh3aco</bpmn:incoming>
       <bpmn:incoming>Flow_1120gfp</bpmn:incoming>
       <bpmn:incoming>Flow_1tso983</bpmn:incoming>
+      <bpmn:incoming>Flow_1u8tbs1</bpmn:incoming>
       <bpmn:outgoing>Flow_1pd2la6</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_06sure7" sourceRef="Event_1pza1q9" targetRef="Gateway_0l777sa" />
@@ -51,14 +53,23 @@
     <bpmn:sequenceFlow id="Flow_1120gfp" sourceRef="Event_14n21hy" targetRef="Gateway_0l777sa" />
     <bpmn:sequenceFlow id="Flow_1pd2la6" sourceRef="Gateway_0l777sa" targetRef="Event_1nbl6u9" />
     <bpmn:sequenceFlow id="Flow_0zsmg0l" sourceRef="Gateway_1xw5kxz" targetRef="Event_18mjng7">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "intermediate-catch-event-test-with-business-key"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "multiple-intermediate-catch-event-test-with-business-key"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:intermediateThrowEvent id="Event_18mjng7">
       <bpmn:incoming>Flow_0zsmg0l</bpmn:incoming>
       <bpmn:outgoing>Flow_1tso983</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_1tib12v" camunda:expression="${correlationService.sendMessageToAll(&#34;intermediate-catch-event-ref&#34;,businessKey)}" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1tib12v" camunda:expression="${correlationService.sendCatchEventMessageToAll(&#34;intermediate-catch-event-ref&#34;,businessKey)}" />
     </bpmn:intermediateThrowEvent>
     <bpmn:sequenceFlow id="Flow_1tso983" sourceRef="Event_18mjng7" targetRef="Gateway_0l777sa" />
+    <bpmn:sequenceFlow id="Flow_0wa3ax5" sourceRef="Gateway_1xw5kxz" targetRef="Event_0ct1jdv">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "intermediate-catch-event-test-with-no-business-key"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:intermediateThrowEvent id="Event_0ct1jdv">
+      <bpmn:incoming>Flow_0wa3ax5</bpmn:incoming>
+      <bpmn:outgoing>Flow_1u8tbs1</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_06ipxtb" camunda:expression="${correlationService.sendCatchEventMessage(&#34;intermediate-catch-event-ref&#34;)}" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_1u8tbs1" sourceRef="Event_0ct1jdv" targetRef="Gateway_0l777sa" />
   </bpmn:process>
   <bpmn:message id="Message_2j1vsbp" name="Message_2j1vsbp" />
   <bpmn:message id="Message_0ifogp4" name="message-start-event" />
@@ -110,6 +121,16 @@
         <di:waypoint x="540" y="430" />
         <di:waypoint x="540" y="235" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0wa3ax5_di" bpmnElement="Flow_0wa3ax5">
+        <di:waypoint x="280" y="235" />
+        <di:waypoint x="280" y="540" />
+        <di:waypoint x="392" y="540" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1u8tbs1_di" bpmnElement="Flow_1u8tbs1">
+        <di:waypoint x="428" y="540" />
+        <di:waypoint x="540" y="540" />
+        <di:waypoint x="540" y="235" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="152" y="192" width="36" height="36" />
       </bpmndi:BPMNShape>
@@ -133,6 +154,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0ewcsue_di" bpmnElement="Event_18mjng7">
         <dc:Bounds x="392" y="412" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0lq0pcq_di" bpmnElement="Event_0ct1jdv">
+        <dc:Bounds x="392" y="522" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

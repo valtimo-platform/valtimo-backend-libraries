@@ -24,8 +24,10 @@ interface CorrelationService {
     fun sendStartMessage(message: String,businessKey: String?): MessageCorrelationResult
     fun sendStartMessage(message: String,businessKey: String?, variables: Map<String, Any>?): MessageCorrelationResult
     fun sendStartMessage(message: String,businessKey: String, variables: Map<String, Any>?, targetProcessDefinitionKey: String)
-    fun sendMessageToAll(message: String): List<MessageCorrelationResult>
-    fun sendMessageToAll(message: String,businessKey: String?): List<MessageCorrelationResult>
-    fun sendMessageToAll(message: String,businessKey: String?,variables: Map<String,Any>?): List<MessageCorrelationResult>
-
+    fun sendCatchEventMessage(message: String): MessageCorrelationResult
+    fun sendCatchEventMessage(message: String, businessKey: String?): MessageCorrelationResult
+    fun sendCatchEventMessage(message: String, businessKey: String?, variables: Map<String, Any>?): MessageCorrelationResult
+    fun sendCatchEventMessageToAll(message: String): List<MessageCorrelationResult>
+    fun sendCatchEventMessageToAll(message: String, businessKey: String?): List<MessageCorrelationResult>
+    fun sendCatchEventMessageToAll(message: String, businessKey: String?, variables: Map<String,Any>?): List<MessageCorrelationResult>
 }

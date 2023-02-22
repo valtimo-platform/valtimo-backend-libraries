@@ -120,7 +120,7 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
     @Throws(JsonProcessingException::class)
     fun `should correlate only the process that matches provided business key`() {
         val variables = HashMap<String, Any>()
-        variables["variable"] = "intermediate-catch-event-test-with-business-key"
+        variables["variable"] = "multiple-intermediate-catch-event-test-with-business-key"
 
         document = documentService.createDocument(
             NewDocumentRequest(
@@ -229,7 +229,7 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
     @Throws(JsonProcessingException::class)
     fun `should correlate all process for message ref with no business key`() {
         val variables = HashMap<String, Any>()
-        variables["variable"] = "intermediate-catch-event-test-with-no-business-key"
+        variables["variable"] = "multiple-intermediate-catch-event-test-with-no-business-key"
         document = documentService.createDocument(
             NewDocumentRequest(
                 "house", objectMapper.readTree(documentJson)
@@ -296,6 +296,55 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
         )
         assertEquals(documentTwo.id(),associatedProcessDocumentsForDocumentTwo.first {
             it.processName().equals("intermediate-catch-event-sample-two")
+        }.id!!.documentId()
+        )
+    }
+
+    @Test
+    @Throws(JsonProcessingException::class)
+    fun `should correlate a process for message ref with no business key`() {
+        val variables = HashMap<String, Any>()
+        variables["variable"] = "intermediate-catch-event-test-with-no-business-key"
+        document = documentService.createDocument(
+            NewDocumentRequest(
+                "house", objectMapper.readTree(documentJson)
+            )
+        ).resultingDocument().orElseThrow()
+        runtimeService.startProcessInstanceByKey(
+            "intermediate-catch-event-sample-one-id",
+            document.id().toString(),
+            emptyMap()
+        )
+        var taskOne = taskService.createTaskQuery().taskName("intermediate-catch-event-1-user-task").singleResult()
+        assertNull(taskOne)
+
+        val processInstance = runtimeService.startProcessInstanceByKey(
+            "start-correlation-test-id",
+            document.id().toString(),
+            variables
+        )
+        processDocumentAssociationService.createProcessDocumentInstance(
+            processInstance.id,
+            document.id().id,
+            "start-correlation-test-process"
+        )
+        taskOne = taskService.createTaskQuery().taskName("intermediate-catch-event-1-user-task").singleResult()
+        assertNotNull(taskOne)
+        val startedProcessOneId = taskOne.processInstanceId
+        val resultProcessOneInstance = camundaProcessService.findProcessInstanceById(startedProcessOneId).get()
+        val associatedProcessDocumentsForDocumentOne =
+            processDocumentInstanceRepository.findAllByDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
+        assertEquals(resultProcessOneInstance.businessKey,document.id().toString())
+        assertEquals(2,associatedProcessDocumentsForDocumentOne.size)
+        assertNotNull(associatedProcessDocumentsForDocumentOne.firstOrNull { it.processName().equals("start-correlation-test-process")})
+        assertNotNull(associatedProcessDocumentsForDocumentOne.firstOrNull { it.processName().equals("intermediate-catch-event-sample-one")})
+        assertNull(associatedProcessDocumentsForDocumentOne.firstOrNull {it.processName().equals("intermediate-catch-event-sample-two") })
+        assertEquals(document.id(), associatedProcessDocumentsForDocumentOne.first {
+            it.processName().equals("start-correlation-test-process")
+        }.id!!.documentId()
+        )
+        assertEquals(document.id(),associatedProcessDocumentsForDocumentOne.first {
+            it.processName().equals("intermediate-catch-event-sample-one")
         }.id!!.documentId()
         )
     }
