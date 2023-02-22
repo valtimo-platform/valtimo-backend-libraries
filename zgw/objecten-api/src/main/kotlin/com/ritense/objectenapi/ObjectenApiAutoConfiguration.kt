@@ -21,11 +21,11 @@ import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.objectenapi.listener.ZaakObjectListener
 import com.ritense.objectenapi.management.ErrorObjectManagementInfoProvider
-import com.ritense.zakenapi.security.ZakenApiHttpSecurityConfigurer
+import com.ritense.objectenapi.management.ObjectManagementInfoProvider
+import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
 import com.ritense.objectenapi.service.ZaakObjectDataResolver
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.web.rest.ObjectResource
-import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -80,8 +80,8 @@ class ObjectenApiAutoConfiguration {
 
     @Order(400)
     @Bean
-    fun objectenApiHttpSecurityConfigurer(): ZakenApiHttpSecurityConfigurer {
-        return ZakenApiHttpSecurityConfigurer()
+    fun objectenApiHttpSecurityConfigurer(): ObjectenApiHttpSecurityConfigurer {
+        return ObjectenApiHttpSecurityConfigurer()
     }
 
     @Bean
