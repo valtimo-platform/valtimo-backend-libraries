@@ -78,12 +78,30 @@ class VerzoekPluginEventListener(
                     "rolDescription" to verzoekTypeProperties.initiatorRolDescription,
                     "verzoekObjectUrl" to event.resourceUrl,
                     "initiatorType" to initiatorType,
-                    "initiatorValue" to verzoekObjectData.get(initiatorType).textValue()
+                    "initiatorValue" to verzoekObjectData.get(initiatorType).textValue(),
+                    "processDefinitionKey" to verzoekTypeProperties.processDefinitionKey,
+                    "documentUrls" to getDocumentUrls(verzoekObjectData)
                 )
             )
 
             startProcess(startProcessRequest)
         }
+    }
+
+    private fun getDocumentUrls(verzoekObjectData: JsonNode): List<String> {
+        val documentList = arrayListOf<String>()
+
+        verzoekObjectData.get("pdf_url")?.let {
+            documentList.add(it.textValue())
+        }
+        verzoekObjectData.get("attachments")?.let {
+            if (it.isArray) {
+                it.toList().forEach {child ->
+                    documentList.add(child.textValue())
+                }
+            }
+        }
+        return documentList
     }
 
     private fun getVerzoekObjectData(

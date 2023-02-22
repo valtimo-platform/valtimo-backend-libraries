@@ -21,9 +21,9 @@ import org.camunda.bpm.engine.runtime.MessageCorrelationResult
 interface CorrelationService {
 
     fun sendStartMessage(message: String): MessageCorrelationResult
-    fun sendStartMessage(message: String,businessKey: String?): MessageCorrelationResult
-    fun sendStartMessage(message: String,businessKey: String?, variables: Map<String, Any>?): MessageCorrelationResult
-    fun sendStartMessage(message: String,businessKey: String, variables: Map<String, Any>?, targetProcessDefinitionKey: String)
+    fun sendStartMessage(message: String, businessKey: String?): MessageCorrelationResult
+    fun sendStartMessage(message: String, businessKey: String?, variables: Map<String, Any>?): MessageCorrelationResult
+    fun sendStartMessage(message: String, businessKey: String, variables: Map<String, Any>?, targetProcessDefinitionKey: String)
     fun sendCatchEventMessage(message: String): MessageCorrelationResult
     fun sendCatchEventMessage(message: String, businessKey: String?): MessageCorrelationResult
     fun sendCatchEventMessage(message: String, businessKey: String?, variables: Map<String, Any>?): MessageCorrelationResult
