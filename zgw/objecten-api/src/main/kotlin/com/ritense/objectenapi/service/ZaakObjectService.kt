@@ -165,7 +165,7 @@ class ZaakObjectService(
         }
     }
 
-    private fun getObjectByManagementIdAndObjectId(objectManagementId: UUID, objectId: UUID): ObjectWrapper? {
+    private fun getObjectByManagementIdAndObjectId(objectManagementId: UUID, objectId: UUID): ObjectWrapper {
         val objectManagement =
             objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
         val objectsApiPlugin =
@@ -264,11 +264,18 @@ class ZaakObjectService(
         ) as ObjectenApiPlugin
 
         val objectTypenApiPlugin = pluginService.createInstance(
-            PluginConfigurationId.existingId(objectManagement.objectenApiPluginConfigurationId)
+            PluginConfigurationId.existingId(objectManagement.objecttypenApiPluginConfigurationId)
         ) as ObjecttypenApiPlugin
 
+        val objectTypeUrl = UriComponentsBuilder.newInstance()
+            .uri(objectTypenApiPlugin.url)
+            .pathSegment("objecttypes")
+            .pathSegment(objectManagement.objecttypeId)
+            .build()
+            .toUri()
+
         val objectRequest = ObjectRequest(
-            objectTypenApiPlugin.url,
+            objectTypeUrl,
             ObjectRecord(
                 typeVersion = objectManagement.objecttypeVersion,
                 data = jsonNode,
