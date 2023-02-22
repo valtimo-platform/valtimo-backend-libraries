@@ -39,6 +39,7 @@ class ObjectenApiHttpSecurityConfigurer: HttpSecurityConfigurer {
                 .antMatchers(DELETE, "/api/v1/object").hasAuthority(USER)
                 .antMatchers(GET, "/api/v1/object/form").hasAuthority(USER)
                 .antMatchers(PATCH, "/api/v1/object").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/object").hasAuthority(USER)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
