@@ -13,6 +13,15 @@
     <bpmn:startEvent id="start-event">
       <bpmn:outgoing>Flow_125lm4p</bpmn:outgoing>
     </bpmn:startEvent>
+    <bpmn:callActivity id="call-link-document-to-zaak" name="Link document to zaak" camunda:asyncBefore="true" calledElement="link-document-to-zaak">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in source="documentUrl" target="documentUrl" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_125lm4p</bpmn:incoming>
+      <bpmn:outgoing>Flow_14ouebs</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:asyncBefore="true" camunda:collection="documentUrls" camunda:elementVariable="documentUrl" />
+    </bpmn:callActivity>
     <bpmn:endEvent id="end-event">
       <bpmn:incoming>Flow_1gm4977</bpmn:incoming>
     </bpmn:endEvent>
@@ -22,17 +31,12 @@
           <camunda:string></camunda:string>
         </camunda:field>
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0e0v41m</bpmn:incoming>
+      <bpmn:incoming>Flow_14ouebs</bpmn:incoming>
       <bpmn:outgoing>Flow_1gm4977</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_125lm4p" sourceRef="start-event" targetRef="link-document-to-zaak" />
+    <bpmn:sequenceFlow id="Flow_125lm4p" sourceRef="start-event" targetRef="call-link-document-to-zaak" />
+    <bpmn:sequenceFlow id="Flow_14ouebs" sourceRef="call-link-document-to-zaak" targetRef="update_portaal_taak_status" />
     <bpmn:sequenceFlow id="Flow_1gm4977" sourceRef="update_portaal_taak_status" targetRef="end-event" />
-    <bpmn:sequenceFlow id="Flow_0e0v41m" sourceRef="link-document-to-zaak" targetRef="update_portaal_taak_status" />
-    <bpmn:serviceTask id="link-document-to-zaak" name="Link document to zaak" camunda:expression="${null}">
-      <bpmn:incoming>Flow_125lm4p</bpmn:incoming>
-      <bpmn:outgoing>Flow_0e0v41m</bpmn:outgoing>
-      <bpmn:multiInstanceLoopCharacteristics camunda:asyncBefore="true" camunda:collection="documentUrls" camunda:elementVariable="documentUrl" />
-    </bpmn:serviceTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1hhep9j">
@@ -43,19 +47,22 @@
         <di:waypoint x="580" y="147" />
         <di:waypoint x="652" y="147" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14ouebs_di" bpmnElement="Flow_14ouebs">
+        <di:waypoint x="420" y="147" />
+        <di:waypoint x="480" y="147" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_125lm4p_di" bpmnElement="Flow_125lm4p">
         <di:waypoint x="265" y="147" />
         <di:waypoint x="320" y="147" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0e0v41m_di" bpmnElement="Flow_0e0v41m">
-        <di:waypoint x="420" y="147" />
-        <di:waypoint x="480" y="147" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start-event">
         <dc:Bounds x="229" y="129" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="235" y="202" width="24" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1vsn7i8_di" bpmnElement="call-link-document-to-zaak">
+        <dc:Bounds x="320" y="107" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0oj65uu_di" bpmnElement="end-event">
         <dc:Bounds x="652" y="129" width="36" height="36" />
@@ -65,10 +72,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1oo9yjc_di" bpmnElement="update_portaal_taak_status">
         <dc:Bounds x="480" y="107" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1ftkxyy_di" bpmnElement="link-document-to-zaak">
-        <dc:Bounds x="320" y="107" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
