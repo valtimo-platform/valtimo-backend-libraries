@@ -26,10 +26,15 @@
     <property name="jsonType" value="JSON" dbms="mysql"/>
     <property name="jsonType" value="JSONB" dbms="postgresql"/>
 
+    <property name="generateUuid" value="uuid_to_bin(uuid())" dbms="mysql"/>
+    <property name="generateUuid" value="gen_random_uuid()" dbms="postgresql"/>
+    <property name="generateUuid" value="random_uuid()" dbms="h2"/>
+
     <include file="changelog/20200320-formlink-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200413-form-association-polymorphism-support-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200507-added-process-definition-to-link-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200513-domain-changed-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220630-storage-performance-improvement-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230221-association-id-datatype-change.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
