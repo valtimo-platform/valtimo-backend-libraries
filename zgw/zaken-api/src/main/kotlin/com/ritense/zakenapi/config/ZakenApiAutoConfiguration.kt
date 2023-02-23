@@ -26,6 +26,7 @@ import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zakenapi.security.ZakenApiHttpSecurityConfigurer
 import com.ritense.zakenapi.service.ZaakDocumentService
 import com.ritense.zakenapi.web.rest.ZaakDocumentResource
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -75,6 +76,7 @@ class ZakenApiAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ZaakDocumentResource::class)
     fun zaakDocumentResource(
         zaakDocumentService: ZaakDocumentService
     ): ZaakDocumentResource {
