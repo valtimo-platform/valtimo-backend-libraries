@@ -116,9 +116,9 @@ class ApplicationReadyEventListener(
             createBomenObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
             createVerzoekPlugin(notificatiesApiPluginId, bezwaarConfigurationId)
             createSmartDocumentsPlugin()
-            val protaalTaakPluginId = createPortaaltaakPlugin(notificatiesApiPluginId, taakConfigurationId)
-            portalPersonCreatePortaalTaak(protaalTaakPluginId)
-            processPortaaltaakUploadedDocumentsCompletePortaaltaak(protaalTaakPluginId)
+            val portaaltaakPluginId = createPortaaltaakPlugin(notificatiesApiPluginId, taakConfigurationId)
+            portalPersonCreatePortaaltaak(portaaltaakPluginId)
+            processPortaaltaakUploadedDocumentsCompletePortaaltaak(portaaltaakPluginId)
             processPortaaltaakUploadedDocumentsLinkDocumentToZaak(zakenApiPluginId)
             createZaakdossierCreateZaak(zakenApiPluginId)
             createZaakdossierCreateZaakRol(zakenApiPluginId)
@@ -129,12 +129,12 @@ class ApplicationReadyEventListener(
         }
     }
 
-    private fun portalPersonCreatePortaalTaak(protaalTaakPluginId: UUID) {
+    private fun portalPersonCreatePortaaltaak(portaaltaakPluginId: UUID) {
         createProcessLinkIfNotExists(
             processDefinitionKey = "portal-person",
             activityId = "portal-task",
             activityType = "bpmn:UserTask:create",
-            pluginConfigurationId = protaalTaakPluginId,
+            pluginConfigurationId = portaaltaakPluginId,
             pluginActionDefinitionKey = "create-portaaltaak",
             actionProperties = """
                 {
@@ -160,12 +160,12 @@ class ApplicationReadyEventListener(
         )
     }
 
-    private fun processPortaaltaakUploadedDocumentsCompletePortaaltaak(protaalTaakPluginId: UUID) {
+    private fun processPortaaltaakUploadedDocumentsCompletePortaaltaak(portaaltaakPluginId: UUID) {
         createProcessLinkIfNotExists(
             processDefinitionKey = "process-portaaltaak-uploaded-documents",
             activityId = "update_portaal_taak_status",
             activityType = "bpmn:ServiceTask:start",
-            pluginConfigurationId = protaalTaakPluginId,
+            pluginConfigurationId = portaaltaakPluginId,
             pluginActionDefinitionKey = "complete-portaaltaak",
             actionProperties = "{}",
         )
