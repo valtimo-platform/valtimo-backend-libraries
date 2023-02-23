@@ -76,7 +76,7 @@ class ZakenApiAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ZaakDocumentService::class)
+    @ConditionalOnMissingBean(ZaakDocumentResource::class)
     fun zaakDocumentResource(
         zaakDocumentService: ZaakDocumentService
     ): ZaakDocumentResource {
