@@ -46,6 +46,8 @@ class JdbcProcessFormAssociationRepository(
 
         if (findByCamundaFormAssociationId(camundaFormAssociation.id) != null) {
             throw DuplicateKeyException("Form process_form_association with form_association_id '${camundaFormAssociation.id}' already exists.")
+        } else if (findByFormLinkId(processDefinitionKey, camundaFormAssociation.formLink.id) != null) {
+            throw DuplicateKeyException("Form process_form_association for process '$processDefinitionKey' and formLinkId '${camundaFormAssociation.formLink.id}' already exists.")
         }
 
         val sql = """
