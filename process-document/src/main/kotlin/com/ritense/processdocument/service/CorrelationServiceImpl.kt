@@ -46,24 +46,27 @@ class CorrelationServiceImpl(
 
     override fun sendStartMessage(message: String, businessKey: String?, variables: Map<String, Any>?): MessageCorrelationResult {
         val result = correlate(message, businessKey,variables)
-        val correlationResultProcessInstance = result.processInstance
-        val processName =
-            camundaProcessService.findProcessDefinitionById(correlationResultProcessInstance.processDefinitionId).name
-        associateDocumentToProcess(correlationResultProcessInstance.id, processName, businessKey)
+        businessKey?.run {
+            val processName =
+                camundaProcessService.findProcessDefinitionById(result.processInstance.processDefinitionId).name
+            associateDocumentToProcess(result.processInstance.id, processName, this)
+        }
         return result
     }
 
-    override fun sendStartMessage(
+    override fun sendStartMessageWithProcessDefinitionKey(
         message: String,
-        businessKey: String,
-        variables: Map<String, Any>?,
-        targetProcessDefinitionKey: String
+        targetProcessDefinitionKey: String,
+        businessKey: String?,
+        variables: Map<String, Any>?
     ){
         val processDefinitionId = getLatestProcessDefinitionIdByKey(targetProcessDefinitionKey)
         val correlationResultProcess = correlateWithProcessDefinitionId(message, businessKey, processDefinitionId.id, variables)
-        val processName =
-            camundaProcessService.findProcessDefinitionById(correlationResultProcess.processDefinitionId).name
-        associateDocumentToProcess(correlationResultProcess.processInstanceId, processName, businessKey)
+        businessKey?.run {
+            val processName =
+                camundaProcessService.findProcessDefinitionById(correlationResultProcess.processDefinitionId).name
+            associateDocumentToProcess(correlationResultProcess.processInstanceId, processName, businessKey)
+        }
     }
 
     override fun sendCatchEventMessage(message: String): MessageCorrelationResult{
@@ -77,12 +80,14 @@ class CorrelationServiceImpl(
     override fun sendCatchEventMessage(message: String, businessKey: String?, variables: Map<String, Any>?): MessageCorrelationResult {
         val result = correlate(message, businessKey, variables)
         val correlationResultProcessInstance = camundaProcessService.findProcessInstanceById(result.execution.processInstanceId)
-        val processName =
-            camundaProcessService.findProcessDefinitionById(correlationResultProcessInstance.get().processDefinitionId).name
-        associateDocumentToProcess(
-            correlationResultProcessInstance.get().processInstanceId,
-            processName,
-            correlationResultProcessInstance.get().businessKey)
+        businessKey.run {
+            val processName =
+                camundaProcessService.findProcessDefinitionById(correlationResultProcessInstance.get().processDefinitionId).name
+            associateDocumentToProcess(
+                correlationResultProcessInstance.get().processInstanceId,
+                processName,
+                correlationResultProcessInstance.get().businessKey)
+        }
         return result
     }
 
@@ -98,9 +103,15 @@ class CorrelationServiceImpl(
         val correlationResultProcessList = correlateAll(message, businessKey, variables)
         correlationResultProcessList.forEach { correlationResultProcess ->
             val runningProcessInstance = camundaProcessService.findProcessInstanceById(correlationResultProcess.execution.processInstanceId)
-            val processName =
-                camundaProcessService.findProcessDefinitionById(runningProcessInstance.get().processDefinitionId).name
-            associateDocumentToProcess(correlationResultProcess.execution.processInstanceId, processName, runningProcessInstance.get().businessKey)
+            businessKey.run {
+                val processName =
+                    camundaProcessService.findProcessDefinitionById(runningProcessInstance.get().processDefinitionId).name
+                associateDocumentToProcess(
+                    correlationResultProcess.execution.processInstanceId,
+                    processName,
+                    runningProcessInstance.get().businessKey)
+            }
+
         }
 
         return correlationResultProcessList
@@ -114,7 +125,7 @@ class CorrelationServiceImpl(
     private fun associateDocumentToProcess(
         processInstanceId: String?,
         processName: String?,
-        businessKey: String?
+        businessKey: String
     ) {
         documentService.findBy(JsonSchemaDocumentId.existingId(UUID.fromString(businessKey)))
             .ifPresentOrElse({ document: Document ->
@@ -139,20 +150,23 @@ class CorrelationServiceImpl(
 
     }
     private fun correlateWithProcessDefinitionId(
-        message: String?,
-        businessKey: String,
+        message: String,
+        businessKey: String?,
         processDefinitionId: String,
         variables: Map<String, Any>?,
     ): ProcessInstance {
-        return runtimeService
-            .createMessageCorrelation(message)
-            .processDefinitionId(processDefinitionId)
-            .processInstanceBusinessKey(businessKey)
-            .setVariables(variables?: emptyMap())
-            .correlateStartMessage()
+        val builder = runtimeService.createMessageCorrelation(message)
+        builder.processDefinitionId(processDefinitionId)
+        businessKey?.run {builder.processInstanceBusinessKey(businessKey) }
+        variables?.run {builder.setVariables(variables)}
+        return builder.correlateStartMessage()
     }
 
-    private fun correlateAll(message: String?, businessKey: String?, variables: Map<String, Any>?): List<MessageCorrelationResult> {
+    private fun correlateAll(
+        message: String,
+        businessKey: String?,
+        variables: Map<String, Any>?
+    ): List<MessageCorrelationResult> {
         val builder = runtimeService.createMessageCorrelation(message)
         businessKey?.run {
             builder.processInstanceBusinessKey(businessKey)

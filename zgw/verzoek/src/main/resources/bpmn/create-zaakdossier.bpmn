@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0wh3h0k" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0wh3h0k" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0">
   <bpmn:collaboration id="Collaboration_134xj6j">
     <bpmn:extensionElements />
     <bpmn:participant id="Participant_1ry53rc" processRef="create-zaakdossier" />
@@ -40,7 +40,7 @@
     <bpmn:intermediateThrowEvent id="Event_1hzhlj9" name="Zaakdossier created" camunda:asyncAfter="true">
       <bpmn:incoming>Flow_1gcez64</bpmn:incoming>
       <bpmn:outgoing>Flow_0loxn4l</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_0ezhml7" messageRef="Message_1540c4d" camunda:expression="${correlationService.sendStartMessage(&#34;zaakdossier-created&#34;, execution.processBusinessKey, null, processDefinitionKey)}" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0ezhml7" messageRef="Message_1540c4d" camunda:expression="${correlationService.sendStartMessageWithProcessDefinitionKey(&#34;zaakdossier-created&#34;, processDefinitionKey, execution.processBusinessKey, null)}" />
     </bpmn:intermediateThrowEvent>
     <bpmn:serviceTask id="delete-verzoek-from-objectsapi" name="Delete Verzoek from ObjectsAPI" camunda:asyncAfter="true" camunda:expression="${true}">
       <bpmn:incoming>Flow_0loxn4l</bpmn:incoming>
@@ -58,6 +58,10 @@
       <bpmndi:BPMNShape id="Participant_1ry53rc_di" bpmnElement="Participant_1ry53rc" isHorizontal="true">
         <dc:Bounds x="160" y="80" width="1270" height="390" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1gcez64_di" bpmnElement="Flow_1gcez64">
+        <di:waypoint x="970" y="260" />
+        <di:waypoint x="1052" y="260" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1eu3hy4_di" bpmnElement="Flow_1eu3hy4">
         <di:waypoint x="630" y="260" />
         <di:waypoint x="700" y="260" />
@@ -81,10 +85,6 @@
       <bpmndi:BPMNEdge id="Flow_0evcldf_di" bpmnElement="Flow_0evcldf">
         <di:waypoint x="800" y="260" />
         <di:waypoint x="870" y="260" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1gcez64_di" bpmnElement="Flow_1gcez64">
-        <di:waypoint x="970" y="260" />
-        <di:waypoint x="1052" y="260" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_0z7tcif_di" bpmnElement="StartEvent_1">
         <dc:Bounds x="252" y="242" width="36" height="36" />
