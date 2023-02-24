@@ -26,8 +26,8 @@
             "onComplete": [],
             "nextSteps": [
                 {
-                    "condition": "${step.submissionData['leen-bedrag'] > step.submissionData.jaaromzet}",
-                    "step": "loan-denied-step"
+                    "condition": "${step.submissionData.'leen-bedrag' > step.submissionData.jaaromzet}",
+                    "step": "load-denied-step"
                 },
                 {
                     "step": "confirm-loan-step"
@@ -48,12 +48,12 @@
             "type": {
                 "name": "form",
                 "properties": {
-                    "definition": "user-task-confirm-loan"
+                    "definition": "user-task-confirm-load"
                 }
             }
         },
         {
-            "key": "loan-denied-step",
+            "key": "load-denied-step",
             "onBack": [],
             "onOpen": [],
             "onComplete": ["${valtimoFormFlow.completeTask(additionalProperties)}"],
