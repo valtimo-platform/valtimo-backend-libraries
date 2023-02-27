@@ -69,8 +69,7 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
     }
 
     @Test
-    @Disabled
-        //TODO try to mock resource loading or refactor
+    @Disabled //TODO try to mock resource loading or refactor
     void shouldDeployAll() {
         when(jsonSchemaDocumentDefinitionRepository.findAllByIdName(anyString())).thenReturn(Collections.emptyList());
         when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(Optional.empty());
