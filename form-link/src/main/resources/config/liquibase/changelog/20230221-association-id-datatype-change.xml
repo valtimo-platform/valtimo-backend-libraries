@@ -30,34 +30,28 @@
                     tableName="process_form_association_v2"/>
     </changeSet>
 
-    <changeSet author="Ritense" id="3">
-        <addColumn tableName="process_form_association_v2">
-            <column name="id" type="${uuidType}"/>
-        </addColumn>
-    </changeSet>
-
-    <changeSet author="Ritense" id="4">
-        <update tableName="process_form_association_v2">
-            <column name="id" valueComputed="${generateUuid}"/>
-        </update>
-    </changeSet>
-
-    <changeSet author="Ritense" id="5">
-        <addNotNullConstraint tableName="process_form_association_v2"
-                              columnName="id"
-                              columnDataType="${uuidType}"/>
-    </changeSet>
-
-    <changeSet author="Ritense" id="6">
-        <addPrimaryKey tableName="process_form_association_v2"
-                       columnNames="id"
-                       constraintName="process_form_association_v2_PK"/>
-    </changeSet>
-
     <changeSet author="Ritense" id="7">
         <modifyDataType tableName="process_form_association_v2"
                         columnName="process_definition_key"
                         newDataType="varchar(255)"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="8">
+        <update tableName="process_form_association_v2">
+            <column name="form_association_id" valueComputed="${generateUuid}"/>
+        </update>
+    </changeSet>
+
+    <changeSet author="Ritense" id="9">
+        <addNotNullConstraint tableName="process_form_association_v2"
+                              columnName="form_association_id"
+                              columnDataType="${uuidType}"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="10">
+        <addPrimaryKey tableName="process_form_association_v2"
+                       columnNames="form_association_id"
+                       constraintName="process_form_association_v2_PK"/>
     </changeSet>
 
 </databaseChangeLog>
