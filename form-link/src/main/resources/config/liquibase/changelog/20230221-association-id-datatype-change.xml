@@ -25,7 +25,10 @@
                         uniqueColumns="id,process_definition_key,form_association_id,form_association_form_link_element_id"/>
     </changeSet>
 
-    <changeSet author="Ritense" id="2">
+    <changeSet author="Ritense" id="11">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="process_form_association_v2" columnName="id"/>
+        </preConditions>
         <dropColumn columnName="id"
                     tableName="process_form_association_v2"/>
     </changeSet>
