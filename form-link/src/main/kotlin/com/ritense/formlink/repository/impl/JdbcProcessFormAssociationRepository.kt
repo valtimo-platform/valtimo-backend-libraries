@@ -39,19 +39,19 @@ import java.util.UUID
 
 @Transactional
 class JdbcProcessFormAssociationRepository(
-    private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate,
-    private val valtimoDatabase: String,
+    private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 ) : ProcessFormAssociationRepository {
 
     override fun add(processDefinitionKey: String, camundaFormAssociation: CamundaFormAssociation) {
 
         if (findByCamundaFormAssociationId(camundaFormAssociation.id) != null) {
             throw DuplicateKeyException("Form process_form_association with form_association_id '${camundaFormAssociation.id}' already exists.")
+        } else if (findByFormLinkId(processDefinitionKey, camundaFormAssociation.formLink.id) != null) {
+            throw DuplicateKeyException("Form process_form_association for process '$processDefinitionKey' and formLinkId '${camundaFormAssociation.formLink.id}' already exists.")
         }
 
         val sql = """
             INSERT  INTO $TABLE_NAME (
-                $ID_COLUMN,
                 $PROCESS_DEFINITION_KEY_COLUMN,
                 $FORM_ASSOCIATION_ID,
                 $FORM_ASSOCIATION_TYPE,
@@ -62,7 +62,6 @@ class JdbcProcessFormAssociationRepository(
                 $FORM_LINK_ANGULAR_STATE_URL
             )
             VALUES (
-                :$ID_COLUMN,
                 :$PROCESS_DEFINITION_KEY_COLUMN,
                 :$FORM_ASSOCIATION_ID,
                 :$FORM_ASSOCIATION_TYPE,
@@ -76,7 +75,6 @@ class JdbcProcessFormAssociationRepository(
         val result = namedParameterJdbcTemplate.update(
             sql,
             mapOf(
-                ID_COLUMN to toUuidParameterValue(UUID.randomUUID()),
                 PROCESS_DEFINITION_KEY_COLUMN to SqlParameterValue(Types.VARCHAR, processDefinitionKey),
                 FORM_ASSOCIATION_ID to SqlParameterValue(Types.BINARY, camundaFormAssociation.id.asBytes()),
                 FORM_ASSOCIATION_TYPE to SqlParameterValue(Types.VARCHAR, camundaFormAssociation.asType()),
@@ -218,7 +216,6 @@ class JdbcProcessFormAssociationRepository(
     companion object {
         val logger = KotlinLogging.logger {}
         private const val TABLE_NAME = "process_form_association_v2"
-        private const val ID_COLUMN = "id"
         private const val PROCESS_DEFINITION_KEY_COLUMN = "process_definition_key"
         private const val FORM_ASSOCIATION_ID = "form_association_id"
         private const val FORM_ASSOCIATION_TYPE = "form_association_type"
@@ -240,12 +237,5 @@ class JdbcProcessFormAssociationRepository(
         }
     }
 
-    private fun toUuidParameterValue(uuid: UUID): SqlParameterValue {
-        return if (valtimoDatabase == "mysql") {
-            SqlParameterValue(Types.BINARY, uuid.asBytes())
-        } else {
-            SqlParameterValue(Types.OTHER, uuid)
-        }
-    }
 
 }

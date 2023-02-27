@@ -27,7 +27,7 @@
     <property name="jsonType" value="JSONB" dbms="postgresql"/>
 
     <property name="generateUuid" value="uuid_to_bin(uuid())" dbms="mysql"/>
-    <property name="generateUuid" value="gen_random_uuid()" dbms="postgresql"/>
+    <property name="generateUuid" value="decode(replace(gen_random_uuid()::text, '-', ''), 'hex')" dbms="postgresql"/>
     <property name="generateUuid" value="random_uuid()" dbms="h2"/>
 
     <include file="changelog/20200320-formlink-changelog.xml" relativeToChangelogFile="true"/>
