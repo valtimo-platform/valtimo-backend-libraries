@@ -216,7 +216,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
     @Transactional
     public CamundaFormAssociation createFormAssociation(CreateFormAssociationRequest request) {
         final var formAssociation = FormAssociationFactory.getFormAssociation(
-            UUID.nameUUIDFromBytes(request.getFormLinkRequest().getId().getBytes()),
+            UUID.randomUUID(),
             request.getFormLinkRequest().getType(),
             request.getFormLinkRequest().getId(),
             request.getFormLinkRequest().getFormId(),
