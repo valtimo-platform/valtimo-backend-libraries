@@ -28,10 +28,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+
+import javax.validation.ValidationException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -66,7 +69,8 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
     }
 
     @Test
-    @Disabled //TODO try to mock resource loading or refactor
+    @Disabled
+        //TODO try to mock resource loading or refactor
     void shouldDeployAll() {
         when(jsonSchemaDocumentDefinitionRepository.findAllByIdName(anyString())).thenReturn(Collections.emptyList());
         when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(Optional.empty());
@@ -164,6 +168,30 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         var definition = definitionOf("array-example");
         assertTrue(documentDefinitionService.isValidJsonPath(definition, "$.files[*].id"));
         assertFalse(documentDefinitionService.isValidJsonPath(definition, "$.nonExistent[*].id"));
+    }
+
+    @Test
+    void shouldValidateJsonPointerWithoutAdditionalProperties() {
+        var definitionName = "combined-schema-additional-property-example";
+        mockDefinition(definitionName);
+        documentDefinitionService.validateJsonPointer(definitionName, "/address/streetName");
+        var exception = assertThrows(ValidationException.class, () ->
+            documentDefinitionService.validateJsonPointer(definitionName, "/address/nonExistent")
+        );
+        assertEquals("JsonPointer '/address/nonExistent' doesn't point to any property inside document definition 'combined-schema-additional-property-example'", exception.getMessage());
+    }
+
+    @Test
+    void shouldValidateJsonPointerWithAdditionalProperties() {
+        var definitionName = "allows-additional-properties";
+        mockDefinition(definitionName);
+        documentDefinitionService.validateJsonPointer(definitionName, "/address/streetName");
+        documentDefinitionService.validateJsonPointer(definitionName, "/address/nonExistent");
+    }
+
+    public void mockDefinition(String definitionName) {
+        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(definitionName))
+            .thenReturn(Optional.of(definitionOf(definitionName)));
     }
 
     public URI path(String name) {

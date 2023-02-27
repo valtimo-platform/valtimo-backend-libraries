@@ -1,0 +1,18 @@
+{
+    "$id": "allows-additional-properties.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "additional-property-example",
+    "type": "object",
+    "properties": {
+        "address": {
+            "type": "object",
+            "properties": {
+                "streetName": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true
+        }
+    },
+    "additionalProperties": false
+}

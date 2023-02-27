@@ -67,4 +67,5 @@ public interface DocumentDefinitionService {
 
     boolean isValidJsonPath(JsonSchemaDocumentDefinition definition, String jsonPathExpression);
 
+    void validateJsonPointer(String documentDefinitionName, String jsonPointer);
 }
