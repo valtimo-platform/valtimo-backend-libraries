@@ -20,76 +20,148 @@ import org.everit.json.schema.ArraySchema
 import org.everit.json.schema.CombinedSchema
 import org.everit.json.schema.JSONPointer
 import org.everit.json.schema.ObjectSchema
+import org.everit.json.schema.ReferenceSchema
 import org.everit.json.schema.Schema
 import org.everit.json.schema.ValidationException
 import org.everit.json.schema.regexp.Regexp
-import kotlin.reflect.KClass
 
-fun Schema.allowsProperty(field: String) = false
+/** This method is a copy from org.everit.json.schema.Schema.definesProperty(.) but returns true when the schema allows additionalProperties */
+fun Schema.allowsProperty(field: String): Boolean {
+    return when(this) {
+        is ObjectSchema -> allowsProperty(field)
+        is ArraySchema -> allowsProperty(field)
+        is CombinedSchema -> allowsProperty(field)
+        is ReferenceSchema -> allowsProperty(field)
+        else -> false
+    }
+}
 
-fun ObjectSchema.allowsProperty(field: String): Boolean {
-    val headAndTail: Array<String?> = callPrivateMethod("headAndTailOfJsonPointerFragment", field)
+private fun ObjectSchema.allowsProperty(field: String): Boolean {
+    val headAndTail: Array<String?> = headAndTailOfJsonPointerFragment(field)
     val nextToken = headAndTail[0]!!
     val remaining = headAndTail[1]
     val field2 = headAndTail[2]!!
     return field2.isNotEmpty() && (allowsSchemaProperty(nextToken, remaining)
-            || callPrivateMethod("definesPatternProperty", nextToken, remaining)
-            || callPrivateMethod("definesSchemaDependencyProperty", field2)
+            || allowsPatternProperty(nextToken, remaining)
+            || allowsSchemaDependencyProperty(field2)
             || permitsAdditionalProperties())
 }
 
 private fun ObjectSchema.allowsSchemaProperty(current: String, remaining: String?): Boolean {
-    var current: String? = current
-    current = callPrivateStaticMethod(JSONPointer::class, "unescape", current)
+    val currentUnescaped = jSONPointerUnescape(current)
     val hasSuffix = remaining != null
-    return if (propertySchemas.containsKey(current)) {
+    return if (propertySchemas.containsKey(currentUnescaped)) {
         if (hasSuffix) {
-            propertySchemas[current]!!.allowsProperty(remaining!!)
+            propertySchemas[currentUnescaped]!!.allowsProperty(remaining!!)
         } else {
             true
         }
     } else false
 }
 
-private fun ObjectSchema.definesPatternProperty(current: String, remaining: String?): Boolean {
-    for ((pattern, value): Map.Entry<Regexp, Schema> in getRegexpPatternProperties().entries) {
-        if (!pattern.patternMatchingFailure(current).isPresent) {
-            if (remaining == null || value.definesProperty(remaining)) {
-                return true
-            }
-        }
-    }
-    return false
-}
-
-private fun ObjectSchema.definesSchemaDependencyProperty(field: String): Boolean {
-    if (schemaDependencies.containsKey(field)) {
-        return true
-    }
-    for (schema in schemaDependencies.values) {
-        if (schema.definesProperty(field)) {
+private fun ObjectSchema.allowsPatternProperty(current: String, remaining: String?): Boolean {
+    val patternProperties: Map<Regexp, Schema> = getPrivateField("patternProperties")
+    patternProperties.entries.forEach { (pattern, value) ->
+        if (!pattern.patternMatchingFailure(current).isPresent
+            && (remaining == null || value.allowsProperty(remaining))
+        ) {
             return true
         }
     }
     return false
 }
 
-fun ArraySchema.allowsProperty(field: String): Boolean {
-    val headAndTail: Array<String?> = callPrivateMethod("headAndTailOfJsonPointerFragment", field)
+private fun ObjectSchema.allowsSchemaDependencyProperty(field: String): Boolean {
+    if (schemaDependencies.containsKey(field)) {
+        return true
+    }
+    for (schema in schemaDependencies.values) {
+        if (schema.allowsProperty(field)) {
+            return true
+        }
+    }
+    return false
+}
+
+private fun ArraySchema.allowsProperty(field: String): Boolean {
+    val headAndTail: Array<String?> = headAndTailOfJsonPointerFragment(field)
     val nextToken = headAndTail[0]!!
     val remaining = headAndTail[1]
     val hasRemaining = remaining != null
     return try {
-        callPrivateMethod("tryPropertyDefinitionByNumericIndex", nextToken, remaining, hasRemaining)
+        tryAllowPropertyDefinitionByNumericIndex(nextToken, remaining, hasRemaining)
     } catch (e: NumberFormatException) {
-        callPrivateMethod("tryPropertyDefinitionByNumericIndex", nextToken, remaining, hasRemaining)
+        tryAllowPropertyDefinitionByMetaIndex(nextToken, remaining, hasRemaining)
     }
 }
 
-fun CombinedSchema.allowsProperty(field: String?): Boolean {
+
+private fun ArraySchema.tryAllowPropertyDefinitionByMetaIndex(
+    nextToken: String,
+    remaining: String?,
+    hasRemaining: Boolean
+): Boolean {
+    val isAll = "all" == nextToken
+    val isAny = "any" == nextToken
+    if (!hasRemaining && (isAll || isAny)) {
+        return true
+    }
+    if (isAll) {
+        return if (allItemSchema != null) {
+            allItemSchema.allowsProperty(remaining!!)
+        } else {
+            val allItemSchemasDefine: Boolean = itemSchemas.stream()
+                .map { schema -> schema.allowsProperty(remaining!!) }
+                .reduce(true) { a, b -> java.lang.Boolean.logicalAnd(a, b) }
+            if (allItemSchemasDefine) {
+                return if (schemaOfAdditionalItems != null) {
+                    schemaOfAdditionalItems.allowsProperty(remaining!!)
+                } else {
+                    true
+                }
+            }
+            false
+        }
+    } else if (isAny) {
+        return if (allItemSchema != null) {
+            allItemSchema.allowsProperty(remaining!!)
+        } else {
+            val anyItemSchemasDefine: Boolean = itemSchemas.stream()
+                .map { schema -> schema.allowsProperty(remaining!!) }
+                .reduce(false) { a, b -> java.lang.Boolean.logicalOr(a, b) }
+            anyItemSchemasDefine || schemaOfAdditionalItems == null || schemaOfAdditionalItems.allowsProperty(remaining!!)
+        }
+    }
+    return false
+}
+
+private fun ArraySchema.tryAllowPropertyDefinitionByNumericIndex(nextToken: String, remaining: String?, hasRemaining: Boolean): Boolean {
+    val index = nextToken.toInt()
+    if (index < 0) {
+        return false
+    }
+    if (maxItems != null && maxItems <= index) {
+        return false
+    }
+    return if (allItemSchema != null && hasRemaining) {
+        allItemSchema.allowsProperty(remaining!!)
+    } else {
+        if (hasRemaining) {
+            if (index < itemSchemas.size) {
+                return itemSchemas[index].allowsProperty(remaining!!)
+            }
+            if (schemaOfAdditionalItems != null) {
+                return schemaOfAdditionalItems.allowsProperty(remaining!!)
+            }
+        }
+        getPrivateField("additionalItems")
+    }
+}
+
+private fun CombinedSchema.allowsProperty(field: String): Boolean {
     val matching: MutableList<Schema> = ArrayList()
     for (subschema in subschemas) {
-        if (subschema.definesProperty(field)) {
+        if (subschema.allowsProperty(field)) {
             matching.add(subschema)
         }
     }
@@ -101,15 +173,26 @@ fun CombinedSchema.allowsProperty(field: String?): Boolean {
     return true
 }
 
-internal fun <T> Any.callPrivateMethod(methodName: String, vararg args: Any?): T {
-    val method = javaClass.getDeclaredMethod(methodName)
-    method.isAccessible = true
-    return method.invoke(this, args) as T
+private fun ReferenceSchema.allowsProperty(field: String): Boolean {
+    checkNotNull(referredSchema) { "referredSchema must be injected before validation" }
+    return referredSchema.allowsProperty(field)
 }
 
-internal fun <T, U : Any> callPrivateStaticMethod(cls: KClass<U>, methodName: String, vararg args: Any?): T {
-    val method = cls.java.getDeclaredMethod(methodName)
+private fun Schema.headAndTailOfJsonPointerFragment(field: String): Array<String?> {
+    val method = Schema::class.java.declaredMethods.firstOrNull { it.name == "headAndTailOfJsonPointerFragment" }!!
     method.isAccessible = true
-    return method.invoke(null, args) as T
+    return method.invoke(this, field) as Array<String?>
+}
+
+private fun <T> Any.getPrivateField(fieldName: String): T {
+    val field = javaClass.getDeclaredField(fieldName)
+    field.isAccessible = true
+    return field.get(this) as T
+}
+
+private fun jSONPointerUnescape(token: String): String {
+    val method = JSONPointer::class.java.declaredMethods.firstOrNull { it.name == "unescape" }!!
+    method.isAccessible = true
+    return method.invoke(null, token) as String
 }
 

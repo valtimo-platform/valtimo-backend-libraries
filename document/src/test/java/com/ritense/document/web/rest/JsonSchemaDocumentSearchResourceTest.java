@@ -77,7 +77,7 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
 
         var content = new JsonDocumentContent("{\"firstName\": \"John\"}");
         final JsonSchemaDocument.CreateDocumentResultImpl result = JsonSchemaDocument.create(
-            definition(),
+            definitionOf("person"),
             content,
             USERNAME,
             documentSequenceGeneratorService,

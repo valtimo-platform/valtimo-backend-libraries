@@ -40,7 +40,6 @@ import org.camunda.bpm.engine.delegate.VariableScope
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity
 import org.camunda.bpm.engine.task.Task
 import org.springframework.context.event.EventListener
-import org.springframework.http.HttpStatus
 import java.net.MalformedURLException
 import java.net.URI
 import java.util.UUID

@@ -187,6 +187,10 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         mockDefinition(definitionName);
         documentDefinitionService.validateJsonPointer(definitionName, "/address/streetName");
         documentDefinitionService.validateJsonPointer(definitionName, "/address/nonExistent");
+        var exception = assertThrows(ValidationException.class, () ->
+            documentDefinitionService.validateJsonPointer(definitionName, "/nonExistent")
+        );
+        assertEquals("JsonPointer '/nonExistent' doesn't point to any property inside document definition 'allows-additional-properties'", exception.getMessage());
     }
 
     public void mockDefinition(String definitionName) {

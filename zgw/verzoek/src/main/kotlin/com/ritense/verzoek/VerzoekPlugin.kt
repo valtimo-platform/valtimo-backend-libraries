@@ -22,6 +22,7 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.EventType
+import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
 import com.ritense.zgw.Rsin
 import java.util.UUID
@@ -53,8 +54,10 @@ class VerzoekPlugin(
     @PluginEvent(invokedOn = [EventType.CREATE])
     fun validateProperties() {
         verzoekProperties.forEach { property ->
-            property.mapping.forEach {
-                documentDefinitionService.validateJsonPointer(property.caseDefinitionName, it.value)
+            if (property.copyStrategy == CopyStrategy.SPECIFIED) {
+                property.mapping?.forEach {
+                    documentDefinitionService.validateJsonPointer(property.caseDefinitionName, it.value)
+                }
             }
         }
     }

@@ -75,7 +75,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
 
         var content = new JsonDocumentContent("{\"firstName\": \"John\"}");
         final JsonSchemaDocument.CreateDocumentResultImpl result = JsonSchemaDocument.create(
-            definition(),
+            definitionOf("person"),
             content,
             USERNAME,
             documentSequenceGeneratorService,
@@ -130,7 +130,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
     void shouldModifyDocument() throws Exception {
         final var json = "{\"firstName\": \"John\"}";
         final var content = new JsonDocumentContent(json);
-        final var document = createDocument(content);
+        final var document = createDocument(definitionOf("person"), content).resultingDocument().get();
         final var modifyDocumentResult = new JsonSchemaDocument.ModifyDocumentResultImpl(document);
         when(documentService.modifyDocument(any())).thenReturn(modifyDocumentResult);
         when(documentService.get(document.id().getId().toString()))
@@ -158,7 +158,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
     void shouldAddResourceForDocument() throws Exception {
         final var json = "{\"firstName\": \"John\"}";
         final var content = new JsonDocumentContent(json);
-        final var document = createDocument(content);
+        final var document = createDocument(definitionOf("person"), content).resultingDocument().get();
 
         when(documentService.get(document.id().getId().toString()))
             .thenReturn(document);
@@ -180,7 +180,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
     void shouldRemoveRelatedFile() throws Exception {
         final var json = "{\"firstName\": \"John\"}";
         final var content = new JsonDocumentContent(json);
-        final var document = createDocument(content);
+        final var document = createDocument(definitionOf("person"), content).resultingDocument().get();
 
         when(documentService.get(document.id().getId().toString()))
             .thenReturn(document);
@@ -202,7 +202,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
     void shouldGetCandidateUsers() throws Exception {
         final var json = "{\"firstName\": \"John\"}";
         final var content = new JsonDocumentContent(json);
-        final var document = createDocument(content);
+        final var document = createDocument(definitionOf("person"), content).resultingDocument().get();
 
         when(documentService.getCandidateUsers(document.id()))
             .thenReturn(List.of(new NamedUser("1234", "John", "Doe")));
@@ -222,7 +222,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
     void shouldNotGetCandidateUsersWhenNoAccessToDocument() throws Exception {
         final var json = "{\"firstName\": \"John\"}";
         final var content = new JsonDocumentContent(json);
-        final var document = createDocument(content);
+        final var document = createDocument(definitionOf("person"), content).resultingDocument().get();
 
         when(documentService.get(document.id().toString())).thenReturn(document);
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))

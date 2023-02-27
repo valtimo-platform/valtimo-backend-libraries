@@ -154,17 +154,17 @@ class VerzoekPluginEventListener(
         verzoekTypeProperties: VerzoekProperties,
         verzoekObjectData: JsonNode
     ): JsonNode {
-        val verzoekDataData = verzoekObjectData.get("data")
+        val verzoekDataData = verzoekObjectData.get("data") ?: throw NotificatiesNotificationEventException(
+            "Verzoek Object data was empty, for verzoek with type '${verzoekTypeProperties.type}'"
+        )
 
         return if (verzoekTypeProperties.copyStrategy == CopyStrategy.FULL) {
-            verzoekDataData ?: throw NotificatiesNotificationEventException(
-                "Verzoek Object data was empty, for verzoek with type '${verzoekTypeProperties.type}'"
-            )
+            verzoekDataData
         } else {
             val documentContent = jacksonObjectMapper().createObjectNode()
             val jsonPatchBuilder = JsonPatchBuilder()
-            verzoekTypeProperties.mapping.map {
-                val verzoekDataItem = verzoekObjectData.at(it.key)
+            verzoekTypeProperties.mapping?.map {
+                val verzoekDataItem = verzoekDataData.at(it.key)
                 if (verzoekDataItem.isMissingNode) {
                     throw NotificatiesNotificationEventException(
                         "Missing Verzoek data at path '${it.key}', for Verzoek with type '${verzoekTypeProperties.type}'"

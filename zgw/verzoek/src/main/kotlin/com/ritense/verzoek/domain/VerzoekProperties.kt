@@ -26,7 +26,7 @@ data class VerzoekProperties(
     val initiatorRoltypeUrl: URI,
     val initiatorRolDescription: String,
     val copyStrategy: CopyStrategy,
-    val mapping: List<Mapping>,
+    val mapping: List<Mapping>?,
 )
 
 enum class CopyStrategy {
