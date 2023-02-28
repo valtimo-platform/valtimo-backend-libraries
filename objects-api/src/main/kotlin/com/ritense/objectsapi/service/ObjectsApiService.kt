@@ -26,6 +26,8 @@ import com.ritense.objectsapi.domain.request.ModifyObjectRequest
 import com.ritense.objectsapi.domain.request.ObjectSearchParameter
 import java.net.URI
 import java.util.UUID
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.core.ParameterizedTypeReference
 
 open class ObjectsApiService(
@@ -88,18 +90,19 @@ open class ObjectsApiService(
      * @param type the <code>type name as String</code> to filter
      */
     fun getObjects(type: URI?, searchParams: List<ObjectSearchParameter> = emptyList()): Collection<Object> {
-        var next = true
+        return buildList {
+            var currentPage = 1
+            while (true) {
+                val result = getObjectsWrapped(type, searchParams, currentPage)
+                addAll(result.results)
 
-        return generateSequence(1) { i -> if (next) i + 1 else null }
-            .flatMap { pageNumber ->
-                val result = getObjectsWrapped(type, searchParams, pageNumber)
+                if (result.next == null) break else currentPage++
 
-                if (result.next == null) {
-                    next = false
+                if (currentPage == 50) logger.warn {
+                    "Retrieving over 50 object pages. Please consider using a paginated result!"
                 }
-
-                result.results
-            }.toList()
+            }
+        }
     }
 
     @Deprecated("Marked for removal since 10.5.0")
@@ -170,5 +173,9 @@ open class ObjectsApiService(
             .path("${ObjectsApiConnector.rootUrlApiVersion}/objects/$uuid")
             .delete()
             .execute()
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }
