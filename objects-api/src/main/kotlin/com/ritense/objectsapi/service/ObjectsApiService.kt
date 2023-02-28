@@ -1,3 +1,20 @@
+/*
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
 package com.ritense.objectsapi.service
 
 import com.ritense.objectsapi.domain.GenericObject
@@ -71,17 +88,24 @@ open class ObjectsApiService(
      * @param type the <code>type name as String</code> to filter
      */
     fun getObjects(type: URI?, searchParams: List<ObjectSearchParameter> = emptyList()): Collection<Object> {
-        return RequestBuilder
-            .builder()
-            .baseUrl(objectsApiProperties.objectsApi.url)
-            .token(objectsApiProperties.objectsApi.token)
-            .path("${ObjectsApiConnector.rootUrlApiVersion}/objects")
-            .get()
-            .queryParams(searchParams.associate { "data_attrs" to it.toQueryParameter() }.toMutableMap())
-            .queryParam("type", type)
-            .executeForCollection(Object::class.java)
+        var next = true
+
+        return generateSequence(1) { i -> if (next) i + 1 else null }
+            .flatMap { pageNumber ->
+                val result = getObjectsWrapped(type, searchParams, pageNumber)
+
+                if (result.next == null) {
+                    next = false
+                }
+
+                result.results
+            }.toList()
     }
 
+    @Deprecated("Marked for removal since 10.5.0")
+    fun getObjectsWrapped(type: URI?, searchParams: List<ObjectSearchParameter> = emptyList()) {
+        getObjectsWrapped(type, searchParams, null)
+    }
     /**
      * Retrieve a Wrapper with a list of OBJECTs and their actual RECORD.
      * The actual record is defined as if the query parameter <code>type=aType</code> was given.
@@ -89,7 +113,7 @@ open class ObjectsApiService(
      *
      * @param type the <code>type name as String</code> to filter
      */
-    fun getObjectsWrapped(type: URI?, searchParams: List<ObjectSearchParameter> = emptyList()): ResultWrapper<Object> {
+    fun getObjectsWrapped(type: URI?, searchParams: List<ObjectSearchParameter> = emptyList(), page:Int?): ResultWrapper<Object> {
         return RequestBuilder
             .builder()
             .baseUrl(objectsApiProperties.objectsApi.url)
@@ -98,6 +122,7 @@ open class ObjectsApiService(
             .get()
             .queryParams(searchParams.associate { "data_attrs" to it.toQueryParameter() }.toMutableMap())
             .queryParam("type", type)
+            .queryParam("page", page)
             .executeWrapped(Object::class.java)
     }
 
