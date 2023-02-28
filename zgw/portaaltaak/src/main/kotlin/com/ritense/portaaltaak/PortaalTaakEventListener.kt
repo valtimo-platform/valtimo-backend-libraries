@@ -40,7 +40,6 @@ import org.camunda.bpm.engine.delegate.VariableScope
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity
 import org.camunda.bpm.engine.task.Task
 import org.springframework.context.event.EventListener
-import org.springframework.http.HttpStatus
 import java.net.MalformedURLException
 import java.net.URI
 import java.util.UUID
@@ -168,8 +167,7 @@ class PortaalTaakEventListener(
         }
         if (!documentPathsNode.isArray) {
             throw NotificatiesNotificationEventException(
-                "Could not retrieve document Urls.'/documenten' is not an array",
-                HttpStatus.INTERNAL_SERVER_ERROR
+                "Could not retrieve document Urls.'/documenten' is not an array"
             )
         }
         val documentenUris = mutableListOf<String>()
@@ -183,14 +181,12 @@ class PortaalTaakEventListener(
                         documentUrlNode.forEach { documentenUris.add(it.textValue()) }
                     } else {
                         throw NotificatiesNotificationEventException(
-                            "Could not retrieve document Urls. Found invalid URL in '/documenten'. ${documentUrlNode.toPrettyString()}",
-                            HttpStatus.INTERNAL_SERVER_ERROR
+                            "Could not retrieve document Urls. Found invalid URL in '/documenten'. ${documentUrlNode.toPrettyString()}"
                         )
                     }
                 } catch (e: MalformedURLException) {
                     throw NotificatiesNotificationEventException(
-                        "Could not retrieve document Urls. Malformed URL in: '/documenten'",
-                        HttpStatus.INTERNAL_SERVER_ERROR
+                        "Could not retrieve document Urls. Malformed URL in: '/documenten'"
                     )
                 }
             }
@@ -220,8 +216,7 @@ class PortaalTaakEventListener(
         } catch (ex: RuntimeException) {
             throw NotificatiesNotificationEventException(
                 "Could not start process with definition: $processDefinitionKey and businessKey: $businessKey.\n " +
-                        "Reason: ${ex.message}",
-                HttpStatus.INTERNAL_SERVER_ERROR
+                        "Reason: ${ex.message}"
             )
         }
     }
@@ -235,8 +230,7 @@ class PortaalTaakEventListener(
                 .createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
         return objectenApiPlugin.getObject(URI(event.resourceUrl)).record.data
             ?: throw NotificatiesNotificationEventException(
-                "Portaaltaak meta data was empty!",
-                HttpStatus.INTERNAL_SERVER_ERROR
+                "Portaaltaak meta data was empty!"
             )
     }
 

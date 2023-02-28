@@ -95,7 +95,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             content.asJson()
         );
 
-        JsonSchemaDocumentDefinition definition = definition();
+        JsonSchemaDocumentDefinition definition = definitionOf("referenced-array");
         when(documentDefinitionService.findLatestByName(eq("document-definition"))).thenReturn(Optional.of(definition));
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 
@@ -132,7 +132,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         );
         documentRequest.withResources(Set.of(resource));
 
-        JsonSchemaDocumentDefinition definition = definition();
+        JsonSchemaDocumentDefinition definition = definitionOf("referenced-array");
         when(documentDefinitionService.findLatestByName(eq("document-definition"))).thenReturn(Optional.of(definition));
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 

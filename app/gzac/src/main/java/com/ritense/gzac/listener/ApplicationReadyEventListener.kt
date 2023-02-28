@@ -718,7 +718,8 @@ class ApplicationReadyEventListener(
                             "caseDefinitionName": "leningen",
                             "processDefinitionKey": "lening-aanvragen",
                             "initiatorRoltypeUrl": "http://localhost:8001/catalogi/api/v1/roltypen/1c359a1b-c38d-47b8-bed5-994db88ead61",
-                            "initiatorRolDescription": "Initiator"
+                            "initiatorRolDescription": "Initiator",
+                            "copyStrategy": "full"
                         }]
                     }
                     """
