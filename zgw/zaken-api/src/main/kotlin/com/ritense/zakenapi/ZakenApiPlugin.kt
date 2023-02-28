@@ -41,6 +41,8 @@ import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
+import mu.KLogger
+import mu.KotlinLogging
 
 @Plugin(
     key = ZakenApiPlugin.PLUGIN_KEY,
@@ -202,25 +204,26 @@ class ZakenApiPlugin(
     }
 
     fun getZaakRollen(zaakUrl: URI, roleType: RolType? = null): List<Rol> {
-        var next = true
+        return buildList {
+            var currentPage = 1
+            while (true) {
+                val result = client.getZaakRollen(
+                    authenticationPluginConfiguration,
+                    url, zaakUrl, currentPage, roleType
+                )
+                addAll(result.results)
 
-        return generateSequence(1) { i -> if (next) i + 1 else null }
-            .flatMap { pageNumber ->
-                val result = client.getZaakRollen(authenticationPluginConfiguration,
-                    url,
-                    zaakUrl,
-                    pageNumber,
-                    roleType)
+                if (result.next == null) break else currentPage++
 
-                if (result.next == null) {
-                    next = false
+                if (currentPage == 50) logger.warn {
+                    "Retrieving over 50 zaakrol pages. Please consider using a paginated result!"
                 }
-
-                result.results
-            }.toList()
+            }
+        }
     }
 
     companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
         const val PLUGIN_KEY = "zakenapi"
         const val URL_PROPERTY = "url"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
