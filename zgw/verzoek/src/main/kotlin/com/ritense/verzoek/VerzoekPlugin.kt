@@ -53,12 +53,12 @@ class VerzoekPlugin(
 
     @PluginEvent(invokedOn = [EventType.CREATE])
     fun validateProperties() {
-        verzoekProperties.forEach { property ->
-            if (property.copyStrategy == CopyStrategy.SPECIFIED) {
+        verzoekProperties
+            .filter { it.copyStrategy == CopyStrategy.SPECIFIED }
+            .forEach { property ->
                 property.mapping?.forEach {
                     documentDefinitionService.validateJsonPointer(property.caseDefinitionName, it.value)
                 }
             }
-        }
     }
 }

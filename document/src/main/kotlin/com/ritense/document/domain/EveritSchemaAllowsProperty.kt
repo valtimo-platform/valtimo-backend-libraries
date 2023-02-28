@@ -27,7 +27,7 @@ import org.everit.json.schema.regexp.Regexp
 
 /** This method is a copy from org.everit.json.schema.Schema.definesProperty(.) but returns true when the schema allows additionalProperties */
 fun Schema.allowsProperty(field: String): Boolean {
-    return when(this) {
+    return when (this) {
         is ObjectSchema -> allowsProperty(field)
         is ArraySchema -> allowsProperty(field)
         is CombinedSchema -> allowsProperty(field)
@@ -36,6 +36,7 @@ fun Schema.allowsProperty(field: String): Boolean {
     }
 }
 
+/** Copied from ObjectSchema.definesProperty(.) but returns true when the schema allows additionalProperties */
 private fun ObjectSchema.allowsProperty(field: String): Boolean {
     val headAndTail: Array<String?> = headAndTailOfJsonPointerFragment(field)
     val nextToken = headAndTail[0]!!
@@ -44,21 +45,22 @@ private fun ObjectSchema.allowsProperty(field: String): Boolean {
     return field2.isNotEmpty() && (allowsSchemaProperty(nextToken, remaining)
             || allowsPatternProperty(nextToken, remaining)
             || allowsSchemaDependencyProperty(field2)
-            || permitsAdditionalProperties())
+            || permitsAdditionalProperties()) // <- This is the only line that is different from all definesProperty(.) implementations
 }
 
+/** Copied from ObjectSchema.definesSchemaProperty(.) but returns true when the schema allows additionalProperties */
 private fun ObjectSchema.allowsSchemaProperty(current: String, remaining: String?): Boolean {
-    val currentUnescaped = jSONPointerUnescape(current)
-    val hasSuffix = remaining != null
+    val currentUnescaped = jsonPointerUnescape(current)
     return if (propertySchemas.containsKey(currentUnescaped)) {
-        if (hasSuffix) {
-            propertySchemas[currentUnescaped]!!.allowsProperty(remaining!!)
+        if (remaining != null) {
+            propertySchemas[currentUnescaped]!!.allowsProperty(remaining)
         } else {
             true
         }
     } else false
 }
 
+/** Copied from ObjectSchema.definesPatternProperty(.) but returns true when the schema allows additionalProperties */
 private fun ObjectSchema.allowsPatternProperty(current: String, remaining: String?): Boolean {
     val patternProperties: Map<Regexp, Schema> = getPrivateField("patternProperties")
     patternProperties.entries.forEach { (pattern, value) ->
@@ -71,6 +73,7 @@ private fun ObjectSchema.allowsPatternProperty(current: String, remaining: Strin
     return false
 }
 
+/** Copied from ObjectSchema.definesSchemaDependencyProperty(.) but returns true when the schema allows additionalProperties */
 private fun ObjectSchema.allowsSchemaDependencyProperty(field: String): Boolean {
     if (schemaDependencies.containsKey(field)) {
         return true
@@ -83,20 +86,22 @@ private fun ObjectSchema.allowsSchemaDependencyProperty(field: String): Boolean 
     return false
 }
 
+/** Copied from ArraySchema.definesProperty(.) but returns true when the schema allows additionalProperties */
 private fun ArraySchema.allowsProperty(field: String): Boolean {
     val headAndTail: Array<String?> = headAndTailOfJsonPointerFragment(field)
     val nextToken = headAndTail[0]!!
     val remaining = headAndTail[1]
     val hasRemaining = remaining != null
     return try {
-        tryAllowPropertyDefinitionByNumericIndex(nextToken, remaining, hasRemaining)
+        tryPropertyDefinitionByNumericIndex(nextToken, remaining, hasRemaining)
     } catch (e: NumberFormatException) {
-        tryAllowPropertyDefinitionByMetaIndex(nextToken, remaining, hasRemaining)
+        tryPropertyDefinitionByMetaIndex(nextToken, remaining, hasRemaining)
     }
 }
 
 
-private fun ArraySchema.tryAllowPropertyDefinitionByMetaIndex(
+/** Copied from ArraySchema.tryPropertyDefinitionByMetaIndex(.) but returns true when the schema allows additionalProperties */
+private fun ArraySchema.tryPropertyDefinitionByMetaIndex(
     nextToken: String,
     remaining: String?,
     hasRemaining: Boolean
@@ -135,7 +140,12 @@ private fun ArraySchema.tryAllowPropertyDefinitionByMetaIndex(
     return false
 }
 
-private fun ArraySchema.tryAllowPropertyDefinitionByNumericIndex(nextToken: String, remaining: String?, hasRemaining: Boolean): Boolean {
+/** Copied from ArraySchema.tryPropertyDefinitionByNumericIndex(.) but returns true when the schema allows additionalProperties */
+private fun ArraySchema.tryPropertyDefinitionByNumericIndex(
+    nextToken: String,
+    remaining: String?,
+    hasRemaining: Boolean
+): Boolean {
     val index = nextToken.toInt()
     if (index < 0) {
         return false
@@ -158,6 +168,7 @@ private fun ArraySchema.tryAllowPropertyDefinitionByNumericIndex(nextToken: Stri
     }
 }
 
+/** Copied from CombinedSchema.definesProperty(.) but returns true when the schema allows additionalProperties */
 private fun CombinedSchema.allowsProperty(field: String): Boolean {
     val matching: MutableList<Schema> = ArrayList()
     for (subschema in subschemas) {
@@ -173,13 +184,14 @@ private fun CombinedSchema.allowsProperty(field: String): Boolean {
     return true
 }
 
+/** Copied from ReferenceSchema.definesProperty(.) but returns true when the schema allows additionalProperties */
 private fun ReferenceSchema.allowsProperty(field: String): Boolean {
     checkNotNull(referredSchema) { "referredSchema must be injected before validation" }
     return referredSchema.allowsProperty(field)
 }
 
 private fun Schema.headAndTailOfJsonPointerFragment(field: String): Array<String?> {
-    val method = Schema::class.java.declaredMethods.firstOrNull { it.name == "headAndTailOfJsonPointerFragment" }!!
+    val method = Schema::class.java.declaredMethods.single { it.name == "headAndTailOfJsonPointerFragment" }
     method.isAccessible = true
     return method.invoke(this, field) as Array<String?>
 }
@@ -190,8 +202,8 @@ private fun <T> Any.getPrivateField(fieldName: String): T {
     return field.get(this) as T
 }
 
-private fun jSONPointerUnescape(token: String): String {
-    val method = JSONPointer::class.java.declaredMethods.firstOrNull { it.name == "unescape" }!!
+private fun jsonPointerUnescape(token: String): String {
+    val method = JSONPointer::class.java.declaredMethods.single { it.name == "unescape" }
     method.isAccessible = true
     return method.invoke(null, token) as String
 }
