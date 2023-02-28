@@ -20,22 +20,6 @@ import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.exception.ProcessNotUpdatableException;
 import com.ritense.valtimo.service.util.FormUtils;
-import org.camunda.bpm.engine.FormService;
-import org.camunda.bpm.engine.HistoryService;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.history.HistoricProcessInstance;
-import org.camunda.bpm.engine.history.HistoricVariableInstance;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.camunda.bpm.model.bpmn.Bpmn;
-import org.camunda.bpm.model.bpmn.BpmnModelInstance;
-import org.camunda.bpm.model.bpmn.instance.Process;
-import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.Comparator;
@@ -45,6 +29,21 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.HistoryService;
+import org.camunda.bpm.engine.RepositoryService;
+import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.history.HistoricProcessInstance;
+import org.camunda.bpm.engine.repository.ProcessDefinition;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.runtime.VariableInstance;
+import org.camunda.bpm.model.bpmn.Bpmn;
+import org.camunda.bpm.model.bpmn.BpmnModelInstance;
+import org.camunda.bpm.model.bpmn.instance.Process;
+import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 public class CamundaProcessService {
 
@@ -125,18 +124,18 @@ public class CamundaProcessService {
     }
 
     public Map<String, Object> getProcessInstanceVariables(String processInstanceId, List<String> variableNames) {
-        List<HistoricVariableInstance> historicVariableInstances = historyService
-            .createHistoricVariableInstanceQuery()
-            .processInstanceId(processInstanceId)
+        List<VariableInstance> variableInstances = runtimeService
+            .createVariableInstanceQuery()
+            .processInstanceIdIn(processInstanceId)
+            .variableNameIn(variableNames.toArray(String[]::new))
             .orderByVariableName()
             .desc()
             .list();
 
-        return historicVariableInstances
+        return variableInstances
             .stream()
-            .filter(historicVariableInstance -> historicVariableInstance.getValue() != null && variableNames.contains(
-                historicVariableInstance.getName()))
-            .collect(Collectors.toMap(HistoricVariableInstance::getName, HistoricVariableInstance::getValue));
+            .filter(variableInstance -> variableInstance.getValue() != null)
+            .collect(Collectors.toMap(VariableInstance::getName, VariableInstance::getValue));
     }
 
     public List<HistoricProcessInstance> getAllActiveContextProcessesStartedByCurrentUser(
