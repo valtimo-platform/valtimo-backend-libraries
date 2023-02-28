@@ -18,9 +18,13 @@ package com.ritense.documentenapi.client
 
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.zgw.ClientTools
+import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToFlux
+import org.springframework.web.util.UriComponentsBuilder
+import reactor.core.publisher.Flux
 import java.net.URI
 
 class DocumentenApiClient(
@@ -52,6 +56,14 @@ class DocumentenApiClient(
 
     fun getInformatieObject(
         authentication: DocumentenApiAuthentication,
+        baseUrl: URI,
+        objectId: String,
+    ): DocumentInformatieObject {
+        return getInformatieObject(authentication, toObjectUrl(baseUrl, objectId))
+    }
+
+    fun getInformatieObject(
+        authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): DocumentInformatieObject {
         return checkNotNull(
@@ -67,5 +79,40 @@ class DocumentenApiClient(
         ) {
             "Could not retrieve ${DocumentInformatieObject::class.simpleName} at $objectUrl"
         }
+    }
+
+    fun downloadInformatieObjectContent(
+        authentication: DocumentenApiAuthentication,
+        baseUrl: URI,
+        objectId: String,
+    ): Flux<DataBuffer> {
+        return downloadInformatieObjectContent(authentication, toObjectUrl(baseUrl, objectId))
+    }
+
+    fun downloadInformatieObjectContent(
+        authentication: DocumentenApiAuthentication,
+        objectUrl: URI
+    ): Flux<DataBuffer> {
+        return webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, objectUrl)
+                    .pathSegment("download")
+                    .build()
+            }
+            .accept(MediaType.APPLICATION_OCTET_STREAM)
+            .retrieve()
+            .bodyToFlux()
+    }
+
+    private fun toObjectUrl(baseUrl: URI, objectId: String): URI {
+        return UriComponentsBuilder
+            .fromUri(baseUrl)
+            .pathSegment("enkelvoudiginformatieobjecten", objectId)
+            .build()
+            .toUri()
     }
 }

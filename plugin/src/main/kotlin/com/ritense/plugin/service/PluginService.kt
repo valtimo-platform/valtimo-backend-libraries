@@ -364,8 +364,16 @@ class PluginService(
         return objectMapper.treeToValue(value, objectMapper.constructType(param.parameterizedType))
     }
 
+    fun <T> createInstance(pluginConfigurationId: String): T {
+        return createInstance(UUID.fromString(pluginConfigurationId))
+    }
+
+    fun <T> createInstance(pluginConfigurationId: UUID): T {
+        return createInstance(PluginConfigurationId.existingId(pluginConfigurationId)) as T
+    }
+
     fun createInstance(pluginConfigurationId: PluginConfigurationId): Any {
-        val configuration = pluginConfigurationRepository.getById(pluginConfigurationId)
+        val configuration = pluginConfigurationRepository.getReferenceById(pluginConfigurationId)
         return createInstance(configuration)
     }
 

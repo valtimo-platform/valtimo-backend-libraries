@@ -17,7 +17,8 @@
 package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.ritense.documentenapi.client.ConfidentialityLevel
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.convertValue
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.DocumentStatusType
@@ -30,9 +31,15 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.zgw.domain.Vertrouwelijkheid
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.core.io.buffer.DataBufferUtils
+import reactor.core.publisher.Flux
 import java.io.InputStream
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
 import java.net.URI
 import java.time.LocalDate
 
@@ -44,7 +51,8 @@ import java.time.LocalDate
 class DocumentenApiPlugin(
     private val client: DocumentenApiClient,
     private val storageService: TemporaryResourceStorageService,
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val objectMapper: ObjectMapper,
 ) {
     @PluginProperty(key = URL_PROPERTY, secret = false)
     lateinit var url: URI
@@ -121,6 +129,46 @@ class DocumentenApiPlugin(
         )
     }
 
+    @PluginAction(
+        key = "download-document",
+        title = "Download document",
+        description = "Download a document from the Documenten API and store it as a temporary document",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun downloadInformatieObject(
+        execution: DelegateExecution,
+    ): String {
+        val documentUrl = URI(execution.getVariable(DOCUMENT_URL_PROCESS_VAR) as String)
+        val metaData = client.getInformatieObject(authenticationPluginConfiguration, documentUrl)
+        val content = client.downloadInformatieObjectContent(authenticationPluginConfiguration, documentUrl)
+
+        val metaDataMap = objectMapper.convertValue<MutableMap<String, Any>>(metaData)
+        metaDataMap[MetadataType.DOCUMENT_ID.key] = execution.businessKey
+        metaDataMap["title"] = metaData.titel
+        metaData.beschrijving?.let { metaDataMap["description"] = it }
+        metaData.bestandsnaam?.let { metaDataMap[MetadataType.FILE_NAME.key] = it }
+
+        val tempResourceId = storageService.store(
+            inputStream = content.toInputStream(),
+            metadata = metaDataMap
+        )
+
+        execution.setVariable(RESOURCE_ID_PROCESS_VAR, tempResourceId)
+        return tempResourceId
+    }
+
+    fun getInformatieObject(objectId: String): DocumentInformatieObject {
+        return client.getInformatieObject(authenticationPluginConfiguration, url, objectId)
+    }
+
+    fun getInformatieObject(objectUrl: URI): DocumentInformatieObject {
+        return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
+    }
+
+    fun downloadInformatieObject(objectId: String): Flux<DataBuffer> {
+        return client.downloadInformatieObjectContent(authenticationPluginConfiguration, url, objectId)
+    }
+
     private fun storeDocument(
         execution: DelegateExecution,
         metadata: Map<String, Any>,
@@ -138,7 +186,7 @@ class DocumentenApiPlugin(
             bronorganisatie = bronorganisatie,
             creatiedatum = getLocalDateFromMetaData(metadata, "creationDate", LocalDate.now())!!,
             titel = title,
-            vertrouwelijkheidaanduiding = ConfidentialityLevel.fromKey(confidentialityLevel),
+            vertrouwelijkheidaanduiding = Vertrouwelijkheid.fromKey(confidentialityLevel),
             auteur = metadata["author"] as String? ?: DEFAULT_AUTHOR,
             status = status,
             taal = language ?: DEFAULT_LANGUAGE,
@@ -189,8 +237,14 @@ class DocumentenApiPlugin(
         return metadata["filename"] as String? ?: metadata[MetadataType.FILE_NAME.name] as String?
     }
 
-    fun getInformatieObject(objectUrl: URI): DocumentInformatieObject {
-        return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
+    private fun Flux<DataBuffer>.toInputStream(): InputStream {
+        val osPipe = PipedOutputStream()
+        val isPipe = PipedInputStream(osPipe)
+        val flux = this
+            .doOnError { isPipe.use {} }
+            .doFinally { osPipe.use {} }
+        DataBufferUtils.write(flux, osPipe).subscribe(DataBufferUtils.releaseConsumer())
+        return isPipe
     }
 
     companion object {
@@ -199,6 +253,7 @@ class DocumentenApiPlugin(
         const val DEFAULT_LANGUAGE = "nld"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
+
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
             url.toString().startsWith(properties.get(URL_PROPERTY).textValue())
         }

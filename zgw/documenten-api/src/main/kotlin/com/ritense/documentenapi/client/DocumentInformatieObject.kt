@@ -17,6 +17,8 @@
 package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.ritense.zgw.Rsin
+import com.ritense.zgw.domain.Vertrouwelijkheid
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -24,16 +26,16 @@ import java.time.LocalDateTime
 class DocumentInformatieObject (
     val url: URI,
     val identificatie: String? = null,
-    val bronorganisatie: String,
+    val bronorganisatie: Rsin,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val creatiedatum: LocalDate,
     val titel: String,
-    val vertrouwelijkheidaanduiding: ConfidentialityLevel? = null,
+    val vertrouwelijkheidaanduiding: Vertrouwelijkheid? = null,
     val auteur: String,
     val status: DocumentStatusType? = null,
     val formaat: String? = null,
     val taal: String,
-    val versie: Int,
+    val versie: Int? = null,
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     val beginRegistratie: LocalDateTime,
     val bestandsnaam: String? = null,
@@ -45,5 +47,4 @@ class DocumentInformatieObject (
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val verzenddatum: LocalDate? = null,
     val indicatieGebruiksrecht: Boolean? = null,
-    val verschijningsvorm: String? = null,
 )

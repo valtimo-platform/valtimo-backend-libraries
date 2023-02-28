@@ -30,6 +30,9 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "io.reactivex:rxjavafx:2.0.2"
+    implementation "io.reactivex:rxjava-reactive-streams:1.2.1"
 
     testImplementation project(':document')
     testImplementation project(':resource')
