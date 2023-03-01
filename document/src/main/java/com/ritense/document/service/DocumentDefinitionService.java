@@ -22,6 +22,8 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import javax.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
@@ -63,8 +65,9 @@ public interface DocumentDefinitionService {
 
     void putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles);
 
-    void validateJsonPath(String documentDefinitionName, String jsonPathExpression);
+    void validateJsonPath(String documentDefinitionName, String jsonPathExpression) throws ValidationException;
 
     boolean isValidJsonPath(JsonSchemaDocumentDefinition definition, String jsonPathExpression);
 
+    void validateJsonPointer(String documentDefinitionName, String jsonPointer) throws ValidationException;
 }

@@ -35,7 +35,7 @@ public class JsonSchemaJsonDifferenceServiceTest extends BaseTest {
 
     @BeforeEach
     public void setUp() {
-        definition = definition();
+        definition = definitionOf("person");
     }
 
     @Test

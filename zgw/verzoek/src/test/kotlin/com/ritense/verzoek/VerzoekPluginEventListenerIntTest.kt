@@ -19,6 +19,7 @@ package com.ritense.verzoek
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.BaseIntegrationTest
+import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.result.DeployDocumentDefinitionResult
@@ -60,7 +61,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
     private val zaakTypeUrl: String = "https://example.gov"
     private val verzoekObjectType = "objection"
 
-    lateinit var documentDefinition: DeployDocumentDefinitionResult
+    lateinit var documentDefinition: DocumentDefinition
     lateinit var notificatiesApiPluginConfiguration: PluginConfiguration
     lateinit var objectManagement: ObjectManagement
 
@@ -127,25 +128,11 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
 
         pluginService
 
-        documentDefinition = documentDefinitionService.deploy(
-            """
-                {
-                    "${"$"}id": "verzoek-document-definition.schema",
-                    "${"$"}schema": "http://json-schema.org/draft-07/schema#",
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        }
-                    }
-                }
-        """.trimIndent()
-        )
-        assert(documentDefinition.documentDefinition() != null)
+        documentDefinition = documentDefinitionService.findLatestByName("profile").get()
 
         objectManagement = objectManagementService.create(createObjectManagement())
 
-        whenever(zaaktypeUrlProvider.getZaaktypeUrl(documentDefinition.documentDefinition().id().name()))
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl(documentDefinition.id().name()))
             .thenReturn(URI.create(zaakTypeUrl))
 
         val notificatiesApiAuthenticationPluginConfiguration = createPluginConfiguration(
@@ -185,10 +172,15 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.documentDefinition().id().name()}",
+                "caseDefinitionName": "${documentDefinition.id().name()}",
                 "processDefinitionKey": "objection-process",
                 "initiatorRoltypeUrl": "$initiatoRolType",
-                "initiatorRolDescription": "Initiator"
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "specified",
+                "mapping": [{
+                    "key": "/name",
+                    "value": "/fullname"
+                }]
               }]
             }
             """.trimIndent()
@@ -221,7 +213,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         val documentInstance = documentService.get(processList[0].businessKey)
         assertEquals(
             "John Doe",
-            documentInstance.content().getValueBy(JsonPointer.valueOf("/name")).get().textValue()
+            documentInstance.content().getValueBy(JsonPointer.valueOf("/fullname")).get().textValue()
         )
     }
 
@@ -237,10 +229,11 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.documentDefinition().id().name()}",
+                "caseDefinitionName": "${documentDefinition.id().name()}",
                 "processDefinitionKey": "objection-process",
                 "initiatorRoltypeUrl": "$initiatoRolType",
-                "initiatorRolDescription": "Initiator"
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "full"
               }]
             }
             """.trimIndent()
@@ -272,10 +265,11 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.documentDefinition().id().name()}",
+                "caseDefinitionName": "${documentDefinition.id().name()}",
                 "processDefinitionKey": "objection-process",
                 "initiatorRoltypeUrl": "$initiatoRolType",
-                "initiatorRolDescription": "Initiator"
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "full"
               }]
             }
             """.trimIndent()
@@ -307,10 +301,11 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.documentDefinition().id().name()}",
+                "caseDefinitionName": "${documentDefinition.id().name()}",
                 "processDefinitionKey": "objection-process",
                 "initiatorRoltypeUrl": "$initiatoRolType",
-                "initiatorRolDescription": "Initiator"
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "full"
               }]
             }
             """.trimIndent()
@@ -327,7 +322,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             verzoekPluginEventListener.createZaakFromNotificatie(createEvent())
         }
         //assertions
-        assertEquals("Verzoek Object data was empty!", exception.message)
+        assertEquals("Verzoek Object data was empty, for verzoek with type 'objection'", exception.message)
     }
 
     private fun createObjectWrapper(withMetaData: Boolean, withType: String, withObjectData: Boolean): ObjectWrapper {

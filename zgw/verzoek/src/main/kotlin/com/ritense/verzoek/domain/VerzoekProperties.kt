@@ -16,6 +16,7 @@
 
 package com.ritense.verzoek.domain
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URI
 
 data class VerzoekProperties(
@@ -24,4 +25,19 @@ data class VerzoekProperties(
     val processDefinitionKey: String,
     val initiatorRoltypeUrl: URI,
     val initiatorRolDescription: String,
+    val copyStrategy: CopyStrategy,
+    val mapping: List<Mapping>?,
+)
+
+enum class CopyStrategy {
+    @JsonProperty("full")
+    FULL,
+
+    @JsonProperty("specified")
+    SPECIFIED
+}
+
+data class Mapping(
+    val key: String,
+    val value: String,
 )

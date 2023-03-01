@@ -1,3 +1,20 @@
+/*
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
 package com.ritense.objectsapi.service
 
 import com.ritense.objectsapi.domain.GenericObject
@@ -9,6 +26,8 @@ import com.ritense.objectsapi.domain.request.ModifyObjectRequest
 import com.ritense.objectsapi.domain.request.ObjectSearchParameter
 import java.net.URI
 import java.util.UUID
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.core.ParameterizedTypeReference
 
 open class ObjectsApiService(
@@ -71,17 +90,25 @@ open class ObjectsApiService(
      * @param type the <code>type name as String</code> to filter
      */
     fun getObjects(type: URI?, searchParams: List<ObjectSearchParameter> = emptyList()): Collection<Object> {
-        return RequestBuilder
-            .builder()
-            .baseUrl(objectsApiProperties.objectsApi.url)
-            .token(objectsApiProperties.objectsApi.token)
-            .path("${ObjectsApiConnector.rootUrlApiVersion}/objects")
-            .get()
-            .queryParams(searchParams.associate { "data_attrs" to it.toQueryParameter() }.toMutableMap())
-            .queryParam("type", type)
-            .executeForCollection(Object::class.java)
+        return buildList {
+            var currentPage = 1
+            while (true) {
+                val result = getObjectsWrapped(type, searchParams, currentPage)
+                addAll(result.results)
+
+                if (result.next == null) break else currentPage++
+
+                if (currentPage == 50) logger.warn {
+                    "Retrieving over 50 object pages. Please consider using a paginated result!"
+                }
+            }
+        }
     }
 
+    @Deprecated("Marked for removal since 10.5.0")
+    fun getObjectsWrapped(type: URI?, searchParams: List<ObjectSearchParameter> = emptyList()) {
+        getObjectsWrapped(type, searchParams, null)
+    }
     /**
      * Retrieve a Wrapper with a list of OBJECTs and their actual RECORD.
      * The actual record is defined as if the query parameter <code>type=aType</code> was given.
@@ -89,7 +116,7 @@ open class ObjectsApiService(
      *
      * @param type the <code>type name as String</code> to filter
      */
-    fun getObjectsWrapped(type: URI?, searchParams: List<ObjectSearchParameter> = emptyList()): ResultWrapper<Object> {
+    fun getObjectsWrapped(type: URI?, searchParams: List<ObjectSearchParameter> = emptyList(), page:Int?): ResultWrapper<Object> {
         return RequestBuilder
             .builder()
             .baseUrl(objectsApiProperties.objectsApi.url)
@@ -98,6 +125,7 @@ open class ObjectsApiService(
             .get()
             .queryParams(searchParams.associate { "data_attrs" to it.toQueryParameter() }.toMutableMap())
             .queryParam("type", type)
+            .queryParam("page", page)
             .executeWrapped(Object::class.java)
     }
 
@@ -145,5 +173,9 @@ open class ObjectsApiService(
             .path("${ObjectsApiConnector.rootUrlApiVersion}/objects/$uuid")
             .delete()
             .execute()
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }
