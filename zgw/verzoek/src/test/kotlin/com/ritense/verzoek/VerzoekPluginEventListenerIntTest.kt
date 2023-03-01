@@ -32,7 +32,7 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import java.net.URI
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 import javax.transaction.Transactional
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -197,7 +197,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
         doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
 
-        doReturn(mockObjectenApiPlugin).whenever(pluginService).createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
+        doReturn(mockObjectenApiPlugin).whenever(pluginService)
+            .createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
         doReturn(createObjectWrapper(withMetaData = true, verzoekObjectType, true)).whenever(mockObjectenApiPlugin)
             .getObject(any())
         //tested method
@@ -247,7 +248,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         //mocks
         val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
         doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
-        doReturn(mockObjectenApiPlugin).whenever(pluginService).createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
+        doReturn(mockObjectenApiPlugin).whenever(pluginService)
+            .createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
         doReturn(createObjectWrapper(withMetaData = false, verzoekObjectType, true)).whenever(mockObjectenApiPlugin)
             .getObject(any())
         //tested method
@@ -281,7 +283,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         //mocks
         val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
         doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
-        doReturn(mockObjectenApiPlugin).whenever(pluginService).createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
+        doReturn(mockObjectenApiPlugin).whenever(pluginService)
+            .createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
         doReturn(createObjectWrapper(withMetaData = true, "otherType", true)).whenever(mockObjectenApiPlugin)
             .getObject(any())
         //tested method
@@ -315,7 +318,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         //mocks
         val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
         doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
-        doReturn(mockObjectenApiPlugin).whenever(pluginService).createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
+        doReturn(mockObjectenApiPlugin).whenever(pluginService)
+            .createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
         doReturn(createObjectWrapper(withMetaData = true, verzoekObjectType, false)).whenever(mockObjectenApiPlugin)
             .getObject(any())
         //tested method

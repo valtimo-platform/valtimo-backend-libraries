@@ -18,6 +18,7 @@ package com.ritense.valtimo.processlink
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
@@ -113,6 +114,7 @@ internal class CopyPluginActionsOnProcessDeploymentListenerIntTest : BaseIntegra
                 pluginConfiguration.id.id,
                 "test-action",
                 jacksonObjectMapper().readTree("{}") as ObjectNode,
+                ActivityType.SERVICE_TASK_START.bpmnModelValue
             )
         )
     }

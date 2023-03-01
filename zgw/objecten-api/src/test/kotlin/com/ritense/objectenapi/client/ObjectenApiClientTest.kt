@@ -16,6 +16,7 @@
 
 package com.ritense.objectenapi.client
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.IntNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.objectenapi.ObjectenApiAuthentication
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.data.domain.PageRequest
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
@@ -195,6 +197,98 @@ internal class ObjectenApiClientTest {
         assertEquals(LocalDate.of(2019, 8, 26), result.results[0].record.registrationAt)
         assertEquals("string", result.results[0].record.correctionFor)
         assertEquals("string2", result.results[0].record.correctedBy)
+    }
+
+    @Test
+    fun `should send patch request`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ObjectenApiClient(webclientBuilder)
+
+        val responseBody = """
+            {
+              "url": "http://example.com",
+              "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+              "type": "http://example.com",
+              "record": {
+                "index": 0,
+                "typeVersion": 32767,
+                "data": {
+                  "property1": "henk",
+                  "property2": 123
+                },
+                "geometry": {
+                  "type": "string",
+                  "coordinates": [
+                    0,
+                    0
+                  ]
+                },
+                "startAt": "2019-08-24",
+                "endAt": "2019-08-25",
+                "registrationAt": "2019-08-26",
+                "correctionFor": "string",
+                "correctedBy": "string2"
+              }
+            }
+        """.trimIndent()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val objectUrl = mockApi.url("/some-object").toString()
+        val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString()
+
+        val result = client.objectPatch(
+            TestAuthentication(),
+            URI(objectUrl),
+            ObjectRequest(
+                URI(objectTypesApiUrl),
+                ObjectRecord(
+                    index = 1,
+                    typeVersion = 2,
+                    data = ObjectMapper().readTree("{\"test\":\"some-value\"}"),
+                    startAt = LocalDate.of(2000, 1, 2)
+                )
+            )
+        )
+
+        val recordedRequest = mockApi.takeRequest()
+
+        val expectedRequest = """
+            {
+               "type":"$objectTypesApiUrl",
+               "record":{
+                  "index":1,
+                  "typeVersion":2,
+                  "data":{
+                     "test":"some-value"
+                  },
+                  "startAt":"2000-01-02"
+               }
+            }
+        """.trimIndent()
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+        assertEquals("PATCH", recordedRequest.method)
+        assertEquals(objectUrl, recordedRequest.requestUrl.toString())
+        JSONAssert.assertEquals(expectedRequest, recordedRequest.body.readUtf8(), false)
+
+        assertEquals(URI("http://example.com"), result.url)
+        assertEquals(UUID.fromString("095be615-a8ad-4c33-8e9c-c7612fbf6c9f"), result.uuid)
+        assertEquals(URI("http://example.com"), result.type)
+        assertEquals(0, result.record.index)
+        assertEquals(32767, result.record.typeVersion)
+        assertEquals("henk", (result.record.data?.get("property1") as TextNode).asText())
+        assertEquals(123, (result.record.data?.get("property2") as IntNode).asInt())
+        assertEquals(2, result.record.data?.size())
+        assertEquals("string", result.record.geometry?.type)
+        assertEquals(0, result.record.geometry?.coordinates?.get(0))
+        assertEquals(0, result.record.geometry?.coordinates?.get(1))
+        assertEquals(2, result.record.geometry?.coordinates?.size)
+        assertEquals(LocalDate.of(2019, 8, 24), result.record.startAt)
+        assertEquals(LocalDate.of(2019, 8, 25), result.record.endAt)
+        assertEquals(LocalDate.of(2019, 8, 26), result.record.registrationAt)
+        assertEquals("string", result.record.correctionFor)
+        assertEquals("string2", result.record.correctedBy)
     }
 
     private fun mockResponse(body: String): MockResponse {

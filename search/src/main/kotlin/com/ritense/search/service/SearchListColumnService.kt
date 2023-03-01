@@ -42,7 +42,15 @@ class SearchListColumnService(
                     )
                 }
             }
-            searchListColumnRepository.save(searchListColumn)
+            searchListColumnRepository.save(this?.copy(
+                 ownerId = searchListColumn.ownerId,
+                key = searchListColumn.key,
+                title = searchListColumn.title,
+                path = searchListColumn.path,
+                order = searchListColumn.order,
+                displayType = searchListColumn.displayType,
+                sortable = searchListColumn.sortable
+            ))
         }
 
     fun findByOwnerId(ownerId: String) = searchListColumnRepository.findAllByOwnerId(ownerId)

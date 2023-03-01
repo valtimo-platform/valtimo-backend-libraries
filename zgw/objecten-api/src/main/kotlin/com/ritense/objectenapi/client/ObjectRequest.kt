@@ -18,7 +18,7 @@ package com.ritense.objectenapi.client
 
 import java.net.URI
 
-class ObjectRequest(
+data class ObjectRequest(
     val type: URI,
     val record: ObjectRecord
 ) {

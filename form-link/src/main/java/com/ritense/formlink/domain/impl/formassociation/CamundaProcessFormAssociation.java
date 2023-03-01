@@ -35,7 +35,7 @@ public class CamundaProcessFormAssociation implements ProcessFormAssociation {
     public CamundaProcessFormAssociation(CamundaProcessFormAssociationId id, String processDefinitionKey, FormAssociations formAssociations) {
         assertArgumentNotNull(id, "id is required");
         assertArgumentNotEmpty(processDefinitionKey, "processDefinitionKey cannot be empty");
-        assertArgumentLength(processDefinitionKey, 64, "processDefinitionKey max length is 64");
+        assertArgumentLength(processDefinitionKey, 255, "processDefinitionKey max length is 255");
         this.id = id;
         this.processDefinitionKey = processDefinitionKey;
         this.formAssociations = formAssociations;

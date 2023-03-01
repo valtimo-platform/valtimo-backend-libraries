@@ -50,4 +50,13 @@
     <changeSet id="objecttype_id unique in object_management_configuration" author="Ritense">
         <addUniqueConstraint tableName="object_management_configuration" columnNames="objecttype_id" constraintName="uc_object_management_configuration_objecttype"/>
     </changeSet>
+
+    <changeSet id="add version column to object_management_configuration" author="Ritense">
+        <addColumn tableName="object_management_configuration">
+            <column name="object_type_version" type="INT" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

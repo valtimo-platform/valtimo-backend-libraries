@@ -2,6 +2,7 @@ package com.ritense.openzaak.service.impl
 
 import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.openzaak.domain.connector.OpenZaakConfig
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

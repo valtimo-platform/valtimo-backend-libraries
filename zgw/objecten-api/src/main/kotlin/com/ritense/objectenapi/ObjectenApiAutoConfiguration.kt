@@ -20,20 +20,20 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.objectenapi.listener.ZaakObjectListener
+import com.ritense.objectenapi.management.ErrorObjectManagementInfoProvider
 import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
 import com.ritense.objectenapi.service.ZaakObjectDataResolver
 import com.ritense.objectenapi.service.ZaakObjectService
-import com.ritense.openzaak.service.ZaakInstanceLinkService
+import com.ritense.objectenapi.web.rest.ObjectResource
+import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.plugin.service.PluginService
-import io.netty.handler.logging.LogLevel
+import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.netty.http.client.HttpClient
-import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
 class ObjectenApiAutoConfiguration {
@@ -66,11 +66,16 @@ class ObjectenApiAutoConfiguration {
 
     @Bean
     fun zaakObjectService(
-        zaakInstanceLinkService: ZaakInstanceLinkService,
+        zaakUrlProvider: ZaakUrlProvider,
         pluginService : PluginService,
-        formDefinitionService : FormDefinitionService
+        formDefinitionService : FormDefinitionService,
+        objectManagementInfoProvider : ObjectManagementInfoProvider
     ): ZaakObjectService {
-        return ZaakObjectService(zaakInstanceLinkService, pluginService, formDefinitionService)
+        return ZaakObjectService(zaakUrlProvider,
+            pluginService,
+            formDefinitionService,
+            objectManagementInfoProvider
+        )
     }
 
     @Order(400)
@@ -85,5 +90,18 @@ class ObjectenApiAutoConfiguration {
         objectMapper: ObjectMapper
     ): ZaakObjectDataResolver {
         return ZaakObjectDataResolver(zaakObjectService, objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ObjectResource::class)
+    fun objectResource(zaakObjectService: ZaakObjectService): ObjectResource {
+        return ObjectResource(zaakObjectService)
+    }
+
+    @Order(Ordered.LOWEST_PRECEDENCE)
+    @Bean
+    @ConditionalOnMissingBean(ObjectManagementInfoProvider::class)
+    fun errorObjectManagementInfoProvider(): ObjectManagementInfoProvider {
+        return ErrorObjectManagementInfoProvider()
     }
 }
