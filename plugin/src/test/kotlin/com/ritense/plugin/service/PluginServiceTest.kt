@@ -293,7 +293,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
-        whenever(pluginConfigurationRepository.getReferenceById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
         whenever(pluginFactory.canCreate(any())).thenReturn(true)
         whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
         whenever(execution.processInstanceId).thenReturn("test")
@@ -321,7 +321,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
-        whenever(pluginConfigurationRepository.getReferenceById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
         whenever(pluginFactory.canCreate(any())).thenReturn(true)
         whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
         whenever(execution.processInstanceId).thenReturn("test")
@@ -349,7 +349,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
-        whenever(pluginConfigurationRepository.getReferenceById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
         whenever(pluginFactory.canCreate(any())).thenReturn(true)
         whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
         whenever(execution.processInstanceId).thenReturn("test")
@@ -377,7 +377,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
-        whenever(pluginConfigurationRepository.getReferenceById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
         whenever(pluginFactory.canCreate(any())).thenReturn(true)
         whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
         whenever(task.processInstanceId).thenReturn("test")
@@ -408,7 +408,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
-        whenever(pluginConfigurationRepository.getReferenceById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
         whenever(pluginFactory.canCreate(any())).thenReturn(true)
         whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
         whenever(task.processInstanceId).thenReturn("test")
@@ -439,7 +439,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
-        whenever(pluginConfigurationRepository.getReferenceById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
         whenever(pluginFactory.canCreate(any())).thenReturn(true)
         whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
         whenever(task.processInstanceId).thenReturn("test")

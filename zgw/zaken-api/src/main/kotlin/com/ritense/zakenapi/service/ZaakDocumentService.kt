@@ -42,10 +42,10 @@ class ZaakDocumentService(
         ) { "Could not find ${ZakenApiPlugin::class.simpleName} configuration for zaak with url: $zaakUri" }
 
         return zakenApiPlugin.getZaakInformatieObjecten(zaakUri)
-            .map { toRelatedFile(it) }
+            .map { getRelatedFiles(it) }
     }
 
-    private fun toRelatedFile(zaakInformatieObject: ZaakInformatieObject): RelatedFileDto {
+    private fun getRelatedFiles(zaakInformatieObject: ZaakInformatieObject): RelatedFileDto {
         val pluginConfiguration = getDocumentenApiPluginByInformatieobjectUrl(zaakInformatieObject.informatieobject)
         val plugin = pluginService.createInstance(pluginConfiguration) as DocumentenApiPlugin
         val informatieObject = plugin.getInformatieObject(zaakInformatieObject.informatieobject)

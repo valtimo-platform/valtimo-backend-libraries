@@ -373,7 +373,7 @@ class PluginService(
     }
 
     fun createInstance(pluginConfigurationId: PluginConfigurationId): Any {
-        val configuration = pluginConfigurationRepository.getReferenceById(pluginConfigurationId)
+        val configuration = pluginConfigurationRepository.getById(pluginConfigurationId)
         return createInstance(configuration)
     }
 

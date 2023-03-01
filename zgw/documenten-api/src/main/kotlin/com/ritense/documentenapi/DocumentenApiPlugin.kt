@@ -152,16 +152,16 @@ class DocumentenApiPlugin(
         return tempResourceId
     }
 
+    fun downloadInformatieObject(objectId: String): InputStream {
+        return client.downloadInformatieObjectContent(authenticationPluginConfiguration, url, objectId)
+    }
+
     fun getInformatieObject(objectId: String): DocumentInformatieObject {
         return client.getInformatieObject(authenticationPluginConfiguration, url, objectId)
     }
 
     fun getInformatieObject(objectUrl: URI): DocumentInformatieObject {
         return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
-    }
-
-    fun downloadInformatieObject(objectId: String): InputStream {
-        return client.downloadInformatieObjectContent(authenticationPluginConfiguration, url, objectId)
     }
 
     private fun storeDocument(
