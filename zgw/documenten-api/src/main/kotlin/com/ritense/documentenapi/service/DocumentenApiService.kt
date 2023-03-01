@@ -19,13 +19,12 @@ package com.ritense.documentenapi.service
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.plugin.service.PluginService
-import org.springframework.core.io.buffer.DataBuffer
-import reactor.core.publisher.Flux
+import java.io.InputStream
 
 class DocumentenApiService(
     val pluginService: PluginService
 ) {
-    fun downloadInformatieObject(pluginConfigurationId: String, documentId: String): Flux<DataBuffer> {
+    fun downloadInformatieObject(pluginConfigurationId: String, documentId: String): InputStream {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         return documentApiPlugin.downloadInformatieObject(documentId)
     }

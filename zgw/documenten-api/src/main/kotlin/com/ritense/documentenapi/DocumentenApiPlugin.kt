@@ -34,12 +34,7 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.core.io.buffer.DataBuffer
-import org.springframework.core.io.buffer.DataBufferUtils
-import reactor.core.publisher.Flux
 import java.io.InputStream
-import java.io.PipedInputStream
-import java.io.PipedOutputStream
 import java.net.URI
 import java.time.LocalDate
 
@@ -149,7 +144,7 @@ class DocumentenApiPlugin(
         metaData.bestandsnaam?.let { metaDataMap[MetadataType.FILE_NAME.key] = it }
 
         val tempResourceId = storageService.store(
-            inputStream = content.toInputStream(),
+            inputStream = content,
             metadata = metaDataMap
         )
 
@@ -165,7 +160,7 @@ class DocumentenApiPlugin(
         return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
     }
 
-    fun downloadInformatieObject(objectId: String): Flux<DataBuffer> {
+    fun downloadInformatieObject(objectId: String): InputStream {
         return client.downloadInformatieObjectContent(authenticationPluginConfiguration, url, objectId)
     }
 
@@ -235,16 +230,6 @@ class DocumentenApiPlugin(
 
     private fun getFilenameFromMetaData(metadata: Map<String, Any>): String? {
         return metadata["filename"] as String? ?: metadata[MetadataType.FILE_NAME.name] as String?
-    }
-
-    private fun Flux<DataBuffer>.toInputStream(): InputStream {
-        val osPipe = PipedOutputStream()
-        val isPipe = PipedInputStream(osPipe)
-        val flux = this
-            .doOnError { isPipe.use {} }
-            .doFinally { osPipe.use {} }
-        DataBufferUtils.write(flux, osPipe).subscribe(DataBufferUtils.releaseConsumer())
-        return isPipe
     }
 
     companion object {

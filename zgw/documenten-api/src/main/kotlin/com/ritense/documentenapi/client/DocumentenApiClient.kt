@@ -19,12 +19,16 @@ package com.ritense.documentenapi.client
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.zgw.ClientTools
 import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToFlux
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Flux
+import java.io.InputStream
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
 import java.net.URI
 
 class DocumentenApiClient(
@@ -85,14 +89,14 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         baseUrl: URI,
         objectId: String,
-    ): Flux<DataBuffer> {
+    ): InputStream {
         return downloadInformatieObjectContent(authentication, toObjectUrl(baseUrl, objectId))
     }
 
     fun downloadInformatieObjectContent(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
-    ): Flux<DataBuffer> {
+    ): InputStream {
         return webclientBuilder
             .clone()
             .filter(authentication)
@@ -105,7 +109,8 @@ class DocumentenApiClient(
             }
             .accept(MediaType.APPLICATION_OCTET_STREAM)
             .retrieve()
-            .bodyToFlux()
+            .bodyToFlux<DataBuffer>()
+            .toInputStream()
     }
 
     private fun toObjectUrl(baseUrl: URI, objectId: String): URI {
@@ -114,5 +119,15 @@ class DocumentenApiClient(
             .pathSegment("enkelvoudiginformatieobjecten", objectId)
             .build()
             .toUri()
+    }
+
+    private fun Flux<DataBuffer>.toInputStream(): InputStream {
+        val osPipe = PipedOutputStream()
+        val isPipe = PipedInputStream(osPipe)
+        val flux = this
+            .doOnError { isPipe.use {} }
+            .doFinally { osPipe.use {} }
+        DataBufferUtils.write(flux, osPipe).subscribe(DataBufferUtils.releaseConsumer())
+        return isPipe
     }
 }

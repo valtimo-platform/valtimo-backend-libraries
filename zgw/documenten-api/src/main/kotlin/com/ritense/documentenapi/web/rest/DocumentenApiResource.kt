@@ -17,7 +17,7 @@
 package com.ritense.documentenapi.web.rest
 
 import com.ritense.documentenapi.service.DocumentenApiService
-import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.core.io.InputStreamResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import reactor.core.publisher.Flux
 import java.net.URLConnection
 
 @RestController
@@ -37,9 +36,9 @@ class DocumentenApiResource(
     fun downloadDocument(
         @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: String,
         @PathVariable(name = "documentId") documentId: String,
-    ): ResponseEntity<Flux<DataBuffer>> {
+    ): ResponseEntity<InputStreamResource> {
 
-        val documentStream = documentenApiService.downloadInformatieObject(pluginConfigurationId, documentId)
+        val documentInputStream = documentenApiService.downloadInformatieObject(pluginConfigurationId, documentId)
         val documentMetadata = documentenApiService.getInformatieObject(pluginConfigurationId, documentId)
 
         val responseHeaders = HttpHeaders()
@@ -55,6 +54,6 @@ class DocumentenApiResource(
             .ok()
             .headers(responseHeaders)
             .contentType(documentMediaType)
-            .body(documentStream)
+            .body(InputStreamResource(documentInputStream))
     }
 }
