@@ -1,0 +1,53 @@
+c5509c83 - Merge branch 'rc/10.4.0.228.RC'
+acb02ce2 - Updated version to 10.4.0.RELEASE
+163d9064 - Fix postgres: ERROR: function gen_random_uuid() does not exist (#603)
+42ac1a09 - #55398 drop id (#599)
+d59e4aa9 - #55398 Release Candidate doesn't work with MySQL database (#597)
+f86c28df - Bugfix: fix error specified key was too long (#575)
+12f7f527 - cherry pick fix to rol class
+15acff3f - plugin_process_link.activity_type was added with a default value of 'bpmn:ServiceTask:start', but JPA cannot map that to the enum value. Changed database value to the enum name. (#577)
+8e70ae4f - Make ObjectManagementInfoProvider optional (#569)
+c134890c - Updated version to 10.4.0.228.RC-SNAPSHOT
+25e27fce - Process definition key size should match camunda specs (#566)
+5b59c1ce - Merge pull request #564 from valtimo-platform/rc/10.3.0.227.RC
+fc762ace - Feature/added publishing metadata to dependencies modules (#563)
+5f690312 - Merge branch 'main' into rc/10.3.0.227.RC
+8832ee06 - Minor fixes for local development (#560)
+05af2f5f - Merge pull request #555 from valtimo-platform/feature/added-publishing-metadata-to-dependencies-modules
+e020b0be - Added apply line to build.gradle.
+549eb6a9 - Removed 'module' from module name based on PR feedback.
+bf887520 - Changed description based on PR feedback.
+0d6b0ff6 - Changed description based on PR feedback.
+a40b19c4 - Feature/plugin create zaakrol action (#557)
+fd5e0651 - added object id to the delete function (#562)
+b50e00c1 - added context to TaskExtended, which is filled based on the "context" property in process variables. (#559)
+e71844a0 - Created endpoint to patch Object from objects api (#558)
+33c1b6cc - Feature/53771 api endpoint for retrieving prefilled object detail form with object management id and object (#556)
+7d6234aa - Fixed int test where 2 were expected but 3 were found due to existing data. (#561)
+edd06961 - Feature/45356 endpoint for searching for objects (#551)
+35dca07f - Feature/43746 auto deploy objecttype config (#552)
+f59fcf54 - Fixed a ClassNotFoundException causing the application startup to fail when a (unused) plugin category class could not be loaded. (#554)
+6a41689a - Added publishing.gradle files with publications metadata.
+2e32c545 - Merge branch 'main' into development
+81d291cf - feature/45316_45317_API_endpoint_for_updating_and_delete_object (#549)
+19ebfe83 - Feature/47740 complete camunda task when portal task is completed (#540)
+dcfa9fe0 - Create portal task plugin action (#550)
+1be01a6f - added name to process (#543)
+e6905205 - Fixed a bug where a nullpointer could occur when trying to access the org.camunda.bpm.engine.impl.context.Context.getCommandContext() when migrating plugin actions. (#547)
+7fcb75b1 - Reverted changes to TaakObjectDto because the TaakObjectConnector should not have been changed. (#546)
+20275826 - Portaal taak (#544)
+dcf20d5a - Add support for new taak-object-schema with 'indentificatie' property (#537)
+f974f357 - GET /roltype should respond with empty list (#542)
+275fa1be - Fix integration tests (#541)
+1124e701 - Remove dependency on openzaak (#539)
+197beb0d - Feature/fix retrieve document and link to zaak error (#538)
+e294e20a - Feature/43756 endpoint for adding objecttype search field (#526)
+9c83a2ba - Fixes (#536)
+3a624cc8 - Fix new systemprocesses activity ids (#535)
+7c0e2255 - added retrieve document and link to zaak bpmn (#530)
+ff7a8faa - fixed integration tests permanently getting stuck (#534)
+38d8b400 - Feature/49149: API endpoint for creating object (#533)
+5bd42ad0 - Feature/47061 Notificaties API - receiving notifications (#525)
+cf6ddcd2 - added new endpoint to get pre-filled Object from an objectUrl (#524)
+ea5c7190 - Feature/user task support for plugins (#531)
+f09e6a5e - added portaltaak uploaded document bpmn (#532)
