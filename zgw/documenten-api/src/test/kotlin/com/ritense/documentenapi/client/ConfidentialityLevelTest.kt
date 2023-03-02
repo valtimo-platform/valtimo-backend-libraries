@@ -17,6 +17,7 @@
 package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.zgw.domain.Vertrouwelijkheid
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -24,13 +25,13 @@ class ConfidentialityLevelTest {
 
     @Test
     fun `should serialize enum to key`() {
-        val jsonValue = jacksonObjectMapper().writeValueAsString(ConfidentialityLevel.VERTROUWELIJK)
+        val jsonValue = jacksonObjectMapper().writeValueAsString(Vertrouwelijkheid.VERTROUWELIJK)
         assertEquals(""" "vertrouwelijk" """.trim(), jsonValue)
     }
 
     @Test
     fun `should deserialize key to enum`() {
-        val enumValue = jacksonObjectMapper().readValue(""" "vertrouwelijk" """.trim(), ConfidentialityLevel::class.java)
-        assertEquals(ConfidentialityLevel.VERTROUWELIJK, enumValue)
+        val enumValue = jacksonObjectMapper().readValue(""" "vertrouwelijk" """.trim(), Vertrouwelijkheid::class.java)
+        assertEquals(Vertrouwelijkheid.VERTROUWELIJK, enumValue)
     }
 }

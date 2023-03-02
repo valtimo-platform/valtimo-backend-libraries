@@ -53,6 +53,7 @@ import java.util.Optional
 import java.util.UUID
 import javax.transaction.Transactional
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @Transactional
 internal class DocumentenApiPluginIT : BaseIntegrationTest() {
@@ -105,7 +106,17 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
             ) as ObjectNode,
             "documentenapi"
         )
-        val actionProperties = """
+
+        processDefinitionId = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("documenten-api-plugin")
+            .latestVersion()
+            .singleResult()
+            .id
+    }
+
+    @Test
+    fun `should store temp file in documenten api`() {
+        saveProcessLink("store-temp-document", """
             {
                 "fileName": "test.ext",
                 "confidentialityLevel": "zaakvertrouwelijk",
@@ -117,19 +128,7 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
                 "taal": "nld",
                 "status": "in_bewerking"
             }
-        """.trimIndent()
-
-        processDefinitionId = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey("documenten-api-plugin")
-            .latestVersion()
-            .singleResult()
-            .id
-
-        saveProcessLink(actionProperties)
-    }
-
-    @Test
-    fun `should store temp file in documenten api`() {
+        """.trimIndent())
         val documentId = temporaryResourceStorageService.store(
             "test".byteInputStream()
         )
@@ -169,7 +168,7 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
 
     @Test
     fun `should store with meta-data-filename when process-link-filename is empty`() {
-        saveProcessLink("""
+        saveProcessLink("store-temp-document", """
             {
                 "fileName": null,
                 "confidentialityLevel": "zaakvertrouwelijk",
@@ -197,15 +196,39 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
         assertEquals("my-document.pdf", parsedOutput["bestandsnaam"])
     }
 
-    private fun saveProcessLink(generateDocumentActionProperties: String) {
+    @Test
+    fun `should download document`() {
+        saveProcessLink("download-document", "{}")
+        val documentUrl = "${server.url("/")}enkelvoudiginformatieobjecten/$DOCUMENT_ID"
+
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
+            .withProcessVars(mapOf("documentUrl" to documentUrl))
+
+        processDocumentService.newDocumentAndStartProcess(request)
+
+        val resourceId = runtimeService.createVariableInstanceQuery()
+            .variableName("resourceId")
+            .singleResult()
+            .value as String
+        val documentInputStream = temporaryResourceStorageService.getResourceContentAsInputStream(resourceId)
+        val documentMetadata = temporaryResourceStorageService.getResourceMetadata(resourceId)
+        assertEquals("TEST_DOCUMENT_CONTENT", documentInputStream.bufferedReader().use { it.readText() })
+        assertNotNull(documentMetadata[MetadataType.DOCUMENT_ID.key])
+        assertEquals("passport.jpg", documentMetadata[MetadataType.FILE_NAME.key])
+        assertEquals("Passport", documentMetadata["title"])
+        assertEquals("My passport", documentMetadata["description"])
+    }
+
+    private fun saveProcessLink(pluginActionDefinitionKey: String, generateDocumentActionProperties: String) {
         pluginProcessLinkRepository.save(
             PluginProcessLink(
                 PluginProcessLinkId(UUID.fromString("71997298-163c-4a67-b52a-1dcc2af72b40")),
                 processDefinitionId,
-                "StoreDocument",
+                "serviceTask",
                 Mapper.INSTANCE.get().readTree(generateDocumentActionProperties) as ObjectNode,
                 pluginConfiguration.id,
-                "store-temp-document",
+                pluginActionDefinitionKey,
                 ActivityType.SERVICE_TASK_START
             )
         )
@@ -219,6 +242,10 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
                 val response = when (path) {
                     "/enkelvoudiginformatieobjecten"
                     -> handleDocumentRequest()
+                    "/enkelvoudiginformatieobjecten/$DOCUMENT_ID"
+                    -> handleDocumentRequest()
+                    "/enkelvoudiginformatieobjecten/$DOCUMENT_ID/download"
+                    -> handleDocumentDownloadRequest()
 
                     else -> MockResponse().setResponseCode(404)
                 }
@@ -233,9 +260,9 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
             {
               "url": "http://example.com",
               "identificatie": "string",
-              "bronorganisatie": "string",
+              "bronorganisatie": "404797441",
               "creatiedatum": "2019-08-24",
-              "titel": "string",
+              "titel": "Passport",
               "vertrouwelijkheidaanduiding": "openbaar",
               "auteur": "string",
               "status": "in_bewerking",
@@ -243,11 +270,11 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
               "taal": "str",
               "versie": 0,
               "beginRegistratie": "2019-08-24T14:15:22Z",
-              "bestandsnaam": "string",
+              "bestandsnaam": "passport.jpg",
               "inhoud": "string",
               "bestandsomvang": 0,
               "link": "http://example.com",
-              "beschrijving": "string",
+              "beschrijving": "My passport",
               "ontvangstdatum": "2019-08-24",
               "verzenddatum": "2019-08-24",
               "indicatieGebruiksrecht": true,
@@ -267,10 +294,10 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
         return mockResponse(body)
     }
 
-    private fun mockResponse(body: String): MockResponse {
+    private fun handleDocumentDownloadRequest(): MockResponse {
         return MockResponse()
-            .addHeader("Content-Type", "application/json")
-            .setBody(body)
+            .addHeader("Content-Type", "application/octet-stream")
+            .setBody("TEST_DOCUMENT_CONTENT")
     }
 
     class TestAuthentication : DocumentenApiAuthentication {
@@ -282,5 +309,6 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
     companion object {
         private const val PROCESS_DEFINITION_KEY = "documenten-api-plugin"
         private const val DOCUMENT_DEFINITION_KEY = "profile"
+        private const val DOCUMENT_ID = "3bd88200-11cb-45cf-a742-da01261755b1"
     }
 }

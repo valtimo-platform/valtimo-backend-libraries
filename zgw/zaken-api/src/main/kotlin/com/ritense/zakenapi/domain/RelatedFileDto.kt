@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.web.rest.value
+package com.ritense.zakenapi.domain
 
 import com.ritense.document.domain.RelatedFile
-import java.net.URI
 import java.time.LocalDateTime
 import java.util.UUID
 
-class RelatedFileDto(
-    val fileUrl: URI,
+data class RelatedFileDto(
+    private val fileId: UUID,
     private val fileName: String?,
     private val sizeInBytes: Long?,
     private val createdOn: LocalDateTime,
-    private val createdBy: String
+    private val createdBy: String,
+    val pluginConfigurationId: UUID,
 ):  RelatedFile {
     override fun getFileId(): UUID {
-        return UUID.fromString(fileUrl.path.substringAfterLast("/"))
+        return fileId
     }
 
     override fun getFileName(): String? {

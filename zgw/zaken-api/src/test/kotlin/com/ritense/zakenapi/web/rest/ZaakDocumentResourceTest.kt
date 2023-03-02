@@ -16,16 +16,9 @@
 
 package com.ritense.zakenapi.web.rest
 
-import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.zakenapi.BaseIntegrationTest
-import java.net.URI
-import java.nio.charset.StandardCharsets
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.UUID
-import org.hamcrest.Matchers
+import com.ritense.zakenapi.domain.RelatedFileDto
 import org.hamcrest.Matchers.hasSize
-import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.doReturn
@@ -39,8 +32,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import java.net.URI
+import java.nio.charset.StandardCharsets
+import java.time.LocalDateTime
+import java.util.UUID
 
-class ZaakDocumentResourceTest: BaseIntegrationTest() {
+class ZaakDocumentResourceTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext
@@ -59,39 +56,38 @@ class ZaakDocumentResourceTest: BaseIntegrationTest() {
         val documentId = UUID.randomUUID()
 
         val informatieObjectId = UUID.randomUUID()
-        val informatieObject = createDocumentInformatieObject(URI("https://example.local/$informatieObjectId"))
-        doReturn(listOf(
-            informatieObject
-        )).whenever(zaakDocumentService).getInformatieObjecten(documentId)
+        val relatedFile = createRelatedFile(URI("https://example.local/$informatieObjectId"))
+        doReturn(
+            listOf(
+                relatedFile
+            )
+        ).whenever(zaakDocumentService).getInformatieObjectenAsRelatedFiles(documentId)
 
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/v1/zaken-api/document/{documentId}/files", documentId)
-            .characterEncoding(StandardCharsets.UTF_8.name())
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON_VALUE)
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$.*", hasSize<Int>(1)))
-            .andExpect(jsonPath("$.[0].fileUrl").value(informatieObject.url.toString()))
-            .andExpect(jsonPath("$.[0].fileName").value(Matchers.nullValue()))
-            .andExpect(jsonPath("$.[0].sizeInBytes").value(informatieObject.bestandsomvang))
-            .andExpect(jsonPath("$.[0].createdOn").value(startsWith(informatieObject.creatiedatum.atStartOfDay().toString())))
-            .andExpect(jsonPath("$.[0].createdBy").value(informatieObject.auteur))
-            .andExpect(jsonPath("$.[0].fileId").value(informatieObjectId.toString()))
+            .andExpect(jsonPath("$.[0].pluginConfigurationId").value(relatedFile.pluginConfigurationId.toString()))
+            .andExpect(jsonPath("$.[0].fileName").value(relatedFile.fileName))
+            .andExpect(jsonPath("$.[0].sizeInBytes").value(relatedFile.sizeInBytes))
+            .andExpect(jsonPath("$.[0].createdOn").value(relatedFile.createdOn.toString()))
+            .andExpect(jsonPath("$.[0].createdBy").value(relatedFile.createdBy))
+            .andExpect(jsonPath("$.[0].fileId").value(relatedFile.fileId.toString()))
     }
 
-    private fun createDocumentInformatieObject(uri: URI) = DocumentInformatieObject(
-        url = uri,
-        bronorganisatie = "x",
-        auteur = "y",
-        beginRegistratie = LocalDateTime.now(),
-        creatiedatum = LocalDate.now(),
-        taal = "nl",
-        titel = "titel",
-        versie = 1,
-        bestandsomvang = 1337L
+    private fun createRelatedFile(uri: URI) = RelatedFileDto(
+        fileId = UUID.fromString(uri.path.substringAfterLast("/")),
+        fileName = "titel",
+        sizeInBytes = 1337L,
+        createdOn = LocalDateTime.now(),
+        createdBy = "y",
+        pluginConfigurationId = UUID.fromString("1f925112-f090-404a-bee7-b20fd8047a72"),
     )
 }
