@@ -18,10 +18,13 @@ package com.ritense.zakenapi.service
 
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
+import com.ritense.plugin.domain.PluginConfiguration
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.ZaakInformatieObject
+import com.ritense.zgw.Rsin
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -39,8 +42,8 @@ import java.util.UUID
 class ZaakDocumentServiceTest {
 
     lateinit var service: ZaakDocumentService
-    lateinit var zaakUrlProvider:ZaakUrlProvider
-    lateinit var pluginService:PluginService
+    lateinit var zaakUrlProvider: ZaakUrlProvider
+    lateinit var pluginService: PluginService
 
     @BeforeEach
     fun init() {
@@ -65,30 +68,36 @@ class ZaakDocumentServiceTest {
             zaakInformatieObjects
         )
 
+        val documentenApiPluginConfiguration = mock<PluginConfiguration>()
         val documentenApiPlugin = mock<DocumentenApiPlugin>()
-        whenever(pluginService.createInstance(eq(DocumentenApiPlugin::class.java), any()))
+        whenever(pluginService.findPluginConfiguration(eq(DocumentenApiPlugin::class.java), any()))
+            .doReturn(documentenApiPluginConfiguration)
+        whenever(documentenApiPluginConfiguration.id)
+            .doReturn(PluginConfigurationId(UUID.randomUUID()))
+        whenever(pluginService.createInstance(eq(documentenApiPluginConfiguration)))
             .doReturn(documentenApiPlugin)
-        whenever(documentenApiPlugin.getInformatieObject(any())).doAnswer { answer ->
+        whenever(documentenApiPlugin.getInformatieObject(any<URI>())).doAnswer { answer ->
             val uri = answer.getArgument(0) as URI
 
             createDocumentInformatieObject(uri)
         }
 
-        val informatieObjecten = service.getInformatieObjecten(documentId)
+        val relatedFiles = service.getInformatieObjectenAsRelatedFiles(documentId)
 
-        assertEquals(5, informatieObjecten.size)
-        informatieObjecten.forEachIndexed { index, informatieObject ->
-            assertEquals(createUrl(zaakUrl,"/$index/informatieobject"), informatieObject.url)
+        assertEquals(5, relatedFiles.size)
+        relatedFiles.forEachIndexed { index, relatedFile ->
+            assertEquals(UUID.fromString("b059092c-9557-431a-9118-97f147903270"), relatedFile.fileId)
+            assertEquals(documentenApiPluginConfiguration.id.id, relatedFile.pluginConfigurationId)
         }
     }
 
-    private fun createZaakInformatieObjecten(zaakUrl:URI, count:Int = 5): List<ZaakInformatieObject> {
-        return IntRange(0, count-1)
+    private fun createZaakInformatieObjecten(zaakUrl: URI, count: Int = 5): List<ZaakInformatieObject> {
+        return IntRange(0, count - 1)
             .map { index ->
                 ZaakInformatieObject(
-                    url = createUrl(zaakUrl,"/$index/url"),
+                    url = createUrl(zaakUrl, "/$index/f5abe5c3-a36c-485b-9935-407e69bae231"),
                     uuid = UUID.randomUUID(),
-                    informatieobject = createUrl(zaakUrl,"/$index/informatieobject"),
+                    informatieobject = createUrl(zaakUrl, "/$index/b059092c-9557-431a-9118-97f147903270"),
                     zaak = zaakUrl,
                     aardRelatieWeergave = "...",
                     registratiedatum = LocalDateTime.now()
@@ -96,13 +105,13 @@ class ZaakDocumentServiceTest {
             }
     }
 
-    private fun createUrl(baseUrl:URI, path:String): URI {
+    private fun createUrl(baseUrl: URI, path: String): URI {
         return URI("$baseUrl$path")
     }
 
     private fun createDocumentInformatieObject(uri: URI) = DocumentInformatieObject(
         url = uri,
-        bronorganisatie = "x",
+        bronorganisatie = Rsin("404797441"),
         auteur = "y",
         beginRegistratie = LocalDateTime.now(),
         creatiedatum = LocalDate.now(),

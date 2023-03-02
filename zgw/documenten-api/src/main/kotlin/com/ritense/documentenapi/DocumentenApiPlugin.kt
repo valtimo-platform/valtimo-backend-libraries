@@ -17,7 +17,8 @@
 package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.ritense.documentenapi.client.ConfidentialityLevel
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.convertValue
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.DocumentStatusType
@@ -30,6 +31,7 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.zgw.domain.Vertrouwelijkheid
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.context.ApplicationEventPublisher
 import java.io.InputStream
@@ -44,7 +46,8 @@ import java.time.LocalDate
 class DocumentenApiPlugin(
     private val client: DocumentenApiClient,
     private val storageService: TemporaryResourceStorageService,
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val objectMapper: ObjectMapper,
 ) {
     @PluginProperty(key = URL_PROPERTY, secret = false)
     lateinit var url: URI
@@ -73,7 +76,8 @@ class DocumentenApiPlugin(
         @PluginActionProperty taal: String = DEFAULT_LANGUAGE,
         @PluginActionProperty status: DocumentStatusType = DocumentStatusType.DEFINITIEF
     ) {
-        val documentLocation = execution.getVariable(localDocumentLocation) as String
+        val documentLocation = execution.getVariable(localDocumentLocation) as String?
+            ?: throw IllegalStateException("Failed to store document. No process variable '$localDocumentLocation' found.")
         val contentAsInputStream = storageService.getResourceContentAsInputStream(documentLocation)
         val metadata = storageService.getResourceMetadata(documentLocation)
         val fileNameNotNull = fileName ?: metadata[MetadataType.FILE_NAME.key] as String
@@ -102,7 +106,8 @@ class DocumentenApiPlugin(
     fun storeUploadedDocument(
         execution: DelegateExecution
     ) {
-        val resourceId = execution.getVariable(RESOURCE_ID_PROCESS_VAR) as String
+        val resourceId = execution.getVariable(RESOURCE_ID_PROCESS_VAR) as String?
+            ?: throw IllegalStateException("Failed to store document. No process variable '$RESOURCE_ID_PROCESS_VAR' found.")
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
 
@@ -119,6 +124,51 @@ class DocumentenApiPlugin(
             informationObjectType = metadata["informatieobjecttype"] as String,
             storedDocumentUrl = DOCUMENT_URL_PROCESS_VAR
         )
+    }
+
+    @PluginAction(
+        key = "download-document",
+        title = "Download document",
+        description = "Download a document from the Documenten API and store it as a temporary document",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun downloadInformatieObject(
+        execution: DelegateExecution,
+    ): String {
+        val documentUrlString = execution.getVariable(DOCUMENT_URL_PROCESS_VAR) as String?
+            ?: throw IllegalStateException("Failed to download document. No process variable '$DOCUMENT_URL_PROCESS_VAR' found.")
+        if (!documentUrlString.startsWith(url.toASCIIString())) {
+            throw IllegalStateException("Failed to download document with url '$documentUrlString'. Document isn't part of Documenten API with url '$url'.")
+        }
+        val documentUrl = URI(documentUrlString)
+        val metaData = client.getInformatieObject(authenticationPluginConfiguration, documentUrl)
+        val content = client.downloadInformatieObjectContent(authenticationPluginConfiguration, documentUrl)
+
+        val metaDataMap = objectMapper.convertValue<MutableMap<String, Any>>(metaData)
+        metaDataMap[MetadataType.DOCUMENT_ID.key] = execution.businessKey
+        metaDataMap["title"] = metaData.titel
+        metaData.beschrijving?.let { metaDataMap["description"] = it }
+        metaData.bestandsnaam?.let { metaDataMap[MetadataType.FILE_NAME.key] = it }
+
+        val tempResourceId = storageService.store(
+            inputStream = content,
+            metadata = metaDataMap
+        )
+
+        execution.setVariable(RESOURCE_ID_PROCESS_VAR, tempResourceId)
+        return tempResourceId
+    }
+
+    fun downloadInformatieObject(objectId: String): InputStream {
+        return client.downloadInformatieObjectContent(authenticationPluginConfiguration, url, objectId)
+    }
+
+    fun getInformatieObject(objectId: String): DocumentInformatieObject {
+        return client.getInformatieObject(authenticationPluginConfiguration, url, objectId)
+    }
+
+    fun getInformatieObject(objectUrl: URI): DocumentInformatieObject {
+        return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
     }
 
     private fun storeDocument(
@@ -138,7 +188,7 @@ class DocumentenApiPlugin(
             bronorganisatie = bronorganisatie,
             creatiedatum = getLocalDateFromMetaData(metadata, "creationDate", LocalDate.now())!!,
             titel = title,
-            vertrouwelijkheidaanduiding = ConfidentialityLevel.fromKey(confidentialityLevel),
+            vertrouwelijkheidaanduiding = Vertrouwelijkheid.fromKey(confidentialityLevel),
             auteur = metadata["author"] as String? ?: DEFAULT_AUTHOR,
             status = status,
             taal = language ?: DEFAULT_LANGUAGE,
@@ -189,16 +239,13 @@ class DocumentenApiPlugin(
         return metadata["filename"] as String? ?: metadata[MetadataType.FILE_NAME.name] as String?
     }
 
-    fun getInformatieObject(objectUrl: URI): DocumentInformatieObject {
-        return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
-    }
-
     companion object {
         const val URL_PROPERTY = "url"
         const val DEFAULT_AUTHOR = "GZAC"
         const val DEFAULT_LANGUAGE = "nld"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
+
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
             url.toString().startsWith(properties.get(URL_PROPERTY).textValue())
         }

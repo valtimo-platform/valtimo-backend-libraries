@@ -16,15 +16,36 @@
 
 package com.ritense.zgw.domain
 
-import com.fasterxml.jackson.annotation.JsonValue
+import com.fasterxml.jackson.annotation.JsonProperty
 
-enum class Vertrouwelijkheid(@JsonValue val key: String) {
-    OPENBAAR("openbaar"),
-    BEPERKT_OPENBAAR("beperkt_openbaar"),
-    INTERN("intern"),
-    ZAAKVERTROUWELIJK("zaakvertrouwelijk"),
-    VERTROUWELIJK("vertrouwelijk"),
-    CONFIDENTIEEL("confidentieel"),
-    GEHEIM("geheim"),
-    ZEER_GEHEIM("zeer_geheim")
+enum class Vertrouwelijkheid() {
+    @JsonProperty("openbaar")
+    OPENBAAR,
+    @JsonProperty("beperkt_openbaar")
+    BEPERKT_OPENBAAR,
+    @JsonProperty("intern")
+    INTERN,
+    @JsonProperty("zaakvertrouwelijk")
+    ZAAKVERTROUWELIJK,
+    @JsonProperty("vertrouwelijk")
+    VERTROUWELIJK,
+    @JsonProperty("confidentieel")
+    CONFIDENTIEEL,
+    @JsonProperty("geheim")
+    GEHEIM,
+    @JsonProperty("zeer_geheim")
+    ZEER_GEHEIM;
+
+    val key: String
+        get() = this.name.lowercase()
+
+    companion object {
+        fun fromKey(key: String?): Vertrouwelijkheid? {
+            return key?.let {
+                Vertrouwelijkheid.values().firstOrNull {
+                    it.key == key.lowercase()
+                }
+            }
+        }
+    }
 }

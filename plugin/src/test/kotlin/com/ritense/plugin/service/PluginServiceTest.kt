@@ -512,7 +512,7 @@ internal class PluginServiceTest {
         }
     }
 
-    class TestPlugin2() {
+    class TestPlugin2 {
         @com.ritense.plugin.annotation.PluginProperty(key = "name", required = false, secret = false)
         var name: String? = null
     }

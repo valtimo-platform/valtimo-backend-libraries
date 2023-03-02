@@ -18,7 +18,7 @@ package com.ritense.zakenapi.web.rest
 
 import com.ritense.document.domain.RelatedFile
 import com.ritense.zakenapi.service.ZaakDocumentService
-import com.ritense.zakenapi.web.rest.value.RelatedFileDto
+import com.ritense.zakenapi.domain.RelatedFileDto
 import java.util.UUID
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
@@ -34,14 +34,6 @@ class ZaakDocumentResource(
 
     @GetMapping("/files")
     fun getFiles(@PathVariable(name = "documentId") documentId: UUID): List<RelatedFile> {
-        return zaakDocumentService.getInformatieObjecten(documentId).map {
-            RelatedFileDto(
-                it.url,
-                it.bestandsnaam,
-                it.bestandsomvang,
-                it.creatiedatum.atStartOfDay(),
-                it.auteur
-            )
-        }
+        return zaakDocumentService.getInformatieObjectenAsRelatedFiles(documentId)
     }
 }
