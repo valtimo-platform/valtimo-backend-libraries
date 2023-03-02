@@ -76,7 +76,8 @@ class DocumentenApiPlugin(
         @PluginActionProperty taal: String = DEFAULT_LANGUAGE,
         @PluginActionProperty status: DocumentStatusType = DocumentStatusType.DEFINITIEF
     ) {
-        val documentLocation = execution.getVariable(localDocumentLocation) as String
+        val documentLocation = execution.getVariable(localDocumentLocation) as String?
+            ?: throw IllegalStateException("Failed to store document. No process variable '$localDocumentLocation' found.")
         val contentAsInputStream = storageService.getResourceContentAsInputStream(documentLocation)
         val metadata = storageService.getResourceMetadata(documentLocation)
         val fileNameNotNull = fileName ?: metadata[MetadataType.FILE_NAME.key] as String
@@ -105,7 +106,8 @@ class DocumentenApiPlugin(
     fun storeUploadedDocument(
         execution: DelegateExecution
     ) {
-        val resourceId = execution.getVariable(RESOURCE_ID_PROCESS_VAR) as String
+        val resourceId = execution.getVariable(RESOURCE_ID_PROCESS_VAR) as String?
+            ?: throw IllegalStateException("Failed to store document. No process variable '$RESOURCE_ID_PROCESS_VAR' found.")
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
 
@@ -133,7 +135,12 @@ class DocumentenApiPlugin(
     fun downloadInformatieObject(
         execution: DelegateExecution,
     ): String {
-        val documentUrl = URI(execution.getVariable(DOCUMENT_URL_PROCESS_VAR) as String)
+        val documentUrlString = execution.getVariable(DOCUMENT_URL_PROCESS_VAR) as String?
+            ?: throw IllegalStateException("Failed to download document. No process variable '$DOCUMENT_URL_PROCESS_VAR' found.")
+        if (!documentUrlString.startsWith(url.toASCIIString())) {
+            throw IllegalStateException("Failed to download document with url '$documentUrlString'. Document isn't part of Documenten API with url '$url'.")
+        }
+        val documentUrl = URI(documentUrlString)
         val metaData = client.getInformatieObject(authenticationPluginConfiguration, documentUrl)
         val content = client.downloadInformatieObjectContent(authenticationPluginConfiguration, documentUrl)
 
