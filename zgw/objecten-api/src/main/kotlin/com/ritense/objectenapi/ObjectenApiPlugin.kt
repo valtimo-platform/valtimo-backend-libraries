@@ -50,6 +50,10 @@ class ObjectenApiPlugin(
         activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun deleteObject(@PluginActionProperty objectUrl: URI): HttpStatus {
+        if (!objectUrl.toASCIIString().startsWith(url.toASCIIString())) {
+            throw IllegalStateException("Failed to delete object with url '$objectUrl'. Object isn't part of Objecten API with url '$url'.")
+        }
+
         return objectenApiClient.deleteObject(authenticationPluginConfiguration, objectUrl)
     }
 
