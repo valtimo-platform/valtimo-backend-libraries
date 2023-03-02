@@ -25,6 +25,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.http.HttpStatus
 import java.net.URI
 import kotlin.test.assertEquals
 
@@ -77,4 +78,15 @@ internal class ObjectenApiPluginTest{
         verify(client).objectPatch(any(), any(), any())
     }
 
+    @Test
+    fun `should call client on delete object`() {
+        val objectUrl = URI("http://example.com")
+        val mockStatus = mock<HttpStatus>()
+        whenever(client.deleteObject(plugin.authenticationPluginConfiguration, objectUrl)).thenReturn(mockStatus)
+
+        val result = plugin.deleteObject(objectUrl)
+
+        assertEquals(mockStatus, result)
+        verify(client).deleteObject(any(), any())
+    }
 }

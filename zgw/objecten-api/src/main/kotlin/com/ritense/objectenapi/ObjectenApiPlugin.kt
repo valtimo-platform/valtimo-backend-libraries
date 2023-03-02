@@ -49,12 +49,8 @@ class ObjectenApiPlugin(
         description = "Delete an object from the Objecten API",
         activityTypes = [ActivityType.SERVICE_TASK_START]
     )
-    fun deleteObjectAction(
-        @PluginActionProperty objectUrl: String,
-    ) {
-        val objectUri = URI(objectUrl)
-
-        deleteObject(objectUri)
+    fun deleteObject(@PluginActionProperty objectUrl: URI): HttpStatus {
+        return objectenApiClient.deleteObject(authenticationPluginConfiguration, objectUrl)
     }
 
     fun getObject(objectUrl: URI): ObjectWrapper {
@@ -102,9 +98,5 @@ class ObjectenApiPlugin(
 
     fun createObject(objectRequest: ObjectRequest): ObjectWrapper {
         return objectenApiClient.createObject(authenticationPluginConfiguration, url, objectRequest)
-    }
-
-    fun deleteObject(objectUrl: URI): HttpStatus {
-        return objectenApiClient.deleteObject(authenticationPluginConfiguration, objectUrl)
     }
 }
