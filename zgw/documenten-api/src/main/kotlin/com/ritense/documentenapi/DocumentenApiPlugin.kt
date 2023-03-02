@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@
 
 package com.ritense.documentenapi
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.documentenapi.client.ConfidentialityLevel
 import com.ritense.documentenapi.client.CreateDocumentRequest
+import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.event.DocumentCreated
@@ -40,11 +42,11 @@ import java.time.LocalDate
     description = "Connects to the Documenten API to store documents"
 )
 class DocumentenApiPlugin(
-    val client: DocumentenApiClient,
-    val storageService: TemporaryResourceStorageService,
-    val applicationEventPublisher: ApplicationEventPublisher
+    private val client: DocumentenApiClient,
+    private val storageService: TemporaryResourceStorageService,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) {
-    @PluginProperty(key = "url", secret = false)
+    @PluginProperty(key = URL_PROPERTY, secret = false)
     lateinit var url: URI
 
     @PluginProperty(key = "bronorganisatie", secret = false)
@@ -57,7 +59,7 @@ class DocumentenApiPlugin(
         key = "store-temp-document",
         title = "Store temporary document",
         description = "Store a temporary document in the Documenten API",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun storeTemporaryDocument(
         execution: DelegateExecution,
@@ -80,7 +82,7 @@ class DocumentenApiPlugin(
             execution = execution,
             metadata = metadata,
             title = title ?: fileNameNotNull,
-            confidentialityLevel = getConfidentialityLevel(confidentialityLevel),
+            confidentialityLevel = confidentialityLevel,
             status = status,
             language = taal,
             filename = fileNameNotNull,
@@ -95,7 +97,7 @@ class DocumentenApiPlugin(
         key = "store-uploaded-document",
         title = "Store uploaded document",
         description = "Store an uploaded document in the Documenten API",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun storeUploadedDocument(
         execution: DelegateExecution
@@ -136,7 +138,7 @@ class DocumentenApiPlugin(
             bronorganisatie = bronorganisatie,
             creatiedatum = getLocalDateFromMetaData(metadata, "creationDate", LocalDate.now())!!,
             titel = title,
-            vertrouwelijkheidaanduiding = getConfidentialityLevel(confidentialityLevel),
+            vertrouwelijkheidaanduiding = ConfidentialityLevel.fromKey(confidentialityLevel),
             auteur = metadata["author"] as String? ?: DEFAULT_AUTHOR,
             status = status,
             taal = language ?: DEFAULT_LANGUAGE,
@@ -174,14 +176,6 @@ class DocumentenApiPlugin(
         }
     }
 
-    private fun getConfidentialityLevel(confidentialityLevel: String?): String? {
-        return if (confidentialityLevel == null) {
-            null
-        } else {
-            ConfidentialityLevel.fromKey(confidentialityLevel).key
-        }
-    }
-
     private fun getStatusFromMetaData(metadata: Map<String, Any>): DocumentStatusType {
         val status = metadata["status"] as String?
         return if (status != null) {
@@ -195,10 +189,18 @@ class DocumentenApiPlugin(
         return metadata["filename"] as String? ?: metadata[MetadataType.FILE_NAME.name] as String?
     }
 
+    fun getInformatieObject(objectUrl: URI): DocumentInformatieObject {
+        return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
+    }
+
     companion object {
+        const val URL_PROPERTY = "url"
         const val DEFAULT_AUTHOR = "GZAC"
         const val DEFAULT_LANGUAGE = "nld"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
+        fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
+            url.toString().startsWith(properties.get(URL_PROPERTY).textValue())
+        }
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
   -->
 
 <databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
     <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
@@ -26,10 +26,15 @@
     <property name="jsonType" value="JSON" dbms="mysql"/>
     <property name="jsonType" value="JSONB" dbms="postgresql"/>
 
+    <property name="generateUuid" value="uuid_to_bin(uuid())" dbms="mysql"/>
+    <property name="generateUuid" value="decode(replace(gen_random_uuid()::text, '-', ''), 'hex')" dbms="postgresql"/>
+    <property name="generateUuid" value="random_uuid()" dbms="h2"/>
+
     <include file="changelog/20200320-formlink-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200413-form-association-polymorphism-support-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200507-added-process-definition-to-link-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20200513-domain-changed-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220630-storage-performance-improvement-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230221-association-id-datatype-change.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

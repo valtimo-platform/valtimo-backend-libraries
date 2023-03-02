@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ class DocumentJsonValueResolverFactory(
         values.forEach {
             val path = JsonPointer.valueOf(it.key.substringAfter(":"))
             val valueNode = toValueNode(it.value)
-            buildJsonPatch(jsonPatchBuilder, documentContent, path, valueNode)
+            jsonPatchBuilder.addJsonNodeValue(documentContent, path, valueNode)
         }
 
         JsonPatchService.apply(jsonPatchBuilder.build(), documentContent)
@@ -158,25 +158,6 @@ class DocumentJsonValueResolverFactory(
             JsonPath.read<Any?>(document.content().asJson().toString(), "$.$jsonPathPostfix")
         } catch (ignore: PathNotFoundException){
             null
-        }
-    }
-
-    private fun buildJsonPatch(builder: JsonPatchBuilder, content: JsonNode, path: JsonPointer, value: JsonNode) {
-        if (content.at(path.head()).isMissingNode) {
-            val propertyName = path.last().matchingProperty
-            val newValue: JsonNode = if (propertyName == "-" || propertyName == "0")
-                Mapper.INSTANCE.get().createArrayNode().add(value)
-            else
-                Mapper.INSTANCE.get().createObjectNode().set(path.last().matchingProperty, value)
-
-            buildJsonPatch(builder, content, path.head(), newValue)
-        } else {
-            val currentValue = content.at(path)
-            if (currentValue.isMissingNode || currentValue.isArray) {
-                builder.add(path, value)
-            } else {
-                builder.replace(path, value)
-            }
         }
     }
 

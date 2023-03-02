@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,22 @@
 
 package com.ritense.objectmanagement.autoconfigure
 
+import com.ritense.objectmanagement.autodeployment.ObjectManagementDefinitionDeploymentService
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.security.config.ObjectManagementHttpSecurityConfigurer
+import com.ritense.objectmanagement.service.ObjectManagementInfoProviderImpl
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objectmanagement.web.rest.ObjectManagementResource
 import com.ritense.plugin.service.PluginService
+import com.ritense.search.service.SearchFieldV2Service
+import com.ritense.search.service.SearchListColumnService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
@@ -37,11 +43,23 @@ class ObjectManagementAutoConfiguration {
     @ConditionalOnMissingBean(ObjectManagementService::class)
     fun objectManagementService(
         objectManagementRepository: ObjectManagementRepository,
-        pluginService: PluginService
+        pluginService: PluginService,
+        searchFieldV2Service: SearchFieldV2Service,
+        searchListColumnService: SearchListColumnService
     ): ObjectManagementService {
         return ObjectManagementService(
             objectManagementRepository,
-            pluginService
+            pluginService,
+            searchFieldV2Service,
+            searchListColumnService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ObjectManagementInfoProviderImpl::class)
+    fun objectManagementInfoProvider(objectManagementService: ObjectManagementService): ObjectManagementInfoProviderImpl {
+        return ObjectManagementInfoProviderImpl(
+            objectManagementService
         )
     }
 
@@ -52,6 +70,22 @@ class ObjectManagementAutoConfiguration {
     ): ObjectManagementResource {
         return ObjectManagementResource(
             objectManagementService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ObjectManagementDefinitionDeploymentService::class)
+    fun objectManagementDefinitionDeploymentService(
+        resourceLoader: ResourceLoader,
+        objectManagementService: ObjectManagementService,
+        objectManagementRepository: ObjectManagementRepository,
+        applicationEventPublisher: ApplicationEventPublisher
+    ): ObjectManagementDefinitionDeploymentService {
+        return ObjectManagementDefinitionDeploymentService(
+            resourceLoader,
+            objectManagementService,
+            objectManagementRepository,
+            applicationEventPublisher
         )
     }
 

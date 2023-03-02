@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.ritense.plugin.domain
 
+import org.camunda.bpm.engine.delegate.ExecutionListener
+import org.camunda.bpm.engine.delegate.TaskListener
 import org.camunda.bpm.engine.ActivityTypes.BOUNDARY_CANCEL as CAMUNDA_BOUNDARY_CANCEL
 import org.camunda.bpm.engine.ActivityTypes.BOUNDARY_COMPENSATION as CAMUNDA_BOUNDARY_COMPENSATION
 import org.camunda.bpm.engine.ActivityTypes.BOUNDARY_CONDITIONAL as CAMUNDA_BOUNDARY_CONDITIONAL
@@ -74,6 +76,24 @@ import org.camunda.bpm.engine.ActivityTypes.TRANSACTION as CAMUNDA_TRANSACTION
 enum class ActivityType(
     val bpmnModelValue: String
 ) {
+    // Service task
+    @Deprecated("Marked for removal since 10.4.0")
+    SERVICE_TASK("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() } + ":" + ExecutionListener.EVENTNAME_START),
+
+    @Deprecated("Marked for removal since 10.4.0")
+    OLD_SERVICE_TASK("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() }),
+    SERVICE_TASK_START("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() } + ":" + ExecutionListener.EVENTNAME_START),
+
+    // User task
+    @Deprecated("Marked for removal since 10.4.0")
+    OLD_USER_TASK("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() }),
+
+    @Deprecated("Marked for removal since 10.4.0")
+    USER_TASK("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() }),
+    USER_TASK_CREATE("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() } + ":" + TaskListener.EVENTNAME_CREATE),
+
+
+    // Unsupported
     MULTI_INSTANCE_BODY("bpmn:" + CAMUNDA_MULTI_INSTANCE_BODY.replaceFirstChar { it.uppercaseChar() }),
 
     EXCLUSIVE_GATEWAY("bpmn:" + CAMUNDA_GATEWAY_EXCLUSIVE.replaceFirstChar { it.uppercaseChar() }),
@@ -84,10 +104,8 @@ enum class ActivityType(
 
     TASK("bpmn:" + CAMUNDA_TASK.replaceFirstChar { it.uppercaseChar() }),
     SCRIPT_TASK("bpmn:" + CAMUNDA_TASK_SCRIPT.replaceFirstChar { it.uppercaseChar() }),
-    SERVICE_TASK("bpmn:" + CAMUNDA_TASK_SERVICE.replaceFirstChar { it.uppercaseChar() }),
     BUSINESS_RULE_TASK("bpmn:" + CAMUNDA_TASK_BUSINESS_RULE.replaceFirstChar { it.uppercaseChar() }),
     MANUAL_TASK("bpmn:" + CAMUNDA_TASK_MANUAL_TASK.replaceFirstChar { it.uppercaseChar() }),
-    USER_TASK("bpmn:" + CAMUNDA_TASK_USER_TASK.replaceFirstChar { it.uppercaseChar() }),
     SEND_TASK("bpmn:" + CAMUNDA_TASK_SEND_TASK.replaceFirstChar { it.uppercaseChar() }),
     RECEIVE_TASK("bpmn:" + CAMUNDA_TASK_RECEIVE_TASK.replaceFirstChar { it.uppercaseChar() }),
 
@@ -135,6 +153,17 @@ enum class ActivityType(
     COMPENSATION_END_EVENT("bpmn:" + CAMUNDA_END_EVENT_COMPENSATION.replaceFirstChar { it.uppercaseChar() }),
     ESCALATION_END_EVENT("bpmn:" + CAMUNDA_END_EVENT_ESCALATION.replaceFirstChar { it.uppercaseChar() }),
     NONE_END_EVENT("bpmn:" + CAMUNDA_END_EVENT_NONE.replaceFirstChar { it.uppercaseChar() });
+
+    @Deprecated("Marked for removal since 10.4.0")
+    fun mapOldActivityTypeToCurrent(): ActivityType {
+        if (OLD_SERVICE_TASK == this || SERVICE_TASK == this) {
+            return SERVICE_TASK_START
+        }
+        if (OLD_USER_TASK == this || USER_TASK == this) {
+            return USER_TASK_CREATE
+        }
+        return this
+    }
 
     companion object {
         private val mapping = values().associateBy(ActivityType::bpmnModelValue)

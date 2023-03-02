@@ -60,6 +60,12 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
+    implementation("io.netty:netty-resolver-dns-native-macos:4.1.86.Final") {
+        artifact {
+            classifier = "osx-aarch_64"
+        }
+    }
+
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,7 +124,7 @@ internal class PluginConfigurationResourceTest {
     }
 
     @Test
-    fun `should filter on plugins for rare activityType`() {
+    fun `should not filter on plugins for rare activityType`() {
         whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
 
         mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:IntermediateLinkCatch")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,23 @@
 
 package com.ritense.zakenapi.config
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.zakenapi.ResourceProvider
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
-import io.netty.handler.logging.LogLevel
-import org.springframework.beans.factory.ObjectProvider
+import com.ritense.zakenapi.security.ZakenApiHttpSecurityConfigurer
+import com.ritense.zakenapi.service.ZaakDocumentService
+import com.ritense.zakenapi.web.rest.ZaakDocumentResource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
-import org.springframework.boot.web.reactive.function.client.WebClientCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.netty.http.client.HttpClient
-import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.zakenapi.repository"])
@@ -55,8 +51,6 @@ class ZakenApiAutoConfiguration {
         pluginService: PluginService,
         zakenApiClient: ZakenApiClient,
         urlProvider: ZaakUrlProvider,
-        resourceProvider: ResourceProvider,
-        documentService: DocumentService,
         storageService: TemporaryResourceStorageService,
         zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
     ): ZakenApiPluginFactory {
@@ -64,10 +58,34 @@ class ZakenApiAutoConfiguration {
             pluginService,
             zakenApiClient,
             urlProvider,
-            resourceProvider,
-            documentService,
             storageService,
             zaakInstanceLinkRepository,
         )
+    }
+
+    @Bean
+    fun zakenApiZaakInstanceLinkService(
+        zaakInstanceLinkRepository: ZaakInstanceLinkRepository
+    ): ZaakInstanceLinkService {
+        return ZaakInstanceLinkService(zaakInstanceLinkRepository)
+    }
+
+    @Bean
+    fun zaakDocumentService(zaakUrlProvider: ZaakUrlProvider, pluginService: PluginService): ZaakDocumentService {
+        return ZaakDocumentService(zaakUrlProvider, pluginService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakDocumentResource::class)
+    fun zaakDocumentResource(
+        zaakDocumentService: ZaakDocumentService
+    ): ZaakDocumentResource {
+        return ZaakDocumentResource(zaakDocumentService)
+    }
+
+    @Order(300)
+    @Bean
+    fun zakenApiHttpSecurityConfigurer(): ZakenApiHttpSecurityConfigurer {
+        return ZakenApiHttpSecurityConfigurer()
     }
 }

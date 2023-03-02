@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+
+import javax.validation.ValidationException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -164,6 +167,34 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         var definition = definitionOf("array-example");
         assertTrue(documentDefinitionService.isValidJsonPath(definition, "$.files[*].id"));
         assertFalse(documentDefinitionService.isValidJsonPath(definition, "$.nonExistent[*].id"));
+    }
+
+    @Test
+    void shouldValidateJsonPointerWithoutAdditionalProperties() {
+        var definitionName = "combined-schema-additional-property-example";
+        mockDefinition(definitionName);
+        documentDefinitionService.validateJsonPointer(definitionName, "/address/streetName");
+        var exception = assertThrows(ValidationException.class, () ->
+            documentDefinitionService.validateJsonPointer(definitionName, "/address/nonExistent")
+        );
+        assertEquals("JsonPointer '/address/nonExistent' doesn't point to any property inside document definition 'combined-schema-additional-property-example'", exception.getMessage());
+    }
+
+    @Test
+    void shouldValidateJsonPointerWithAdditionalProperties() {
+        var definitionName = "allows-additional-properties";
+        mockDefinition(definitionName);
+        documentDefinitionService.validateJsonPointer(definitionName, "/address/streetName");
+        documentDefinitionService.validateJsonPointer(definitionName, "/address/nonExistent");
+        var exception = assertThrows(ValidationException.class, () ->
+            documentDefinitionService.validateJsonPointer(definitionName, "/nonExistent")
+        );
+        assertEquals("JsonPointer '/nonExistent' doesn't point to any property inside document definition 'allows-additional-properties'", exception.getMessage());
+    }
+
+    public void mockDefinition(String definitionName) {
+        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(definitionName))
+            .thenReturn(Optional.of(definitionOf(definitionName)));
     }
 
     public URI path(String name) {

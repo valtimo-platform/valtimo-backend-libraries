@@ -3,6 +3,7 @@ package com.ritense.zakenapi
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
@@ -13,6 +14,7 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProcessResultSucceeded
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.resource.Resource
+import java.net.URI
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -69,7 +71,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         doReturn(TestAuthentication()).whenever(pluginService).createInstance(mockedId)
         doCallRealMethod().whenever(pluginService).createPluginConfiguration(any(), any(), any())
 
-        whenever(zaakUrlProvider.getZaak(any())).thenReturn(ZAAK_URL)
+        whenever(zaakUrlProvider.getZaakUrl(any())).thenReturn(ZAAK_URL)
 
         // Setting up plugin
         val pluginPropertiesJson = """
@@ -108,7 +110,8 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
                 "LinkDocument",
                 Mapper.INSTANCE.get().readTree(actionPropertiesJson) as ObjectNode,
                 configuration.id,
-                "link-document-to-zaak"
+                "link-document-to-zaak",
+                ActivityType.SERVICE_TASK_START
             )
         )
     }
@@ -140,7 +143,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
         assertEquals(4, parsedOutput.size)
         assertEquals(INFORMATIE_OBJECT_URL, parsedOutput["informatieobject"])
-        assertEquals(ZAAK_URL, parsedOutput["zaak"])
+        assertEquals(ZAAK_URL.toString(), parsedOutput["zaak"])
         assertEquals("titelVariableName", parsedOutput["titel"])
         assertEquals("beschrijvingVariableName", parsedOutput["beschrijving"])
 
@@ -178,7 +181,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
         assertEquals(4, parsedOutput.size)
         assertEquals(INFORMATIE_OBJECT_URL, parsedOutput["informatieobject"])
-        assertEquals(ZAAK_URL, parsedOutput["zaak"])
+        assertEquals(ZAAK_URL.toString(), parsedOutput["zaak"])
         assertEquals("titelVariableName", parsedOutput["titel"])
         assertEquals("beschrijvingVariableName", parsedOutput["beschrijving"])
 
@@ -237,6 +240,6 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         private const val PROCESS_DEFINITION_KEY = "zaken-api-plugin"
         private const val DOCUMENT_DEFINITION_KEY = "profile"
         private const val INFORMATIE_OBJECT_URL = "http://informatie.object.url"
-        private const val ZAAK_URL = "http://zaak.url"
+        private val ZAAK_URL = URI("http://zaak.url")
     }
 }

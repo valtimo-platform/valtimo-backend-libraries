@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
@@ -26,7 +27,6 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.MetadataType
-import com.ritense.resource.repository.OpenZaakResourceRepository
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.json.Mapper
 import okhttp3.mockwebserver.Dispatcher
@@ -41,22 +41,21 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
-import java.net.URI
 import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
 import javax.transaction.Transactional
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 @Transactional
-internal class DocumentenApiPluginIT: BaseIntegrationTest(){
+internal class DocumentenApiPluginIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var repositoryService: RepositoryService
@@ -72,9 +71,6 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
 
     @Autowired
     lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
-
-    @Autowired
-    lateinit var openZaakResourceRepository: OpenZaakResourceRepository
 
     lateinit var server: MockWebServer
 
@@ -149,14 +145,12 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
             .singleResult()
             .value as String
 
-        val resource = openZaakResourceRepository.findByInformatieObjectUrl(URI("http://example.com"))
-        assertNotNull(resource)
-
         val recordedRequest = server.takeRequest()
         val requestString = recordedRequest.body.readUtf8()
 
         val parsedOutput = Mapper.INSTANCE.get().readValue(requestString, Map::class.java)
 
+        verify(consumer).consumeEvent(any())
         assertEquals("123456789", parsedOutput["bronorganisatie"])
         assertEquals(LocalDate.now().toString(), parsedOutput["creatiedatum"])
         assertEquals("zaakvertrouwelijk", parsedOutput["vertrouwelijkheidaanduiding"])
@@ -211,7 +205,8 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
                 "StoreDocument",
                 Mapper.INSTANCE.get().readTree(generateDocumentActionProperties) as ObjectNode,
                 pluginConfiguration.id,
-                "store-temp-document"
+                "store-temp-document",
+                ActivityType.SERVICE_TASK_START
             )
         )
     }
@@ -224,6 +219,7 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
                 val response = when (path) {
                     "/enkelvoudiginformatieobjecten"
                     -> handleDocumentRequest()
+
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
@@ -277,7 +273,7 @@ internal class DocumentenApiPluginIT: BaseIntegrationTest(){
             .setBody(body)
     }
 
-    class TestAuthentication: DocumentenApiAuthentication {
+    class TestAuthentication : DocumentenApiAuthentication {
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
         }

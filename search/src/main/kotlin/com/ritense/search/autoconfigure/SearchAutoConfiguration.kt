@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package com.ritense.search.autoconfigure
 
+import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.repository.SearchListColumnRepository
 import com.ritense.search.security.config.SearchHttpSecurityConfigurer
+import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.search.service.SearchListColumnService
+import com.ritense.search.web.rest.SearchFieldV2Resource
 import com.ritense.search.web.rest.SearchListColumnResource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -49,6 +52,26 @@ class SearchAutoConfiguration {
     ): SearchListColumnResource {
         return SearchListColumnResource(
             searchListColumnService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SearchFieldV2Service::class)
+    fun searchFieldV2Service(
+        searchFieldV2Repository: SearchFieldV2Repository
+    ): SearchFieldV2Service {
+        return SearchFieldV2Service(
+            searchFieldV2Repository
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SearchFieldV2Resource::class)
+    fun searchFieldV2Resource(
+        searchFieldV2Service: SearchFieldV2Service
+    ): SearchFieldV2Resource {
+        return SearchFieldV2Resource(
+            searchFieldV2Service
         )
     }
 

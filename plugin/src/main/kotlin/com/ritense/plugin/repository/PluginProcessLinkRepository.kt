@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.ritense.plugin.repository
 
+import com.ritense.plugin.domain.ActivityType
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
 import org.springframework.data.jpa.repository.JpaRepository
@@ -23,4 +25,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface PluginProcessLinkRepository: JpaRepository<PluginProcessLink, PluginProcessLinkId> {
     fun findByProcessDefinitionId(processDefinitionId: String): List<PluginProcessLink>
     fun findByProcessDefinitionIdAndActivityId(processDefinitionId: String, activityId: String): List<PluginProcessLink>
+    fun findByProcessDefinitionIdAndActivityIdAndActivityType(processDefinitionId: String, activityId: String, activityType: ActivityType): List<PluginProcessLink>
+    fun findByPluginConfigurationIdAndActivityIdAndActivityType(pluginConfigurationId: PluginConfigurationId, activityId: String, activityType: ActivityType): List<PluginProcessLink>
 }

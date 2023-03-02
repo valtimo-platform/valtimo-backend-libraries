@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,5 +48,24 @@ class DocumentenApiClient(
             .block()
 
         return result?.body!!
+    }
+
+    fun getInformatieObject(
+        authentication: DocumentenApiAuthentication,
+        objectUrl: URI
+    ): DocumentInformatieObject {
+        return checkNotNull(
+            webclientBuilder
+                .clone()
+                .filter(authentication)
+                .build()
+                .get()
+                .uri(objectUrl)
+                .retrieve()
+                .toEntity(DocumentInformatieObject::class.java)
+                .block()?.body
+        ) {
+            "Could not retrieve ${DocumentInformatieObject::class.simpleName} at $objectUrl"
+        }
     }
 }

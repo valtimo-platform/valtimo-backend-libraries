@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ class SmartDocumentsPlugin(
         key = "generate-document",
         title = "Generate document",
         description = "Generates a document of a given type based on a template with data from a case.",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun generate(
         execution: DelegateExecution,

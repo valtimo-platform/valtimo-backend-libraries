@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ dependencies {
     implementation project(':plugin')
     implementation project(':contract')
     implementation project(":web")
+    implementation project(":search")
+    implementation project(":plugin-authentication:objecten-api-authentication")
     implementation project(':zgw')
     implementation project(':zgw:objecttypen-api')
     implementation project(':zgw:objecten-api')
@@ -38,6 +40,7 @@ dependencies {
     testImplementation project(":core")
     testImplementation project(":resource:local-resource")
     testImplementation project(":test-utils-common")
+    testImplementation project(":zgw:catalogi-api")
     testImplementation project(':zgw:zaken-api')
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"

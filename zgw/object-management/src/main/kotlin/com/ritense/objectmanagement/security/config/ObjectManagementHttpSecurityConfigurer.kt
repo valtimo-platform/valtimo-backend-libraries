@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,9 @@ class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
                 .antMatchers(HttpMethod.DELETE, "/api/v1/object/management/configuration/{id}")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{id}/object")
-                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .hasAuthority(AuthoritiesConstants.USER)
+                .antMatchers(HttpMethod.POST, "/api/v1/object/management/configuration/{id}/object")
+                .hasAuthority(AuthoritiesConstants.USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

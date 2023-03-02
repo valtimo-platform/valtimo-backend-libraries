@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,8 +189,8 @@ public class ProcessDocumentAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(DocumentJsonValueResolverFactory.class)
-    public DocumentTableValueResolver documentTableValueResolver(
+    @ConditionalOnMissingBean(DocumentTableValueResolver.class)
+    public ValueResolverFactory documentTableValueResolver(
         ProcessDocumentService processDocumentService,
         DocumentService documentService
     ) {

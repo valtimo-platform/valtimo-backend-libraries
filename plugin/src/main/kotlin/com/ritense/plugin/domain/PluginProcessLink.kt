@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import org.hibernate.annotations.Type
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.Table
 
@@ -40,5 +42,8 @@ data class PluginProcessLink(
     @Embedded
     val pluginConfigurationId: PluginConfigurationId,
     @Column(name = "plugin_action_definition_key")
-    val pluginActionDefinitionKey: String
+    val pluginActionDefinitionKey: String,
+    @Column(name = "activity_type")
+    @Enumerated(EnumType.STRING)
+    val activityType: ActivityType
 )

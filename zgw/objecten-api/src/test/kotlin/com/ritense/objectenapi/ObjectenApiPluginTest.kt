@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,19 @@ internal class ObjectenApiPluginTest{
 
         assertEquals(objectMock, result)
         verify(client).objectUpdate(any(), any(), any())
+    }
+
+    @Test
+    fun `should call client on patch object`() {
+        val objectUrl = URI("http://example.com")
+        val objectMock = mock<ObjectWrapper>()
+        val objectRequest = mock<ObjectRequest>()
+        whenever(client.objectPatch(plugin.authenticationPluginConfiguration, objectUrl, objectRequest)).thenReturn(objectMock)
+
+        val result = plugin.objectPatch(objectUrl,  objectRequest)
+
+        assertEquals(objectMock, result)
+        verify(client).objectPatch(any(), any(), any())
     }
 
 }

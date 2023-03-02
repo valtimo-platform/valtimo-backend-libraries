@@ -1,5 +1,5 @@
 /*
-* Copyright 2015-2022 Ritense BV, the Netherlands.
+* Copyright 2015-2023 Ritense BV, the Netherlands.
 *
 * Licensed under EUPL, Version 1.2 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,7 +16,17 @@
 
 package com.ritense.portaaltaak
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.document.domain.impl.Mapper
+import com.ritense.document.service.DocumentService
+import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valueresolver.ValueResolverService
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -27,8 +37,45 @@ class PortaaltaakAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(PortaaltaakPluginFactory::class)
     fun portaaltaakPluginFactory(
-        pluginService: PluginService
+        pluginService: PluginService,
+        objectManagementService: ObjectManagementService,
+        valueResolverService: ValueResolverService,
+        processDocumentService: ProcessDocumentService,
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        taskService: TaskService
     ): PortaaltaakPluginFactory {
-        return PortaaltaakPluginFactory(pluginService)
+        return PortaaltaakPluginFactory(
+            pluginService,
+            objectManagementService,
+            valueResolverService,
+            processDocumentService,
+            zaakInstanceLinkService,
+            taskService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PortaalTaakEventListener::class)
+    fun portaalTaakEventListener(
+        pluginService: PluginService,
+        objectManagementService: ObjectManagementService,
+        processDocumentService: ProcessDocumentService,
+        processService: CamundaProcessService,
+        taskService: TaskService,
+        documentService: DocumentService,
+        runtimeService: RuntimeService,
+        valueResolverService: ValueResolverService,
+        objectMapper: ObjectMapper
+    ): PortaalTaakEventListener {
+        return PortaalTaakEventListener(
+            objectManagementService,
+            pluginService,
+            processDocumentService,
+            processService,
+            taskService,
+            runtimeService,
+            valueResolverService,
+            objectMapper
+        )
     }
 }

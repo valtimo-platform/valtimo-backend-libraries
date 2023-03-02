@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ internal class CreateDocumentRequestTest {
             bronorganisatie = "123",
             creatiedatum = LocalDate.of(2020, 5, 3),
             titel = "titel",
-            vertrouwelijkheidaanduiding = ConfidentialityLevel.ZAAKVERTROUWELIJK.key,
+            vertrouwelijkheidaanduiding = ConfidentialityLevel.ZAAKVERTROUWELIJK,
             auteur = "GZAC",
             status = DocumentStatusType.DEFINITIEF,
             taal = "taal",

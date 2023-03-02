@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2015-2022 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -32,5 +32,6 @@
     <include file="changelog/20220706-add-plugin-process-link.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220705-add-plugin-property.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220801-add-plugin-categories.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230131-add-activity-type-to-process-links.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

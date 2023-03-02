@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,9 +85,6 @@ internal class DocumentenApiPluginFactoryTest {
         assertEquals(URI("http://some-url"), plugin.url)
         assertEquals("123456789", plugin.bronorganisatie)
         assertEquals(authentication, plugin.authenticationPluginConfiguration)
-        assertEquals(applicationEventPublisher, plugin.applicationEventPublisher)
-        assertEquals(client, plugin.client)
-        assertEquals(storageService, plugin.storageService)
     }
 
 }
