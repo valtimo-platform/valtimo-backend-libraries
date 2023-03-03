@@ -17,6 +17,8 @@
 package com.ritense.documentenapi.client
 
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.zgw.Rsin
+import com.ritense.zgw.domain.Vertrouwelijkheid
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
@@ -125,7 +127,7 @@ internal class DocumentenApiClientTest {
             {
               "url": "http://example.com/informatie-object/123",
               "identificatie": "identificatie",
-              "bronorganisatie": "bronorganisatie",
+              "bronorganisatie": "621248691",
               "creatiedatum": "2019-08-24",
               "titel": "titel",
               "vertrouwelijkheidaanduiding": "openbaar",
@@ -169,10 +171,10 @@ internal class DocumentenApiClientTest {
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
         assertEquals(URI("http://example.com/informatie-object/123"), result.url)
         assertEquals("identificatie", result.identificatie)
-        assertEquals("bronorganisatie", result.bronorganisatie)
+        assertEquals(Rsin("621248691"), result.bronorganisatie)
         assertEquals(LocalDate.of(2019, 8, 24), result.creatiedatum)
         assertEquals("titel", result.titel)
-        assertEquals(ConfidentialityLevel.OPENBAAR, result.vertrouwelijkheidaanduiding)
+        assertEquals(Vertrouwelijkheid.OPENBAAR, result.vertrouwelijkheidaanduiding)
         assertEquals("auteur", result.auteur)
         assertEquals(DocumentStatusType.IN_BEWERKING, result.status)
         assertEquals("formaat", result.formaat)

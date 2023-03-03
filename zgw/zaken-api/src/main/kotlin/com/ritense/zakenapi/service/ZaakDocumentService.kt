@@ -17,10 +17,13 @@
 package com.ritense.zakenapi.service
 
 import com.ritense.documentenapi.DocumentenApiPlugin
-import com.ritense.documentenapi.client.DocumentInformatieObject
+import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
+import com.ritense.zakenapi.domain.RelatedFileDto
+import com.ritense.zakenapi.domain.ZaakInformatieObject
+import java.net.URI
 import java.util.UUID
 
 class ZaakDocumentService(
@@ -28,7 +31,7 @@ class ZaakDocumentService(
     val pluginService: PluginService
 ) {
 
-    fun getInformatieObjecten(documentId: UUID): List<DocumentInformatieObject> {
+    fun getInformatieObjectenAsRelatedFiles(documentId: UUID): List<RelatedFileDto> {
         val zaakUri = zaakUrlProvider.getZaakUrl(documentId)
 
         val zakenApiPlugin = checkNotNull(
@@ -39,12 +42,31 @@ class ZaakDocumentService(
         ) { "Could not find ${ZakenApiPlugin::class.simpleName} configuration for zaak with url: $zaakUri" }
 
         return zakenApiPlugin.getZaakInformatieObjecten(zaakUri)
-            .mapNotNull { zaakInformatieObject ->
-                pluginService.createInstance(
-                    DocumentenApiPlugin::class.java,
-                    DocumentenApiPlugin.findConfigurationByUrl(zaakInformatieObject.informatieobject)
-                )?.getInformatieObject(zaakInformatieObject.informatieobject)
-            }
+            .map { getRelatedFiles(it) }
+    }
+
+    private fun getRelatedFiles(zaakInformatieObject: ZaakInformatieObject): RelatedFileDto {
+        val pluginConfiguration = getDocumentenApiPluginByInformatieobjectUrl(zaakInformatieObject.informatieobject)
+        val plugin = pluginService.createInstance(pluginConfiguration) as DocumentenApiPlugin
+        val informatieObject = plugin.getInformatieObject(zaakInformatieObject.informatieobject)
+        return RelatedFileDto(
+            fileId = UUID.fromString(informatieObject.url.path.substringAfterLast("/")),
+            fileName = informatieObject.bestandsnaam,
+            sizeInBytes = informatieObject.bestandsomvang,
+            createdOn = informatieObject.creatiedatum.atStartOfDay(),
+            createdBy = informatieObject.auteur,
+            pluginConfigurationId = pluginConfiguration.id.id,
+        )
+    }
+
+    private fun getDocumentenApiPluginByInformatieobjectUrl(informatieobjectUrl: URI): PluginConfiguration {
+        return checkNotNull(
+            pluginService.findPluginConfiguration(
+                DocumentenApiPlugin::class.java,
+                DocumentenApiPlugin.findConfigurationByUrl(informatieobjectUrl)
+            )
+        ) { "Could not find ${DocumentenApiPlugin::class.simpleName} configuration for informatieobjectUrl: $informatieobjectUrl" }
+
     }
 
 }

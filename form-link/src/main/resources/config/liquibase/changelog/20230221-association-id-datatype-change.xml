@@ -39,16 +39,7 @@
                         newDataType="varchar(255)"/>
     </changeSet>
 
-    <changeSet author="Ritense" id="12">
-        <preConditions onFail="MARK_RAN">
-            <dbms type="postgresql"/>
-        </preConditions>
-        <sql>
-            CREATE EXTENSION pgcrypto;
-        </sql>
-    </changeSet>
-
-    <changeSet author="Ritense" id="8">
+    <changeSet author="Ritense" id="13">
         <update tableName="process_form_association_v2">
             <column name="form_association_id" valueComputed="${generateUuid}"/>
         </update>

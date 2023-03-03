@@ -30,6 +30,7 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-starter-security"
 
     testImplementation project(':document')
     testImplementation project(':resource')
@@ -37,6 +38,7 @@ dependencies {
     testImplementation project(':plugin-valtimo')
     testImplementation project(':test-utils-common')
 
+    testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
