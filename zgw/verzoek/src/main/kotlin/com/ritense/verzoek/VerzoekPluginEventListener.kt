@@ -170,7 +170,8 @@ class VerzoekPluginEventListener(
                         "Missing Verzoek data at path '${it.key}', for Verzoek with type '${verzoekTypeProperties.type}'"
                     )
                 }
-                jsonPatchBuilder.addJsonNodeValue(documentContent, JsonPointer.valueOf(it.value), verzoekDataItem)
+                val documentPath = JsonPointer.valueOf(it.value.substringAfter(delimiter = ":"))
+                jsonPatchBuilder.addJsonNodeValue(documentContent, documentPath, verzoekDataItem)
             }
             JsonPatchService.apply(jsonPatchBuilder.build(), documentContent)
             documentContent

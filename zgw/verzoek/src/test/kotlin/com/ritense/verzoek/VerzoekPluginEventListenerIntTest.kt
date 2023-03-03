@@ -22,7 +22,6 @@ import com.ritense.BaseIntegrationTest
 import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
-import com.ritense.document.service.result.DeployDocumentDefinitionResult
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectRecord
@@ -31,10 +30,6 @@ import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
-import java.net.URI
-import java.time.LocalDate
-import java.util.*
-import javax.transaction.Transactional
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.camunda.bpm.engine.RuntimeService
@@ -50,6 +45,10 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import java.net.URI
+import java.time.LocalDate
+import java.util.UUID
+import javax.transaction.Transactional
 
 @Transactional
 internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
@@ -179,7 +178,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
                 "copyStrategy": "specified",
                 "mapping": [{
                     "key": "/name",
-                    "value": "/fullname"
+                    "value": "doc:/fullname"
                 }]
               }]
             }

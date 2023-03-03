@@ -33,16 +33,16 @@ import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
-import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
+import mu.KLogger
+import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
-import mu.KLogger
-import mu.KotlinLogging
 
 @Plugin(
     key = ZakenApiPlugin.PLUGIN_KEY,
@@ -123,6 +123,12 @@ class ZakenApiPlugin(
         @PluginActionProperty zaaktypeUrl: URI,
     ) {
         val documentId = UUID.fromString(execution.businessKey)
+
+        val zaakInstanceLink = zaakInstanceLinkRepository.findByDocumentId(documentId)
+        if (zaakInstanceLink != null) {
+            logger.warn { "SKIPPING ZAAK CREATION. Reason: a zaak already exists for this case. Case id '$documentId'. Zaak URL '${zaakInstanceLink.zaakInstanceUrl}'." }
+            return
+        }
 
         val zaak = client.createZaak(
             authenticationPluginConfiguration,

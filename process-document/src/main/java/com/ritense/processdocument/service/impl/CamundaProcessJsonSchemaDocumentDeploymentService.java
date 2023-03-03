@@ -113,13 +113,13 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
             processDocumentAssociationService.createProcessDocumentDefinition(request);
         }
 
-        contextService.findAll(Pageable.unpaged()).forEach(context -> {
-            context.getProcesses().removeIf(contextProcess -> contextProcess.getProcessDefinitionKey().equals(item.getProcessDefinitionKey()));
-            if (Boolean.TRUE.equals(item.getProcessIsVisibleInMenu())) {
-                context.addProcess(new ContextProcess(item.getProcessDefinitionKey(), true));
-            }
-            contextService.save(context);
-        });
+        if (item.getProcessIsVisibleInMenu() != null) {
+            contextService.findAll(Pageable.unpaged()).forEach(context -> {
+                context.getProcesses().removeIf(contextProcess -> contextProcess.getProcessDefinitionKey().equals(item.getProcessDefinitionKey()));
+                context.addProcess(new ContextProcess(item.getProcessDefinitionKey(), item.getProcessIsVisibleInMenu()));
+                contextService.save(context);
+            });
+        }
     }
 
     private String getProcessDocumentLinkResourcePath(String documentDefinitionName) {
