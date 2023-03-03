@@ -164,13 +164,13 @@ class VerzoekPluginEventListener(
             val documentContent = jacksonObjectMapper().createObjectNode()
             val jsonPatchBuilder = JsonPatchBuilder()
             verzoekTypeProperties.mapping?.map {
-                val verzoekDataItem = verzoekDataData.at(it.key)
+                val verzoekDataItem = verzoekDataData.at(it.value)
                 if (verzoekDataItem.isMissingNode) {
                     throw NotificatiesNotificationEventException(
-                        "Missing Verzoek data at path '${it.key}', for Verzoek with type '${verzoekTypeProperties.type}'"
+                        "Missing Verzoek data at path '${it.value}', for Verzoek with type '${verzoekTypeProperties.type}'"
                     )
                 }
-                val documentPath = JsonPointer.valueOf(it.value.substringAfter(delimiter = ":"))
+                val documentPath = JsonPointer.valueOf(it.key.substringAfter(delimiter = ":"))
                 jsonPatchBuilder.addJsonNodeValue(documentContent, documentPath, verzoekDataItem)
             }
             JsonPatchService.apply(jsonPatchBuilder.build(), documentContent)

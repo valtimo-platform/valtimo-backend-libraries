@@ -177,8 +177,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
                 "initiatorRolDescription": "Initiator",
                 "copyStrategy": "specified",
                 "mapping": [{
-                    "key": "/name",
-                    "value": "doc:/fullname"
+                    "key": "doc:/fullname",
+                    "value": "/name"
                 }]
               }]
             }
