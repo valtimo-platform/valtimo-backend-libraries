@@ -18,13 +18,17 @@ package com.ritense.zakenapi.client
 
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.ZakenApiAuthentication
-import com.ritense.zakenapi.domain.rol.BetrokkeneIdentificatie
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.IndicatieMachtiging
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
+import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.domain.rol.ZaakRolOmschrijving
+import java.net.URI
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
+import java.util.UUID
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
@@ -37,10 +41,6 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
-import java.net.URI
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
-import java.util.UUID
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ZakenApiClientTest {
@@ -270,7 +270,7 @@ internal class ZakenApiClientTest {
     }
 
     @Test
-    fun `should send create zaakrol request and parse response`() {
+    fun `should send create natuurlijk persoon zaakrol request and parse response`() {
         val webclientBuilder = WebClient.builder()
         val client = ZakenApiClient(webclientBuilder)
 
@@ -359,6 +359,75 @@ internal class ZakenApiClientTest {
         assertEquals("voornamen", betrokkeneIdentificatie.voornamen)
         assertEquals("m", betrokkeneIdentificatie.geslachtsaanduiding)
         assertEquals("geboortedatum", betrokkeneIdentificatie.geboortedatum)
+    }
+
+    @Test
+    fun `should send create niet-natuurlijk persoon zaakrol request and parse response`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ZakenApiClient(webclientBuilder)
+
+        val responseBody = """
+            {
+              "url": "https://example.com/rol/d31cd83f-11da-4932-bde8-a9123c9821d3",
+              "uuid": "d31cd83f-11da-4932-bde8-a9123c9821d3",
+              "zaak": "https://example.com/zaak",
+              "betrokkene": "https://example.com/betrokkene",
+              "betrokkeneType": "niet_natuurlijk_persoon",
+              "roltype": "https://example.com/roltype",
+              "omschrijving": "omschrijving",
+              "omschrijvingGeneriek": "initiator",
+              "roltoelichting": "roltoelichting",
+              "registratiedatum": "2019-08-24T14:15:22Z",
+              "indicatieMachtiging": "gemachtigde",
+              "betrokkeneIdentificatie": {
+                "annIdentificatie": "annIdentificatie",
+                "innNnpId": "innNnpId",
+                "statutaireNaam": "statutaireNaam",
+                "innRechtsvorm": "besloten_vennootschap",
+                "bezoekadres": "bezoekadres"
+              }
+            }
+        """.trimIndent()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val result = client.createZaakRol(
+            TestAuthentication(),
+            URI(mockApi.url("/").toString()),
+            Rol(
+                zaak = URI("https://example.com/zaak"),
+                betrokkeneType = BetrokkeneType.NIET_NATUURLIJK_PERSOON,
+                roltype = URI("https://example.com/roltype"),
+                roltoelichting = "test",
+                betrokkeneIdentificatie = RolNietNatuurlijkPersoon(
+                    annIdentificatie = "annIdentificatie"
+                )
+            )
+        )
+
+        val recordedRequest = mockApi.takeRequest()
+        val requestUrl = recordedRequest.requestUrl
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+
+        assertEquals(URI("https://example.com/rol/d31cd83f-11da-4932-bde8-a9123c9821d3"), result.url)
+        assertEquals(UUID.fromString("d31cd83f-11da-4932-bde8-a9123c9821d3"), result.uuid)
+        assertEquals(URI("https://example.com/zaak"), result.zaak)
+        assertEquals(URI("https://example.com/betrokkene"), result.betrokkene)
+        assertEquals(BetrokkeneType.NIET_NATUURLIJK_PERSOON, result.betrokkeneType)
+        assertEquals(URI("https://example.com/roltype"), result.roltype)
+        assertEquals("omschrijving", result.omschrijving)
+        assertEquals(ZaakRolOmschrijving.INITIATOR, result.omschrijvingGeneriek)
+        assertEquals("roltoelichting", result.roltoelichting)
+        assertEquals(LocalDateTime.of(2019, 8, 24, 14, 15, 22), result.registratiedatum)
+        assertEquals(IndicatieMachtiging.GEMACHTIGDE, result.indicatieMachtiging)
+
+        val betrokkeneIdentificatie = result.betrokkeneIdentificatie as RolNietNatuurlijkPersoon
+        assertEquals("annIdentificatie", betrokkeneIdentificatie.annIdentificatie)
+        assertEquals("innNnpId", betrokkeneIdentificatie.innNnpId)
+        assertEquals("statutaireNaam", betrokkeneIdentificatie.statutaireNaam)
+        assertEquals("besloten_vennootschap", betrokkeneIdentificatie.innRechtsvorm)
+        assertEquals("bezoekadres", betrokkeneIdentificatie.bezoekadres)
     }
 
     private fun mockResponse(body: String): MockResponse {
