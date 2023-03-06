@@ -38,6 +38,6 @@ enum class CopyStrategy {
 }
 
 data class Mapping(
-    val key: String,
-    val value: String,
+    val source: String,
+    val target: String,
 )
