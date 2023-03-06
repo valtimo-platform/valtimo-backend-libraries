@@ -48,13 +48,14 @@ import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkReque
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
+import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
-import java.lang.RuntimeException
 import java.net.URI
 import java.util.UUID
 
@@ -68,6 +69,7 @@ class ApplicationReadyEventListener(
     private val pluginService: PluginService,
     private val objectManagementService: ObjectManagementService,
     private val repositoryService: RepositoryService,
+    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
@@ -122,6 +124,8 @@ class ApplicationReadyEventListener(
             processPortaaltaakUploadedDocumentsLinkDocumentToZaak(zakenApiPluginId)
             createZaakdossierCreateZaak(zakenApiPluginId)
             createZaakdossierCreateZaakRol(zakenApiPluginId)
+            createZaakdossierLinkDocumentToZaak(zakenApiPluginId)
+            createZaakdossierDeleteVerzoek(objectenApiPluginId)
             uploadDocumentUploadDocument(documentenApiPluginId)
             uploadDocumentLinkDocumentToZaak(zakenApiPluginId)
         } catch (ex: Exception) {
@@ -218,6 +222,38 @@ class ApplicationReadyEventListener(
                     "inpBsn": "pv:initiatorValue"
                 }
             """.trimIndent()
+        )
+    }
+
+    private fun createZaakdossierLinkDocumentToZaak(zakenApiPluginId: UUID) {
+        createProcessLinkIfNotExists(
+            processDefinitionKey = "create-zaakdossier",
+            activityId = "link-document-to-zaak",
+            activityType = "bpmn:ServiceTask:start",
+            pluginConfigurationId = zakenApiPluginId,
+            pluginActionDefinitionKey = "link-document-to-zaak",
+            actionProperties = """
+                {
+                    "documentUrl": "pv:documentUrl",
+                    "titel": "Verzoek document",
+                    "beschrijving": "Document that belongs to a Verzoek"
+                }
+            """.trimIndent(),
+        )
+    }
+
+    private fun createZaakdossierDeleteVerzoek(objectenApiPluginId: UUID) {
+        createProcessLinkIfNotExists(
+            processDefinitionKey = "create-zaakdossier",
+            activityId = "delete-verzoek-from-objectsapi",
+            activityType = "bpmn:ServiceTask:start",
+            pluginConfigurationId = objectenApiPluginId,
+            pluginActionDefinitionKey = "delete-object",
+            actionProperties = """
+                {
+                    "objectUrl": "pv:verzoekObjectUrl"
+                }
+            """.trimIndent(),
         )
     }
 
@@ -695,16 +731,16 @@ class ApplicationReadyEventListener(
     }
 
     private fun createVerzoekPlugin(notificatiesApiPluginConfiguration: UUID, objectManagementId: UUID): UUID {
-        logger.debug { "Creating Verzoek lening plugin" }
+        logger.debug { "Creating Verzoek bezwaar plugin" }
         val existing = pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
-                pluginConfigurationTitle = "Verzoek lening",
+                pluginConfigurationTitle = "Verzoek bezwaar",
                 pluginDefinitionKey = "verzoek",
             )
         )
         return if (existing.isEmpty()) {
             pluginService.createPluginConfiguration(
-                title = "Verzoek lening",
+                title = "Verzoek bezwaar",
                 pluginDefinitionKey = "verzoek",
                 properties = jacksonObjectMapper().readValue(
                     """
@@ -714,9 +750,9 @@ class ApplicationReadyEventListener(
                         "processToStart": "create-zaakdossier",
                         "rsin": "051845623",
                         "verzoekProperties": [{
-                            "type": "lening",
-                            "caseDefinitionName": "leningen",
-                            "processDefinitionKey": "lening-aanvragen",
+                            "type": "bezwaar",
+                            "caseDefinitionName": "bezwaar",
+                            "processDefinitionKey": "bezwaar",
                             "initiatorRoltypeUrl": "http://localhost:8001/catalogi/api/v1/roltypen/1c359a1b-c38d-47b8-bed5-994db88ead61",
                             "initiatorRolDescription": "Initiator",
                             "copyStrategy": "full"
@@ -813,17 +849,17 @@ class ApplicationReadyEventListener(
     }
 
     private fun connectZaakType(event: DocumentDefinitionDeployedEvent) {
-        if (event.documentDefinition().id().name().equals("leningen")) {
+        if (event.documentDefinition().id().name().equals("bezwaar")) {
             zaakTypeLinkService.createZaakTypeLink(
                 CreateZaakTypeLinkRequest(
-                    "leningen",
+                    "bezwaar",
                     URI("http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"),
                     true
                 )
             )
             informatieObjectTypeLinkService.create(
                 CreateInformatieObjectTypeLinkRequest(
-                    "leningen",
+                    "bezwaar",
                     URI("http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"),
                     URI("http://localhost:8001/catalogi/api/v1/informatieobjecttypen/efc332f2-be3b-4bad-9e3c-49a6219c92ad")
                 )
@@ -838,6 +874,14 @@ class ApplicationReadyEventListener(
                 )
             )
         }
+        documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+            "portal-person",
+            DocumentDefinitionProcessRequest("document-upload", "DOCUMENT_UPLOAD")
+        )
+        documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+            "bezwaar",
+            DocumentDefinitionProcessRequest("document-upload", "DOCUMENT_UPLOAD")
+        )
     }
 
     private fun createPortaaltaakPlugin(

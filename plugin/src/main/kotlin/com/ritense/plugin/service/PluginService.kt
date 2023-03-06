@@ -346,11 +346,9 @@ class PluginService(
     private fun mapActionParamValues(paramValues: Map<Parameter, JsonNode>, placeHolderValueMap: Map<String, Any>): Map<Parameter, Any> {
         return paramValues.mapValues { (param, value) ->
             if (value.isTextual) {
-                //TODO: possible issue here. resulting placeHolderValue might be a string value of an enum or date
-                val placeHolderValue =
-                    placeHolderValueMap.getOrDefault(value.textValue(), toValue(value, param))
-                if (placeHolderValue::class.java.isAssignableFrom(param.type)) {
-                    placeHolderValue
+                val placeHolderValueAsString = placeHolderValueMap[value.textValue()]
+                if (placeHolderValueAsString != null) {
+                    objectMapper.convertValue(placeHolderValueAsString, objectMapper.constructType(param.parameterizedType))
                 } else {
                     toValue(value, param)
                 }

@@ -51,7 +51,7 @@ class VerzoekPlugin(
     @PluginProperty(key = "verzoekProperties", secret = false)
     lateinit var verzoekProperties: List<VerzoekProperties>
 
-    @PluginEvent(invokedOn = [EventType.CREATE])
+    @PluginEvent(invokedOn = [EventType.CREATE, EventType.UPDATE])
     fun validateProperties() {
         verzoekProperties
             .filter { it.copyStrategy == CopyStrategy.SPECIFIED }
