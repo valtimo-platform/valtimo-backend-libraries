@@ -57,7 +57,11 @@ class VerzoekPlugin(
             .filter { it.copyStrategy == CopyStrategy.SPECIFIED }
             .forEach { property ->
                 property.mapping?.forEach {
-                    documentDefinitionService.validateJsonPointer(property.caseDefinitionName, it.value)
+                    if (!it.key.startsWith("doc:")) {
+                        throw IllegalArgumentException("Failed to set mapping. Unknown prefix '${it.key.substringBefore(":")}:'.")
+                    }
+                    val documentPath = it.key.substringAfter(delimiter = ":")
+                    documentDefinitionService.validateJsonPointer(property.caseDefinitionName, documentPath)
                 }
             }
     }

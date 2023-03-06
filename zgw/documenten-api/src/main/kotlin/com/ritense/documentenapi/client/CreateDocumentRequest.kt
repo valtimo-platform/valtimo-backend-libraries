@@ -18,6 +18,7 @@ package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.ritense.zgw.domain.Vertrouwelijkheid
 import java.io.InputStream
 import java.time.LocalDate
 
@@ -26,7 +27,7 @@ class CreateDocumentRequest(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val creatiedatum: LocalDate,
     val titel: String,
-    val vertrouwelijkheidaanduiding: ConfidentialityLevel? = null,
+    val vertrouwelijkheidaanduiding: Vertrouwelijkheid? = null,
     val auteur: String,
     val status: DocumentStatusType? = null,
     val taal: String,

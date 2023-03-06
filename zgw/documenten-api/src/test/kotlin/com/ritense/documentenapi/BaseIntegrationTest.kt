@@ -23,6 +23,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
+import okhttp3.mockwebserver.MockResponse
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -31,7 +32,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.context.event.EventListener
 import org.springframework.test.context.junit.jupiter.SpringExtension
-
 
 @SpringBootTest(classes = [TestApplication::class])
 @ExtendWith(value = [SpringExtension::class])
@@ -63,5 +63,11 @@ class BaseIntegrationTest {
         @EventListener
         fun consumeEvent(event: DocumentCreated) {
         }
+    }
+
+    fun mockResponse(body: String): MockResponse {
+        return MockResponse()
+            .addHeader("Content-Type", "application/json")
+            .setBody(body)
     }
 }
