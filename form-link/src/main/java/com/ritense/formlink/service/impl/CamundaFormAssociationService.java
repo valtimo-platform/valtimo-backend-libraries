@@ -328,7 +328,9 @@ public class CamundaFormAssociationService implements FormAssociationService {
         final ObjectNode extendedDocumentContent = (ObjectNode) document.content().asJson();
         extendedDocumentContent.set("metadata", buildMetaDataObject(document));
 
-        prefillProcessVariables(formDefinition, document);
+        if (taskInstanceId.isEmpty()) {
+            prefillProcessVariables(formDefinition, document);
+        }
         prefillDataResolverFields(formDefinition, document, extendedDocumentContent);
         if (camundaFormAssociation.isPresent() && camundaFormAssociation.get() instanceof UserTaskFormAssociation) {
             taskInstanceId
@@ -403,6 +405,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
     public void prefillTaskVariables(FormIoFormDefinition formDefinition, String taskInstanceId, JsonNode extendedDocumentContent) {
         final Map<String, Object> taskVariables = taskService.getVariables(taskInstanceId);
         final ObjectNode placeholders = Mapper.INSTANCE.objectMapper().valueToTree(taskVariables);
+        formDefinition.preFillWith("pv", taskVariables);
         submissionTransformerService.prePreFillTransform(formDefinition, placeholders, extendedDocumentContent);
     }
 
