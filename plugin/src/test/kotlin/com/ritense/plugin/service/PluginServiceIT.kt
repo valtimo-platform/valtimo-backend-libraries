@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,6 @@ import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.valtimo.contract.json.Mapper
 import org.camunda.bpm.engine.delegate.DelegateExecution
-import java.lang.reflect.InvocationTargetException
-import java.util.UUID
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNotEquals
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -52,6 +48,11 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.lang.reflect.InvocationTargetException
+import java.net.URI
+import java.util.UUID
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotEquals
 
 
 internal class PluginServiceIT : BaseIntegrationTest() {
@@ -251,6 +252,28 @@ internal class PluginServiceIT : BaseIntegrationTest() {
                 pluginService.invoke(mock<DelegateExecution>(), processLink)
             }
         )
+    }
+
+    @Test
+    @Transactional
+    fun `should invoke an action on the plugin with a URI inside a resolved parameter`() {
+        val processLink = PluginProcessLink(
+            PluginProcessLinkId.newId(),
+            processDefinitionId = UUID.randomUUID().toString(),
+            activityId = "test",
+            pluginConfigurationId = pluginConfiguration.id,
+            pluginActionDefinitionKey = "test-action-with-uri-parameter",
+            actionProperties = jacksonObjectMapper().readTree("""{"uriParam": "pv:exampleUrl"}""") as ObjectNode,
+            activityType = ActivityType.SERVICE_TASK_START
+        )
+
+        val execution = DelegateExecutionFake.of()
+            .withProcessInstanceId(UUID.randomUUID().toString())
+            .withVariable("exampleUrl", "www.example.com")
+
+        val result = pluginService.invoke(execution, processLink)
+
+        assertEquals(URI("www.example.com"), result)
     }
 
     @Test

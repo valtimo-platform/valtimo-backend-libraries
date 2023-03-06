@@ -20,7 +20,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.BaseIntegrationTest
 import com.ritense.notificatiesapiauthentication.NotificatiesApiAuthenticationPlugin
 import com.ritense.plugin.domain.PluginConfiguration
-import java.net.URI
+import com.ritense.verzoek.domain.CopyStrategy
+import com.ritense.verzoek.domain.Mapping
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterEach
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.springframework.beans.factory.annotation.Autowired
+import java.net.URI
 
 internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
 
@@ -123,10 +125,15 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
               "rsin": "637549971",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "objection-case-definition",
+                "caseDefinitionName": "profile",
                 "processDefinitionKey": "objection-process",
                 "initiatorRoltypeUrl": "https://example.com/my-role-type",
-                "initiatorRolDescription": "Initiator"
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "specified",
+                "mapping": [{
+                    "target": "doc:/fullname",
+                    "source": "/name"
+                }]
               }]
             }
         """.trimIndent()
@@ -144,10 +151,12 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
         assertEquals("637549971", plugin.rsin.toString())
         assertEquals(1, plugin.verzoekProperties.size)
         assertEquals("objection", plugin.verzoekProperties[0].type)
-        assertEquals("objection-case-definition", plugin.verzoekProperties[0].caseDefinitionName)
+        assertEquals("profile", plugin.verzoekProperties[0].caseDefinitionName)
         assertEquals("objection-process", plugin.verzoekProperties[0].processDefinitionKey)
         assertEquals("https://example.com/my-role-type", plugin.verzoekProperties[0].initiatorRoltypeUrl.toString())
         assertEquals("Initiator", plugin.verzoekProperties[0].initiatorRolDescription)
+        assertEquals(CopyStrategy.SPECIFIED, plugin.verzoekProperties[0].copyStrategy)
+        assertEquals(listOf(Mapping("/name", "doc:/fullname")), plugin.verzoekProperties[0].mapping)
     }
 
     private fun mockResponse(body: String): MockResponse {

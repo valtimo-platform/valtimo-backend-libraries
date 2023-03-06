@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,16 +28,16 @@ import com.ritense.plugin.repository.PluginDefinitionRepository
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.containsInAnyOrder
+import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.hamcrest.Matchers.hasProperty
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.not
 import org.hamcrest.core.IsIterableContaining.hasItems
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import javax.transaction.Transactional
-import org.hamcrest.Matchers.greaterThanOrEqualTo
-import org.junit.jupiter.api.Assertions.fail
 
 internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
 
@@ -72,7 +72,7 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
         assertPluginCategoryPresent(plugin.categories)
 
         val deployedActionProperties = pluginActionPropertyDefinitionRepository.findAll()
-        assertThat(deployedActionProperties.size, `is`(1))
+        assertThat(deployedActionProperties.size, `is`(2))
     }
 
     private fun assertPluginPropertiesPresent(

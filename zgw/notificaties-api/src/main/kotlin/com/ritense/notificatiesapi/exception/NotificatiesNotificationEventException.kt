@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.exception
+package com.ritense.notificatiesapi.exception
 
-import org.zalando.problem.AbstractThrowableProblem
-import org.zalando.problem.Exceptional
-import org.zalando.problem.Status
+import org.springframework.http.HttpStatus
 
-class ZaakInstanceLinkNotFoundException(message: String?) : AbstractThrowableProblem
-    (
-    null,
-    message,
-    Status.NOT_FOUND
-) {
-    override fun getCause(): Exceptional? {
-        return null
-    }
-}
+class NotificatiesNotificationEventException(
+    message: String?,
+    val status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR
+) : RuntimeException(message)

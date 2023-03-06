@@ -1,0 +1,60 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet author="Ritense" id="1">
+        <dropPrimaryKey tableName="process_form_association_v2"
+                        constraintName="process_form_association_v2_PK"
+                        uniqueColumns="id,process_definition_key,form_association_id,form_association_form_link_element_id"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="11">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="process_form_association_v2" columnName="id"/>
+        </preConditions>
+        <dropColumn columnName="id"
+                    tableName="process_form_association_v2"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="7">
+        <modifyDataType tableName="process_form_association_v2"
+                        columnName="process_definition_key"
+                        newDataType="varchar(255)"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="13">
+        <update tableName="process_form_association_v2">
+            <column name="form_association_id" valueComputed="${generateUuid}"/>
+        </update>
+    </changeSet>
+
+    <changeSet author="Ritense" id="9">
+        <addNotNullConstraint tableName="process_form_association_v2"
+                              columnName="form_association_id"
+                              columnDataType="${uuidType}"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="10">
+        <addPrimaryKey tableName="process_form_association_v2"
+                       columnNames="form_association_id"
+                       constraintName="process_form_association_v2_PK"/>
+    </changeSet>
+
+</databaseChangeLog>

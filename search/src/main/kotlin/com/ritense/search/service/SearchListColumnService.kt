@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,15 @@ class SearchListColumnService(
                     )
                 }
             }
-            searchListColumnRepository.save(searchListColumn)
+            searchListColumnRepository.save(this?.copy(
+                 ownerId = searchListColumn.ownerId,
+                key = searchListColumn.key,
+                title = searchListColumn.title,
+                path = searchListColumn.path,
+                order = searchListColumn.order,
+                displayType = searchListColumn.displayType,
+                sortable = searchListColumn.sortable
+            ))
         }
 
     fun findByOwnerId(ownerId: String) = searchListColumnRepository.findAllByOwnerId(ownerId)

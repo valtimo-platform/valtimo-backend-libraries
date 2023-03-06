@@ -163,6 +163,15 @@ class PluginService(
         }
     }
 
+    fun processLinkExists(pluginConfigurationId: PluginConfigurationId, activityId: String, activityType: ActivityType): Boolean {
+        return pluginProcessLinkRepository
+            .findByPluginConfigurationIdAndActivityIdAndActivityType(
+                pluginConfigurationId,
+                activityId,
+                activityType
+            ).size == 1
+    }
+
     fun getProcessLinks(
         processDefinitionId: String,
         activityId: String
@@ -279,6 +288,8 @@ class PluginService(
             param.isAnnotationPresent(PluginActionProperty::class.java)
         }.mapNotNull { param ->
             param to actionProperties.get(param.name)
+        }.filter { pair ->
+            pair.second != null
         }.toMap()
 
         // We want to process all placeholder values together to improve performance if external sources are needed.
@@ -295,20 +306,7 @@ class PluginService(
                 valueResolverService.resolveValues(execution.processInstanceId, execution, values.toList())
             }
 
-        return paramValues.mapValues { (param, value) ->
-            if (value.isTextual) {
-                //TODO: possible issue here. resulting placeHolderValue might be a string value of an enum or date
-                val placeHolderValue =
-                    placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
-                if (placeHolderValue::class.java.isAssignableFrom(param.type)) {
-                    placeHolderValue
-                } else {
-                    objectMapper.treeToValue(value, param.type)
-                }
-            } else {
-                objectMapper.treeToValue(value, param.type)
-            }
-        }
+        return mapActionParamValues(paramValues, placeHolderValueMap)
     }
 
     private fun resolveActionParamValues(
@@ -324,6 +322,8 @@ class PluginService(
             param.isAnnotationPresent(PluginActionProperty::class.java)
         }.mapNotNull { param ->
             param to actionProperties.get(param.name)
+        }.filter {
+            pair -> pair.second != null
         }.toMap()
 
         // We want to process all placeholder values together to improve performance if external sources are needed.
@@ -346,18 +346,28 @@ class PluginService(
     private fun mapActionParamValues(paramValues: Map<Parameter, JsonNode>, placeHolderValueMap: Map<String, Any>): Map<Parameter, Any> {
         return paramValues.mapValues { (param, value) ->
             if (value.isTextual) {
-                //TODO: possible issue here. resulting placeHolderValue might be a string value of an enum or date
-                val placeHolderValue =
-                    placeHolderValueMap.getOrDefault(value.textValue(), objectMapper.treeToValue(value, param.type))
-                if (placeHolderValue::class.java.isAssignableFrom(param.type)) {
-                    placeHolderValue
+                val placeHolderValueAsString = placeHolderValueMap[value.textValue()]
+                if (placeHolderValueAsString != null) {
+                    objectMapper.convertValue(placeHolderValueAsString, objectMapper.constructType(param.parameterizedType))
                 } else {
-                    objectMapper.treeToValue(value, param.type)
+                    toValue(value, param)
                 }
             } else {
-                objectMapper.treeToValue(value, param.type)
+                toValue(value, param)
             }
         }
+    }
+
+    private fun <T> toValue(value: JsonNode, param: Parameter): T {
+        return objectMapper.treeToValue(value, objectMapper.constructType(param.parameterizedType))
+    }
+
+    fun <T> createInstance(pluginConfigurationId: String): T {
+        return createInstance(UUID.fromString(pluginConfigurationId))
+    }
+
+    fun <T> createInstance(pluginConfigurationId: UUID): T {
+        return createInstance(PluginConfigurationId.existingId(pluginConfigurationId)) as T
     }
 
     fun createInstance(pluginConfigurationId: PluginConfigurationId): Any {
@@ -368,16 +378,20 @@ class PluginService(
     fun createInstance(pluginConfiguration: PluginConfiguration): Any {
         return pluginFactories.first {
             it.canCreate(pluginConfiguration)
-        }.create(pluginConfiguration)!!
+        }.create(pluginConfiguration)
     }
 
     fun <T> createInstance(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): T? {
+        val pluginConfiguration = findPluginConfiguration(clazz, configurationFilter)
+
+        return pluginConfiguration?.let { createInstance(it) as T }
+    }
+
+    fun <T> findPluginConfiguration(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): PluginConfiguration? {
         val annotation = clazz.getAnnotation(Plugin::class.java)
             ?: throw IllegalArgumentException("Requested plugin for class ${clazz.name}, but class is not annotated as plugin")
 
-        val pluginConfiguration = findPluginConfiguration(annotation.key, configurationFilter)
-
-        return pluginConfiguration?.let { createInstance(it) as T }
+        return findPluginConfiguration(annotation.key, configurationFilter)
     }
 
     private fun getActionMethod(
@@ -430,7 +444,7 @@ class PluginService(
         }
     }
 
-    private fun findPluginConfiguration(
+    fun findPluginConfiguration(
         pluginDefinitionKey: String,
         filter: (JsonNode) -> Boolean
     ): PluginConfiguration? {

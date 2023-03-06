@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.documentenapi
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
@@ -26,10 +27,11 @@ class DocumentenApiPluginFactory(
     pluginService: PluginService,
     val client: DocumentenApiClient,
     val storageService: TemporaryResourceStorageService,
-    val applicationEventPublisher: ApplicationEventPublisher
+    val applicationEventPublisher: ApplicationEventPublisher,
+    val objectMapper: ObjectMapper,
 ) : PluginFactory<DocumentenApiPlugin>(pluginService) {
 
     override fun create(): DocumentenApiPlugin {
-        return DocumentenApiPlugin(client, storageService, applicationEventPublisher)
+        return DocumentenApiPlugin(client, storageService, applicationEventPublisher, objectMapper)
     }
 }

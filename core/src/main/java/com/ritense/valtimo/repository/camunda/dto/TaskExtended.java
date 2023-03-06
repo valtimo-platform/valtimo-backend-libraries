@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ public class TaskExtended extends org.camunda.bpm.engine.rest.dto.task.TaskDto {
 
     private ValtimoUser valtimoAssignee;
 
+    private Object context;
+
     public TaskExtended(final String businessKey, final String processDefinitionKey) {
         super();
         this.businessKey = businessKey;
@@ -47,4 +49,11 @@ public class TaskExtended extends org.camunda.bpm.engine.rest.dto.task.TaskDto {
         valtimoAssignee = user;
     }
 
+    public Object getContext() {
+        return context;
+    }
+
+    public void setContext(Object context) {
+        this.context = context;
+    }
 }

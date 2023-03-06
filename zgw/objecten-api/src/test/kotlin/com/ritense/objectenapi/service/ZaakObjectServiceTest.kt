@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,16 @@ import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
+import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.objecttypenapi.client.Objecttype
-import com.ritense.openzaak.exception.ZaakInstanceLinkNotFoundException
-import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
-import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakObject
 import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -47,16 +47,31 @@ import kotlin.test.assertTrue
 
 internal class ZaakObjectServiceTest {
 
-    val zaakInstanceLinkService = mock<ZaakInstanceLinkService>()
-    val pluginService = mock<PluginService>()
-    val formDefinitionService = mock<FormDefinitionService>()
-    val zaakObjectService = ZaakObjectService(zaakInstanceLinkService, pluginService, formDefinitionService)
+    lateinit var zaakUrlProvider: ZaakUrlProvider
+    lateinit var pluginService:PluginService
+    lateinit var formDefinitionService:FormDefinitionService
+    lateinit var objectManagementInfoProvider:ObjectManagementInfoProvider
+    lateinit var zaakObjectService:ZaakObjectService
 
     var zaakPlugin: ZakenApiPlugin? = null
     var objectenApiPlugin: ObjectenApiPlugin? = null
     var objecttypenApiPlugin: ObjecttypenApiPlugin? = null
 
-    var zaakObjecten = mutableListOf<ZaakObject>()
+    lateinit var zaakObjecten: MutableList<ZaakObject>
+
+    @BeforeEach
+    fun init() {
+        zaakUrlProvider = mock()
+        pluginService = mock()
+        formDefinitionService = mock()
+        objectManagementInfoProvider = mock()
+        zaakObjectService = ZaakObjectService(zaakUrlProvider, pluginService, formDefinitionService, objectManagementInfoProvider)
+
+        zaakPlugin = null
+        objectenApiPlugin = null
+        objecttypenApiPlugin = null
+        zaakObjecten = mutableListOf()
+    }
 
     @Test
     fun `should get objecttypes for document`() {
@@ -93,10 +108,10 @@ internal class ZaakObjectServiceTest {
     @Test
     fun `should throw exception if zaak instance link is not found`() {
         val documentId = UUID.randomUUID()
-        whenever(zaakInstanceLinkService.getByDocumentId(documentId))
-            .thenThrow(ZaakInstanceLinkNotFoundException::class.java)
+        whenever(zaakUrlProvider.getZaakUrl(documentId))
+            .thenThrow(RuntimeException::class.java)
 
-        assertThrows(ZaakInstanceLinkNotFoundException::class.java) {
+        assertThrows(RuntimeException::class.java) {
             zaakObjectService.getZaakObjectTypes(documentId)
         }
     }
@@ -261,7 +276,6 @@ internal class ZaakObjectServiceTest {
     fun `should throw exception when getting object by type and there are no objects`() {
         val documentId = UUID.randomUUID()
         val objecttypeName = "test"
-        val objecttypeUrl = URI("http://example.com/objecttype")
 
         val zaakInstanceUrl = setupZaakInstanceLink(documentId)
         setupPlugins(zaakInstanceUrl)
@@ -395,9 +409,7 @@ internal class ZaakObjectServiceTest {
 
     private fun setupZaakInstanceLink(documentId: UUID): URI {
         val zaakInstanceUrl = URI("http://example.com/zaak/${UUID.randomUUID()}")
-        val zaakInstanceLink = mock<ZaakInstanceLink>()
-        whenever(zaakInstanceLink.zaakInstanceUrl).thenReturn(zaakInstanceUrl)
-        whenever(zaakInstanceLinkService.getByDocumentId(documentId)).thenReturn(zaakInstanceLink)
+        whenever(zaakUrlProvider.getZaakUrl(documentId)).thenReturn(zaakInstanceUrl)
         return zaakInstanceUrl
     }
 

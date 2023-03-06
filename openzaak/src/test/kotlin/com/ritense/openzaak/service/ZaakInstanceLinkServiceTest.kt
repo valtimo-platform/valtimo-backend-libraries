@@ -1,6 +1,6 @@
 /*
  *
- *  * Copyright 2015-2021 Ritense BV, the Netherlands.
+ *  * Copyright 2015-2023 Ritense BV, the Netherlands.
  *  *
  *  * Licensed under EUPL, Version 1.2 (the "License");
  *  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@
 package com.ritense.openzaak.service
 
 import com.ritense.openzaak.BaseTest
-import com.ritense.openzaak.exception.ZaakInstanceLinkNotFoundException
-import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
+import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows

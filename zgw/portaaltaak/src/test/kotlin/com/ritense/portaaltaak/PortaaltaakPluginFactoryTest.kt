@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ internal class PortaaltaakPluginFactoryTest {
         val notificatiesApiPluginMock = mock<NotificatiesApiPlugin>()
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(notificatiesApiPluginMock)
 
-        val factory = PortaaltaakPluginFactory(pluginService)
+        val factory = PortaaltaakPluginFactory(pluginService, mock(), mock(), mock(), mock(), mock())
 
         val portaaltaakPluginProperties: String = """
             {

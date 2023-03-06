@@ -19,9 +19,9 @@ package com.ritense.verzoek
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.BaseIntegrationTest
+import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
-import com.ritense.document.service.result.DeployDocumentDefinitionResult
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectRecord
@@ -30,10 +30,6 @@ import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
-import java.net.URI
-import java.time.LocalDate
-import java.util.UUID
-import javax.transaction.Transactional
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.camunda.bpm.engine.RuntimeService
@@ -49,6 +45,10 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import java.net.URI
+import java.time.LocalDate
+import java.util.UUID
+import javax.transaction.Transactional
 
 @Transactional
 internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
@@ -60,7 +60,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
     private val zaakTypeUrl: String = "https://example.gov"
     private val verzoekObjectType = "objection"
 
-    lateinit var documentDefinition: DeployDocumentDefinitionResult
+    lateinit var documentDefinition: DocumentDefinition
     lateinit var notificatiesApiPluginConfiguration: PluginConfiguration
     lateinit var objectManagement: ObjectManagement
 
@@ -127,25 +127,11 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
 
         pluginService
 
-        documentDefinition = documentDefinitionService.deploy(
-            """
-                {
-                    "${"$"}id": "verzoek-document-definition.schema",
-                    "${"$"}schema": "http://json-schema.org/draft-07/schema#",
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        }
-                    }
-                }
-        """.trimIndent()
-        )
-        assert(documentDefinition.documentDefinition() != null)
+        documentDefinition = documentDefinitionService.findLatestByName("profile").get()
 
         objectManagement = objectManagementService.create(createObjectManagement())
 
-        whenever(zaaktypeUrlProvider.getZaaktypeUrl(documentDefinition.documentDefinition().id().name()))
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl(documentDefinition.id().name()))
             .thenReturn(URI.create(zaakTypeUrl))
 
         val notificatiesApiAuthenticationPluginConfiguration = createPluginConfiguration(
@@ -185,10 +171,15 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.documentDefinition().id().name()}",
+                "caseDefinitionName": "${documentDefinition.id().name()}",
                 "processDefinitionKey": "objection-process",
                 "initiatorRoltypeUrl": "$initiatoRolType",
-                "initiatorRolDescription": "Initiator"
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "specified",
+                "mapping": [{
+                    "target": "doc:/fullname",
+                    "source": "/name"
+                }]
               }]
             }
             """.trimIndent()
@@ -197,7 +188,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
         doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
 
-        doReturn(mockObjectenApiPlugin).whenever(pluginService).createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
+        doReturn(mockObjectenApiPlugin).whenever(pluginService)
+            .createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
         doReturn(createObjectWrapper(withMetaData = true, verzoekObjectType, true)).whenever(mockObjectenApiPlugin)
             .getObject(any())
         //tested method
@@ -220,7 +212,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         val documentInstance = documentService.get(processList[0].businessKey)
         assertEquals(
             "John Doe",
-            documentInstance.content().getValueBy(JsonPointer.valueOf("/name")).get().textValue()
+            documentInstance.content().getValueBy(JsonPointer.valueOf("/fullname")).get().textValue()
         )
     }
 
@@ -236,10 +228,11 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.documentDefinition().id().name()}",
+                "caseDefinitionName": "${documentDefinition.id().name()}",
                 "processDefinitionKey": "objection-process",
                 "initiatorRoltypeUrl": "$initiatoRolType",
-                "initiatorRolDescription": "Initiator"
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "full"
               }]
             }
             """.trimIndent()
@@ -247,7 +240,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         //mocks
         val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
         doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
-        doReturn(mockObjectenApiPlugin).whenever(pluginService).createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
+        doReturn(mockObjectenApiPlugin).whenever(pluginService)
+            .createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
         doReturn(createObjectWrapper(withMetaData = false, verzoekObjectType, true)).whenever(mockObjectenApiPlugin)
             .getObject(any())
         //tested method
@@ -270,10 +264,11 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.documentDefinition().id().name()}",
+                "caseDefinitionName": "${documentDefinition.id().name()}",
                 "processDefinitionKey": "objection-process",
                 "initiatorRoltypeUrl": "$initiatoRolType",
-                "initiatorRolDescription": "Initiator"
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "full"
               }]
             }
             """.trimIndent()
@@ -281,7 +276,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         //mocks
         val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
         doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
-        doReturn(mockObjectenApiPlugin).whenever(pluginService).createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
+        doReturn(mockObjectenApiPlugin).whenever(pluginService)
+            .createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
         doReturn(createObjectWrapper(withMetaData = true, "otherType", true)).whenever(mockObjectenApiPlugin)
             .getObject(any())
         //tested method
@@ -304,10 +300,11 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.documentDefinition().id().name()}",
+                "caseDefinitionName": "${documentDefinition.id().name()}",
                 "processDefinitionKey": "objection-process",
                 "initiatorRoltypeUrl": "$initiatoRolType",
-                "initiatorRolDescription": "Initiator"
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "full"
               }]
             }
             """.trimIndent()
@@ -315,7 +312,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         //mocks
         val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
         doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
-        doReturn(mockObjectenApiPlugin).whenever(pluginService).createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
+        doReturn(mockObjectenApiPlugin).whenever(pluginService)
+            .createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
         doReturn(createObjectWrapper(withMetaData = true, verzoekObjectType, false)).whenever(mockObjectenApiPlugin)
             .getObject(any())
         //tested method
@@ -323,7 +321,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             verzoekPluginEventListener.createZaakFromNotificatie(createEvent())
         }
         //assertions
-        assertEquals("Verzoek Object data was empty!", exception.message)
+        assertEquals("Verzoek Object data was empty, for verzoek with type 'objection'", exception.message)
     }
 
     private fun createObjectWrapper(withMetaData: Boolean, withType: String, withObjectData: Boolean): ObjectWrapper {

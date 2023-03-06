@@ -20,6 +20,9 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 
 data class Rsin(private val value: String) {
+
+    constructor(value: Long) : this(value.toString().padStart(9, '0'))
+
     companion object {
         @JvmStatic
         @JsonCreator

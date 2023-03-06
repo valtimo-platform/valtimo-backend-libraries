@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -216,7 +216,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
     @Transactional
     public CamundaFormAssociation createFormAssociation(CreateFormAssociationRequest request) {
         final var formAssociation = FormAssociationFactory.getFormAssociation(
-            UUID.nameUUIDFromBytes(request.getFormLinkRequest().getId().getBytes()),
+            UUID.randomUUID(),
             request.getFormLinkRequest().getType(),
             request.getFormLinkRequest().getId(),
             request.getFormLinkRequest().getFormId(),
@@ -328,7 +328,9 @@ public class CamundaFormAssociationService implements FormAssociationService {
         final ObjectNode extendedDocumentContent = (ObjectNode) document.content().asJson();
         extendedDocumentContent.set("metadata", buildMetaDataObject(document));
 
-        prefillProcessVariables(formDefinition, document);
+        if (taskInstanceId.isEmpty()) {
+            prefillProcessVariables(formDefinition, document);
+        }
         prefillDataResolverFields(formDefinition, document, extendedDocumentContent);
         if (camundaFormAssociation.isPresent() && camundaFormAssociation.get() instanceof UserTaskFormAssociation) {
             taskInstanceId
@@ -403,6 +405,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
     public void prefillTaskVariables(FormIoFormDefinition formDefinition, String taskInstanceId, JsonNode extendedDocumentContent) {
         final Map<String, Object> taskVariables = taskService.getVariables(taskInstanceId);
         final ObjectNode placeholders = Mapper.INSTANCE.objectMapper().valueToTree(taskVariables);
+        formDefinition.preFillWith("pv", taskVariables);
         submissionTransformerService.prePreFillTransform(formDefinition, placeholders, extendedDocumentContent);
     }
 

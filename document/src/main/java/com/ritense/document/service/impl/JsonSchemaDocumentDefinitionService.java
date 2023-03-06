@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import com.jayway.jsonpath.internal.path.RootPathToken;
 import com.jayway.jsonpath.internal.path.ScanPathToken;
 import com.jayway.jsonpath.internal.path.WildcardPathToken;
 import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.document.domain.EveritSchemaAllowsPropertyKt;
 import com.ritense.document.domain.impl.JsonSchema;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
@@ -284,8 +285,17 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         return isValidJsonPointer(definition, jsonPointer);
     }
 
+    @Override
+    public void validateJsonPointer(String documentDefinitionName, String jsonPointer) {
+        var definition = findLatestByName(documentDefinitionName)
+            .orElseThrow(() -> new UnknownDocumentDefinitionException(documentDefinitionName));
+        if (!isValidJsonPointer(definition, jsonPointer)) {
+            throw new ValidationException("JsonPointer '" + jsonPointer + "' doesn't point to any property inside document definition '" + documentDefinitionName + "'");
+        }
+    }
+
     private boolean isValidJsonPointer(JsonSchemaDocumentDefinition definition, String jsonPointer) {
-        return definition.getSchema().getSchema().definesProperty(jsonPointer);
+        return EveritSchemaAllowsPropertyKt.allowsProperty(definition.getSchema().getSchema(), jsonPointer);
     }
 
     private String toJsonPointerRecursive(PathToken pathToken) {

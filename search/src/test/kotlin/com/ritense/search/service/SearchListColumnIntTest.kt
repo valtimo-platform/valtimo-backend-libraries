@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,13 +43,13 @@ internal class SearchListColumnIntTest : BaseIntegrationTest() {
             updatedSearchListColumn
         )
 
-        assertThat(dbUpdatedSearchListColumn.title).isEqualTo(updatedSearchListColumn.title)
+        assertThat(dbUpdatedSearchListColumn?.title).isEqualTo(updatedSearchListColumn.title)
 
         val dbLookUpByOwnerId = searchListColumnService.findByOwnerId(searchListColumn.ownerId)
         assertThat(dbLookUpByOwnerId).isNotNull
         assertThat(dbLookUpByOwnerId?.first()?.path).isEqualTo(searchListColumn.path)
 
-        searchListColumnService.delete(dbUpdatedSearchListColumn.ownerId, dbUpdatedSearchListColumn.key)
+        dbUpdatedSearchListColumn?.ownerId?.let { searchListColumnService.delete(it, dbUpdatedSearchListColumn.key) }
 
         val list = searchListColumnService.findByOwnerId(searchListColumn.ownerId)
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,10 @@
 package com.ritense.openzaak.plugin
 
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
 import com.ritense.openzaak.service.ZaakTypeLinkService
-import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.zakenapi.ZaakUrlProvider
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import java.net.URI
 import java.util.UUID
 
@@ -33,17 +34,13 @@ class OpenZaakUrlProvider(
 
     override fun getZaaktypeUrl(documentDefinitionName: String): URI {
         val zaakTypeLink = zaakTypeLinkService.get(documentDefinitionName)
-        requireNotNull(zaakTypeLink) {
-            "No zaak type was found for document definition with name $documentDefinitionName"
-        }
+            ?: throw ZaakTypeLinkNotFoundException("For document definition with name $documentDefinitionName")
         return zaakTypeLink.zaakTypeUrl
     }
 
     override fun getZaaktypeUrlByCaseDefinitionName(caseDefinitionName: String): URI {
         val zaakTypeLink = zaakTypeLinkService.get(caseDefinitionName)
-        requireNotNull(zaakTypeLink) {
-            "No zaak type was found for case definition with name $caseDefinitionName"
-        }
+            ?: throw ZaakTypeLinkNotFoundException("For case definition with name $caseDefinitionName")
         return zaakTypeLink.zaakTypeUrl
     }
 }

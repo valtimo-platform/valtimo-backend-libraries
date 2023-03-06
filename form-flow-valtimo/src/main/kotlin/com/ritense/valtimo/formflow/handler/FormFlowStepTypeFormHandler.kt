@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2022 Ritense BV, the Netherlands.
+ *  Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -70,7 +70,10 @@ class FormFlowStepTypeFormHandler(
         val document = documentService.get(documentId)
         val documentContent = document.content().asJson() as ObjectNode
 
-        camundaFormAssociationService.prefillProcessVariables(formDefinition, document)
+        if (taskInstanceId == null) {
+            camundaFormAssociationService.prefillProcessVariables(formDefinition, document)
+        }
+
         camundaFormAssociationService.prefillDataResolverFields(formDefinition, document, documentContent)
 
         if (taskInstanceId != null) {

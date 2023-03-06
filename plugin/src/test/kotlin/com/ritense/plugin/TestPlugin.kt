@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
 import com.ritense.plugin.domain.EventType
+import java.net.URI
 
 @Plugin(
     key = "test-plugin",
@@ -73,6 +74,16 @@ class TestPlugin(
     )
     fun testAction(@PluginActionProperty someString: String): String {
         return someString
+    }
+
+    @PluginAction(
+        key = "test-action-with-uri-parameter",
+        title = "Test action with uri parameter",
+        description = "This is an action used to test having an uri as a parameter",
+        activityTypes = [SERVICE_TASK_START]
+    )
+    fun testActionWithUriParameter(@PluginActionProperty uriParam: URI): URI {
+        return uriParam
     }
 
     @PluginAction(

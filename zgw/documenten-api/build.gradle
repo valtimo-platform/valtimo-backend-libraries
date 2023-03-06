@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,14 +30,15 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-starter-security"
 
     testImplementation project(':document')
+    testImplementation project(':resource')
     testImplementation project(':process-document')
-    testImplementation project(':resource:openzaak-resource')
-    testImplementation project(':openzaak')
     testImplementation project(':plugin-valtimo')
     testImplementation project(':test-utils-common')
 
+    testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"

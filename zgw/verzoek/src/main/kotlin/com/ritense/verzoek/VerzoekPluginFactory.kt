@@ -16,14 +16,16 @@
 
 package com.ritense.verzoek
 
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 
 class VerzoekPluginFactory(
     pluginService: PluginService,
+    private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
 ) : PluginFactory<VerzoekPlugin>(pluginService) {
 
     override fun create(): VerzoekPlugin {
-        return VerzoekPlugin()
+        return VerzoekPlugin(documentDefinitionService)
     }
 }

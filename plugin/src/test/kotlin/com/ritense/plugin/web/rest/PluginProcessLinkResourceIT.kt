@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.ritense.plugin.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.BaseIntegrationTest
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
@@ -153,7 +154,8 @@ internal class PluginProcessLinkResourceIT : BaseIntegrationTest() {
                 processDefinitionId = PROCESS_DEF_ID,
                 activityId = ACTIVITY_ID,
                 pluginConfigurationId = pluginConfiguration.id,
-                pluginActionDefinitionKey = ACTION_KEY
+                pluginActionDefinitionKey = ACTION_KEY,
+                activityType = ActivityType.SERVICE_TASK_START
             )
         ).id
     }

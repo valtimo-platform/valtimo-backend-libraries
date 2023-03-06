@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 package com.ritense.zakenapi
 
-import com.ritense.document.domain.impl.JsonSchemaDocumentId
-import com.ritense.document.service.DocumentService
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -27,12 +26,19 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.rol.BetrokkeneType
+import com.ritense.zakenapi.domain.rol.Rol
+import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
+import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
+import mu.KLogger
+import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
 import java.time.LocalDate
@@ -46,12 +52,10 @@ import java.util.UUID
 class ZakenApiPlugin(
     private val client: ZakenApiClient,
     private val zaakUrlProvider: ZaakUrlProvider,
-    private val resourceProvider: ResourceProvider,
-    private val documentService: DocumentService,
     private val storageService: TemporaryResourceStorageService,
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
 ) {
-    @PluginProperty(key = "url", secret = false)
+    @PluginProperty(key = URL_PROPERTY, secret = false)
     lateinit var url: URI
 
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
@@ -70,16 +74,16 @@ class ZakenApiPlugin(
         @PluginActionProperty beschrijving: String?
     ) {
         val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaak(documentId)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
         val request = LinkDocumentRequest(
             documentUrl,
-            zaakUrl,
+            zaakUrl.toString(),
             titel,
             beschrijving
         )
 
-        linkDocument(documentId, request, documentUrl)
+        client.linkDocument(authenticationPluginConfiguration, url, request)
     }
 
     @PluginAction(
@@ -96,15 +100,15 @@ class ZakenApiPlugin(
         val metadata = storageService.getResourceMetadata(resourceId)
 
         val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaak(documentId)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
         val request = LinkDocumentRequest(
             documentUrl,
-            zaakUrl,
+            zaakUrl.toString(),
             metadata["title"] as String?,
             metadata["description"] as String?,
         )
-        linkDocument(documentId, request, documentUrl)
+        client.linkDocument(authenticationPluginConfiguration, url, request)
     }
 
     @PluginAction(
@@ -118,8 +122,13 @@ class ZakenApiPlugin(
         @PluginActionProperty rsin: Rsin,
         @PluginActionProperty zaaktypeUrl: URI,
     ) {
-        execution.activityInstanceId
         val documentId = UUID.fromString(execution.businessKey)
+
+        val zaakInstanceLink = zaakInstanceLinkRepository.findByDocumentId(documentId)
+        if (zaakInstanceLink != null) {
+            logger.warn { "SKIPPING ZAAK CREATION. Reason: a zaak already exists for this case. Case id '$documentId'. Zaak URL '${zaakInstanceLink.zaakInstanceUrl}'." }
+            return
+        }
 
         val zaak = client.createZaak(
             authenticationPluginConfiguration,
@@ -143,14 +152,43 @@ class ZakenApiPlugin(
         )
     }
 
-    private fun linkDocument(documentId: UUID, request: LinkDocumentRequest, documentUrl: String) {
-        client.linkDocument(authenticationPluginConfiguration, url, request)
-        val resource = resourceProvider.getResource(documentUrl)
-        documentService.assignResource(
-            JsonSchemaDocumentId.existingId(documentId),
-            resource.id(),
-            mapOf("createInformatieObject" to false)
+    @PluginAction(
+        key = "create-natuurlijk-persoon-zaak-rol",
+        title = "Create natuurlijk persoon zaakrol",
+        description = "Adds a zaakrol to the zaak in the Zaken API",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun createNatuurlijkPersoonZaakRol(
+        execution: DelegateExecution,
+        @PluginActionProperty roltypeUrl: String,
+        @PluginActionProperty rolToelichting: String,
+        @PluginActionProperty inpBsn: String?,
+        @PluginActionProperty anpIdentificatie: String?,
+        @PluginActionProperty inpA_nummer: String?
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaak(documentId)
+
+        client.createZaakRol(
+            authenticationPluginConfiguration,
+            url,
+            Rol(
+                zaak = URI(zaakUrl),
+                roltype = URI(roltypeUrl),
+                roltoelichting = rolToelichting,
+                betrokkeneType = BetrokkeneType.NATUURLIJK_PERSOON,
+                betrokkeneIdentificatie = RolNatuurlijkPersoon(
+                    inpBsn = inpBsn,
+                    anpIdentificatie = anpIdentificatie,
+                    inpA_nummer = inpA_nummer
+                )
+            )
         )
+
+    }
+
+    fun getZaakInformatieObjecten(zaakUrl: URI): List<ZaakInformatieObject> {
+        return client.getZaakInformatieObjecten(authenticationPluginConfiguration, url, zaakUrl)
     }
 
     fun getZaakObjecten(zaakUrl: URI): List<ZaakObject> {
@@ -171,9 +209,31 @@ class ZakenApiPlugin(
         return results
     }
 
+    fun getZaakRollen(zaakUrl: URI, roleType: RolType? = null): List<Rol> {
+        return buildList {
+            var currentPage = 1
+            while (true) {
+                val result = client.getZaakRollen(
+                    authenticationPluginConfiguration,
+                    url, zaakUrl, currentPage, roleType
+                )
+                addAll(result.results)
+
+                if (result.next == null) break else currentPage++
+
+                if (currentPage == 50) logger.warn {
+                    "Retrieving over 50 zaakrol pages. Please consider using a paginated result!"
+                }
+            }
+        }
+    }
+
     companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
         const val PLUGIN_KEY = "zakenapi"
+        const val URL_PROPERTY = "url"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
+        fun findConfigurationByUrl(url:URI) = { properties:JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import com.ritense.objecttypenapi.client.ObjecttypenApiClient
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import java.net.URI
+import org.springframework.web.util.UriComponentsBuilder
 
 @Plugin(
    key = "objecttypenapi",
@@ -37,5 +38,13 @@ class ObjecttypenApiPlugin(
 
     fun getObjecttype(typeUrl: URI): Objecttype {
         return objecttypenApiClient.getObjecttype(authenticationPluginConfiguration, typeUrl)
+    }
+
+    fun getObjectTypeUrlById(id:String): URI {
+        return UriComponentsBuilder.fromUri(url)
+            .pathSegment("objecttypes")
+            .pathSegment(id)
+            .build()
+            .toUri()
     }
 }

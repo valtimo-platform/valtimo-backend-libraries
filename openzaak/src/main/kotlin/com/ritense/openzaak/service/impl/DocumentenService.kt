@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.ritense.openzaak.service.DocumentenService
 import com.ritense.openzaak.service.impl.model.documenten.DocumentCreatedResult
 import com.ritense.openzaak.service.impl.model.documenten.ZaakInformatieObjectCreatedResult
 import com.ritense.valtimo.contract.utils.SecurityUtils
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import java.net.URI
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
