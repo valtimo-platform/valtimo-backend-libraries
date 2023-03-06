@@ -15,7 +15,6 @@
     <bpmn:exclusiveGateway id="Gateway_1xw5kxz">
       <bpmn:incoming>Flow_0v7tm6z</bpmn:incoming>
       <bpmn:outgoing>Flow_0tdgxe1</bpmn:outgoing>
-      <bpmn:outgoing>Flow_09ag5pd</bpmn:outgoing>
       <bpmn:outgoing>Flow_04q08ak</bpmn:outgoing>
       <bpmn:outgoing>Flow_0zsmg0l</bpmn:outgoing>
       <bpmn:outgoing>Flow_0wa3ax5</bpmn:outgoing>
@@ -24,14 +23,6 @@
     <bpmn:sequenceFlow id="Flow_0tdgxe1" sourceRef="Gateway_1xw5kxz" targetRef="Event_1pza1q9">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "start-event-test"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_09ag5pd" sourceRef="Gateway_1xw5kxz" targetRef="Event_1eogthm">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "multiple-intermediate-catch-event-test-with-no-business-key"}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:intermediateThrowEvent id="Event_1eogthm">
-      <bpmn:incoming>Flow_09ag5pd</bpmn:incoming>
-      <bpmn:outgoing>Flow_0hh3aco</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_10lsqp2" camunda:expression="${correlationService.sendCatchEventMessageToAll(&#34;intermediate-catch-event-ref&#34;)}" />
-    </bpmn:intermediateThrowEvent>
     <bpmn:sequenceFlow id="Flow_04q08ak" sourceRef="Gateway_1xw5kxz" targetRef="Event_14n21hy">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "process-definition-start-event-test"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -42,14 +33,12 @@
     </bpmn:intermediateThrowEvent>
     <bpmn:exclusiveGateway id="Gateway_0l777sa">
       <bpmn:incoming>Flow_06sure7</bpmn:incoming>
-      <bpmn:incoming>Flow_0hh3aco</bpmn:incoming>
       <bpmn:incoming>Flow_1120gfp</bpmn:incoming>
       <bpmn:incoming>Flow_1tso983</bpmn:incoming>
       <bpmn:incoming>Flow_1u8tbs1</bpmn:incoming>
       <bpmn:outgoing>Flow_1pd2la6</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_06sure7" sourceRef="Event_1pza1q9" targetRef="Gateway_0l777sa" />
-    <bpmn:sequenceFlow id="Flow_0hh3aco" sourceRef="Event_1eogthm" targetRef="Gateway_0l777sa" />
     <bpmn:sequenceFlow id="Flow_1120gfp" sourceRef="Event_14n21hy" targetRef="Gateway_0l777sa" />
     <bpmn:sequenceFlow id="Flow_1pd2la6" sourceRef="Gateway_0l777sa" targetRef="Event_1nbl6u9" />
     <bpmn:sequenceFlow id="Flow_0zsmg0l" sourceRef="Gateway_1xw5kxz" targetRef="Event_18mjng7">
@@ -62,12 +51,12 @@
     </bpmn:intermediateThrowEvent>
     <bpmn:sequenceFlow id="Flow_1tso983" sourceRef="Event_18mjng7" targetRef="Gateway_0l777sa" />
     <bpmn:sequenceFlow id="Flow_0wa3ax5" sourceRef="Gateway_1xw5kxz" targetRef="Event_0ct1jdv">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "intermediate-catch-event-test-with-no-business-key"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${variable == "intermediate-catch-event-test-with-business-key"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:intermediateThrowEvent id="Event_0ct1jdv">
       <bpmn:incoming>Flow_0wa3ax5</bpmn:incoming>
       <bpmn:outgoing>Flow_1u8tbs1</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_06ipxtb" camunda:expression="${correlationService.sendCatchEventMessage(&#34;intermediate-catch-event-ref&#34;)}" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_06ipxtb" camunda:expression="${correlationService.sendCatchEventMessage(&#34;intermediate-catch-event-ref&#34;,businessKey)}" />
     </bpmn:intermediateThrowEvent>
     <bpmn:sequenceFlow id="Flow_1u8tbs1" sourceRef="Event_0ct1jdv" targetRef="Gateway_0l777sa" />
   </bpmn:process>
@@ -76,35 +65,30 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="start-correlation-test-id">
       <bpmndi:BPMNEdge id="Flow_1u8tbs1_di" bpmnElement="Flow_1u8tbs1">
-        <di:waypoint x="428" y="540" />
-        <di:waypoint x="540" y="540" />
+        <di:waypoint x="428" y="420" />
+        <di:waypoint x="540" y="420" />
         <di:waypoint x="540" y="235" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0wa3ax5_di" bpmnElement="Flow_0wa3ax5">
         <di:waypoint x="280" y="235" />
-        <di:waypoint x="280" y="540" />
-        <di:waypoint x="392" y="540" />
+        <di:waypoint x="280" y="420" />
+        <di:waypoint x="392" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1tso983_di" bpmnElement="Flow_1tso983">
-        <di:waypoint x="428" y="430" />
-        <di:waypoint x="540" y="430" />
+        <di:waypoint x="428" y="320" />
+        <di:waypoint x="540" y="320" />
         <di:waypoint x="540" y="235" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0zsmg0l_di" bpmnElement="Flow_0zsmg0l">
         <di:waypoint x="280" y="235" />
-        <di:waypoint x="280" y="430" />
-        <di:waypoint x="392" y="430" />
+        <di:waypoint x="280" y="320" />
+        <di:waypoint x="392" y="320" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1pd2la6_di" bpmnElement="Flow_1pd2la6">
         <di:waypoint x="565" y="210" />
         <di:waypoint x="682" y="210" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1120gfp_di" bpmnElement="Flow_1120gfp">
-        <di:waypoint x="428" y="320" />
-        <di:waypoint x="540" y="320" />
-        <di:waypoint x="540" y="235" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0hh3aco_di" bpmnElement="Flow_0hh3aco">
         <di:waypoint x="428" y="210" />
         <di:waypoint x="515" y="210" />
       </bpmndi:BPMNEdge>
@@ -114,11 +98,6 @@
         <di:waypoint x="540" y="185" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_04q08ak_di" bpmnElement="Flow_04q08ak">
-        <di:waypoint x="280" y="235" />
-        <di:waypoint x="280" y="320" />
-        <di:waypoint x="392" y="320" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_09ag5pd_di" bpmnElement="Flow_09ag5pd">
         <di:waypoint x="305" y="210" />
         <di:waypoint x="392" y="210" />
       </bpmndi:BPMNEdge>
@@ -143,20 +122,17 @@
       <bpmndi:BPMNShape id="Gateway_056zh9x_di" bpmnElement="Gateway_1xw5kxz" isMarkerVisible="true">
         <dc:Bounds x="255" y="185" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_04m9knq_di" bpmnElement="Event_1eogthm">
-        <dc:Bounds x="392" y="192" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1vtonsp_di" bpmnElement="Event_14n21hy">
-        <dc:Bounds x="392" y="302" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0l777sa_di" bpmnElement="Gateway_0l777sa" isMarkerVisible="true">
         <dc:Bounds x="515" y="185" width="50" height="50" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1vtonsp_di" bpmnElement="Event_14n21hy">
+        <dc:Bounds x="392" y="192" width="36" height="36" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0ewcsue_di" bpmnElement="Event_18mjng7">
-        <dc:Bounds x="392" y="412" width="36" height="36" />
+        <dc:Bounds x="392" y="302" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0lq0pcq_di" bpmnElement="Event_0ct1jdv">
-        <dc:Bounds x="392" y="522" width="36" height="36" />
+        <dc:Bounds x="392" y="402" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
