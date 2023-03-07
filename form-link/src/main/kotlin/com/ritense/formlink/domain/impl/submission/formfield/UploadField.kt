@@ -18,6 +18,7 @@ package com.ritense.formlink.domain.impl.submission.formfield
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.resource.domain.TemporaryResourceSubmittedEvent
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent
@@ -73,6 +74,10 @@ data class UploadField(
             return
         }
         processResource()
+    }
+
+    override fun appendValueToDocument(documentContent: ObjectNode) {
+        // Upload fields should not update the document, because it will cause a subsequent prefill issue (ref: TP54696)
     }
 
     private fun processResource() {
