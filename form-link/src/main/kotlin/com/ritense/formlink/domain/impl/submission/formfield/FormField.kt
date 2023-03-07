@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.valtimo.contract.json.JsonPointerHelper
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 
@@ -34,6 +35,10 @@ abstract class FormField(
     abstract fun preProcess()
 
     abstract fun postProcess()
+
+    open fun appendValueToDocument(documentContent: ObjectNode) {
+        JsonPointerHelper.appendJsonPointerTo(documentContent, pointer, value)
+    }
 
     companion object Factory {
         const val PROPERTY_KEY = "key"
