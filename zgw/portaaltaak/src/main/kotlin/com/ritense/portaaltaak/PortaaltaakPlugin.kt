@@ -203,7 +203,12 @@ class PortaaltaakPlugin(
                             "Zaak initiator did not have valid inpBsn BSN"
                         }
                     )
-                    is RolNietNatuurlijkPersoon -> TaakIdentificatie(TaakIdentificatie.TYPE_KVK, it.annIdentificatie)
+                    is RolNietNatuurlijkPersoon -> TaakIdentificatie(
+                        TaakIdentificatie.TYPE_KVK,
+                        requireNotNull(it.annIdentificatie) {
+                            "Zaak initiator did not have valid annIdentificatie KVK"
+                        }
+                    )
                     else -> null
                 }
             }
