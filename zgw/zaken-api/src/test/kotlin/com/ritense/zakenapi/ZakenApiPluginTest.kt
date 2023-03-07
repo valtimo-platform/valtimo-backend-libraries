@@ -26,6 +26,7 @@ import com.ritense.zakenapi.domain.CreateZaakResponse
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
+import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
@@ -283,7 +284,7 @@ internal class ZakenApiPluginTest {
     }
 
     @Test
-    fun `should create zaakrol`() {
+    fun `should create zaakrol for natuurlijk persoon`() {
         val zakenApiClient: ZakenApiClient = mock()
         val zaakUrlProvider: ZaakUrlProvider = mock()
         val storageService: TemporaryResourceStorageService = mock()
@@ -293,7 +294,7 @@ internal class ZakenApiPluginTest {
 
         val documentId = UUID.randomUUID()
         whenever(executionMock.businessKey).thenReturn(documentId.toString())
-        whenever(zaakUrlProvider.getZaak(any())).thenReturn("https://zaak.uri")
+        whenever(zaakUrlProvider.getZaakUrl(any())).thenReturn(URI("https://zaak.uri"))
 
         val plugin = ZakenApiPlugin(
             zakenApiClient,
@@ -326,6 +327,50 @@ internal class ZakenApiPluginTest {
         assertEquals("inpBsn", betrokkeneIdentificatie.inpBsn)
         assertEquals("anpIdentificatie", betrokkeneIdentificatie.anpIdentificatie)
         assertEquals("inpA_nummer", betrokkeneIdentificatie.inpA_nummer)
+    }
+
+    @Test
+    fun `should create zaakrol for niet-natuurlijk persoon`() {
+        val zakenApiClient: ZakenApiClient = mock()
+        val zaakUrlProvider: ZaakUrlProvider = mock()
+        val storageService: TemporaryResourceStorageService = mock()
+        val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
+        val authenticationMock = mock<ZakenApiAuthentication>()
+        val executionMock = mock<DelegateExecution>()
+
+        val documentId = UUID.randomUUID()
+        whenever(executionMock.businessKey).thenReturn(documentId.toString())
+        whenever(zaakUrlProvider.getZaakUrl(any())).thenReturn(URI("https://zaak.uri"))
+
+        val plugin = ZakenApiPlugin(
+            zakenApiClient,
+            zaakUrlProvider,
+            storageService,
+            zaakInstanceLinkRepository
+        )
+        plugin.url = URI("https://zaken.plugin.url")
+        plugin.authenticationPluginConfiguration = authenticationMock
+
+        plugin.createNietNatuurlijkPersoonZaakRol(
+            executionMock,
+            "http://roltype.uri",
+            "rolToelichting",
+            "innNnpId",
+            "annIdentificatie"
+        )
+
+        val rolCaptor = argumentCaptor<Rol>()
+        verify(zakenApiClient).createZaakRol(any(), any(), rolCaptor.capture())
+
+        val rol = rolCaptor.firstValue
+
+        assertEquals(URI("https://zaak.uri"), rol.zaak)
+        assertEquals(URI("http://roltype.uri"), rol.roltype)
+        assertEquals("rolToelichting", rol.roltoelichting)
+
+        val betrokkeneIdentificatie = rol.betrokkeneIdentificatie as RolNietNatuurlijkPersoon
+        assertEquals("annIdentificatie", betrokkeneIdentificatie.annIdentificatie)
+        assertEquals("innNnpId", betrokkeneIdentificatie.innNnpId)
     }
 
 
