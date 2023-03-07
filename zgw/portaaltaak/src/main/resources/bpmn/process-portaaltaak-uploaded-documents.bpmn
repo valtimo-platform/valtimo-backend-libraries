@@ -2,7 +2,7 @@
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0v1ejyk" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.7.0">
   <bpmn:collaboration id="Collaboration_1hhep9j">
     <bpmn:extensionElements />
-    <bpmn:participant id="Participant_0q24bm9" name="Process Portaaltaak uploaded Documents" processRef="process-portaaltaak-uploaded-documents" />
+    <bpmn:participant id="Participant_0q24bm9" name="Process completed Portaaltaak" processRef="process-portaaltaak-uploaded-documents" />
   </bpmn:collaboration>
   <bpmn:process id="process-portaaltaak-uploaded-documents" name="Process completed Portaaltaak" isExecutable="true">
     <bpmn:extensionElements>
@@ -38,6 +38,7 @@
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1hhep9j">
       <bpmndi:BPMNShape id="Participant_0q24bm9_di" bpmnElement="Participant_0q24bm9" isHorizontal="true">
         <dc:Bounds x="160" y="70" width="570" height="160" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start-event">
         <dc:Bounds x="229" y="129" width="36" height="36" />
