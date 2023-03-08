@@ -26,6 +26,7 @@ dependencies {
     implementation project(":data-provider")
     implementation project(":resource")
     implementation project(":web")
+    implementation project(":core")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -76,6 +77,8 @@ dependencies {
     testImplementation project(':test-utils-common')
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.mockito:mockito-core"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+
 
     jar {
         enabled = true
