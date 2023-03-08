@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0v1ejyk" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0v1ejyk" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.7.0">
   <bpmn:collaboration id="Collaboration_1hhep9j">
     <bpmn:extensionElements />
-    <bpmn:participant id="Participant_0q24bm9" name="Process Portaaltaak uploaded Documents" processRef="process-portaaltaak-uploaded-documents" />
+    <bpmn:participant id="Participant_0q24bm9" name="Process completed Portaaltaak" processRef="process-portaaltaak-uploaded-documents" />
   </bpmn:collaboration>
-  <bpmn:process id="process-portaaltaak-uploaded-documents" name="Process PortaalTaak Uploaded Documents" isExecutable="true">
+  <bpmn:process id="process-portaaltaak-uploaded-documents" name="Process completed Portaaltaak" isExecutable="true">
     <bpmn:extensionElements>
       <camunda:properties>
         <camunda:property name="systemProcess" value="true" />
@@ -38,19 +38,8 @@
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1hhep9j">
       <bpmndi:BPMNShape id="Participant_0q24bm9_di" bpmnElement="Participant_0q24bm9" isHorizontal="true">
         <dc:Bounds x="160" y="70" width="570" height="160" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_1gm4977_di" bpmnElement="Flow_1gm4977">
-        <di:waypoint x="580" y="147" />
-        <di:waypoint x="652" y="147" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_125lm4p_di" bpmnElement="Flow_125lm4p">
-        <di:waypoint x="265" y="147" />
-        <di:waypoint x="320" y="147" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0e0v41m_di" bpmnElement="Flow_0e0v41m">
-        <di:waypoint x="420" y="147" />
-        <di:waypoint x="480" y="147" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start-event">
         <dc:Bounds x="229" y="129" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -71,6 +60,18 @@
         <dc:Bounds x="320" y="107" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_125lm4p_di" bpmnElement="Flow_125lm4p">
+        <di:waypoint x="265" y="147" />
+        <di:waypoint x="320" y="147" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gm4977_di" bpmnElement="Flow_1gm4977">
+        <di:waypoint x="580" y="147" />
+        <di:waypoint x="652" y="147" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0e0v41m_di" bpmnElement="Flow_0e0v41m">
+        <di:waypoint x="420" y="147" />
+        <di:waypoint x="480" y="147" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

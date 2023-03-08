@@ -24,6 +24,7 @@ import com.ritense.objectsapi.service.ObjectSyncService;
 import com.ritense.openzaak.service.InformatieObjectTypeLinkService;
 import com.ritense.openzaak.service.ZaakTypeLinkService;
 import com.ritense.plugin.service.PluginService;
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
 import com.ritense.valtimo.config.DefaultProfileUtil;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.camunda.bpm.engine.RepositoryService;
@@ -71,7 +72,8 @@ public class GzacApplication {
         DocumentDefinitionService documentDefinitionService,
         PluginService pluginService,
         ObjectManagementService objectManagementService,
-        RepositoryService repositoryService
+        RepositoryService repositoryService,
+        DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService
     ) {
         return new ApplicationReadyEventListener(
             connectorService,
@@ -81,7 +83,8 @@ public class GzacApplication {
             documentDefinitionService,
             pluginService,
             objectManagementService,
-            repositoryService
+            repositoryService,
+            documentDefinitionProcessLinkService
         );
     }
 }

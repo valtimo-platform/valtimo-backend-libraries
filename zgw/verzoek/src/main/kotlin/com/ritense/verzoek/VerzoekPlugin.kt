@@ -51,16 +51,16 @@ class VerzoekPlugin(
     @PluginProperty(key = "verzoekProperties", secret = false)
     lateinit var verzoekProperties: List<VerzoekProperties>
 
-    @PluginEvent(invokedOn = [EventType.CREATE])
+    @PluginEvent(invokedOn = [EventType.CREATE, EventType.UPDATE])
     fun validateProperties() {
         verzoekProperties
             .filter { it.copyStrategy == CopyStrategy.SPECIFIED }
             .forEach { property ->
                 property.mapping?.forEach {
-                    if (!it.key.startsWith("doc:")) {
-                        throw IllegalArgumentException("Failed to set mapping. Unknown prefix '${it.key.substringBefore(":")}:'.")
+                    if (!it.target.startsWith("doc:")) {
+                        throw IllegalArgumentException("Failed to set mapping. Unknown prefix '${it.target.substringBefore(":")}:'.")
                     }
-                    val documentPath = it.key.substringAfter(delimiter = ":")
+                    val documentPath = it.target.substringAfter(delimiter = ":")
                     documentDefinitionService.validateJsonPointer(property.caseDefinitionName, documentPath)
                 }
             }

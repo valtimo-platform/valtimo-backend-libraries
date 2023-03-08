@@ -33,6 +33,7 @@ import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
+import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.Page
@@ -167,13 +168,13 @@ class ZakenApiPlugin(
         @PluginActionProperty inpA_nummer: String?
     ) {
         val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaak(documentId)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
         client.createZaakRol(
             authenticationPluginConfiguration,
             url,
             Rol(
-                zaak = URI(zaakUrl),
+                zaak = zaakUrl,
                 roltype = URI(roltypeUrl),
                 roltoelichting = rolToelichting,
                 betrokkeneType = BetrokkeneType.NATUURLIJK_PERSOON,
@@ -185,6 +186,38 @@ class ZakenApiPlugin(
             )
         )
 
+    }
+
+    @PluginAction(
+        key = "create-niet-natuurlijk-persoon-zaak-rol",
+        title = "Create niet-natuurlijk persoon zaakrol",
+        description = "Adds a zaakrol to the zaak in the Zaken API",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun createNietNatuurlijkPersoonZaakRol(
+        execution: DelegateExecution,
+        @PluginActionProperty roltypeUrl: String,
+        @PluginActionProperty rolToelichting: String,
+        @PluginActionProperty innNnpId: String?,
+        @PluginActionProperty annIdentificatie: String?
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+        client.createZaakRol(
+            authenticationPluginConfiguration,
+            url,
+            Rol(
+                zaak = zaakUrl,
+                roltype = URI(roltypeUrl),
+                roltoelichting = rolToelichting,
+                betrokkeneType = BetrokkeneType.NIET_NATUURLIJK_PERSOON,
+                betrokkeneIdentificatie = RolNietNatuurlijkPersoon(
+                    annIdentificatie = annIdentificatie,
+                    innNnpId = innNnpId
+                )
+            )
+        )
     }
 
     fun getZaakInformatieObjecten(zaakUrl: URI): List<ZaakInformatieObject> {

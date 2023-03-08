@@ -131,8 +131,8 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
                 "initiatorRolDescription": "Initiator",
                 "copyStrategy": "specified",
                 "mapping": [{
-                    "key": "doc:/fullname",
-                    "value": "/name"
+                    "target": "doc:/fullname",
+                    "source": "/name"
                 }]
               }]
             }
@@ -156,7 +156,7 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
         assertEquals("https://example.com/my-role-type", plugin.verzoekProperties[0].initiatorRoltypeUrl.toString())
         assertEquals("Initiator", plugin.verzoekProperties[0].initiatorRolDescription)
         assertEquals(CopyStrategy.SPECIFIED, plugin.verzoekProperties[0].copyStrategy)
-        assertEquals(listOf(Mapping("doc:/fullname", "/name")), plugin.verzoekProperties[0].mapping)
+        assertEquals(listOf(Mapping("/name", "doc:/fullname")), plugin.verzoekProperties[0].mapping)
     }
 
     private fun mockResponse(body: String): MockResponse {
