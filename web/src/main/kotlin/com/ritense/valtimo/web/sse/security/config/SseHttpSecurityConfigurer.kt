@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.sse.security.config
+package com.ritense.valtimo.web.sse.security.config
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
@@ -28,8 +28,8 @@ class SseHttpSecurityConfigurer : HttpSecurityConfigurer {
         try {
             http
                 .authorizeRequests()
-                .antMatchers(GET, "/api/v1/sse").hasAuthority(AuthoritiesConstants.USER)
-                .antMatchers(GET, "/api/v1/sse/{subscriptionId}").hasAuthority(AuthoritiesConstants.USER)
+                .antMatchers(GET, "/api/v1/sse").anonymous()
+                .antMatchers(GET, "/api/v1/sse/{subscriptionId}").anonymous()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

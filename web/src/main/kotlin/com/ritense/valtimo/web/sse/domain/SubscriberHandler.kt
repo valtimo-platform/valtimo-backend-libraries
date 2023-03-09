@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.sse.domain
+package com.ritense.valtimo.web.sse.domain
 
-import com.ritense.valtimo.sse.event.BaseSseEvent
+import com.ritense.valtimo.web.sse.event.BaseSseEvent
 import java.io.IOException
 import java.util.LinkedList
 
