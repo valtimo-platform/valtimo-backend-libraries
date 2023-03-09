@@ -79,7 +79,7 @@ class ObjectenApiAutoConfiguration {
         )
     }
 
-    @Order(400)
+    @Order(380)
     @Bean
     fun objectenApiHttpSecurityConfigurer(): ObjectenApiHttpSecurityConfigurer {
         return ObjectenApiHttpSecurityConfigurer()
