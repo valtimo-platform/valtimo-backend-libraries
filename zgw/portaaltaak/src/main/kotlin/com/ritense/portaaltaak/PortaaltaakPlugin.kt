@@ -239,13 +239,10 @@ class PortaaltaakPlugin(
 
         if (sendData.size != sendDataValuesResolvedMap.size) {
             val failedValues = sendData
-                .filter { sendDataValuesResolvedMap.containsKey(it.value) }
+                .filter { !sendDataValuesResolvedMap.containsKey(it.value) }
                 .joinToString(", ") { "'${it.key}' = '${it.value}'" }
             throw IllegalArgumentException(
-                """
-                    Error in sendData for task: '${delegateTask.taskDefinitionKey}' and documentId: '${documentId}'. Failed to resolve values:
-                    $failedValues
-                """.trimMargin()
+                "Error in sendData for task: '${delegateTask.taskDefinitionKey}' and documentId: '${documentId}'. Failed to resolve values: $failedValues".trimMargin()
             )
         }
 
