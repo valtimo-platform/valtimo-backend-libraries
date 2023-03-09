@@ -71,7 +71,7 @@ class DocumentenApiAutoConfiguration {
         return DocumentenApiResource(documentenApiService)
     }
 
-    @Order(400)
+    @Order(380)
     @Bean
     fun documentenApiHttpSecurityConfigurer(): DocumentenApiHttpSecurityConfigurer {
         return DocumentenApiHttpSecurityConfigurer()

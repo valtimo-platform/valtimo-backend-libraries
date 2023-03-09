@@ -26,6 +26,7 @@ import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
 import com.ritense.zgw.Rsin
 import java.util.UUID
+import javax.validation.ValidationException
 
 @Plugin(
     key = "verzoek",
@@ -58,7 +59,7 @@ class VerzoekPlugin(
             .forEach { property ->
                 property.mapping?.forEach {
                     if (!it.target.startsWith("doc:")) {
-                        throw IllegalArgumentException("Failed to set mapping. Unknown prefix '${it.target.substringBefore(":")}:'.")
+                        throw ValidationException("Failed to set mapping. Unknown prefix '${it.target.substringBefore(":")}:'.")
                     }
                     val documentPath = it.target.substringAfter(delimiter = ":")
                     documentDefinitionService.validateJsonPointer(property.caseDefinitionName, documentPath)
