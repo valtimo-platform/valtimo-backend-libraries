@@ -14,15 +14,8 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.sse.event
+package com.ritense.valtimo.web.sse.domain
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 
-abstract class BaseSseEvent(
-    @JsonProperty("_t")
-    val eventType: String
-) {
-
-
-
-}
+class Subscriber : SseEmitter()

@@ -17,7 +17,7 @@
 package com.ritense.document.autoconfiguration
 
 import com.ritense.document.listener.DocumentEventListener
-import com.ritense.valtimo.sse.service.SseSubscriptionService
+import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

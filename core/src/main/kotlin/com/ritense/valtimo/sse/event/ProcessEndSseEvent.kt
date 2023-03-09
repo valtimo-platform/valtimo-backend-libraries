@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.sse.event
 
+import com.ritense.valtimo.web.sse.event.BaseSseEvent
+
 class ProcessEndSseEvent(
     val processInstanceId: String
 ) : BaseSseEvent("PROCESS_END")
