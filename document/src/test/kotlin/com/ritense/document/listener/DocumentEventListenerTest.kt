@@ -3,7 +3,7 @@ package com.ritense.document.listener
 import com.ritense.document.domain.event.CaseAssignedEvent
 import com.ritense.document.domain.event.CaseCreatedEvent
 import com.ritense.document.domain.event.CaseUnassignedEvent
-import com.ritense.valtimo.sse.service.SseSubscriptionService
+import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any

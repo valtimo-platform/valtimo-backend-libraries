@@ -17,7 +17,7 @@
 package com.ritense.valtimo.sse.domain.listener
 
 import com.ritense.valtimo.sse.event.ProcessEndSseEvent
-import com.ritense.valtimo.sse.service.SseSubscriptionService
+import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import org.camunda.bpm.spring.boot.starter.event.ExecutionEvent
 import org.springframework.transaction.event.TransactionalEventListener
 

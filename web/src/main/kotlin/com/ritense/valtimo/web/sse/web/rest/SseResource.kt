@@ -14,10 +14,10 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.sse.web.rest
+package com.ritense.valtimo.web.sse.web.rest
 
-import com.ritense.valtimo.sse.domain.Subscriber
-import com.ritense.valtimo.sse.service.SseSubscriptionService
+import com.ritense.valtimo.web.sse.domain.Subscriber
+import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -25,15 +25,15 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-class CamundaEventResource(
+class SseResource(
     private val sseSubscriptionService: SseSubscriptionService
 ) {
 
     @GetMapping("/api/v1/sse")
-    fun subscribeToCamundaEvents() = sseSubscriptionService.subscribe()
+    fun subscribeToEvents() = sseSubscriptionService.subscribe()
 
     @GetMapping("/api/v1/sse/{subscriptionId}")
-    fun subscribeToCamundaEvents(
+    fun subscribeToEvents(
         @PathVariable subscriptionId: UUID?
     ): Subscriber {
         subscriptionId?.let {
