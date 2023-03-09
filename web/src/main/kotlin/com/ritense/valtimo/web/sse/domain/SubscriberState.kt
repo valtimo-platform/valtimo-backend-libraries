@@ -14,8 +14,10 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.sse.domain
+package com.ritense.valtimo.web.sse.domain
 
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
+import java.util.UUID
 
-class Subscriber : SseEmitter()
+class SubscriberState(
+    val subscriptionId: UUID = UUID.randomUUID()
+)

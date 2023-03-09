@@ -14,10 +14,15 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.sse.domain
+package com.ritense.valtimo.web.sse.event
 
-import java.util.UUID
+import com.fasterxml.jackson.annotation.JsonProperty
 
-class SubscriberState(
-    val subscriptionId: UUID = UUID.randomUUID()
-)
+abstract class BaseSseEvent(
+    @JsonProperty("_t")
+    val eventType: String
+) {
+
+
+
+}

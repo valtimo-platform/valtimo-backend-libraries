@@ -1,9 +1,11 @@
-package com.ritense.valtimo.sse.service
+package com.ritense.valtimo.web.sse.service
 
-import com.ritense.valtimo.sse.event.TaskUpdateSseEvent
+import com.ritense.valtimo.web.sse.event.BaseSseEvent
+import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
+import org.mockito.kotlin.mock
 import java.util.UUID
 
 class SseSubscriptionServiceTest {
@@ -26,12 +28,11 @@ class SseSubscriptionServiceTest {
     @Test
     fun notifySubscribers() {
         val subscriptionId = UUID.randomUUID()
+        val event = mock<BaseSseEvent>()
         sseSubscriptionService.subscribe(subscriptionId)
         assertDoesNotThrow {
             sseSubscriptionService.notifySubscribers(
-                TaskUpdateSseEvent(
-                    processInstanceId = "processInstanceId"
-                )
+                event
             )
         }
     }
