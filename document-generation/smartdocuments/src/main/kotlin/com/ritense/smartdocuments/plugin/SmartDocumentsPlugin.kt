@@ -131,6 +131,6 @@ class SmartDocumentsPlugin(
             execution,
             templateData.map { it.value }.toList()
         )
-        return templateData.associate { it.key to placeHolderValueMap.getOrDefault(it.value, it.value) }
+        return templateData.associate { it.key to placeHolderValueMap.getOrDefault(it.value, "") }
     }
 }
