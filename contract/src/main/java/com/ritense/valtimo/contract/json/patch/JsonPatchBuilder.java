@@ -139,8 +139,6 @@ public final class JsonPatchBuilder {
         return this;
     }
 
-
-
     public JsonPatch build() {
         return new JsonPatch(operations);
     }
