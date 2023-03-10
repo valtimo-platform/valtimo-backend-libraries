@@ -21,7 +21,10 @@
 
     <changeSet id="1" author="Ritense">
         <preConditions onFail="MARK_RAN">
-            <dbms type="mysql"/>
+            <and>
+                <dbms type="mysql"/>
+                <tableExists tableName="plugin_configuration" />
+            </and>
         </preConditions>
         <sql>
             UPDATE plugin_configuration
@@ -36,7 +39,10 @@
 
     <changeSet id="2" author="Ritense">
         <preConditions onFail="MARK_RAN">
-            <dbms type="postgresql"/>
+            <and>
+                <dbms type="postgresql"/>
+                <tableExists tableName="plugin_configuration" />
+            </and>
         </preConditions>
         <sql>
             UPDATE plugin_configuration
@@ -50,7 +56,10 @@
 
     <changeSet id="3" author="Ritense">
         <preConditions onFail="MARK_RAN">
-            <dbms type="mysql"/>
+            <and>
+                <dbms type="mysql"/>
+                <tableExists tableName="plugin_configuration" />
+            </and>
         </preConditions>
         <sql>
             UPDATE plugin_configuration
@@ -62,7 +71,10 @@
 
     <changeSet id="4" author="Ritense">
         <preConditions onFail="MARK_RAN">
-            <dbms type="postgresql"/>
+            <and>
+                <dbms type="postgresql"/>
+                <tableExists tableName="plugin_configuration" />
+            </and>
         </preConditions>
         <sql>
             UPDATE plugin_configuration
