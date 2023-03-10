@@ -97,6 +97,18 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
                     {
                         "key": "leeftijd",
                         "value": "pv:age"
+                    },
+                    {
+                        "key": "nonExistingDocumentVar",
+                        "value": "doc:/nonExisting"
+                    },
+                    {
+                        "key": "nonExistingProcessVar",
+                        "value": "pv:/nonExisting"
+                    },
+                    {
+                        "key": "fixedValue",
+                        "value": "My fixed value"
                     }
                 ],
                 "resultingDocumentProcessVariableName": "my-generated-document"
@@ -128,7 +140,13 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
             findRequestBody(HttpMethod.POST, "/wsxmldeposit/deposit/unattended", SmartDocumentsRequest::class.java)
         assertThat(requestBody.smartDocument.selection.templateGroup).isEqualTo("test-template-group")
         assertThat(requestBody.smartDocument.selection.template).isEqualTo("test-template-name")
-        assertThat(requestBody.customerData).isEqualTo(mapOf("achternaam" to "Klaveren", "leeftijd" to 138))
+        assertThat(requestBody.customerData).isEqualTo(mapOf(
+            "achternaam" to "Klaveren",
+            "leeftijd" to 138,
+            "nonExistingDocumentVar" to null,
+            "nonExistingProcessVar" to null,
+            "fixedValue" to "My fixed value",
+        ))
     }
 
     @Test

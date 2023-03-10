@@ -19,7 +19,7 @@ package com.ritense.smartdocuments.domain
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class SmartDocumentsRequest(
-    val customerData: Map<String, Any>,
+    val customerData: Map<String, Any?>,
     @JsonProperty("SmartDocument") val smartDocument: SmartDocument,
 ) {
 
