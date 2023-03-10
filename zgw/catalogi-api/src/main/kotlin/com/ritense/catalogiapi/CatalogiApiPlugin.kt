@@ -17,10 +17,12 @@
 package com.ritense.catalogiapi
 
 import com.ritense.catalogiapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.client.ResultaattypeRequest
 import com.ritense.catalogiapi.client.RoltypeRequest
 import com.ritense.catalogiapi.client.StatustypeRequest
 import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
 import com.ritense.catalogiapi.domain.Informatieobjecttype
+import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
@@ -107,6 +109,27 @@ class CatalogiApiPlugin(
                 authenticationPluginConfiguration,
                 url,
                 StatustypeRequest(
+                    zaaktype = zaakTypeUrl,
+                    page = currentPage++
+                )
+            )
+            results.addAll(currentResults.results)
+        } while(currentResults?.next != null)
+
+        return results
+    }
+
+    fun getResultaatTypes(zaakTypeUrl: URI): List<Resultaattype> {
+        var currentPage = 1
+        var currentResults: Page<Resultaattype>?
+        val results = mutableListOf<Resultaattype>()
+
+        do {
+            logger.debug { "Getting page of reultaat types, page $currentPage for zaaktype $zaakTypeUrl" }
+            currentResults = client.getResultaattypen(
+                authenticationPluginConfiguration,
+                url,
+                ResultaattypeRequest(
                     zaaktype = zaakTypeUrl,
                     page = currentPage++
                 )
