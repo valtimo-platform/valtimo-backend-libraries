@@ -62,8 +62,10 @@ internal class CatalogiApiClientTes {
 
     @Test
     fun `should send get zaaktype informatieobjecttype request with request variables and parse response`() {
+        val baseUrl = mockApi.url("api").toString()
+        val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
         val request = ZaaktypeInformatieobjecttypeRequest(
-            zaaktype = URI("http://example.com/zaaktype"),
+            zaaktype = URI(zaakTypeUrl),
             informatieobjecttype = URI("http://example.com/informatieobjecttype"),
             richting = InformatieobjecttypeRichting.INKOMEND,
             status = ZaakTypePublishedStatus.ALLES,
@@ -72,7 +74,7 @@ internal class CatalogiApiClientTes {
         val recordedRequest = sendGetZaaktypeInformatieobjecttypeRequest(request)
 
         assertEquals(5, recordedRequest.requestUrl?.querySize)
-        assertEquals("http://example.com/zaaktype", recordedRequest.requestUrl?.queryParameter("zaaktype"))
+        assertEquals(zaakTypeUrl, recordedRequest.requestUrl?.queryParameter("zaaktype"))
         assertEquals("http://example.com/informatieobjecttype",
             recordedRequest.requestUrl?.queryParameter("informatieobjecttype"))
         assertEquals("inkomend", recordedRequest.requestUrl?.queryParameter("richting"))
@@ -135,7 +137,7 @@ internal class CatalogiApiClientTes {
                 URI(informatieobjecttypeUrl)
             )
         }
-        assertEquals("Requested informatieobjecttypeUrl 'http://other-domain.com/informatieobjecttypen/" +
+        assertEquals("Requested url 'http://other-domain.com/informatieobjecttypen/" +
             "f3974b80-b538-48c1-b82e-3a3113fc9971' is not valid for baseUrl 'http://example.com'", exception.message)
     }
 
@@ -180,6 +182,56 @@ internal class CatalogiApiClientTes {
         assertEquals(zaakTypeUrl, response.results[0].zaaktype.toString())
         assertEquals("Aanvrager", response.results[0].omschrijving)
         assertEquals("initiator", response.results[0].omschrijvingGeneriek)
+    }
+
+    @Test
+    fun `should get statustypen request and parse response`() {
+        val webclientBuilder = WebClient.builder()
+        val client = CatalogiApiClient(webclientBuilder)
+        val baseUrl = mockApi.url("api").toString()
+        val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
+        val responseBody = """
+            {
+                "count": 1,
+                "next": null,
+                "previous": null,
+                "results": [
+                    {
+                        "url": "http://example.com/id",
+                        "zaaktype": "$zaakTypeUrl",
+                        "omschrijving": "Zaak afgerond",
+                        "omschrijvingGeneriek": "Zaak afgerond",
+                        "statustekst": "Geachte heer/mevrouw",
+                        "volgnummer": 7,
+                        "isEindstatus": true,
+                        "informeren": true
+                    }
+                ]
+            }
+        """.trimIndent()
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val response = client.getStatustypen(
+            authentication = TestAuthentication(),
+            baseUrl = URI(baseUrl),
+            request = StatustypeRequest(
+                zaaktype = URI(zaakTypeUrl),
+                status = ZaakTypePublishedStatus.ALLES,
+                page = 1
+            )
+        )
+
+        // to make sure the request is cleaned up to prevent issues with other tests
+        mockApi.takeRequest()
+        assertEquals(1, response.results.size)
+        assertEquals("http://example.com/id", response.results[0].url.toString())
+        assertEquals(zaakTypeUrl, response.results[0].zaaktype.toString())
+        assertEquals("Zaak afgerond", response.results[0].omschrijving)
+        assertEquals("Zaak afgerond", response.results[0].omschrijvingGeneriek)
+        assertEquals("Geachte heer/mevrouw", response.results[0].statustekst)
+        assertEquals(7, response.results[0].volgnummer)
+        assertEquals(true, response.results[0].isEindstatus)
+        assertEquals(true, response.results[0].informeren)
     }
 
     private fun sendGetZaaktypeInformatieobjecttypeRequest(
