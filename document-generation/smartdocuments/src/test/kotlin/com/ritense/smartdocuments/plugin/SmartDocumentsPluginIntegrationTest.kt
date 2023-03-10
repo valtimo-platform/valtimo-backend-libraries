@@ -143,8 +143,8 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
         assertThat(requestBody.customerData).isEqualTo(mapOf(
             "achternaam" to "Klaveren",
             "leeftijd" to 138,
-            "nonExistingDocumentVar" to "",
-            "nonExistingProcessVar" to "",
+            "nonExistingDocumentVar" to null,
+            "nonExistingProcessVar" to null,
             "fixedValue" to "My fixed value",
         ))
     }
