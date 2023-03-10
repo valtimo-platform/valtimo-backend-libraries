@@ -120,8 +120,8 @@ class ApplicationReadyEventListener(
             createSmartDocumentsPlugin()
             val portaaltaakPluginId = createPortaaltaakPlugin(notificatiesApiPluginId, taakConfigurationId)
             portalPersonCreatePortaaltaak(portaaltaakPluginId)
-            processPortaaltaakUploadedDocumentsCompletePortaaltaak(portaaltaakPluginId)
-            processPortaaltaakUploadedDocumentsLinkDocumentToZaak(zakenApiPluginId)
+            processCompletedPortaalTaakCompletePortaaltaak(portaaltaakPluginId)
+            processCompletedPortaalTaakLinkDocumentToZaak(zakenApiPluginId)
             createZaakdossierCreateZaak(zakenApiPluginId)
             createZaakdossierCreateZaakRol(zakenApiPluginId)
             createZaakdossierLinkDocumentToZaak(zakenApiPluginId)
@@ -164,9 +164,9 @@ class ApplicationReadyEventListener(
         )
     }
 
-    private fun processPortaaltaakUploadedDocumentsCompletePortaaltaak(portaaltaakPluginId: UUID) {
+    private fun processCompletedPortaalTaakCompletePortaaltaak(portaaltaakPluginId: UUID) {
         createProcessLinkIfNotExists(
-            processDefinitionKey = "process-portaaltaak-uploaded-documents",
+            processDefinitionKey = "process-completed-portaaltaak",
             activityId = "update_portaal_taak_status",
             activityType = "bpmn:ServiceTask:start",
             pluginConfigurationId = portaaltaakPluginId,
@@ -175,9 +175,9 @@ class ApplicationReadyEventListener(
         )
     }
 
-    private fun processPortaaltaakUploadedDocumentsLinkDocumentToZaak(zakenApiPluginId: UUID) {
+    private fun processCompletedPortaalTaakLinkDocumentToZaak(zakenApiPluginId: UUID) {
         createProcessLinkIfNotExists(
-            processDefinitionKey = "process-portaaltaak-uploaded-documents",
+            processDefinitionKey = "process-completed-portaaltaak",
             activityId = "link-document-to-zaak",
             activityType = "bpmn:ServiceTask:start",
             pluginConfigurationId = zakenApiPluginId,
@@ -903,7 +903,7 @@ class ApplicationReadyEventListener(
                     {
                         "notificatiesApiPluginConfiguration": "$notificatiesApiPluginConfigurationId",
                         "objectManagementConfigurationId": "$objectManagementConfigurationId",
-                        "uploadedDocumentsHandlerProcess": "process-portaaltaak-uploaded-documents"
+                        "completeTaakProcess": "process-completed-portaaltaak"
                     }
                     """
                 )
