@@ -21,7 +21,7 @@ import java.net.URI
 class Statustype(
     val url: URI?,
     val zaaktype: URI,
-    val omschrijving: String?,
+    val omschrijving: String,
     val omschrijvingGeneriek: String?,
     val statustekst: String?,
     val volgnummer: Int,

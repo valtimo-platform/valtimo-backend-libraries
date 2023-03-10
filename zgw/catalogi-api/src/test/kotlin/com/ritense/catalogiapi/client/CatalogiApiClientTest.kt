@@ -62,8 +62,10 @@ internal class CatalogiApiClientTes {
 
     @Test
     fun `should send get zaaktype informatieobjecttype request with request variables and parse response`() {
+        val baseUrl = mockApi.url("api").toString()
+        val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
         val request = ZaaktypeInformatieobjecttypeRequest(
-            zaaktype = URI("http://example.com/zaaktype"),
+            zaaktype = URI(zaakTypeUrl),
             informatieobjecttype = URI("http://example.com/informatieobjecttype"),
             richting = InformatieobjecttypeRichting.INKOMEND,
             status = ZaakTypePublishedStatus.ALLES,
@@ -72,7 +74,7 @@ internal class CatalogiApiClientTes {
         val recordedRequest = sendGetZaaktypeInformatieobjecttypeRequest(request)
 
         assertEquals(5, recordedRequest.requestUrl?.querySize)
-        assertEquals("http://example.com/zaaktype", recordedRequest.requestUrl?.queryParameter("zaaktype"))
+        assertEquals(zaakTypeUrl, recordedRequest.requestUrl?.queryParameter("zaaktype"))
         assertEquals("http://example.com/informatieobjecttype",
             recordedRequest.requestUrl?.queryParameter("informatieobjecttype"))
         assertEquals("inkomend", recordedRequest.requestUrl?.queryParameter("richting"))

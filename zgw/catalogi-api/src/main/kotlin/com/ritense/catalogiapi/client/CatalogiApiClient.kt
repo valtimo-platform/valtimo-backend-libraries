@@ -117,7 +117,7 @@ class CatalogiApiClient(
     }
 
     private fun validateUrlHost(baseUrl: URI, url: URI?) {
-        if (baseUrl.host != url?.host) {
+        if (url != null && baseUrl.host != url.host) {
             throw IllegalArgumentException(
                 "Requested url '$url' is not valid for baseUrl '$baseUrl'"
             )
