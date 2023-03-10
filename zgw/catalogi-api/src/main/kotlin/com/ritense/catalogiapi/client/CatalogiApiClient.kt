@@ -19,6 +19,7 @@ package com.ritense.catalogiapi.client
 import com.ritense.catalogiapi.CatalogiApiAuthentication
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Roltype
+import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
@@ -34,10 +35,8 @@ class CatalogiApiClient(
         baseUrl: URI,
         request: ZaaktypeInformatieobjecttypeRequest
     ): Page<ZaaktypeInformatieobjecttype> {
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
+        validateUrlHost(baseUrl, request.zaaktype)
+        val result = buildWebclient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -61,15 +60,8 @@ class CatalogiApiClient(
         baseUrl: URI,
         informatieobjecttypeUrl: URI
     ): Informatieobjecttype {
-        if (baseUrl.host != informatieobjecttypeUrl.host)
-            throw IllegalArgumentException(
-                "Requested informatieobjecttypeUrl '$informatieobjecttypeUrl' is not valid for baseUrl '$baseUrl'"
-            )
-
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
+        validateUrlHost(baseUrl, informatieobjecttypeUrl)
+        val result = buildWebclient(authentication)
             .get()
             .uri(informatieobjecttypeUrl)
             .retrieve()
@@ -84,16 +76,8 @@ class CatalogiApiClient(
         baseUrl: URI,
         request: RoltypeRequest,
     ): Page<Roltype> {
-        if (baseUrl.host != request.zaaktype?.host) {
-            throw IllegalArgumentException(
-                "Requested zaakTypeUrl '${request.zaaktype}' is not valid for baseUrl '$baseUrl'"
-            )
-        }
-
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
+        validateUrlHost(baseUrl, request.zaaktype)
+        val result = buildWebclient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -108,6 +92,43 @@ class CatalogiApiClient(
             .block()
 
         return result?.body!!
+    }
+
+    fun getStatustypen(
+        authentication: CatalogiApiAuthentication,
+        baseUrl: URI,
+        request: StatustypeRequest,
+    ): Page<Statustype> {
+        validateUrlHost(baseUrl, request.zaaktype)
+        val result = buildWebclient(authentication)
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .pathSegment("statustypen")
+                    .addOptionalQueryParamFromRequest("zaaktype", request.zaaktype)
+                    .addOptionalQueryParamFromRequest("status", request.status?.getSearchValue())
+                    .addOptionalQueryParamFromRequest("page", request.page)
+                    .build()
+            }.retrieve()
+            .toEntity(ClientTools.getTypedPage(Statustype::class.java))
+            .block()
+
+        return result?.body!!
+    }
+
+    private fun validateUrlHost(baseUrl: URI, url: URI?) {
+        if (baseUrl.host != url?.host) {
+            throw IllegalArgumentException(
+                "Requested url '$url' is not valid for baseUrl '$baseUrl'"
+            )
+        }
+    }
+
+    private fun buildWebclient(authentication: CatalogiApiAuthentication): WebClient {
+        return webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
     }
 
     private fun UriBuilder.addOptionalQueryParamFromRequest(name: String, value: Any?): UriBuilder {
