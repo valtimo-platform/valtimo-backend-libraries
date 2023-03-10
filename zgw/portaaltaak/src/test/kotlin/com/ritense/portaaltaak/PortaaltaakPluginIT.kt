@@ -337,7 +337,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPlugin.id.id}",
               "objectManagementConfigurationId": "${objectManagement.id}",
-              "uploadedDocumentsHandlerProcess": "process-portaaltaak-uploaded-documents"
+              "completeTaakProcess": "process-completed-portaaltaak"
             }
         """.trimIndent()
 
