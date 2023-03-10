@@ -16,14 +16,16 @@
 
 package com.ritense.catalogiapi
 
+import com.ritense.catalogiapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.client.RoltypeRequest
+import com.ritense.catalogiapi.client.StatustypeRequest
 import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
 import com.ritense.catalogiapi.domain.Informatieobjecttype
+import com.ritense.catalogiapi.domain.Roltype
+import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.catalogiapi.client.CatalogiApiClient
-import com.ritense.catalogiapi.client.RoltypeRequest
-import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.zgw.Page
 import mu.KotlinLogging
 import java.net.URI
@@ -84,6 +86,27 @@ class CatalogiApiPlugin(
                 authenticationPluginConfiguration,
                 url,
                 RoltypeRequest(
+                    zaaktype = zaakTypeUrl,
+                    page = currentPage++
+                )
+            )
+            results.addAll(currentResults.results)
+        } while(currentResults?.next != null)
+
+        return results
+    }
+
+    fun getStatusTypes(zaakTypeUrl: URI): List<Statustype> {
+        var currentPage = 1
+        var currentResults: Page<Statustype>?
+        val results = mutableListOf<Statustype>()
+
+        do {
+            logger.debug { "Getting page of status types, page $currentPage for zaaktype $zaakTypeUrl" }
+            currentResults = client.getStatustypen(
+                authenticationPluginConfiguration,
+                url,
+                StatustypeRequest(
                     zaaktype = zaakTypeUrl,
                     page = currentPage++
                 )
