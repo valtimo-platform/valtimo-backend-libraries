@@ -17,6 +17,7 @@
 package com.ritense.catalogiapi.web.rest
 
 import com.ritense.catalogiapi.domain.Informatieobjecttype
+import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.service.CatalogiService
@@ -134,6 +135,39 @@ internal class CatalogiResourceTest {
         mockMvc
             .perform(
                 MockMvcRequestBuilders.get("/api/v1/case-definition/$caseDefinitionName/zaaktype/statustype")
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.*", Matchers.hasSize<Int>(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].url").value("http://example.com/1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[1].url").value("http://example.com/2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("name 1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[1].name").value("name 2"))
+    }
+
+    @Test
+    fun `should get resultaattypes for caseDefinitionName`() {
+        val caseDefinitionName = "case-name"
+
+        val type1 = mock<Resultaattype>()
+        whenever(type1.url).thenReturn(URI("http://example.com/1"))
+        whenever(type1.omschrijving).thenReturn("name 1")
+
+        val type2 = mock<Resultaattype>()
+        whenever(type2.url).thenReturn(URI("http://example.com/2"))
+        whenever(type2.omschrijving).thenReturn("name 2")
+
+        whenever(catalogiService.getResultaattypes(caseDefinitionName))
+            .thenReturn(listOf(type1, type2))
+
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.get("/api/v1/case-definition/$caseDefinitionName/zaaktype/resultaattype")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
