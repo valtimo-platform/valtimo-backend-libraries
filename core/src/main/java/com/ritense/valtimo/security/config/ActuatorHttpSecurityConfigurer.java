@@ -27,6 +27,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ACTUATOR;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 public class ActuatorHttpSecurityConfigurer implements HttpSecurityConfigurer, AuthenticationSecurityConfigurer {
 
@@ -53,9 +54,11 @@ public class ActuatorHttpSecurityConfigurer implements HttpSecurityConfigurer, A
                 .antMatchers(GET, "/management/configprops").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/env").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/health").hasAuthority(ACTUATOR)
+                .antMatchers(POST, "/management/health").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/mappings").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/logfile").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/loggers").hasAuthority(ACTUATOR)
+                .antMatchers(POST, "/management/loggers").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/info").hasAnyAuthority(ACTUATOR)
                 .and()
                 .httpBasic().authenticationEntryPoint(basicAuthenticationEntryPoint());
