@@ -25,6 +25,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ACTUATOR;
 import static org.springframework.http.HttpMethod.GET;
 
@@ -56,6 +57,7 @@ public class ActuatorHttpSecurityConfigurer implements HttpSecurityConfigurer, A
                 .antMatchers(GET, "/management/mappings").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/logfile").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/loggers").hasAuthority(ACTUATOR)
+                .antMatchers(GET, "/management/loggers/**").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/info").hasAnyAuthority(ACTUATOR)
                 .and()
                 .httpBasic().authenticationEntryPoint(basicAuthenticationEntryPoint());
