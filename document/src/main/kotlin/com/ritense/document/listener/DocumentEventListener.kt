@@ -22,14 +22,15 @@ import com.ritense.document.domain.event.CaseUnassignedEvent
 import com.ritense.document.domain.event.DocumentCreatedEvent
 import com.ritense.document.event.DocumentAssigneeChangedEvent
 import com.ritense.document.event.DocumentUnassignedEvent
-import com.ritense.valtimo.sse.service.SseSubscriptionService
+import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import org.springframework.context.event.EventListener
+import org.springframework.transaction.event.TransactionalEventListener
 
 class DocumentEventListener(
     private val subscriptionService: SseSubscriptionService
 ) {
 
-    @EventListener(DocumentCreatedEvent::class)
+    @TransactionalEventListener(DocumentCreatedEvent::class)
     fun handleDocumentCreatedEvent() {
         subscriptionService.notifySubscribers(CaseCreatedEvent())
     }

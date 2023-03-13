@@ -16,9 +16,10 @@
 
 package com.ritense.catalogiapi.web.rest
 
-import com.ritense.catalogiapi.web.rest.result.InformatieobjecttypeDto
 import com.ritense.catalogiapi.service.CatalogiService
+import com.ritense.catalogiapi.web.rest.result.InformatieobjecttypeDto
 import com.ritense.catalogiapi.web.rest.result.RoltypeDto
+import com.ritense.catalogiapi.web.rest.result.StatustypeDto
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -54,5 +55,18 @@ class CatalogiResource(
             )
         }
         return ResponseEntity.ok(zaakRolTypes)
+    }
+
+    @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/statustype"])
+    fun getZaakStatustypes(
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+    ): ResponseEntity<List<StatustypeDto>> {
+        val zaakStatusTypes = catalogiService.getStatustypes(caseDefinitionName).map {
+            StatustypeDto(
+                it.url,
+                it.omschrijving!!
+            )
+        }
+        return ResponseEntity.ok(zaakStatusTypes)
     }
 }

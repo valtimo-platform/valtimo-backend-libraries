@@ -79,6 +79,7 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.mockito:mockito-core"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation "org.skyscreamer:jsonassert:${jsonassertVersion}"
 
 
     jar {
