@@ -19,6 +19,7 @@ package com.ritense.catalogiapi.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.catalogiapi.domain.Informatieobjecttype
+import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
@@ -52,6 +53,14 @@ class CatalogiService(
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
         return catalogiApiPluginInstance.getStatusTypes(zaakTypeUrl)
+    }
+
+    fun getResultaattypes(caseDefinitionName: String): List<Resultaattype> {
+        logger.debug { "Getting resultaattypes for case definition $caseDefinitionName" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
+
+        return catalogiApiPluginInstance.getResultaatTypes(zaakTypeUrl)
     }
 
     private fun findCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin? {

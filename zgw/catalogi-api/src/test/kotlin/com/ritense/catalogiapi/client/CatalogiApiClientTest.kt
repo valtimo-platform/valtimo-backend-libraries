@@ -234,6 +234,64 @@ internal class CatalogiApiClientTes {
         assertEquals(true, response.results[0].informeren)
     }
 
+    @Test
+    fun `should get resultaattypen request and parse response`() {
+        val webclientBuilder = WebClient.builder()
+        val client = CatalogiApiClient(webclientBuilder)
+        val baseUrl = mockApi.url("api").toString()
+        val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
+        val responseBody = """
+            {
+                "count": 1,
+                "next": null,
+                "previous": null,
+                "results": [
+                    {
+                        "url": "http://example.com/id",
+                        "zaaktype": "$zaakTypeUrl",
+                        "omschrijving": "Beëindigd",
+                        "resultaattypeomschrijving": "https://example.com/resultaattypeomschrijvingen/id",
+                        "omschrijvingGeneriek": "Ingetrokken",
+                        "selectielijstklasse": "https://example.com/resultaten/id",
+                        "toelichting": "test",
+                        "archiefnominatie": "vernietigen",
+                        "archiefactietermijn": "P10Y",
+                        "brondatumArchiefprocedure": {
+                            "afleidingswijze": "afgehandeld",
+                            "datumkenmerk": "",
+                            "einddatumBekend": false,
+                            "objecttype": "",
+                            "registratie": "",
+                            "procestermijn": null
+                        }
+                    }
+                ]
+            }
+        """.trimIndent()
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val response = client.getResultaattypen(
+            authentication = TestAuthentication(),
+            baseUrl = URI(baseUrl),
+            request = ResultaattypeRequest(
+                zaaktype = URI(zaakTypeUrl),
+                status = ZaakTypePublishedStatus.ALLES,
+                page = 1
+            )
+        )
+
+        // to make sure the request is cleaned up to prevent issues with other tests
+        mockApi.takeRequest()
+        assertEquals(1, response.results.size)
+        assertEquals("http://example.com/id", response.results[0].url.toString())
+        assertEquals(zaakTypeUrl, response.results[0].zaaktype.toString())
+        assertEquals("Beëindigd", response.results[0].omschrijving)
+        assertEquals(URI("https://example.com/resultaattypeomschrijvingen/id"), response.results[0].resultaattypeomschrijving)
+        assertEquals("Ingetrokken", response.results[0].omschrijvingGeneriek)
+        assertEquals(URI("https://example.com/resultaten/id"), response.results[0].selectielijstklasse)
+        assertEquals("test", response.results[0].toelichting)
+    }
+
     private fun sendGetZaaktypeInformatieobjecttypeRequest(
         request: ZaaktypeInformatieobjecttypeRequest
     ): RecordedRequest {
