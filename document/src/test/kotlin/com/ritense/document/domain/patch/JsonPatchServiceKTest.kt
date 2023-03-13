@@ -29,7 +29,13 @@ class JsonPatchServiceKTest {
     fun `should patch existing object`() {
         val mapper = Mapper.INSTANCE.get()
         val jsonPatchBuilder = JsonPatchBuilder()
-        val obj = mapper.createObjectNode()
+        val obj = mapper.readTree("""
+            {
+                "z": [
+                    "1"
+                ]
+            }
+        """.trimIndent())
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/x/0/y/firstName"), TextNode.valueOf("John"))
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/x/0/y/lastName"), TextNode.valueOf("Doe"))
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/x/-/y/status"), TextNode.valueOf("Unknown"))
@@ -53,6 +59,7 @@ class JsonPatchServiceKTest {
                     }
                 ],
                 "z": [
+                  "1",
                   "1",
                   "2"
                 ]
