@@ -77,5 +77,6 @@ include(
     "zgw:zaken-api",
     "zgw:portaaltaak"
 )
-
+include 'zgw:besluiten-api'
+findProject(':zgw:besluiten-api')?.name = 'besluiten-api'
 
