@@ -26,6 +26,8 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
+import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
@@ -43,6 +45,7 @@ import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Plugin(
@@ -216,6 +219,57 @@ class ZakenApiPlugin(
                     annIdentificatie = annIdentificatie,
                     innNnpId = innNnpId
                 )
+            )
+        )
+    }
+
+    @PluginAction(
+        key = "set-zaakstatus",
+        title = "Set zaak status",
+        description = "Sets the status of a zaak",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun setZaakStatus(
+        execution: DelegateExecution,
+        @PluginActionProperty statustypeUrl: URI,
+        @PluginActionProperty statustoelichting: String?,
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+        client.createZaakStatus(
+            authenticationPluginConfiguration,
+            url,
+            CreateZaakStatusRequest(
+                zaak = zaakUrl,
+                statustype = statustypeUrl,
+                datumStatusGezet = LocalDateTime.now().minusSeconds(5),
+                statustoelichting = statustoelichting,
+            )
+        )
+    }
+
+    @PluginAction(
+        key = "create-zaakresultaat",
+        title = "Create zaak status",
+        description = "Creates a resultaat for a zaak",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun createZaakResultaat(
+        execution: DelegateExecution,
+        @PluginActionProperty resultaattypeUrl: URI,
+        @PluginActionProperty toelichting: String?,
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+        client.createZaakResultaat(
+            authenticationPluginConfiguration,
+            url,
+            CreateZaakResultaatRequest(
+                zaak = zaakUrl,
+                resultaattype = resultaattypeUrl,
+                toelichting = toelichting,
             )
         )
     }
