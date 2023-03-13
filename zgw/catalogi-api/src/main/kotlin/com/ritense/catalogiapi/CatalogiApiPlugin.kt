@@ -16,11 +16,13 @@
 
 package com.ritense.catalogiapi
 
+import com.ritense.catalogiapi.client.BesluittypeRequest
 import com.ritense.catalogiapi.client.CatalogiApiClient
 import com.ritense.catalogiapi.client.ResultaattypeRequest
 import com.ritense.catalogiapi.client.RoltypeRequest
 import com.ritense.catalogiapi.client.StatustypeRequest
 import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
+import com.ritense.catalogiapi.domain.Besluittype
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
@@ -125,12 +127,33 @@ class CatalogiApiPlugin(
         val results = mutableListOf<Resultaattype>()
 
         do {
-            logger.debug { "Getting page of reultaat types, page $currentPage for zaaktype $zaakTypeUrl" }
+            logger.debug { "Getting page of resultaat types, page $currentPage for zaaktype $zaakTypeUrl" }
             currentResults = client.getResultaattypen(
                 authenticationPluginConfiguration,
                 url,
                 ResultaattypeRequest(
                     zaaktype = zaakTypeUrl,
+                    page = currentPage++
+                )
+            )
+            results.addAll(currentResults.results)
+        } while(currentResults?.next != null)
+
+        return results
+    }
+
+    fun getBesluitTypes(zaakTypeUrl: URI): List<Besluittype> {
+        var currentPage = 1
+        var currentResults: Page<Besluittype>?
+        val results = mutableListOf<Besluittype>()
+
+        do {
+            logger.debug { "Getting page of besluit types, page $currentPage for zaaktype $zaakTypeUrl" }
+            currentResults = client.getBesluittypen(
+                authenticationPluginConfiguration,
+                url,
+                BesluittypeRequest(
+                    zaaktypen = zaakTypeUrl,
                     page = currentPage++
                 )
             )

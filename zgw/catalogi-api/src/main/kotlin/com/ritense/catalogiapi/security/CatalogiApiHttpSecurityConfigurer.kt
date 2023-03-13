@@ -31,6 +31,7 @@ class CatalogiApiHttpSecurityConfigurer: HttpSecurityConfigurer {
                 .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/roltype").hasAuthority(USER)
                 .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/statustype").hasAuthority(USER)
                 .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype").hasAuthority(USER)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

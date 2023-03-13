@@ -17,6 +17,7 @@
 package com.ritense.catalogiapi.web.rest
 
 import com.ritense.catalogiapi.service.CatalogiService
+import com.ritense.catalogiapi.web.rest.result.BesluittypeDto
 import com.ritense.catalogiapi.web.rest.result.InformatieobjecttypeDto
 import com.ritense.catalogiapi.web.rest.result.ResultaattypeDto
 import com.ritense.catalogiapi.web.rest.result.RoltypeDto
@@ -64,8 +65,8 @@ class CatalogiResource(
     ): ResponseEntity<List<StatustypeDto>> {
         val zaakStatusTypes = catalogiService.getStatustypes(caseDefinitionName).map {
             StatustypeDto(
-                it.url,
-                it.omschrijving!!
+                it.url!!,
+                it.omschrijving
             )
         }
         return ResponseEntity.ok(zaakStatusTypes)
@@ -77,10 +78,23 @@ class CatalogiResource(
     ): ResponseEntity<List<ResultaattypeDto>> {
         val zaakResultaatTypes = catalogiService.getResultaattypes(caseDefinitionName).map {
             ResultaattypeDto(
-                it.url,
+                it.url!!,
                 it.omschrijving
             )
         }
         return ResponseEntity.ok(zaakResultaatTypes)
+    }
+
+    @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype"])
+    fun getZaakBesuilttypes(
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+    ): ResponseEntity<List<BesluittypeDto>> {
+        val zaakBesluitTypes = catalogiService.getBesluittypes(caseDefinitionName).map {
+            BesluittypeDto(
+                it.url!!,
+                it.omschrijving ?: it.url.toString().substringAfterLast("/")
+            )
+        }
+        return ResponseEntity.ok(zaakBesluitTypes)
     }
 }

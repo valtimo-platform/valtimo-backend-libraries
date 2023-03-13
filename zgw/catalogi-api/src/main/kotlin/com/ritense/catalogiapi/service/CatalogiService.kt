@@ -18,6 +18,7 @@ package com.ritense.catalogiapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.catalogiapi.CatalogiApiPlugin
+import com.ritense.catalogiapi.domain.Besluittype
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
@@ -61,6 +62,14 @@ class CatalogiService(
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
         return catalogiApiPluginInstance.getResultaatTypes(zaakTypeUrl)
+    }
+
+    fun getBesluittypes(caseDefinitionName: String): List<Besluittype> {
+        logger.debug { "Getting besluittypes for case definition $caseDefinitionName" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
+
+        return catalogiApiPluginInstance.getBesluitTypes(zaakTypeUrl)
     }
 
     private fun findCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin? {
