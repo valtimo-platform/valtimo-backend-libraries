@@ -75,8 +75,7 @@ include(
     "zgw:objecttypen-api",
     "zgw:verzoek",
     "zgw:zaken-api",
-    "zgw:portaaltaak"
+    "zgw:portaaltaak",
+    "zgw:besluiten-api"
 )
-include 'zgw:besluiten-api'
-findProject(':zgw:besluiten-api')?.name = 'besluiten-api'
 
