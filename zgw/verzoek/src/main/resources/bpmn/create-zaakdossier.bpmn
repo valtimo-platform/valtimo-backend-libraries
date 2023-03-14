@@ -13,7 +13,6 @@
     <bpmn:sequenceFlow id="Flow_0evcldf" sourceRef="create-initiator-zaak-rol" targetRef="link-document-to-zaak" />
     <bpmn:sequenceFlow id="Flow_1tgmdp6" sourceRef="create-zaak" targetRef="Activity_1m2evlj" />
     <bpmn:sequenceFlow id="Flow_1uhql59" sourceRef="delete-verzoek-from-objectsapi" targetRef="Event_19l1mml" />
-    <bpmn:sequenceFlow id="Flow_0loxn4l" sourceRef="Event_1hzhlj9" targetRef="delete-verzoek-from-objectsapi" />
     <bpmn:sequenceFlow id="Flow_1ju01uk" sourceRef="StartEvent_1" targetRef="create-zaak" />
     <bpmn:startEvent id="StartEvent_1" name="Verzoek notification">
       <bpmn:outgoing>Flow_1ju01uk</bpmn:outgoing>
@@ -33,22 +32,22 @@
     <bpmn:sequenceFlow id="Flow_1eu3hy4" sourceRef="Activity_1m2evlj" targetRef="create-initiator-zaak-rol" />
     <bpmn:serviceTask id="link-document-to-zaak" name="Link Document to Zaak" camunda:expression="${true}">
       <bpmn:incoming>Flow_0evcldf</bpmn:incoming>
-      <bpmn:outgoing>Flow_1gcez64</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1gwaqz2</bpmn:outgoing>
       <bpmn:multiInstanceLoopCharacteristics camunda:asyncAfter="true" camunda:collection="documentUrls" camunda:elementVariable="documentUrl" />
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_1gcez64" sourceRef="link-document-to-zaak" targetRef="Event_1hzhlj9" />
-    <bpmn:intermediateThrowEvent id="Event_1hzhlj9" name="Zaakdossier created" camunda:asyncAfter="true">
-      <bpmn:incoming>Flow_1gcez64</bpmn:incoming>
-      <bpmn:outgoing>Flow_0loxn4l</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_0ezhml7" messageRef="Message_1540c4d" camunda:expression="${correlationService.sendStartMessageWithProcessDefinitionKey(&#34;zaakdossier-created&#34;, processDefinitionKey, execution.processBusinessKey, null)}" />
-    </bpmn:intermediateThrowEvent>
-    <bpmn:serviceTask id="delete-verzoek-from-objectsapi" name="Delete Verzoek from ObjectsAPI" camunda:asyncAfter="true" camunda:expression="${true}">
-      <bpmn:incoming>Flow_0loxn4l</bpmn:incoming>
-      <bpmn:outgoing>Flow_1uhql59</bpmn:outgoing>
-    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1gwaqz2" sourceRef="link-document-to-zaak" targetRef="start-handling-process" />
     <bpmn:endEvent id="Event_19l1mml">
       <bpmn:incoming>Flow_1uhql59</bpmn:incoming>
     </bpmn:endEvent>
+    <bpmn:serviceTask id="delete-verzoek-from-objectsapi" name="Delete Verzoek from ObjectsAPI" camunda:asyncAfter="true" camunda:expression="${true}">
+      <bpmn:incoming>Flow_1k5479s</bpmn:incoming>
+      <bpmn:outgoing>Flow_1uhql59</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1k5479s" sourceRef="start-handling-process" targetRef="delete-verzoek-from-objectsapi" />
+    <bpmn:serviceTask id="start-handling-process" name="Start handling process" camunda:expression="${processService.startProcessByProcessDefinitionKey(processDefinitionKey,execution.processBusinessKey)}">
+      <bpmn:incoming>Flow_1gwaqz2</bpmn:incoming>
+      <bpmn:outgoing>Flow_1k5479s</bpmn:outgoing>
+    </bpmn:serviceTask>
   </bpmn:process>
   <bpmn:message id="Message_1540c4d" name="zaakdossier-aangemaakt" />
   <bpmn:signal id="Signal_05dgijz" name="Signal_0fp1u4a" />
@@ -56,11 +55,11 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_134xj6j">
       <bpmndi:BPMNShape id="Participant_1ry53rc_di" bpmnElement="Participant_1ry53rc" isHorizontal="true">
-        <dc:Bounds x="160" y="80" width="1270" height="390" />
+        <dc:Bounds x="160" y="80" width="1340" height="390" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_1gcez64_di" bpmnElement="Flow_1gcez64">
+      <bpmndi:BPMNEdge id="Flow_1gwaqz2_di" bpmnElement="Flow_1gwaqz2">
         <di:waypoint x="970" y="260" />
-        <di:waypoint x="1052" y="260" />
+        <di:waypoint x="1040" y="260" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1eu3hy4_di" bpmnElement="Flow_1eu3hy4">
         <di:waypoint x="630" y="260" />
@@ -70,13 +69,9 @@
         <di:waypoint x="288" y="260" />
         <di:waypoint x="370" y="260" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0loxn4l_di" bpmnElement="Flow_0loxn4l">
-        <di:waypoint x="1088" y="260" />
-        <di:waypoint x="1170" y="260" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1uhql59_di" bpmnElement="Flow_1uhql59">
-        <di:waypoint x="1270" y="260" />
-        <di:waypoint x="1342" y="260" />
+        <di:waypoint x="1320" y="260" />
+        <di:waypoint x="1412" y="260" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1tgmdp6_di" bpmnElement="Flow_1tgmdp6">
         <di:waypoint x="470" y="260" />
@@ -85,6 +80,10 @@
       <bpmndi:BPMNEdge id="Flow_0evcldf_di" bpmnElement="Flow_0evcldf">
         <di:waypoint x="800" y="260" />
         <di:waypoint x="870" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1k5479s_di" bpmnElement="Flow_1k5479s">
+        <di:waypoint x="1140" y="260" />
+        <di:waypoint x="1220" y="260" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_0z7tcif_di" bpmnElement="StartEvent_1">
         <dc:Bounds x="252" y="242" width="36" height="36" />
@@ -108,18 +107,16 @@
         <dc:Bounds x="870" y="220" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_01mw537_di" bpmnElement="Event_1hzhlj9">
-        <dc:Bounds x="1052" y="242" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1040" y="285" width="61" height="27" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="Event_19l1mml_di" bpmnElement="Event_19l1mml">
+        <dc:Bounds x="1412" y="242" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0cihujh_di" bpmnElement="delete-verzoek-from-objectsapi">
-        <dc:Bounds x="1170" y="220" width="100" height="80" />
+        <dc:Bounds x="1220" y="220" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_19l1mml_di" bpmnElement="Event_19l1mml">
-        <dc:Bounds x="1342" y="242" width="36" height="36" />
+      <bpmndi:BPMNShape id="Activity_0wnmb58_di" bpmnElement="start-handling-process">
+        <dc:Bounds x="1040" y="220" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
