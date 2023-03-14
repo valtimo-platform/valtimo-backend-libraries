@@ -35,6 +35,7 @@ dependencies {
     implementation project(':zgw:documenten-api')
     api project(':zgw:catalogi-api')
     api project(":zgw:zaken-api")
+    api project(":zgw:besluiten-api")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
