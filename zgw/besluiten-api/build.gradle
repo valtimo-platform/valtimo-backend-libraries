@@ -23,8 +23,15 @@ dockerCompose {
 
 dependencies {
     implementation project(":plugin")
+    implementation project(":zgw")
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    //Kotlin
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
     jar {
         enabled = true

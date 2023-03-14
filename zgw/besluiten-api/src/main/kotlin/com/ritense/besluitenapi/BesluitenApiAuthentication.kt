@@ -16,13 +16,8 @@
 
 package com.ritense.besluitenapi
 
-import com.ritense.plugin.PluginFactory
-import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.annotation.PluginCategory
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
-class BesluitenApiPluginFactory(
-    pluginService: PluginService
-): PluginFactory<BesluitenApiPlugin>(pluginService) {
-    override fun create(): BesluitenApiPlugin {
-        return BesluitenApiPlugin()
-    }
-}
+@PluginCategory("besluiten-api-authentication")
+interface BesluitenApiAuthentication: ExchangeFilterFunction
