@@ -48,28 +48,28 @@ class CatalogiService(
         return catalogiApiPluginInstance.getRoltypes(zaakTypeUrl)
     }
 
-    fun getStatustypes(caseDefinitionName: String): List<Statustype> {
-        logger.debug { "Getting statustypes for case definition $caseDefinitionName" }
+    fun getStatustypen(caseDefinitionName: String): List<Statustype> {
+        logger.debug { "Getting statustypen for case definition $caseDefinitionName" }
         val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
-        return catalogiApiPluginInstance.getStatusTypes(zaakTypeUrl)
+        return catalogiApiPluginInstance.getStatustypen(zaakTypeUrl)
     }
 
-    fun getResultaattypes(caseDefinitionName: String): List<Resultaattype> {
-        logger.debug { "Getting resultaattypes for case definition $caseDefinitionName" }
+    fun getResultaattypen(caseDefinitionName: String): List<Resultaattype> {
+        logger.debug { "Getting resultaattypen for case definition $caseDefinitionName" }
         val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
-        return catalogiApiPluginInstance.getResultaatTypes(zaakTypeUrl)
+        return catalogiApiPluginInstance.getResultaattypen(zaakTypeUrl)
     }
 
-    fun getBesluittypes(caseDefinitionName: String): List<Besluittype> {
-        logger.debug { "Getting besluittypes for case definition $caseDefinitionName" }
+    fun getBesluittypen(caseDefinitionName: String): List<Besluittype> {
+        logger.debug { "Getting besluittypen for case definition $caseDefinitionName" }
         val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
-        return catalogiApiPluginInstance.getBesluitTypes(zaakTypeUrl)
+        return catalogiApiPluginInstance.getBesluittypen(zaakTypeUrl)
     }
 
     private fun findCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin? {

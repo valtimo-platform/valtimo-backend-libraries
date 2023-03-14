@@ -119,7 +119,7 @@ internal class CatalogiResourceTest {
     }
 
     @Test
-    fun `should get statustypes for caseDefinitionName`() {
+    fun `should get statustypen for caseDefinitionName`() {
         val caseDefinitionName = "case-name"
 
         val type1 = mock<Statustype>()
@@ -130,7 +130,7 @@ internal class CatalogiResourceTest {
         whenever(type2.url).thenReturn(URI("http://example.com/2"))
         whenever(type2.omschrijving).thenReturn("name 2")
 
-        whenever(catalogiService.getStatustypes(caseDefinitionName))
+        whenever(catalogiService.getStatustypen(caseDefinitionName))
             .thenReturn(listOf(type1, type2))
 
         mockMvc
@@ -152,7 +152,7 @@ internal class CatalogiResourceTest {
     }
 
     @Test
-    fun `should get resultaattypes for caseDefinitionName`() {
+    fun `should get resultaattypen for caseDefinitionName`() {
         val caseDefinitionName = "case-name"
 
         val type1 = mock<Resultaattype>()
@@ -163,7 +163,7 @@ internal class CatalogiResourceTest {
         whenever(type2.url).thenReturn(URI("http://example.com/2"))
         whenever(type2.omschrijving).thenReturn("name 2")
 
-        whenever(catalogiService.getResultaattypes(caseDefinitionName))
+        whenever(catalogiService.getResultaattypen(caseDefinitionName))
             .thenReturn(listOf(type1, type2))
 
         mockMvc
@@ -185,7 +185,7 @@ internal class CatalogiResourceTest {
     }
 
     @Test
-    fun `should get besluittypes for caseDefinitionName`() {
+    fun `should get besluittypen for caseDefinitionName`() {
         val caseDefinitionName = "case-name"
 
         val type1 = mock<Besluittype>()
@@ -196,7 +196,7 @@ internal class CatalogiResourceTest {
         whenever(type2.url).thenReturn(URI("http://example.com/2"))
         whenever(type2.omschrijving).thenReturn("name 2")
 
-        whenever(catalogiService.getBesluittypes(caseDefinitionName))
+        whenever(catalogiService.getBesluittypen(caseDefinitionName))
             .thenReturn(listOf(type1, type2))
 
         mockMvc

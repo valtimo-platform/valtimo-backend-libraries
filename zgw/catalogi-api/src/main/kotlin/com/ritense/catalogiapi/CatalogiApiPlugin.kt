@@ -100,13 +100,13 @@ class CatalogiApiPlugin(
         return results
     }
 
-    fun getStatusTypes(zaakTypeUrl: URI): List<Statustype> {
+    fun getStatustypen(zaakTypeUrl: URI): List<Statustype> {
         var currentPage = 1
         var currentResults: Page<Statustype>?
         val results = mutableListOf<Statustype>()
 
         do {
-            logger.debug { "Getting page of status types, page $currentPage for zaaktype $zaakTypeUrl" }
+            logger.debug { "Getting page of statustypen, page $currentPage for zaaktype $zaakTypeUrl" }
             currentResults = client.getStatustypen(
                 authenticationPluginConfiguration,
                 url,
@@ -121,13 +121,13 @@ class CatalogiApiPlugin(
         return results
     }
 
-    fun getResultaatTypes(zaakTypeUrl: URI): List<Resultaattype> {
+    fun getResultaattypen(zaakTypeUrl: URI): List<Resultaattype> {
         var currentPage = 1
         var currentResults: Page<Resultaattype>?
         val results = mutableListOf<Resultaattype>()
 
         do {
-            logger.debug { "Getting page of resultaat types, page $currentPage for zaaktype $zaakTypeUrl" }
+            logger.debug { "Getting page of resultaattypen, page $currentPage for zaaktype $zaakTypeUrl" }
             currentResults = client.getResultaattypen(
                 authenticationPluginConfiguration,
                 url,
@@ -142,13 +142,13 @@ class CatalogiApiPlugin(
         return results
     }
 
-    fun getBesluitTypes(zaakTypeUrl: URI): List<Besluittype> {
+    fun getBesluittypen(zaakTypeUrl: URI): List<Besluittype> {
         var currentPage = 1
         var currentResults: Page<Besluittype>?
         val results = mutableListOf<Besluittype>()
 
         do {
-            logger.debug { "Getting page of besluit types, page $currentPage for zaaktype $zaakTypeUrl" }
+            logger.debug { "Getting page of besluittypen, page $currentPage for zaaktype $zaakTypeUrl" }
             currentResults = client.getBesluittypen(
                 authenticationPluginConfiguration,
                 url,

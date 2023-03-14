@@ -60,10 +60,10 @@ class CatalogiResource(
     }
 
     @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/statustype"])
-    fun getZaakStatustypes(
+    fun getZaakStatustypen(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<StatustypeDto>> {
-        val zaakStatusTypes = catalogiService.getStatustypes(caseDefinitionName).map {
+        val zaakStatusTypes = catalogiService.getStatustypen(caseDefinitionName).map {
             StatustypeDto(
                 it.url!!,
                 it.omschrijving
@@ -73,10 +73,10 @@ class CatalogiResource(
     }
 
     @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype"])
-    fun getZaakResultaattypes(
+    fun getZaakResultaattypen(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<ResultaattypeDto>> {
-        val zaakResultaatTypes = catalogiService.getResultaattypes(caseDefinitionName).map {
+        val zaakResultaatTypes = catalogiService.getResultaattypen(caseDefinitionName).map {
             ResultaattypeDto(
                 it.url!!,
                 it.omschrijving
@@ -86,10 +86,10 @@ class CatalogiResource(
     }
 
     @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype"])
-    fun getZaakBesuilttypes(
+    fun getZaakBesuilttypen(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<BesluittypeDto>> {
-        val zaakBesluitTypes = catalogiService.getBesluittypes(caseDefinitionName).map {
+        val zaakBesluitTypes = catalogiService.getBesluittypen(caseDefinitionName).map {
             BesluittypeDto(
                 it.url!!,
                 it.omschrijving ?: it.url.toString().substringAfterLast("/")
