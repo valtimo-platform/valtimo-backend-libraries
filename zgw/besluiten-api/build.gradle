@@ -36,7 +36,7 @@ dependencies {
     jar {
         enabled = true
         manifest {
-            attributes("Implementation-Title": "ZGW Zaken API plugin spring boot starter")
+            attributes("Implementation-Title": "ZGW Besluiten API plugin spring boot starter")
             attributes("Implementation-Version": projectVersion)
         }
     }
