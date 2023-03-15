@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
-package com.ritense.catalogiapi.web.rest.result
+package com.ritense.catalogiapi.domain
 
 import java.net.URI
+import java.time.LocalDate
 
-class StatustypeDto(
-    val url: URI,
-    val name: String,
+class Besluittype(
+    val url: URI?,
+    val catalogus: URI,
+    val zaaktypen: List<URI>,
+    val omschrijving: String?,
+    val omschrijvingGeneriek: String?,
+    val besluitcategorie: String?,
+    val reactietermijn: String?,
+    val publicatieIndicatie: Boolean,
+    val publicatietekst: String?,
+    val publicatietermijn: String?,
+    val toelichting: String?,
+    val informatieobjecttypen: List<URI>,
+    val beginGeldigheid: LocalDate,
+    val eindeGeldigheid: LocalDate?,
+    val concept: Boolean?,
 )
