@@ -28,7 +28,6 @@ import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.ProcessEngineException
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
-import org.camunda.bpm.engine.runtime.ProcessInstance
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -39,7 +38,7 @@ import kotlin.test.assertNotNull
 import java.util.UUID
 
 @Transactional
-class ProcessDocumentKotlinServiceIntTest : BaseIntegrationTest() {
+class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var runtimeService: RuntimeService

@@ -24,7 +24,7 @@ import com.ritense.valtimo.service.CamundaProcessService
 import java.util.UUID
 
 
-class ProcessDocumentKotlinService(
+class ProcessDocumentsKotlinService(
     private val documentService: DocumentService,
     private val camundaProcessService: CamundaProcessService,
     private val associationService: ProcessDocumentAssociationService
