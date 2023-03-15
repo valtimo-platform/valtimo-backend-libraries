@@ -23,7 +23,7 @@ import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.CorrelationServiceImpl
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.processdocument.service.ProcessDocumentsKotlinService
+import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.service.CamundaProcessService
@@ -71,13 +71,13 @@ class ProcessDocumentsAutoConfiguration {
 
     @ProcessBean
     @Bean("processService")
-    @ConditionalOnMissingBean(ProcessDocumentsKotlinService::class)
+    @ConditionalOnMissingBean(ProcessDocumentsService::class)
     fun processDocumentKotlinService(
         documentService: DocumentService,
         processDocumentAssociationService: ProcessDocumentAssociationService,
         camundaProcessService: CamundaProcessService
-    ): ProcessDocumentsKotlinService {
-        return ProcessDocumentsKotlinService(
+    ): ProcessDocumentsService {
+        return ProcessDocumentsService(
             documentService,
             camundaProcessService,
             processDocumentAssociationService
