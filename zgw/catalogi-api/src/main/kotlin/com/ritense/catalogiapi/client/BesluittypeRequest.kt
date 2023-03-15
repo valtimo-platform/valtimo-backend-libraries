@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.catalogiapi.web.rest.result
+package com.ritense.catalogiapi.client
 
 import java.net.URI
 
-class StatustypeDto(
-    val url: URI,
-    val name: String,
+data class BesluittypeRequest(
+    val catalogus: URI? = null,
+    val zaaktypen: URI? = null,
+    val informatieobjecttypen: URI? = null,
+    val status: ZaakTypePublishedStatus? = null,
+    val page: Int? = null
 )

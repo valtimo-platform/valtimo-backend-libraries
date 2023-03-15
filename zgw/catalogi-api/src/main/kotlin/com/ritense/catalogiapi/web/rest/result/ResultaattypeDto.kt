@@ -19,6 +19,6 @@ package com.ritense.catalogiapi.web.rest.result
 import java.net.URI
 
 class ResultaattypeDto(
-    val url: URI?,
+    val url: URI,
     val name: String,
 )
