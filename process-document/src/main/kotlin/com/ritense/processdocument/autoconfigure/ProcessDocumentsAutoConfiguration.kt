@@ -72,7 +72,7 @@ class ProcessDocumentsAutoConfiguration {
     @ProcessBean
     @Bean("processService")
     @ConditionalOnMissingBean(ProcessDocumentsService::class)
-    fun processDocumentKotlinService(
+    fun processDocumentsService(
         documentService: DocumentService,
         processDocumentAssociationService: ProcessDocumentAssociationService,
         camundaProcessService: CamundaProcessService
