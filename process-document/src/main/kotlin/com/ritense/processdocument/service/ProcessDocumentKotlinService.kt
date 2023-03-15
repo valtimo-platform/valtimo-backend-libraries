@@ -21,7 +21,8 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
 import com.ritense.valtimo.service.CamundaProcessService
-import java.util.*
+import java.util.UUID
+
 
 class ProcessDocumentKotlinService(
     private val documentService: DocumentService,
@@ -29,13 +30,21 @@ class ProcessDocumentKotlinService(
     private val associationService: ProcessDocumentAssociationService
 ) {
 
-    fun startProcessByProcessDefinitionKey(processDefinitionKey: String,businessKey: String){
-        startProcessByProcessDefinitionKey(processDefinitionKey,businessKey,null)
+    fun startProcessByProcessDefinitionKey(processDefinitionKey: String, businessKey: String) {
+        startProcessByProcessDefinitionKey(processDefinitionKey, businessKey, null)
     }
 
-    fun startProcessByProcessDefinitionKey(processDefinitionKey: String, businessKey: String, variables: Map<String,Any>?) {
-        val processInstance = camundaProcessService.startProcess(processDefinitionKey,businessKey,variables)
-        associateDocumentToProcess(processInstance.processInstanceDto.id,processInstance.processDefinition.name,businessKey)
+    fun startProcessByProcessDefinitionKey(
+        processDefinitionKey: String,
+        businessKey: String,
+        variables: Map<String, Any>?
+    ) {
+        val processInstance = camundaProcessService.startProcess(processDefinitionKey, businessKey, variables)
+        associateDocumentToProcess(
+            processInstance.processInstanceDto.id,
+            processInstance.processDefinition.name,
+            businessKey
+        )
     }
 
     private fun associateDocumentToProcess(

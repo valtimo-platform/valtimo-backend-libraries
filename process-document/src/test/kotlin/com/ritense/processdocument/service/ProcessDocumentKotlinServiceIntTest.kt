@@ -25,17 +25,21 @@ import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
 import com.ritense.valtimo.service.CamundaProcessService
+import org.camunda.bpm.engine.ProcessEngineException
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
+import org.camunda.bpm.engine.runtime.ProcessInstance
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import java.util.UUID
 
 @Transactional
-class ProcessDocumentKotlinServiceIntTest: BaseIntegrationTest() {
+class ProcessDocumentKotlinServiceIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var runtimeService: RuntimeService
@@ -95,17 +99,55 @@ class ProcessDocumentKotlinServiceIntTest: BaseIntegrationTest() {
         val associatedProcessDocuments =
             processDocumentInstanceRepository.findAllByDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
         val resultProcessInstance = camundaProcessService.findProcessInstanceById(startedProcessId).get()
-        assertEquals(document.id().toString(),resultProcessInstance.businessKey)
-        assertEquals(associatedProcessDocuments.size,2)
-        assertNotNull(associatedProcessDocuments.firstOrNull { it.processName().equals("parent process")})
-        assertNotNull(associatedProcessDocuments.firstOrNull { it.processName().equals("child process")})
-        assertEquals(document.id(), associatedProcessDocuments.first {
-            it.processName().equals("parent process")
-        }.id!!.documentId()
+        assertEquals(document.id().toString(), resultProcessInstance.businessKey)
+        assertEquals(associatedProcessDocuments.size, 2)
+        assertNotNull(associatedProcessDocuments.firstOrNull { it.processName().equals("parent process") })
+        assertNotNull(associatedProcessDocuments.firstOrNull { it.processName().equals("child process") })
+        assertEquals(
+            document.id(), associatedProcessDocuments.first {
+                it.processName().equals("parent process")
+            }.id!!.documentId()
         )
-        assertEquals(document.id(), associatedProcessDocuments.first {
-            it.processName().equals("child process")
-        }.id!!.documentId()
+        assertEquals(
+            document.id(), associatedProcessDocuments.first {
+                it.processName().equals("child process")
+            }.id!!.documentId()
+        )
+    }
+
+    @Test
+    @Throws(JsonProcessingException::class)
+    fun `should fail to start process with non existing process definition key`() {
+        document = documentService.createDocument(
+            NewDocumentRequest(
+                "house", objectMapper.readTree(documentJson)
+            )
+        ).resultingDocument().orElseThrow()
+        val exception = assertThrows<ProcessEngineException> {
+            runtimeService.startProcessInstanceByKey(
+                "parent-process-with-non-existing-key",
+                document.id().toString()
+            )
+        }
+        assertEquals(
+            "java.lang.IllegalStateException: No process definition found with key: 'non-existing-key'",
+            exception.cause?.message
+        )
+    }
+
+    @Test
+    @Throws(JsonProcessingException::class)
+    fun `should fail to start process with non existing document`() {
+        val uuid = UUID.randomUUID().toString()
+        val exception = assertThrows<ProcessEngineException> {
+            runtimeService.startProcessInstanceByKey(
+                "parent-process",
+                uuid
+            )
+        }
+        assertEquals(
+            "com.ritense.document.exception.DocumentNotFoundException: No Document found with id $uuid",
+            exception.cause?.message
         )
     }
 
