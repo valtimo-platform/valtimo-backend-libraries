@@ -18,7 +18,7 @@ package com.ritense.catalogiapi.web.rest.result
 
 import java.net.URI
 
-class StatustypeDto(
+class BesluittypeDto(
     val url: URI,
     val name: String,
 )

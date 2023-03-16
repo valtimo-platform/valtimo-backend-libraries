@@ -292,6 +292,64 @@ internal class CatalogiApiClientTes {
         assertEquals("test", response.results[0].toelichting)
     }
 
+    @Test
+    fun `should get beluittypen request and parse response`() {
+        val webclientBuilder = WebClient.builder()
+        val client = CatalogiApiClient(webclientBuilder)
+        val baseUrl = mockApi.url("api").toString()
+        val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
+        val responseBody = """
+            {
+                "count": 1,
+                "next": null,
+                "previous": null,
+                "results": [
+                    {
+                        "url": "http://example.com/id",
+                        "catalogus": "http://example.com/catalogussen/id",
+                        "zaaktypen": [
+                            "$zaakTypeUrl"
+                        ],
+                        "omschrijving": "Toegewezen",
+                        "omschrijvingGeneriek": "Toegewezen",
+                        "besluitcategorie": "",
+                        "reactietermijn": null,
+                        "publicatieIndicatie": false,
+                        "publicatietekst": "",
+                        "publicatietermijn": null,
+                        "toelichting": "",
+                        "informatieobjecttypen": [],
+                        "beginGeldigheid": "2022-09-12",
+                        "eindeGeldigheid": null,
+                        "concept": false
+                    }
+                ]
+            }
+        """.trimIndent()
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val response = client.getBesluittypen(
+            authentication = TestAuthentication(),
+            baseUrl = URI(baseUrl),
+            request = BesluittypeRequest(
+                zaaktypen = URI(zaakTypeUrl),
+                status = ZaakTypePublishedStatus.ALLES,
+                page = 1
+            )
+        )
+
+        // to make sure the request is cleaned up to prevent issues with other tests
+        mockApi.takeRequest()
+        assertEquals(1, response.results.size)
+        assertEquals("http://example.com/id", response.results[0].url.toString())
+        assertEquals("http://example.com/catalogussen/id", response.results[0].catalogus.toString())
+        assertEquals(zaakTypeUrl, response.results[0].zaaktypen[0].toString())
+        assertEquals("Toegewezen", response.results[0].omschrijving)
+        assertEquals("Toegewezen", response.results[0].omschrijvingGeneriek)
+        assertEquals(false, response.results[0].publicatieIndicatie)
+        assertEquals(LocalDate.parse("2022-09-12"), response.results[0].beginGeldigheid)
+    }
+
     private fun sendGetZaaktypeInformatieobjecttypeRequest(
         request: ZaaktypeInformatieobjecttypeRequest
     ): RecordedRequest {

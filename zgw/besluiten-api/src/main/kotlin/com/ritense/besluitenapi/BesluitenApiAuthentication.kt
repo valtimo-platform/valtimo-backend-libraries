@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.catalogiapi.web.rest.result
+package com.ritense.besluitenapi
 
-import java.net.URI
+import com.ritense.plugin.annotation.PluginCategory
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
-class StatustypeDto(
-    val url: URI,
-    val name: String,
-)
+@PluginCategory("besluiten-api-authentication")
+interface BesluitenApiAuthentication: ExchangeFilterFunction

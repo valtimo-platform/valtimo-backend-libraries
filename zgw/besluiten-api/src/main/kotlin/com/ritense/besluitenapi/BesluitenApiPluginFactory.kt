@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.catalogiapi.web.rest.result
+package com.ritense.besluitenapi
 
-import java.net.URI
+import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.service.PluginService
 
-class StatustypeDto(
-    val url: URI,
-    val name: String,
-)
+class BesluitenApiPluginFactory(
+    pluginService: PluginService
+): PluginFactory<BesluitenApiPlugin>(pluginService) {
+    override fun create(): BesluitenApiPlugin {
+        return BesluitenApiPlugin()
+    }
+}

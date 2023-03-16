@@ -16,11 +16,13 @@
 
 package com.ritense.catalogiapi
 
+import com.ritense.catalogiapi.client.BesluittypeRequest
 import com.ritense.catalogiapi.client.CatalogiApiClient
 import com.ritense.catalogiapi.client.ResultaattypeRequest
 import com.ritense.catalogiapi.client.RoltypeRequest
 import com.ritense.catalogiapi.client.StatustypeRequest
 import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
+import com.ritense.catalogiapi.domain.Besluittype
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
@@ -98,13 +100,13 @@ class CatalogiApiPlugin(
         return results
     }
 
-    fun getStatusTypes(zaakTypeUrl: URI): List<Statustype> {
+    fun getStatustypen(zaakTypeUrl: URI): List<Statustype> {
         var currentPage = 1
         var currentResults: Page<Statustype>?
         val results = mutableListOf<Statustype>()
 
         do {
-            logger.debug { "Getting page of status types, page $currentPage for zaaktype $zaakTypeUrl" }
+            logger.debug { "Getting page of statustypen, page $currentPage for zaaktype $zaakTypeUrl" }
             currentResults = client.getStatustypen(
                 authenticationPluginConfiguration,
                 url,
@@ -119,18 +121,39 @@ class CatalogiApiPlugin(
         return results
     }
 
-    fun getResultaatTypes(zaakTypeUrl: URI): List<Resultaattype> {
+    fun getResultaattypen(zaakTypeUrl: URI): List<Resultaattype> {
         var currentPage = 1
         var currentResults: Page<Resultaattype>?
         val results = mutableListOf<Resultaattype>()
 
         do {
-            logger.debug { "Getting page of reultaat types, page $currentPage for zaaktype $zaakTypeUrl" }
+            logger.debug { "Getting page of resultaattypen, page $currentPage for zaaktype $zaakTypeUrl" }
             currentResults = client.getResultaattypen(
                 authenticationPluginConfiguration,
                 url,
                 ResultaattypeRequest(
                     zaaktype = zaakTypeUrl,
+                    page = currentPage++
+                )
+            )
+            results.addAll(currentResults.results)
+        } while(currentResults?.next != null)
+
+        return results
+    }
+
+    fun getBesluittypen(zaakTypeUrl: URI): List<Besluittype> {
+        var currentPage = 1
+        var currentResults: Page<Besluittype>?
+        val results = mutableListOf<Besluittype>()
+
+        do {
+            logger.debug { "Getting page of besluittypen, page $currentPage for zaaktype $zaakTypeUrl" }
+            currentResults = client.getBesluittypen(
+                authenticationPluginConfiguration,
+                url,
+                BesluittypeRequest(
+                    zaaktypen = zaakTypeUrl,
                     page = currentPage++
                 )
             )
