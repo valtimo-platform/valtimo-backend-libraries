@@ -48,6 +48,16 @@ public class DocumentVariableDelegateImpl implements DocumentVariableDelegate {
             .orElseThrow();
     }
 
+    @Override
+    public Object findValueByJsonPointerOrDefault(String jsonPointer, DelegateExecution execution, Object defaultValue) {
+        final var jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(execution.getProcessBusinessKey()));
+        logger.debug("Retrieving value for key {} from documentId {}", jsonPointer, execution.getProcessBusinessKey());
+        return documentService
+            .findBy(jsonSchemaDocumentId)
+            .map(jsonSchemaDocument -> transform(jsonSchemaDocument.content().getValueBy(JsonPointer.valueOf(jsonPointer)).orElseThrow()))
+            .orElse(defaultValue);
+    }
+
     private Object transform(JsonNode jsonNode) {
         switch (jsonNode.getNodeType()) {
             case STRING:
