@@ -18,10 +18,8 @@ package com.ritense.processdocument.domain.impl.delegate;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.POJONode;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.domain.delegate.DocumentVariableDelegate;
@@ -29,22 +27,13 @@ import com.ritense.valtimo.contract.json.Mapper;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class DocumentVariableDelegateImpl implements DocumentVariableDelegate {
 
     private static final Logger logger = LoggerFactory.getLogger(DocumentVariableDelegateImpl.class);
-    private static final ObjectMapper mapper = Mapper.INSTANCE.get().copy()
-        .disable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
-        .disable(DeserializationFeature.USE_LONG_FOR_INTS)
-        .disable(DeserializationFeature.ACCEPT_FLOAT_AS_INT);
+    private static final ObjectMapper mapper = Mapper.INSTANCE.get();
     private final DocumentService documentService;
 
     public DocumentVariableDelegateImpl(DocumentService documentService) {
