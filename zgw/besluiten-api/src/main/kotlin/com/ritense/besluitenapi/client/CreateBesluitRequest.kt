@@ -16,6 +16,7 @@
 
 package com.ritense.besluitenapi.client
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.net.URI
 import java.time.LocalDate
 
@@ -23,13 +24,19 @@ class CreateBesluitRequest(
     val zaak: URI,
     val besluittype: URI,
     val verantwoordelijkeOrganisatie: String,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val datum: LocalDate,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val ingangsdatum: LocalDate,
     val toelichting: String?,
     val bestuursorgaan: String?,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val vervaldatum: LocalDate?,
     val vervalreden: Vervalreden?,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val publicatiedatum: LocalDate?,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val verzenddatum: LocalDate?,
-    val uiterlijkeReactieDatum: LocalDate?,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    val uiterlijkeReactiedatum: LocalDate?,
 )

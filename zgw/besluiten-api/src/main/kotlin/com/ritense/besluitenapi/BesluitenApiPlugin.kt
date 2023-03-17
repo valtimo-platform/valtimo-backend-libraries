@@ -90,7 +90,7 @@ class BesluitenApiPlugin(
                 vervalreden = vervalreden,
                 publicatiedatum = publicatiedatum,
                 verzenddatum = verzenddatum,
-                uiterlijkeReactieDatum = uiterlijkeReactieDatum
+                uiterlijkeReactiedatum = uiterlijkeReactieDatum
             )
         )
 
