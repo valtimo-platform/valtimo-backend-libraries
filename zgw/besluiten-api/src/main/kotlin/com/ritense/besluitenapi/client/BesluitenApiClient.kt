@@ -62,7 +62,11 @@ class BesluitenApiClient(
             .filter(authentication)
             .build()
             .post()
-            .uri("$url/besluitinformatieobjecten")
+            .uri {
+                ClientTools.baseUrlToBuilder(it, url)
+                    .path("besluitinformatieobjecten")
+                    .build()
+            }
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(besluitInformatieObject)
             .retrieve()
