@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.besluitenapi
+package com.ritense.besluitenapi.client
 
-import com.ritense.besluitenapi.client.BesluitenApiClient
-import com.ritense.plugin.PluginFactory
-import com.ritense.plugin.service.PluginService
-import com.ritense.zakenapi.ZaakUrlProvider
+import com.fasterxml.jackson.annotation.JsonProperty
 
-class BesluitenApiPluginFactory(
-    pluginService: PluginService,
-    private val besluitenApiClient: BesluitenApiClient,
-    private val urlProvider: ZaakUrlProvider,
-): PluginFactory<BesluitenApiPlugin>(pluginService) {
-    override fun create(): BesluitenApiPlugin {
-        return BesluitenApiPlugin(
-            besluitenApiClient,
-            urlProvider
-        )
-    }
+enum class Vervalreden {
+    @JsonProperty("tijdelijk")
+    TIJDELIJK,
+
+    @JsonProperty("ingetrokken_overheid")
+    INGETROKKEN_OVERHEID,
+
+    @JsonProperty("ingetrokken_belanghebbende")
+    INGETROKKEN_BELANGHEBBENDE
 }

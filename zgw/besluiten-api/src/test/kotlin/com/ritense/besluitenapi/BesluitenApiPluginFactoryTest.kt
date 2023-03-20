@@ -25,6 +25,7 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
+import com.ritense.zakenapi.ZaakUrlProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -36,6 +37,8 @@ internal class BesluitenApiPluginFactoryTest {
     @Test
     fun `should create BesluitenApiPlugin`() {
         val pluginService: PluginService = mock()
+        val besluitenApiClient: BesluitenApiClient = mock()
+        val urlProvider: ZaakUrlProvider = mock()
         val authentication: BesluitenApiAuthentication = mock();
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authentication)
         whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
@@ -48,8 +51,7 @@ internal class BesluitenApiPluginFactoryTest {
             }
         """.trimIndent()
 
-        val besluitenApiClient: BesluitenApiClient = mock()
-        val factory = BesluitenApiPluginFactory(pluginService, besluitenApiClient)
+        val factory = BesluitenApiPluginFactory(pluginService, besluitenApiClient, urlProvider)
 
         val pluginDefinition = createPluginDefinition()
         val pluginConfiguration = PluginConfiguration(

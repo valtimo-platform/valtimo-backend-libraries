@@ -13,26 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.ritense.besluitenapi.client
 
 import com.ritense.besluitenapi.BesluitenApiAuthentication
 import com.ritense.besluitenapi.domain.BesluitInformatieObject
 import com.ritense.besluitenapi.domain.CreateBesluitInformatieObject
+import com.ritense.zgw.ClientTools
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.toEntity
 import java.net.URI
 
 class BesluitenApiClient(
-    private val webClientBuilder: WebClient.Builder
+    val webclientBuilder: WebClient.Builder
 ) {
+    fun createBesluit(
+        authentication: BesluitenApiAuthentication,
+        baseUrl: URI,
+        request: CreateBesluitRequest
+    ): Besluit {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .post()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("besluiten")
+                    .build()
+            }
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(request))
+            .retrieve()
+            .toEntity(Besluit::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
     fun createBesluitInformatieObject(
         authentication: BesluitenApiAuthentication,
         url: URI,
         besluitInformatieObject: CreateBesluitInformatieObject
     ): ResponseEntity<BesluitInformatieObject>? {
-        return webClientBuilder.clone()
+        return webClientBuilder
+            .clone()
             .filter(authentication)
             .build()
             .post()

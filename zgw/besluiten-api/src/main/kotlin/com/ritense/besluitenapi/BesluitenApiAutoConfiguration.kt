@@ -18,22 +18,31 @@ package com.ritense.besluitenapi
 
 import com.ritense.besluitenapi.client.BesluitenApiClient
 import com.ritense.plugin.service.PluginService
+import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class BesluitenApiAutoConfiguration {
+
     @Bean
-    fun besluitenApiPluginFactory(
-        pluginService: PluginService,
-        besluitenApiClient: BesluitenApiClient
-    ): BesluitenApiPluginFactory {
-        return BesluitenApiPluginFactory(pluginService,besluitenApiClient)
+    fun besluitenApiClient(
+        webclientBuilder: WebClient.Builder
+    ): BesluitenApiClient {
+        return BesluitenApiClient(webclientBuilder)
     }
 
     @Bean
-    fun besluitenApiClient(webclientBuilder: WebClient.Builder): BesluitenApiClient {
-        return BesluitenApiClient(webclientBuilder)
+    fun besluitenApiPluginFactory(
+        pluginService: PluginService,
+        besluitenApiClient: BesluitenApiClient,
+        urlProvider: ZaakUrlProvider,
+    ): BesluitenApiPluginFactory {
+        return BesluitenApiPluginFactory(
+            pluginService,
+            besluitenApiClient,
+            urlProvider
+        )
     }
 }
