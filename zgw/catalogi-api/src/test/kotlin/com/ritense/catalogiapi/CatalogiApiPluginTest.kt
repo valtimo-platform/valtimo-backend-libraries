@@ -21,6 +21,7 @@ import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
+import com.ritense.catalogiapi.exception.StatustypeNotFoundException
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
@@ -29,6 +30,7 @@ import com.ritense.zgw.Page
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -53,19 +55,25 @@ internal class CatalogiApiPluginTest {
     fun `should call client to get informatieobjecttypes`() {
         val zaakTypeUrl = URI("https://example.com/zaaktype")
         val resultPage = mock<Page<ZaaktypeInformatieobjecttype>>()
-        whenever(client.getZaaktypeInformatieobjecttypes(
-            plugin.authenticationPluginConfiguration,
-            plugin.url,
-            ZaaktypeInformatieobjecttypeRequest(
-                zaaktype = zaakTypeUrl,
-                page = 1
+        whenever(
+            client.getZaaktypeInformatieobjecttypes(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                ZaaktypeInformatieobjecttypeRequest(
+                    zaaktype = zaakTypeUrl,
+                    page = 1
+                )
             )
-        )).thenReturn(resultPage)
+        ).thenReturn(resultPage)
 
         val mockZaaktypeInformatieobjecttype1 = mock<ZaaktypeInformatieobjecttype>()
         val mockZaaktypeInformatieobjecttype2 = mock<ZaaktypeInformatieobjecttype>()
-        whenever(resultPage.results).thenReturn(listOf(mockZaaktypeInformatieobjecttype1,
-            mockZaaktypeInformatieobjecttype2))
+        whenever(resultPage.results).thenReturn(
+            listOf(
+                mockZaaktypeInformatieobjecttype1,
+                mockZaaktypeInformatieobjecttype2
+            )
+        )
 
         val mockInformatieobjecttype1 = mock<Informatieobjecttype>()
         val mockInformatieobjecttypeUrl1 = URI("https://example.com/informatieobjecttype/1")
@@ -76,17 +84,21 @@ internal class CatalogiApiPluginTest {
         whenever(mockZaaktypeInformatieobjecttype2.informatieobjecttype)
             .thenReturn(mockInformatieobjecttypeUrl2)
 
-        whenever(client.getInformatieobjecttype(
-            plugin.authenticationPluginConfiguration,
-            plugin.url,
-            mockInformatieobjecttypeUrl1
-        )).thenReturn(mockInformatieobjecttype1)
+        whenever(
+            client.getInformatieobjecttype(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                mockInformatieobjecttypeUrl1
+            )
+        ).thenReturn(mockInformatieobjecttype1)
 
-        whenever(client.getInformatieobjecttype(
-            plugin.authenticationPluginConfiguration,
-            plugin.url,
-            mockInformatieobjecttypeUrl2
-        )).thenReturn(mockInformatieobjecttype2)
+        whenever(
+            client.getInformatieobjecttype(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                mockInformatieobjecttypeUrl2
+            )
+        ).thenReturn(mockInformatieobjecttype2)
 
         val informatieobjecttypes = plugin.getInformatieobjecttypes(zaakTypeUrl)
 
@@ -102,23 +114,27 @@ internal class CatalogiApiPluginTest {
         whenever(resultPage1.next).thenReturn(URI("https://example.com/zaaktype/2"))
         val resultPage2 = mock<Page<ZaaktypeInformatieobjecttype>>()
 
-        whenever(client.getZaaktypeInformatieobjecttypes(
-            plugin.authenticationPluginConfiguration,
-            plugin.url,
-            ZaaktypeInformatieobjecttypeRequest(
-                zaaktype = zaakTypeUrl,
-                page = 1
+        whenever(
+            client.getZaaktypeInformatieobjecttypes(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                ZaaktypeInformatieobjecttypeRequest(
+                    zaaktype = zaakTypeUrl,
+                    page = 1
+                )
             )
-        )).thenReturn(resultPage1)
+        ).thenReturn(resultPage1)
 
-        whenever(client.getZaaktypeInformatieobjecttypes(
-            plugin.authenticationPluginConfiguration,
-            plugin.url,
-            ZaaktypeInformatieobjecttypeRequest(
-                zaaktype = zaakTypeUrl,
-                page = 2
+        whenever(
+            client.getZaaktypeInformatieobjecttypes(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                ZaaktypeInformatieobjecttypeRequest(
+                    zaaktype = zaakTypeUrl,
+                    page = 2
+                )
             )
-        )).thenReturn(resultPage2)
+        ).thenReturn(resultPage2)
 
         val mockZaaktypeInformatieobjecttype1 = mock<ZaaktypeInformatieobjecttype>()
         val mockZaaktypeInformatieobjecttype2 = mock<ZaaktypeInformatieobjecttype>()
@@ -134,17 +150,21 @@ internal class CatalogiApiPluginTest {
         whenever(mockZaaktypeInformatieobjecttype2.informatieobjecttype)
             .thenReturn(mockInformatieobjecttypeUrl2)
 
-        whenever(client.getInformatieobjecttype(
-            plugin.authenticationPluginConfiguration,
-            plugin.url,
-            mockInformatieobjecttypeUrl1
-        )).thenReturn(mockInformatieobjecttype1)
+        whenever(
+            client.getInformatieobjecttype(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                mockInformatieobjecttypeUrl1
+            )
+        ).thenReturn(mockInformatieobjecttype1)
 
-        whenever(client.getInformatieobjecttype(
-            plugin.authenticationPluginConfiguration,
-            plugin.url,
-            mockInformatieobjecttypeUrl2
-        )).thenReturn(mockInformatieobjecttype2)
+        whenever(
+            client.getInformatieobjecttype(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                mockInformatieobjecttypeUrl2
+            )
+        ).thenReturn(mockInformatieobjecttype2)
 
         val informatieobjecttypes = plugin.getInformatieobjecttypes(zaakTypeUrl)
 
@@ -159,18 +179,18 @@ internal class CatalogiApiPluginTest {
         val document = mock<Document>()
         val statustype = "Registered"
         val statustypeUrl = "https://example.com/statustype/456"
-        val zaaktypeUrl = "https://example.com/statustype/456"
+        val zaaktypeUrl = "https://example.com/zaaktype/123"
         val execution = DelegateExecutionFake().withBusinessKey(documentId)
         whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
         whenever(documentService.get(documentId)).thenReturn(document)
         whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
         whenever(client.getStatustypen(any(), any(), any())).thenReturn(
             Page(
-                count = 1,
+                count = 3,
                 results = listOf(
-                    Statustype(URI(statustypeUrl), URI(zaaktypeUrl), "other status", null, null, 0, null, null),
+                    Statustype(URI("example.com/1"), URI(zaaktypeUrl), "other status", null, null, 0, null, null),
                     Statustype(URI(statustypeUrl), URI(zaaktypeUrl), statustype, null, null, 0, null, null),
-                    Statustype(URI(statustypeUrl), URI(zaaktypeUrl), "yet another status", null, null, 0, null, null),
+                    Statustype(URI("example.com/2"), URI(zaaktypeUrl), "yet another status", null, null, 0, null, null),
                 )
             )
         )
@@ -179,6 +199,30 @@ internal class CatalogiApiPluginTest {
         )
 
         assertEquals(statustypeUrl, execution.getVariable("myProcessVar"))
+    }
+
+    @Test
+    fun `should throw StatustypeNotFoundException when get status type doesn't exist`() {
+        val documentId = UUID.randomUUID().toString()
+        val document = mock<Document>()
+        val statustype = "Registered"
+        val statustypeUrl = "https://example.com/statustype/456"
+        val zaaktypeUrl = "https://example.com/zaaktype/123"
+        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
+        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
+        whenever(client.getStatustypen(any(), any(), any())).thenReturn(
+            Page(count = 0, results = listOf())
+        )
+
+        val exception = assertThrows<StatustypeNotFoundException> {
+            plugin.getStatustype(
+                execution, statustype, "myProcessVar"
+            )
+        }
+
+        assertEquals("No statustype was found. With 'omschrijving': 'Registered'", exception.message)
     }
 
 }
