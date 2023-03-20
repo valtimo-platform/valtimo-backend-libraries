@@ -19,6 +19,7 @@ package com.ritense.besluitenapi
 import com.ritense.besluitenapi.client.BesluitenApiClient
 import com.ritense.besluitenapi.client.CreateBesluitRequest
 import com.ritense.besluitenapi.client.Vervalreden
+import com.ritense.besluitenapi.client.CreateBesluitInformatieObject
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -33,9 +34,11 @@ import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 
-@Plugin(key = BesluitenApiPlugin.PLUGIN_KEY,
+@Plugin(
+    key = BesluitenApiPlugin.PLUGIN_KEY,
     title = "Besluiten API",
-    description = "Connects to the Besluiten API")
+    description = "Connects to the Besluiten API"
+)
 class BesluitenApiPlugin(
     private val besluitenApiClient: BesluitenApiClient,
     private val zaakUrlProvider: ZaakUrlProvider,
@@ -49,6 +52,22 @@ class BesluitenApiPlugin(
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: BesluitenApiAuthentication
 
+    @PluginAction(
+        key = "link-document-to-besluitt",
+        title = "Link Document to besluit",
+        description = "Links a document to a besluit",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun linkDocumentToBesluit(
+        @PluginActionProperty documentUrl: String,
+        @PluginActionProperty besluitUrl: String
+    ) {
+        besluitenApiClient.createBesluitInformatieObject(
+            authenticationPluginConfiguration,
+            url,
+            CreateBesluitInformatieObject(documentUrl, besluitUrl)
+        )
+    }
 
     @PluginAction(
         key = "create-besluit",

@@ -20,11 +20,14 @@ import com.ritense.besluitenapi.client.Besluit
 import com.ritense.besluitenapi.client.BesluitenApiClient
 import com.ritense.besluitenapi.client.CreateBesluitRequest
 import com.ritense.besluitenapi.client.Vervalreden
+import com.ritense.besluitenapi.client.BesluitInformatieObject
+import com.ritense.besluitenapi.client.CreateBesluitInformatieObject
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zgw.Rsin
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
@@ -32,17 +35,30 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.http.ResponseEntity
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 
 class BesluitenApiPluginTest {
 
+    lateinit var besluitenApiPlugin: BesluitenApiPlugin
+    lateinit var besluitenApiClient: BesluitenApiClient
+    lateinit var zaakUrlProvider: ZaakUrlProvider
+
+
+    @BeforeEach
+    fun init() {
+        zaakUrlProvider = mock()
+        besluitenApiClient = mock()
+        besluitenApiPlugin = BesluitenApiPlugin(besluitenApiClient, zaakUrlProvider)
+        besluitenApiPlugin.authenticationPluginConfiguration = mock()
+        besluitenApiPlugin.url = URI.create("https://some-host.nl/besluiten/api/v1/besluitinformatieobjecten")
+        besluitenApiPlugin.rsin = Rsin("252170362")
+    }
+
     @Test
     fun `should call client when given minimal arguments`() {
-        val besluitenApiClient = mock<BesluitenApiClient>()
-        val zaakUrlProvider = mock<ZaakUrlProvider>()
-
         val authenticationMock = mock<BesluitenApiAuthentication>()
         val executionMock = mock<DelegateExecution>()
 
@@ -60,11 +76,13 @@ class BesluitenApiPluginTest {
         val uriCaptor = argumentCaptor<URI>()
         val requestCaptor = argumentCaptor<CreateBesluitRequest>()
         val besluit = mock<Besluit>()
-        whenever(besluitenApiClient.createBesluit(
-            authenticationCaptor.capture(),
-            uriCaptor.capture(),
-            requestCaptor.capture()
-        )).thenReturn(besluit)
+        whenever(
+            besluitenApiClient.createBesluit(
+                authenticationCaptor.capture(),
+                uriCaptor.capture(),
+                requestCaptor.capture()
+            )
+        ).thenReturn(besluit)
 
         plugin.createBesluit(
             executionMock,
@@ -105,9 +123,6 @@ class BesluitenApiPluginTest {
 
     @Test
     fun `should call client when given all arguments`() {
-        val besluitenApiClient = mock<BesluitenApiClient>()
-        val zaakUrlProvider = mock<ZaakUrlProvider>()
-
         val authenticationMock = mock<BesluitenApiAuthentication>()
         val executionMock = mock<DelegateExecution>()
 
@@ -127,11 +142,13 @@ class BesluitenApiPluginTest {
         val requestCaptor = argumentCaptor<CreateBesluitRequest>()
         val besluit = mock<Besluit>()
         whenever(besluit.url).thenReturn(besluitUrl)
-        whenever(besluitenApiClient.createBesluit(
-            authenticationCaptor.capture(),
-            uriCaptor.capture(),
-            requestCaptor.capture()
-        )).thenReturn(besluit)
+        whenever(
+            besluitenApiClient.createBesluit(
+                authenticationCaptor.capture(),
+                uriCaptor.capture(),
+                requestCaptor.capture()
+            )
+        ).thenReturn(besluit)
 
         plugin.createBesluit(
             executionMock,
@@ -168,5 +185,37 @@ class BesluitenApiPluginTest {
         assertEquals(LocalDate.of(2020, 2, 22), createBesluitRequest.publicatiedatum)
         assertEquals(LocalDate.of(2020, 2, 23), createBesluitRequest.verzenddatum)
         assertEquals(LocalDate.of(2020, 2, 24), createBesluitRequest.uiterlijkeReactiedatum)
+    }
+
+    @Test
+    fun `should link document to besluit`() {
+        val besluitenApiAuthenticationCaptor = argumentCaptor<BesluitenApiAuthentication>()
+        val uriCaptor = argumentCaptor<URI>()
+        val besluitInformatieObjectCaptor = argumentCaptor<CreateBesluitInformatieObject>()
+        val documentUrl = "https://some-host.nl/documenten/api/v1/${UUID.randomUUID()}"
+        val besluitUrl = "https://some-host.nl/besluit/api/v1/besluitobjecten/${UUID.randomUUID()}"
+        val besluitInformatieObjectUrl =
+            "https://some-host.nl/besluiten/api/v1/besluiteninformatieobjecten/${UUID.randomUUID()}"
+        whenever(besluitenApiClient.createBesluitInformatieObject(any(), any(), any())).thenReturn(
+            ResponseEntity.ok().body(BesluitInformatieObject(besluitInformatieObjectUrl, documentUrl, besluitUrl))
+        )
+        besluitenApiPlugin.linkDocumentToBesluit(
+            documentUrl,
+            besluitUrl
+        )
+
+        verify(besluitenApiClient).createBesluitInformatieObject(
+            besluitenApiAuthenticationCaptor.capture(),
+            uriCaptor.capture(),
+            besluitInformatieObjectCaptor.capture()
+        )
+        val besluitInformatieObjectValue = besluitInformatieObjectCaptor.firstValue
+        val besluitenApiAuthenticationValue = besluitenApiAuthenticationCaptor.firstValue
+        val uriValue = uriCaptor.firstValue
+
+        assertEquals(besluitInformatieObjectValue.besluit, besluitUrl)
+        assertEquals(besluitInformatieObjectValue.informatieobject, documentUrl)
+        assertEquals(besluitenApiAuthenticationValue, besluitenApiPlugin.authenticationPluginConfiguration)
+        assertEquals(uriValue, besluitenApiPlugin.url)
     }
 }

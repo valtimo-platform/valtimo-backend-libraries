@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.besluitenapi
+package com.ritense.besluitenapi.client
 
-import com.ritense.plugin.annotation.PluginCategory
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction
-
-@PluginCategory("besluiten-api-authentication")
-interface BesluitenApiAuthentication : ExchangeFilterFunction
+class CreateBesluitInformatieObject(
+    val informatieobject: String,
+    val besluit: String
+)
