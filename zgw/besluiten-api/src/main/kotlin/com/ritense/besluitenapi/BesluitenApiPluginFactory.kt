@@ -16,13 +16,17 @@
 
 package com.ritense.besluitenapi
 
+import com.ritense.besluitenapi.client.BesluitenApiClient
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
+import org.springframework.web.reactive.function.client.WebClient
 
 class BesluitenApiPluginFactory(
-    pluginService: PluginService
-): PluginFactory<BesluitenApiPlugin>(pluginService) {
+    pluginService: PluginService,
+    val besluitenApiClient: BesluitenApiClient
+
+) : PluginFactory<BesluitenApiPlugin>(pluginService) {
     override fun create(): BesluitenApiPlugin {
-        return BesluitenApiPlugin()
+        return BesluitenApiPlugin(besluitenApiClient)
     }
 }

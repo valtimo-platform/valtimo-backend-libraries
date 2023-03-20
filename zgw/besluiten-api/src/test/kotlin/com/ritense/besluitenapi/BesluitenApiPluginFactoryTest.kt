@@ -19,6 +19,7 @@ package com.ritense.besluitenapi
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.besluitenapi.client.BesluitenApiClient
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.springframework.web.reactive.function.client.WebClient
 
 internal class BesluitenApiPluginFactoryTest {
     @Test
@@ -46,7 +48,8 @@ internal class BesluitenApiPluginFactoryTest {
             }
         """.trimIndent()
 
-        val factory = BesluitenApiPluginFactory(pluginService)
+        val besluitenApiClient: BesluitenApiClient = mock()
+        val factory = BesluitenApiPluginFactory(pluginService, besluitenApiClient)
 
         val pluginDefinition = createPluginDefinition()
         val pluginConfiguration = PluginConfiguration(
