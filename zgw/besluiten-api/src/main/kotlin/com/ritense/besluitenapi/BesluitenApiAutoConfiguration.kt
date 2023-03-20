@@ -16,14 +16,24 @@
 
 package com.ritense.besluitenapi
 
+import com.ritense.besluitenapi.client.BesluitenApiClient
 import com.ritense.plugin.service.PluginService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class BesluitenApiAutoConfiguration {
     @Bean
-    fun besluitenApiPluginFactory(pluginService: PluginService): BesluitenApiPluginFactory {
-        return BesluitenApiPluginFactory(pluginService)
+    fun besluitenApiPluginFactory(
+        pluginService: PluginService,
+        besluitenApiClient: BesluitenApiClient
+    ): BesluitenApiPluginFactory {
+        return BesluitenApiPluginFactory(pluginService,besluitenApiClient)
+    }
+
+    @Bean
+    fun besluitenApiClient(webclientBuilder: WebClient.Builder): BesluitenApiClient {
+        return BesluitenApiClient(webclientBuilder)
     }
 }
