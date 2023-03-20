@@ -111,7 +111,7 @@ enum class ActivityType(
 
     SUB_PROCESS("bpmn:" + CAMUNDA_SUB_PROCESS.replaceFirstChar { it.uppercaseChar() }),
     AD_HOC_SUB_PROCESS("bpmn:" + CAMUNDA_SUB_PROCESS_AD_HOC.replaceFirstChar { it.uppercaseChar() }),
-    CALL_ACTIVITY("bpmn:" + CAMUNDA_CALL_ACTIVITY.replaceFirstChar { it.uppercaseChar() }),
+    CALL_ACTIVITY_START("bpmn:" + CAMUNDA_CALL_ACTIVITY.replaceFirstChar { it.uppercaseChar() } + ":" + ExecutionListener.EVENTNAME_START),
     TRANSACTION("bpmn:" + CAMUNDA_TRANSACTION.replaceFirstChar { it.uppercaseChar() }),
 
     BOUNDARY_TIMER("bpmn:" + CAMUNDA_BOUNDARY_TIMER.replaceFirstChar { it.uppercaseChar() }),

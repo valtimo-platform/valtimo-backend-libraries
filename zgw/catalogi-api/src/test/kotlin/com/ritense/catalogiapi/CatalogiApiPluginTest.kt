@@ -16,22 +16,32 @@
 
 package com.ritense.catalogiapi
 
+import com.ritense.catalogiapi.client.CatalogiApiClient
 import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
 import com.ritense.catalogiapi.domain.Informatieobjecttype
+import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
-import com.ritense.catalogiapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
+import com.ritense.document.service.DocumentService
 import com.ritense.zgw.Page
+import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.net.URI
+import java.util.UUID
 import kotlin.test.assertEquals
 
-internal class CatalogiApiPluginTest{
+internal class CatalogiApiPluginTest {
 
     val client = mock<CatalogiApiClient>()
-    val plugin = CatalogiApiPlugin(client)
+    val zaaktypeUrlProvider = mock<ZaaktypeUrlProvider>()
+    val documentService = mock<DocumentService>()
+    val plugin = CatalogiApiPlugin(client, zaaktypeUrlProvider, documentService)
 
     @BeforeEach
     fun setUp() {
@@ -141,6 +151,34 @@ internal class CatalogiApiPluginTest{
         assertEquals(2, informatieobjecttypes.size)
         assertEquals(mockInformatieobjecttype1, informatieobjecttypes[0])
         assertEquals(mockInformatieobjecttype2, informatieobjecttypes[1])
+    }
+
+    @Test
+    fun `should get status type`() {
+        val documentId = UUID.randomUUID().toString()
+        val document = mock<Document>()
+        val statustype = "Registered"
+        val statustypeUrl = "https://example.com/statustype/456"
+        val zaaktypeUrl = "https://example.com/statustype/456"
+        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
+        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
+        whenever(client.getStatustypen(any(), any(), any())).thenReturn(
+            Page(
+                count = 1,
+                results = listOf(
+                    Statustype(URI(statustypeUrl), URI(zaaktypeUrl), "other status", null, null, 0, null, null),
+                    Statustype(URI(statustypeUrl), URI(zaaktypeUrl), statustype, null, null, 0, null, null),
+                    Statustype(URI(statustypeUrl), URI(zaaktypeUrl), "yet another status", null, null, 0, null, null),
+                )
+            )
+        )
+        plugin.getStatustype(
+            execution, statustype, "myProcessVar"
+        )
+
+        assertEquals(statustypeUrl, execution.getVariable("myProcessVar"))
     }
 
 }

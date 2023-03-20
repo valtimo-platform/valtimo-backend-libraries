@@ -16,16 +16,20 @@
 
 package com.ritense.catalogiapi
 
+import com.ritense.catalogiapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.document.service.DocumentService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
-import com.ritense.catalogiapi.client.CatalogiApiClient
 
 class CatalogiApiPluginFactory(
     pluginService: PluginService,
-    val client: CatalogiApiClient
+    val client: CatalogiApiClient,
+    val zaaktypeUrlProvider: ZaaktypeUrlProvider,
+    val documentService: DocumentService,
 ) : PluginFactory<CatalogiApiPlugin>(pluginService) {
 
     override fun create(): CatalogiApiPlugin {
-        return CatalogiApiPlugin(client)
+        return CatalogiApiPlugin(client, zaaktypeUrlProvider, documentService)
     }
 }
