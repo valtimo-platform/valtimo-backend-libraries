@@ -120,6 +120,41 @@ public class FormIoJsonPatchSubmissionTransformerServiceTest extends BaseTest {
     }
 
     @Test
+    public void shouldAddNewArrayNodeWhenMissing() throws IOException {
+
+        final var formDefinition = formDefinitionOf("new-item-array-form-example");
+
+        ObjectNode submission = submission();
+        ObjectNode placeholders = placeholders();
+        ObjectNode source = JsonNodeFactory.instance.objectNode();
+
+        JsonPatch jsonPatch = formIoJsonPatchSubmissionTransformerService.preSubmissionTransform(
+            formDefinition,
+            submission,
+            placeholders,
+            source
+        );
+
+        //Assert initial submission is cleaned up
+        assertThat(submission.get("name")).isNullOrEmpty();
+        assertThat(jsonPatch.patches().size()).isEqualTo(3);
+
+        //Patch for source is created
+        AddOperation newArrayOperation = (AddOperation) jsonPatch.patches().stream().skip(jsonPatch.patches().size() - 2).findFirst().orElseThrow();
+        assertThat(newArrayOperation.getOperation()).isEqualTo(Operation.ADD.toString());
+        assertThat(newArrayOperation.getPath()).isEqualTo("/favorites/0");
+        assertThat(newArrayOperation.getValue().isObject()).isTrue();
+
+        AddOperation jsonPatchOperation = (AddOperation) jsonPatch.patches().stream().skip(jsonPatch.patches().size() - 1).findFirst().orElseThrow();
+        assertThat(jsonPatchOperation.getOperation()).isEqualTo(Operation.ADD.toString());
+        assertThat(jsonPatchOperation.getPath()).isEqualTo("/favorites/0/name");
+        assertThat(jsonPatchOperation.getValue().textValue()).isEqualTo("Focaccia");
+
+        JsonPatchService.apply(jsonPatch, source);
+        assertThat(source.at("/favorites/0/name").textValue()).isEqualTo("Focaccia");
+    }
+
+    @Test
     public void preProcessNewArrayItemMissingKeysInSubmission() throws IOException {
 
         final var formDefinition = formDefinitionOf("new-item-array-form-example");

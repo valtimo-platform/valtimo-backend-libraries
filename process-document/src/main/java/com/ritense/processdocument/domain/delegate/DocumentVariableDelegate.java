@@ -16,10 +16,19 @@
 
 package com.ritense.processdocument.domain.delegate;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public interface DocumentVariableDelegate {
 
     Object findValueByJsonPointer(final String jsonPointer, final DelegateExecution execution);
+
+    default Object findValueByJsonPointerOrDefault(
+        final String jsonPointer,
+        final DelegateExecution execution,
+        Object defaultValue
+    ) {
+        throw new NotImplementedException();
+    }
 
 }
