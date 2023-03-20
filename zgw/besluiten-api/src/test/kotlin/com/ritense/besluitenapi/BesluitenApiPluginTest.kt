@@ -20,8 +20,8 @@ import com.ritense.besluitenapi.client.Besluit
 import com.ritense.besluitenapi.client.BesluitenApiClient
 import com.ritense.besluitenapi.client.CreateBesluitRequest
 import com.ritense.besluitenapi.client.Vervalreden
-import com.ritense.besluitenapi.domain.BesluitInformatieObject
-import com.ritense.besluitenapi.domain.CreateBesluitInformatieObject
+import com.ritense.besluitenapi.client.BesluitInformatieObject
+import com.ritense.besluitenapi.client.CreateBesluitInformatieObject
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zgw.Rsin
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -44,12 +44,14 @@ class BesluitenApiPluginTest {
 
     lateinit var besluitenApiPlugin: BesluitenApiPlugin
     lateinit var besluitenApiClient: BesluitenApiClient
+    lateinit var zaakUrlProvider: ZaakUrlProvider
 
 
     @BeforeEach
     fun init() {
+        zaakUrlProvider = mock()
         besluitenApiClient = mock()
-        besluitenApiPlugin = BesluitenApiPlugin(besluitenApiClient)
+        besluitenApiPlugin = BesluitenApiPlugin(besluitenApiClient, zaakUrlProvider)
         besluitenApiPlugin.authenticationPluginConfiguration = mock()
         besluitenApiPlugin.url = URI.create("https://some-host.nl/besluiten/api/v1/besluitinformatieobjecten")
         besluitenApiPlugin.rsin = Rsin("252170362")
@@ -57,9 +59,6 @@ class BesluitenApiPluginTest {
 
     @Test
     fun `should call client when given minimal arguments`() {
-        val besluitenApiClient = mock<BesluitenApiClient>()
-        val zaakUrlProvider = mock<ZaakUrlProvider>()
-
         val authenticationMock = mock<BesluitenApiAuthentication>()
         val executionMock = mock<DelegateExecution>()
 
@@ -77,11 +76,13 @@ class BesluitenApiPluginTest {
         val uriCaptor = argumentCaptor<URI>()
         val requestCaptor = argumentCaptor<CreateBesluitRequest>()
         val besluit = mock<Besluit>()
-        whenever(besluitenApiClient.createBesluit(
-            authenticationCaptor.capture(),
-            uriCaptor.capture(),
-            requestCaptor.capture()
-        )).thenReturn(besluit)
+        whenever(
+            besluitenApiClient.createBesluit(
+                authenticationCaptor.capture(),
+                uriCaptor.capture(),
+                requestCaptor.capture()
+            )
+        ).thenReturn(besluit)
 
         plugin.createBesluit(
             executionMock,
@@ -122,9 +123,6 @@ class BesluitenApiPluginTest {
 
     @Test
     fun `should call client when given all arguments`() {
-        val besluitenApiClient = mock<BesluitenApiClient>()
-        val zaakUrlProvider = mock<ZaakUrlProvider>()
-
         val authenticationMock = mock<BesluitenApiAuthentication>()
         val executionMock = mock<DelegateExecution>()
 
@@ -144,11 +142,13 @@ class BesluitenApiPluginTest {
         val requestCaptor = argumentCaptor<CreateBesluitRequest>()
         val besluit = mock<Besluit>()
         whenever(besluit.url).thenReturn(besluitUrl)
-        whenever(besluitenApiClient.createBesluit(
-            authenticationCaptor.capture(),
-            uriCaptor.capture(),
-            requestCaptor.capture()
-        )).thenReturn(besluit)
+        whenever(
+            besluitenApiClient.createBesluit(
+                authenticationCaptor.capture(),
+                uriCaptor.capture(),
+                requestCaptor.capture()
+            )
+        ).thenReturn(besluit)
 
         plugin.createBesluit(
             executionMock,
@@ -214,7 +214,7 @@ class BesluitenApiPluginTest {
         val uriValue = uriCaptor.firstValue
 
         assertEquals(besluitInformatieObjectValue.besluit, besluitUrl)
-        assertEquals(besluitInformatieObjectValue.informatieobject,documentUrl)
+        assertEquals(besluitInformatieObjectValue.informatieobject, documentUrl)
         assertEquals(besluitenApiAuthenticationValue, besluitenApiPlugin.authenticationPluginConfiguration)
         assertEquals(uriValue, besluitenApiPlugin.url)
     }

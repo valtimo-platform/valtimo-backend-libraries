@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.besluitenapi.domain
+package com.ritense.besluitenapi.client
 
 class BesluitInformatieObject(
     val url: String,

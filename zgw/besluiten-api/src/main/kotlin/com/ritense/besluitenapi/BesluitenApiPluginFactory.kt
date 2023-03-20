@@ -25,7 +25,7 @@ class BesluitenApiPluginFactory(
     pluginService: PluginService,
     private val besluitenApiClient: BesluitenApiClient,
     private val urlProvider: ZaakUrlProvider,
-): PluginFactory<BesluitenApiPlugin>(pluginService) {
+) : PluginFactory<BesluitenApiPlugin>(pluginService) {
     override fun create(): BesluitenApiPlugin {
         return BesluitenApiPlugin(
             besluitenApiClient,

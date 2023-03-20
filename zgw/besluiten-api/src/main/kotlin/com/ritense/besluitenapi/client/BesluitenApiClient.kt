@@ -17,8 +17,6 @@
 package com.ritense.besluitenapi.client
 
 import com.ritense.besluitenapi.BesluitenApiAuthentication
-import com.ritense.besluitenapi.domain.BesluitInformatieObject
-import com.ritense.besluitenapi.domain.CreateBesluitInformatieObject
 import com.ritense.zgw.ClientTools
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -28,7 +26,7 @@ import org.springframework.web.reactive.function.client.toEntity
 import java.net.URI
 
 class BesluitenApiClient(
-    val webclientBuilder: WebClient.Builder
+    private val webclientBuilder: WebClient.Builder
 ) {
     fun createBesluit(
         authentication: BesluitenApiAuthentication,
@@ -59,7 +57,7 @@ class BesluitenApiClient(
         url: URI,
         besluitInformatieObject: CreateBesluitInformatieObject
     ): ResponseEntity<BesluitInformatieObject>? {
-        return webClientBuilder
+        return webclientBuilder
             .clone()
             .filter(authentication)
             .build()
