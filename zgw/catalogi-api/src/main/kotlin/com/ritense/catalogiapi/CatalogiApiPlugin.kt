@@ -28,10 +28,17 @@ import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
+import com.ritense.catalogiapi.exception.StatustypeNotFoundException
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.document.service.DocumentService
 import com.ritense.plugin.annotation.Plugin
+import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.zgw.Page
 import mu.KotlinLogging
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
 
 @Plugin(
@@ -40,13 +47,37 @@ import java.net.URI
     description = "Connects to the Catalogi API to retrieve zaak type information"
 )
 class CatalogiApiPlugin(
-    val client: CatalogiApiClient
+    val client: CatalogiApiClient,
+    val zaaktypeUrlProvider: ZaaktypeUrlProvider,
+    val documentService: DocumentService,
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
 
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: CatalogiApiAuthentication
+
+    @PluginAction(
+        key = "get-statustype",
+        title = "Get Statustype",
+        description = "Retrieve the statustype and save it in a process variable",
+        activityTypes = [ActivityType.SERVICE_TASK_START, ActivityType.CALL_ACTIVITY_START]
+    )
+    fun getStatustype(
+        execution: DelegateExecution,
+        @PluginActionProperty statustype: String,
+        @PluginActionProperty processVariable: String,
+    ) {
+        val statustypeUrl = if (statustype.startsWith("https://")) {
+            statustype
+        } else {
+            val document = documentService.get(execution.businessKey)
+            val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+            getStatustypeByOmschrijving(zaaktypeUrl, statustype).url!!.toASCIIString()
+        }
+
+        execution.setVariable(processVariable, statustypeUrl)
+    }
 
     fun getInformatieobjecttypes(
         zaakTypeUrl: URI,
@@ -119,6 +150,12 @@ class CatalogiApiPlugin(
         } while(currentResults?.next != null)
 
         return results
+    }
+
+    fun getStatustypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Statustype {
+        return getStatustypen(zaakTypeUrl)
+            .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
+            ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
     }
 
     fun getResultaattypen(zaakTypeUrl: URI): List<Resultaattype> {
