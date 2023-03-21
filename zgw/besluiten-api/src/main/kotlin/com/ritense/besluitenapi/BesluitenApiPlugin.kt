@@ -53,7 +53,7 @@ class BesluitenApiPlugin(
     lateinit var authenticationPluginConfiguration: BesluitenApiAuthentication
 
     @PluginAction(
-        key = "link-document-to-besluitt",
+        key = "link-document-to-besluit",
         title = "Link Document to besluit",
         description = "Links a document to a besluit",
         activityTypes = [ActivityType.SERVICE_TASK_START]
