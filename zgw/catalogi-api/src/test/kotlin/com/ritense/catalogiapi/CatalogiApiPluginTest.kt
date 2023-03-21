@@ -19,6 +19,7 @@ package com.ritense.catalogiapi
 import com.ritense.catalogiapi.client.CatalogiApiClient
 import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
 import com.ritense.catalogiapi.domain.Informatieobjecttype
+import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.catalogiapi.exception.StatustypeNotFoundException
@@ -222,6 +223,59 @@ internal class CatalogiApiPluginTest {
         }
 
         assertEquals("No statustype was found. With 'omschrijving': 'Registered'", exception.message)
+    }
+
+    @Test
+    fun `should get resultaat type`() {
+        val exampleUrl = URI("example.com")
+        val documentId = UUID.randomUUID().toString()
+        val document = mock<Document>()
+        val resultaattype = "Registered"
+        val resultaattypeUrl = "https://example.com/resultaattype/456"
+        val zaaktypeUrl = "https://example.com/zaaktype/123"
+        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
+        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
+        whenever(client.getResultaattypen(any(), any(), any())).thenReturn(
+            Page(
+                count = 3,
+                results = listOf(
+                    Resultaattype(
+                        URI("example.com/1"),
+                        URI(zaaktypeUrl),
+                        "other resultaat",
+                        exampleUrl,
+                        null,
+                        exampleUrl,
+                        null
+                    ),
+                    Resultaattype(
+                        URI(resultaattypeUrl),
+                        URI(zaaktypeUrl),
+                        resultaattype,
+                        exampleUrl,
+                        null,
+                        exampleUrl,
+                        null
+                    ),
+                    Resultaattype(
+                        URI("example.com/2"),
+                        URI(zaaktypeUrl),
+                        "yet another resultaat",
+                        exampleUrl,
+                        null,
+                        exampleUrl,
+                        null
+                    ),
+                )
+            )
+        )
+        plugin.getResultaattype(
+            execution, resultaattype, "myProcessVar"
+        )
+
+        assertEquals(resultaattypeUrl, execution.getVariable("myProcessVar"))
     }
 
 }
