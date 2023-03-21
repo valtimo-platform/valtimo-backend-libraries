@@ -79,6 +79,28 @@ class CatalogiApiPlugin(
         execution.setVariable(processVariable, statustypeUrl)
     }
 
+    @PluginAction(
+        key = "get-resultaattype",
+        title = "Get Resultaattype",
+        description = "Retrieve the resultaattype and save it in a process variable",
+        activityTypes = [ActivityType.SERVICE_TASK_START, ActivityType.CALL_ACTIVITY_START]
+    )
+    fun getResultaattype(
+        execution: DelegateExecution,
+        @PluginActionProperty resultaattype: String,
+        @PluginActionProperty processVariable: String,
+    ) {
+        val resultaattypeUrl = if (resultaattype.startsWith("https://")) {
+            resultaattype
+        } else {
+            val document = documentService.get(execution.businessKey)
+            val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+            getResultaattypeByOmschrijving(zaaktypeUrl, resultaattype).url!!.toASCIIString()
+        }
+
+        execution.setVariable(processVariable, resultaattypeUrl)
+    }
+
     fun getInformatieobjecttypes(
         zaakTypeUrl: URI,
     ): List<Informatieobjecttype> {
@@ -177,6 +199,12 @@ class CatalogiApiPlugin(
         } while(currentResults?.next != null)
 
         return results
+    }
+
+    fun getResultaattypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Resultaattype {
+        return getResultaattypen(zaakTypeUrl)
+            .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
+            ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
     }
 
     fun getBesluittypen(zaakTypeUrl: URI): List<Besluittype> {
