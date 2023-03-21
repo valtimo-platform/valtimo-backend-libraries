@@ -206,7 +206,6 @@ internal class CatalogiApiPluginTest {
         val documentId = UUID.randomUUID().toString()
         val document = mock<Document>()
         val statustype = "Registered"
-        val statustypeUrl = "https://example.com/statustype/456"
         val zaaktypeUrl = "https://example.com/zaaktype/123"
         val execution = DelegateExecutionFake().withBusinessKey(documentId)
         whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))

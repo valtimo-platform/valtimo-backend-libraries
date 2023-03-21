@@ -154,7 +154,7 @@ class CatalogiApiPlugin(
 
     fun getStatustypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Statustype {
         return getStatustypen(zaakTypeUrl)
-            .singleOrNull { it.omschrijving == omschrijving }
+            .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
             ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
     }
 
