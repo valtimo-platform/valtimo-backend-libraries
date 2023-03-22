@@ -27,6 +27,7 @@ import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.repository.DocumentDefinitionRoleRepository;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
 import com.ritense.document.repository.DocumentRepository;
+import com.ritense.document.service.AuthorizationService;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
@@ -130,14 +131,15 @@ public class DocumentAutoConfiguration {
         final EntityManager entityManager,
         final QueryDialectHelper queryDialectHelper,
         final SearchFieldService searchFieldService,
-        final UserManagementService userManagementService
+        final UserManagementService userManagementService,
+        final AuthorizationService authorizationService
     ) {
         return new JsonSchemaDocumentSearchService(
             entityManager,
             queryDialectHelper,
             searchFieldService,
-            userManagementService
-        );
+            userManagementService,
+            authorizationService);
     }
 
     @Bean
@@ -146,6 +148,14 @@ public class DocumentAutoConfiguration {
         final DocumentDefinitionService documentDefinitionService
     ) {
         return new ApplicationReadyEventListenerImpl(documentDefinitionService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AuthorizationService authorizationService(
+        final QueryDialectHelper queryDialectHelper
+    ) {
+        return new AuthorizationService(queryDialectHelper);
     }
 
     @Bean

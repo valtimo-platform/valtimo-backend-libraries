@@ -25,6 +25,7 @@ import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.domain.search.SearchRequestMapper;
 import com.ritense.document.domain.search.SearchRequestValidator;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
+import com.ritense.document.service.AuthorizationService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -88,16 +89,19 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private final SearchFieldService searchFieldService;
     private final UserManagementService userManagementService;
 
+    private final AuthorizationService authorizationService;
+
     public JsonSchemaDocumentSearchService(
         EntityManager entityManager,
         QueryDialectHelper queryDialectHelper,
         SearchFieldService searchFieldService,
-        UserManagementService userManagementService
-    ) {
+        UserManagementService userManagementService,
+        AuthorizationService authorizationService) {
         this.entityManager = entityManager;
         this.queryDialectHelper = queryDialectHelper;
         this.searchFieldService = searchFieldService;
         this.userManagementService = userManagementService;
+        this.authorizationService = authorizationService;
     }
 
     @Override
@@ -174,6 +178,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         addJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
         if (withAuthorization) {
             addUserRolePredicate(query, documentRoot, predicates);
+            predicates.add(authorizationService.hasPermission(JsonSchemaDocument.class).toPredicate(documentRoot, query, cb));
         }
 
         query.where(predicates.toArray(new Predicate[0]));
@@ -194,6 +199,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             addUserRolePredicate(query, documentRoot, predicates);
+            predicates.add(authorizationService.hasPermission(JsonSchemaDocument.class).toPredicate(documentRoot, query, cb));
         }
 
         if (searchRequest.getAssigneeFilter() != null && searchRequest.getAssigneeFilter() != AssigneeFilter.ALL) {
