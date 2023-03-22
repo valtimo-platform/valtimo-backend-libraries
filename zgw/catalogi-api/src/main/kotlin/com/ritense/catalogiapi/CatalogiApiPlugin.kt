@@ -68,7 +68,7 @@ class CatalogiApiPlugin(
         @PluginActionProperty statustype: String,
         @PluginActionProperty processVariable: String,
     ) {
-        val statustypeUrl = if (statustype.startsWith("https://")) {
+        val statustypeUrl = if (statustype.matches("https?://.+".toRegex())) {
             statustype
         } else {
             val document = documentService.get(execution.businessKey)
@@ -90,7 +90,7 @@ class CatalogiApiPlugin(
         @PluginActionProperty resultaattype: String,
         @PluginActionProperty processVariable: String,
     ) {
-        val resultaattypeUrl = if (resultaattype.startsWith("https://")) {
+        val resultaattypeUrl = if (resultaattype.matches("https?://.+".toRegex())) {
             resultaattype
         } else {
             val document = documentService.get(execution.businessKey)
@@ -99,6 +99,28 @@ class CatalogiApiPlugin(
         }
 
         execution.setVariable(processVariable, resultaattypeUrl)
+    }
+
+    @PluginAction(
+        key = "get-besluittype",
+        title = "Get Besluittype",
+        description = "Retrieve the besluittype and save it in a process variable",
+        activityTypes = [ActivityType.SERVICE_TASK_START, ActivityType.CALL_ACTIVITY_START]
+    )
+    fun getBesluittype(
+        execution: DelegateExecution,
+        @PluginActionProperty besluittype: String,
+        @PluginActionProperty processVariable: String,
+    ) {
+        val besluittypeUrl = if (besluittype.matches("https?://.+".toRegex())) {
+            besluittype
+        } else {
+            val document = documentService.get(execution.businessKey)
+            val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+            getBesluittypeByOmschrijving(zaaktypeUrl, besluittype).url!!.toASCIIString()
+        }
+
+        execution.setVariable(processVariable, besluittypeUrl)
     }
 
     fun getInformatieobjecttypes(
@@ -226,6 +248,12 @@ class CatalogiApiPlugin(
         } while(currentResults?.next != null)
 
         return results
+    }
+
+    fun getBesluittypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Besluittype {
+        return getBesluittypen(zaakTypeUrl)
+            .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
+            ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
     }
 
     companion object {

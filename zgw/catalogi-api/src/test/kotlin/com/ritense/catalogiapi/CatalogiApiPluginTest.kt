@@ -18,6 +18,7 @@ package com.ritense.catalogiapi
 
 import com.ritense.catalogiapi.client.CatalogiApiClient
 import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
+import com.ritense.catalogiapi.domain.Besluittype
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Statustype
@@ -36,6 +37,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.net.URI
+import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.assertEquals
 
@@ -276,6 +278,94 @@ internal class CatalogiApiPluginTest {
         )
 
         assertEquals(resultaattypeUrl, execution.getVariable("myProcessVar"))
+    }
+
+    @Test
+    fun `should get besluit type`() {
+        val exampleUrl = URI("example.com")
+        val documentId = UUID.randomUUID().toString()
+        val document = mock<Document>()
+        val besluittype = "Allocated"
+        val besluittypeUrl = "https://example.com/besluittype/456"
+        val zaaktypeUrl = "https://example.com/zaaktype/123"
+        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
+        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
+        whenever(client.getBesluittypen(any(), any(), any())).thenReturn(
+            Page(
+                count = 3,
+                results = listOf(
+                    Besluittype(
+                        URI("example.com/1"),
+                        URI(zaaktypeUrl),
+                        listOf(),
+                        "other besluit",
+                        null,
+                        null,
+                        null,
+                        true,
+                        null,
+                        null,
+                        null,
+                        listOf(),
+                        LocalDate.now(),
+                        null,
+                        null
+                    ),
+                    Besluittype(
+                        URI(besluittypeUrl),
+                        URI(zaaktypeUrl),
+                        listOf(),
+                        besluittype,
+                        null,
+                        null,
+                        null,
+                        true,
+                        null,
+                        null,
+                        null,
+                        listOf(),
+                        LocalDate.now(),
+                        null,
+                        null
+                    ),
+                    Besluittype(
+                        URI("example.com/2"),
+                        URI(zaaktypeUrl),
+                        listOf(),
+                        "yet another besluit",
+                        null,
+                        null,
+                        null,
+                        true,
+                        null,
+                        null,
+                        null,
+                        listOf(),
+                        LocalDate.now(),
+                        null,
+                        null
+                    ),
+                )
+            )
+        )
+        plugin.getBesluittype(
+            execution, besluittype, "myProcessVar"
+        )
+
+        assertEquals(besluittypeUrl, execution.getVariable("myProcessVar"))
+    }
+
+    @Test
+    fun `should get besluit type by url`() {
+        val documentId = UUID.randomUUID().toString()
+        val besluittype = "http://example.com/besluittype/456"
+        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+
+        plugin.getBesluittype(execution, besluittype, "myProcessVar")
+
+        assertEquals(besluittype, execution.getVariable("myProcessVar"))
     }
 
 }
