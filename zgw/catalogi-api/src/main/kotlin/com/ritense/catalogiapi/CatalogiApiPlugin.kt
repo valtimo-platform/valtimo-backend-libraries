@@ -68,7 +68,7 @@ class CatalogiApiPlugin(
         @PluginActionProperty statustype: String,
         @PluginActionProperty processVariable: String,
     ) {
-        val statustypeUrl = if (statustype.startsWith("https://")) {
+        val statustypeUrl = if (statustype.matches("https?://.+".toRegex())) {
             statustype
         } else {
             val document = documentService.get(execution.businessKey)
@@ -90,7 +90,7 @@ class CatalogiApiPlugin(
         @PluginActionProperty resultaattype: String,
         @PluginActionProperty processVariable: String,
     ) {
-        val resultaattypeUrl = if (resultaattype.startsWith("https://")) {
+        val resultaattypeUrl = if (resultaattype.matches("https?://.+".toRegex())) {
             resultaattype
         } else {
             val document = documentService.get(execution.businessKey)
@@ -112,7 +112,7 @@ class CatalogiApiPlugin(
         @PluginActionProperty besluittype: String,
         @PluginActionProperty processVariable: String,
     ) {
-        val besluittypeUrl = if (besluittype.startsWith("https://")) {
+        val besluittypeUrl = if (besluittype.matches("https?://.+".toRegex())) {
             besluittype
         } else {
             val document = documentService.get(execution.businessKey)

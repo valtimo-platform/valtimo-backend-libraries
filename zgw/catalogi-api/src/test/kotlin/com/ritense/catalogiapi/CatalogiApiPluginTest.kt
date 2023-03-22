@@ -357,4 +357,15 @@ internal class CatalogiApiPluginTest {
         assertEquals(besluittypeUrl, execution.getVariable("myProcessVar"))
     }
 
+    @Test
+    fun `should get besluit type by url`() {
+        val documentId = UUID.randomUUID().toString()
+        val besluittype = "http://example.com/besluittype/456"
+        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+
+        plugin.getBesluittype(execution, besluittype, "myProcessVar")
+
+        assertEquals(besluittype, execution.getVariable("myProcessVar"))
+    }
+
 }
