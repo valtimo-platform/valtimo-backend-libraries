@@ -106,6 +106,13 @@ public class ProcessDocumentResource {
         return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName));
     }
 
+    @GetMapping(value = "/v1/process-document/definition/process/{process-definition-key}")
+    public ResponseEntity<List<? extends ProcessDocumentDefinition>> findProcessDocumentDefinitionsByProcessDefinitionKey(
+        @PathVariable(name = "process-definition-key") String processDefinitionKey
+    ) {
+        return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitionsByProcessDefinitionKey(processDefinitionKey));
+    }
+
     @GetMapping("/v1/process-document/definition/processinstance/{processInstanceId}")
     public ResponseEntity<ProcessDocumentDefinition> getProcessDocumentDefinition(
         @PathVariable String processInstanceId

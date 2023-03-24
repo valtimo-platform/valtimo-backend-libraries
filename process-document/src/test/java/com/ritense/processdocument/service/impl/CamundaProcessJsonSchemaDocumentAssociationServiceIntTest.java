@@ -64,6 +64,16 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
     }
 
     @Test
+    public void findProcessDocumentDefinitionByProcessDefinitionKey() {
+        final var processDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
+            .findProcessDocumentDefinitionsByProcessDefinitionKey(PROCESS_DEFINITION_KEY);
+
+        assertThat(processDocumentDefinitions.size()).isEqualTo(1);
+        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);
+        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
+    }
+
+    @Test
     public void shouldCreateProcessDocumentDefinition() {
         var request = new ProcessDocumentDefinitionRequest(
             "embedded-subprocess-example",
