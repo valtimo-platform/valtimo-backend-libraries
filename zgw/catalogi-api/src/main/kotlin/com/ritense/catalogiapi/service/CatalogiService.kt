@@ -18,7 +18,9 @@ package com.ritense.catalogiapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.catalogiapi.CatalogiApiPlugin
+import com.ritense.catalogiapi.domain.Besluittype
 import com.ritense.catalogiapi.domain.Informatieobjecttype
+import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
@@ -46,12 +48,28 @@ class CatalogiService(
         return catalogiApiPluginInstance.getRoltypes(zaakTypeUrl)
     }
 
-    fun getStatustypes(caseDefinitionName: String): List<Statustype> {
-        logger.debug { "Getting statustypes for case definition $caseDefinitionName" }
+    fun getStatustypen(caseDefinitionName: String): List<Statustype> {
+        logger.debug { "Getting statustypen for case definition $caseDefinitionName" }
         val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
-        return catalogiApiPluginInstance.getStatusTypes(zaakTypeUrl)
+        return catalogiApiPluginInstance.getStatustypen(zaakTypeUrl)
+    }
+
+    fun getResultaattypen(caseDefinitionName: String): List<Resultaattype> {
+        logger.debug { "Getting resultaattypen for case definition $caseDefinitionName" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
+
+        return catalogiApiPluginInstance.getResultaattypen(zaakTypeUrl)
+    }
+
+    fun getBesluittypen(caseDefinitionName: String): List<Besluittype> {
+        logger.debug { "Getting besluittypen for case definition $caseDefinitionName" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
+
+        return catalogiApiPluginInstance.getBesluittypen(zaakTypeUrl)
     }
 
     private fun findCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin? {

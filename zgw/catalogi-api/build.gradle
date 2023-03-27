@@ -17,6 +17,7 @@
 dependencies {
     implementation project(':contract')
     implementation project(':core')
+    implementation project(':document')
     implementation project(':plugin')
     implementation project(':zgw')
 
@@ -24,6 +25,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
+    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"

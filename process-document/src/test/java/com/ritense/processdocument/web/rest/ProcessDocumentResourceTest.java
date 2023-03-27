@@ -177,6 +177,23 @@ class ProcessDocumentResourceTest extends BaseTest {
     }
 
     @Test
+    void shouldReturnOkWhenGettingProcessDocumentDefinitionByProcessDefinitionKey() throws Exception {
+        when(processDocumentAssociationService.findProcessDocumentDefinitionsByProcessDefinitionKey(eq(processDefinitionKey.toString())))
+            .thenReturn(List.of(processDocumentDefinition));
+
+        mockMvc.perform(
+                get("/api/v1/process-document/definition/process/{process-definition-key}", PROCESS_DEFINITION_KEY)
+                    .accept(APPLICATION_JSON_VALUE)
+                    .contentType(APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[0].id.processDefinitionKey").value(processDefinitionKey.toString()))
+            .andExpect(jsonPath("$.[0].id.documentDefinitionId.name").value(documentDefinitionId.name()))
+            .andExpect(jsonPath("$.[0].id.documentDefinitionId.version").value(documentDefinitionId.version()));
+    }
+
+    @Test
     void shouldReturnOkWhenGettingProcessDocumentDefinitionByProcessInstanceId() throws Exception {
         when(processDocumentService.findProcessDocumentDefinition(new CamundaProcessInstanceId(PROCESS_INSTANCE_ID)))
             .thenReturn(Optional.of(processDocumentDefinition));

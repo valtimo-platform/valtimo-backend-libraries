@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.web.sse.event
 
-import com.ritense.valtimo.web.sse.event.BaseSseEvent
 import java.util.UUID
 
 class EstablishedConnectionSseEvent(

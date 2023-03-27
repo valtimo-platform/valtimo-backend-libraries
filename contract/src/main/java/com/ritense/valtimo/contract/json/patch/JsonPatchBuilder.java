@@ -117,7 +117,7 @@ public final class JsonPatchBuilder {
         }
     }
 
-    public JsonPatchBuilder addJsonNodeValueInternal(JsonNode destination, JsonPointer path, JsonNode value) {
+    private JsonPatchBuilder addJsonNodeValueInternal(JsonNode destination, JsonPointer path, JsonNode value) {
         if (destination.at(path.head()).isMissingNode()) {
             var propertyName = path.last().getMatchingProperty();
             JsonNode newValue;

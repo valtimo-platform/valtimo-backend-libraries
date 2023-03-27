@@ -48,6 +48,18 @@ class ProcessLinkAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ProcessLinkCallActivityStartListener::class)
+    fun processLinkCallActivityStartListener(
+        pluginProcessLinkRepository: PluginProcessLinkRepository?,
+        pluginService: PluginService?
+    ): ProcessLinkCallActivityStartListener {
+        return ProcessLinkCallActivityStartListener(
+            pluginProcessLinkRepository!!,
+            pluginService!!
+        )
+    }
+
+    @Bean
     @ConditionalOnMissingBean(CopyPluginActionsOnProcessDeploymentListener::class)
     fun copyPluginActionsOnProcessDeploymentListener(
         pluginProcessLinkRepository: PluginProcessLinkRepository,
