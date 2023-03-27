@@ -19,6 +19,7 @@ package com.ritense.valtimo.autoconfiguration
 
 import com.ritense.valtimo.JobService
 import com.ritense.valtimo.contract.annotation.ProcessBean
+import org.camunda.bpm.engine.ManagementService
 import org.camunda.bpm.engine.ProcessEngine
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -28,8 +29,8 @@ class JobAutoConfiguration {
 
     @Bean
     @ProcessBean
-    fun jobService(processEngine: ProcessEngine): JobService {
-        return JobService(processEngine)
+    fun jobService(managementService: ManagementService): JobService {
+        return JobService(managementService)
     }
 
 }

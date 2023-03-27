@@ -20,12 +20,12 @@ package com.ritense.valtimo
 import java.time.ZonedDateTime
 import java.util.Date
 import mu.KotlinLogging
-import org.camunda.bpm.engine.ProcessEngine
+import org.camunda.bpm.engine.ManagementService
 import org.camunda.bpm.engine.ProcessEngineException
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.runtime.Job
 
-class JobService(val processEngine: ProcessEngine) {
+class JobService(private val managementService: ManagementService) {
 
     fun addOffsetInMillisToTimerDueDateByActivityId(
         millisecondsToAdd: Long, activityId: String, execution: DelegateExecution
@@ -35,7 +35,7 @@ class JobService(val processEngine: ProcessEngine) {
             val dueDate = Date.from(
                 this.duedate.toInstant().plusMillis(millisecondsToAdd)
             )
-            processEngine.managementService.setJobDuedate(this.id, dueDate).also {
+            managementService.setJobDuedate(this.id, dueDate).also {
                 logger.debug {
                     "Changing the date of timer ${this.id} from ${this.duedate} to $dueDate " +
                         "for process instance $processInstanceId"
@@ -48,7 +48,7 @@ class JobService(val processEngine: ProcessEngine) {
         val dueDate = Date.from(ZonedDateTime.parse(dueDateString).toInstant())
 
         getJobByActivityIdAndProcessInstanceId(activityId, execution.processInstanceId).apply {
-            processEngine.managementService.setJobDuedate(this.id, dueDate).also {
+            managementService.setJobDuedate(this.id, dueDate).also {
                 logger.debug {
                     "Changing the date of timer ${this.id} from ${this.duedate} to $dueDate " +
                         "for process instance $processInstanceId"
@@ -62,7 +62,7 @@ class JobService(val processEngine: ProcessEngine) {
         processInstanceId: String,
     ): Job {
 
-        return processEngine.managementService.createJobQuery().timers().processInstanceId(processInstanceId)
+        return managementService.createJobQuery().timers().processInstanceId(processInstanceId)
             .activityId(jobActivityId).singleResult() ?: throw ProcessEngineException(
             "No job with $jobActivityId found for process with Id $processInstanceId"
         )
