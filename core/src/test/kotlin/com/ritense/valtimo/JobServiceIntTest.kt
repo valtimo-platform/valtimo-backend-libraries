@@ -22,7 +22,7 @@ import org.camunda.bpm.engine.ProcessEngine
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import java.sql.Date
+import java.util.Date
 import java.time.Instant
 import java.util.UUID
 import kotlin.test.assertEquals
