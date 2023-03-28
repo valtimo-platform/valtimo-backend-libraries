@@ -32,6 +32,7 @@ plugins {
     id "com.avast.gradle.docker-compose" version "${dockerComposePluginVersion}"
     id "com.github.jk1.dependency-license-report" version "${dependencyLicenseReportVersion}"
     id "project-report"
+    id "com.jraska.module.graph.assertion" version "2.3.1"
 }
 
 //Jacoco
