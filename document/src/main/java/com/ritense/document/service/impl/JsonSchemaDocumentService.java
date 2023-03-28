@@ -16,7 +16,12 @@
 
 package com.ritense.document.service.impl;
 
+import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
+
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -45,13 +50,6 @@ import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCrite
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +57,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 public class JsonSchemaDocumentService implements DocumentService {
 
@@ -73,19 +75,24 @@ public class JsonSchemaDocumentService implements DocumentService {
     private final UserManagementService userManagementService;
     private final ResourceService resourceService;
 
+    private final AuthorizationService authorizationService;
+
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public JsonSchemaDocumentService(DocumentRepository documentRepository,
-                                     JsonSchemaDocumentDefinitionService documentDefinitionService,
-                                     JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
-                                     ResourceService resourceService,
-                                     UserManagementService userManagementService,
-                                     ApplicationEventPublisher applicationEventPublisher) {
+        JsonSchemaDocumentDefinitionService documentDefinitionService,
+        JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
+        ResourceService resourceService,
+        UserManagementService userManagementService,
+        AuthorizationService authorizationService,
+        ApplicationEventPublisher applicationEventPublisher
+    ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
         this.documentSequenceGeneratorService = documentSequenceGeneratorService;
         this.resourceService = resourceService;
         this.userManagementService = userManagementService;
+        this.authorizationService = authorizationService;
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
@@ -135,10 +142,10 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
         result.resultingDocument().ifPresent(jsonSchemaDocument -> {
             newDocumentRequest.getResources()
-                    .stream()
-                    .map(JsonSchemaRelatedFile::from)
-                    .map(relatedFile -> relatedFile.withCreatedBy(SecurityUtils.getCurrentUserLogin()))
-                    .forEach(jsonSchemaDocument::addRelatedFile);
+                .stream()
+                .map(JsonSchemaRelatedFile::from)
+                .map(relatedFile -> relatedFile.withCreatedBy(SecurityUtils.getCurrentUserLogin()))
+                .forEach(jsonSchemaDocument::addRelatedFile);
             documentRepository.saveAndFlush(jsonSchemaDocument);
         });
         return result;
@@ -155,7 +162,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    @Transactional(timeout = 30, rollbackFor = { Exception.class })
+    @Transactional(timeout = 30, rollbackFor = {Exception.class})
     public synchronized JsonSchemaDocument.ModifyDocumentResultImpl modifyDocument(
         ModifyDocumentRequest request
     ) {
@@ -257,6 +264,15 @@ public class JsonSchemaDocumentService implements DocumentService {
     public void assignUserToDocument(UUID documentId, String assigneeId) {
         JsonSchemaDocument document = getDocumentBy(
             JsonSchemaDocumentId.existingId(documentId));
+
+        authorizationService
+            .requirePermission(
+                new AuthorizationRequest<>(
+                    List.of(document.definitionId().name()),
+                    Action.CLAIM,
+                    JsonSchemaDocument.class
+                )
+            );
 
         var assignee = userManagementService.findById(assigneeId);
         if (assignee == null) {

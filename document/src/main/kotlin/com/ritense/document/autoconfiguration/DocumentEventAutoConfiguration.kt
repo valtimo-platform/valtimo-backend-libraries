@@ -16,7 +16,11 @@
 
 package com.ritense.document.autoconfiguration
 
+import com.ritense.authorization.AuthorizationSpecificationFactory
+import com.ritense.document.JsonSchemaDocumentSpecificationFactory
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.listener.DocumentEventListener
+import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -29,6 +33,14 @@ class DocumentEventAutoConfiguration {
     @ConditionalOnMissingBean(DocumentEventListener::class)
     fun documentCreatedEventListener(sseSubscritionService: SseSubscriptionService): DocumentEventListener {
         return DocumentEventListener(sseSubscritionService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun jsonSchemaDocumentSpecificationFactory(
+        queryDialectHelper: QueryDialectHelper
+    ): AuthorizationSpecificationFactory<JsonSchemaDocument> {
+        return JsonSchemaDocumentSpecificationFactory(queryDialectHelper)
     }
 
 }

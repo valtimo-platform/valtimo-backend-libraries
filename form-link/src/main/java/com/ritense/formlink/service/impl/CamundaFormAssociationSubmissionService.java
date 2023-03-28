@@ -17,6 +17,9 @@
 package com.ritense.formlink.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.exception.DocumentNotFoundException;
@@ -37,6 +40,8 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaTaskService;
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -55,6 +60,7 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
     private final CamundaTaskService camundaTaskService;
     private final SubmissionTransformerService submissionTransformerService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final AuthorizationService authorizationService;
 
     public CamundaFormAssociationSubmissionService(
         FormDefinitionService formDefinitionService,
@@ -64,8 +70,8 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
         ProcessDocumentService processDocumentService,
         CamundaTaskService camundaTaskService,
         SubmissionTransformerService submissionTransformerService,
-        ApplicationEventPublisher applicationEventPublisher
-    ) {
+        ApplicationEventPublisher applicationEventPublisher,
+        AuthorizationService authorizationService) {
         this.formDefinitionService = formDefinitionService;
         this.documentService = documentService;
         this.processDocumentAssociationService = processDocumentAssociationService;
@@ -74,6 +80,7 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
         this.camundaTaskService = camundaTaskService;
         this.submissionTransformerService = submissionTransformerService;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.authorizationService = authorizationService;
     }
 
     @Override
@@ -100,6 +107,17 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                     JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
                 ).orElseThrow(() -> new DocumentNotFoundException(String.format("Unable to find a Document for document ID '%s'", documentId)));
             }
+
+            authorizationService
+                .requirePermission(
+                    new AuthorizationRequest<>(
+                        Map.of("process-definition-key", List.of(processDefinitionKey),
+                            "document-definition-key", List.of(document.definitionId().name())
+                        ),
+                        Action.CREATE_PROCESS,
+                        JsonSchemaDocument.class
+                    )
+                );
 
             ProcessDocumentDefinition processDocumentDefinition;
             if (document == null) {

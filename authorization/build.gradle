@@ -1,0 +1,19 @@
+dockerCompose {
+    projectName = "authorization"
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
+}
+
+dependencies {
+    implementation project(":contract")
+    implementation("org.springframework.security:spring-security-core")
+    implementation("org.springframework.data:spring-data-jpa")
+
+    jar {
+        enabled = true
+        manifest {
+            attributes("Implementation-Title": "Ritense Authorization module")
+            attributes("Implementation-Version": projectVersion)
+        }
+    }
+}

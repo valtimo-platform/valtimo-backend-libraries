@@ -20,6 +20,7 @@ include(
     "app:gzac",
     "app:valtimo-core",
     "audit",
+    "authorization",
     "besluit",
     "case",
     "connector",

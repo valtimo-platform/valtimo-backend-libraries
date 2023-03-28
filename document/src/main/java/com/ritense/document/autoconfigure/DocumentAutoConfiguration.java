@@ -16,6 +16,7 @@
 
 package com.ritense.document.autoconfigure;
 
+import com.ritense.authorization.AuthorizationSpecificationFactory;
 import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
@@ -27,7 +28,7 @@ import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.repository.DocumentDefinitionRoleRepository;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
 import com.ritense.document.repository.DocumentRepository;
-import com.ritense.document.service.AuthorizationService;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
@@ -53,6 +54,9 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import com.ritense.valtimo.contract.hardening.service.HardeningService;
+import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
@@ -60,9 +64,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
-import javax.persistence.EntityManager;
-import java.util.Optional;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.document.repository")
@@ -77,6 +78,7 @@ public class DocumentAutoConfiguration {
         final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
         final ResourceService resourceService,
         final UserManagementService userManagementService,
+        final AuthorizationService authorizationService,
         final ApplicationEventPublisher applicationEventPublisher
     ) {
         return new JsonSchemaDocumentService(
@@ -85,6 +87,7 @@ public class DocumentAutoConfiguration {
             documentSequenceGeneratorService,
             resourceService,
             userManagementService,
+            authorizationService,
             applicationEventPublisher
         );
     }
@@ -153,9 +156,9 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public AuthorizationService authorizationService(
-        final QueryDialectHelper queryDialectHelper
+        List<AuthorizationSpecificationFactory<?>> authorizationSpecificationFactories
     ) {
-        return new AuthorizationService(queryDialectHelper);
+        return new AuthorizationService(authorizationSpecificationFactories);
     }
 
     @Bean

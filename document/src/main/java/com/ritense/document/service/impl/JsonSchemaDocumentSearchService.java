@@ -25,7 +25,9 @@ import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.domain.search.SearchRequestMapper;
 import com.ritense.document.domain.search.SearchRequestValidator;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
-import com.ritense.document.service.AuthorizationService;
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -178,7 +180,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         addJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
         if (withAuthorization) {
             addUserRolePredicate(query, documentRoot, predicates);
-            predicates.add(authorizationService.hasPermission(JsonSchemaDocument.class).toPredicate(documentRoot, query, cb));
+            predicates.add(
+                authorizationService
+                    .getAuthorizationSpecification(
+                        new AuthorizationRequest<>(null, Action.VIEW, JsonSchemaDocument.class)
+                    ).toPredicate(documentRoot, query, cb));
         }
 
         query.where(predicates.toArray(new Predicate[0]));
@@ -199,7 +205,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             addUserRolePredicate(query, documentRoot, predicates);
-            predicates.add(authorizationService.hasPermission(JsonSchemaDocument.class).toPredicate(documentRoot, query, cb));
+            predicates.add(
+                authorizationService
+                    .getAuthorizationSpecification(
+                        new AuthorizationRequest<>(null, Action.VIEW, JsonSchemaDocument.class)
+                    ).toPredicate(documentRoot, query, cb));
         }
 
         if (searchRequest.getAssigneeFilter() != null && searchRequest.getAssigneeFilter() != AssigneeFilter.ALL) {

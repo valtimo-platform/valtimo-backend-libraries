@@ -22,6 +22,8 @@ dockerCompose {
 }
 
 dependencies {
+    api project(":authorization")
+
     implementation project(":contract")
     implementation project(":resource")
     implementation project(":web")

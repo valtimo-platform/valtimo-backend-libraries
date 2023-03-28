@@ -18,6 +18,7 @@ package com.ritense.formlink.service.impl;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
@@ -62,6 +63,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
     private CamundaTaskService camundaTaskService;
     private SubmissionTransformerService submissionTransformerService;
     private ApplicationEventPublisher applicationEventPublisher;
+    private AuthorizationService authorizationService;
 
     @BeforeEach
     public void beforeEach() {
@@ -73,6 +75,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
         camundaTaskService = mock(CamundaTaskService.class);
         submissionTransformerService = mock(FormIoJsonPatchSubmissionTransformerService.class);
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
+        authorizationService = mock(AuthorizationService.class);
 
         formAssociationSubmissionService = new CamundaFormAssociationSubmissionService(
             formDefinitionService,
@@ -82,8 +85,8 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
             processDocumentService,
             camundaTaskService,
             submissionTransformerService,
-            applicationEventPublisher
-        );
+            applicationEventPublisher,
+            authorizationService);
     }
 
     @Test

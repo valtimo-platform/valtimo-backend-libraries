@@ -23,6 +23,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
+import com.ritense.document.service.AuthorizationService;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -60,6 +61,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
     private JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService;
     private ResourceService resourceService;
 
+    private AuthorizationService authorizationService;
+
     private UserManagementService userManagementService;
     private ApplicationEventPublisher applicationEventPublisher;
     private JsonSchemaDocument jsonSchemaDocument;
@@ -72,6 +75,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         documentDefinitionService = mock(JsonSchemaDocumentDefinitionService.class);
         documentSequenceGeneratorService = mock(JsonSchemaDocumentDefinitionSequenceGeneratorService.class);
         resourceService = mock(ResourceService.class);
+        authorizationService = mock(AuthorizationService.class);
         userManagementService = mock(UserManagementService.class);
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
 
@@ -81,6 +85,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             documentSequenceGeneratorService,
             resourceService,
             userManagementService,
+            authorizationService,
             applicationEventPublisher);
 
         var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");

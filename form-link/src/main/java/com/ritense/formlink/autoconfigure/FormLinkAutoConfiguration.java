@@ -16,6 +16,7 @@
 
 package com.ritense.formlink.autoconfigure;
 
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.service.FormDefinitionService;
@@ -93,7 +94,8 @@ public class FormLinkAutoConfiguration {
         ProcessDocumentService processDocumentService,
         CamundaTaskService camundaTaskService,
         SubmissionTransformerService<FormIoFormDefinition> submissionTransformerService,
-        ApplicationEventPublisher applicationEventPublisher
+        ApplicationEventPublisher applicationEventPublisher,
+        AuthorizationService authorizationService
     ) {
         return new CamundaFormAssociationSubmissionService(
             formDefinitionService,
@@ -103,8 +105,8 @@ public class FormLinkAutoConfiguration {
             processDocumentService,
             camundaTaskService,
             submissionTransformerService,
-            applicationEventPublisher
-        );
+            applicationEventPublisher,
+            authorizationService);
     }
 
     @Bean
