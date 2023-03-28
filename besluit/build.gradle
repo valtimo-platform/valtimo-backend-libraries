@@ -22,13 +22,10 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':core')
-    implementation project(':contract')
-    implementation project(':connector')
-    implementation project(':openzaak')
-    implementation project(':document')
-    implementation project(':process-document')
-    implementation project(':resource:openzaak-resource')
+    api project(':connector')
+    api project(':openzaak')
+    api project(':process-document')
+    api project(':resource:openzaak-resource')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -65,7 +62,6 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation project(':document')
-    testImplementation project(':process-document')
     testImplementation project(path: ":core", configuration: 'testOutput')
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"

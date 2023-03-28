@@ -23,7 +23,7 @@ dockerCompose {
 
 dependencies {
     api project(':plugin')
-    implementation project(':core')
+    api project(':core')
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"

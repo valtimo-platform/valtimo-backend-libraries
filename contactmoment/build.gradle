@@ -24,11 +24,10 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':connector')
-    implementation project(':contract')
-    implementation project(':core')
-    implementation project(':klant')
-    implementation project(':mail')
+    api project(':connector')
+    api project(':core')
+    api project(':klant')
+    api project(':mail')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

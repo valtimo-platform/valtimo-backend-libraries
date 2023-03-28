@@ -22,10 +22,9 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(":contract")
-    implementation project(":core")
+    api project(":core")
+    api project(":web")
     testImplementation project(path: ":core", configuration: 'testOutput')
-    implementation project(":web")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

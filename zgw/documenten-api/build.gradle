@@ -22,11 +22,8 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':core')
-    implementation project(':plugin')
-    implementation project(':resource:temporary-resource-storage')
-    implementation project(':zgw')
-    implementation project(':zgw:catalogi-api')
+    api project(':resource:temporary-resource-storage')
+    api project(':zgw:catalogi-api')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"

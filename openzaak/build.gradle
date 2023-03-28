@@ -24,17 +24,12 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':connector')
-    implementation project(':contract')
-    implementation project(':core')
-    implementation project(':document')
-    implementation project(':process-document')
-    implementation project(':resource')
+    api project(':connector')
+    api project(':process-document')
 
-    implementation project(':plugin')
-    implementation project(':zgw:documenten-api')
+    api project(':plugin')
+    api project(':zgw:documenten-api')
     api project(':zgw:catalogi-api')
-    api project(":zgw:zaken-api")
     api project(":zgw:besluiten-api")
 
     api "org.springframework.security:spring-security-core"

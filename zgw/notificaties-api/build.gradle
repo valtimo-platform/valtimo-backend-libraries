@@ -22,8 +22,8 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':contract')
-    implementation project(':plugin')
+    api project(':contract')
+    api project(':plugin')
 
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"

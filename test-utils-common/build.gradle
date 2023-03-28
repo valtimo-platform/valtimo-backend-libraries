@@ -15,7 +15,7 @@
  */
 
 dependencies {
-    implementation project(':contract')
+    api project(':contract')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

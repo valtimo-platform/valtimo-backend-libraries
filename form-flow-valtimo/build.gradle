@@ -23,6 +23,9 @@ dockerCompose {
 
 dependencies {
     api project(':form-flow')
+    api project(':form')
+    api project(':form-link')
+    api project(':value-resolver')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -54,12 +57,7 @@ dependencies {
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
 
-    implementation project(':contract')
-    implementation project(':core')
-    implementation project(':form')
-    implementation project(':form-link')
-    implementation project(':document')
-    implementation project(':value-resolver')
+
 
     testImplementation project(':resource')
     testImplementation project(':process-document')

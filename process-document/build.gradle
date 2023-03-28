@@ -22,12 +22,10 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':contract')
-    implementation project(':core')
-    implementation project(':document')
-    implementation project(':audit')
-    implementation project(':resource')
-    implementation project(':value-resolver')
+    api project(':core')
+    api project(':document')
+    api project(':audit')
+    api project(':value-resolver')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

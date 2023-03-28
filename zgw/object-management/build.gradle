@@ -22,20 +22,17 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':plugin')
-    implementation project(':contract')
-    implementation project(":web")
-    implementation project(":search")
-    implementation project(":plugin-authentication:objecten-api-authentication")
-    implementation project(':zgw')
-    implementation project(':zgw:objecttypen-api')
-    implementation project(':zgw:objecten-api')
+    api project(":web")
+    api project(":search")
+    api project(":plugin-authentication:objecten-api-authentication")
+    api project(':zgw')
+    api project(':zgw:objecttypen-api')
+    api project(':zgw:objecten-api')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
-    testImplementation project(":contract")
     testImplementation project(':plugin-valtimo')
     testImplementation project(":core")
     testImplementation project(":resource:local-resource")

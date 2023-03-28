@@ -22,17 +22,14 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':plugin')
-    implementation project(':contract')
-    implementation project(':form')
-    implementation project(':zgw:zaken-api')
-    implementation project(':zgw:objecttypen-api')
+    api project(':plugin')
+    api project(':form')
+    api project(':zgw:zaken-api')
+    api project(':zgw:objecttypen-api')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-security"
-
-    testImplementation project(":contract")
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"

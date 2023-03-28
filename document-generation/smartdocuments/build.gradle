@@ -22,15 +22,12 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(":connector")
-    implementation project(':contract')
-    implementation project(':core')
-    implementation project(':document')
-    implementation project(":document-generation")
-    implementation project(':process-document')
-    implementation project(':resource')
-    implementation project(':resource:temporary-resource-storage')
-    implementation project(':value-resolver')
+    api project(":connector")
+    api project(":document-generation")
+    api project(':process-document')
+    api project(':resource')
+    api project(':resource:temporary-resource-storage')
+    api project(':value-resolver')
 
     api project(':document-generation')
 

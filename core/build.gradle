@@ -22,9 +22,8 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(":contract")
-    implementation project(":resource")
-    implementation project(":web")
+    api project(":resource")
+    api project(":web")
 
     testImplementation project(':test-utils-common')
 

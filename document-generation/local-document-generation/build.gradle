@@ -15,11 +15,6 @@
  */
 
 dependencies {
-    implementation project(':contract')
-    implementation project(':core')
-    implementation project(':document')
-    implementation project(':process-document')
-    implementation project(':resource')
     api project(':document-generation')
 
     api "org.springframework.security:spring-security-core"
