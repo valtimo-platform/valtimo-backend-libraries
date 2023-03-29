@@ -22,11 +22,11 @@ class AuthorizationService(
     private fun createExamplePermissions(): List<Permission> {
         return listOf(
             Permission(
-                "document-definition",
+                Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
                 Action.VIEW,
                 listOf(FieldPermissionFilter("documentDefinitionId.name", "leningen"))
             ),
-            Permission(
+/*            Permission(
                 "document-definition",
                 Action.ASSIGN,
                 listOf(FieldPermissionFilter("documentDefinitionId.name", "leningen"))
@@ -56,7 +56,7 @@ class AuthorizationService(
                         )
                     )
                 )
-            )
+            )*/
         )
     }
 }

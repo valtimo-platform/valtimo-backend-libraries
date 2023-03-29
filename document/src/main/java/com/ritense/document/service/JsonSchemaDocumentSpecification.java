@@ -74,12 +74,10 @@ public class JsonSchemaDocumentSpecification implements AuthorizationSpecificati
     }
 
     @Override
-    public boolean isAuthorized(@NotNull AuthorizationRequest<JsonSchemaDocument> authContext, Object relevantObject) {
-        List<Permission> relevantPermissions = permissions.stream().filter(permission ->
-            "document-definition".equals(permission.getResourceType())
+    public boolean isAuthorized(@NotNull AuthorizationRequest<JsonSchemaDocument> authContext, JsonSchemaDocument entity) {
+        return permissions.stream().filter(permission ->
+            JsonSchemaDocument.class.equals(permission.getResourceType())
                 && authContext.getAction().equals(permission.getAction())
-        ).collect(Collectors.toList());
-
-        return (authContext.getResources().contains("leningen") && Action.CLAIM != authContext.getAction());
+        ).anyMatch(permission -> permission.appliesTo(entity));
     }
 }

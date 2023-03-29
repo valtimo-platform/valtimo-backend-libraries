@@ -7,4 +7,7 @@ class ExpressionPermissionFilter(
     val value: String
 ): PermissionFilter() {
     override val permissionFilterType: PermissionFilterType = PermissionFilterType.EXPRESSION
+    override fun isValid(entity: Any): Boolean {
+
+    }
 }

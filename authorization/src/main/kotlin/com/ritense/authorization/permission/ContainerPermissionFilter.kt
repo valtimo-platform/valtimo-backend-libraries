@@ -5,4 +5,7 @@ class ContainerPermissionFilter(
     val filters: List<PermissionFilter>
 ): PermissionFilter() {
     override val permissionFilterType: PermissionFilterType = PermissionFilterType.CONTAINER
+    override fun isValid(entity: Any): Boolean {
+        TODO("Not yet implemented")
+    }
 }
