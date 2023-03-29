@@ -183,7 +183,12 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             predicates.add(
                 authorizationService
                     .getAuthorizationSpecification(
-                        new AuthorizationRequest<>(null, Action.VIEW, JsonSchemaDocument.class)
+                        new AuthorizationRequest<>(
+                            "document-definition",
+                            null,
+                            Action.VIEW,
+                            JsonSchemaDocument.class
+                        )
                     ).toPredicate(documentRoot, query, cb));
         }
 
@@ -208,7 +213,12 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             predicates.add(
                 authorizationService
                     .getAuthorizationSpecification(
-                        new AuthorizationRequest<>(null, Action.VIEW, JsonSchemaDocument.class)
+                        new AuthorizationRequest<>(
+                            "document-definition",
+                            null,
+                            Action.VIEW,
+                            JsonSchemaDocument.class
+                        )
                     ).toPredicate(documentRoot, query, cb));
         }
 

@@ -268,6 +268,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         authorizationService
             .requirePermission(
                 new AuthorizationRequest<>(
+                    "document-definition",
                     List.of(document.definitionId().name()),
                     Action.CLAIM,
                     JsonSchemaDocument.class

@@ -111,10 +111,13 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
             authorizationService
                 .requirePermission(
                     new AuthorizationRequest<>(
-                        Map.of("process-definition-key", List.of(processDefinitionKey),
-                            "document-definition-key", List.of(document.definitionId().name())
-                        ),
-                        Action.CREATE_PROCESS,
+                        "task-definition",
+                        List.of(processDefinitionKey),
+
+//                        Map.of("process-definition-key", List.of(processDefinitionKey),
+//                            "document-definition-key", List.of(document.definitionId().name())
+//                        ),
+                        Action.CREATE_INSTANCE,
                         JsonSchemaDocument.class
                     )
                 );

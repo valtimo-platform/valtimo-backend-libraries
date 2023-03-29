@@ -1,7 +1,8 @@
 package com.ritense.authorization
 
 class AuthorizationRequest<T>(
-    val resources: Map<String, List<String>>?,
+    val resourceType: String,
+    val resources: List<String>? = listOf(),
     val action: Action,
     val classContext: Class<T>
 )

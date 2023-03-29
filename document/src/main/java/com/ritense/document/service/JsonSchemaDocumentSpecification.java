@@ -1,13 +1,19 @@
 package com.ritense.document.service;
 
 import com.ritense.authorization.Action;
-import com.ritense.authorization.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationFilter;
+import com.ritense.authorization.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationSpecification;
+import com.ritense.authorization.permission.ContainerPermissionFilter;
+import com.ritense.authorization.permission.ExpressionPermissionFilter;
+import com.ritense.authorization.permission.Permission;
+import com.ritense.authorization.permission.FieldPermissionFilter;
+import com.ritense.authorization.permission.PermissionFilter;
+import com.ritense.authorization.permission.PermissionFilterType;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -15,12 +21,12 @@ import javax.persistence.criteria.Root;
 import org.jetbrains.annotations.NotNull;
 
 public class JsonSchemaDocumentSpecification implements AuthorizationSpecification<JsonSchemaDocument> {
-    private Map<AuthorizationFilter, List<AuthorizationFilter>> filters;
+    private List<Permission> permissions;
     private QueryDialectHelper queryDialectHelper;
 
-    public JsonSchemaDocumentSpecification(List<AuthorizationFilter> filters, QueryDialectHelper queryDialectHelper) {
+    public JsonSchemaDocumentSpecification(List<Permission> permissions, QueryDialectHelper queryDialectHelper) {
         super();
-        this.filters = filters;
+        this.permissions = permissions;
         this.queryDialectHelper = queryDialectHelper;
     }
 
@@ -30,6 +36,9 @@ public class JsonSchemaDocumentSpecification implements AuthorizationSpecificati
         CriteriaQuery<?> query,
         CriteriaBuilder criteriaBuilder
     ) {
+        // Filter the permissions for the relevant ones and use those to  find the filters that are required
+        // Turn those filters into predicates
+
         List<Predicate> predicates = filters.stream().map(
             filter -> {
                 if (filter.getField().startsWith("$.")) {
@@ -65,7 +74,11 @@ public class JsonSchemaDocumentSpecification implements AuthorizationSpecificati
     }
 
     @Override
-    public boolean isAuthorized(@NotNull AuthorizationRequest<JsonSchemaDocument> authContext) {
+    public boolean isAuthorized(@NotNull AuthorizationRequest<JsonSchemaDocument> authContext, Object relevantObject) {
+        List<Permission> relevantPermissions = permissions.stream().filter(permission ->
+            "document-definition".equals(permission.getResourceType())
+                && authContext.getAction().equals(permission.getAction())
+        ).collect(Collectors.toList());
 
         return (authContext.getResources().contains("leningen") && Action.CLAIM != authContext.getAction());
     }
