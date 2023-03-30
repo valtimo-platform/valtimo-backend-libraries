@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest.request
+package com.ritense.processlink.mapper
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUGIN
+import com.ritense.processlink.domain.ProcessLink
+import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
+import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
-import java.util.UUID
 
-data class PluginProcessLinkUpdateDto(
-    override val id: UUID,
-    val pluginConfigurationId: UUID,
-    val pluginActionDefinitionKey: String,
-    val actionProperties: ObjectNode? = null
-) : ProcessLinkUpdateRequestDto(
-    id,
-    PROCESS_LINK_TYPE_PLUGIN,
-)
+interface ProcessLinkMapper {
+    fun supportsProcessLinkType(processLinkType: String): Boolean
+    fun toProcessLinkResponseDto(processLink: ProcessLink): ProcessLinkResponseDto
+    fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink
+    fun toUpdatedProcessLink(
+        processLinkToUpdate: ProcessLink,
+        updateRequestDto: ProcessLinkUpdateRequestDto
+    ): ProcessLink
+}

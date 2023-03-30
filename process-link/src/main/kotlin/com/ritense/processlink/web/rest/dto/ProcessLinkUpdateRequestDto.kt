@@ -14,26 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.domain
+package com.ritense.processlink.web.rest.dto
 
-import com.ritense.valtimo.contract.domain.AbstractId
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.util.UUID
-import javax.persistence.Embeddable
 
-@Deprecated("Marked for removal since 10.6.0")
-@Embeddable
-class PluginProcessLinkId(
-    val id: UUID
-): AbstractId<PluginProcessLinkId>(){
-
-    companion object {
-
-        fun existingId(id: UUID): PluginProcessLinkId {
-            return PluginProcessLinkId(id)
-        }
-
-        fun newId(): PluginProcessLinkId {
-            return PluginProcessLinkId(UUID.randomUUID()).newIdentity()
-        }
-    }
-}
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
+abstract class ProcessLinkUpdateRequestDto (
+    open val id: UUID,
+    open val processLinkType: String,
+)

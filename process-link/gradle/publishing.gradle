@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.domain
-
-import com.ritense.valtimo.contract.domain.AbstractId
-import java.util.UUID
-import javax.persistence.Embeddable
-
-@Deprecated("Marked for removal since 10.6.0")
-@Embeddable
-class PluginProcessLinkId(
-    val id: UUID
-): AbstractId<PluginProcessLinkId>(){
-
-    companion object {
-
-        fun existingId(id: UUID): PluginProcessLinkId {
-            return PluginProcessLinkId(id)
-        }
-
-        fun newId(): PluginProcessLinkId {
-            return PluginProcessLinkId(UUID.randomUUID()).newIdentity()
+pluginManager.withPlugin('maven-publish') {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                pom {
+                    name = 'Process link module'
+                    description = 'The process link module can link processlink-actions, forms and form flows to a process.'
+                    developers {
+                        developer {
+                            id = "team-valtimo"
+                            name = "Team Valtimo"
+                            email = "team-valtimo@ritense.com"
+                        }
+                    }
+                }
+            }
         }
     }
 }

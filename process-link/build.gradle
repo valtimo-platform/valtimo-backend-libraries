@@ -15,18 +15,15 @@
  */
 
 dockerCompose {
-    projectName = "plugin"
+    projectName = "processlink"
     isRequiredBy(integrationTesting)
     isRequiredBy(securityTesting)
     useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
 }
 
 dependencies {
-    api(project(":process-link")) {
-        exclude(group: "com.ritense.valtimo", module: "core")
-    }
     implementation project(":contract")
-    implementation project(":value-resolver")
+    implementation project(":core")
 
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter"
@@ -34,7 +31,6 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
-    implementation "io.github.classgraph:classgraph:${classgraphVersion}"
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
@@ -43,12 +39,12 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
 
-    testImplementation project(':test-utils-common')
+    testImplementation project(":test-utils-common")
 
     jar {
         enabled = true
         manifest {
-            attributes("Implementation-Title": "Ritense Plugin module")
+            attributes("Implementation-Title": "Ritense Process link module")
             attributes("Implementation-Version": projectVersion)
         }
     }

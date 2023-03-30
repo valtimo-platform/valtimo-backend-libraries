@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest.result
+package com.ritense.processlink.repository
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUGIN
 import com.ritense.processlink.domain.ActivityTypeWithEventName
-import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
+import com.ritense.processlink.domain.ProcessLink
+import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
-data class PluginProcessLinkResultDto(
-    override val id: UUID,
-    override val processDefinitionId: String,
-    override val activityId: String,
-    override val activityType: ActivityTypeWithEventName,
-    val pluginConfigurationId: UUID,
-    val pluginActionDefinitionKey: String,
-    val actionProperties: ObjectNode? = null
-) : ProcessLinkResponseDto(id, processDefinitionId, activityId, activityType, PROCESS_LINK_TYPE_PLUGIN)
+interface ProcessLinkRepository : JpaRepository<ProcessLink, UUID> {
+    fun findByProcessDefinitionId(processDefinitionId: String): List<ProcessLink>
+    fun findByProcessDefinitionIdAndActivityId(processDefinitionId: String, activityId: String): List<ProcessLink>
+    fun findByActivityIdAndActivityTypeAndProcessLinkType(
+        activityId: String,
+        activityType: ActivityTypeWithEventName,
+        processLinkType: String
+    ): List<ProcessLink>
+}

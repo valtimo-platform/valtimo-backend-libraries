@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.processlink
+package com.ritense.processlink.service
 
-import com.ritense.plugin.domain.PluginProcessLinkId
-import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
 import mu.KotlinLogging
 import org.camunda.bpm.model.bpmn.instance.FlowNode
 import org.springframework.context.event.EventListener
+import java.util.UUID
 
-class CopyPluginActionsOnProcessDeploymentListener(
-    private val pluginProcessLinkRepository: PluginProcessLinkRepository
+class CopyProcessLinkOnProcessDeploymentListener(
+    private val processLinkRepository: ProcessLinkRepository
 ) {
 
     @EventListener(ProcessDefinitionDeployedEvent::class)
@@ -34,21 +34,21 @@ class CopyPluginActionsOnProcessDeploymentListener(
         if (previousProcessDefinitionId != null) {
             val modelInstance = event.processDefinitionModelInstance
 
-            val newLinks = pluginProcessLinkRepository.findByProcessDefinitionId(previousProcessDefinitionId)
+            val newLinks = processLinkRepository.findByProcessDefinitionId(previousProcessDefinitionId)
                 .filter { link -> modelInstance.getModelElementById<FlowNode>(link.activityId) != null }
                 .filter { link ->
-                    pluginProcessLinkRepository.findByProcessDefinitionIdAndActivityId(
+                    processLinkRepository.findByProcessDefinitionIdAndActivityId(
                         event.processDefinitionId,
                         link.activityId
                     ).isEmpty()
                 }
                 .onEach { link ->
-                    logger.debug { "Copying plugin action link to newly deployed process with id ${event.processDefinitionId}. Activity: '${link.activityId}', plugin action: '${link.pluginActionDefinitionKey}'." }
+                    logger.debug { "Copying process link to newly deployed process with id ${event.processDefinitionId}. Activity: '${link.activityId}', type: '${link.processLinkType}'." }
                 }.map { link ->
-                    link.copy(id = PluginProcessLinkId.newId(), processDefinitionId = event.processDefinitionId)
+                    link.copy(id = UUID.randomUUID(), processDefinitionId = event.processDefinitionId)
                 }
 
-            pluginProcessLinkRepository.saveAll(newLinks)
+            processLinkRepository.saveAll(newLinks)
         }
     }
 
