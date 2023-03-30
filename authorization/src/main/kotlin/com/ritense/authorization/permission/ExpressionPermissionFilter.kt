@@ -1,6 +1,12 @@
 package com.ritense.authorization.permission
 
 import com.jayway.jsonpath.JsonPath
+import com.ritense.valtimo.contract.database.QueryDialectHelper
+import javax.persistence.criteria.CriteriaBuilder
+import javax.persistence.criteria.CriteriaQuery
+import javax.persistence.criteria.Path
+import javax.persistence.criteria.Predicate
+import javax.persistence.criteria.Root
 
 
 class ExpressionPermissionFilter(
@@ -16,6 +22,24 @@ class ExpressionPermissionFilter(
         return evaluateExpression(
             JsonPath.read(fieldValue, path)
         )
+    }
+
+    override fun <T> toPredicate(
+        root: Root<T>,
+        query: CriteriaQuery<*>,
+        criteriaBuilder: CriteriaBuilder,
+        resourceType: Class<T>,
+        queryDialectHelper: QueryDialectHelper
+    ): Predicate {
+        val path: Path<Any>? = createDatabaseObjectPath(field, root, resourceType)
+
+        return queryDialectHelper
+            .getJsonValueExistsInPathExpression(
+                criteriaBuilder,
+                path,
+                this.path,
+                this.value
+            )
     }
 
     private fun reflectionFindFieldIfString(entity: Any): String? {

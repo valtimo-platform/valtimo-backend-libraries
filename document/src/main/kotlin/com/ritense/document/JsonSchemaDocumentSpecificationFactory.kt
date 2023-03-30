@@ -18,6 +18,7 @@ class JsonSchemaDocumentSpecificationFactory(
     ): AuthorizationSpecification<JsonSchemaDocument> {
         return JsonSchemaDocumentSpecification(
             permissions,
+            context,
             queryDialectHelper
         )
     }

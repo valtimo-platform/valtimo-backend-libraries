@@ -8,12 +8,12 @@ import com.ritense.authorization.permission.Permission
 class AuthorizationService(
     private val authorizationSpecificationFactories: List<AuthorizationSpecificationFactory<*>>
 ) {
-    fun <T> requirePermission(context: AuthorizationRequest<T>, entity: T) {
-        if (!(getAuthorizationSpecification(context).isAuthorized(context, entity)))
+    fun <T : Any> requirePermission(context: AuthorizationRequest<T>, entity: T) {
+        if (!(getAuthorizationSpecification(context).isAuthorized(entity)))
             throw RuntimeException("Unauthorized")
     }
 
-    fun <T> getAuthorizationSpecification(context: AuthorizationRequest<T>): AuthorizationSpecification<T> {
+    fun <T : Any> getAuthorizationSpecification(context: AuthorizationRequest<T>): AuthorizationSpecification<T> {
         return (authorizationSpecificationFactories.first {
             it.canCreate(context)
         } as AuthorizationSpecificationFactory<T>).create(context, createExamplePermissions())

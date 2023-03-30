@@ -180,24 +180,23 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         addJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
         if (withAuthorization) {
             addUserRolePredicate(query, documentRoot, predicates);
-            authorizationService.requirePermission(
-                new AuthorizationRequest<>(
-                    JsonSchemaDocument.class,
-                    null,
-                    Action.LIST_VIEW
-                ),
-                null
-            );
-//            predicates.add(
-//                authorizationService
-//                    .getAuthorizationSpecification(
-//                        new AuthorizationRequest<>(
-//                            "document-definition",
-//                            null,
-//                            Action.VIEW,
-//                            JsonSchemaDocument.class
-//                        )
-//                    ).toPredicate(documentRoot, query, cb));
+//            authorizationService.requirePermission(
+//                new AuthorizationRequest<>(
+//                    JsonSchemaDocument.class,
+//                    null,
+//                    Action.LIST_VIEW
+//                ),
+//                null
+//            );
+            predicates.add(
+                authorizationService
+                    .getAuthorizationSpecification(
+                        new AuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            null,
+                            Action.VIEW
+                        )
+                    ).toPredicate(documentRoot, query, cb));
         }
 
         query.where(predicates.toArray(new Predicate[0]));
@@ -218,23 +217,23 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             addUserRolePredicate(query, documentRoot, predicates);
-            authorizationService.requirePermission(
-                new AuthorizationRequest<>(
-                    JsonSchemaDocument.class,
-                    null,
-                    Action.LIST_VIEW
-                ),
-                null
-            );
-//            predicates.add(
-//                authorizationService
-//                    .getAuthorizationSpecification(
-//                        new AuthorizationRequest<>(
-//                            JsonSchemaDocument.class,
-//                            null,
-//                            Action.VIEW
-//                        )
-//                    ).toPredicate(documentRoot, query, cb));
+//            authorizationService.requirePermission(
+//                new AuthorizationRequest<>(
+//                    JsonSchemaDocument.class,
+//                    null,
+//                    Action.LIST_VIEW
+//                ),
+//                null
+//            );
+            predicates.add(
+                authorizationService
+                    .getAuthorizationSpecification(
+                        new AuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            null,
+                            Action.VIEW
+                        )
+                    ).toPredicate(documentRoot, query, cb));
         }
 
         if (searchRequest.getAssigneeFilter() != null && searchRequest.getAssigneeFilter() != AssigneeFilter.ALL) {

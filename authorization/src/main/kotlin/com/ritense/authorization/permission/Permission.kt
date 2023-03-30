@@ -1,8 +1,10 @@
 package com.ritense.authorization.permission
 
 import com.ritense.authorization.Action
+import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
+import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class Permission(
@@ -23,11 +25,31 @@ class Permission(
         }
     }
 
-    fun toPredicate(
-        root: Root<*> ,
+    fun <T> toPredicate(
+        root: Root<T> ,
         query: CriteriaQuery<*>,
-        criteriaBuilder: CriteriaBuilder
-    ) {
-
+        criteriaBuilder: CriteriaBuilder,
+        resourceType: Class<T>,
+        queryDialectHelper: QueryDialectHelper
+    ): Predicate {
+        val predicates = filters.map {
+            it.toPredicate(
+                root,
+                query,
+                criteriaBuilder,
+                resourceType,
+                queryDialectHelper)
+        }
+        return criteriaBuilder
+            .and(
+                *filters.map {
+                    it.toPredicate(
+                        root,
+                        query,
+                        criteriaBuilder,
+                        resourceType,
+                        queryDialectHelper)
+                }.toTypedArray()
+            )
     }
 }

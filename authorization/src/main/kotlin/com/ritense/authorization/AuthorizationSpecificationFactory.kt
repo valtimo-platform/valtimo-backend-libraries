@@ -2,7 +2,7 @@ package com.ritense.authorization
 
 import com.ritense.authorization.permission.Permission
 
-interface AuthorizationSpecificationFactory<T> {
+interface AuthorizationSpecificationFactory<T : Any> {
 
     fun create(context: AuthorizationRequest<T>, permissions: List<Permission>): AuthorizationSpecification<T>
 
