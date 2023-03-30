@@ -53,9 +53,9 @@ class SearchListColumnService(
             ))
         }
 
-    fun findByOwnerId(ownerId: String) = searchListColumnRepository.findAllByOwnerId(ownerId)
+    fun findByOwnerId(ownerId: String) = searchListColumnRepository.findAllByOwnerIdOrderByOrder(ownerId)
 
-    fun findByOwnerIdAndKey(ownerId: String, key: String) = searchListColumnRepository.findByOwnerIdAndKey(ownerId, key)
+    fun findByOwnerIdAndKey(ownerId: String, key: String) = searchListColumnRepository.findByOwnerIdAndKeyOrderByOrder(ownerId, key)
 
     fun delete(ownerId: String, key: String) =
         with(findByOwnerIdAndKey(ownerId, key)) {
