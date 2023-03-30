@@ -22,7 +22,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface SearchListColumnRepository: JpaRepository<SearchListColumn, UUID> {
 
-    fun findByOwnerIdAndKey(ownerId: String, key: String): SearchListColumn?
-    fun findAllByOwnerId(ownerId: String): List<SearchListColumn>?
+    fun findByOwnerIdAndKeyOrderByOrder(ownerId: String, key: String): SearchListColumn?
+    fun findAllByOwnerIdOrderByOrder(ownerId: String): List<SearchListColumn>?
 
 }
