@@ -17,26 +17,15 @@
 
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="1" author="Ritense">
-        <createTable tableName="process_link">
-            <column name="id" type="${uuidType}">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="process_definition_id" type="varchar(64)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="activity_id" type="varchar(64)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="activity_type" type="varchar(256)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="process_link_type" type="varchar(64)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="process_link"/>
+        </preConditions>
+        <addColumn tableName="process_link">
+            <column name="form_definition_id" type="${uuidType}"/>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>
