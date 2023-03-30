@@ -32,14 +32,6 @@ class Permission(
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper
     ): Predicate {
-        val predicates = filters.map {
-            it.toPredicate(
-                root,
-                query,
-                criteriaBuilder,
-                resourceType,
-                queryDialectHelper)
-        }
         return criteriaBuilder
             .and(
                 *filters.map {

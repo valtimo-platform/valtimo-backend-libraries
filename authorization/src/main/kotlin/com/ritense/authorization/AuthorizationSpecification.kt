@@ -7,7 +7,7 @@ import javax.persistence.criteria.Predicate
 
 abstract class AuthorizationSpecification<T: Any> (
     val permissions: List<Permission>,
-    val authContext: AuthorizationRequest<T>
+    internal val authContext: AuthorizationRequest<T>
 ): Specification<T> {
     fun isAuthorized(entity: T): Boolean {
         return permissions.filter {
