@@ -21,7 +21,7 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import java.util.UUID
 
-data class FormProcessLinkCreateDto(
+data class FormProcessLinkCreateRequestDto(
     override val processDefinitionId: String,
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,

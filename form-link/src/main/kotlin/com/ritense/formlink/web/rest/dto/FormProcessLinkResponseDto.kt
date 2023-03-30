@@ -21,7 +21,7 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import java.util.UUID
 
-data class FormProcessLinkResultDto(
+data class FormProcessLinkResponseDto(
     override val id: UUID,
     override val processDefinitionId: String,
     override val activityId: String,

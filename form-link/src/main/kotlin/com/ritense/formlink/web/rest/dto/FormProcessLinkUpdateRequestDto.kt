@@ -20,7 +20,7 @@ import com.ritense.formlink.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import java.util.UUID
 
-data class FormProcessLinkUpdateDto(
+data class FormProcessLinkUpdateRequestDto(
     override val id: UUID,
     val formDefinitionId: UUID,
 ) : ProcessLinkUpdateRequestDto(

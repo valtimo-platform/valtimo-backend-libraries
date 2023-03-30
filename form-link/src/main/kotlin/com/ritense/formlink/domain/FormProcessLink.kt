@@ -17,6 +17,7 @@
 package com.ritense.formlink.domain
 
 import com.ritense.formlink.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import java.util.UUID
 import javax.persistence.Column
@@ -32,7 +33,7 @@ data class FormProcessLink(
 
     override val activityId: String,
 
-    override val activityType: com.ritense.processlink.domain.ActivityTypeWithEventName,
+    override val activityType: ActivityTypeWithEventName,
 
     @Column(name = "form_definition_id")
     val formDefinitionId: UUID
@@ -48,16 +49,11 @@ data class FormProcessLink(
     override fun copy(
         id: UUID,
         processDefinitionId: String,
-        activityId: String,
-        activityType: com.ritense.processlink.domain.ActivityTypeWithEventName,
-        processLinkType: String
-    ): FormProcessLink {
-        return this.copy(
-            id = id,
-            processDefinitionId = processDefinitionId,
-            activityId = activityId,
-            activityType = activityType,
-            formDefinitionId = formDefinitionId
-        )
-    }
+    ) = copy(
+        id = id,
+        processDefinitionId = processDefinitionId,
+        activityId = activityId,
+        activityType = activityType,
+        formDefinitionId = formDefinitionId
+    )
 }

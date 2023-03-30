@@ -19,9 +19,9 @@ package com.ritense.formlink.mapper
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.formlink.domain.FormProcessLink
-import com.ritense.formlink.web.rest.dto.FormProcessLinkCreateDto
-import com.ritense.formlink.web.rest.dto.FormProcessLinkResultDto
-import com.ritense.formlink.web.rest.dto.FormProcessLinkUpdateDto
+import com.ritense.formlink.web.rest.dto.FormProcessLinkCreateRequestDto
+import com.ritense.formlink.web.rest.dto.FormProcessLinkResponseDto
+import com.ritense.formlink.web.rest.dto.FormProcessLinkUpdateRequestDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
@@ -36,9 +36,9 @@ class FormProcessLinkMapper(
 
     init {
         objectMapper.registerSubtypes(
-            FormProcessLinkResultDto::class.java,
-            FormProcessLinkCreateDto::class.java,
-            FormProcessLinkUpdateDto::class.java,
+            FormProcessLinkResponseDto::class.java,
+            FormProcessLinkCreateRequestDto::class.java,
+            FormProcessLinkUpdateRequestDto::class.java,
         )
     }
 
@@ -46,7 +46,7 @@ class FormProcessLinkMapper(
 
     override fun toProcessLinkResponseDto(processLink: ProcessLink): ProcessLinkResponseDto {
         processLink as FormProcessLink
-        return FormProcessLinkResultDto(
+        return FormProcessLinkResponseDto(
             id = processLink.id,
             processDefinitionId = processLink.processDefinitionId,
             activityId = processLink.activityId,
@@ -56,7 +56,7 @@ class FormProcessLinkMapper(
     }
 
     override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink {
-        createRequestDto as FormProcessLinkCreateDto
+        createRequestDto as FormProcessLinkCreateRequestDto
         if (!formDefinitionService.formDefinitionExistsById(createRequestDto.formDefinitionId)) {
             throw RuntimeException("Form definition not found with id ${createRequestDto.formDefinitionId}")
         }
@@ -73,7 +73,7 @@ class FormProcessLinkMapper(
         processLinkToUpdate: ProcessLink,
         updateRequestDto: ProcessLinkUpdateRequestDto
     ): ProcessLink {
-        updateRequestDto as FormProcessLinkUpdateDto
+        updateRequestDto as FormProcessLinkUpdateRequestDto
         if (!formDefinitionService.formDefinitionExistsById(updateRequestDto.formDefinitionId)) {
             throw RuntimeException("Form definition not found with id ${updateRequestDto.formDefinitionId}")
         }
