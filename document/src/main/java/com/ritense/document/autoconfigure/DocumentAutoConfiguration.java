@@ -16,7 +16,7 @@
 
 package com.ritense.document.autoconfigure;
 
-import com.ritense.document.config.DocumentSpringContextHelper;
+import  com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerImpl;
@@ -65,7 +65,7 @@ import java.util.Optional;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.document.repository")
-@EntityScan("com.ritense.document.domain")
+@EntityScan({"com.ritense.document.domain", "com.ritense.tenancy.jpa"})
 public class DocumentAutoConfiguration {
 
     @Bean

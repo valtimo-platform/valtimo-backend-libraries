@@ -17,6 +17,7 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import org.camunda.bpm.engine.AuthorizationException;
@@ -30,8 +31,10 @@ import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
+
 import java.util.HashMap;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -81,7 +84,8 @@ class CamundaTaskServiceTest {
                 Optional.empty(),
                 applicationEventPublisher,
                 runtimeService,
-                userManagementService
+                userManagementService,
+                mock(ValtimoProperties.class)
             )
         );
     }
@@ -150,8 +154,21 @@ class CamundaTaskServiceTest {
     void taskComplete_withoutVariablesSuccessfully() {
         //initialize own taskService here because we need to override the complete method
         TaskService taskService = mock(TaskService.class, RETURNS_DEEP_STUBS);
-        CamundaTaskService camundaTaskService = spy(new CamundaTaskService(taskService, null, null, delegateTaskHelper, null, null,
-            Optional.empty(), applicationEventPublisher, null, userManagementService));
+        CamundaTaskService camundaTaskService = spy(
+            new CamundaTaskService(
+                taskService,
+                null,
+                null,
+                delegateTaskHelper,
+                null,
+                null,
+                Optional.empty(),
+                applicationEventPublisher,
+                null,
+                userManagementService,
+                mock(ValtimoProperties.class)
+            )
+        );
 
         when(taskService.createTaskQuery().taskId(TASK_ID).initializeFormKeys().singleResult()).thenReturn(task);
         doNothing().when(taskService).complete(TASK_ID);

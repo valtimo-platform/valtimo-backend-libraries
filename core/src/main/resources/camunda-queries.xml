@@ -269,6 +269,12 @@
             </foreach>
             )
         </if>
+        <if test="parameter.tenantId != null">
+            AND RES.TENANT_ID_ = #{parameter.tenantId, jdbcType=VARCHAR}
+        </if>
+        <if test="parameter.tenantId == null">
+            AND RES.TENANT_ID_ IS NULL
+        </if>
         <!-- If the processDefinitionKeys is set but empty, return nothing. -->
         <if test="parameter.processDefinitionKeys != null &amp;&amp; parameter.processDefinitionKeys.size() == 0">
             AND 0 = 1
@@ -321,6 +327,12 @@
         </if>
         <if test="begin != null &amp;&amp; end != null">
           AND ACT_HI_TASKINST.START_TIME_ BETWEEN #{begin, jdbcType=TIMESTAMP} AND #{end, jdbcType=TIMESTAMP}
+        </if>
+        <if test="tenantId != null">
+            AND ACT_HI_TASKINST.TENANT_ID_ = #{tenantId, jdbcType=VARCHAR}
+        </if>
+        <if test="tenantId == null">
+            AND ACT_HI_TASKINST.TENANT_ID_ IS NULL
         </if>
         GROUP BY  ACT_RU_IDENTITYLINK.GROUP_ID_
     </select>

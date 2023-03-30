@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.security.config;
 
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import com.ritense.valtimo.security.jwt.JwtSecurityConfigurerAdapter;
@@ -27,13 +28,16 @@ public class JwtHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     private final IdentityService identityService;
     private final TokenAuthenticationService tokenAuthenticationService;
+    private final ValtimoProperties valtimoProperties;
 
     public JwtHttpSecurityConfigurer(
         IdentityService identityService,
-        TokenAuthenticationService tokenAuthenticationService
+        TokenAuthenticationService tokenAuthenticationService,
+        ValtimoProperties valtimoProperties
     ) {
         this.tokenAuthenticationService = tokenAuthenticationService;
         this.identityService = identityService;
+        this.valtimoProperties = valtimoProperties;
     }
 
     @Override
@@ -46,7 +50,11 @@ public class JwtHttpSecurityConfigurer implements HttpSecurityConfigurer {
     }
 
     private JwtSecurityConfigurerAdapter jwtSecurityConfigurerAdapter() {
-        return new JwtSecurityConfigurerAdapter(identityService, tokenAuthenticationService);
+        return new JwtSecurityConfigurerAdapter(
+            identityService,
+            tokenAuthenticationService,
+            valtimoProperties
+        );
     }
 
 }

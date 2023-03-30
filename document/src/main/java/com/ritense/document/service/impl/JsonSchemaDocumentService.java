@@ -75,12 +75,14 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public JsonSchemaDocumentService(DocumentRepository documentRepository,
-                                     JsonSchemaDocumentDefinitionService documentDefinitionService,
-                                     JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
-                                     ResourceService resourceService,
-                                     UserManagementService userManagementService,
-                                     ApplicationEventPublisher applicationEventPublisher) {
+    public JsonSchemaDocumentService(
+        DocumentRepository documentRepository,
+        JsonSchemaDocumentDefinitionService documentDefinitionService,
+        JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
+        ResourceService resourceService,
+        UserManagementService userManagementService,
+        ApplicationEventPublisher applicationEventPublisher
+    ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
         this.documentSequenceGeneratorService = documentSequenceGeneratorService;

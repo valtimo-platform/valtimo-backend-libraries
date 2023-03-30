@@ -71,6 +71,7 @@ public class ValtimoProperties {
 
         private String hostname;
         private String scheme;
+        private Boolean enableTenancy = false;
 
         public String getHostname() {
             return hostname;
@@ -90,6 +91,14 @@ public class ValtimoProperties {
 
         public String getBaselUrl() {
             return String.format("%s://%s/", scheme, hostname);
+        }
+
+        public Boolean getEnableTenancy() {
+            return enableTenancy;
+        }
+
+        public void setEnableTenancy(Boolean enableTenancy) {
+            this.enableTenancy = enableTenancy;
         }
     }
 

@@ -31,6 +31,7 @@ import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.service.result.error.ConflictedDocumentVersion;
 import com.ritense.document.service.result.error.DocumentOperationError;
+import com.ritense.tenancy.jpa.AbstractTenantAwareAggregateRoot;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileAddedEvent;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileRemovedEvent;
@@ -38,7 +39,6 @@ import com.ritense.valtimo.contract.utils.RequestHelper;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.Column;
@@ -73,7 +73,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
         @Index(name = "sequence_index", columnList = "sequence")
     }
 )
-public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument>
+public class JsonSchemaDocument extends AbstractTenantAwareAggregateRoot<JsonSchemaDocument>
     implements Document, Persistable<JsonSchemaDocumentId> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocument.class);
@@ -101,10 +101,10 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Column(name = "sequence", columnDefinition = "BIGINT")
     private Long sequence;
 
-    @Column(name = "assignee_id", columnDefinition="varchar(64)")
+    @Column(name = "assignee_id", columnDefinition = "varchar(64)")
     private String assigneeId;
 
-    @Column(name = "assignee_full_name", columnDefinition="varchar(255)")
+    @Column(name = "assignee_full_name", columnDefinition = "varchar(255)")
     private String assigneeFullName;
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
@@ -122,7 +122,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         final String createdBy,
         final Long sequence,
         final JsonSchemaDocumentRelation documentRelation
-        ) {
+    ) {
         assertArgumentNotNull(id, "id is required");
         assertArgumentNotNull(content, "content is required");
         assertArgumentNotNull(documentDefinition, "documentDefinition is required");
@@ -252,6 +252,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     public void addRelatedFile(final JsonSchemaRelatedFile relatedFile) {
         addRelatedFile(relatedFile, null);
     }
+
     public void addRelatedFile(final JsonSchemaRelatedFile relatedFile, Map<String, Object> metadata) {
         assertArgumentNotNull(relatedFile, "relatedFile is required");
         if (this.relatedFiles.add(relatedFile)) {

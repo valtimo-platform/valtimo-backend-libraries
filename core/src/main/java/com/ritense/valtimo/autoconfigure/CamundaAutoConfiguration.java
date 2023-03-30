@@ -56,7 +56,9 @@ public class CamundaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(HistoryEventAuditProcessEnginePlugin.class)
-    public HistoryEventAuditProcessEnginePlugin historyEventAuditProcessEnginePlugin(final ApplicationEventPublisher applicationEventPublisher) {
+    public HistoryEventAuditProcessEnginePlugin historyEventAuditProcessEnginePlugin(
+        final ApplicationEventPublisher applicationEventPublisher
+    ) {
         return new HistoryEventAuditProcessEnginePlugin(applicationEventPublisher);
     }
 
@@ -77,9 +79,15 @@ public class CamundaAutoConfiguration {
     public CamundaConfiguration camundaConfiguration(
         final ValtimoSchemaOperationsCommand valtimoSchemaOperationsCommand,
         final CustomRepositoryServiceImpl repositoryService,
-        final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher
+        final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher,
+        final ValtimoProperties valtimoProperties
     ) {
-        return new CamundaConfiguration(valtimoSchemaOperationsCommand, repositoryService, processDefinitionDeployedEventPublisher);
+        return new CamundaConfiguration(
+            valtimoSchemaOperationsCommand,
+            repositoryService,
+            processDefinitionDeployedEventPublisher,
+            valtimoProperties
+        );
     }
 
     @Bean
@@ -90,7 +98,9 @@ public class CamundaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(CustomRepositoryServiceImpl.class)
-    public CustomRepositoryServiceImpl customRepositoryServiceImpl(final ApplicationEventPublisher applicationEventPublisher) {
+    public CustomRepositoryServiceImpl customRepositoryServiceImpl(
+        final ApplicationEventPublisher applicationEventPublisher
+    ) {
         return new CustomRepositoryServiceImpl(applicationEventPublisher);
     }
 

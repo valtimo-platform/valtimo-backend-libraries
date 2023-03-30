@@ -16,12 +16,14 @@
 
 package com.valtimo.keycloak.repository;
 
+import com.ritense.tenancy.authentication.TenantAuthenticationToken;
 import com.ritense.valtimo.contract.authentication.CurrentUserRepository;
 import com.ritense.valtimo.contract.authentication.model.Profile;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+
 import static com.ritense.valtimo.contract.utils.SecurityUtils.getCurrentUserRoles;
 
 public class KeycloakCurrentUserRepository implements CurrentUserRepository {
@@ -50,7 +52,8 @@ public class KeycloakCurrentUserRepository implements CurrentUserRepository {
 
     @Override
     public boolean supports(Class<? extends Authentication> authentication) {
-        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+        return TenantAuthenticationToken.class.isAssignableFrom(authentication) ||
+            UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
 }

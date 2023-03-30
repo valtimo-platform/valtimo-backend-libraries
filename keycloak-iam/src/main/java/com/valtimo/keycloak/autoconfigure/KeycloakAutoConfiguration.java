@@ -16,6 +16,7 @@
 
 package com.valtimo.keycloak.autoconfigure;
 
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.valtimo.keycloak.repository.KeycloakCurrentUserRepository;
 import com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator;
 import com.valtimo.keycloak.security.jwt.provider.KeycloakSecretKeyProvider;
@@ -39,9 +40,10 @@ public class KeycloakAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(KeycloakTokenAuthenticator.class)
     public KeycloakTokenAuthenticator keycloakTokenAuthenticator(
-        @Value("${valtimo.keycloak.client:}") final String keycloakClient
+        @Value("${valtimo.keycloak.client:}") final String keycloakClient,
+        ValtimoProperties valtimoProperties
     ) {
-        return new KeycloakTokenAuthenticator(keycloakClient);
+        return new KeycloakTokenAuthenticator(keycloakClient, valtimoProperties);
     }
 
     @Bean

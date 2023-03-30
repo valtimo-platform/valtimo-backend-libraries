@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.security.jwt;
+package com.ritense.tenancy.autoconfigure
 
-public class JwtConstants {
-    public static final String AUTHORIZATION_HEADER = "Authorization";
-    public static final String ROLES_SCOPE = "roles";
-    public static final String NAME_KEY = "name";
-    public static final String EMAIL_KEY = "email";
-    public static final String TENANT_KEY = "tenantId";
+import com.ritense.tenancy.jpa.TenantAwareListener
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+
+@Configuration
+class TenantAwareListenerAutoConfiguration {
+
+    @Bean
+    fun tenantAwareListener() = TenantAwareListener()
+
 }

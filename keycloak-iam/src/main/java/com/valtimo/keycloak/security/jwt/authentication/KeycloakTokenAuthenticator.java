@@ -16,6 +16,8 @@
 
 package com.valtimo.keycloak.security.jwt.authentication;
 
+import com.ritense.tenancy.authentication.TenantAuthenticationToken;
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.contract.security.jwt.TokenAuthenticator;
 import io.jsonwebtoken.Claims;
 import org.slf4j.Logger;
@@ -25,14 +27,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.TENANT_KEY;
 import static java.util.Objects.requireNonNull;
 
 public class KeycloakTokenAuthenticator extends TokenAuthenticator {
@@ -40,10 +45,12 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakTokenAuthenticator.class);
     public final static String REALM_ACCESS = "realm_access";
     public final static String RESOURCE_ACCESS = "resource_access";
+    private final ValtimoProperties valtimoProperties;
     private final String clientName;
 
-    public KeycloakTokenAuthenticator(String keycloakClient) {
+    public KeycloakTokenAuthenticator(String keycloakClient, ValtimoProperties valtimoProperties) {
         this.clientName = keycloakClient;
+        this.valtimoProperties = valtimoProperties;
     }
 
     @Override
@@ -79,15 +86,27 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
         final String email = getEmail(claims);
         final List<String> roles = getRoles(claims);
 
-        if (email != null && roles != null && !roles.isEmpty()) {
+        if (email != null && !roles.isEmpty()) {
             final Set<? extends GrantedAuthority> authorities = roles.stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.toUpperCase()))
                 .collect(Collectors.toSet());
 
             final User principal = new User(email, "", authorities);
-            return new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
+            final Authentication authentication = new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
+            if (valtimoProperties.getApp().getEnableTenancy()) {
+                logger.debug("Creating tenant authentication token");
+                return new TenantAuthenticationToken(authentication, getTenantId(claims));
+            }
+            return authentication;
         }
         return null;
+    }
+
+    private String getTenantId(Claims claims) {
+        if (claims.containsKey(TENANT_KEY)) {
+            return claims.get(TENANT_KEY, String.class);
+        }
+        throw new IllegalStateException("Missing tenant key in claims");
     }
 
     private String getEmail(Claims claims) {
@@ -97,13 +116,11 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
     private List<String> getRoles(Claims claims) {
         final Map<String, List<String>> realmSettings = claims.get(REALM_ACCESS, Map.class);
         final Map<String, Map<String, List<String>>> resourceSettings = claims.get(RESOURCE_ACCESS, Map.class);
-
-        List<String> roles = new ArrayList<>(realmSettings.get(ROLES_SCOPE));
+        final List<String> roles = new ArrayList<>(realmSettings.get(ROLES_SCOPE));
 
         if (!clientName.isBlank() && resourceSettings != null && resourceSettings.containsKey(clientName)) {
             roles.addAll(resourceSettings.get(clientName).get(ROLES_SCOPE));
         }
-
         return roles;
     }
 

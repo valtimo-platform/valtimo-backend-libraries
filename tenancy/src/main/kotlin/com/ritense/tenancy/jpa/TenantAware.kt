@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.security.jwt;
+package com.ritense.tenancy.jpa;
 
-public class JwtConstants {
-    public static final String AUTHORIZATION_HEADER = "Authorization";
-    public static final String ROLES_SCOPE = "roles";
-    public static final String NAME_KEY = "name";
-    public static final String EMAIL_KEY = "email";
-    public static final String TENANT_KEY = "tenantId";
+interface TenantAware {
+    var tenantId: String
 }

@@ -19,6 +19,7 @@ package com.ritense.valtimo.config;
 import com.ritense.valtimo.camunda.ProcessDefinitionDeployedEventPublisher;
 import com.ritense.valtimo.camunda.command.ValtimoSchemaOperationsCommand;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
+import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.validator.MaxDateValidator;
 import com.ritense.valtimo.validator.MinDateValidator;
 import org.camunda.bpm.engine.RepositoryService;
@@ -37,15 +38,18 @@ public class CamundaConfiguration implements CamundaProcessEngineConfiguration {
     private final ValtimoSchemaOperationsCommand schemaOperationsCommand;
     private final RepositoryService repositoryService;
     private final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher;
+    private final ValtimoProperties valtimoProperties;
 
     public CamundaConfiguration(
         final ValtimoSchemaOperationsCommand valtimoSchemaOperationsCommand,
         final CustomRepositoryServiceImpl repositoryService,
-        final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher
+        final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher,
+        final ValtimoProperties valtimoProperties
     ) {
         this.schemaOperationsCommand = valtimoSchemaOperationsCommand;
         this.repositoryService = repositoryService;
         this.processDefinitionDeployedEventPublisher = processDefinitionDeployedEventPublisher;
+        this.valtimoProperties = valtimoProperties;
     }
 
     @Override
@@ -65,6 +69,10 @@ public class CamundaConfiguration implements CamundaProcessEngineConfiguration {
 
         //Override default
         processEngineConfiguration.setSchemaOperationsCommand(schemaOperationsCommand);
+
+        if (valtimoProperties.getApp().getEnableTenancy()) {
+            processEngineConfiguration.setTenantIdProvider(new CustomTenantIdProvider());
+        }
     }
 
     @Override
