@@ -54,8 +54,5 @@ abstract class ProcessLink(
     abstract fun copy(
         id: UUID = this.id,
         processDefinitionId: String = this.processDefinitionId,
-        activityId: String = this.activityId,
-        activityType: ActivityTypeWithEventName = this.activityType,
-        processLinkType: String = this.processLinkType
     ) : ProcessLink
 }

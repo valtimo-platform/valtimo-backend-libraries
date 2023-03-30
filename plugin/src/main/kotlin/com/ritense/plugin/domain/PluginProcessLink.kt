@@ -18,6 +18,7 @@ package com.ritense.plugin.domain
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUGIN
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import org.hibernate.annotations.Type
 import java.util.UUID
@@ -35,7 +36,7 @@ data class PluginProcessLink(
 
     override val activityId: String,
 
-    override val activityType: com.ritense.processlink.domain.ActivityTypeWithEventName,
+    override val activityType: ActivityTypeWithEventName,
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "action_properties", columnDefinition = "JSON")
@@ -77,18 +78,13 @@ data class PluginProcessLink(
     override fun copy(
         id: UUID,
         processDefinitionId: String,
-        activityId: String,
-        activityType: com.ritense.processlink.domain.ActivityTypeWithEventName,
-        processLinkType: String
-    ): PluginProcessLink {
-        return this.copy(
-            id = id,
-            processDefinitionId = processDefinitionId,
-            activityId = activityId,
-            activityType = activityType,
-            actionProperties = actionProperties,
-            pluginConfigurationId = pluginConfigurationId,
-            pluginActionDefinitionKey = pluginActionDefinitionKey
-        )
-    }
+    ) = copy(
+        id = id,
+        processDefinitionId = processDefinitionId,
+        activityId = activityId,
+        activityType = activityType,
+        actionProperties = actionProperties,
+        pluginConfigurationId = pluginConfigurationId,
+        pluginActionDefinitionKey = pluginActionDefinitionKey
+    )
 }

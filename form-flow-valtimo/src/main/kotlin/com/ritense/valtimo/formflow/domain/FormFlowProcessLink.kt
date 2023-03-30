@@ -14,43 +14,46 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.domain
+package com.ritense.valtimo.formflow.domain
 
-import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.domain.ProcessLink
+import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM_FLOW
 import java.util.UUID
+import javax.persistence.Column
 import javax.persistence.DiscriminatorValue
 import javax.persistence.Entity
 
 @Entity
-@DiscriminatorValue(PROCESS_LINK_TYPE_TEST)
-data class CustomProcessLink(
+@DiscriminatorValue(PROCESS_LINK_TYPE_FORM_FLOW)
+data class FormFlowProcessLink(
     override val id: UUID,
 
     override val processDefinitionId: String,
 
     override val activityId: String,
 
-    override val activityType: ActivityTypeWithEventName
+    override val activityType: ActivityTypeWithEventName,
+
+    @Column(name = "form_flow_definition_id", nullable = false)
+    val formFlowDefinitionId: String
 
 ) : ProcessLink(
     id,
     processDefinitionId,
     activityId,
     activityType,
-    PROCESS_LINK_TYPE_TEST,
+    PROCESS_LINK_TYPE_FORM_FLOW,
 ) {
 
     override fun copy(
         id: UUID,
-        processDefinitionId: String
+        processDefinitionId: String,
     ) = copy(
         id = id,
         processDefinitionId = processDefinitionId,
         activityId = activityId,
         activityType = activityType,
+        formFlowDefinitionId = this.formFlowDefinitionId
     )
-
-    companion object {
-        const val PROCESS_LINK_TYPE_TEST = "test"
-    }
 }
