@@ -22,7 +22,7 @@
     <changeSet id="1" author="Ritense">
         <createTable tableName="process_link">
             <column name="id" type="${uuidType}">
-                <constraints nullable="false"/>
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="process_definition_id" type="varchar(64)">
                 <constraints nullable="false"/>
