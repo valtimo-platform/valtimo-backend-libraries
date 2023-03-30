@@ -72,8 +72,8 @@ class PortaaltaakPlugin(
     @PluginProperty(key = "objectManagementConfigurationId", secret = false)
     lateinit var objectManagementConfigurationId: UUID
 
-    @PluginProperty(key = "uploadedDocumentsHandlerProcess", secret = false)
-    lateinit var uploadedDocumentsHandlerProcess: String
+    @PluginProperty(key = "completeTaakProcess", secret = false)
+    lateinit var completeTaakProcess: String
 
     @PluginAction(
         key = "create-portaaltaak",
@@ -203,7 +203,12 @@ class PortaaltaakPlugin(
                             "Zaak initiator did not have valid inpBsn BSN"
                         }
                     )
-                    is RolNietNatuurlijkPersoon -> TaakIdentificatie(TaakIdentificatie.TYPE_KVK, it.annIdentificatie)
+                    is RolNietNatuurlijkPersoon -> TaakIdentificatie(
+                        TaakIdentificatie.TYPE_KVK,
+                        requireNotNull(it.annIdentificatie) {
+                            "Zaak initiator did not have valid annIdentificatie KVK"
+                        }
+                    )
                     else -> null
                 }
             }
@@ -234,13 +239,10 @@ class PortaaltaakPlugin(
 
         if (sendData.size != sendDataValuesResolvedMap.size) {
             val failedValues = sendData
-                .filter { sendDataValuesResolvedMap.containsKey(it.value) }
+                .filter { !sendDataValuesResolvedMap.containsKey(it.value) }
                 .joinToString(", ") { "'${it.key}' = '${it.value}'" }
             throw IllegalArgumentException(
-                """
-                    Error in sendData for task: '${delegateTask.taskDefinitionKey}' and documentId: '${documentId}'. Failed to resolve values:
-                    $failedValues
-                """.trimMargin()
+                "Error in sendData for task: '${delegateTask.taskDefinitionKey}' and documentId: '${documentId}'. Failed to resolve values: $failedValues".trimMargin()
             )
         }
 

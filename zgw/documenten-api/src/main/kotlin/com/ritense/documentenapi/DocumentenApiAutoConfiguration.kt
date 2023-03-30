@@ -16,18 +16,19 @@
 
 package com.ritense.documentenapi
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.security.DocumentenApiHttpSecurityConfigurer
+import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.documentenapi.web.rest.DocumentenApiResource
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
-import io.netty.handler.logging.LogLevel
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
+import org.springframework.core.annotation.Order
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.netty.http.client.HttpClient
-import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
 class DocumentenApiAutoConfiguration {
@@ -42,9 +43,38 @@ class DocumentenApiAutoConfiguration {
         pluginService: PluginService,
         client: DocumentenApiClient,
         storageService: TemporaryResourceStorageService,
-        applicationEventPublisher: ApplicationEventPublisher
+        applicationEventPublisher: ApplicationEventPublisher,
+        objectMapper: ObjectMapper,
     ): DocumentenApiPluginFactory {
-        return DocumentenApiPluginFactory(pluginService, client, storageService, applicationEventPublisher)
+        return DocumentenApiPluginFactory(
+            pluginService,
+            client,
+            storageService,
+            applicationEventPublisher,
+            objectMapper
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentenApiService::class)
+    fun documentenApiService(
+        pluginService: PluginService
+    ): DocumentenApiService {
+        return DocumentenApiService(pluginService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentenApiResource::class)
+    fun documentenApiResource(
+        documentenApiService: DocumentenApiService
+    ): DocumentenApiResource {
+        return DocumentenApiResource(documentenApiService)
+    }
+
+    @Order(380)
+    @Bean
+    fun documentenApiHttpSecurityConfigurer(): DocumentenApiHttpSecurityConfigurer {
+        return DocumentenApiHttpSecurityConfigurer()
     }
 
 }

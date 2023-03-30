@@ -18,9 +18,17 @@ package com.ritense.documentenapi.client
 
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.zgw.ClientTools
+import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToFlux
+import org.springframework.web.util.UriComponentsBuilder
+import reactor.core.publisher.Flux
+import java.io.InputStream
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
 import java.net.URI
 
 class DocumentenApiClient(
@@ -52,6 +60,14 @@ class DocumentenApiClient(
 
     fun getInformatieObject(
         authentication: DocumentenApiAuthentication,
+        baseUrl: URI,
+        objectId: String,
+    ): DocumentInformatieObject {
+        return getInformatieObject(authentication, toObjectUrl(baseUrl, objectId))
+    }
+
+    fun getInformatieObject(
+        authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): DocumentInformatieObject {
         return checkNotNull(
@@ -67,5 +83,51 @@ class DocumentenApiClient(
         ) {
             "Could not retrieve ${DocumentInformatieObject::class.simpleName} at $objectUrl"
         }
+    }
+
+    fun downloadInformatieObjectContent(
+        authentication: DocumentenApiAuthentication,
+        baseUrl: URI,
+        objectId: String,
+    ): InputStream {
+        return downloadInformatieObjectContent(authentication, toObjectUrl(baseUrl, objectId))
+    }
+
+    fun downloadInformatieObjectContent(
+        authentication: DocumentenApiAuthentication,
+        objectUrl: URI
+    ): InputStream {
+        return webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, objectUrl)
+                    .pathSegment("download")
+                    .build()
+            }
+            .accept(MediaType.APPLICATION_OCTET_STREAM)
+            .retrieve()
+            .bodyToFlux<DataBuffer>()
+            .toInputStream()
+    }
+
+    private fun toObjectUrl(baseUrl: URI, objectId: String): URI {
+        return UriComponentsBuilder
+            .fromUri(baseUrl)
+            .pathSegment("enkelvoudiginformatieobjecten", objectId)
+            .build()
+            .toUri()
+    }
+
+    private fun Flux<DataBuffer>.toInputStream(): InputStream {
+        val osPipe = PipedOutputStream()
+        val isPipe = PipedInputStream(osPipe)
+        val flux = this
+            .doOnError { isPipe.use {} }
+            .doFinally { osPipe.use {} }
+        DataBufferUtils.write(flux, osPipe).subscribe(DataBufferUtils.releaseConsumer())
+        return isPipe
     }
 }

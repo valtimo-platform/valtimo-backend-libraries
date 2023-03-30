@@ -16,9 +16,12 @@
 
 package com.ritense.catalogiapi.web.rest
 
-import com.ritense.catalogiapi.web.rest.result.InformatieobjecttypeDto
 import com.ritense.catalogiapi.service.CatalogiService
+import com.ritense.catalogiapi.web.rest.result.BesluittypeDto
+import com.ritense.catalogiapi.web.rest.result.InformatieobjecttypeDto
+import com.ritense.catalogiapi.web.rest.result.ResultaattypeDto
 import com.ritense.catalogiapi.web.rest.result.RoltypeDto
+import com.ritense.catalogiapi.web.rest.result.StatustypeDto
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -54,5 +57,44 @@ class CatalogiResource(
             )
         }
         return ResponseEntity.ok(zaakRolTypes)
+    }
+
+    @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/statustype"])
+    fun getZaakStatustypen(
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+    ): ResponseEntity<List<StatustypeDto>> {
+        val zaakStatusTypes = catalogiService.getStatustypen(caseDefinitionName).map {
+            StatustypeDto(
+                it.url!!,
+                it.omschrijving
+            )
+        }
+        return ResponseEntity.ok(zaakStatusTypes)
+    }
+
+    @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype"])
+    fun getZaakResultaattypen(
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+    ): ResponseEntity<List<ResultaattypeDto>> {
+        val zaakResultaatTypes = catalogiService.getResultaattypen(caseDefinitionName).map {
+            ResultaattypeDto(
+                it.url!!,
+                it.omschrijving
+            )
+        }
+        return ResponseEntity.ok(zaakResultaatTypes)
+    }
+
+    @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype"])
+    fun getZaakBesuilttypen(
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+    ): ResponseEntity<List<BesluittypeDto>> {
+        val zaakBesluitTypes = catalogiService.getBesluittypen(caseDefinitionName).map {
+            BesluittypeDto(
+                it.url!!,
+                it.omschrijving ?: it.url.toString().substringAfterLast("/")
+            )
+        }
+        return ResponseEntity.ok(zaakBesluitTypes)
     }
 }

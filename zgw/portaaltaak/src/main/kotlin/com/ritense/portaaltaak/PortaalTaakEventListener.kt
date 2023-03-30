@@ -87,7 +87,7 @@ class PortaalTaakEventListener(
                     saveDataInDocument(taakObject, task, receiveData)
                     startProcessToUploadDocuments(
                         taakObject,
-                        portaaltaakPlugin.uploadedDocumentsHandlerProcess,
+                        portaaltaakPlugin.completeTaakProcess,
                         document.id().id.toString(),
                         objectManagement.objectenApiPluginConfigurationId.toString(),
                         event.resourceUrl

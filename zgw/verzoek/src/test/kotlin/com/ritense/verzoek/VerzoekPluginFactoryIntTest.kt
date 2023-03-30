@@ -18,12 +18,10 @@ package com.ritense.verzoek
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.BaseIntegrationTest
-import com.ritense.document.repository.DocumentDefinitionRepository
 import com.ritense.notificatiesapiauthentication.NotificatiesApiAuthenticationPlugin
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.Mapping
-import java.net.URI
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterEach
@@ -33,6 +31,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.springframework.beans.factory.annotation.Autowired
+import java.net.URI
 
 internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
 
@@ -132,8 +131,8 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
                 "initiatorRolDescription": "Initiator",
                 "copyStrategy": "specified",
                 "mapping": [{
-                    "key": "/name",
-                    "value": "/fullname"
+                    "target": "doc:/fullname",
+                    "source": "/name"
                 }]
               }]
             }
@@ -157,7 +156,7 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
         assertEquals("https://example.com/my-role-type", plugin.verzoekProperties[0].initiatorRoltypeUrl.toString())
         assertEquals("Initiator", plugin.verzoekProperties[0].initiatorRolDescription)
         assertEquals(CopyStrategy.SPECIFIED, plugin.verzoekProperties[0].copyStrategy)
-        assertEquals(listOf(Mapping("/name", "/fullname")), plugin.verzoekProperties[0].mapping)
+        assertEquals(listOf(Mapping("/name", "doc:/fullname")), plugin.verzoekProperties[0].mapping)
     }
 
     private fun mockResponse(body: String): MockResponse {

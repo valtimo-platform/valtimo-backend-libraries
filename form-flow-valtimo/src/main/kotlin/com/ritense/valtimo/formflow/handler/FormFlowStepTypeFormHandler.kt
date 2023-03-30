@@ -70,7 +70,10 @@ class FormFlowStepTypeFormHandler(
         val document = documentService.get(documentId)
         val documentContent = document.content().asJson() as ObjectNode
 
-        camundaFormAssociationService.prefillProcessVariables(formDefinition, document)
+        if (taskInstanceId == null) {
+            camundaFormAssociationService.prefillProcessVariables(formDefinition, document)
+        }
+
         camundaFormAssociationService.prefillDataResolverFields(formDefinition, document, documentContent)
 
         if (taskInstanceId != null) {

@@ -36,84 +36,58 @@ class CorrelationServiceImpl(
     val associationService: ProcessDocumentAssociationService
 ) : CorrelationService{
 
-    override fun sendStartMessage(message: String): MessageCorrelationResult {
-        return sendStartMessage(message,null,null)
-    }
-
-    override fun sendStartMessage(message: String, businessKey: String?): MessageCorrelationResult {
+    override fun sendStartMessage(message: String, businessKey: String): MessageCorrelationResult {
         return sendStartMessage(message, businessKey, null)
     }
 
-    override fun sendStartMessage(message: String, businessKey: String?, variables: Map<String, Any>?): MessageCorrelationResult {
+    override fun sendStartMessage(message: String, businessKey: String, variables: Map<String, Any>?): MessageCorrelationResult {
         val result = correlate(message, businessKey,variables)
-        businessKey?.run {
-            val processName =
-                camundaProcessService.findProcessDefinitionById(result.processInstance.processDefinitionId).name
-            associateDocumentToProcess(result.processInstance.id, processName, this)
-        }
+        val processName = camundaProcessService.findProcessDefinitionById(result.processInstance.processDefinitionId).name
+        associateDocumentToProcess(result.processInstance.id, processName, businessKey)
+
         return result
     }
 
     override fun sendStartMessageWithProcessDefinitionKey(
         message: String,
         targetProcessDefinitionKey: String,
-        businessKey: String?,
+        businessKey: String,
         variables: Map<String, Any>?
     ){
         val processDefinitionId = getLatestProcessDefinitionIdByKey(targetProcessDefinitionKey)
         val correlationResultProcess = correlateWithProcessDefinitionId(message, businessKey, processDefinitionId.id, variables)
-        businessKey?.run {
-            val processName =
-                camundaProcessService.findProcessDefinitionById(correlationResultProcess.processDefinitionId).name
-            associateDocumentToProcess(correlationResultProcess.processInstanceId, processName, businessKey)
-        }
+        val processName = camundaProcessService.findProcessDefinitionById(correlationResultProcess.processDefinitionId).name
+        associateDocumentToProcess(correlationResultProcess.processInstanceId, processName, businessKey)
     }
 
-    override fun sendCatchEventMessage(message: String): MessageCorrelationResult{
-        return sendCatchEventMessage(message, null, null)
-    }
-
-    override fun sendCatchEventMessage(message: String, businessKey: String?): MessageCorrelationResult{
+    override fun sendCatchEventMessage(message: String, businessKey: String): MessageCorrelationResult{
         return sendCatchEventMessage(message, businessKey, null)
     }
 
-    override fun sendCatchEventMessage(message: String, businessKey: String?, variables: Map<String, Any>?): MessageCorrelationResult {
+    override fun sendCatchEventMessage(message: String, businessKey: String, variables: Map<String, Any>?): MessageCorrelationResult {
         val result = correlate(message, businessKey, variables)
         val correlationResultProcessInstance = camundaProcessService.findProcessInstanceById(result.execution.processInstanceId)
-        businessKey.run {
-            val processName =
-                camundaProcessService.findProcessDefinitionById(correlationResultProcessInstance.get().processDefinitionId).name
-            associateDocumentToProcess(
-                correlationResultProcessInstance.get().processInstanceId,
-                processName,
-                correlationResultProcessInstance.get().businessKey)
-        }
+        val processName = camundaProcessService.findProcessDefinitionById(correlationResultProcessInstance.get().processDefinitionId).name
+        associateDocumentToProcess(
+            correlationResultProcessInstance.get().processInstanceId,
+            processName,
+            correlationResultProcessInstance.get().businessKey)
         return result
     }
-
-    override fun sendCatchEventMessageToAll(message: String): List<MessageCorrelationResult> {
-        return sendCatchEventMessageToAll(message, null, null)
-    }
-
-    override fun sendCatchEventMessageToAll(message: String, businessKey: String?): List<MessageCorrelationResult> {
+    override fun sendCatchEventMessageToAll(message: String, businessKey: String): List<MessageCorrelationResult> {
         return sendCatchEventMessageToAll(message, businessKey, null)
     }
 
-    override fun sendCatchEventMessageToAll(message: String, businessKey: String?, variables: Map<String,Any>?): List<MessageCorrelationResult> {
+    override fun sendCatchEventMessageToAll(message: String, businessKey: String, variables: Map<String,Any>?): List<MessageCorrelationResult> {
         val correlationResultProcessList = correlateAll(message, businessKey, variables)
         correlationResultProcessList.forEach { correlationResultProcess ->
             val runningProcessInstance = camundaProcessService.findProcessInstanceById(correlationResultProcess.execution.processInstanceId)
-            businessKey.run {
-                val processName =
-                    camundaProcessService.findProcessDefinitionById(runningProcessInstance.get().processDefinitionId).name
-                associateDocumentToProcess(
-                    correlationResultProcess.execution.processInstanceId,
-                    processName,
-                    runningProcessInstance.get().businessKey)
-            }
-
+            val processName = camundaProcessService.findProcessDefinitionById(runningProcessInstance.get().processDefinitionId).name
+            associateDocumentToProcess(
+                correlationResultProcess.execution.processInstanceId,
+                processName,
+                runningProcessInstance.get().businessKey)
         }
-
         return correlationResultProcessList
     }
 
@@ -138,11 +112,9 @@ class CorrelationServiceImpl(
     }
 
     private fun correlate(
-        message: String, businessKey: String?, variables: Map<String, Any>?):MessageCorrelationResult{
+        message: String, businessKey: String, variables: Map<String, Any>?):MessageCorrelationResult{
         val builder = runtimeService.createMessageCorrelation(message)
-        businessKey?.run {
-            builder.processInstanceBusinessKey(businessKey)
-        }
+        builder.processInstanceBusinessKey(businessKey)
         variables?.run {
             builder.processInstanceVariablesEqual(variables)
         }
@@ -151,26 +123,24 @@ class CorrelationServiceImpl(
     }
     private fun correlateWithProcessDefinitionId(
         message: String,
-        businessKey: String?,
+        businessKey: String,
         processDefinitionId: String,
         variables: Map<String, Any>?,
     ): ProcessInstance {
         val builder = runtimeService.createMessageCorrelation(message)
         builder.processDefinitionId(processDefinitionId)
-        businessKey?.run {builder.processInstanceBusinessKey(businessKey) }
+        builder.processInstanceBusinessKey(businessKey)
         variables?.run {builder.setVariables(variables)}
         return builder.correlateStartMessage()
     }
 
     private fun correlateAll(
         message: String,
-        businessKey: String?,
+        businessKey: String,
         variables: Map<String, Any>?
     ): List<MessageCorrelationResult> {
         val builder = runtimeService.createMessageCorrelation(message)
-        businessKey?.run {
-            builder.processInstanceBusinessKey(businessKey)
-        }
+        builder.processInstanceBusinessKey(businessKey)
         variables?.run {
             builder.processInstanceVariablesEqual(variables)
         }

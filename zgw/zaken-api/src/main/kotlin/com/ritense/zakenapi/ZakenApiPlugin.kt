@@ -26,6 +26,8 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
+import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
@@ -33,16 +35,18 @@ import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
-import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
+import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
+import mu.KLogger
+import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
-import mu.KLogger
-import mu.KotlinLogging
 
 @Plugin(
     key = ZakenApiPlugin.PLUGIN_KEY,
@@ -124,6 +128,12 @@ class ZakenApiPlugin(
     ) {
         val documentId = UUID.fromString(execution.businessKey)
 
+        val zaakInstanceLink = zaakInstanceLinkRepository.findByDocumentId(documentId)
+        if (zaakInstanceLink != null) {
+            logger.warn { "SKIPPING ZAAK CREATION. Reason: a zaak already exists for this case. Case id '$documentId'. Zaak URL '${zaakInstanceLink.zaakInstanceUrl}'." }
+            return
+        }
+
         val zaak = client.createZaak(
             authenticationPluginConfiguration,
             url,
@@ -161,13 +171,13 @@ class ZakenApiPlugin(
         @PluginActionProperty inpA_nummer: String?
     ) {
         val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaak(documentId)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
         client.createZaakRol(
             authenticationPluginConfiguration,
             url,
             Rol(
-                zaak = URI(zaakUrl),
+                zaak = zaakUrl,
                 roltype = URI(roltypeUrl),
                 roltoelichting = rolToelichting,
                 betrokkeneType = BetrokkeneType.NATUURLIJK_PERSOON,
@@ -179,6 +189,89 @@ class ZakenApiPlugin(
             )
         )
 
+    }
+
+    @PluginAction(
+        key = "create-niet-natuurlijk-persoon-zaak-rol",
+        title = "Create niet-natuurlijk persoon zaakrol",
+        description = "Adds a zaakrol to the zaak in the Zaken API",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun createNietNatuurlijkPersoonZaakRol(
+        execution: DelegateExecution,
+        @PluginActionProperty roltypeUrl: String,
+        @PluginActionProperty rolToelichting: String,
+        @PluginActionProperty innNnpId: String?,
+        @PluginActionProperty annIdentificatie: String?
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+        client.createZaakRol(
+            authenticationPluginConfiguration,
+            url,
+            Rol(
+                zaak = zaakUrl,
+                roltype = URI(roltypeUrl),
+                roltoelichting = rolToelichting,
+                betrokkeneType = BetrokkeneType.NIET_NATUURLIJK_PERSOON,
+                betrokkeneIdentificatie = RolNietNatuurlijkPersoon(
+                    annIdentificatie = annIdentificatie,
+                    innNnpId = innNnpId
+                )
+            )
+        )
+    }
+
+    @PluginAction(
+        key = "set-zaakstatus",
+        title = "Set zaak status",
+        description = "Sets the status of a zaak",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun setZaakStatus(
+        execution: DelegateExecution,
+        @PluginActionProperty statustypeUrl: URI,
+        @PluginActionProperty statustoelichting: String?,
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+        client.createZaakStatus(
+            authenticationPluginConfiguration,
+            url,
+            CreateZaakStatusRequest(
+                zaak = zaakUrl,
+                statustype = statustypeUrl,
+                datumStatusGezet = LocalDateTime.now().minusSeconds(5),
+                statustoelichting = statustoelichting,
+            )
+        )
+    }
+
+    @PluginAction(
+        key = "create-zaakresultaat",
+        title = "Create zaak status",
+        description = "Creates a resultaat for a zaak",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun createZaakResultaat(
+        execution: DelegateExecution,
+        @PluginActionProperty resultaattypeUrl: URI,
+        @PluginActionProperty toelichting: String?,
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+        client.createZaakResultaat(
+            authenticationPluginConfiguration,
+            url,
+            CreateZaakResultaatRequest(
+                zaak = zaakUrl,
+                resultaattype = resultaattypeUrl,
+                toelichting = toelichting,
+            )
+        )
     }
 
     fun getZaakInformatieObjecten(zaakUrl: URI): List<ZaakInformatieObject> {
