@@ -5,5 +5,6 @@ enum class Action {
     CREATE_INSTANCE,
     ASSIGN,
     CLAIM,
-    COMPLETE
+    COMPLETE,
+    LIST_VIEW
 }

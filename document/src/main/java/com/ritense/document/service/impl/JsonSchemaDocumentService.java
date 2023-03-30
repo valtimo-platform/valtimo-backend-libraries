@@ -98,7 +98,17 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public Optional<JsonSchemaDocument> findBy(Document.Id documentId) {
-        return documentRepository.findById(documentId);
+        Optional<JsonSchemaDocument> optionalDocument = documentRepository.findById(documentId);
+
+        if (optionalDocument.isPresent()) {
+            authorizationService.requirePermission(
+                new AuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    List.of(optionalDocument.get().definitionId().name()),
+                    Action.VIEW
+                ), optionalDocument.get());
+        }
+        return optionalDocument;
     }
 
     @Override
@@ -107,9 +117,18 @@ public class JsonSchemaDocumentService implements DocumentService {
             JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
         );
 
-        return documentOptional.orElseThrow(
+        JsonSchemaDocument document = documentOptional.orElseThrow(
             () -> new DocumentNotFoundException("Document not found with id " + documentId)
         );
+
+        authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                List.of(document.definitionId().name()),
+                Action.VIEW
+            ), document);
+
+        return document;
     }
 
     @Override
@@ -268,11 +287,11 @@ public class JsonSchemaDocumentService implements DocumentService {
         authorizationService
             .requirePermission(
                 new AuthorizationRequest<>(
-                    "document-definition",
+                    JsonSchemaDocument.class,
                     List.of(document.definitionId().name()),
-                    Action.CLAIM,
-                    JsonSchemaDocument.class
-                )
+                    Action.CLAIM
+                ),
+                document
             );
 
         var assignee = userManagementService.findById(assigneeId);

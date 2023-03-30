@@ -106,21 +106,17 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                 document = (JsonSchemaDocument) documentService.findBy(
                     JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
                 ).orElseThrow(() -> new DocumentNotFoundException(String.format("Unable to find a Document for document ID '%s'", documentId)));
+
+                authorizationService
+                    .requirePermission(
+                        new AuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            List.of(processDefinitionKey),
+                            Action.CREATE_INSTANCE
+                        ),
+                        document
+                    );
             }
-
-            authorizationService
-                .requirePermission(
-                    new AuthorizationRequest<>(
-                        "task-definition",
-                        List.of(processDefinitionKey),
-
-//                        Map.of("process-definition-key", List.of(processDefinitionKey),
-//                            "document-definition-key", List.of(document.definitionId().name())
-//                        ),
-                        Action.CREATE_INSTANCE,
-                        JsonSchemaDocument.class
-                    )
-                );
 
             ProcessDocumentDefinition processDocumentDefinition;
             if (document == null) {

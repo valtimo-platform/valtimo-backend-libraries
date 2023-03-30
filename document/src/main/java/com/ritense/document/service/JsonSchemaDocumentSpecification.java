@@ -31,6 +31,14 @@ public class JsonSchemaDocumentSpecification implements AuthorizationSpecificati
     }
 
     @Override
+    public boolean isAuthorized(@NotNull AuthorizationRequest<JsonSchemaDocument> authContext, JsonSchemaDocument entity) {
+        return permissions.stream().filter(permission ->
+            JsonSchemaDocument.class.equals(permission.getResourceType())
+                && authContext.getAction().equals(permission.getAction())
+        ).anyMatch(permission -> permission.appliesTo(authContext.getResourceType(), entity));
+    }
+
+    @Override
     public Predicate toPredicate(
         Root<JsonSchemaDocument> root,
         CriteriaQuery<?> query,
@@ -38,18 +46,18 @@ public class JsonSchemaDocumentSpecification implements AuthorizationSpecificati
     ) {
         // Filter the permissions for the relevant ones and use those to  find the filters that are required
         // Turn those filters into predicates
-
-        List<Predicate> predicates = filters.stream().map(
-            filter -> {
-                if (filter.getField().startsWith("$.")) {
-                    return jsonPathPredicate(root, criteriaBuilder, filter);
-                } else {
-                    return documentPredicate(root, criteriaBuilder, filter);
-                }
-            }
-        ).toList();
-
-        return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
+        return null;
+//        List<Predicate> predicates = filters.stream().map(
+//            filter -> {
+//                if (filter.getField().startsWith("$.")) {
+//                    return jsonPathPredicate(root, criteriaBuilder, filter);
+//                } else {
+//                    return documentPredicate(root, criteriaBuilder, filter);
+//                }
+//            }
+//        ).toList();
+//
+//        return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
     }
 
     private Predicate jsonPathPredicate(Root<JsonSchemaDocument> root,
@@ -73,11 +81,4 @@ public class JsonSchemaDocumentSpecification implements AuthorizationSpecificati
         return criteriaBuilder.equal(root.get(filter.getField()), filter.getValue());
     }
 
-    @Override
-    public boolean isAuthorized(@NotNull AuthorizationRequest<JsonSchemaDocument> authContext, JsonSchemaDocument entity) {
-        return permissions.stream().filter(permission ->
-            JsonSchemaDocument.class.equals(permission.getResourceType())
-                && authContext.getAction().equals(permission.getAction())
-        ).anyMatch(permission -> permission.appliesTo(entity));
-    }
 }

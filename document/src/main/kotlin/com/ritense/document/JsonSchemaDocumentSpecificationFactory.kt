@@ -12,18 +12,17 @@ class JsonSchemaDocumentSpecificationFactory(
     private var queryDialectHelper: QueryDialectHelper
 ): AuthorizationSpecificationFactory<JsonSchemaDocument> {
 
-    override fun create(context: AuthorizationRequest<JsonSchemaDocument>, permissions: List<Permission>): AuthorizationSpecification<JsonSchemaDocument> {
+    override fun create(
+        context: AuthorizationRequest<JsonSchemaDocument>,
+        permissions: List<Permission>
+    ): AuthorizationSpecification<JsonSchemaDocument> {
         return JsonSchemaDocumentSpecification(
-//            listOf(
-//                AuthorizationFilter("$.voornaam", "Peter", "AND"),
-//                AuthorizationFilter("documentDefinitionId.name", "leningen", "AND") // can also result in an increased nr of results
-//            ),
             permissions,
             queryDialectHelper
         )
     }
 
     override fun canCreate(context: AuthorizationRequest<*>): Boolean {
-        return JsonSchemaDocument::class.java == context.classContext
+        return JsonSchemaDocument::class.java == context.resourceType
     }
 }

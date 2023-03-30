@@ -1,6 +1,7 @@
 package com.ritense.authorization.permission
 
 import com.ritense.authorization.Action
+import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Root
 
@@ -9,10 +10,13 @@ class Permission(
     val action: Action,
     val filters: List<PermissionFilter>
 ) {
-    fun appliesTo(entity: Any): Boolean {
-        return if (entity::class.java == resourceType) {
+    fun appliesTo(resourceType: Class<*>, entity: Any?): Boolean {
+        return if (this.resourceType.javaClass == resourceType.javaClass) {
+            if (entity == null && filters.isNotEmpty()) {
+                return false
+            }
             filters
-                .map { it.isValid(entity) }
+                .map { it.isValid(entity!!) }
                 .all { it }
         } else {
             false
@@ -20,9 +24,9 @@ class Permission(
     }
 
     fun toPredicate(
-        Root<*> root,
-        CriteriaQuery<?> query,
-        CriteriaBuilder criteriaBuilder
+        root: Root<*> ,
+        query: CriteriaQuery<*>,
+        criteriaBuilder: CriteriaBuilder
     ) {
 
     }
