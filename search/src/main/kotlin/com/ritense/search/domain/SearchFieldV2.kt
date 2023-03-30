@@ -37,7 +37,7 @@ data class SearchFieldV2(
     @Column(name = "path")
     val path: String,
     @Column(name = "column_order")
-    val order: Int,
+    var order: Int,
     @Column(name = "data_type")
     val dataType: DataType,
     @Column(name = "field_type")

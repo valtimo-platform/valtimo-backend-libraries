@@ -61,4 +61,10 @@ class SearchListColumnService(
         with(findByOwnerIdAndKey(ownerId, key)) {
             this?.let { searchListColumnRepository.delete(it) }
         }
+
+    fun updateList(ownerId: String, searchListColumn: List<SearchListColumn>) {
+        var order = 0
+        searchListColumn.forEach { it.order = order++ }
+        searchListColumnRepository.saveAll(searchListColumn)
+    }
 }
