@@ -42,18 +42,13 @@ data class CustomProcessLink(
 
     override fun copy(
         id: UUID,
-        processDefinitionId: String,
-        activityId: String,
-        activityType: ActivityTypeWithEventName,
-        processLinkType: String
-    ): CustomProcessLink {
-        return this.copy(
-            id = id,
-            processDefinitionId = processDefinitionId,
-            activityId = activityId,
-            activityType = activityType,
-        )
-    }
+        processDefinitionId: String
+    ) = copy(
+        id = id,
+        processDefinitionId = processDefinitionId,
+        activityId = activityId,
+        activityType = activityType,
+    )
 
     companion object {
         const val PROCESS_LINK_TYPE_TEST = "test"
