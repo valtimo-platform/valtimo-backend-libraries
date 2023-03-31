@@ -20,7 +20,7 @@ import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_T
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import java.util.UUID
 
-data class CustomProcessLinkReponseDto(
+data class CustomProcessLinkResponseDto(
     override val id: UUID,
     override val processDefinitionId: String,
     override val activityId: String,
