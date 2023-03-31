@@ -128,7 +128,7 @@ public class FormLinkAutoConfiguration {
         return new CamundaFormAssociationManagementResource(formAssociationService);
     }
 
-    @Bean
+    @Bean("formProcessLinkResource")
     @ConditionalOnMissingBean(ProcessLinkResource.class)
     public ProcessLinkResource defaultProcessLinkResource(
         ProcessLinkService processLinkService
@@ -166,7 +166,7 @@ public class FormLinkAutoConfiguration {
         return new FormProcessLinkTaskProvider();
     }
 
-    @Bean
+    @Bean("formProcessLinkService")
     @ConditionalOnMissingBean(ProcessLinkService.class)
     public ProcessLinkService processLinkService(
         RepositoryService repositoryService,

@@ -50,6 +50,8 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RepositoryService
@@ -67,6 +69,7 @@ class ApplicationReadyEventListener(
     private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
     private val documentDefinitionService: DocumentDefinitionService,
     private val pluginService: PluginService,
+    private val processLinkService: ProcessLinkService,
     private val objectManagementService: ObjectManagementService,
     private val repositoryService: RepositoryService,
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
@@ -933,15 +936,15 @@ class ApplicationReadyEventListener(
             .latestVersion()
             .singleResult()
             .id
-        if (pluginService.getProcessLinks(processDefinitionId, activityId).isEmpty()) {
-            pluginService.createProcessLink(
+        if (processLinkService.getProcessLinks(processDefinitionId, activityId).isEmpty()) {
+            processLinkService.createProcessLink(
                 PluginProcessLinkCreateDto(
-                    processDefinitionId,
-                    activityId,
-                    pluginConfigurationId,
-                    pluginActionDefinitionKey,
-                    jacksonObjectMapper().readValue(actionProperties),
-                    activityType,
+                    processDefinitionId = processDefinitionId,
+                    activityId = activityId,
+                    pluginConfigurationId = pluginConfigurationId,
+                    pluginActionDefinitionKey = pluginActionDefinitionKey,
+                    actionProperties = jacksonObjectMapper().readValue(actionProperties),
+                    activityType = ActivityTypeWithEventName.fromValue(activityType),
                 )
             )
         }
