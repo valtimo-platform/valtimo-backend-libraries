@@ -23,9 +23,5 @@ data class CustomProcessLinkCreateRequestDto(
     override val processDefinitionId: String,
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
-) : ProcessLinkCreateRequestDto(
-    processDefinitionId,
-    activityId,
-    activityType,
-    PROCESS_LINK_TYPE_TEST,
-)
+    override val processLinkType: String = PROCESS_LINK_TYPE_TEST,
+) : ProcessLinkCreateRequestDto

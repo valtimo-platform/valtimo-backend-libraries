@@ -25,10 +25,5 @@ data class CustomProcessLinkReponseDto(
     override val processDefinitionId: String,
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
-) : ProcessLinkResponseDto(
-    id,
-    processDefinitionId,
-    activityId,
-    activityType,
-    PROCESS_LINK_TYPE_TEST
-)
+    override val processLinkType: String = PROCESS_LINK_TYPE_TEST,
+) : ProcessLinkResponseDto

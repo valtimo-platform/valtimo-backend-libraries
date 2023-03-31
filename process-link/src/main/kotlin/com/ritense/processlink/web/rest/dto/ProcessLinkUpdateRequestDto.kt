@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.util.UUID
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
-abstract class ProcessLinkUpdateRequestDto (
-    open val id: UUID,
-    open val processLinkType: String,
-)
+interface ProcessLinkUpdateRequestDto {
+    val id: UUID
+    val processLinkType: String
+}
