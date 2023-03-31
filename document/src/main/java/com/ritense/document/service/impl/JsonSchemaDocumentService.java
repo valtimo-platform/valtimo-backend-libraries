@@ -308,10 +308,6 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public List<NamedUser> getCandidateUsers(Document.Id documentId) {
-        var searchCriteria = new SearchByUserGroupsCriteria();
-        searchCriteria.addToOrUserGroups(getDocumentRoles(documentId));
-        return userManagementService.findByRoles(searchCriteria).stream()
-            .map(NamedUser::from)
-            .collect(Collectors.toList());
+        return userManagementService.findNamedUserByRoles(getDocumentRoles(documentId));
     }
 }
