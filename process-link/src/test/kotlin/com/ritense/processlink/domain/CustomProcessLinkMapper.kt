@@ -30,7 +30,7 @@ class CustomProcessLinkMapper(
 
     init {
         objectMapper.registerSubtypes(
-            CustomProcessLinkResponseDto::class.java,
+            CustomProcessLinkReponseDto::class.java,
             CustomProcessLinkCreateRequestDto::class.java,
             CustomProcessLinkUpdateRequestDto::class.java,
         )
@@ -40,7 +40,7 @@ class CustomProcessLinkMapper(
 
     override fun toProcessLinkResponseDto(processLink: ProcessLink): ProcessLinkResponseDto {
         processLink as CustomProcessLink
-        return CustomProcessLinkResponseDto(
+        return CustomProcessLinkReponseDto(
             id = processLink.id,
             processDefinitionId = processLink.processDefinitionId,
             activityId = processLink.activityId,

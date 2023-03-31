@@ -23,10 +23,8 @@ import java.util.UUID
 
 data class PluginProcessLinkUpdateDto(
     override val id: UUID,
+    override val processLinkType: String = PROCESS_LINK_TYPE_PLUGIN,
     val pluginConfigurationId: UUID,
     val pluginActionDefinitionKey: String,
     val actionProperties: ObjectNode? = null
-) : ProcessLinkUpdateRequestDto {
-    override val processLinkType: String
-        get() = PROCESS_LINK_TYPE_PLUGIN
-}
+) : ProcessLinkUpdateRequestDto

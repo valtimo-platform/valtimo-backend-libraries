@@ -25,11 +25,9 @@ import java.util.UUID
 data class PluginProcessLinkCreateDto(
     override val processDefinitionId: String,
     override val activityId: String,
+    override val processLinkType: String = PROCESS_LINK_TYPE_PLUGIN,
     val pluginConfigurationId: UUID,
     val pluginActionDefinitionKey: String,
     val actionProperties: ObjectNode? = null,
     override val activityType: ActivityTypeWithEventName,
-) : ProcessLinkCreateRequestDto {
-    override val processLinkType: String
-        get() = PROCESS_LINK_TYPE_PLUGIN
-}
+) : ProcessLinkCreateRequestDto
