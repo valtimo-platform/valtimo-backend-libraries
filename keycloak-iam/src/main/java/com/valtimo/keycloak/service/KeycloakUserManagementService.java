@@ -23,6 +23,14 @@ import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCrite
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import javax.ws.rs.NotFoundException;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -30,17 +38,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.ws.rs.NotFoundException;
-import org.keycloak.representations.idm.RoleRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
 public class KeycloakUserManagementService implements UserManagementService {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakUserManagementService.class);
+    protected static final int MAX_USERS = 1000;
 
     private final KeycloakService keycloakService;
     private final String clientName;
@@ -88,7 +91,7 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public List<ManageableUser> getAllUsers() {
-        return keycloakService.usersResource().list().stream()
+        return keycloakService.usersResource().list(0, MAX_USERS).stream()
             .filter(UserRepresentation::isEnabled)
             .map(this::userRepresentationToManagableUser)
             .collect(Collectors.toList());
@@ -119,7 +122,7 @@ public class KeycloakUserManagementService implements UserManagementService {
         boolean rolesFound = false;
 
         try {
-            roleUserMembers.addAll(keycloakService.realmRolesResource().get(authority).getRoleUserMembers());
+            roleUserMembers.addAll(keycloakService.realmRolesResource().get(authority).getRoleUserMembers(0, MAX_USERS));
             rolesFound = true;
         } catch (NotFoundException e) {
             logger.debug("Could not find realm roles", e);
@@ -127,7 +130,7 @@ public class KeycloakUserManagementService implements UserManagementService {
 
         if (!clientName.isBlank()) {
             try {
-                roleUserMembers.addAll(keycloakService.clientRolesResource().get(authority).getRoleUserMembers());
+                roleUserMembers.addAll(keycloakService.clientRolesResource().get(authority).getRoleUserMembers(0, MAX_USERS));
                 rolesFound = true;
             } catch (NotFoundException e) {
                 logger.debug("Could not find client roles", e);
