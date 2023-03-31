@@ -62,7 +62,6 @@ internal class FormProcessLinkMapperTest {
         val formProcessLinkResponseDto = formProcessLinkMapper.toProcessLinkResponseDto(formProcessLink)
 
         assertTrue(formProcessLinkResponseDto is FormProcessLinkResponseDto)
-        formProcessLinkResponseDto as FormProcessLinkResponseDto
         assertEquals(formProcessLink.id, formProcessLinkResponseDto.id)
         assertEquals(formProcessLink.processDefinitionId, formProcessLinkResponseDto.processDefinitionId)
         assertEquals(formProcessLink.activityId, formProcessLinkResponseDto.activityId)
@@ -83,7 +82,6 @@ internal class FormProcessLinkMapperTest {
         val formProcessLink = formProcessLinkMapper.toNewProcessLink(createRequestDto)
 
         assertTrue(formProcessLink is FormProcessLink)
-        formProcessLink as FormProcessLink
         assertEquals(createRequestDto.processDefinitionId, formProcessLink.processDefinitionId)
         assertEquals(createRequestDto.activityId, formProcessLink.activityId)
         assertEquals(createRequestDto.activityType, formProcessLink.activityType)
@@ -108,7 +106,6 @@ internal class FormProcessLinkMapperTest {
         val formProcessLink = formProcessLinkMapper.toUpdatedProcessLink(processLinkToUpdate, updateRequestDto)
 
         assertTrue(formProcessLink is FormProcessLink)
-        formProcessLink as FormProcessLink
         assertEquals(processLinkToUpdate.processDefinitionId, formProcessLink.processDefinitionId)
         assertEquals(processLinkToUpdate.activityId, formProcessLink.activityId)
         assertEquals(processLinkToUpdate.activityType, formProcessLink.activityType)

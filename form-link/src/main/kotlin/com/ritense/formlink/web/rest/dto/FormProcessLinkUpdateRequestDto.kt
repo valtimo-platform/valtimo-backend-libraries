@@ -22,8 +22,6 @@ import java.util.UUID
 
 data class FormProcessLinkUpdateRequestDto(
     override val id: UUID,
+    override val processLinkType: String = PROCESS_LINK_TYPE_FORM,
     val formDefinitionId: UUID,
-) : ProcessLinkUpdateRequestDto(
-    id,
-    PROCESS_LINK_TYPE_FORM,
-)
+) : ProcessLinkUpdateRequestDto

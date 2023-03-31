@@ -25,10 +25,6 @@ data class FormProcessLinkCreateRequestDto(
     override val processDefinitionId: String,
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
+    override val processLinkType: String = PROCESS_LINK_TYPE_FORM,
     val formDefinitionId: UUID,
-) : ProcessLinkCreateRequestDto(
-    processDefinitionId,
-    activityId,
-    activityType,
-    PROCESS_LINK_TYPE_FORM,
-)
+) : ProcessLinkCreateRequestDto
