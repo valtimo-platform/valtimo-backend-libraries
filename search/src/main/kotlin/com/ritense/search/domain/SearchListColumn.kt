@@ -40,7 +40,7 @@ data class SearchListColumn(
     @Column(name = "path")
     val path: String,
     @Column(name = "column_order")
-    var order: Int,
+    val order: Int,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "display_type")
     val displayType: DisplayType,

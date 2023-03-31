@@ -63,9 +63,11 @@ class SearchFieldV2Service(
         }
 
     fun updateList(ownerId: String, searchFieldV2: List<SearchFieldV2>): List<SearchFieldV2> {
-        var order = 0
-        searchFieldV2.forEach { it.order = order++ }
-        return searchFieldV2Repository.saveAll(searchFieldV2)
+        return searchFieldV2Repository.saveAll(
+            searchFieldV2.mapIndexed{
+                index, field ->  field.copy(order = index)
+            }
+        )
     }
 
 }
