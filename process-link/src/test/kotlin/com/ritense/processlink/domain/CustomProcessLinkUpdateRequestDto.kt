@@ -22,7 +22,5 @@ import java.util.UUID
 
 data class CustomProcessLinkUpdateRequestDto(
     override val id: UUID,
-) : ProcessLinkUpdateRequestDto(
-    id,
-    PROCESS_LINK_TYPE_TEST,
-)
+    override val processLinkType: String = PROCESS_LINK_TYPE_TEST,
+) : ProcessLinkUpdateRequestDto

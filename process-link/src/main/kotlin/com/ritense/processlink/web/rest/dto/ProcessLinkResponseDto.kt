@@ -21,10 +21,10 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName
 import java.util.UUID
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
-abstract class ProcessLinkResponseDto (
-    open val id: UUID,
-    open val processDefinitionId: String,
-    open val activityId: String,
-    open val activityType: ActivityTypeWithEventName,
-    open val processLinkType: String,
-)
+interface ProcessLinkResponseDto {
+    val id: UUID
+    val processDefinitionId: String
+    val activityId: String
+    val activityType: ActivityTypeWithEventName
+    val processLinkType: String
+}
