@@ -9,7 +9,7 @@ spring:
       auto-commit: false
   liquibase:
     enabled: true
-    change-log: classpath:/config/liquibase/form-flow-master.xml
+    change-log: classpath:/config/liquibase/form-flow-valtimo-master.xml
     contexts: unit-test
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect

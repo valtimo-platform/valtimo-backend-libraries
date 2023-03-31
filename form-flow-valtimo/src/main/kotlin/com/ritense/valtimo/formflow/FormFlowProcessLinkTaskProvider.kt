@@ -18,8 +18,6 @@ package com.ritense.valtimo.formflow
 
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
-import com.ritense.formflow.domain.definition.FormFlowDefinition
-import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.domain.FormAssociation
@@ -28,7 +26,6 @@ import com.ritense.formlink.domain.ProcessLinkTaskProvider
 import com.ritense.formlink.domain.TaskOpenResult
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
 import com.ritense.formlink.service.FormAssociationService
-import org.apache.logging.log4j.util.Strings
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.task.Task
@@ -58,7 +55,7 @@ class FormFlowProcessLinkTaskProvider(
     private fun createFormFlowInstance(task: Task): FormFlowInstance {
         val additionalProperties = getAdditionalProperties(task)
         val formFlowId = getFormAssociationByTask(task).formLink.formFlowId
-        val formFlowDefinition = getFormFlowDefinition(formFlowId)
+        val formFlowDefinition = formFlowService.findDefinition(formFlowId)!!
         return formFlowService.save(formFlowDefinition.createInstance(additionalProperties))
     }
 
@@ -77,20 +74,6 @@ class FormFlowProcessLinkTaskProvider(
         }
 
         return formAssociation
-    }
-
-    private fun getFormFlowDefinition(formFlowId: String): FormFlowDefinition {
-        val formFlowIdAsArray = formFlowId.split(":")
-        if (formFlowIdAsArray.size != 2) {
-            throw IllegalArgumentException("Invalid Format found for formFlowId '${Strings.join(formFlowIdAsArray, ':' )}'. Form flow id must have format key:version")
-        }
-        return if (formFlowIdAsArray[1] == "latest") {
-            formFlowService.findLatestDefinitionByKey(formFlowIdAsArray[0])!!
-        } else {
-            formFlowService.findDefinition(
-                FormFlowDefinitionId(formFlowIdAsArray[0], formFlowIdAsArray[1].toLong())
-            )
-        }
     }
 
     private fun getAdditionalProperties(task: Task): Map<String, Any> {

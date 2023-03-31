@@ -26,6 +26,7 @@ dependencies {
     implementation project(':core')
     implementation project(':document')
     implementation project(':process-document')
+    implementation project(':process-link')
     implementation project(':form')
     implementation project(':resource')
     implementation project(":resource:temporary-resource-storage")

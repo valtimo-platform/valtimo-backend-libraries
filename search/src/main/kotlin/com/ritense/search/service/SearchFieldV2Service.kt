@@ -62,4 +62,12 @@ class SearchFieldV2Service(
             this?.let { searchFieldV2Repository.delete(it) }
         }
 
+    fun updateList(ownerId: String, searchFieldV2: List<SearchFieldV2>): List<SearchFieldV2> {
+        return searchFieldV2Repository.saveAll(
+            searchFieldV2.mapIndexed{
+                index, field ->  field.copy(order = index)
+            }
+        )
+    }
+
 }
