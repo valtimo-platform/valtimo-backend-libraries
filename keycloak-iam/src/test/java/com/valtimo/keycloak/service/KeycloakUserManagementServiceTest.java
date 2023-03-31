@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package com.valtimo.keycloak.security.jwt.service;
+package com.valtimo.keycloak.service;
 
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
-import com.valtimo.keycloak.service.KeycloakService;
-import com.valtimo.keycloak.service.KeycloakUserManagementService;
-import javax.ws.rs.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
+import javax.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -33,6 +31,7 @@ import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+import static com.valtimo.keycloak.service.KeycloakUserManagementService.MAX_USERS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -56,9 +55,9 @@ class KeycloakUserManagementServiceTest {
         johnDoe = newUser("John", "Doe", List.of(USER, ADMIN));
         ashaMiller = newUser("Asha", "Miller", List.of(ADMIN));
 
-        when(keycloakService.realmRolesResource().get(USER).getRoleUserMembers())
+        when(keycloakService.realmRolesResource().get(USER).getRoleUserMembers(0, MAX_USERS))
             .thenReturn(Set.of(johnDoe, jamesVance));
-        when(keycloakService.realmRolesResource().get(ADMIN).getRoleUserMembers())
+        when(keycloakService.realmRolesResource().get(ADMIN).getRoleUserMembers(0, MAX_USERS))
             .thenReturn(Set.of(johnDoe, ashaMiller));
     }
 
