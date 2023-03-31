@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest
+package com.ritense.processlink.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
-import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
-import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.domain.CustomProcessLink
+import com.ritense.processlink.domain.CustomProcessLinkCreateRequestDto
+import com.ritense.processlink.domain.CustomProcessLinkMapper
+import com.ritense.processlink.domain.CustomProcessLinkUpdateRequestDto
+import com.ritense.processlink.mapper.ProcessLinkMapper
+import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.contract.json.Mapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -30,6 +33,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -42,54 +46,55 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 
-internal class PluginProcessLinkResourceTest {
+internal class ProcessLinkResourceTest {
 
     lateinit var mockMvc: MockMvc
-    lateinit var pluginService: PluginService
-    lateinit var pluginProcessLinkResource: PluginProcessLinkResource
+    lateinit var processLinkService: ProcessLinkService
+    lateinit var processLinkMappers: List<ProcessLinkMapper>
+    lateinit var processLinkResource: ProcessLinkResource
+    lateinit var objectMapper: ObjectMapper
 
     @BeforeEach
     fun init() {
-        pluginService = mock()
-        pluginProcessLinkResource = PluginProcessLinkResource(pluginService)
+        objectMapper = jacksonObjectMapper()
+        processLinkService = mock()
+        processLinkMappers = listOf(CustomProcessLinkMapper(objectMapper))
+        processLinkResource = ProcessLinkResource(processLinkService, processLinkMappers)
+
+        val mappingJackson2HttpMessageConverter = MappingJackson2HttpMessageConverter()
+        mappingJackson2HttpMessageConverter.objectMapper = objectMapper
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(pluginProcessLinkResource)
+            .standaloneSetup(processLinkResource)
+            .setMessageConverters(mappingJackson2HttpMessageConverter)
             .build()
     }
 
 
     @Test
-    fun `should list plugin process links`() {
-        val properties: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
+    fun `should list process links`() {
         val id1 = UUID.randomUUID()
         val id2 = UUID.randomUUID()
         val processDefinitionId = "pid"
         val activityId = "aid"
-
-        val pluginConfigurationId1 = UUID.randomUUID()
-        val pluginConfigurationId2 = UUID.randomUUID()
+        val activityType = ActivityTypeWithEventName.SERVICE_TASK_START
 
         val processLinks = listOf(
-            PluginProcessLinkResultDto(
+            CustomProcessLink(
                 id = id1,
                 processDefinitionId = processDefinitionId,
                 activityId = activityId,
-                actionProperties = properties,
-                pluginConfigurationId = pluginConfigurationId1,
-                pluginActionDefinitionKey = "pluginActionDefinitionKey1"
+                activityType = activityType
             ),
-            PluginProcessLinkResultDto(
+            CustomProcessLink(
                 id = id2,
                 processDefinitionId = processDefinitionId,
                 activityId = activityId,
-                actionProperties = properties,
-                pluginConfigurationId = pluginConfigurationId2,
-                pluginActionDefinitionKey = "pluginActionDefinitionKey2"
+                activityType = activityType
             )
         )
 
-        whenever(pluginService.getProcessLinks(any(), any())).thenReturn(processLinks)
+        whenever(processLinkService.getProcessLinks(any(), any())).thenReturn(processLinks)
 
         mockMvc.perform(
             get("/api/v1/process-link?processDefinitionId=$processDefinitionId&activityId=$activityId")
@@ -101,78 +106,64 @@ internal class PluginProcessLinkResourceTest {
             .andExpect(jsonPath("$.[0].id").value(id1.toString()))
             .andExpect(jsonPath("$.[0].processDefinitionId").value(processDefinitionId))
             .andExpect(jsonPath("$.[0].activityId").value(activityId))
-            .andExpect(jsonPath("$.[0].actionProperties.name").value("whatever"))
-            .andExpect(jsonPath("$.[0].pluginConfigurationId").value(pluginConfigurationId1.toString()))
-            .andExpect(jsonPath("$.[0].pluginActionDefinitionKey").value("pluginActionDefinitionKey1"))
+            .andExpect(jsonPath("$.[0].activityType").value(activityType.value))
             .andExpect(jsonPath("$.[1].id").value(id2.toString()))
             .andExpect(jsonPath("$.[1].processDefinitionId").value(processDefinitionId))
             .andExpect(jsonPath("$.[1].activityId").value(activityId))
-            .andExpect(jsonPath("$.[1].actionProperties.name").value("whatever"))
-            .andExpect(jsonPath("$.[1].pluginConfigurationId").value(pluginConfigurationId2.toString()))
-            .andExpect(jsonPath("$.[1].pluginActionDefinitionKey").value("pluginActionDefinitionKey2"))
+            .andExpect(jsonPath("$.[1].activityType").value(activityType.value))
 
 
-        verify(pluginService).getProcessLinks(processDefinitionId, activityId)
+        verify(processLinkService).getProcessLinks(processDefinitionId, activityId)
     }
 
     @Test
-    fun `should add plugin process link`() {
-        val properties: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
-
-        val pluginProcessLinkDto = PluginProcessLinkCreateDto(
+    fun `should add process link`() {
+        val processLinkDto = CustomProcessLinkCreateRequestDto(
             processDefinitionId = UUID.randomUUID().toString(),
-            pluginConfigurationId = UUID.randomUUID(),
             activityId = "someActivity",
-            pluginActionDefinitionKey = "some-plugin-action",
-            actionProperties = properties,
-            activityType = "bpmn:ServiceTask:start"
+            activityType = ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
         mockMvc.perform(
             post("/api/v1/process-link")
-            .characterEncoding(StandardCharsets.UTF_8.name())
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(Mapper.INSTANCE.get().writeValueAsString(pluginProcessLinkDto))
-            .accept(MediaType.APPLICATION_JSON_VALUE)
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Mapper.INSTANCE.get().writeValueAsString(processLinkDto))
+                .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())
             .andExpect(status().isNoContent)
 
-        verify(pluginService).createProcessLink(pluginProcessLinkDto)
+        verify(processLinkService).createProcessLink(processLinkDto)
     }
 
     @Test
-    fun `should update plugin process link`() {
-        val properties: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
-
-        val pluginProcessLinkDto = PluginProcessLinkUpdateDto(
+    fun `should update process link`() {
+        val processLinkDto = CustomProcessLinkUpdateRequestDto(
             id = UUID.randomUUID(),
-            pluginConfigurationId = UUID.randomUUID(),
-            pluginActionDefinitionKey = "some-plugin-action",
-            actionProperties = properties
         )
 
         mockMvc.perform(
             put("/api/v1/process-link")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(Mapper.INSTANCE.get().writeValueAsString(pluginProcessLinkDto))
+                .content(Mapper.INSTANCE.get().writeValueAsString(processLinkDto))
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())
             .andExpect(status().isNoContent)
 
-        verify(pluginService).updateProcessLink(pluginProcessLinkDto)
+        verify(processLinkService).updateProcessLink(processLinkDto)
     }
 
     @Test
-    fun `should delete plugin process link`() {
-        val pluginProcessLinkId = UUID.randomUUID()
+    fun `should delete process link`() {
+        val processLinkId = UUID.randomUUID()
 
-        mockMvc.perform(delete("/api/v1/process-link/{processLinkId}", pluginProcessLinkId))
+        mockMvc.perform(delete("/api/v1/process-link/{processLinkId}", processLinkId))
             .andDo(print())
             .andExpect(status().isNoContent)
 
-        verify(pluginService).deleteProcessLink(pluginProcessLinkId)
+        verify(processLinkService).deleteProcessLink(processLinkId)
     }
 }

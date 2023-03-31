@@ -16,16 +16,13 @@
 
 package com.ritense.plugin.domain
 
-import com.fasterxml.jackson.annotation.JsonValue
 import com.ritense.valtimo.contract.domain.AbstractId
 import java.util.UUID
-import javax.persistence.Column
 import javax.persistence.Embeddable
 
+@Deprecated("Marked for removal since 10.6.0")
 @Embeddable
 class PluginProcessLinkId(
-    @Column(name = "plugin_process_link_id")
-    @JsonValue
     val id: UUID
 ): AbstractId<PluginProcessLinkId>(){
 
