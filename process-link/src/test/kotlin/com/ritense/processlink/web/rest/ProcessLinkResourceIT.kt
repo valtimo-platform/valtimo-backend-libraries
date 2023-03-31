@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest
+package com.ritense.processlink.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.plugin.BaseIntegrationTest
-import com.ritense.plugin.domain.ActivityType
-import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
-import com.ritense.plugin.domain.PluginProcessLink
-import com.ritense.plugin.domain.PluginProcessLinkId
-import com.ritense.plugin.repository.PluginConfigurationRepository
-import com.ritense.plugin.repository.PluginDefinitionRepository
-import com.ritense.plugin.repository.PluginProcessLinkRepository
-import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
-import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
-import java.nio.charset.StandardCharsets
+import com.ritense.processlink.BaseIntegrationTest
+import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
+import com.ritense.processlink.domain.CustomProcessLink
+import com.ritense.processlink.domain.CustomProcessLinkCreateRequestDto
+import com.ritense.processlink.domain.CustomProcessLinkUpdateRequestDto
+import com.ritense.processlink.repository.ProcessLinkRepository
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -44,53 +38,35 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import java.nio.charset.StandardCharsets
+import java.util.UUID
 
 
-internal class PluginProcessLinkResourceIT : BaseIntegrationTest() {
+internal class ProcessLinkResourceIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext
 
     @Autowired
-    lateinit var pluginConfigurationRepository: PluginConfigurationRepository
-
-    @Autowired
-    lateinit var pluginDefinitionRepository: PluginDefinitionRepository
-
-    @Autowired
-    lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
+    lateinit var processLinkRepository: ProcessLinkRepository
 
 
     lateinit var mockMvc: MockMvc
-    lateinit var pluginConfiguration: PluginConfiguration
 
     @BeforeEach
     fun init() {
         mockMvc = MockMvcBuilders
             .webAppContextSetup(this.webApplicationContext)
             .build()
-
-        val pluginDefinition = pluginDefinitionRepository.getById("test-plugin")
-
-        pluginConfiguration = pluginConfigurationRepository.save(
-            PluginConfiguration(
-                PluginConfigurationId.newId(),
-                "some-config",
-                null,
-                pluginDefinition
-            )
-        )
     }
 
     @Test
     @Transactional
     fun `should create a process-link`() {
-        val createDto = PluginProcessLinkCreateDto(
+        val createDto = CustomProcessLinkCreateRequestDto(
             processDefinitionId = PROCESS_DEF_ID,
             activityId = ACTIVITY_ID,
-            pluginConfigurationId = pluginConfiguration.id.id,
-            pluginActionDefinitionKey = ACTION_KEY,
-            activityType = "bpmn:ServiceTask:start"
+            activityType = SERVICE_TASK_START
         )
 
         mockMvc.perform(
@@ -122,18 +98,15 @@ internal class PluginProcessLinkResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$.*", hasSize<Int>(1)))
-            .andExpect(jsonPath("$[0].pluginActionDefinitionKey").value("test-action"))
     }
 
     @Test
     @Transactional
     fun `should update a process-link`() {
-        val processLink = createProcessLink()
+        val processLinkId = createProcessLink()
 
-        val updateDto = PluginProcessLinkUpdateDto(
-            id = processLink.id,
-            pluginConfigurationId = pluginConfiguration.id.id,
-            pluginActionDefinitionKey = "test-action1"
+        val updateDto = CustomProcessLinkUpdateRequestDto(
+            id = processLinkId
         )
 
         mockMvc.perform(
@@ -147,15 +120,13 @@ internal class PluginProcessLinkResourceIT : BaseIntegrationTest() {
             .andExpect(status().isNoContent)
     }
 
-    private fun createProcessLink(): PluginProcessLinkId {
-        return pluginProcessLinkRepository.save(
-            PluginProcessLink(
-                PluginProcessLinkId.newId(),
+    private fun createProcessLink(): UUID {
+        return processLinkRepository.save(
+            CustomProcessLink(
+                UUID.randomUUID(),
                 processDefinitionId = PROCESS_DEF_ID,
                 activityId = ACTIVITY_ID,
-                pluginConfigurationId = pluginConfiguration.id,
-                pluginActionDefinitionKey = ACTION_KEY,
-                activityType = ActivityType.SERVICE_TASK_START
+                activityType = SERVICE_TASK_START
             )
         ).id
     }
@@ -163,6 +134,5 @@ internal class PluginProcessLinkResourceIT : BaseIntegrationTest() {
     companion object {
         const val PROCESS_DEF_ID = "test-process"
         const val ACTIVITY_ID = "test-activity"
-        const val ACTION_KEY = "test-action"
     }
 }

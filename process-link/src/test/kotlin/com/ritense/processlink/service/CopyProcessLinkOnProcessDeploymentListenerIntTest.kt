@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.processlink
+package com.ritense.processlink.service
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ritense.plugin.domain.ActivityType
-import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
-import com.ritense.valtimo.BaseIntegrationTest
-import com.ritense.valtimo.TestPlugin
-import com.ritense.valtimo.TestPluginFactory
+import com.ritense.processlink.BaseIntegrationTest
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.domain.CustomProcessLinkCreateRequestDto
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.repository.ProcessDefinition
@@ -35,36 +29,22 @@ import javax.transaction.Transactional
 import kotlin.test.assertEquals
 
 @Transactional
-internal class CopyPluginActionsOnProcessDeploymentListenerIntTest : BaseIntegrationTest() {
+internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrationTest() {
 
     @Autowired
-    lateinit var pluginService: PluginService
+    lateinit var processLinkService: ProcessLinkService
 
     @Autowired
     lateinit var repositoryService: RepositoryService
 
     @Autowired
-    lateinit var testPluginFactory: TestPluginFactory
-
-    @Autowired
     lateinit var camundaProcessService: CamundaProcessService
 
-    private lateinit var pluginConfiguration: PluginConfiguration
-
     private lateinit var processDefinition: ProcessDefinition
-    private lateinit var testPlugin: TestPlugin
 
     @BeforeEach
     fun beforeEach() {
         processDefinition = getLatestProcessDefinition()
-
-        pluginConfiguration = pluginService.createPluginConfiguration(
-            "Test plugin configuration",
-            jacksonObjectMapper().readTree("{}") as ObjectNode,
-            "test-plugin"
-        )
-
-        testPlugin = testPluginFactory.create(pluginConfiguration)
     }
 
     @Test
@@ -80,9 +60,9 @@ internal class CopyPluginActionsOnProcessDeploymentListenerIntTest : BaseIntegra
         // then
         val latestProcessDefinition = getLatestProcessDefinition()
         assertEquals(1, processDefinition.version)
-        assertEquals(1, pluginService.getProcessLinks(processDefinition.id, SERVICE_TASK_ID).count())
+        assertEquals(1, processLinkService.getProcessLinks(processDefinition.id, SERVICE_TASK_ID).count())
         assertEquals(2, latestProcessDefinition.version)
-        assertEquals(1, pluginService.getProcessLinks(latestProcessDefinition.id, SERVICE_TASK_ID).count())
+        assertEquals(1, processLinkService.getProcessLinks(latestProcessDefinition.id, SERVICE_TASK_ID).count())
     }
 
     @Test
@@ -101,20 +81,17 @@ internal class CopyPluginActionsOnProcessDeploymentListenerIntTest : BaseIntegra
         // then
         val latestProcessDefinition = getLatestProcessDefinition()
         assertEquals(1, processDefinition.version)
-        assertEquals(1, pluginService.getProcessLinks(processDefinition.id, SERVICE_TASK_ID).count())
+        assertEquals(1, processLinkService.getProcessLinks(processDefinition.id, SERVICE_TASK_ID).count())
         assertEquals(3, latestProcessDefinition.version)
-        assertEquals(0, pluginService.getProcessLinks(latestProcessDefinition.id, SERVICE_TASK_ID).count())
+        assertEquals(0, processLinkService.getProcessLinks(latestProcessDefinition.id, SERVICE_TASK_ID).count())
     }
 
     private fun createProcessLink(processDefinition: ProcessDefinition) {
-        pluginService.createProcessLink(
-            PluginProcessLinkCreateDto(
+        processLinkService.createProcessLink(
+            CustomProcessLinkCreateRequestDto(
                 processDefinition.id,
                 SERVICE_TASK_ID,
-                pluginConfiguration.id.id,
-                "test-action",
-                jacksonObjectMapper().readTree("{}") as ObjectNode,
-                ActivityType.SERVICE_TASK_START.bpmnModelValue
+                ActivityTypeWithEventName.SERVICE_TASK_START
             )
         )
     }

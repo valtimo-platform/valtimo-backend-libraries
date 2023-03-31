@@ -58,14 +58,4 @@ class ProcessLinkAutoConfiguration {
             pluginService!!
         )
     }
-
-    @Bean
-    @ConditionalOnMissingBean(CopyPluginActionsOnProcessDeploymentListener::class)
-    fun copyPluginActionsOnProcessDeploymentListener(
-        pluginProcessLinkRepository: PluginProcessLinkRepository,
-    ): CopyPluginActionsOnProcessDeploymentListener {
-        return CopyPluginActionsOnProcessDeploymentListener(
-            pluginProcessLinkRepository,
-        )
-    }
 }

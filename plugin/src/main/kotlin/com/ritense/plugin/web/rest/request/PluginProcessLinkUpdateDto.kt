@@ -17,11 +17,14 @@
 package com.ritense.plugin.web.rest.request
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUGIN
+import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import java.util.UUID
 
 data class PluginProcessLinkUpdateDto(
-    val id: UUID,
+    override val id: UUID,
+    override val processLinkType: String = PROCESS_LINK_TYPE_PLUGIN,
     val pluginConfigurationId: UUID,
     val pluginActionDefinitionKey: String,
     val actionProperties: ObjectNode? = null
-)
+) : ProcessLinkUpdateRequestDto
