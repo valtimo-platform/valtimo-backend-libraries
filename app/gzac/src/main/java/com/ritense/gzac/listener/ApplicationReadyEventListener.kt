@@ -939,12 +939,12 @@ class ApplicationReadyEventListener(
         if (processLinkService.getProcessLinks(processDefinitionId, activityId).isEmpty()) {
             processLinkService.createProcessLink(
                 PluginProcessLinkCreateDto(
-                    processDefinitionId,
-                    activityId,
-                    pluginConfigurationId,
-                    pluginActionDefinitionKey,
-                    jacksonObjectMapper().readValue(actionProperties),
-                    ActivityTypeWithEventName.fromValue(activityType),
+                    processDefinitionId = processDefinitionId,
+                    activityId = activityId,
+                    pluginConfigurationId = pluginConfigurationId,
+                    pluginActionDefinitionKey = pluginActionDefinitionKey,
+                    actionProperties = jacksonObjectMapper().readValue(actionProperties),
+                    activityType = ActivityTypeWithEventName.fromValue(activityType),
                 )
             )
         }
