@@ -17,6 +17,7 @@
 package com.valtimo.keycloak.service;
 
 import com.ritense.valtimo.contract.authentication.ManageableUser;
+import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.UserNotFoundException;
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
@@ -37,13 +38,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
 public class KeycloakUserManagementService implements UserManagementService {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakUserManagementService.class);
     protected static final int MAX_USERS = 1000;
+    private static final String MAX_USERS_WARNING_MESSAGE = "Maximum number of users retrieved from keycloak: " + MAX_USERS + ".";
 
     private final KeycloakService keycloakService;
     private final String clientName;
@@ -91,10 +92,16 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public List<ManageableUser> getAllUsers() {
-        return keycloakService.usersResource().list(0, MAX_USERS).stream()
+        var users = keycloakService.usersResource().list(0, MAX_USERS).parallelStream()
             .filter(UserRepresentation::isEnabled)
-            .map(this::userRepresentationToManagableUser)
-            .collect(Collectors.toList());
+            .map(this::toManageableUserByRetrievingRoles)
+            .toList();
+
+        if (users.size() >= MAX_USERS) {
+            logger.warn(MAX_USERS_WARNING_MESSAGE);
+        }
+
+        return users;
     }
 
     @Override
@@ -107,44 +114,20 @@ public class KeycloakUserManagementService implements UserManagementService {
         var userList = keycloakService
             .usersResource()
             .search(null, null, null, email, 0, 1, true, true);
-        return userList.isEmpty() ? Optional.empty() : Optional.of(userRepresentationToManagableUser(userList.get(0)));
+        return userList.isEmpty() ? Optional.empty() : Optional.of(toManageableUserByRetrievingRoles(userList.get(0)));
     }
 
     @Override
     public ValtimoUser findById(String userId) {
         var user = keycloakService.usersResource().get(userId).toRepresentation();
-        return user.isEnabled() ? userRepresentationToValtimoUser(user) : null;
+        return Boolean.TRUE.equals(user.isEnabled()) ? toValtimoUserByRetrievingRoles(user) : null;
     }
 
     @Override
     public List<ManageableUser> findByRole(String authority) {
-        Set<UserRepresentation> roleUserMembers = new HashSet<>();
-        boolean rolesFound = false;
-
-        try {
-            roleUserMembers.addAll(keycloakService.realmRolesResource().get(authority).getRoleUserMembers(0, MAX_USERS));
-            rolesFound = true;
-        } catch (NotFoundException e) {
-            logger.debug("Could not find realm roles", e);
-        }
-
-        if (!clientName.isBlank()) {
-            try {
-                roleUserMembers.addAll(keycloakService.clientRolesResource().get(authority).getRoleUserMembers(0, MAX_USERS));
-                rolesFound = true;
-            } catch (NotFoundException e) {
-                logger.debug("Could not find client roles", e);
-            }
-        }
-
-        if (!rolesFound) {
-            logger.error("Role {} was not found in keycloak realm roles or client roles", authority);
-        }
-
-        return roleUserMembers.stream()
-            .filter(UserRepresentation::isEnabled)
-            .map(this::userRepresentationToManagableUser)
-            .collect(Collectors.toList());
+        return findUserRepresentationByRole(authority).parallelStream()
+            .map(this::toManageableUserByRetrievingRoles)
+            .toList();
     }
 
     @Override
@@ -156,7 +139,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             .map(this::findByRole)
             .flatMap(Collection::stream)
             .distinct()
-            .collect(Collectors.toList());
+            .toList();
 
         return allUsers.stream()
             .filter(user -> user.getRoles().containsAll(groupsCriteria.getRequiredUserGroups()))
@@ -164,7 +147,18 @@ public class KeycloakUserManagementService implements UserManagementService {
                 .map(userGroups -> user.getRoles().stream().anyMatch(userGroups::contains))
                 .reduce(true, (orUserGroup1, orUserGroup2) -> orUserGroup1 && orUserGroup2))
             .sorted(Comparator.comparing(ManageableUser::getFullName))
-            .collect(Collectors.toList());
+            .toList();
+    }
+
+    @Override
+    public List<NamedUser> findNamedUserByRoles(Set<String> roles) {
+        return roles.stream()
+            .map(this::findUserRepresentationByRole)
+            .flatMap(Collection::stream)
+            .map(this::toNamedUser)
+            .distinct()
+            .sorted(Comparator.comparing(NamedUser::getFirstName).thenComparing(NamedUser::getLastName))
+            .toList();
     }
 
     @Override
@@ -178,22 +172,67 @@ public class KeycloakUserManagementService implements UserManagementService {
         }
     }
 
-    private ManageableUser userRepresentationToManagableUser(UserRepresentation userRepresentation) {
+    private List<UserRepresentation> findUserRepresentationByRole(String authority) {
+        Set<UserRepresentation> roleUserMembers = new HashSet<>();
+        boolean rolesFound = false;
+
+        try {
+            var users = keycloakService.realmRolesResource().get(authority).getRoleUserMembers(0, MAX_USERS);
+            if (users.size() >= MAX_USERS) {
+                logger.warn(MAX_USERS_WARNING_MESSAGE);
+            }
+            roleUserMembers.addAll(users);
+            rolesFound = true;
+        } catch (NotFoundException e) {
+            logger.debug("Could not find realm roles", e);
+        }
+
+        if (!clientName.isBlank()) {
+            try {
+                var users = keycloakService.clientRolesResource().get(authority).getRoleUserMembers(0, MAX_USERS);
+                if (users.size() >= MAX_USERS) {
+                    logger.warn(MAX_USERS_WARNING_MESSAGE);
+                }
+                roleUserMembers.addAll(users);
+                rolesFound = true;
+            } catch (NotFoundException e) {
+                logger.debug("Could not find client roles", e);
+            }
+        }
+
+        if (!rolesFound) {
+            logger.error("Role {} was not found in keycloak realm roles or client roles", authority);
+        }
+
+        return roleUserMembers.stream()
+            .filter(UserRepresentation::isEnabled)
+            .toList();
+    }
+
+    private ManageableUser toManageableUserByRetrievingRoles(UserRepresentation userRepresentation) {
         return new ValtimoUserBuilder()
             .id(userRepresentation.getId())
             .username(userRepresentation.getUsername())
             .firstName(userRepresentation.getFirstName())
             .lastName(userRepresentation.getLastName())
             .email(userRepresentation.getEmail())
-            .roles(getRolesAsStringFromUser(userRepresentation))
+            .roles(getRolesAsStringFromUser(userRepresentation)) // <- does an additional call to retrieve the roles
             .build();
+    }
+
+    private NamedUser toNamedUser(UserRepresentation userRepresentation) {
+        return new NamedUser(
+            userRepresentation.getId(),
+            userRepresentation.getFirstName(),
+            userRepresentation.getLastName()
+        );
     }
 
     private List<String> getRolesAsStringFromUser(UserRepresentation userRepresentation) {
         return getRolesFromUser(userRepresentation)
             .stream()
             .map(RoleRepresentation::getName)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<RoleRepresentation> getRolesFromUser(UserRepresentation userRepresentation) {
@@ -203,7 +242,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             .roles().realmLevel().listAll();
     }
 
-    private ValtimoUser userRepresentationToValtimoUser(UserRepresentation userRepresentation) {
-        return (ValtimoUser) userRepresentationToManagableUser(userRepresentation);
+    private ValtimoUser toValtimoUserByRetrievingRoles(UserRepresentation userRepresentation) {
+        return (ValtimoUser) toManageableUserByRetrievingRoles(userRepresentation);
     }
 }

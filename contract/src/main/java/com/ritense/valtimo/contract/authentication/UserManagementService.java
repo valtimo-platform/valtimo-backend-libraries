@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserManagementService {
 
@@ -51,6 +52,8 @@ public interface UserManagementService {
     List<ManageableUser> findByRole(String authority);
 
     List<ManageableUser> findByRoles(SearchByUserGroupsCriteria groupsCriteria);
+
+    List<NamedUser> findNamedUserByRoles(Set<String> roles);
 
     default ManageableUser getCurrentUser() {
         throw new NotImplementedException("Failed to get current user because method is not implemented.");
