@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.besluit.connector.BesluitProperties
+import com.ritense.besluitenapi.BesluitenApiPlugin
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
@@ -50,6 +51,8 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RepositoryService
@@ -67,6 +70,7 @@ class ApplicationReadyEventListener(
     private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
     private val documentDefinitionService: DocumentDefinitionService,
     private val pluginService: PluginService,
+    private val processLinkService: ProcessLinkService,
     private val objectManagementService: ObjectManagementService,
     private val repositoryService: RepositoryService,
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
@@ -105,6 +109,7 @@ class ApplicationReadyEventListener(
         try {
             val zakenApiAuthenticationPluginId = createZakenApiAuthenticationPlugin()
             val zakenApiPluginId = createZakenApiPlugin(zakenApiAuthenticationPluginId)
+            createBesluitenApiPlugin(zakenApiAuthenticationPluginId)
             createCatalogiApiPlugin(zakenApiAuthenticationPluginId)
             val documentenApiPluginId = createDocumentenApiPlugin(zakenApiAuthenticationPluginId)
             val notificatiesApiAuthenticationPluginId = createNotificatiesApiAuthenticationPlugin()
@@ -677,6 +682,34 @@ class ApplicationReadyEventListener(
         }
     }
 
+    private fun createBesluitenApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        val title = "Besluiten API"
+        logger.debug { "Creating $title plugin" }
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = title,
+                pluginDefinitionKey = BesluitenApiPlugin.PLUGIN_KEY,
+            )
+        )
+        return if (existing.isEmpty()) {
+            pluginService.createPluginConfiguration(
+                title = title,
+                pluginDefinitionKey = BesluitenApiPlugin.PLUGIN_KEY,
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "url": "http://localhost:8001/besluiten/api/v1/",
+                        "rsin": "051845623",
+                        "authenticationPluginConfiguration": "$authenticationPluginConfigurationId"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
     private fun createCatalogiApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
         logger.debug { "Creating Catalogi API plugin" }
         val existing = pluginService.getPluginConfigurations(
@@ -933,15 +966,15 @@ class ApplicationReadyEventListener(
             .latestVersion()
             .singleResult()
             .id
-        if (pluginService.getProcessLinks(processDefinitionId, activityId).isEmpty()) {
-            pluginService.createProcessLink(
+        if (processLinkService.getProcessLinks(processDefinitionId, activityId).isEmpty()) {
+            processLinkService.createProcessLink(
                 PluginProcessLinkCreateDto(
-                    processDefinitionId,
-                    activityId,
-                    pluginConfigurationId,
-                    pluginActionDefinitionKey,
-                    jacksonObjectMapper().readValue(actionProperties),
-                    activityType,
+                    processDefinitionId = processDefinitionId,
+                    activityId = activityId,
+                    pluginConfigurationId = pluginConfigurationId,
+                    pluginActionDefinitionKey = pluginActionDefinitionKey,
+                    actionProperties = jacksonObjectMapper().readValue(actionProperties),
+                    activityType = ActivityTypeWithEventName.fromValue(activityType),
                 )
             )
         }

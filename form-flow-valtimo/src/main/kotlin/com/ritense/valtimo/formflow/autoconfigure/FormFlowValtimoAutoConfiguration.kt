@@ -27,6 +27,8 @@ import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
+import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper
+import com.ritense.valtimo.formflow.repository.FormFlowProcessLinkRepository
 import com.ritense.valtimo.formflow.security.ValtimoFormFlowHttpSecurityConfigurer
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
 import com.ritense.valtimo.formflow.web.rest.ProcessLinkFormFlowDefinitionResource
@@ -35,11 +37,17 @@ import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
+@EnableJpaRepositories(
+    basePackageClasses = [FormFlowProcessLinkRepository::class]
+)
+@EntityScan(basePackages = ["com.ritense.valtimo.formflow.domain"])
 class FormFlowValtimoAutoConfiguration {
 
     @Bean
@@ -107,6 +115,18 @@ class FormFlowValtimoAutoConfiguration {
             taskService,
             objectMapper,
             valueResolverService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowProcessLinkMapper::class)
+    fun formFlowProcessLinkMapper(
+        objectMapper: ObjectMapper,
+        formFlowService: FormFlowService,
+    ): FormFlowProcessLinkMapper {
+        return FormFlowProcessLinkMapper(
+            objectMapper,
+            formFlowService
         )
     }
 }

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest
+package com.ritense.processlink.web.rest
 
-import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
-import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
-import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
+import com.ritense.processlink.mapper.ProcessLinkMapper
+import com.ritense.processlink.service.ProcessLinkService
+import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
+import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
+import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -36,34 +37,36 @@ import java.util.UUID
 
 @RestController
 @RequestMapping(value = ["/api"])
-class PluginProcessLinkResource(
-    private var pluginService: PluginService
+class ProcessLinkResource(
+    private var processLinkService: ProcessLinkService,
+    private val processLinkMappers: List<ProcessLinkMapper>,
 ) {
 
     @GetMapping(value = ["/v1/process-link"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getProcessLinks(
         @RequestParam("processDefinitionId") processDefinitionId: String,
         @RequestParam("activityId") activityId: String
-    ): ResponseEntity<List<PluginProcessLinkResultDto>> {
-        val list: List<PluginProcessLinkResultDto> = pluginService.getProcessLinks(processDefinitionId, activityId)
+    ): ResponseEntity<List<ProcessLinkResponseDto>> {
+        val list = processLinkService.getProcessLinks(processDefinitionId, activityId)
+            .map { getProcessLinkMapper(it.processLinkType).toProcessLinkResponseDto(it) }
 
         return ResponseEntity.ok(list)
     }
 
     @PostMapping("/v1/process-link")
     fun createProcessLink(
-        @RequestBody processLink: PluginProcessLinkCreateDto
+        @RequestBody processLink: ProcessLinkCreateRequestDto
     ): ResponseEntity<Unit> {
-        pluginService.createProcessLink(processLink)
+        processLinkService.createProcessLink(processLink)
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
     @PutMapping("/v1/process-link")
     fun updateProcessLink(
-        @RequestBody processLink: PluginProcessLinkUpdateDto
+        @RequestBody processLink: ProcessLinkUpdateRequestDto
     ): ResponseEntity<Unit> {
-        pluginService.updateProcessLink(processLink)
+        processLinkService.updateProcessLink(processLink)
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
@@ -72,8 +75,13 @@ class PluginProcessLinkResource(
     fun deleteProcessLink(
         @PathVariable(name = "processLinkId") processLinkId: UUID
     ): ResponseEntity<Unit> {
-        pluginService.deleteProcessLink(processLinkId)
+        processLinkService.deleteProcessLink(processLinkId)
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+    }
+
+    private fun getProcessLinkMapper(processLinkType: String): ProcessLinkMapper {
+        return processLinkMappers.singleOrNull { it.supportsProcessLinkType(processLinkType) }
+            ?: throw IllegalStateException("No ProcessLinkMapper found for processLinkType $processLinkType")
     }
 }
