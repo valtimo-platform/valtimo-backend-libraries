@@ -21,6 +21,8 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import java.util.UUID
 
 data class CustomProcessLinkUpdateRequestDto(
-    override val id: UUID,
-    override val processLinkType: String = PROCESS_LINK_TYPE_TEST,
-) : ProcessLinkUpdateRequestDto
+    override val id: UUID
+) : ProcessLinkUpdateRequestDto {
+    override val processLinkType: String
+        get() = PROCESS_LINK_TYPE_TEST
+}
