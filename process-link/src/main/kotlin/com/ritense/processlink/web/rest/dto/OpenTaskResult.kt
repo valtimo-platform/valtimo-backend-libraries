@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.domain
+package com.ritense.processlink.web.rest.dto
 
-import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
-import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
-import java.util.UUID
-
-data class CustomProcessLinkReponseDto(
-    override val id: UUID,
-    override val processDefinitionId: String,
-    override val activityId: String,
-    override val activityType: ActivityTypeWithEventName,
-    override val processLinkType: String = PROCESS_LINK_TYPE_TEST,
-) : ProcessLinkResponseDto
+data class OpenTaskResult<T> (
+    val type: String,
+    val properties: T
+)

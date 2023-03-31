@@ -18,9 +18,11 @@ package com.ritense.processlink.web.rest
 
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkService
+import com.ritense.processlink.web.rest.dto.OpenTaskResult
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
+import java.util.UUID
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -33,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 
 @RestController
 @RequestMapping(value = ["/api"])
@@ -78,6 +79,11 @@ class ProcessLinkResource(
         processLinkService.deleteProcessLink(processLinkId)
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+    }
+
+    @GetMapping(value = ["/v2/process-link/task/{taskId}"])
+    fun getTask(@PathVariable taskId: UUID): ResponseEntity<OpenTaskResult<Any>> {
+        return ResponseEntity.ok(processLinkService.openTask(taskId))
     }
 
     private fun getProcessLinkMapper(processLinkType: String): ProcessLinkMapper {

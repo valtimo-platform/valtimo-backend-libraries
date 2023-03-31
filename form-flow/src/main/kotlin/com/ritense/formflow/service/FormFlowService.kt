@@ -44,8 +44,8 @@ class FormFlowService(
         return formFlowDefinitionRepository.getById(formFlowId)
     }
 
-    fun findDefinition(formFlowId: String): FormFlowDefinition? {
-        val formFlowIdAsArray = formFlowId.split(":")
+    fun findDefinition(formFlowDefinitionId: String): FormFlowDefinition? {
+        val formFlowIdAsArray = formFlowDefinitionId.split(":")
         if (formFlowIdAsArray.size != 2) {
             throw IllegalArgumentException("Invalid Format found for formFlowId '${formFlowIdAsArray.joinToString(":")}'. Form flow id must have format key:version")
         }

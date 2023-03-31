@@ -20,16 +20,21 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
+import com.ritense.processlink.web.rest.dto.OpenTaskResult
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
-import mu.KotlinLogging
 import java.util.UUID
 import javax.validation.ValidationException
 import kotlin.jvm.optionals.getOrElse
+import mu.KotlinLogging
+import org.camunda.bpm.engine.TaskService
+import org.camunda.bpm.engine.task.Task
 
 open class ProcessLinkService(
     private val processLinkRepository: ProcessLinkRepository,
     private val processLinkMappers: List<ProcessLinkMapper>,
+    private val taskService: TaskService,
+    private val processLinkTaskProviders: List<ProcessLinkTaskProvider<Any>>?
 ) {
 
     fun getProcessLinks(processDefinitionId: String, activityId: String): List<ProcessLink> {
@@ -68,6 +73,20 @@ open class ProcessLinkService(
     private fun getProcessLinkMapper(processLinkType: String): ProcessLinkMapper {
         return processLinkMappers.singleOrNull { it.supportsProcessLinkType(processLinkType) }
             ?: throw IllegalStateException("No ProcessLinkMapper found for processLinkType $processLinkType")
+    }
+
+    fun openTask(taskId: UUID): OpenTaskResult<Any> {
+        val task: Task = taskService
+            .createTaskQuery()
+            .taskId(taskId.toString())
+            .active()
+            .singleResult()
+
+        return getProcessLinks(task.processDefinitionId, task.taskDefinitionKey)
+            .firstNotNullOfOrNull { processLink ->
+                processLinkTaskProviders?.firstOrNull { provider -> provider.supports(processLink) }
+                    ?.openTask(task, processLink)
+            } ?: throw NoSuchElementException("Could not find ProcessLinkTaskProvider or ProcessLink related to task $taskId")
     }
 
     companion object {
