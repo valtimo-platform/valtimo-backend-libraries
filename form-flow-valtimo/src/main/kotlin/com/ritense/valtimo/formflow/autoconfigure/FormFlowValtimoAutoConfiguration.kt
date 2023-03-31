@@ -20,10 +20,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.service.DocumentService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formflow.service.FormFlowService
-import com.ritense.formlink.domain.ProcessLinkTaskProvider
+import com.ritense.formlink.domain.FormLinkTaskProvider
 import com.ritense.formlink.service.FormAssociationService
 import com.ritense.formlink.service.impl.CamundaFormAssociationService
-import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
+import com.ritense.valtimo.formflow.FormFlowFormLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
@@ -51,14 +51,14 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 class FormFlowValtimoAutoConfiguration {
 
     @Bean
-    fun formFlowProcessLinkTaskProvider(
+    fun formFlowFormLinkTaskProvider(
         formFlowService: FormFlowService,
         formAssociationService: FormAssociationService,
         documentService: DocumentService,
         repositoryService: RepositoryService,
         runtimeService: RuntimeService,
-    ): ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
-        return FormFlowProcessLinkTaskProvider(
+    ): FormLinkTaskProvider<FormFlowTaskOpenResultProperties> {
+        return FormFlowFormLinkTaskProvider(
             formFlowService,
             formAssociationService,
             documentService,

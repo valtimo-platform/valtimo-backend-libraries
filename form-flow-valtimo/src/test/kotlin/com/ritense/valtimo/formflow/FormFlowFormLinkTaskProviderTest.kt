@@ -41,14 +41,14 @@ import org.mockito.kotlin.whenever
 import java.util.Optional
 import java.util.UUID
 
-internal class FormFlowProcessLinkTaskProviderTest {
+internal class FormFlowFormLinkTaskProviderTest {
 
     private lateinit var formFlowService: FormFlowService
     private lateinit var formAssociationService: FormAssociationService
     private lateinit var documentService: DocumentService
     private lateinit var repositoryService: RepositoryService
     private lateinit var runtimeService: RuntimeService
-    private lateinit var formFlowProcessLinkTaskProvider: FormFlowProcessLinkTaskProvider
+    private lateinit var formFlowProcessLinkTaskProvider: FormFlowFormLinkTaskProvider
 
     @BeforeEach
     fun beforeEach() {
@@ -57,7 +57,7 @@ internal class FormFlowProcessLinkTaskProviderTest {
         documentService = mock()
         repositoryService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
         runtimeService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
-        formFlowProcessLinkTaskProvider = FormFlowProcessLinkTaskProvider(
+        formFlowProcessLinkTaskProvider = FormFlowFormLinkTaskProvider(
             formFlowService,
             formAssociationService,
             documentService,

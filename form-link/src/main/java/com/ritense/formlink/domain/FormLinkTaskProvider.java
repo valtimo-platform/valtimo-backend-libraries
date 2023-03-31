@@ -19,7 +19,7 @@ package com.ritense.formlink.domain;
 
 import org.camunda.bpm.engine.task.Task;
 
-public interface ProcessLinkTaskProvider<T> {
+public interface FormLinkTaskProvider<T> {
     boolean supports(FormLink formLink);
     TaskOpenResult<T> getTaskResult(Task task, FormLink formLink);
 }

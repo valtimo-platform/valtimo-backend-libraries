@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Transactional
-internal class FormFlowProcessLinkTaskProviderIntTest: BaseIntegrationTest() {
+internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
     @Autowired
     lateinit var documentDefinitionService: DocumentDefinitionService
 

@@ -22,7 +22,7 @@ import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.domain.FormAssociation
 import com.ritense.formlink.domain.FormLink
-import com.ritense.formlink.domain.ProcessLinkTaskProvider
+import com.ritense.formlink.domain.FormLinkTaskProvider
 import com.ritense.formlink.domain.TaskOpenResult
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
 import com.ritense.formlink.service.FormAssociationService
@@ -30,13 +30,13 @@ import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.task.Task
 
-class FormFlowProcessLinkTaskProvider(
+class FormFlowFormLinkTaskProvider(
     private val formFlowService: FormFlowService,
     private val formAssociationService: FormAssociationService,
     private val documentService: DocumentService,
     private val repositoryService: RepositoryService,
     private val runtimeService: RuntimeService,
-): ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
+): FormLinkTaskProvider<FormFlowTaskOpenResultProperties> {
 
     override fun supports(formLink: FormLink?): Boolean {
         return formLink is BpmnElementFormFlowIdLink
