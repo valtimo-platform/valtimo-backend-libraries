@@ -36,5 +36,6 @@
     <include file="changelog/20200513-domain-changed-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220630-storage-performance-improvement-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230221-association-id-datatype-change.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230330-add-form-process-link.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
