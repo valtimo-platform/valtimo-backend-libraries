@@ -53,9 +53,9 @@ class SearchFieldV2Service(
             ))
         }
 
-    fun findAllByOwnerId(ownerId: String) = searchFieldV2Repository.findAllByOwnerId(ownerId)
+    fun findAllByOwnerId(ownerId: String) = searchFieldV2Repository.findAllByOwnerIdOrderByOrder(ownerId)
 
-    fun findByOwnerIdAndKey(ownerId: String, key: String) = searchFieldV2Repository.findByOwnerIdAndKey(ownerId, key)
+    fun findByOwnerIdAndKey(ownerId: String, key: String) = searchFieldV2Repository.findByOwnerIdAndKeyOrderByOrder(ownerId, key)
 
     fun delete(ownerId: String, key: String) =
         with(findByOwnerIdAndKey(ownerId, key)) {
