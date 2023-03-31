@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.besluit.connector.BesluitProperties
+import com.ritense.besluitenapi.BesluitenApiPlugin
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
@@ -108,6 +109,7 @@ class ApplicationReadyEventListener(
         try {
             val zakenApiAuthenticationPluginId = createZakenApiAuthenticationPlugin()
             val zakenApiPluginId = createZakenApiPlugin(zakenApiAuthenticationPluginId)
+            createBesluitenApiPlugin(zakenApiAuthenticationPluginId)
             createCatalogiApiPlugin(zakenApiAuthenticationPluginId)
             val documentenApiPluginId = createDocumentenApiPlugin(zakenApiAuthenticationPluginId)
             val notificatiesApiAuthenticationPluginId = createNotificatiesApiAuthenticationPlugin()
@@ -670,6 +672,34 @@ class ApplicationReadyEventListener(
                     """
                     {
                         "url": "http://localhost:8001/zaken/api/v1/",
+                        "authenticationPluginConfiguration": "$authenticationPluginConfigurationId"
+                    }
+                    """
+                )
+            ).id.id
+        } else {
+            existing[0].id.id
+        }
+    }
+
+    private fun createBesluitenApiPlugin(authenticationPluginConfigurationId: UUID): UUID {
+        val title = "Besluiten API"
+        logger.debug { "Creating $title plugin" }
+        val existing = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(
+                pluginConfigurationTitle = title,
+                pluginDefinitionKey = BesluitenApiPlugin.PLUGIN_KEY,
+            )
+        )
+        return if (existing.isEmpty()) {
+            pluginService.createPluginConfiguration(
+                title = title,
+                pluginDefinitionKey = BesluitenApiPlugin.PLUGIN_KEY,
+                properties = jacksonObjectMapper().readValue(
+                    """
+                    {
+                        "url": "http://localhost:8001/besluiten/api/v1/",
+                        "rsin": "051845623",
                         "authenticationPluginConfiguration": "$authenticationPluginConfigurationId"
                     }
                     """
