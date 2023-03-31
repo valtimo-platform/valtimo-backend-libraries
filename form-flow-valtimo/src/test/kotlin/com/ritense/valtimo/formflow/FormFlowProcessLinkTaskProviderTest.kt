@@ -106,7 +106,7 @@ internal class FormFlowProcessLinkTaskProviderTest {
         whenever(formFlowInstance.id).thenReturn(FormFlowInstanceId(UUID.randomUUID()))
         whenever(formAssociationService
             .getFormAssociationByFormLinkId(null, null)).thenReturn(Optional.of(formAssociation))
-        whenever(formFlowService.findDefinition(any())).thenReturn(formFlowDefinition)
+        whenever(formFlowService.findDefinition(any<String>())).thenReturn(formFlowDefinition)
         whenever(formFlowService.save(formFlowInstance)).thenReturn(formFlowInstance)
         whenever(formFlowDefinition.createInstance(any())).thenReturn(formFlowInstance)
 
