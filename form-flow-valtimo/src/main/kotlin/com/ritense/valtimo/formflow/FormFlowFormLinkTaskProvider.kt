@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.formflow
 
-import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.service.FormFlowService
@@ -33,10 +32,12 @@ import org.camunda.bpm.engine.task.Task
 class FormFlowFormLinkTaskProvider(
     private val formFlowService: FormFlowService,
     private val formAssociationService: FormAssociationService,
-    private val documentService: DocumentService,
+    documentService: DocumentService,
     private val repositoryService: RepositoryService,
-    private val runtimeService: RuntimeService,
-): FormLinkTaskProvider<FormFlowTaskOpenResultProperties> {
+    runtimeService: RuntimeService,
+): AbstractFormFlowLinkTaskProvider(
+    documentService, runtimeService
+), FormLinkTaskProvider<FormFlowTaskOpenResultProperties> {
 
     override fun supports(formLink: FormLink?): Boolean {
         return formLink is BpmnElementFormFlowIdLink
@@ -74,32 +75,5 @@ class FormFlowFormLinkTaskProvider(
         }
 
         return formAssociation
-    }
-
-    private fun getAdditionalProperties(task: Task): Map<String, Any> {
-        val processInstance = runtimeService.createProcessInstanceQuery()
-            .processInstanceId(task.processInstanceId)
-            .singleResult()
-
-        val additionalProperties = mutableMapOf(
-            "processInstanceId" to task.processInstanceId,
-            "processInstanceBusinessKey" to processInstance.businessKey,
-            "taskInstanceId" to task.id
-        )
-
-        try {
-            val document = documentService[processInstance.businessKey]
-            if (document != null) {
-                additionalProperties["documentId"] = processInstance.businessKey
-            }
-        } catch (e: DocumentNotFoundException) {
-            // we do nothing here, intentional
-        }
-
-        return additionalProperties
-    }
-
-    companion object {
-        private const val FORM_FLOW_TASK_TYPE_KEY = "form-flow"
     }
 }
