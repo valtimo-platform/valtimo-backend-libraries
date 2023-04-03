@@ -31,7 +31,7 @@ class ProcessLinkTaskResource(
     private var processLinkTaskService: ProcessLinkTaskService
 ) {
     @GetMapping(value = ["/v2/process-link/task/{taskId}"])
-    fun getTask(@PathVariable taskId: UUID): ResponseEntity<OpenTaskResult<Any>> {
+    fun getTask(@PathVariable taskId: UUID): ResponseEntity<OpenTaskResult<*>> {
         return ResponseEntity.ok(processLinkTaskService.openTask(taskId))
     }
 }

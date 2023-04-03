@@ -25,9 +25,9 @@ import org.camunda.bpm.engine.task.Task
 open class ProcessLinkTaskService(
     private val processLinkService: ProcessLinkService,
     private val taskService: TaskService,
-    private val processLinkTaskProviders: List<ProcessLinkTaskProvider<Any>>
+    private val processLinkTaskProviders: List<ProcessLinkTaskProvider<*>>
 ) {
-    fun openTask(taskId: UUID): OpenTaskResult<Any> {
+    fun openTask(taskId: UUID): OpenTaskResult<*> {
         val task: Task = taskService
             .createTaskQuery()
             .taskId(taskId.toString())

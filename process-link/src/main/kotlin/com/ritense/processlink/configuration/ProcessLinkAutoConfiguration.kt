@@ -63,11 +63,11 @@ class ProcessLinkAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ProcessLinkTaskService::class)
-    @ConditionalOnBean(value = [TaskService::class, ProcessLinkTaskProvider::class])
+    @ConditionalOnBean(value = [TaskService::class])
     fun processLinkTaskService(
         processLinkService: ProcessLinkService,
         taskService: TaskService,
-        processLinkTaskProviders: List<ProcessLinkTaskProvider<Any>>,
+        processLinkTaskProviders: List<ProcessLinkTaskProvider<*>>,
     ): ProcessLinkTaskService {
         return ProcessLinkTaskService(processLinkService, taskService, processLinkTaskProviders)
     }
