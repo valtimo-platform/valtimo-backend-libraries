@@ -1,13 +1,10 @@
 package com.ritense.document.service;
 
-import com.ritense.authorization.AuthorizationFilter;
 import com.ritense.authorization.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationSpecification;
-import com.ritense.authorization.permission.ExpressionPermissionFilter;
 import com.ritense.authorization.permission.Permission;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
-import java.util.Arrays;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;

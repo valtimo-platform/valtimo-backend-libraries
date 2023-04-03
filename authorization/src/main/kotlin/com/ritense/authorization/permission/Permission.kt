@@ -12,7 +12,7 @@ class Permission(
     val action: Action,
     val filters: List<PermissionFilter>
 ) {
-    fun appliesTo(resourceType: Class<*>, entity: Any?): Boolean {
+    fun <T> appliesTo(resourceType: Class<T>, entity: Any?): Boolean {
         return if (this.resourceType.javaClass == resourceType.javaClass) {
             if (entity == null && filters.isNotEmpty()) {
                 return false
@@ -26,7 +26,7 @@ class Permission(
     }
 
     fun <T> toPredicate(
-        root: Root<T> ,
+        root: Root<T>,
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder,
         resourceType: Class<T>,

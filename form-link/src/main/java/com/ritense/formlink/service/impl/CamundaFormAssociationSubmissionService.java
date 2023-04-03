@@ -114,7 +114,8 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                             List.of(processDefinitionKey),
                             Action.CREATE_INSTANCE
                         ),
-                        document
+                        document,
+                        null
                     );
             }
 

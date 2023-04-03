@@ -106,7 +106,10 @@ public class JsonSchemaDocumentService implements DocumentService {
                     JsonSchemaDocument.class,
                     List.of(optionalDocument.get().definitionId().name()),
                     Action.VIEW
-                ), optionalDocument.get());
+                ),
+                optionalDocument.get(),
+                null
+            );
         }
         return optionalDocument;
     }
@@ -126,7 +129,10 @@ public class JsonSchemaDocumentService implements DocumentService {
                 JsonSchemaDocument.class,
                 List.of(document.definitionId().name()),
                 Action.VIEW
-            ), document);
+            ),
+            document,
+            null
+        );
 
         return document;
     }
@@ -291,7 +297,8 @@ public class JsonSchemaDocumentService implements DocumentService {
                     List.of(document.definitionId().name()),
                     Action.CLAIM
                 ),
-                document
+                document,
+                null
             );
 
         var assignee = userManagementService.findById(assigneeId);

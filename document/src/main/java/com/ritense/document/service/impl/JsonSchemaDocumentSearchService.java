@@ -195,7 +195,8 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                             JsonSchemaDocument.class,
                             null,
                             Action.VIEW
-                        )
+                        ),
+                        null
                     ).toPredicate(documentRoot, query, cb));
         }
 
@@ -232,7 +233,8 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                             JsonSchemaDocument.class,
                             null,
                             Action.VIEW
-                        )
+                        ),
+                        null
                     ).toPredicate(documentRoot, query, cb));
         }
 

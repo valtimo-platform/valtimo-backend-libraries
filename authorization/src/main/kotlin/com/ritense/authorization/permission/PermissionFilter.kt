@@ -1,5 +1,6 @@
 package com.ritense.authorization.permission
 
+import com.ritense.authorization.AuthorizationRequest
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery

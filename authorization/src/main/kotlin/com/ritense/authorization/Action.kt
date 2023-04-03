@@ -6,5 +6,6 @@ enum class Action {
     ASSIGN,
     CLAIM,
     COMPLETE,
-    LIST_VIEW
+    LIST_VIEW,
+    IGNORE
 }
