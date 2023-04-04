@@ -25,7 +25,7 @@ class Permission(
         }
     }
 
-    fun <T> toPredicate(
+    fun <T: Any> toPredicate(
         root: Root<T>,
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder,

@@ -16,12 +16,16 @@
 
 package com.ritense.note.autoconfigure
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.document.service.DocumentService
+import com.ritense.note.repository.NoteDocumentMapper
 import com.ritense.note.repository.NoteRepository
+import com.ritense.note.repository.NoteSpecificationFactory
 import com.ritense.note.security.config.NoteHttpSecurityConfigurer
 import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.NoteResource
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.database.QueryDialectHelper
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationEventPublisher
@@ -41,11 +45,13 @@ class NoteAutoConfiguration {
         noteRepository: NoteRepository,
         userManagementService: UserManagementService,
         applicationEventPublisher: ApplicationEventPublisher,
+        authorizationService: AuthorizationService
     ): NoteService {
         return NoteService(
             noteRepository,
             userManagementService,
             applicationEventPublisher,
+            authorizationService
         )
     }
 
@@ -68,4 +74,15 @@ class NoteAutoConfiguration {
         return NoteHttpSecurityConfigurer()
     }
 
+    @Bean
+    fun noteDocumentMapper(): NoteDocumentMapper {
+        return NoteDocumentMapper()
+    }
+
+    @Bean
+    fun noteSpecificationFactory(
+        queryDialectHelper: QueryDialectHelper
+    ): NoteSpecificationFactory {
+        return NoteSpecificationFactory(queryDialectHelper)
+    }
 }

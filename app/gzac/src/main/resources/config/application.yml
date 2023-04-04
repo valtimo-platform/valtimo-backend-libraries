@@ -46,7 +46,7 @@ spring:
         enabled: false
     jpa:
         database-platform: org.hibernate.dialect.PostgreSQLDialect
-        show_sql: false
+        show_sql: true
         open-in-view: false
         properties:
             hibernate:

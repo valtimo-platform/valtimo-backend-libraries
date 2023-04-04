@@ -16,7 +16,7 @@ class ExpressionPermissionFilter(
     val value: String
 ): PermissionFilter() {
     override val permissionFilterType: PermissionFilterType = PermissionFilterType.EXPRESSION
-    override fun isValid(entity: Any): Boolean {
+    override fun <T: Any> isValid(entity: T): Boolean {
         val fieldValue = reflectionFindFieldIfString(entity) ?: return false
 
         return evaluateExpression(
@@ -24,7 +24,7 @@ class ExpressionPermissionFilter(
         )
     }
 
-    override fun <T> toPredicate(
+    override fun <T: Any> toPredicate(
         root: Root<T>,
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder,

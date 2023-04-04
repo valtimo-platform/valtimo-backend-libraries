@@ -16,6 +16,7 @@
 
 package com.ritense.document.autoconfigure;
 
+import com.ritense.authorization.AuthorizationEntityMapper;
 import com.ritense.authorization.AuthorizationSpecificationFactory;
 import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
@@ -156,9 +157,10 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public AuthorizationService authorizationService(
-        List<AuthorizationSpecificationFactory<?>> authorizationSpecificationFactories
+        List<AuthorizationSpecificationFactory<?>> authorizationSpecificationFactories,
+        List<AuthorizationEntityMapper<?, ?>> mappers
     ) {
-        return new AuthorizationService(authorizationSpecificationFactories);
+        return new AuthorizationService(authorizationSpecificationFactories, mappers);
     }
 
     @Bean

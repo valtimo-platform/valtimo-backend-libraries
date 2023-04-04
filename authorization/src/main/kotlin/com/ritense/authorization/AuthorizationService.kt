@@ -1,12 +1,14 @@
 package com.ritense.authorization
 
+import com.ritense.authorization.permission.ContainerPermissionFilter
 import com.ritense.authorization.permission.ExpressionOperator
 import com.ritense.authorization.permission.ExpressionPermissionFilter
 import com.ritense.authorization.permission.FieldPermissionFilter
 import com.ritense.authorization.permission.Permission
 
 class AuthorizationService(
-    private val authorizationSpecificationFactories: List<AuthorizationSpecificationFactory<*>>
+    private val authorizationSpecificationFactories: List<AuthorizationSpecificationFactory<*>>,
+    private val mappers: List<AuthorizationEntityMapper<*, *>>
 ) {
     fun <T : Any> requirePermission(context: AuthorizationRequest<T>, entity: T, permissions: List<Permission>?) {
 
@@ -21,6 +23,12 @@ class AuthorizationService(
         return (authorizationSpecificationFactories.first {
             it.canCreate(context)
         } as AuthorizationSpecificationFactory<T>).create(context, permissions ?: createExamplePermissions())
+    }
+
+    fun <FROM, TO> getMapper(from: Class<FROM>, to: Class<TO>): AuthorizationEntityMapper<FROM, TO> {
+        return mappers.first {
+            it.appliesTo(from, to)
+        } as AuthorizationEntityMapper<FROM, TO>
     }
 
     private fun createExamplePermissions(): List<Permission> {
@@ -40,7 +48,23 @@ class AuthorizationService(
                         "$.voornaam",
                         ExpressionOperator.EQUAL_TO, "Peter")
                 )
-            )
+            ),
+            Permission(
+                Class.forName("com.ritense.note.domain.Note"),
+                Action.VIEW,
+                listOf(
+                    ContainerPermissionFilter(
+                        Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
+                        listOf(
+                            FieldPermissionFilter("documentDefinitionId.name", "leningen"),
+                            ExpressionPermissionFilter(
+                                "content.content",
+                                "$.voornaam",
+                                ExpressionOperator.EQUAL_TO, "Peter")
+                        )
+                    )
+                )
+            ),
             /*            Permission(
                             "document-definition",
                             Action.ASSIGN,

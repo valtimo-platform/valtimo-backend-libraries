@@ -1,7 +1,14 @@
 package com.ritense.authorization
 
-interface AuthorizationEntityMapper<FROM, TO> {
-    fun mapTo(toClass: Class<TO>, entity: FROM): List<TO>
+import javax.persistence.criteria.CriteriaBuilder
+import javax.persistence.criteria.CriteriaQuery
+import javax.persistence.criteria.Predicate
+import javax.persistence.criteria.Root
 
-    fun appliesTo(fromClass: Class<FROM>, toClass: Class<TO>)
+interface AuthorizationEntityMapper<FROM, TO> {
+    fun mapTo(entity: FROM): List<TO>
+
+    fun mapQueryTo(root: Root<FROM>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<TO>
+
+    fun appliesTo(fromClass: Class<*>, toClass: Class<*>): Boolean
 }

@@ -12,11 +12,11 @@ class FieldPermissionFilter(
     val value: String
 ) : PermissionFilter() {
     override val permissionFilterType: PermissionFilterType = PermissionFilterType.FIELD
-    override fun isValid(entity: Any): Boolean {
+    override fun <T: Any> isValid(entity: T): Boolean {
         return reflectionFindField(entity).toString() == value
     }
 
-    override fun <T> toPredicate(
+    override fun <T: Any> toPredicate(
         root: Root<T>,
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder,

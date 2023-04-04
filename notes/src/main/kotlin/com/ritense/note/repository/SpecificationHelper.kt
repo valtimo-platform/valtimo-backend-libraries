@@ -17,14 +17,22 @@
 package com.ritense.note.repository
 
 import com.ritense.note.domain.Note
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import java.util.UUID
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Root
 
-interface NoteRepository : JpaRepository<Note, UUID>, JpaSpecificationExecutor<Note>
+class SpecificationHelper {
+
+
+    companion object {
+        fun byDocumentId(documentId: UUID): Specification<Note> {
+            return Specification { root: Root<Note>,
+                                   _: CriteriaQuery<*>?,
+                                   criteriaBuilder: CriteriaBuilder ->
+                criteriaBuilder.equal(root.get<UUID>("documentId"), documentId)
+            }
+        }
+    }
+}
