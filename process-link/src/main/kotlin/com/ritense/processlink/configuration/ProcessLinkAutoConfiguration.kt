@@ -16,6 +16,7 @@
 
 package com.ritense.processlink.configuration
 
+import com.ritense.processlink.domain.SupportedProcessLinkType
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.security.config.ProcessLinkHttpSecurityConfigurer
@@ -52,8 +53,9 @@ class ProcessLinkAutoConfiguration {
     fun processLinkService(
         processLinkRepository: ProcessLinkRepository,
         processLinkMappers: List<ProcessLinkMapper>,
+        processLinkTypes: List<SupportedProcessLinkType>
     ): ProcessLinkService {
-        return ProcessLinkService(processLinkRepository, processLinkMappers)
+        return ProcessLinkService(processLinkRepository, processLinkMappers, processLinkTypes)
     }
 
     @Bean

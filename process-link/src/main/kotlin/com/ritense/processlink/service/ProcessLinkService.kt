@@ -18,6 +18,8 @@ package com.ritense.processlink.service
 
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
+import com.ritense.processlink.domain.ProcessLinkType
+import com.ritense.processlink.domain.SupportedProcessLinkType
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
@@ -30,13 +32,18 @@ import kotlin.jvm.optionals.getOrElse
 open class ProcessLinkService(
     private val processLinkRepository: ProcessLinkRepository,
     private val processLinkMappers: List<ProcessLinkMapper>,
+    private val processLinkTypes: List<SupportedProcessLinkType>
 ) {
 
     fun getProcessLinks(processDefinitionId: String, activityId: String): List<ProcessLink> {
         return processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinitionId, activityId)
     }
 
-    fun getProcessLinks(activityId: String, activityType: ActivityTypeWithEventName, processLinkType: String): List<ProcessLink> {
+    fun getProcessLinks(
+        activityId: String,
+        activityType: ActivityTypeWithEventName,
+        processLinkType: String
+    ): List<ProcessLink> {
         return processLinkRepository.findByActivityIdAndActivityTypeAndProcessLinkType(
             activityId,
             activityType,
@@ -68,6 +75,12 @@ open class ProcessLinkService(
     private fun getProcessLinkMapper(processLinkType: String): ProcessLinkMapper {
         return processLinkMappers.singleOrNull { it.supportsProcessLinkType(processLinkType) }
             ?: throw IllegalStateException("No ProcessLinkMapper found for processLinkType $processLinkType")
+    }
+
+    fun getSupportedProcessLinkTypes(activityType: String): List<ProcessLinkType> {
+        return processLinkTypes.mapNotNull {
+            it.getProcessLinkType(activityType)
+        }
     }
 
     companion object {

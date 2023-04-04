@@ -121,4 +121,10 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
         return formDefinitionRepository.existsById(id);
     }
 
+    @Override
+    public Long countAllForms() {
+        return formDefinitionRepository.count();
+
+    }
+
 }

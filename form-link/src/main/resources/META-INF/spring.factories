@@ -2,4 +2,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.formlink.autoconfigure.FormLinkAutoConfiguration, \
   com.ritense.formlink.autoconfigure.FormLinkLiquibaseAutoConfiguration, \
   com.ritense.formlink.autoconfigure.FormLinkSecurityAutoConfiguration, \
-  com.ritense.formlink.autoconfigure.FormLinkRateLimitConfiguration
+  com.ritense.formlink.autoconfigure.FormLinkRateLimitConfiguration, \
+  com.ritense.formlink.autoconfigure.FormSupportedProcessLinksAutoConfiguration

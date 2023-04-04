@@ -16,6 +16,7 @@
 
 package com.ritense.processlink.web.rest
 
+import com.ritense.processlink.domain.ProcessLinkType
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
@@ -51,6 +52,13 @@ class ProcessLinkResource(
             .map { getProcessLinkMapper(it.processLinkType).toProcessLinkResponseDto(it) }
 
         return ResponseEntity.ok(list)
+    }
+
+    @GetMapping(value = ["/v1/process-link/types"])
+    fun getSupportedProcessLinkTypes(
+        @RequestParam(name = "activityType") activityType: String
+    ): ResponseEntity<List<ProcessLinkType>> {
+        return ResponseEntity.ok(processLinkService.getSupportedProcessLinkTypes(activityType))
     }
 
     @PostMapping("/v1/process-link")

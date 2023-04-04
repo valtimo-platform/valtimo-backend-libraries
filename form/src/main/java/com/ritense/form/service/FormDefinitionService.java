@@ -45,4 +45,6 @@ public interface FormDefinitionService {
     void deleteFormDefinition(UUID id);
 
     boolean formDefinitionExistsById(UUID id);
+
+    Long countAllForms();
 }
