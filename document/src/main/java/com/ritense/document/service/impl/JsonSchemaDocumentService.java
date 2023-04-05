@@ -133,10 +133,10 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
         result.resultingDocument().ifPresent(jsonSchemaDocument -> {
             newDocumentRequest.getResources()
-                    .stream()
-                    .map(JsonSchemaRelatedFile::from)
-                    .map(relatedFile -> relatedFile.withCreatedBy(user))
-                    .forEach(jsonSchemaDocument::addRelatedFile);
+                .stream()
+                .map(JsonSchemaRelatedFile::from)
+                .map(relatedFile -> relatedFile.withCreatedBy(user))
+                .forEach(jsonSchemaDocument::addRelatedFile);
             documentRepository.saveAndFlush(jsonSchemaDocument);
         });
         return result;
@@ -153,7 +153,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    @Transactional(timeout = 30, rollbackFor = { Exception.class })
+    @Transactional(timeout = 30, rollbackFor = {Exception.class})
     public synchronized JsonSchemaDocument.ModifyDocumentResultImpl modifyDocument(
         ModifyDocumentRequest request
     ) {
