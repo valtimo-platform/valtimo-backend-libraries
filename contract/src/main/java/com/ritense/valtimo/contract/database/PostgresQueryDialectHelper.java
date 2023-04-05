@@ -77,6 +77,14 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
         );
     }
 
+    @Override
+    public Predicate getJsonValueLessThanExistsInPathExpression(CriteriaBuilder cb, Path column, String path, String value) {
+        return cb.lessThan(
+            getValueForPath(cb, column, path, String.class),
+            value.toLowerCase()
+        );
+    }
+
     private <T> Expression<T> getValueForPath(CriteriaBuilder cb, Path column, String path, Class<T> type) {
         List<Expression<String>> pathParts = splitPath(path).stream().map(cb::literal).toList();
         Expression[] expressions = new Expression[pathParts.size() + 1];

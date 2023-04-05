@@ -71,4 +71,9 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
             )
         );
     }
+
+    @Override
+    public Predicate getJsonValueLessThanExistsInPathExpression(CriteriaBuilder cb, Path column, String path, String value) {
+        return null;
+    }
 }

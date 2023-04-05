@@ -41,12 +41,17 @@ class AuthorizationService(
             Permission(
                 Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
                 Action.VIEW,
+                emptyList()
+            ),
+            Permission(
+                Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
+                Action.CLAIM,
                 listOf(
                     FieldPermissionFilter("documentDefinitionId.name", "leningen"),
                     ExpressionPermissionFilter(
                         "content.content",
-                        "$.voornaam",
-                        ExpressionOperator.EQUAL_TO, "Peter")
+                        "$.height",
+                        ExpressionOperator.LESS_THAN, "20000")
                 )
             ),
             Permission(
@@ -59,8 +64,9 @@ class AuthorizationService(
                             FieldPermissionFilter("documentDefinitionId.name", "leningen"),
                             ExpressionPermissionFilter(
                                 "content.content",
-                                "$.voornaam",
-                                ExpressionOperator.EQUAL_TO, "Peter")
+                                "$.height",
+                                ExpressionOperator.LESS_THAN, "20000"),
+                            FieldPermissionFilter("assigneeFullName", "Asha Miller")
                         )
                     )
                 )

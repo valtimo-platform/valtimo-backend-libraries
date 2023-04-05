@@ -33,6 +33,16 @@ class ExpressionPermissionFilter(
     ): Predicate {
         val path: Path<Any>? = createDatabaseObjectPath(field, root, resourceType)
 
+        if (ExpressionOperator.LESS_THAN == operator) {
+            return queryDialectHelper
+                .getJsonValueLessThanExistsInPathExpression(
+                    criteriaBuilder,
+                    path,
+                    this.path,
+                    this.value
+                )
+        }
+
         return queryDialectHelper
             .getJsonValueExistsInPathExpression(
                 criteriaBuilder,
@@ -56,7 +66,7 @@ class ExpressionPermissionFilter(
         }
     }
 
-    private fun evaluateExpression(pathValue: String): Boolean {
-        return operator.evaluate(pathValue, value)
+    private fun evaluateExpression(pathValue: Any): Boolean {
+        return operator.evaluate(pathValue.toString(), value)
     }
 }
