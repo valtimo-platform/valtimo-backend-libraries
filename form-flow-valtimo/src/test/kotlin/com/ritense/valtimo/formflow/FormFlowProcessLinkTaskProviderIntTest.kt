@@ -16,83 +16,62 @@
 
 package com.ritense.valtimo.formflow
 
-import com.ritense.document.domain.impl.request.NewDocumentRequest
-import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.formflow.repository.FormFlowInstanceRepository
-import com.ritense.formlink.domain.impl.formassociation.FormAssociationType
-import com.ritense.formlink.domain.request.CreateFormAssociationRequest
-import com.ritense.formlink.domain.request.FormLinkRequest
-import com.ritense.formlink.service.FormAssociationService
-import com.ritense.formlink.service.ProcessLinkService
-import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
-import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
-import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.service.ProcessLinkService
+import com.ritense.processlink.service.ProcessLinkTaskService
+import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
+import com.ritense.valtimo.service.CamundaProcessService
+import java.util.UUID
+import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
 
 @Transactional
 internal class FormFlowProcessLinkTaskProviderIntTest: BaseIntegrationTest() {
-    @Autowired
-    lateinit var documentDefinitionService: DocumentDefinitionService
-
-    @Autowired
-    lateinit var processDocumentService: ProcessDocumentService
-
-    @Autowired
-    lateinit var formAssociationService: FormAssociationService
 
     @Autowired
     lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
 
     @Autowired
-    lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
+    lateinit var processLinkService: ProcessLinkService
 
     @Autowired
-    lateinit var processLinkService: ProcessLinkService
+    lateinit var processLinkTaskService: ProcessLinkTaskService
+
+    @Autowired
+    lateinit var camundaProcessService: CamundaProcessService
 
     @Autowired
     lateinit var taskService: TaskService
 
+    @Autowired
+    lateinit var repositoryService: RepositoryService
+
     @Test
     fun `should not create form flow instance when Camunda user task is created`() {
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"\$id\": \"testing.schema\",\n" +
-            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n")
 
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(
-                "one-task-process",
-                "testing",
-                true
+        val processDefinition = repositoryService.createProcessDefinitionQuery()
+            .latestVersion()
+            .processDefinitionKey("one-task-process")
+            .singleResult();
+
+        processLinkService.createProcessLink(
+            FormFlowProcessLinkCreateRequestDto(
+                processDefinitionId = processDefinition.id,
+                activityId = "do-something",
+                activityType = ActivityTypeWithEventName.USER_TASK_START,
+                formFlowDefinitionId = "inkomens_loket:latest"
             )
         )
 
-        formAssociationService.createFormAssociation(
-            CreateFormAssociationRequest("one-task-process",
-                FormLinkRequest(
-                    "do-something",
-                    FormAssociationType.USER_TASK,
-                    null,
-                    "inkomens_loket:latest",
-                    null,
-                    null
-                )
-            )
-        )
-
-        processDocumentService.newDocumentAndStartProcess(
-            NewDocumentAndStartProcessRequest("one-task-process",
-                NewDocumentRequest("testing",
-                    Mapper.INSTANCE.get().readTree("{}"))
-            )
+        camundaProcessService.startProcess(
+            processDefinition.key,
+            UUID.randomUUID().toString(),
+            mapOf()
         )
 
         assertEquals(0, formFlowInstanceRepository.findAll().size)
@@ -100,46 +79,33 @@ internal class FormFlowProcessLinkTaskProviderIntTest: BaseIntegrationTest() {
 
     @Test
     fun `should create form flow instance when task is opened`() {
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"\$id\": \"testing.schema\",\n" +
-            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n")
+        val processDefinition = repositoryService.createProcessDefinitionQuery()
+            .latestVersion()
+            .processDefinitionKey("one-task-process")
+            .singleResult();
 
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(
-                "one-task-process",
-                "testing",
-                true
+        processLinkService.createProcessLink(
+            FormFlowProcessLinkCreateRequestDto(
+                processDefinitionId = processDefinition.id,
+                activityId = "do-something",
+                activityType = ActivityTypeWithEventName.USER_TASK_START,
+                formFlowDefinitionId = "inkomens_loket:latest"
             )
         )
 
-        formAssociationService.createFormAssociation(
-            CreateFormAssociationRequest("one-task-process",
-                FormLinkRequest(
-                    "do-something",
-                    FormAssociationType.USER_TASK,
-                    null,
-                    "inkomens_loket:latest",
-                    null,
-                    null
-                )
-            )
-        )
-
-        val result = processDocumentService.newDocumentAndStartProcess(
-            NewDocumentAndStartProcessRequest("one-task-process",
-                NewDocumentRequest("testing",
-                    Mapper.INSTANCE.get().readTree("{}"))
-            )
+        val processInstance = camundaProcessService.startProcess(
+            processDefinition.key,
+            UUID.randomUUID().toString(),
+            mapOf()
         )
 
         val task = taskService.createTaskQuery()
-            .processInstanceId(result.resultingProcessInstanceId().get().toString())
+            .processInstanceId(processInstance.processInstanceDto.id)
             .singleResult()
+
         assertEquals(0, formFlowInstanceRepository.findAll().size)
 
-        processLinkService.openTask(UUID.fromString(task.id))
+        processLinkTaskService.openTask(UUID.fromString(task.id))
 
         assertEquals(1, formFlowInstanceRepository.findAll().size)
     }
