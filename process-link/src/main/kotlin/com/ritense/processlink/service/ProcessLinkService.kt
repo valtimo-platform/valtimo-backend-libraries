@@ -22,14 +22,14 @@ import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
-import mu.KotlinLogging
 import java.util.UUID
 import javax.validation.ValidationException
 import kotlin.jvm.optionals.getOrElse
+import mu.KotlinLogging
 
 open class ProcessLinkService(
     private val processLinkRepository: ProcessLinkRepository,
-    private val processLinkMappers: List<ProcessLinkMapper>,
+    private val processLinkMappers: List<ProcessLinkMapper>
 ) {
 
     fun getProcessLinks(processDefinitionId: String, activityId: String): List<ProcessLink> {

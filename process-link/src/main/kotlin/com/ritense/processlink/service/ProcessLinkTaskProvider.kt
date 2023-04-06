@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ritense.processlink.service
 
-package com.ritense.formlink.domain;
+import com.ritense.processlink.domain.ProcessLink
+import com.ritense.processlink.web.rest.dto.OpenTaskResult
+import org.camunda.bpm.engine.task.Task
 
-
-import org.camunda.bpm.engine.task.Task;
-
-public interface ProcessLinkTaskProvider<T> {
-    boolean supports(FormLink formLink);
-    TaskOpenResult<T> getTaskResult(Task task, FormLink formLink);
+interface ProcessLinkTaskProvider<T> {
+    fun supports(processLink: ProcessLink): Boolean
+    fun openTask(task: Task, processLink: ProcessLink): OpenTaskResult<T>
 }
