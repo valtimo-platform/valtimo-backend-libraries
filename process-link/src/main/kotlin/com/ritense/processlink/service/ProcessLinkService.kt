@@ -60,7 +60,9 @@ open class ProcessLinkService(
     fun updateProcessLink(updateRequest: ProcessLinkUpdateRequestDto) {
         val processLinkToUpdate = processLinkRepository.findById(updateRequest.id)
             .getOrElse { throw IllegalStateException("No ProcessLink found with id ${updateRequest.id}") }
-
+        check(updateRequest.processLinkType == processLinkToUpdate.processLinkType) {
+            "The processLinkType of the persisted entity does not match the given type!"
+        }
         val mapper = getProcessLinkMapper(processLinkToUpdate.processLinkType)
         val processLinkUpdated = mapper.toUpdatedProcessLink(processLinkToUpdate, updateRequest)
         processLinkRepository.save(processLinkUpdated)
