@@ -87,6 +87,6 @@ class FormFlowProcessLinkMapper(
     }
 
     companion object {
-        const val PROCESS_LINK_TYPE_FORM_FLOW = "form_flow"
+        const val PROCESS_LINK_TYPE_FORM_FLOW = "form-flow"
     }
 }
