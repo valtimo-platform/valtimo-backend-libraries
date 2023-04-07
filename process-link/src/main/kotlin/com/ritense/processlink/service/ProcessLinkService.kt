@@ -26,7 +26,9 @@ import java.util.UUID
 import javax.validation.ValidationException
 import kotlin.jvm.optionals.getOrElse
 import mu.KotlinLogging
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional(readOnly = true)
 open class ProcessLinkService(
     private val processLinkRepository: ProcessLinkRepository,
     private val processLinkMappers: List<ProcessLinkMapper>
@@ -44,6 +46,7 @@ open class ProcessLinkService(
         )
     }
 
+    @Transactional
     fun createProcessLink(createRequest: ProcessLinkCreateRequestDto) {
         if (getProcessLinks(createRequest.processDefinitionId, createRequest.activityId).isNotEmpty()) {
             throw ValidationException("A process-link for process-definition '${createRequest.processDefinitionId}' and activity '${createRequest.activityId}' already exists!")
@@ -53,14 +56,17 @@ open class ProcessLinkService(
         processLinkRepository.save(mapper.toNewProcessLink(createRequest))
     }
 
+    @Transactional
     fun updateProcessLink(updateRequest: ProcessLinkUpdateRequestDto) {
-        val mapper = getProcessLinkMapper(updateRequest.processLinkType)
         val processLinkToUpdate = processLinkRepository.findById(updateRequest.id)
             .getOrElse { throw IllegalStateException("No ProcessLink found with id ${updateRequest.id}") }
+
+        val mapper = getProcessLinkMapper(processLinkToUpdate.processLinkType)
         val processLinkUpdated = mapper.toUpdatedProcessLink(processLinkToUpdate, updateRequest)
         processLinkRepository.save(processLinkUpdated)
     }
 
+    @Transactional
     fun deleteProcessLink(id: UUID) {
         processLinkRepository.deleteById(id)
     }
