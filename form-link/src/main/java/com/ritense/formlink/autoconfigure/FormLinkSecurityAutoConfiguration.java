@@ -42,7 +42,7 @@ public class FormLinkSecurityAutoConfiguration {
     }
 
     @Order(276)
-    @Bean
+    @Bean("formProcessLinkHttpSecurityConfigurer")
     @ConditionalOnMissingBean(ProcessLinkHttpSecurityConfigurer.class)
     public ProcessLinkHttpSecurityConfigurer processLinkHttpSecurityConfigurer() {
         return new ProcessLinkHttpSecurityConfigurer();

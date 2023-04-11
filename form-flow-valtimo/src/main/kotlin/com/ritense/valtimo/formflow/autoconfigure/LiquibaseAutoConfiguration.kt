@@ -36,4 +36,11 @@ class LiquibaseAutoConfiguration {
     fun formFlowLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
         return LiquibaseMasterChangeLogLocation("config/liquibase/form-flow-master.xml")
     }
+
+    @Order(Ordered.HIGHEST_PRECEDENCE + 28)
+    @ConditionalOnMissingBean(name = ["formFlowValtimoLiquibaseMasterChangeLogLocation"])
+    @Bean
+    fun formFlowValtimoLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
+        return LiquibaseMasterChangeLogLocation("config/liquibase/form-flow-valtimo-master.xml")
+    }
 }

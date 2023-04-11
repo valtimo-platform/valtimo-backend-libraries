@@ -49,6 +49,13 @@ class SearchFieldV2Resource(
     ) =
         ResponseEntity.ok(searchFieldV2Service.update(ownerId, key, searchFieldV2))
 
+    @PutMapping("/{ownerId}/fields")
+    fun updateList(
+        @PathVariable ownerId: String,
+        @Valid @RequestBody searchFieldV2: List<SearchFieldV2>
+    ) =
+        ResponseEntity.ok(searchFieldV2Service.updateList(ownerId, searchFieldV2))
+
     @GetMapping("/{ownerId}")
     fun getAllByOwnerId(@PathVariable ownerId: String) =
         ResponseEntity.ok(searchFieldV2Service.findAllByOwnerId(ownerId))

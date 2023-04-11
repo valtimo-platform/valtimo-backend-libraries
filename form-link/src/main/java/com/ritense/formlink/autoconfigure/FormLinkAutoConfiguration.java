@@ -16,13 +16,15 @@
 
 package com.ritense.formlink.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.formlink.autodeployment.FormLinkDeploymentService;
 import com.ritense.formlink.autodeployment.FormsAutoDeploymentFinishedEventListener;
-import com.ritense.formlink.domain.ProcessLinkTaskProvider;
-import com.ritense.formlink.domain.impl.formassociation.FormProcessLinkTaskProvider;
+import com.ritense.formlink.domain.FormLinkTaskProvider;
+import com.ritense.formlink.domain.impl.formassociation.FormFormLinkTaskProvider;
+import com.ritense.formlink.mapper.FormProcessLinkMapper;
 import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.formlink.repository.impl.JdbcProcessFormAssociationRepository;
 import com.ritense.formlink.service.FormAssociationService;
@@ -48,15 +50,19 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.List;
 
 @Configuration
+@EnableJpaRepositories(basePackages = "com.ritense.formlink.repository")
+@EntityScan("com.ritense.formlink.domain")
 public class FormLinkAutoConfiguration {
 
     @Bean
@@ -128,7 +134,7 @@ public class FormLinkAutoConfiguration {
         return new CamundaFormAssociationManagementResource(formAssociationService);
     }
 
-    @Bean
+    @Bean("formProcessLinkResource")
     @ConditionalOnMissingBean(ProcessLinkResource.class)
     public ProcessLinkResource defaultProcessLinkResource(
         ProcessLinkService processLinkService
@@ -162,17 +168,17 @@ public class FormLinkAutoConfiguration {
     }
 
     @Bean
-    public ProcessLinkTaskProvider formProcessLinkTaskProvider() {
-        return new FormProcessLinkTaskProvider();
+    public FormLinkTaskProvider formFormLinkTaskProvider() {
+        return new FormFormLinkTaskProvider();
     }
 
-    @Bean
+    @Bean("formProcessLinkService")
     @ConditionalOnMissingBean(ProcessLinkService.class)
     public ProcessLinkService processLinkService(
         RepositoryService repositoryService,
         TaskService taskService,
         FormAssociationService formAssociationService,
-        List<ProcessLinkTaskProvider> processLinkTaskProvide
+        List<FormLinkTaskProvider> processLinkTaskProvide
     ) {
         return new DefaultProcessLinkService(repositoryService, taskService, formAssociationService, processLinkTaskProvide);
     }
@@ -183,6 +189,15 @@ public class FormLinkAutoConfiguration {
         final NamedParameterJdbcTemplate namedParameterJdbcTemplate
     ) {
         return new JdbcProcessFormAssociationRepository(namedParameterJdbcTemplate);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormProcessLinkMapper.class)
+    public FormProcessLinkMapper formProcessLinkMapper(
+        final ObjectMapper objectMapper,
+        final FormDefinitionService formDefinitionService
+    ) {
+        return new FormProcessLinkMapper(objectMapper, formDefinitionService);
     }
 
 }

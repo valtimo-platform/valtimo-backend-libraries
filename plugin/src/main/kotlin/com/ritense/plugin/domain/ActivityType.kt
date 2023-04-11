@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.domain
 
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import org.camunda.bpm.engine.delegate.ExecutionListener
 import org.camunda.bpm.engine.delegate.TaskListener
 import org.camunda.bpm.engine.ActivityTypes.BOUNDARY_CANCEL as CAMUNDA_BOUNDARY_CANCEL
@@ -163,6 +164,10 @@ enum class ActivityType(
             return USER_TASK_CREATE
         }
         return this
+    }
+
+    fun toActivityTypeWithEventName(): ActivityTypeWithEventName {
+        return ActivityTypeWithEventName.fromValue(bpmnModelValue)
     }
 
     companion object {

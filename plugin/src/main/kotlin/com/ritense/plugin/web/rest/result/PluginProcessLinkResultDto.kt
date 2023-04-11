@@ -17,13 +17,18 @@
 package com.ritense.plugin.web.rest.result
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUGIN
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import java.util.UUID
 
-data class PluginProcessLinkResultDto (
-    val id: UUID,
-    val processDefinitionId: String,
-    val activityId: String,
+data class PluginProcessLinkResultDto(
+    override val id: UUID,
+    override val processDefinitionId: String,
+    override val activityId: String,
+    override val activityType: ActivityTypeWithEventName,
+    override val processLinkType: String = PROCESS_LINK_TYPE_PLUGIN,
     val pluginConfigurationId: UUID,
     val pluginActionDefinitionKey: String,
     val actionProperties: ObjectNode? = null
-)
+) : ProcessLinkResponseDto

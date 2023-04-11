@@ -53,13 +53,21 @@ class SearchFieldV2Service(
             ))
         }
 
-    fun findAllByOwnerId(ownerId: String) = searchFieldV2Repository.findAllByOwnerId(ownerId)
+    fun findAllByOwnerId(ownerId: String) = searchFieldV2Repository.findAllByOwnerIdOrderByOrder(ownerId)
 
-    fun findByOwnerIdAndKey(ownerId: String, key: String) = searchFieldV2Repository.findByOwnerIdAndKey(ownerId, key)
+    fun findByOwnerIdAndKey(ownerId: String, key: String) = searchFieldV2Repository.findByOwnerIdAndKeyOrderByOrder(ownerId, key)
 
     fun delete(ownerId: String, key: String) =
         with(findByOwnerIdAndKey(ownerId, key)) {
             this?.let { searchFieldV2Repository.delete(it) }
         }
+
+    fun updateList(ownerId: String, searchFieldV2: List<SearchFieldV2>): List<SearchFieldV2> {
+        return searchFieldV2Repository.saveAll(
+            searchFieldV2.mapIndexed{
+                index, field ->  field.copy(order = index)
+            }
+        )
+    }
 
 }

@@ -26,6 +26,7 @@ dependencies {
     api project(':form')
     api project(':form-link')
     api project(':value-resolver')
+    api project(":process-link")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
