@@ -22,8 +22,8 @@ import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.formlink.autodeployment.FormLinkDeploymentService;
 import com.ritense.formlink.autodeployment.FormsAutoDeploymentFinishedEventListener;
-import com.ritense.formlink.domain.ProcessLinkTaskProvider;
-import com.ritense.formlink.domain.impl.formassociation.FormProcessLinkTaskProvider;
+import com.ritense.formlink.domain.FormLinkTaskProvider;
+import com.ritense.formlink.domain.impl.formassociation.FormFormLinkTaskProvider;
 import com.ritense.formlink.mapper.FormProcessLinkMapper;
 import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.formlink.repository.impl.JdbcProcessFormAssociationRepository;
@@ -168,8 +168,8 @@ public class FormLinkAutoConfiguration {
     }
 
     @Bean
-    public ProcessLinkTaskProvider formProcessLinkTaskProvider() {
-        return new FormProcessLinkTaskProvider();
+    public FormLinkTaskProvider formFormLinkTaskProvider() {
+        return new FormFormLinkTaskProvider();
     }
 
     @Bean("formProcessLinkService")
@@ -178,7 +178,7 @@ public class FormLinkAutoConfiguration {
         RepositoryService repositoryService,
         TaskService taskService,
         FormAssociationService formAssociationService,
-        List<ProcessLinkTaskProvider> processLinkTaskProvide
+        List<FormLinkTaskProvider> processLinkTaskProvide
     ) {
         return new DefaultProcessLinkService(repositoryService, taskService, formAssociationService, processLinkTaskProvide);
     }

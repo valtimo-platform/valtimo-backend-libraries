@@ -17,12 +17,12 @@
 package com.ritense.formlink.domain.impl.formassociation;
 
 import com.ritense.formlink.domain.FormLink;
-import com.ritense.formlink.domain.ProcessLinkTaskProvider;
+import com.ritense.formlink.domain.FormLinkTaskProvider;
 import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import org.camunda.bpm.engine.task.Task;
 
-public class FormProcessLinkTaskProvider implements ProcessLinkTaskProvider<FormTaskOpenResultProperties> {
+public class FormFormLinkTaskProvider implements FormLinkTaskProvider<FormTaskOpenResultProperties> {
 
     private static final String FORM_TASK_TYPE_KEY = "form";
 

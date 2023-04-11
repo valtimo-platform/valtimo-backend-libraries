@@ -16,12 +16,16 @@
 
 package com.ritense.formlink.web.rest.dto
 
+import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.formlink.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import java.util.UUID
 
+@JsonTypeName(PROCESS_LINK_TYPE_FORM)
 data class FormProcessLinkUpdateRequestDto(
     override val id: UUID,
-    override val processLinkType: String = PROCESS_LINK_TYPE_FORM,
     val formDefinitionId: UUID,
-) : ProcessLinkUpdateRequestDto
+) : ProcessLinkUpdateRequestDto {
+    override val processLinkType: String
+        get() = PROCESS_LINK_TYPE_FORM
+}

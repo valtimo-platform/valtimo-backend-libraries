@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-class FormProcessLinkTaskProviderTest {
-    FormProcessLinkTaskProvider provider = new FormProcessLinkTaskProvider();
+class FormFormLinkTaskProviderTest {
+    FormFormLinkTaskProvider provider = new FormFormLinkTaskProvider();
 
     @Test
     void supportsReturnsTrueOnFormTypeFormlink() {
