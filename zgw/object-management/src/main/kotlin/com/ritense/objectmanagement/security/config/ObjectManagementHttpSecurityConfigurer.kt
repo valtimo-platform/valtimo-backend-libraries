@@ -32,7 +32,7 @@ class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
                 .antMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{id}")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(HttpMethod.GET, "/api/v1/object/management/configuration")
-                .hasAuthority(AuthoritiesConstants.ADMIN)
+                .hasAuthority(AuthoritiesConstants.USER)
                 .antMatchers(HttpMethod.PUT, "/api/v1/object/management/configuration")
                 .hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(HttpMethod.DELETE, "/api/v1/object/management/configuration/{id}")

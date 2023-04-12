@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.web.rest.dto
+package com.ritense.formlink.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import java.util.UUID
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "processLinkType")
-@JsonIgnoreProperties(value = ["processLinkType"], allowSetters = true)
-interface ProcessLinkUpdateRequestDto {
-    val id: UUID
-    val processLinkType: String
+import org.camunda.bpm.engine.task.Task;
+
+public interface FormLinkTaskProvider<T> {
+    boolean supports(FormLink formLink);
+    TaskOpenResult<T> getTaskResult(Task task, FormLink formLink);
 }
