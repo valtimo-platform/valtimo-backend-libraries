@@ -22,9 +22,9 @@ dockerCompose {
 }
 
 dependencies {
-    api project(':connector')
-    api project(':openzaak')
-    api project(':process-document')
+//    api project(':connector')
+//    api project(':openzaak')
+//    api project(':process-document')
     api project(':resource:openzaak-resource')
 
     api "org.springframework.security:spring-security-core"

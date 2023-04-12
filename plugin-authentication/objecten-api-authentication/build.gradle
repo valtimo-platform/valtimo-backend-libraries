@@ -24,7 +24,7 @@ dockerCompose {
 dependencies {
     api project(':core')
     api project(':zgw:objecten-api')
-    api project(':zgw:objecttypen-api')
+//    api project(':zgw:objecttypen-api')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"

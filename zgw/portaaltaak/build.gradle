@@ -25,7 +25,7 @@ dependencies {
     api(project(":process-document"))
     api project(':zgw:object-management')
     api project(':zgw:notificaties-api')
-    api project(':zgw:zaken-api')
+//    api project(':zgw:zaken-api')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"

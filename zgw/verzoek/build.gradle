@@ -24,8 +24,8 @@ dockerCompose {
 dependencies {
     api project(":process-document")
     api project(":plugin-authentication:notificaties-api-authentication")
-    api project(":zgw:catalogi-api")
-    api project(":zgw:notificaties-api")
+//    api project(":zgw:catalogi-api")
+//    api project(":zgw:notificaties-api")
     api project(":zgw:object-management")
 
     implementation "org.springframework.boot:spring-boot-starter"

@@ -22,7 +22,7 @@ dockerCompose {
 }
 
 dependencies {
-    api project(':plugin')
+//    api project(':plugin')
     api project(':form')
     api project(':zgw:zaken-api')
     api project(':zgw:objecttypen-api')

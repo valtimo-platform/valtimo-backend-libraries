@@ -25,10 +25,10 @@ dockerCompose {
 
 dependencies {
     api project(':connector')
-    api project(':process-document')
+//    api project(':process-document')
 
     api project(':plugin')
-    api project(':zgw:documenten-api')
+//    api project(':zgw:documenten-api')
     api project(':zgw:catalogi-api')
     api project(":zgw:besluiten-api")
 

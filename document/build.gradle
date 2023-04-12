@@ -50,6 +50,8 @@ dependencies {
         exclude(module:"liquibase-core")
     }
 
+    implementation "org.json:json:${orgJsonJsonVersion}"
+
     implementation "com.vladmihalcea:hibernate-types-55:${hibernateTypesVersion}"
 
     implementation "org.hibernate:hibernate-core"

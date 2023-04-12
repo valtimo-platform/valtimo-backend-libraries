@@ -22,7 +22,7 @@ dockerCompose {
 }
 
 dependencies {
-    api project(':core')
+//    api project(':core')
     api project(':openzaak')
     api project(':zgw:notificaties-api')
 
