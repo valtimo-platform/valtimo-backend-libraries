@@ -17,7 +17,6 @@
 
 package com.ritense.processlink.domain
 
-interface SupportedProcessLinkType {
+interface SupportedProcessLinkTypeHandler {
     fun getProcessLinkType(activityType: String): ProcessLinkType?
-    fun isEnabled(activityType: String): Boolean
 }

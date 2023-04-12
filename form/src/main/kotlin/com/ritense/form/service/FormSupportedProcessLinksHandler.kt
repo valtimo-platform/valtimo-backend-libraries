@@ -15,15 +15,15 @@
  *
  */
 
-package com.ritense.valtimo.formflow.service
+package com.ritense.form.service
 
-import com.ritense.formflow.service.FormFlowService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLinkType
-import com.ritense.processlink.domain.SupportedProcessLinkType
-import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM_FLOW
+import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
 
-class FormFlowSupportedProcessLinks(val formFlowService: FormFlowService) : SupportedProcessLinkType{
+class FormSupportedProcessLinksHandler(
+    val formDefinitionService: FormDefinitionService
+): SupportedProcessLinkTypeHandler {
 
     private val supportedActivityTypes = listOf(
         ActivityTypeWithEventName.USER_TASK_CREATE,
@@ -32,13 +32,13 @@ class FormFlowSupportedProcessLinks(val formFlowService: FormFlowService) : Supp
 
     override fun getProcessLinkType(activityType: String): ProcessLinkType? {
         if (supportedActivityTypes.contains(ActivityTypeWithEventName.fromValue(activityType))) {
-            return ProcessLinkType(PROCESS_LINK_TYPE_FORM_FLOW, isEnabled(activityType))
+            return ProcessLinkType("form", isEnabled(activityType))
         }
         return null
     }
 
-    override fun isEnabled(activityType: String): Boolean {
-        return formFlowService.getFormFlowDefinitions().isNotEmpty()
+    private fun isEnabled(activityType: String): Boolean {
+        return formDefinitionService.countAllForms() > 0
     }
 
 }

@@ -17,5 +17,4 @@
 
 package com.ritense.processlink.domain
 
-class ProcessLinkType(val processLinkType: String, val enabled: Boolean) {
-}
+data class ProcessLinkType(val processLinkType: String, val enabled: Boolean)

@@ -19,11 +19,11 @@ package com.ritense.plugin.service
 
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.processlink.domain.ProcessLinkType
-import com.ritense.processlink.domain.SupportedProcessLinkType
+import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
 
-class PluginSupportedProcessLinks(
+class PluginSupportedProcessLinksHandler(
     val pluginService: PluginService
-) : SupportedProcessLinkType {
+) : SupportedProcessLinkTypeHandler {
 
     override fun getProcessLinkType(activityType: String): ProcessLinkType? {
         if (pluginService.getPluginDefinitionActionsByActivityType(activityType).isNotEmpty()) {
@@ -32,7 +32,7 @@ class PluginSupportedProcessLinks(
         return null
     }
 
-    override fun isEnabled(activityType: String): Boolean {
+    private fun isEnabled(activityType: String): Boolean {
         return pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
                 activityType = ActivityType.fromValue(activityType)

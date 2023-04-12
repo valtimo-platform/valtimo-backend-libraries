@@ -33,7 +33,7 @@ import kotlin.test.assertNull
 class PluginSupportedProcessLinksIntTest : BaseIntegrationTest() {
 
     @Autowired
-    lateinit var pluginSupportedProcessLinks: PluginSupportedProcessLinks
+    lateinit var pluginSupportedProcessLinks: PluginSupportedProcessLinksHandler
 
     @Autowired
     lateinit var pluginConfigurationRepository: PluginConfigurationRepository

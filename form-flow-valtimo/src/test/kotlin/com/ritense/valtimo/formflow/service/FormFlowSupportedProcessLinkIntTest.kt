@@ -32,13 +32,13 @@ import kotlin.test.assertNull
 internal class FormFlowSupportedProcessLinkIntTest: BaseIntegrationTest() {
 
     @Autowired
-    lateinit var formFlowSupportedProcessLinks: FormFlowSupportedProcessLinks
+    lateinit var formFlowSupportedProcessLinks: FormFlowSupportedProcessLinksHandler
 
     @Test
     fun `should return a form flow process link type for StartEventStart with enabled false`() {
         val formFlowServiceMock = mock<FormFlowService>()
         whenever(formFlowServiceMock.getFormFlowDefinitions()).thenReturn(emptyList())
-        val formFlowSupportedProcessLinks = FormFlowSupportedProcessLinks(formFlowServiceMock)
+        val formFlowSupportedProcessLinks = FormFlowSupportedProcessLinksHandler(formFlowServiceMock)
         val result = formFlowSupportedProcessLinks.getProcessLinkType(ActivityTypeWithEventName.START_EVENT_START.value)
         assertEquals("form_flow", result?.processLinkType)
         assertEquals(false, result?.enabled)

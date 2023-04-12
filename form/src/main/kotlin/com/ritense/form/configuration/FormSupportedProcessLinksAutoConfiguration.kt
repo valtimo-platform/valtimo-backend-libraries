@@ -15,10 +15,10 @@
  *
  */
 
-package com.ritense.formlink.autoconfigure
+package com.ritense.form.configuration
 
 import com.ritense.form.service.FormDefinitionService
-import com.ritense.formlink.service.FormSupportedProcessLinks
+import com.ritense.form.service.FormSupportedProcessLinksHandler
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -27,9 +27,9 @@ import org.springframework.context.annotation.Configuration
 class FormSupportedProcessLinksAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(FormSupportedProcessLinks::class)
-    fun formSupportedProcessLinks(formDefinitionService: FormDefinitionService): FormSupportedProcessLinks {
-        return FormSupportedProcessLinks(formDefinitionService)
+    @ConditionalOnMissingBean(FormSupportedProcessLinksHandler::class)
+    fun formSupportedProcessLinks(formDefinitionService: FormDefinitionService): FormSupportedProcessLinksHandler {
+        return FormSupportedProcessLinksHandler(formDefinitionService)
     }
 
 }

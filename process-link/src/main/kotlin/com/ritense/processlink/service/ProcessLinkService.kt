@@ -19,7 +19,7 @@ package com.ritense.processlink.service
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.domain.ProcessLinkType
-import com.ritense.processlink.domain.SupportedProcessLinkType
+import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional
 open class ProcessLinkService(
     private val processLinkRepository: ProcessLinkRepository,
     private val processLinkMappers: List<ProcessLinkMapper>,
-    private val processLinkTypes: List<SupportedProcessLinkType>
+    private val processLinkTypes: List<SupportedProcessLinkTypeHandler>
 ) {
 
     fun getProcessLinks(processDefinitionId: String, activityId: String): List<ProcessLink> {

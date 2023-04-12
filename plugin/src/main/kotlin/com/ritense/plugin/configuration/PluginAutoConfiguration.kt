@@ -21,7 +21,7 @@ import com.ritense.plugin.PluginCategoryResolver
 import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
 import com.ritense.plugin.PluginFactory
-import com.ritense.plugin.service.PluginSupportedProcessLinks
+import com.ritense.plugin.service.PluginSupportedProcessLinksHandler
 import com.ritense.plugin.mapper.PluginProcessLinkMapper
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
@@ -176,8 +176,8 @@ class PluginAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(PluginSupportedProcessLinks::class)
-    fun getPluginSupportedProcessLinks(pluginService: PluginService): PluginSupportedProcessLinks {
-        return PluginSupportedProcessLinks(pluginService)
+    @ConditionalOnMissingBean(PluginSupportedProcessLinksHandler::class)
+    fun getPluginSupportedProcessLinks(pluginService: PluginService): PluginSupportedProcessLinksHandler {
+        return PluginSupportedProcessLinksHandler(pluginService)
     }
 }
