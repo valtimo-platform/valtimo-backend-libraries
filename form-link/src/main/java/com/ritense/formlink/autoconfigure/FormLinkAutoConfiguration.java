@@ -16,7 +16,6 @@
 
 package com.ritense.formlink.autoconfigure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.service.FormDefinitionService;
@@ -24,7 +23,6 @@ import com.ritense.formlink.autodeployment.FormLinkDeploymentService;
 import com.ritense.formlink.autodeployment.FormsAutoDeploymentFinishedEventListener;
 import com.ritense.formlink.domain.FormLinkTaskProvider;
 import com.ritense.formlink.domain.impl.formassociation.FormFormLinkTaskProvider;
-import com.ritense.formlink.mapper.FormProcessLinkMapper;
 import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.formlink.repository.impl.JdbcProcessFormAssociationRepository;
 import com.ritense.formlink.service.FormAssociationService;
@@ -189,15 +187,6 @@ public class FormLinkAutoConfiguration {
         final NamedParameterJdbcTemplate namedParameterJdbcTemplate
     ) {
         return new JdbcProcessFormAssociationRepository(namedParameterJdbcTemplate);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(FormProcessLinkMapper.class)
-    public FormProcessLinkMapper formProcessLinkMapper(
-        final ObjectMapper objectMapper,
-        final FormDefinitionService formDefinitionService
-    ) {
-        return new FormProcessLinkMapper(objectMapper, formDefinitionService);
     }
 
 }

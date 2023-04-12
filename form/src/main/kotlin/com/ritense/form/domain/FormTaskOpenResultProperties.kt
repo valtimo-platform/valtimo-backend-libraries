@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.formlink.web.rest.dto
+package com.ritense.form.domain
 
-import com.ritense.formlink.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
-import com.ritense.processlink.domain.ActivityTypeWithEventName
-import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
+import com.fasterxml.jackson.databind.JsonNode
 import java.util.UUID
 
-data class FormProcessLinkResponseDto(
-    override val id: UUID,
-    override val processDefinitionId: String,
-    override val activityId: String,
-    override val activityType: ActivityTypeWithEventName,
-    override val processLinkType: String = PROCESS_LINK_TYPE_FORM,
+data class FormTaskOpenResultProperties(
     val formDefinitionId: UUID,
-) : ProcessLinkResponseDto
+    val prefilledForm: JsonNode,
+)
