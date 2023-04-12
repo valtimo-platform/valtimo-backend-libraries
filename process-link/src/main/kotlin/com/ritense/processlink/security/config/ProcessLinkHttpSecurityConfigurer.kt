@@ -35,7 +35,7 @@ class ProcessLinkHttpSecurityConfigurer: HttpSecurityConfigurer {
                 .antMatchers(POST, "/api/v1/process-link").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/v1/process-link").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/v1/process-link/{processLinkId}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/v2/process-link/task/{taskId}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v2/process-link/task/{taskId}").hasAuthority(USER)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
