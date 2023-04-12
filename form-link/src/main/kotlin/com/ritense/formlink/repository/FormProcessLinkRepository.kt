@@ -16,7 +16,7 @@
 
 package com.ritense.formlink.repository
 
-import com.ritense.formlink.domain.FormProcessLink
+import com.ritense.form.domain.FormProcessLink
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 

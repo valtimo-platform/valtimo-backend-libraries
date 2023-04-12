@@ -14,46 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.formlink.domain
+package com.ritense.form.web.rest.dto
 
-import com.ritense.formlink.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
+import com.ritense.form.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
 import com.ritense.processlink.domain.ActivityTypeWithEventName
-import com.ritense.processlink.domain.ProcessLink
+import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.DiscriminatorValue
-import javax.persistence.Entity
 
-@Entity
-@DiscriminatorValue(PROCESS_LINK_TYPE_FORM)
-data class FormProcessLink(
+data class FormProcessLinkResponseDto(
     override val id: UUID,
-
     override val processDefinitionId: String,
-
     override val activityId: String,
-
     override val activityType: ActivityTypeWithEventName,
-
-    @Column(name = "form_definition_id")
-    val formDefinitionId: UUID
-
-) : ProcessLink(
-    id,
-    processDefinitionId,
-    activityId,
-    activityType,
-    PROCESS_LINK_TYPE_FORM,
-) {
-
-    override fun copy(
-        id: UUID,
-        processDefinitionId: String,
-    ) = copy(
-        id = id,
-        processDefinitionId = processDefinitionId,
-        activityId = activityId,
-        activityType = activityType,
-        formDefinitionId = formDefinitionId
-    )
-}
+    override val processLinkType: String = PROCESS_LINK_TYPE_FORM,
+    val formDefinitionId: UUID,
+) : ProcessLinkResponseDto
