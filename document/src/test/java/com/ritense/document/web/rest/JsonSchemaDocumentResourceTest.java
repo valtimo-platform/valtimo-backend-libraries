@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -103,7 +104,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
     }
 
@@ -120,7 +121,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty())
             .andExpect(jsonPath("$.assigneeId").value("test-assignee-id"))
             .andExpect(jsonPath("$.assigneeFullName").value("John Doe"));

@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties(value = {HardeningProperties.class})
+@EnableConfigurationProperties(HardeningProperties.class)
 public class HardeningAutoConfiguration {
 
     @Bean

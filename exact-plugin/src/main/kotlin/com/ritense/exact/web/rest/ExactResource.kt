@@ -3,13 +3,13 @@ package com.ritense.exact.web.rest
 import com.ritense.exact.service.ExactService
 import com.ritense.exact.service.request.ExactExchangeRequest
 import com.ritense.exact.service.response.ExactExchangeResponse
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 @RestController
 class ExactResource(
     val exactService: ExactService

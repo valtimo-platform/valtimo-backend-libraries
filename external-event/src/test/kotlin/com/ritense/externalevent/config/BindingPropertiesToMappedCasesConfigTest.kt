@@ -9,7 +9,7 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @ExtendWith(SpringExtension::class)
-@EnableConfigurationProperties(value = [MappedCasesConfig::class])
+@EnableConfigurationProperties(MappedCasesConfig::class)
 @TestPropertySource("classpath:mapping-config.properties")
 internal class BindingPropertiesToMappedCasesConfigTest {
 
