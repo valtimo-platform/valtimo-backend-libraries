@@ -46,8 +46,10 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class JsonSchemaDocumentResource implements DocumentResource {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentResource.class);
@@ -64,7 +66,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @GetMapping(value = "/v1/document/{id}")
+    @GetMapping("/v1/document/{id}")
     public ResponseEntity<? extends Document> getDocument(@PathVariable(name = "id") UUID id) {
         return documentService.findBy(JsonSchemaDocumentId.existingId(id))
             .filter(it -> hasAccessToDefinitionName(it.definitionId().name()))
@@ -123,7 +125,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @PostMapping(value = "/v1/document/{documentId}/assign")
+    @PostMapping("/v1/document/{documentId}/assign")
     public ResponseEntity<Void> assignHandlerToDocument(
         @PathVariable(name = "documentId")UUID documentId,
         @RequestBody @Valid UpdateAssigneeRequest request) {
@@ -143,7 +145,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @PostMapping(value = "/v1/document/{documentId}/unassign")
+    @PostMapping("/v1/document/{documentId}/unassign")
     public ResponseEntity<Void> unassignHandlerFromDocument(@PathVariable(name = "documentId")UUID documentId) {
         logger.debug(String.format("REST call /api/v1/document/%s/unassign", documentId));
 

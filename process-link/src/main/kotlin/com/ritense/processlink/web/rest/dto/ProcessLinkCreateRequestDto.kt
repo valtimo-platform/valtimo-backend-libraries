@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "processLinkType")
-@JsonIgnoreProperties(value = ["processLinkType"], allowSetters = true)
+@JsonIgnoreProperties("processLinkType", allowSetters = true)
 interface ProcessLinkCreateRequestDto {
     val processDefinitionId: String
     val activityId: String

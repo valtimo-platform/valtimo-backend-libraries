@@ -17,8 +17,8 @@
 package com.ritense.openzaak.web.rest
 
 import com.ritense.openzaak.web.rest.response.ZaakInstanceLinkDTO
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -28,12 +28,12 @@ import java.net.URI
 import java.util.UUID
 
 @RestController
-@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class ZaakInstanceLinkResource(
     val zaakInstanceLinkService: ZaakInstanceLinkService,
 ) {
 
-    @GetMapping(value = ["/v1/zaakinstancelink/zaak"])
+    @GetMapping("/v1/zaakinstancelink/zaak")
     fun getZaakInstanceLink(
         @RequestParam(name = "zaakInstanceUrl") zaakInstanceUrl: URI
     ): ResponseEntity<ZaakInstanceLinkDTO> {
@@ -46,7 +46,7 @@ class ZaakInstanceLinkResource(
         )
     }
 
-    @GetMapping(value = ["/v1/zaakinstancelink/document"])
+    @GetMapping("/v1/zaakinstancelink/document")
     fun getZaakInstanceLink(
         @RequestParam(name = "documentId") documentId: UUID
     ): ResponseEntity<ZaakInstanceLinkDTO> {

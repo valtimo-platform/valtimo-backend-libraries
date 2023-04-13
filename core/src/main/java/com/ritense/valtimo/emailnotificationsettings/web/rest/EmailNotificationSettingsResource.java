@@ -20,17 +20,19 @@ import com.ritense.valtimo.contract.utils.SecurityUtils;
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettings;
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettingsRequestImpl;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1", produces = APPLICATION_JSON_UTF8_VALUE)
 public class EmailNotificationSettingsResource {
 
     private final EmailNotificationSettingsService emailNotificationService;
@@ -39,7 +41,7 @@ public class EmailNotificationSettingsResource {
         this.emailNotificationService = emailNotificationService;
     }
 
-    @GetMapping(value = "/email-notification-settings")
+    @GetMapping("/email-notification-settings")
     public ResponseEntity<EmailNotificationSettings.JsonViewResult> getSettingsFor() {
         final String emailAddress = SecurityUtils.getCurrentUserLogin();
         return emailNotificationService.getSettingsFor(emailAddress)
@@ -47,7 +49,7 @@ public class EmailNotificationSettingsResource {
             .orElse(ResponseEntity.noContent().build());
     }
 
-    @PutMapping(value = "/email-notification-settings")
+    @PutMapping("/email-notification-settings")
     public ResponseEntity<EmailNotificationSettings.JsonViewResult> process(
         @RequestBody @Valid EmailNotificationSettingsRequestImpl request
     ) {

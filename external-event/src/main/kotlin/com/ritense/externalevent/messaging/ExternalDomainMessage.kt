@@ -18,5 +18,5 @@ package com.ritense.externalevent.messaging
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
-@JsonIgnoreProperties(value = ["destination"])
+@JsonIgnoreProperties("destination")
 abstract class ExternalDomainMessage(var destination: String? = null)
