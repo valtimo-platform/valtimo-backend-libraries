@@ -25,7 +25,7 @@ dependencies {
     api project(":mail")
     api project(":connector")
     api project(":document")
-    api project(":resource")
+//    api project(":resource")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

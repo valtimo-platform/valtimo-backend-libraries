@@ -22,7 +22,7 @@ dockerCompose {
 }
 
 dependencies {
-    api project(":core")
+//    api project(":core")
     api project(":web")
     testImplementation project(path: ":core", configuration: 'testOutput')
 

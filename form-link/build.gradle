@@ -25,7 +25,7 @@ dependencies {
     api project(':process-document')
     api project(':form')
     api project(":resource:temporary-resource-storage")
-    api project(':process-link')
+//    api project(':process-link')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

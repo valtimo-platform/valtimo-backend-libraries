@@ -30,3 +30,5 @@ gsed -i '/^":test-utils-common.*$/d' module-dependencies.dot
 gsed -i '/^":.*-dependencies.*$/d' module-dependencies.dot
 #gsed -i '/^$/d' module-dependencies.dot
 #dot -Kneato -Tpdf module-dependencies.dot -Gsplines="ortho" -Gconcentrate -Gnormalize -Goverlap="vpsc" -Gesep=+20 -Earrowsize=0.5 -Nshape=record -Nstyle="filled" -Nfillcolor="#f2f2f2" > output.pdf
+
+#graphviz2drawio module-dependencies.dot
