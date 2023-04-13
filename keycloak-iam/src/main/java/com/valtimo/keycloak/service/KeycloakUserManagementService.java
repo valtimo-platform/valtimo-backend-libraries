@@ -33,13 +33,15 @@ import org.springframework.data.domain.Pageable;
 
 import javax.ws.rs.NotFoundException;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsLast;
 
 public class KeycloakUserManagementService implements UserManagementService {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakUserManagementService.class);
@@ -92,7 +94,7 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public List<ManageableUser> getAllUsers() {
-        var users = keycloakService.usersResource().list(0, MAX_USERS).parallelStream()
+        var users = keycloakService.usersResource().list(0, MAX_USERS).stream()
             .filter(UserRepresentation::isEnabled)
             .map(this::toManageableUserByRetrievingRoles)
             .toList();
@@ -125,7 +127,7 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public List<ManageableUser> findByRole(String authority) {
-        return findUserRepresentationByRole(authority).parallelStream()
+        return findUserRepresentationByRole(authority).stream()
             .map(this::toManageableUserByRetrievingRoles)
             .toList();
     }
@@ -146,7 +148,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             .filter(user -> groupsCriteria.getOrUserGroups().stream()
                 .map(userGroups -> user.getRoles().stream().anyMatch(userGroups::contains))
                 .reduce(true, (orUserGroup1, orUserGroup2) -> orUserGroup1 && orUserGroup2))
-            .sorted(Comparator.comparing(ManageableUser::getFullName))
+            .sorted(comparing(ManageableUser::getFullName, nullsLast(naturalOrder())))
             .toList();
     }
 
@@ -157,7 +159,8 @@ public class KeycloakUserManagementService implements UserManagementService {
             .flatMap(Collection::stream)
             .map(this::toNamedUser)
             .distinct()
-            .sorted(Comparator.comparing(NamedUser::getFirstName).thenComparing(NamedUser::getLastName))
+            .sorted(comparing(NamedUser::getFirstName, nullsLast(naturalOrder()))
+                .thenComparing(NamedUser::getLastName, nullsLast(naturalOrder())))
             .toList();
     }
 
