@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -105,7 +106,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         mockMvc.perform(get("/api/v1/document-definition"))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
     }
 
@@ -117,7 +118,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         mockMvc.perform(get("/api/v1/document-definition?sort=id.name,DESC"))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
 
         Pageable page = pageCaptor.getValue();
@@ -133,7 +134,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         mockMvc.perform(get("/api/v1/document-definition?sort=id.version,DESC"))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
 
         Pageable page = pageCaptor.getValue();
@@ -149,7 +150,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         mockMvc.perform(get("/api/v1/document-definition?sort=readOnly,ASC&sort=id.name,DESC&sort=other,ASC"))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
 
         Pageable page = pageCaptor.getValue();
@@ -170,7 +171,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         mockMvc.perform(get("/api/v1/document-definition/{name}", definitionName))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
     }
 
@@ -298,7 +299,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
                 get("/api/v1/document-definition/open/count").accept(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$.[0].documentDefinitionName").value("my-document-definition-name"))
             .andExpect(jsonPath("$.[0].openDocumentCount").value(23L));

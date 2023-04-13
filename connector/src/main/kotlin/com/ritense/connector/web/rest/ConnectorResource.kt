@@ -22,11 +22,11 @@ import com.ritense.connector.web.rest.request.CreateConnectorInstanceRequest
 import com.ritense.connector.web.rest.request.ModifyConnectorInstanceRequest
 import com.ritense.connector.web.rest.result.CreateConnectorInstanceResult
 import com.ritense.connector.web.rest.result.ModifyConnectorInstanceResult
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -41,37 +41,37 @@ import java.util.UUID
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface ConnectorResource {
 
-    @GetMapping(value = ["/v1/connector/type"])
+    @GetMapping("/v1/connector/type")
     fun getTypes(): ResponseEntity<List<ConnectorType>>
 
-    @GetMapping(value = ["/v1/connector/instance"], params = ["instanceId"])
+    @GetMapping("/v1/connector/instance", params = ["instanceId"])
     fun getConnectorInstance(@RequestParam(name = "instanceId") instanceId: UUID): ResponseEntity<ConnectorInstance>
 
-    @GetMapping(value = ["/v1/connector/instance"])
+    @GetMapping("/v1/connector/instance")
     fun getInstances(
         @RequestParam(required = false) typeName: String?,
         @PageableDefault(sort = ["name"], direction = Sort.Direction.DESC) pageable: Pageable = Pageable.unpaged()
     ): ResponseEntity<Page<ConnectorInstance>>
 
-    @GetMapping(value = ["/v1/connector/instance/{typeId}"])
+    @GetMapping("/v1/connector/instance/{typeId}")
     fun getInstancesByType(
         @PathVariable(name = "typeId") typeId: UUID,
         @PageableDefault(sort = ["name"], direction = Sort.Direction.DESC) pageable: Pageable = Pageable.unpaged()
     ): ResponseEntity<Page<ConnectorInstance>>
 
-    @PostMapping(value = ["/v1/connector/instance"])
+    @PostMapping("/v1/connector/instance")
     fun create(
         @Valid @RequestBody request: CreateConnectorInstanceRequest
     ): ResponseEntity<CreateConnectorInstanceResult>
 
-    @PutMapping(value = ["/v1/connector/instance"])
+    @PutMapping("/v1/connector/instance")
     fun modify(
         @Valid @RequestBody request: ModifyConnectorInstanceRequest
     ): ResponseEntity<ModifyConnectorInstanceResult>
 
-    @DeleteMapping(value = ["/v1/connector/instance/{instanceId}"])
+    @DeleteMapping("/v1/connector/instance/{instanceId}")
     fun remove(@PathVariable(name = "instanceId") instanceId: UUID): ResponseEntity<Void>
 }
