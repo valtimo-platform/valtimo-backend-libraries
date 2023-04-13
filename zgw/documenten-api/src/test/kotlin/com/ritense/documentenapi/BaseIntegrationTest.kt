@@ -34,7 +34,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest(classes = [TestApplication::class])
-@ExtendWith(value = [SpringExtension::class])
+@ExtendWith(SpringExtension::class)
 @Tag("integration")
 class BaseIntegrationTest {
     @SpyBean

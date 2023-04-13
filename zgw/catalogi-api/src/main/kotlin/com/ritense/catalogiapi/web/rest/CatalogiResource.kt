@@ -22,6 +22,7 @@ import com.ritense.catalogiapi.web.rest.result.InformatieobjecttypeDto
 import com.ritense.catalogiapi.web.rest.result.ResultaattypeDto
 import com.ritense.catalogiapi.web.rest.result.RoltypeDto
 import com.ritense.catalogiapi.web.rest.result.StatustypeDto
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -29,11 +30,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api"])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class CatalogiResource(
     val catalogiService: CatalogiService
 ) {
-    @GetMapping(value = ["/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype"])
+    @GetMapping("/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype")
     fun getZaakObjecttypes(
         @PathVariable(name = "documentDefinitionName") documentDefinitionName: String
     ): ResponseEntity<List<InformatieobjecttypeDto>> {
@@ -46,7 +47,7 @@ class CatalogiResource(
         return ResponseEntity.ok(zaakObjectTypes)
     }
 
-    @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/roltype"])
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/zaaktype/roltype")
     fun getZaakRoltypes(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<RoltypeDto>> {
@@ -59,7 +60,7 @@ class CatalogiResource(
         return ResponseEntity.ok(zaakRolTypes)
     }
 
-    @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/statustype"])
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/zaaktype/statustype")
     fun getZaakStatustypen(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<StatustypeDto>> {
@@ -72,7 +73,7 @@ class CatalogiResource(
         return ResponseEntity.ok(zaakStatusTypes)
     }
 
-    @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype"])
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype")
     fun getZaakResultaattypen(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<ResultaattypeDto>> {
@@ -85,7 +86,7 @@ class CatalogiResource(
         return ResponseEntity.ok(zaakResultaatTypes)
     }
 
-    @GetMapping(value = ["/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype"])
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype")
     fun getZaakBesuilttypen(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<BesluittypeDto>> {

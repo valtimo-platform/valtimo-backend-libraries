@@ -17,6 +17,7 @@
 package com.ritense.zakenapi.uploadprocess
 
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.DOCUMENT_UPLOAD
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class UploadProcessResource(
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {

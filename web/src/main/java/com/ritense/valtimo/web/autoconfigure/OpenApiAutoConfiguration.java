@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
  * OpenAPI configuration.
  */
 @Configuration
-@EnableConfigurationProperties(value = {OpenApiProperties.class})
+@EnableConfigurationProperties(OpenApiProperties.class)
 public class OpenApiAutoConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenApiAutoConfiguration.class);

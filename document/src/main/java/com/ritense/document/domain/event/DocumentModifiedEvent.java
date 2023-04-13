@@ -29,7 +29,7 @@ public interface DocumentModifiedEvent {
 
     List<? extends DocumentFieldChangedEvent> changes();
 
-    @JsonProperty(value = "changes")
+    @JsonProperty("changes")
     default List<? extends DocumentFieldChangedEvent> registeredChanges() {
         List<? extends DocumentFieldChangedEvent> changes = null;
 

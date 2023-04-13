@@ -36,13 +36,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class PublicProcessResource {
 
     private final FormService formService;
@@ -59,7 +62,7 @@ public class PublicProcessResource {
         this.camundaProcessService = camundaProcessService;
     }
 
-    @GetMapping(value = "/v1/public/process/definition/{processDefinitionKey}/start-form")
+    @GetMapping("/v1/public/process/definition/{processDefinitionKey}/start-form")
     @ResponseBody
     public ResponseEntity<StartFormDto> getStartForm(
         HttpServletRequest request,

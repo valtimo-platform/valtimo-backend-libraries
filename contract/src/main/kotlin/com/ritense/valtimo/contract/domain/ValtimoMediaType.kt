@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.web.rest.dto
+package com.ritense.valtimo.contract.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import java.util.UUID
+object ValtimoMediaType {
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "processLinkType")
-@JsonIgnoreProperties("processLinkType", allowSetters = true)
-interface ProcessLinkUpdateRequestDto {
-    val id: UUID
-    val processLinkType: String
+    const val APPLICATION_JSON_UTF8_VALUE = "application/json;charset=UTF-8"
+    const val TEXT_PLAIN_UTF8_VALUE = "text/plain;charset=UTF-8"
+
 }

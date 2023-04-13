@@ -25,7 +25,7 @@ public class DocumentDefinitionProcessRequest {
 
     public DocumentDefinitionProcessRequest(
         @JsonProperty(value = "processDefinitionKey", required = true) String processDefinitionKey,
-        @JsonProperty(value = "linkType") String linkType
+        @JsonProperty("linkType") String linkType
     ) {
         this.processDefinitionKey = processDefinitionKey;
         this.linkType = linkType;
