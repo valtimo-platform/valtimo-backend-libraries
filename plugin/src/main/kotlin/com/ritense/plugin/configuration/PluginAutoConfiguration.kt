@@ -21,6 +21,7 @@ import com.ritense.plugin.PluginCategoryResolver
 import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
 import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.service.PluginSupportedProcessLinksHandler
 import com.ritense.plugin.mapper.PluginProcessLinkMapper
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
@@ -116,7 +117,8 @@ class PluginAutoConfiguration {
         valueResolverService: ValueResolverService,
         pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
     ): PluginService {
-        return PluginService(pluginDefinitionRepository,
+        return PluginService(
+            pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
             pluginProcessLinkRepository,
@@ -171,5 +173,11 @@ class PluginAutoConfiguration {
         secret: String
     ): EncryptionService {
         return EncryptionService(secret)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginSupportedProcessLinksHandler::class)
+    fun getPluginSupportedProcessLinks(pluginService: PluginService): PluginSupportedProcessLinksHandler {
+        return PluginSupportedProcessLinksHandler(pluginService)
     }
 }

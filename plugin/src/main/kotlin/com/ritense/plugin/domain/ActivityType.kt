@@ -125,6 +125,7 @@ enum class ActivityType(
     BOUNDARY_CONDITIONAL("bpmn:" + CAMUNDA_BOUNDARY_CONDITIONAL.replaceFirstChar { it.uppercaseChar() }),
 
     START_EVENT("bpmn:" + CAMUNDA_START_EVENT.replaceFirstChar { it.uppercaseChar() }),
+    START_EVENT_START("bpmn:" + CAMUNDA_START_EVENT.replaceFirstChar { it.uppercaseChar() } + ":" + ExecutionListener.EVENTNAME_START),
     START_TIMER_EVENT("bpmn:" + CAMUNDA_START_EVENT_TIMER.replaceFirstChar { it.uppercaseChar() }),
     MESSAGE_START_EVENT("bpmn:" + CAMUNDA_START_EVENT_MESSAGE.replaceFirstChar { it.uppercaseChar() }),
     SIGNAL_START_EVENT("bpmn:" + CAMUNDA_START_EVENT_SIGNAL.replaceFirstChar { it.uppercaseChar() }),
