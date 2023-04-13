@@ -40,7 +40,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.util.UUID
 
 @SpringBootTest
-@ExtendWith(value = [SpringExtension::class])
+@ExtendWith(SpringExtension::class)
 @Tag("integration")
 class BaseIntegrationTest : BaseTest() {
 

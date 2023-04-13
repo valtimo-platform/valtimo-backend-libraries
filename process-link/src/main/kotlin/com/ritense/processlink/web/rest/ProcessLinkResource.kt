@@ -22,9 +22,8 @@ import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
-import java.util.UUID
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -35,15 +34,16 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
-@RequestMapping(value = ["/api"])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class ProcessLinkResource(
     private var processLinkService: ProcessLinkService,
     private val processLinkMappers: List<ProcessLinkMapper>,
 ) {
 
-    @GetMapping(value = ["/v1/process-link"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("/v1/process-link")
     fun getProcessLinks(
         @RequestParam("processDefinitionId") processDefinitionId: String,
         @RequestParam("activityId") activityId: String
@@ -54,7 +54,7 @@ class ProcessLinkResource(
         return ResponseEntity.ok(list)
     }
 
-    @GetMapping(value = ["/v1/process-link/types"])
+    @GetMapping("/v1/process-link/types")
     fun getSupportedProcessLinkTypes(
         @RequestParam(name = "activityType") activityType: String
     ): ResponseEntity<List<ProcessLinkType>> {

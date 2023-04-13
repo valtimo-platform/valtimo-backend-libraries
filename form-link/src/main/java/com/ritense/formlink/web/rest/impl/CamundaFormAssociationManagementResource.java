@@ -37,8 +37,10 @@ import javax.validation.Valid;
 import java.util.Collection;
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class CamundaFormAssociationManagementResource implements FormAssociationManagementResource {
 
     private final FormAssociationService formAssociationService;
@@ -95,7 +97,7 @@ public class CamundaFormAssociationManagementResource implements FormAssociation
     }
 
     @Override
-    @DeleteMapping(value = "/v1/form-association-management/{processDefinitionKey}/{formAssociationId}")
+    @DeleteMapping("/v1/form-association-management/{processDefinitionKey}/{formAssociationId}")
     public ResponseEntity<Void> deleteFormAssociation(
         @PathVariable String processDefinitionKey,
         @PathVariable String formAssociationId
