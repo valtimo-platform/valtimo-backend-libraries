@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.formlink.web.rest.dto
+package com.ritense.form.web.rest.dto
 
 import com.fasterxml.jackson.annotation.JsonTypeName
-import com.ritense.formlink.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
+import com.ritense.form.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import java.util.UUID

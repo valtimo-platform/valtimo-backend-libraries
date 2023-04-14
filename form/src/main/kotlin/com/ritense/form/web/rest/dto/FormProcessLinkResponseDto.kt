@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.formlink.repository
+package com.ritense.form.web.rest.dto
 
-import com.ritense.formlink.domain.FormProcessLink
-import org.springframework.data.jpa.repository.JpaRepository
+import com.ritense.form.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import java.util.UUID
 
-interface FormProcessLinkRepository : JpaRepository<FormProcessLink, UUID>
+data class FormProcessLinkResponseDto(
+    override val id: UUID,
+    override val processDefinitionId: String,
+    override val activityId: String,
+    override val activityType: ActivityTypeWithEventName,
+    override val processLinkType: String = PROCESS_LINK_TYPE_FORM,
+    val formDefinitionId: UUID,
+) : ProcessLinkResponseDto
