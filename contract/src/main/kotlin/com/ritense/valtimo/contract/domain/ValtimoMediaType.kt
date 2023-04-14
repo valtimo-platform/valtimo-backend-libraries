@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.formlink.web.rest.dto
+package com.ritense.valtimo.contract.domain
 
-import com.ritense.formlink.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
-import com.ritense.processlink.domain.ActivityTypeWithEventName
-import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
-import java.util.UUID
+object ValtimoMediaType {
 
-data class FormProcessLinkResponseDto(
-    override val id: UUID,
-    override val processDefinitionId: String,
-    override val activityId: String,
-    override val activityType: ActivityTypeWithEventName,
-    override val processLinkType: String = PROCESS_LINK_TYPE_FORM,
-    val formDefinitionId: UUID,
-) : ProcessLinkResponseDto
+    const val APPLICATION_JSON_UTF8_VALUE = "application/json;charset=UTF-8"
+    const val TEXT_PLAIN_UTF8_VALUE = "text/plain;charset=UTF-8"
+
+}

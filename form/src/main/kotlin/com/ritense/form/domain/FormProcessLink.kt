@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.formlink.domain
+package com.ritense.form.domain
 
-import com.ritense.formlink.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
+import com.ritense.form.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import java.util.UUID

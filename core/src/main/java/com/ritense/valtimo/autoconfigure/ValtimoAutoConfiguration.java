@@ -77,7 +77,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 @Configuration
-@EnableConfigurationProperties(value = {ValtimoProperties.class})
+@EnableConfigurationProperties(ValtimoProperties.class)
 @EnableJpaAuditing(dateTimeProviderRef = "customDateTimeProvider")
 @EnableCamundaEventBus
 @EnableJpaRepositories(basePackageClasses = ProcessDefinitionPropertiesRepository.class)

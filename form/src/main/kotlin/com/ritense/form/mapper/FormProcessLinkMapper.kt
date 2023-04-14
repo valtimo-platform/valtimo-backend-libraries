@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.formlink.mapper
+package com.ritense.form.mapper
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.form.domain.FormProcessLink
 import com.ritense.form.service.FormDefinitionService
-import com.ritense.formlink.domain.FormProcessLink
-import com.ritense.formlink.web.rest.dto.FormProcessLinkCreateRequestDto
-import com.ritense.formlink.web.rest.dto.FormProcessLinkResponseDto
-import com.ritense.formlink.web.rest.dto.FormProcessLinkUpdateRequestDto
+import com.ritense.form.web.rest.dto.FormProcessLinkCreateRequestDto
+import com.ritense.form.web.rest.dto.FormProcessLinkResponseDto
+import com.ritense.form.web.rest.dto.FormProcessLinkUpdateRequestDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto

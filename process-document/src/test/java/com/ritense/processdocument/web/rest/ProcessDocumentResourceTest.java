@@ -63,6 +63,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -153,7 +154,7 @@ class ProcessDocumentResourceTest extends BaseTest {
                     .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.content[0].id.processDefinitionKey").exists())
             .andExpect(jsonPath("$.content[0].id.documentDefinitionId.name").exists())
             .andExpect(jsonPath("$.content[0].id.documentDefinitionId.version").exists());
@@ -170,7 +171,7 @@ class ProcessDocumentResourceTest extends BaseTest {
                     .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[0].id.processDefinitionKey").value(processDefinitionKey.toString()))
             .andExpect(jsonPath("$.[0].id.documentDefinitionId.name").value(documentDefinitionId.name()))
             .andExpect(jsonPath("$.[0].id.documentDefinitionId.version").value(documentDefinitionId.version()));
@@ -187,7 +188,7 @@ class ProcessDocumentResourceTest extends BaseTest {
                     .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[0].id.processDefinitionKey").value(processDefinitionKey.toString()))
             .andExpect(jsonPath("$.[0].id.documentDefinitionId.name").value(documentDefinitionId.name()))
             .andExpect(jsonPath("$.[0].id.documentDefinitionId.version").value(documentDefinitionId.version()));
@@ -203,7 +204,7 @@ class ProcessDocumentResourceTest extends BaseTest {
                     .accept(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id.processDefinitionKey").value(processDefinitionKey.toString()))
             .andExpect(jsonPath("$.id.documentDefinitionId.name").value(documentDefinitionId.name()))
             .andExpect(jsonPath("$.id.documentDefinitionId.version").value(documentDefinitionId.version()));
@@ -220,7 +221,7 @@ class ProcessDocumentResourceTest extends BaseTest {
                     .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[0].id.processInstanceId").exists())
             .andExpect(jsonPath("$.[0].id.documentId").exists());
     }
@@ -252,7 +253,7 @@ class ProcessDocumentResourceTest extends BaseTest {
                     .content(TestUtil.convertObjectToJsonBytes(request)))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.document").exists())
             .andExpect(jsonPath("$.processInstanceId").value(processInstanceId.toString()))
             .andExpect(jsonPath("$.errors").exists())
@@ -282,7 +283,7 @@ class ProcessDocumentResourceTest extends BaseTest {
                     .content(TestUtil.convertObjectToJsonBytes(request)))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.document").exists())
             .andExpect(jsonPath("$.errors").exists())
             .andExpect(jsonPath("$.errors").isEmpty());
@@ -358,7 +359,7 @@ class ProcessDocumentResourceTest extends BaseTest {
                     .content(TestUtil.convertObjectToJsonBytes(request)))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.document").exists())
             .andExpect(jsonPath("$.errors").exists())
             .andExpect(jsonPath("$.errors").isEmpty());

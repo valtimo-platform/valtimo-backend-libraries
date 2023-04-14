@@ -16,18 +16,20 @@
 
 package com.ritense.valtimo.web.rest;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Map;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class VersionResource {
 
-    @GetMapping(value = "/v1/valtimo/version")
+    @GetMapping("/v1/valtimo/version")
     public ResponseEntity<Map<String, String>> getValtimoVersion() {
         String title = "";
         if (this.getClass().getPackage().getImplementationTitle() != null) {

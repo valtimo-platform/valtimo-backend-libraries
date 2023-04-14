@@ -54,11 +54,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(value = "/api", produces = APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class ProcessDocumentResource {
 
     private final ProcessDocumentService processDocumentService;
@@ -75,7 +76,7 @@ public class ProcessDocumentResource {
         this.documentDefinitionProcessLinkService = documentDefinitionProcessLinkService;
     }
 
-    @GetMapping(value = "/v1/process-document/definition")
+    @GetMapping("/v1/process-document/definition")
     public ResponseEntity<Page<? extends ProcessDocumentDefinition>> getProcessDocumentDefinitions(
         @PageableDefault(sort = {"processDocumentDefinitionId.documentDefinitionName.name"}, direction = DESC) Pageable pageable
     ) {
@@ -99,14 +100,14 @@ public class ProcessDocumentResource {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping(value = "/v1/process-document/definition/document/{document-definition-name}")
+    @GetMapping("/v1/process-document/definition/document/{document-definition-name}")
     public ResponseEntity<List<? extends ProcessDocumentDefinition>> findProcessDocumentDefinitions(
         @PathVariable(name = "document-definition-name") String documentDefinitionName
     ) {
         return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName));
     }
 
-    @GetMapping(value = "/v1/process-document/definition/process/{process-definition-key}")
+    @GetMapping("/v1/process-document/definition/process/{process-definition-key}")
     public ResponseEntity<List<? extends ProcessDocumentDefinition>> findProcessDocumentDefinitionsByProcessDefinitionKey(
         @PathVariable(name = "process-definition-key") String processDefinitionKey
     ) {
@@ -122,7 +123,7 @@ public class ProcessDocumentResource {
             .orElse(ResponseEntity.badRequest().build());
     }
 
-    @GetMapping(value = "/v1/process-document/instance/document/{documentId}")
+    @GetMapping("/v1/process-document/instance/document/{documentId}")
     public ResponseEntity<List<? extends ProcessDocumentInstance>> findProcessDocumentInstances(
         @PathVariable UUID documentId
     ) {

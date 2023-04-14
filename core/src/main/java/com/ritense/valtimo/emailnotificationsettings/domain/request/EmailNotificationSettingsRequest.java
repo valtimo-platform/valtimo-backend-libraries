@@ -20,31 +20,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public interface EmailNotificationSettingsRequest {
 
-    @JsonProperty(value = "emailNotifications")
+    @JsonProperty("emailNotifications")
     boolean reminderNotificationsEnabled();
 
-    @JsonProperty(value = "emailNotificationOnMonday")
+    @JsonProperty("emailNotificationOnMonday")
     boolean monday();
 
-    @JsonProperty(value = "emailNotificationOnTuesday")
+    @JsonProperty("emailNotificationOnTuesday")
     boolean tuesday();
 
-    @JsonProperty(value = "emailNotificationOnWednesday")
+    @JsonProperty("emailNotificationOnWednesday")
     boolean wednesday();
 
-    @JsonProperty(value = "emailNotificationOnThursday")
+    @JsonProperty("emailNotificationOnThursday")
     boolean thursday();
 
-    @JsonProperty(value = "emailNotificationOnFriday")
+    @JsonProperty("emailNotificationOnFriday")
     boolean friday();
 
-    @JsonProperty(value = "emailNotificationOnSaturday")
+    @JsonProperty("emailNotificationOnSaturday")
     boolean saturday();
 
-    @JsonProperty(value = "emailNotificationOnSunday")
+    @JsonProperty("emailNotificationOnSunday")
     boolean sunday();
 
-    @JsonProperty(value = "taskNotifications")
+    @JsonProperty("taskNotifications")
     boolean taskNotificationsEnabled();
 
 }

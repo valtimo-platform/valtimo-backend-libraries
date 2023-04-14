@@ -20,6 +20,7 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpConnector
 import com.ritense.haalcentraal.brp.domain.Person
 import com.ritense.haalcentraal.brp.web.rest.request.GetPeopleRequest
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api"])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class HaalCentraalBrpResource(
     val connectorService: ConnectorService
 ) {

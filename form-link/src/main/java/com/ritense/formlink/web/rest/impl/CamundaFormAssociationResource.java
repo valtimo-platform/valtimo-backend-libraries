@@ -23,7 +23,6 @@ import com.ritense.formlink.service.FormAssociationSubmissionService;
 import com.ritense.formlink.service.result.FormSubmissionResult;
 import com.ritense.formlink.web.rest.FormAssociationResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,11 +32,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class CamundaFormAssociationResource implements FormAssociationResource {
 
     private final FormAssociationService formAssociationService;
@@ -78,7 +80,7 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
     }
 
     @Override
-    @GetMapping(value = "/v1/form-association/form-definition/{formKey}")
+    @GetMapping("/v1/form-association/form-definition/{formKey}")
     public ResponseEntity<JsonNode> getFormDefinitionByFormKey(
         @PathVariable String formKey,
         @RequestParam(required = false) Optional<UUID> documentId
@@ -89,7 +91,7 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
     }
 
     @Override
-    @PostMapping(value = "/v1/form-association/form-definition/submission")
+    @PostMapping("/v1/form-association/form-definition/submission")
     @PreAuthorize("#taskInstanceId.present == false or hasPermission(#taskInstanceId.orElseThrow(), 'taskAccess')")
     public ResponseEntity<FormSubmissionResult> handleSubmission(
         @RequestParam String processDefinitionKey,

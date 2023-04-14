@@ -16,6 +16,7 @@
 
 package com.ritense.processlink.configuration
 
+import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.security.config.ProcessLinkHttpSecurityConfigurer
@@ -56,14 +57,15 @@ class ProcessLinkAutoConfiguration {
     @ConditionalOnMissingBean(ProcessLinkService::class)
     fun processLinkService(
         processLinkRepository: ProcessLinkRepository,
-        processLinkMappers: List<ProcessLinkMapper>
+        processLinkMappers: List<ProcessLinkMapper>,
+        processLinkTypes: List<SupportedProcessLinkTypeHandler>
     ): ProcessLinkService {
-        return ProcessLinkService(processLinkRepository, processLinkMappers)
+        return ProcessLinkService(processLinkRepository, processLinkMappers, processLinkTypes)
     }
 
     @Bean
     @ConditionalOnMissingBean(ProcessLinkTaskService::class)
-    @ConditionalOnBean(value = [TaskService::class])
+    @ConditionalOnBean(TaskService::class)
     fun processLinkTaskService(
         processLinkService: ProcessLinkService,
         taskService: TaskService,
