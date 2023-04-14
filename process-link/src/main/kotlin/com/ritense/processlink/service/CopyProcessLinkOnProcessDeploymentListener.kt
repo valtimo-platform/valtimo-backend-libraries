@@ -28,7 +28,7 @@ class CopyProcessLinkOnProcessDeploymentListener(
 ) {
 
     @EventListener(ProcessDefinitionDeployedEvent::class)
-    fun copyPluginLinks(event: ProcessDefinitionDeployedEvent) {
+    fun copyProcessLinks(event: ProcessDefinitionDeployedEvent) {
         val previousProcessDefinitionId = event.previousProcessDefinitionId
 
         if (previousProcessDefinitionId != null) {

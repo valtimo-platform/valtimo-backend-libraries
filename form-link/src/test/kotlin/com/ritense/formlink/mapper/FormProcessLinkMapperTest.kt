@@ -17,11 +17,12 @@
 package com.ritense.formlink.mapper
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.form.domain.FormProcessLink
+import com.ritense.form.mapper.FormProcessLinkMapper
 import com.ritense.form.service.FormDefinitionService
-import com.ritense.formlink.domain.FormProcessLink
-import com.ritense.formlink.web.rest.dto.FormProcessLinkCreateRequestDto
-import com.ritense.formlink.web.rest.dto.FormProcessLinkResponseDto
-import com.ritense.formlink.web.rest.dto.FormProcessLinkUpdateRequestDto
+import com.ritense.form.web.rest.dto.FormProcessLinkCreateRequestDto
+import com.ritense.form.web.rest.dto.FormProcessLinkResponseDto
+import com.ritense.form.web.rest.dto.FormProcessLinkUpdateRequestDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
