@@ -40,14 +40,14 @@ internal class FormFlowSupportedProcessLinkIntTest: BaseIntegrationTest() {
         whenever(formFlowServiceMock.getFormFlowDefinitions()).thenReturn(emptyList())
         val formFlowSupportedProcessLinks = FormFlowSupportedProcessLinksHandler(formFlowServiceMock)
         val result = formFlowSupportedProcessLinks.getProcessLinkType(ActivityTypeWithEventName.START_EVENT_START.value)
-        assertEquals("form_flow", result?.processLinkType)
+        assertEquals("form-flow", result?.processLinkType)
         assertEquals(false, result?.enabled)
     }
 
     @Test
     fun `should return a form flow process link type for StartEventStart with enabled true`() {
         val result = formFlowSupportedProcessLinks.getProcessLinkType(ActivityTypeWithEventName.START_EVENT_START.value)
-        assertEquals("form_flow", result?.processLinkType)
+        assertEquals("form-flow", result?.processLinkType)
         assertEquals(true, result?.enabled)
     }
 
