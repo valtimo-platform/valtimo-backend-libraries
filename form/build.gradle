@@ -22,8 +22,8 @@ dockerCompose {
 }
 
 dependencies {
-    api project(':core')
-    api project(':document')
+//    api project(':core')
+//    api project(':document')
     api project(":process-document")
     api project(":process-link")
 
