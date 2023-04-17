@@ -16,11 +16,9 @@
 
 package com.ritense.processlink.web.rest.dto
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import java.util.UUID
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
 interface ProcessLinkResponseDto {
     val id: UUID
     val processDefinitionId: String

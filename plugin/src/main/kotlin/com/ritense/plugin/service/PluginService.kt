@@ -33,6 +33,7 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
+import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
@@ -483,6 +484,10 @@ class PluginService(
             }
 
         return this
+    }
+
+    fun getPluginDefinitionActionsByActivityType(activityType: String): List<PluginActionDefinition> {
+        return pluginActionDefinitionRepository.findByActivityTypes(ActivityType.fromValue(activityType))
     }
 
     companion object {

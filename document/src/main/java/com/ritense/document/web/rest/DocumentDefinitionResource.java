@@ -24,7 +24,6 @@ import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,23 +39,24 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Set;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1", produces = APPLICATION_JSON_UTF8_VALUE)
 public interface DocumentDefinitionResource {
 
-    @GetMapping(value = "/document-definition")
+    @GetMapping("/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
         @RequestParam(name = "filteredOnRole", defaultValue = "true") boolean filteredOnRole,
         @PageableDefault(sort = {"document_definition_name"}, direction = ASC) Pageable pageable
     );
 
-    @GetMapping(value = "/document-definition/{name}")
+    @GetMapping("/document-definition/{name}")
     ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(@PathVariable String name);
 
-    @GetMapping(value = "/document-definition/open/count")
+    @GetMapping("/document-definition/open/count")
     ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount();
 
     @PostMapping(value = "/document-definition", consumes = APPLICATION_JSON_VALUE)
@@ -64,12 +64,12 @@ public interface DocumentDefinitionResource {
         @Valid @RequestBody DocumentDefinitionCreateRequest request
     );
 
-    @DeleteMapping(value = "/document-definition/{name}")
+    @DeleteMapping("/document-definition/{name}")
     ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(@PathVariable String name);
 
-    @GetMapping(value = "/document-definition/{documentDefinitionName}/roles")
+    @GetMapping("/document-definition/{documentDefinitionName}/roles")
     ResponseEntity<Set<String>> getDocumentDefinitionRoles(@PathVariable String documentDefinitionName);
 
-    @PutMapping(value = "/document-definition/{documentDefinitionName}/roles")
+    @PutMapping("/document-definition/{documentDefinitionName}/roles")
     ResponseEntity<Void> putDocumentDefinitionRoles(@PathVariable String documentDefinitionName, @RequestBody Set<String> roles);
 }

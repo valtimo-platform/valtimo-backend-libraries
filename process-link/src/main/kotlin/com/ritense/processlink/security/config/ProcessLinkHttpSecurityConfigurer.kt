@@ -17,6 +17,7 @@
 package com.ritense.processlink.security.config
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.DELETE
@@ -31,9 +32,11 @@ class ProcessLinkHttpSecurityConfigurer: HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/process-link").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/process-link/types").hasAuthority(ADMIN)
                 .antMatchers(POST, "/api/v1/process-link").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/v1/process-link").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/v1/process-link/{processLinkId}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v2/process-link/task/{taskId}").hasAuthority(USER)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

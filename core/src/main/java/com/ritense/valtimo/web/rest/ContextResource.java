@@ -29,7 +29,6 @@ import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +38,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -47,8 +47,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class ContextResource {
 
     private final ContextService contextService;
@@ -62,36 +64,36 @@ public class ContextResource {
         this.camundaProcessService = camundaProcessService;
     }
 
-    @GetMapping(value = "/v1/user/context/processes")
+    @GetMapping("/v1/user/context/processes")
     public ResponseEntity<List<ProcessDefinitionDto>> getContextProcess() throws IllegalAccessException {
         return ResponseEntity.ok(contextService.findVisibleContextProcesses());
     }
 
-    @GetMapping(value = "/v1/user/contexts")
+    @GetMapping("/v1/user/contexts")
     public ResponseEntity<List<Context>> getContextsMatchingRoles() throws IllegalAccessException {
         final List<Context> contexts = contextService.findContextsMatchingRoles();
         return ResponseEntity.ok(contexts);
     }
 
-    @GetMapping(value = "/v1/contexts")
+    @GetMapping("/v1/contexts")
     public ResponseEntity<List<Context>> getContexts(Pageable pageable) {
         final Page<Context> page = contextService.findAll(pageable);
         final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/contexts");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    @GetMapping(value = "/v1/user/context")
+    @GetMapping("/v1/user/context")
     public ResponseEntity<Context> getUserContext() throws IllegalAccessException {
         return ResponseEntity.ok(contextService.getContextOfCurrentUser());
     }
 
-    @PostMapping(value = "/v1/user/context")
+    @PostMapping("/v1/user/context")
     public ResponseEntity<Void> setUserContext(@Valid @RequestBody UserContextDTO userContextDTO) throws IllegalAccessException {
         contextService.setContextOfCurrentUser(userContextDTO.getContextId());
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping(value = "/v1/contexts")
+    @PutMapping("/v1/contexts")
     public ResponseEntity<Context> updateContext(@Valid @RequestBody Context context) throws URISyntaxException {
         if (context.getId() == null) {
             return createContext(context);
@@ -102,7 +104,7 @@ public class ContextResource {
             .body(result);
     }
 
-    @PostMapping(value = "/v1/contexts")
+    @PostMapping("/v1/contexts")
     public ResponseEntity<Context> createContext(@Valid @RequestBody Context context) throws URISyntaxException {
         if (context.getId() != null) {
             return ResponseEntity.badRequest()
@@ -115,13 +117,13 @@ public class ContextResource {
             .body(result);
     }
 
-    @DeleteMapping(value = "/v1/contexts/{id}")
+    @DeleteMapping("/v1/contexts/{id}")
     public ResponseEntity<Void> deleteChoiceField(@PathVariable Long id) {
         contextService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert("context", id.toString())).build();
     }
 
-    @GetMapping(value = "/v1/contexts/{id}")
+    @GetMapping("/v1/contexts/{id}")
     public ResponseEntity<Context> getContext(@PathVariable Long id) {
         Optional<Context> context = contextService.findOneById(id);
         return context
@@ -129,7 +131,7 @@ public class ContextResource {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping(value = "/v1/context/process/user/active")
+    @GetMapping("/v1/context/process/user/active")
     public ResponseEntity<List<HistoricProcessInstance>> getAllActiveContextProcessesStartedByCurrentUser() throws IllegalAccessException {
         final Set<String> processes =
             contextService

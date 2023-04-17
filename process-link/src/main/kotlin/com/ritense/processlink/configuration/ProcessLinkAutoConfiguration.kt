@@ -16,13 +16,19 @@
 
 package com.ritense.processlink.configuration
 
+import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.security.config.ProcessLinkHttpSecurityConfigurer
 import com.ritense.processlink.service.CopyProcessLinkOnProcessDeploymentListener
 import com.ritense.processlink.service.ProcessLinkService
+import com.ritense.processlink.service.ProcessLinkTaskProvider
+import com.ritense.processlink.service.ProcessLinkTaskService
 import com.ritense.processlink.web.rest.ProcessLinkResource
+import com.ritense.processlink.web.rest.ProcessLinkTaskResource
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
+import org.camunda.bpm.engine.TaskService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -52,8 +58,29 @@ class ProcessLinkAutoConfiguration {
     fun processLinkService(
         processLinkRepository: ProcessLinkRepository,
         processLinkMappers: List<ProcessLinkMapper>,
+        processLinkTypes: List<SupportedProcessLinkTypeHandler>
     ): ProcessLinkService {
-        return ProcessLinkService(processLinkRepository, processLinkMappers)
+        return ProcessLinkService(processLinkRepository, processLinkMappers, processLinkTypes)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessLinkTaskService::class)
+    @ConditionalOnBean(TaskService::class)
+    fun processLinkTaskService(
+        processLinkService: ProcessLinkService,
+        taskService: TaskService,
+        processLinkTaskProviders: List<ProcessLinkTaskProvider<*>>,
+    ): ProcessLinkTaskService {
+        return ProcessLinkTaskService(processLinkService, taskService, processLinkTaskProviders)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessLinkTaskResource::class)
+    @ConditionalOnBean(ProcessLinkTaskService::class)
+    fun processLinkTaskResource(
+        processLinkTaskService: ProcessLinkTaskService
+    ): ProcessLinkTaskResource {
+        return ProcessLinkTaskResource(processLinkTaskService)
     }
 
     @Bean

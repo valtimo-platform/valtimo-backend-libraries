@@ -18,7 +18,7 @@ package com.ritense.formlink.service.impl;
 
 import com.ritense.formlink.domain.FormAssociation;
 import com.ritense.formlink.domain.FormLink;
-import com.ritense.formlink.domain.ProcessLinkTaskProvider;
+import com.ritense.formlink.domain.FormLinkTaskProvider;
 import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.ProcessLinkService;
@@ -37,18 +37,18 @@ public class DefaultProcessLinkService implements ProcessLinkService {
     private final RepositoryService repositoryService;
     private final TaskService taskService;
     private final FormAssociationService formAssociationService;
-    private final List<ProcessLinkTaskProvider> processLinkTaskProviders;
+    private final List<FormLinkTaskProvider> formLinkTaskProviders;
 
     public DefaultProcessLinkService(
         RepositoryService repositoryService,
         TaskService taskService,
         FormAssociationService formAssociationService,
-        List<ProcessLinkTaskProvider> processLinkTaskProviders
+        List<FormLinkTaskProvider> formLinkTaskProviders
     ) {
         this.repositoryService = repositoryService;
         this.taskService = taskService;
         this.formAssociationService = formAssociationService;
-        this.processLinkTaskProviders = processLinkTaskProviders;
+        this.formLinkTaskProviders = formLinkTaskProviders;
     }
 
     @Override
@@ -71,9 +71,9 @@ public class DefaultProcessLinkService implements ProcessLinkService {
             .orElseThrow(() -> new NoSuchElementException("Could not find FormAssociation for task " + taskId));
 
         FormLink formLink = formAssociation.getFormLink();
-        return processLinkTaskProviders.stream()
-            .filter(processLinkTaskProvider -> processLinkTaskProvider.supports(formLink))
-            .map(processLinkTaskProvider -> processLinkTaskProvider.getTaskResult(task, formLink))
+        return formLinkTaskProviders.stream()
+            .filter(formLinkTaskProvider -> formLinkTaskProvider.supports(formLink))
+            .map(formLinkTaskProvider -> formLinkTaskProvider.getTaskResult(task, formLink))
             .findFirst()
             .orElseThrow(() -> new NoSuchElementException("Could not find ProcessLinkTaskProvider for FormLink related to task " + taskId));
     }

@@ -16,10 +16,12 @@
 
 package com.ritense.processlink.web.rest.dto
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.util.UUID
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "processLinkType")
+@JsonIgnoreProperties("processLinkType", allowSetters = true)
 interface ProcessLinkUpdateRequestDto {
     val id: UUID
     val processLinkType: String
