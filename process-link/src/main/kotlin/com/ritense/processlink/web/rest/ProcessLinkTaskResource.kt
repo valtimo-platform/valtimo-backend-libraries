@@ -16,7 +16,7 @@
 
 package com.ritense.processlink.web.rest
 
-import com.ritense.processlink.service.ProcessLinkTaskService
+import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.web.rest.dto.OpenProcessLinkResult
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
