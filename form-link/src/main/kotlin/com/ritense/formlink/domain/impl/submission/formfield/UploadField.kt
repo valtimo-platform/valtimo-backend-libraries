@@ -76,6 +76,10 @@ data class UploadField(
         processResource()
     }
 
+    override fun appendValueToDocument(documentContent: ObjectNode) {
+        // Upload fields should not update the document, because it will cause a subsequent prefill issue (ref: TP54696)
+    }
+
     private fun processResource() {
         val document = documentSupplier()
         if (document != null) {
