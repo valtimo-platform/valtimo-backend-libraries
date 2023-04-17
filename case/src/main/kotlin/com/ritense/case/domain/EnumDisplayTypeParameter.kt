@@ -19,7 +19,7 @@ package com.ritense.case.domain
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class EnumDisplayTypeParameter(
-    @JsonProperty(value = "enum")
+    @JsonProperty("enum")
     val enum: Map<String, String>?
 ) : DisplayTypeParameter {
     override fun validate(): Boolean {

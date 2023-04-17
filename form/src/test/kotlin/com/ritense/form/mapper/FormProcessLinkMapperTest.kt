@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package com.ritense.formlink.mapper
+package com.ritense.form.mapper
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.form.domain.FormProcessLink
-import com.ritense.form.mapper.FormProcessLinkMapper
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.web.rest.dto.FormProcessLinkCreateRequestDto
 import com.ritense.form.web.rest.dto.FormProcessLinkResponseDto
 import com.ritense.form.web.rest.dto.FormProcessLinkUpdateRequestDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.whenever
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 internal class FormProcessLinkMapperTest {
 

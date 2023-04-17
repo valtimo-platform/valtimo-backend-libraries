@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.formlink.repository
+package com.ritense.valtimo.contract.domain
 
-import com.ritense.form.domain.FormProcessLink
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
+object ValtimoMediaType {
 
-interface FormProcessLinkRepository : JpaRepository<FormProcessLink, UUID>
+    const val APPLICATION_JSON_UTF8_VALUE = "application/json;charset=UTF-8"
+    const val TEXT_PLAIN_UTF8_VALUE = "text/plain;charset=UTF-8"
+
+}

@@ -17,7 +17,7 @@
 package com.ritense.objectsapi.web.rest
 
 import com.ritense.objectsapi.domain.request.HandleNotificationRequest
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface OpenNotificatieResource {
 
     @PostMapping("/v1/notification")

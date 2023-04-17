@@ -17,6 +17,7 @@
 package com.ritense.documentenapi.web.rest
 
 import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.core.io.InputStreamResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -28,11 +29,11 @@ import org.springframework.web.bind.annotation.RestController
 import java.net.URLConnection
 
 @RestController
-@RequestMapping(value = ["/api"])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class DocumentenApiResource(
     val documentenApiService: DocumentenApiService
 ) {
-    @GetMapping(value = ["/v1/documenten-api/{pluginConfigurationId}/files/{documentId}/download"])
+    @GetMapping("/v1/documenten-api/{pluginConfigurationId}/files/{documentId}/download")
     fun downloadDocument(
         @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: String,
         @PathVariable(name = "documentId") documentId: String,

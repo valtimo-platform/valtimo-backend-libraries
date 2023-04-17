@@ -16,17 +16,18 @@
 
 package com.ritense.processlink.web.rest
 
-import com.ritense.processlink.service.ProcessLinkActivityService
+import com.ritense.processlink.service.ProcessLinkTaskService
 import com.ritense.processlink.web.rest.dto.OpenProcessLinkResult
-import java.util.UUID
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
-@RequestMapping(value = ["/api"])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class ProcessLinkTaskResource(
     private var processLinkActivityService: ProcessLinkActivityService
 ) {

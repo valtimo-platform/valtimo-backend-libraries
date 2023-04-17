@@ -42,8 +42,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping(value = "/api/v1", produces = APPLICATION_JSON_UTF8_VALUE)
 public class AuthorityResource {
 
     private static final String AUTHORITY = "authority";
@@ -54,7 +56,7 @@ public class AuthorityResource {
         this.authorityService = authorityService;
     }
 
-    @PostMapping(value = "/authorities")
+    @PostMapping("/authorities")
     public ResponseEntity<Authority> createAuthority(
         @RequestBody @Valid AuthorityRequest authorityRequest
     ) throws URISyntaxException {
@@ -65,7 +67,7 @@ public class AuthorityResource {
             .body(authority);
     }
 
-    @PutMapping(value = "/authorities")
+    @PutMapping("/authorities")
     public ResponseEntity<Authority> updateAuthority(@RequestBody @Valid AuthorityRequest authorityRequest) {
         final Authority authority = authorityService.updateAuthority(authorityRequest);
         return ResponseEntity.ok()
@@ -73,7 +75,7 @@ public class AuthorityResource {
             .body(authority);
     }
 
-    @GetMapping(value = "/authorities")
+    @GetMapping("/authorities")
     public ResponseEntity<List<Authority>> getAllAuthorities(Pageable pageable) {
         logger.debug("REST request to get a page of Authorities");
         Page<Authority> page = authorityService.findAll(pageable);
@@ -81,7 +83,7 @@ public class AuthorityResource {
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/authorities/{name}")
+    @GetMapping("/authorities/{name}")
     public ResponseEntity<Authority> getAuthority(@PathVariable String name) {
         logger.debug("REST request to get Authority by name : {}", name);
         return authorityService.findBy(name)
@@ -89,7 +91,7 @@ public class AuthorityResource {
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping(value = "/authorities/{name}")
+    @DeleteMapping("/authorities/{name}")
     public ResponseEntity<Void> deleteAuthority(@PathVariable String name) throws IllegalAccessException {
         logger.debug("REST request to delete Authority : {}", name);
         authorityService.deleteAuthority(name);
