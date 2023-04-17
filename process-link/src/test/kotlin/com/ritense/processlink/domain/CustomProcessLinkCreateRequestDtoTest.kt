@@ -40,17 +40,19 @@ class CustomProcessLinkCreateRequestDtoTest {
                 "processDefinitionId": "process-definition:1",
                 "activityId": "serviceTask1",
                 "activityType": "${ActivityTypeWithEventName.SERVICE_TASK_START.value}",
-                "processLinkType": "$PROCESS_LINK_TYPE_TEST"
+                "processLinkType": "$PROCESS_LINK_TYPE_TEST",
+                "someValue": "test"
             }
         """.trimIndent())
 
         assertThat(value, instanceOf(CustomProcessLinkCreateRequestDto::class.java))
         assertThat(value.processLinkType, equalTo(PROCESS_LINK_TYPE_TEST))
+        assertThat(value.someValue, equalTo("test"))
     }
 
     @Test
     fun `should serialize correctly`() {
-        val value = CustomProcessLinkCreateRequestDto("process-definition:1","serviceTask1", ActivityTypeWithEventName.SERVICE_TASK_START)
+        val value = CustomProcessLinkCreateRequestDto("process-definition:1","serviceTask1", ActivityTypeWithEventName.SERVICE_TASK_START, "test")
 
         val json = mapper.writeValueAsString(value)
 
@@ -59,7 +61,8 @@ class CustomProcessLinkCreateRequestDtoTest {
               "processDefinitionId": "${value.processDefinitionId}",
               "activityId": "${value.activityId}",
               "activityType": "${value.activityType.value}",
-              "processLinkType":"$PROCESS_LINK_TYPE_TEST"
+              "processLinkType":"$PROCESS_LINK_TYPE_TEST",
+              "someValue": "test"
             }
         """.trimIndent(), json, JSONCompareMode.NON_EXTENSIBLE)
     }

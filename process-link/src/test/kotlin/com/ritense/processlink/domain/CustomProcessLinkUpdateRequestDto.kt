@@ -23,7 +23,8 @@ import java.util.UUID
 
 @JsonTypeName(PROCESS_LINK_TYPE_TEST)
 data class CustomProcessLinkUpdateRequestDto(
-    override val id: UUID
+    override val id: UUID,
+    val someValue: String = "test"
 ) : ProcessLinkUpdateRequestDto {
     override val processLinkType: String
         get() = PROCESS_LINK_TYPE_TEST

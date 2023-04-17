@@ -24,7 +24,8 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 data class CustomProcessLinkCreateRequestDto(
     override val processDefinitionId: String,
     override val activityId: String,
-    override val activityType: ActivityTypeWithEventName
+    override val activityType: ActivityTypeWithEventName,
+    val someValue: String = "test"
 ) : ProcessLinkCreateRequestDto {
     override val processLinkType: String
         get() = PROCESS_LINK_TYPE_TEST
