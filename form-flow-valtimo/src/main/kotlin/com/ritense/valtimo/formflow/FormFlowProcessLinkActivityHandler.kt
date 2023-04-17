@@ -53,7 +53,7 @@ class FormFlowProcessLinkActivityHandler(
     override fun getStartEventObject(processDefinitionId: String, processLink: ProcessLink): OpenProcessLinkResult<FormFlowTaskOpenResultProperties> {
         processLink as FormFlowProcessLink
         val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId)!!
-        val additionalProperties = mapOf<String,Any>(Pair("processDefinitionId",processDefinitionId))
+        val additionalProperties = mapOf<String,Any>("processDefinitionId" to processDefinitionId)
         return OpenProcessLinkResult(FORM_FLOW_TASK_TYPE_KEY,FormFlowTaskOpenResultProperties(
             formFlowService.save(
                 formFlowDefinition.createInstance(additionalProperties)
