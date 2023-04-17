@@ -16,18 +16,20 @@
 
 package com.ritense.processlink.service
 
-import com.ritense.processlink.web.rest.dto.OpenTaskResult
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.domain.ProcessLink
+import com.ritense.processlink.web.rest.dto.OpenProcessLinkResult
 import java.util.UUID
 import mu.KotlinLogging
 import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.task.Task
 
-open class ProcessLinkTaskService(
+open class ProcessLinkActivityService(
     private val processLinkService: ProcessLinkService,
     private val taskService: TaskService,
-    private val processLinkTaskProviders: List<ProcessLinkTaskProvider<*>>
+    private val processLinkActivityHandlers: List<ProcessLinkActivityHandler<*>>
 ) {
-    fun openTask(taskId: UUID): OpenTaskResult<*> {
+    fun openTask(taskId: UUID): OpenProcessLinkResult<*> {
         val task: Task = taskService
             .createTaskQuery()
             .taskId(taskId.toString())
@@ -36,9 +38,20 @@ open class ProcessLinkTaskService(
 
         return processLinkService.getProcessLinks(task.processDefinitionId, task.taskDefinitionKey)
             .firstNotNullOfOrNull { processLink ->
-                processLinkTaskProviders.firstOrNull { provider -> provider.supports(processLink) }
+                processLinkActivityHandlers.firstOrNull { provider -> provider.supports(processLink) }
                     ?.openTask(task, processLink)
             } ?: throw NoSuchElementException("Could not find ProcessLinkTaskProvider or ProcessLink related to task $taskId")
+    }
+
+    fun getStartEventObject(processDefinitionId: String): OpenProcessLinkResult<*>? {
+        val processLink = processLinkService.getProcessLinksByProcessDefinitionIdAndActivityType(processDefinitionId,ActivityTypeWithEventName.START_EVENT_START)
+        var result: OpenProcessLinkResult<*>? = null
+        processLinkActivityHandlers.forEach {
+            if(it.supports(processLink)){
+                result = it.getStartEventObject(processDefinitionId, processLink)
+            }
+        }
+        return result
     }
 
     companion object {

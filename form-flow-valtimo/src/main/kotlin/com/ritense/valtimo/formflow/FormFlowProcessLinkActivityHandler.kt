@@ -20,25 +20,25 @@ import com.ritense.document.service.DocumentService
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.processlink.domain.ProcessLink
-import com.ritense.processlink.service.ProcessLinkTaskProvider
-import com.ritense.processlink.web.rest.dto.OpenTaskResult
+import com.ritense.processlink.service.ProcessLinkActivityHandler
+import com.ritense.processlink.web.rest.dto.OpenProcessLinkResult
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.task.Task
 
-class FormFlowProcessLinkTaskProvider(
+class FormFlowProcessLinkActivityHandler(
     private val formFlowService: FormFlowService,
     documentService: DocumentService,
     runtimeService: RuntimeService,
 ): AbstractFormFlowLinkTaskProvider(
     documentService, runtimeService
-), ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
+), ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties> {
 
     override fun supports(processLink: ProcessLink): Boolean {
         return processLink is FormFlowProcessLink
     }
 
-    override fun openTask(task: Task, processLink: ProcessLink): OpenTaskResult<FormFlowTaskOpenResultProperties> {
+    override fun openTask(task: Task, processLink: ProcessLink): OpenProcessLinkResult<FormFlowTaskOpenResultProperties> {
         processLink as FormFlowProcessLink
 
         val instances = formFlowService.findInstances(mapOf("taskInstanceId" to task.id))
@@ -47,7 +47,18 @@ class FormFlowProcessLinkTaskProvider(
             1 -> instances[0]
             else -> throw IllegalStateException("Multiple form flow instances linked to task: ${task.id}")
         }
-        return OpenTaskResult(FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(instance.id.id))
+        return OpenProcessLinkResult(FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(instance.id.id))
+    }
+
+    override fun getStartEventObject(processDefinitionId: String, processLink: ProcessLink): OpenProcessLinkResult<FormFlowTaskOpenResultProperties> {
+        processLink as FormFlowProcessLink
+        val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId)!!
+        val additionalProperties = mapOf<String,Any>(Pair("processDefinitionId",processDefinitionId))
+        return OpenProcessLinkResult(FORM_FLOW_TASK_TYPE_KEY,FormFlowTaskOpenResultProperties(
+            formFlowService.save(
+                formFlowDefinition.createInstance(additionalProperties)
+            ).id.id)
+        )
     }
 
     private fun createFormFlowInstance(task: Task, processLink: FormFlowProcessLink): FormFlowInstance {

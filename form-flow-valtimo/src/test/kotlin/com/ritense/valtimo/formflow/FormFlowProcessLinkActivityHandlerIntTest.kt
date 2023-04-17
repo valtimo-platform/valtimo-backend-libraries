@@ -17,9 +17,12 @@
 package com.ritense.valtimo.formflow
 
 import com.ritense.formflow.repository.FormFlowInstanceRepository
+import com.ritense.formflow.service.FormFlowService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.processlink.service.ProcessLinkTaskService
+import com.ritense.processlink.service.ProcessLinkActivityService
+import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.valtimo.service.CamundaProcessService
 import java.util.UUID
@@ -31,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-internal class FormFlowProcessLinkTaskProviderIntTest: BaseIntegrationTest() {
+internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() {
 
     @Autowired
     lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
@@ -40,7 +43,7 @@ internal class FormFlowProcessLinkTaskProviderIntTest: BaseIntegrationTest() {
     lateinit var processLinkService: ProcessLinkService
 
     @Autowired
-    lateinit var processLinkTaskService: ProcessLinkTaskService
+    lateinit var processLinkActivityService: ProcessLinkActivityService
 
     @Autowired
     lateinit var camundaProcessService: CamundaProcessService
@@ -50,6 +53,12 @@ internal class FormFlowProcessLinkTaskProviderIntTest: BaseIntegrationTest() {
 
     @Autowired
     lateinit var repositoryService: RepositoryService
+
+    @Autowired
+    lateinit var processLinkActivityHandler :FormFlowProcessLinkActivityHandler
+
+    @Autowired
+    lateinit var formFlowService: FormFlowService
 
     @Test
     fun `should not create form flow instance when Camunda user task is created`() {
@@ -105,8 +114,30 @@ internal class FormFlowProcessLinkTaskProviderIntTest: BaseIntegrationTest() {
 
         assertEquals(0, formFlowInstanceRepository.findAll().size)
 
-        processLinkTaskService.openTask(UUID.fromString(task.id))
+        processLinkActivityService.openTask(UUID.fromString(task.id))
 
         assertEquals(1, formFlowInstanceRepository.findAll().size)
+    }
+
+    @Test
+    fun `should retrieve form-flow and create instance`(){
+        val processDefinitionId: String = UUID.randomUUID().toString()
+        val processLinkId = UUID.randomUUID()
+
+        val formFlowDefinition = formFlowService.findDefinition("inkomens_loket:1")
+
+        val processLink: ProcessLink = FormFlowProcessLink(
+            id = processLinkId,
+            processDefinitionId = processDefinitionId,
+            activityId = "some_activity_id",
+            activityType = ActivityTypeWithEventName.START_EVENT_START,
+            formFlowDefinitionId = formFlowDefinition?.id.toString())
+
+        val result = processLinkActivityHandler.getStartEventObject("",processLink)
+        val dbFormFlowInstances = formFlowInstanceRepository.findAll().filter { it.formFlowDefinition.id.toString() == "inkomens_loket:1" }
+        assertEquals(1, dbFormFlowInstances.size)
+        assertEquals("form-flow",result.type)
+        assertEquals(dbFormFlowInstances[0].id.id,result.properties.formFlowInstanceId)
+
     }
 }

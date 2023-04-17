@@ -16,8 +16,8 @@
 
 package com.ritense.processlink.web.rest
 
-import com.ritense.processlink.service.ProcessLinkTaskService
-import com.ritense.processlink.web.rest.dto.OpenTaskResult
+import com.ritense.processlink.service.ProcessLinkActivityService
+import com.ritense.processlink.web.rest.dto.OpenProcessLinkResult
 import java.util.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -28,10 +28,15 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(value = ["/api"])
 class ProcessLinkTaskResource(
-    private var processLinkTaskService: ProcessLinkTaskService
+    private var processLinkActivityService: ProcessLinkActivityService
 ) {
     @GetMapping(value = ["/v2/process-link/task/{taskId}"])
-    fun getTask(@PathVariable taskId: UUID): ResponseEntity<OpenTaskResult<*>> {
-        return ResponseEntity.ok(processLinkTaskService.openTask(taskId))
+    fun getTask(@PathVariable taskId: UUID): ResponseEntity<OpenProcessLinkResult<*>> {
+        return ResponseEntity.ok(processLinkActivityService.openTask(taskId))
+    }
+
+    @GetMapping(value = ["/v1/process-definition/{processDefinitionId}/start-form"])
+    fun getFormDefinition(@PathVariable processDefinitionId: UUID): ResponseEntity<Any> {
+        return ResponseEntity.ok(processLinkActivityService.getStartEventObject(processDefinitionId.toString()))
     }
 }

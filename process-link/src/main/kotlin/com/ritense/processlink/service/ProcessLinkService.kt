@@ -53,6 +53,10 @@ open class ProcessLinkService(
         )
     }
 
+    fun getProcessLinksByProcessDefinitionIdAndActivityType(processDefinitionId: String, activityType: ActivityTypeWithEventName): ProcessLink {
+        return processLinkRepository.findByProcessDefinitionIdAndActivityType(processDefinitionId, activityType)
+    }
+
     @Transactional
     fun createProcessLink(createRequest: ProcessLinkCreateRequestDto) {
         if (getProcessLinks(createRequest.processDefinitionId, createRequest.activityId).isNotEmpty()) {

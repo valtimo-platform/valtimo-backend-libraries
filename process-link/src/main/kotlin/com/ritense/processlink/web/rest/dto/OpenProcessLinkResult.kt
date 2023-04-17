@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.processlink.service
 
-import com.ritense.processlink.domain.ProcessLink
-import com.ritense.processlink.web.rest.dto.OpenTaskResult
-import org.camunda.bpm.engine.task.Task
+package com.ritense.processlink.web.rest.dto
 
-interface ProcessLinkTaskProvider<T> {
-    fun supports(processLink: ProcessLink): Boolean
-    fun openTask(task: Task, processLink: ProcessLink): OpenTaskResult<T>
-}
+data class OpenProcessLinkResult<T> (
+    val type: String,
+    val properties: T
+)

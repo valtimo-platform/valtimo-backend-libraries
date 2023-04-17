@@ -17,13 +17,11 @@
 package com.ritense.processlink.service
 
 import com.ritense.processlink.domain.ProcessLink
-import com.ritense.processlink.web.rest.dto.OpenTaskResult
+import com.ritense.processlink.web.rest.dto.OpenProcessLinkResult
 import java.util.UUID
 import org.camunda.bpm.engine.TaskService
-import org.camunda.bpm.engine.task.Task
 import org.camunda.community.mockito.CamundaMockito
 import org.camunda.community.mockito.task.TaskFake
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
@@ -34,7 +32,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 
-class ProcessLinkTaskServiceTest {
+class ProcessLinkActivityServiceTest {
 
     @Mock
     lateinit var taskService: TaskService
@@ -43,14 +41,14 @@ class ProcessLinkTaskServiceTest {
     lateinit var processLinkService: ProcessLinkService
 
     @Mock
-    lateinit var processLinkTaskProvider: ProcessLinkTaskProvider<Map<String, Any>>
+    lateinit var processLinkActivityHandler: ProcessLinkActivityHandler<Map<String, Any>>
 
-    lateinit var processLinkTaskService: ProcessLinkTaskService
+    lateinit var processLinkActivityService: ProcessLinkActivityService
 
     @BeforeEach
     fun init() {
         MockitoAnnotations.openMocks(this)
-        processLinkTaskService = ProcessLinkTaskService(processLinkService, taskService, listOf(processLinkTaskProvider))
+        processLinkActivityService = ProcessLinkActivityService(processLinkService, taskService, listOf(processLinkActivityHandler))
     }
 
     @Test
@@ -63,16 +61,16 @@ class ProcessLinkTaskServiceTest {
             .build()
 
         val processLink: ProcessLink = mock()
-        val openTaskResult = OpenTaskResult<Map<String,Any>>("test", mapOf())
+        val openProcessLinkResult = OpenProcessLinkResult<Map<String,Any>>("test", mapOf())
 
         CamundaMockito.mockTaskQuery(taskService).singleResult(task)
         whenever(processLinkService.getProcessLinks(any(), any())).thenReturn(listOf(processLink))
-        whenever(processLinkTaskProvider.supports(processLink)).thenReturn(true)
-        whenever(processLinkTaskProvider.openTask(task, processLink)).thenReturn(openTaskResult)
+        whenever(processLinkActivityHandler.supports(processLink)).thenReturn(true)
+        whenever(processLinkActivityHandler.openTask(task, processLink)).thenReturn(openProcessLinkResult)
 
-        processLinkTaskService.openTask(taskId)
+        processLinkActivityService.openTask(taskId)
 
-        verify(processLinkTaskProvider).supports(processLink)
-        verify(processLinkTaskProvider).openTask(task, processLink)
+        verify(processLinkActivityHandler).supports(processLink)
+        verify(processLinkActivityHandler).openTask(task, processLink)
     }
 }

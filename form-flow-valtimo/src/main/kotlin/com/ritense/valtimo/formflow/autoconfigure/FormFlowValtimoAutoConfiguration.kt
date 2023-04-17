@@ -23,9 +23,9 @@ import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.domain.FormLinkTaskProvider
 import com.ritense.formlink.service.FormAssociationService
 import com.ritense.formlink.service.impl.CamundaFormAssociationService
-import com.ritense.processlink.service.ProcessLinkTaskProvider
+import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.valtimo.formflow.FormFlowFormLinkTaskProvider
-import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
+import com.ritense.valtimo.formflow.FormFlowProcessLinkActivityHandler
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
 import com.ritense.valtimo.formflow.service.FormFlowSupportedProcessLinksHandler
@@ -75,8 +75,8 @@ class FormFlowValtimoAutoConfiguration {
         formFlowService: FormFlowService,
         documentService: DocumentService,
         runtimeService: RuntimeService,
-    ): ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
-        return FormFlowProcessLinkTaskProvider(
+    ): ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties> {
+        return FormFlowProcessLinkActivityHandler(
             formFlowService,
             documentService,
             runtimeService
