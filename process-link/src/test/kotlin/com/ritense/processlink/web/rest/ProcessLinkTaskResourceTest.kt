@@ -21,7 +21,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.processlink.domain.CustomProcessLinkMapper
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkActivityService
-import com.ritense.processlink.web.rest.dto.OpenProcessLinkResult
+import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
@@ -68,8 +68,8 @@ internal class ProcessLinkTaskResourceTest {
         val taskId = UUID.randomUUID()
 
 
-        val openProcessLinkResult = OpenProcessLinkResult("test", mapOf("x" to "y"))
-        whenever(processLinkActivityService.openTask(taskId)).thenReturn(openProcessLinkResult)
+        val processLinkActivityResult = ProcessLinkActivityResult("test", mapOf("x" to "y"))
+        whenever(processLinkActivityService.openTask(taskId)).thenReturn(processLinkActivityResult)
 
         mockMvc.perform(
             get("/api/v2/process-link/task/$taskId")

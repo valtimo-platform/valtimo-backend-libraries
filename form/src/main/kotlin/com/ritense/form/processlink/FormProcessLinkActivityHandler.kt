@@ -22,7 +22,7 @@ import com.ritense.form.service.PrefillFormService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
-import com.ritense.processlink.web.rest.dto.OpenProcessLinkResult
+import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import org.camunda.bpm.engine.task.Task
 
 class FormProcessLinkActivityHandler(
@@ -34,14 +34,14 @@ class FormProcessLinkActivityHandler(
         return processLink is FormProcessLink
     }
 
-    override fun openTask(task: Task, processLink: ProcessLink): OpenProcessLinkResult<FormTaskOpenResultProperties> {
+    override fun openTask(task: Task, processLink: ProcessLink): ProcessLinkActivityResult<FormTaskOpenResultProperties> {
         processLink as FormProcessLink
         val formDefinition = prefillFormService.getPrefilledFormDefinition(
             formDefinitionId = processLink.formDefinitionId,
             processInstanceId = task.processInstanceId,
             taskInstanceId = task.id,
         )
-        return OpenProcessLinkResult(
+        return ProcessLinkActivityResult(
             FORM_TASK_TYPE_KEY,
             FormTaskOpenResultProperties(processLink.formDefinitionId, formDefinition.asJson())
         )
@@ -50,10 +50,10 @@ class FormProcessLinkActivityHandler(
     override fun getStartEventObject(
         processDefinitionId: String,
         processLink: ProcessLink
-    ): OpenProcessLinkResult<FormTaskOpenResultProperties> {
+    ): ProcessLinkActivityResult<FormTaskOpenResultProperties> {
         processLink as FormProcessLink
         val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
-        return OpenProcessLinkResult(
+        return ProcessLinkActivityResult(
             FORM_TASK_TYPE_KEY,
             FormTaskOpenResultProperties(processLink.formDefinitionId, formDefinition.asJson())
         )

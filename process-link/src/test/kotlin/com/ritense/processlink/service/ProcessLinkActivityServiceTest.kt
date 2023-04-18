@@ -17,7 +17,7 @@
 package com.ritense.processlink.service
 
 import com.ritense.processlink.domain.ProcessLink
-import com.ritense.processlink.web.rest.dto.OpenProcessLinkResult
+import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import java.util.UUID
 import org.camunda.bpm.engine.TaskService
 import org.camunda.community.mockito.CamundaMockito
@@ -61,12 +61,12 @@ class ProcessLinkActivityServiceTest {
             .build()
 
         val processLink: ProcessLink = mock()
-        val openProcessLinkResult = OpenProcessLinkResult<Map<String,Any>>("test", mapOf())
+        val processLinkActivityResult = ProcessLinkActivityResult<Map<String,Any>>("test", mapOf())
 
         CamundaMockito.mockTaskQuery(taskService).singleResult(task)
         whenever(processLinkService.getProcessLinks(any(), any())).thenReturn(listOf(processLink))
         whenever(processLinkActivityHandler.supports(processLink)).thenReturn(true)
-        whenever(processLinkActivityHandler.openTask(task, processLink)).thenReturn(openProcessLinkResult)
+        whenever(processLinkActivityHandler.openTask(task, processLink)).thenReturn(processLinkActivityResult)
 
         processLinkActivityService.openTask(taskId)
 
