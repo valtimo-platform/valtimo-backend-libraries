@@ -16,6 +16,7 @@
 
 package com.ritense.processlink.web.rest
 
+import com.ritense.processlink.exception.ProcessLinkNotFoundException
 import com.ritense.processlink.service.ProcessLinkTaskService
 import com.ritense.processlink.web.rest.dto.OpenTaskResult
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
@@ -33,6 +34,10 @@ class ProcessLinkTaskResource(
 ) {
     @GetMapping("/v2/process-link/task/{taskId}")
     fun getTask(@PathVariable taskId: UUID): ResponseEntity<OpenTaskResult<*>> {
-        return ResponseEntity.ok(processLinkTaskService.openTask(taskId))
+        return try {
+            ResponseEntity.ok(processLinkTaskService.openTask(taskId))
+        } catch (e: ProcessLinkNotFoundException) {
+            ResponseEntity.noContent().build()
+        }
     }
 }
