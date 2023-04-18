@@ -18,12 +18,14 @@ package com.ritense.valtimo.formflow.mapper
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
+import com.ritense.valtimo.formflow.processlink.dto.FormFlowProcessLinkDeployDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkResponseDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkUpdateRequestDto
@@ -36,6 +38,7 @@ class FormFlowProcessLinkMapper(
 
     init {
         objectMapper.registerSubtypes(
+            FormFlowProcessLinkDeployDto::class.java,
             FormFlowProcessLinkResponseDto::class.java,
             FormFlowProcessLinkCreateRequestDto::class.java,
             FormFlowProcessLinkUpdateRequestDto::class.java,
@@ -53,6 +56,18 @@ class FormFlowProcessLinkMapper(
             activityType = processLink.activityType,
             formFlowDefinitionId = processLink.formFlowDefinitionId
         )
+    }
+
+    override fun toProcessLinkCreateRequestDto(deployDto: ProcessLinkDeployDto): ProcessLinkCreateRequestDto {
+        deployDto as FormFlowProcessLinkDeployDto
+
+        return FormFlowProcessLinkCreateRequestDto(
+            processDefinitionId = deployDto.processDefinitionId,
+            activityId = deployDto.activityId,
+            activityType = deployDto.activityType,
+            formFlowDefinitionId = deployDto.formFlowDefinitionId
+        )
+
     }
 
     override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink {

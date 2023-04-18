@@ -18,10 +18,12 @@ package com.ritense.form.mapper
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.form.domain.FormProcessLink
+import com.ritense.form.processlink.dto.FormProcessLinkDeployDto
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.web.rest.dto.FormProcessLinkCreateRequestDto
 import com.ritense.form.web.rest.dto.FormProcessLinkResponseDto
 import com.ritense.form.web.rest.dto.FormProcessLinkUpdateRequestDto
+import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
@@ -36,6 +38,7 @@ class FormProcessLinkMapper(
 
     init {
         objectMapper.registerSubtypes(
+            FormProcessLinkDeployDto::class.java,
             FormProcessLinkResponseDto::class.java,
             FormProcessLinkCreateRequestDto::class.java,
             FormProcessLinkUpdateRequestDto::class.java,
@@ -52,6 +55,18 @@ class FormProcessLinkMapper(
             activityId = processLink.activityId,
             activityType = processLink.activityType,
             formDefinitionId = processLink.formDefinitionId
+        )
+    }
+
+    override fun toProcessLinkCreateRequestDto(deployDto: ProcessLinkDeployDto): ProcessLinkCreateRequestDto {
+        deployDto as FormProcessLinkDeployDto
+
+        val formDefinition = formDefinitionService.getFormDefinitionByName(deployDto.formDefinitionName).get()
+        return FormProcessLinkCreateRequestDto(
+            processDefinitionId = deployDto.processDefinitionId,
+            activityId = deployDto.activityId,
+            activityType = deployDto.activityType,
+            formDefinitionId = formDefinition.id
         )
     }
 

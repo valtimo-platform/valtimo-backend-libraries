@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.autodeployment
+package com.ritense.valtimo.formflow.autodeployment
 
-import com.ritense.processlink.BaseIntegrationTest
-import com.ritense.processlink.domain.CustomProcessLink
+import com.ritense.form.domain.FormProcessLink
 import com.ritense.processlink.repository.ProcessLinkRepository
+import com.ritense.valtimo.formflow.BaseIntegrationTest
+import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
+import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,21 +36,21 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
 ): BaseIntegrationTest() {
 
     @Test
-    fun `should find 1 deployed process link on service task`() {
+    fun `should find 1 deployed process link on user task`() {
         val processDefinition = getLatestProcessDefinition()
         val processLinks =
-            processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinition.id, "my-service-task")
+            processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinition.id, "do-something")
 
         assertThat(processLinks, hasSize(1))
         val processLink = processLinks.first()
-        assertThat(processLink, Matchers.isA(CustomProcessLink::class.java))
-        processLink as CustomProcessLink
-        assertThat(processLink.someValue, Matchers.equalTo("test"))
+        assertThat(processLink, Matchers.isA(FormFlowProcessLink::class.java))
+        processLink as FormFlowProcessLink
+        assertThat(processLink.formFlowDefinitionId, equalTo("inkomens_loket:latest"))
     }
 
     private fun getLatestProcessDefinition(): ProcessDefinition {
         return repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey("auto-deploy-process-link")
+            .processDefinitionKey("processlink-autodeploy")
             .latestVersion()
             .singleResult()
     }

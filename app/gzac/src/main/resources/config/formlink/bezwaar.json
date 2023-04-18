@@ -1,6 +1,6 @@
 [
     {
-        "formName": "start-form-bezwaar",
+        "formName": "lookup:formName(start-form-bezwaar)",
         "formLinkElementId": "start-event-bezwaar-proces-gestart",
         "formAssociationType": "start-event"
     }
