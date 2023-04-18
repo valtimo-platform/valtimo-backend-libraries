@@ -18,29 +18,19 @@ package com.ritense.processlink.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ritense.processlink.domain.ActivityTypeWithEventName
-import com.ritense.processlink.domain.CustomProcessLink
-import com.ritense.processlink.domain.CustomProcessLinkCreateRequestDto
 import com.ritense.processlink.domain.CustomProcessLinkMapper
-import com.ritense.processlink.domain.CustomProcessLinkUpdateRequestDto
 import com.ritense.processlink.mapper.ProcessLinkMapper
-import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.processlink.service.ProcessLinkTaskService
-import com.ritense.processlink.web.rest.dto.OpenTaskResult
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.processlink.service.ProcessLinkActivityService
+import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -51,7 +41,7 @@ import java.util.UUID
 internal class ProcessLinkTaskResourceTest {
 
     lateinit var mockMvc: MockMvc
-    lateinit var processLinkTaskService: ProcessLinkTaskService
+    lateinit var processLinkActivityService: ProcessLinkActivityService
     lateinit var processLinkMappers: List<ProcessLinkMapper>
     lateinit var processLinkTaskResource: ProcessLinkTaskResource
     lateinit var objectMapper: ObjectMapper
@@ -59,9 +49,9 @@ internal class ProcessLinkTaskResourceTest {
     @BeforeEach
     fun init() {
         objectMapper = jacksonObjectMapper()
-        processLinkTaskService = mock()
+        processLinkActivityService = mock()
         processLinkMappers = listOf(CustomProcessLinkMapper(objectMapper))
-        processLinkTaskResource = ProcessLinkTaskResource(processLinkTaskService)
+        processLinkTaskResource = ProcessLinkTaskResource(processLinkActivityService)
 
         val mappingJackson2HttpMessageConverter = MappingJackson2HttpMessageConverter()
         mappingJackson2HttpMessageConverter.objectMapper = objectMapper
@@ -78,8 +68,8 @@ internal class ProcessLinkTaskResourceTest {
         val taskId = UUID.randomUUID()
 
 
-        val openTaskResult = OpenTaskResult("test", mapOf("x" to "y"))
-        whenever(processLinkTaskService.openTask(taskId)).thenReturn(openTaskResult)
+        val processLinkActivityResult = ProcessLinkActivityResult("test", mapOf("x" to "y"))
+        whenever(processLinkActivityService.openTask(taskId)).thenReturn(processLinkActivityResult)
 
         mockMvc.perform(
             get("/api/v2/process-link/task/$taskId")
@@ -91,6 +81,6 @@ internal class ProcessLinkTaskResourceTest {
             .andExpect(jsonPath("$.type").value("test"))
             .andExpect(jsonPath("$.properties.x").value("y"))
 
-        verify(processLinkTaskService).openTask(taskId)
+        verify(processLinkActivityService).openTask(taskId)
     }
 }

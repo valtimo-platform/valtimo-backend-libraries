@@ -22,7 +22,7 @@ import com.ritense.form.autodeployment.FormApplicationReadyEventListener;
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService;
 import com.ritense.form.domain.FormSpringContextHelper;
 import com.ritense.form.mapper.FormProcessLinkMapper;
-import com.ritense.form.processlink.FormProcessLinkTaskProvider;
+import com.ritense.form.processlink.FormProcessLinkActivityHandler;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.service.FormLoaderService;
@@ -143,10 +143,11 @@ public class FormAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(FormProcessLinkTaskProvider.class)
-    public FormProcessLinkTaskProvider formProcessLinkTaskProvider(
+    @ConditionalOnMissingBean(FormProcessLinkActivityHandler.class)
+    public FormProcessLinkActivityHandler formProcessLinkTaskProvider(
+        FormIoFormDefinitionService formDefinitionService,
         PrefillFormService prefillFormService
     ) {
-        return new FormProcessLinkTaskProvider(prefillFormService);
+        return new FormProcessLinkActivityHandler(formDefinitionService,prefillFormService);
     }
 }

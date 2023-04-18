@@ -17,8 +17,8 @@
 package com.ritense.processlink.web.rest
 
 import com.ritense.processlink.exception.ProcessLinkNotFoundException
-import com.ritense.processlink.service.ProcessLinkTaskService
-import com.ritense.processlink.web.rest.dto.OpenTaskResult
+import com.ritense.processlink.service.ProcessLinkActivityService
+import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -30,14 +30,18 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class ProcessLinkTaskResource(
-    private var processLinkTaskService: ProcessLinkTaskService
+    private var processLinkActivityService: ProcessLinkActivityService
 ) {
-    @GetMapping("/v2/process-link/task/{taskId}")
-    fun getTask(@PathVariable taskId: UUID): ResponseEntity<OpenTaskResult<*>> {
+    @GetMapping(value = ["/v2/process-link/task/{taskId}"])
+    fun getTask(@PathVariable taskId: UUID): ResponseEntity<ProcessLinkActivityResult<*>> {
         return try {
-            ResponseEntity.ok(processLinkTaskService.openTask(taskId))
+            ResponseEntity.ok(processLinkActivityService.openTask(taskId))
         } catch (e: ProcessLinkNotFoundException) {
             ResponseEntity.noContent().build()
-        }
+        }}
+
+    @GetMapping(value = ["/v1/process-definition/{processDefinitionId}/start-form"])
+    fun getFormDefinition(@PathVariable processDefinitionId: UUID): ResponseEntity<Any> {
+        return ResponseEntity.ok(processLinkActivityService.getStartEventObject(processDefinitionId.toString()))
     }
 }

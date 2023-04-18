@@ -16,7 +16,7 @@
 
 package com.ritense.processlink.web.rest.dto
 
-data class OpenTaskResult<T> (
+data class ProcessLinkActivityResult<T> (
     val type: String,
     val properties: T
 )
