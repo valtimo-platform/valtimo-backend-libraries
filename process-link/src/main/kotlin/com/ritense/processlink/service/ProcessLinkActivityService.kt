@@ -16,8 +16,8 @@
 
 package com.ritense.processlink.service
 
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.exception.ProcessLinkNotFoundException
-import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.web.rest.dto.OpenProcessLinkResult
 import mu.KotlinLogging
 import org.camunda.bpm.engine.TaskService
@@ -44,7 +44,8 @@ open class ProcessLinkActivityService(
     }
 
     fun getStartEventObject(processDefinitionId: String): OpenProcessLinkResult<*>? {
-        val processLink = processLinkService.getProcessLinksByProcessDefinitionIdAndActivityType(processDefinitionId,ActivityTypeWithEventName.START_EVENT_START)
+        val processLink = processLinkService.getProcessLinksByProcessDefinitionIdAndActivityType(processDefinitionId,
+            ActivityTypeWithEventName.START_EVENT_START)
         var result: OpenProcessLinkResult<*>? = null
         processLinkActivityHandlers.forEach {
             if(it.supports(processLink)){
