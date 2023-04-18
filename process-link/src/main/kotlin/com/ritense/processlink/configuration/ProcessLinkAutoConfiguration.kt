@@ -16,6 +16,8 @@
 
 package com.ritense.processlink.configuration
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.processlink.autodeployment.ProcessLinkDeploymentApplicationReadyEventListener
 import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
@@ -27,6 +29,7 @@ import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.web.rest.ProcessLinkResource
 import com.ritense.processlink.web.rest.ProcessLinkTaskResource
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
+import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -35,6 +38,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
@@ -101,5 +105,18 @@ class ProcessLinkAutoConfiguration {
         return CopyProcessLinkOnProcessDeploymentListener(
             processLinkRepository,
         )
+    }
+
+    @Bean
+    @ConditionalOnBean(RepositoryService::class)
+    @ConditionalOnMissingBean(ProcessLinkDeploymentApplicationReadyEventListener::class)
+    fun processLinkDeploymentApplicationReadyEventListener(
+        resourceLoader: ResourceLoader,
+        repositoryService: RepositoryService,
+        processLinkService: ProcessLinkService,
+        objectMapper: ObjectMapper): ProcessLinkDeploymentApplicationReadyEventListener {
+        return ProcessLinkDeploymentApplicationReadyEventListener(resourceLoader,
+            repositoryService,
+            processLinkService, objectMapper)
     }
 }

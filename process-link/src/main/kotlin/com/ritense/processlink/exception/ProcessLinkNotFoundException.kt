@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.domain
+package com.ritense.processlink.exception
 
-import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
-import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
-import java.util.UUID
-
-data class CustomProcessLinkResponseDto(
-    override val id: UUID,
-    override val processDefinitionId: String,
-    override val activityId: String,
-    override val activityType: ActivityTypeWithEventName,
-    override val processLinkType: String = PROCESS_LINK_TYPE_TEST,
-    val someValue: String
-) : ProcessLinkResponseDto
+class ProcessLinkNotFoundException(
+    additionalMessage: String
+) : RuntimeException("No process link found. $additionalMessage")

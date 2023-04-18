@@ -40,24 +40,28 @@ class CustomProcessLinkUpdateRequestDtoTest {
         val value: ProcessLinkUpdateRequestDto = mapper.readValue("""
             {
                 "id": "${UUID.randomUUID()}",
-                "processLinkType": "$PROCESS_LINK_TYPE_TEST"
+                "processLinkType": "$PROCESS_LINK_TYPE_TEST",
+                "someValue": "test"
             }
         """.trimIndent())
 
         assertThat(value, instanceOf(CustomProcessLinkUpdateRequestDto::class.java))
+        value as CustomProcessLinkUpdateRequestDto
         assertThat(value.processLinkType, equalTo(PROCESS_LINK_TYPE_TEST))
+        assertThat(value.someValue, equalTo("test"))
     }
 
     @Test
     fun `should serialize correctly`() {
-        val value = CustomProcessLinkUpdateRequestDto(UUID.randomUUID())
+        val value = CustomProcessLinkUpdateRequestDto(UUID.randomUUID(), "test")
 
         val json = mapper.writeValueAsString(value)
 
         JSONAssert.assertEquals("""
             {
               "processLinkType":"$PROCESS_LINK_TYPE_TEST",
-              "id":"${value.id}"
+              "id":"${value.id}",
+              "someValue": "test"
             }
         """.trimIndent(), json, JSONCompareMode.NON_EXTENSIBLE)
     }
