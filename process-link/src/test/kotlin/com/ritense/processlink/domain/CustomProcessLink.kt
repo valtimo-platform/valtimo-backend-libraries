@@ -18,6 +18,7 @@ package com.ritense.processlink.domain
 
 import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
 import java.util.UUID
+import javax.persistence.Column
 import javax.persistence.DiscriminatorValue
 import javax.persistence.Entity
 
@@ -30,7 +31,10 @@ data class CustomProcessLink(
 
     override val activityId: String,
 
-    override val activityType: ActivityTypeWithEventName
+    override val activityType: ActivityTypeWithEventName,
+
+    @Column(name = "some_value")
+    val someValue: String = "test"
 
 ) : ProcessLink(
     id,
@@ -48,6 +52,7 @@ data class CustomProcessLink(
         processDefinitionId = processDefinitionId,
         activityId = activityId,
         activityType = activityType,
+        someValue = someValue
     )
 
     companion object {

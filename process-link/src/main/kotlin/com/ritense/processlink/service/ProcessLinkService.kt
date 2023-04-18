@@ -80,7 +80,7 @@ open class ProcessLinkService(
         processLinkRepository.deleteById(id)
     }
 
-    private fun getProcessLinkMapper(processLinkType: String): ProcessLinkMapper {
+    fun getProcessLinkMapper(processLinkType: String): ProcessLinkMapper {
         return processLinkMappers.singleOrNull { it.supportsProcessLinkType(processLinkType) }
             ?: throw IllegalStateException("No ProcessLinkMapper found for processLinkType $processLinkType")
     }

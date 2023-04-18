@@ -45,6 +45,7 @@ class CustomProcessLinkMapper(
             processDefinitionId = processLink.processDefinitionId,
             activityId = processLink.activityId,
             activityType = processLink.activityType,
+            someValue = processLink.someValue
         )
     }
 
@@ -55,6 +56,7 @@ class CustomProcessLinkMapper(
             processDefinitionId = createRequestDto.processDefinitionId,
             activityId = createRequestDto.activityId,
             activityType = createRequestDto.activityType,
+            someValue = createRequestDto.someValue
         )
     }
 
@@ -63,11 +65,13 @@ class CustomProcessLinkMapper(
         updateRequestDto: ProcessLinkUpdateRequestDto
     ): ProcessLink {
         updateRequestDto as CustomProcessLinkUpdateRequestDto
+
         return CustomProcessLink(
             id = updateRequestDto.id,
             processDefinitionId = processLinkToUpdate.processDefinitionId,
             activityId = processLinkToUpdate.activityId,
             activityType = processLinkToUpdate.activityType,
+            someValue = updateRequestDto.someValue
         )
     }
 }
