@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.web.rest.dto
+package com.ritense.processlink.exception
 
-data class OpenTaskResult<T> (
-    val type: String,
-    val properties: T
-)
+class ProcessLinkNotFoundException(
+    additionalMessage: String
+) : RuntimeException("No process link found. $additionalMessage")

@@ -24,8 +24,8 @@ import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.security.config.ProcessLinkHttpSecurityConfigurer
 import com.ritense.processlink.service.CopyProcessLinkOnProcessDeploymentListener
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.processlink.service.ProcessLinkTaskProvider
-import com.ritense.processlink.service.ProcessLinkTaskService
+import com.ritense.processlink.service.ProcessLinkActivityHandler
+import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.web.rest.ProcessLinkResource
 import com.ritense.processlink.web.rest.ProcessLinkTaskResource
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
@@ -68,23 +68,23 @@ class ProcessLinkAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ProcessLinkTaskService::class)
+    @ConditionalOnMissingBean(ProcessLinkActivityService::class)
     @ConditionalOnBean(TaskService::class)
     fun processLinkTaskService(
         processLinkService: ProcessLinkService,
         taskService: TaskService,
-        processLinkTaskProviders: List<ProcessLinkTaskProvider<*>>,
-    ): ProcessLinkTaskService {
-        return ProcessLinkTaskService(processLinkService, taskService, processLinkTaskProviders)
+        processLinkActivityHandlers: List<ProcessLinkActivityHandler<*>>,
+    ): ProcessLinkActivityService {
+        return ProcessLinkActivityService(processLinkService, taskService, processLinkActivityHandlers)
     }
 
     @Bean
     @ConditionalOnMissingBean(ProcessLinkTaskResource::class)
-    @ConditionalOnBean(ProcessLinkTaskService::class)
+    @ConditionalOnBean(ProcessLinkActivityService::class)
     fun processLinkTaskResource(
-        processLinkTaskService: ProcessLinkTaskService
+        processLinkActivityService: ProcessLinkActivityService
     ): ProcessLinkTaskResource {
-        return ProcessLinkTaskResource(processLinkTaskService)
+        return ProcessLinkTaskResource(processLinkActivityService)
     }
 
     @Bean

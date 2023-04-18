@@ -9,6 +9,6 @@
         "activityId": "my-service-task",
         "activityType": "bpmn:ServiceTask:start",
         "processLinkType": "test",
-        "formDefinitionId": "changed"
+        "someValue": "changed"
     }
 ]

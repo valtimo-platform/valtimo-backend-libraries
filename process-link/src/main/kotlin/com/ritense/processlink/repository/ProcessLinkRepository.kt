@@ -29,4 +29,6 @@ interface ProcessLinkRepository : JpaRepository<ProcessLink, UUID> {
         activityType: ActivityTypeWithEventName,
         processLinkType: String
     ): List<ProcessLink>
+
+    fun findByProcessDefinitionIdAndActivityType(processDefinitionId: String, activityType: ActivityTypeWithEventName): ProcessLink
 }
