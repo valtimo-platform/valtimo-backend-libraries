@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.mapper
+package com.ritense.valtimo.formflow.processlink.dto
 
+import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
-import com.ritense.processlink.domain.ProcessLink
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
-import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
-import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
+import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM_FLOW
 
-interface ProcessLinkMapper {
-    fun supportsProcessLinkType(processLinkType: String): Boolean
-    fun toProcessLinkResponseDto(processLink: ProcessLink): ProcessLinkResponseDto
-    fun toProcessLinkCreateRequestDto(deployDto: ProcessLinkDeployDto): ProcessLinkCreateRequestDto
-    fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink
-    fun toUpdatedProcessLink(
-        processLinkToUpdate: ProcessLink,
-        updateRequestDto: ProcessLinkUpdateRequestDto
-    ): ProcessLink
+@JsonTypeName(PROCESS_LINK_TYPE_FORM_FLOW)
+data class FormFlowProcessLinkDeployDto(
+    override val processDefinitionId: String,
+    override val activityId: String,
+    override val activityType: ActivityTypeWithEventName,
+    val formFlowDefinitionId: String,
+) : ProcessLinkDeployDto {
+    override val processLinkType: String
+        get() = PROCESS_LINK_TYPE_FORM_FLOW
 }

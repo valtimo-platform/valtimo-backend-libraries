@@ -58,12 +58,23 @@ open class ProcessLinkService(
     }
 
     @Transactional
+    @Throws(ProcessLinkExistsException::class)
     fun createProcessLink(createRequest: ProcessLinkCreateRequestDto) {
-        if (getProcessLinks(createRequest.processDefinitionId, createRequest.activityId).isNotEmpty()) {
-            throw ValidationException("A process-link for process-definition '${createRequest.processDefinitionId}' and activity '${createRequest.activityId}' already exists!")
+        val mapper = getProcessLinkMapper(createRequest.processLinkType)
+        val newProcessLink = mapper.toNewProcessLink(createRequest)
+
+        val currentProcessLinks = getProcessLinks(createRequest.processDefinitionId, createRequest.activityId)
+        if (currentProcessLinks.isNotEmpty()) {
+            val contentsDiffer = currentProcessLinks.any { processLinkEntity ->
+                newProcessLink.copy(id = processLinkEntity.id) != processLinkEntity
+            }
+
+            throw ProcessLinkExistsException(
+                "A process-link for process-definition '${createRequest.processDefinitionId}' and activity '${createRequest.activityId}' already exists!",
+                contentsDiffer
+            )
         }
 
-        val mapper = getProcessLinkMapper(createRequest.processLinkType)
         processLinkRepository.save(mapper.toNewProcessLink(createRequest))
     }
 

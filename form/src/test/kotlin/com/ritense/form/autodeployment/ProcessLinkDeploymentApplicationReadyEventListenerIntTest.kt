@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.autodeployment
+package com.ritense.form.autodeployment
 
-import com.ritense.processlink.BaseIntegrationTest
-import com.ritense.processlink.domain.CustomProcessLink
+import com.ritense.form.BaseIntegrationTest
+import com.ritense.form.domain.FormProcessLink
 import com.ritense.processlink.repository.ProcessLinkRepository
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers
+import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.hasSize
+import org.hamcrest.Matchers.isA
+import org.hamcrest.Matchers.notNullValue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -34,21 +36,21 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
 ): BaseIntegrationTest() {
 
     @Test
-    fun `should find 1 deployed process link on service task`() {
+    fun `should find 1 deployed process link on user task`() {
         val processDefinition = getLatestProcessDefinition()
         val processLinks =
-            processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinition.id, "my-service-task")
+            processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinition.id, "do-something")
 
         assertThat(processLinks, hasSize(1))
         val processLink = processLinks.first()
-        assertThat(processLink, Matchers.isA(CustomProcessLink::class.java))
-        processLink as CustomProcessLink
-        assertThat(processLink.someValue, Matchers.equalTo("test"))
+        assertThat(processLink, isA(FormProcessLink::class.java))
+        processLink as FormProcessLink
+        assertThat(processLink.formDefinitionId, notNullValue())
     }
 
     private fun getLatestProcessDefinition(): ProcessDefinition {
         return repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey("auto-deploy-process-link")
+            .processDefinitionKey("form-one-task-process")
             .latestVersion()
             .singleResult()
     }

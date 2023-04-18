@@ -17,6 +17,7 @@
 package com.ritense.processlink.domain
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
@@ -30,6 +31,7 @@ class CustomProcessLinkMapper(
 
     init {
         objectMapper.registerSubtypes(
+            CustomProcessLinkDeployDto::class.java,
             CustomProcessLinkResponseDto::class.java,
             CustomProcessLinkCreateRequestDto::class.java,
             CustomProcessLinkUpdateRequestDto::class.java,
@@ -46,6 +48,16 @@ class CustomProcessLinkMapper(
             activityId = processLink.activityId,
             activityType = processLink.activityType,
             someValue = processLink.someValue
+        )
+    }
+
+    override fun toProcessLinkCreateRequestDto(deployDto: ProcessLinkDeployDto): ProcessLinkCreateRequestDto {
+        deployDto as CustomProcessLinkDeployDto
+        return CustomProcessLinkCreateRequestDto(
+            processDefinitionId = deployDto.processDefinitionId,
+            activityId = deployDto.activityId,
+            activityType = deployDto.activityType,
+            someValue = deployDto.someValue
         )
     }
 

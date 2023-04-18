@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
-import com.ritense.processlink.domain.ProcessLink
+import com.ritense.processlink.service.ProcessLinkExistsException
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import java.io.IOException
@@ -54,33 +54,18 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
                 val processLinkCreateDtos = getProcessLinks(resource, processDefinitionId)
 
                 processLinkCreateDtos.forEach {  processLinkDto ->
-                    val existingLinks = processLinkService.getProcessLinks(processDefinitionId, processLinkDto.activityId)
-                    val exists = existingLinks.any { processLinkEntity ->
-                        val contentsDiffer = contentsDiffer(processLinkDto, processLinkEntity)
-                        if (contentsDiffer) {
-                            logger.error { "Existing process-link found for activity '${processLinkDto.activityId}' in '${processLinkDto.processDefinitionId}', but configuration has changed. Skipping autodeployment." }
-                        }
-
-                        contentsDiffer
-                    }
-
-                    if(!exists) {
+                    try {
                         processLinkService.createProcessLink(processLinkDto)
+                    } catch (e: ProcessLinkExistsException) {
+                        if (e.contentsDiffer) {
+                            logger.error { "${e.message} Skipping autodeployment." }
+                        }
                     }
                 }
             }
         } catch (e: Exception) {
             logger.error(e) { "Error while deploying process-links" }
         }
-    }
-
-    private fun contentsDiffer(processLinkDto: ProcessLinkCreateRequestDto, processLinkEntity: ProcessLink): Boolean {
-        val newProcessLink = processLinkService.getProcessLinkMapper(processLinkDto.processLinkType)
-            .toNewProcessLink(processLinkDto)
-            .copy(id = processLinkEntity.id)
-
-        return newProcessLink != processLinkEntity
-
     }
 
     private fun getProcessDefinitionId(fileName: String): String {
@@ -106,8 +91,12 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
                 node.set<ObjectNode>("processDefinitionId", TextNode.valueOf(processDefinitionId))
             }
 
-            objectMapper.treeToValue<ProcessLinkCreateRequestDto>(node)
+            val deployDto = objectMapper.treeToValue<ProcessLinkDeployDto>(node)
+
+            processLinkService.getProcessLinkMapper(deployDto.processLinkType)
+                .toProcessLinkCreateRequestDto(deployDto)
         }
+
         return processLinkCreateDtos
     }
 

@@ -23,6 +23,7 @@ import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUG
 import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
 import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
 import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
+import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
@@ -55,6 +56,10 @@ class PluginProcessLinkMapper(
             pluginActionDefinitionKey = processLink.pluginActionDefinitionKey,
             actionProperties = processLink.actionProperties,
         )
+    }
+
+    override fun toProcessLinkCreateRequestDto(deployDto: ProcessLinkDeployDto): ProcessLinkCreateRequestDto {
+        throw UnsupportedOperationException("Plugins are not yet supported for autodeployment!")
     }
 
     override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink {
