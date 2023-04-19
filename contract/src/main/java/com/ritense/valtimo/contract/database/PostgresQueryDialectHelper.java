@@ -16,14 +16,13 @@
 
 package com.ritense.valtimo.contract.database;
 
+import java.time.temporal.TemporalAccessor;
+import java.util.Arrays;
+import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-import java.time.temporal.TemporalAccessor;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class PostgresQueryDialectHelper implements QueryDialectHelper {
 
@@ -78,14 +77,7 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
     }
 
     @Override
-    public Predicate getJsonValueLessThanExistsInPathExpression(CriteriaBuilder cb, Path column, String path, String value) {
-        return cb.lessThan(
-            getValueForPath(cb, column, path, String.class),
-            value.toLowerCase()
-        );
-    }
-
-    private <T> Expression<T> getValueForPath(CriteriaBuilder cb, Path column, String path, Class<T> type) {
+    public <T> Expression<T> getValueForPath(CriteriaBuilder cb, Path column, String path, Class<T> type) {
         List<Expression<String>> pathParts = splitPath(path).stream().map(cb::literal).toList();
         Expression[] expressions = new Expression[pathParts.size() + 1];
         expressions[0] = column;

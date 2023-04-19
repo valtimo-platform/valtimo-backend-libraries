@@ -1,7 +1,7 @@
 package com.ritense.authorization
 
 import com.ritense.authorization.permission.ContainerPermissionCondition
-import com.ritense.authorization.permission.ExpressionOperator
+import com.ritense.authorization.permission.PermissionExpressionOperator
 import com.ritense.authorization.permission.ExpressionPermissionCondition
 import com.ritense.authorization.permission.FieldPermissionCondition
 import com.ritense.authorization.permission.Permission
@@ -51,7 +51,7 @@ class AuthorizationService(
                     ExpressionPermissionCondition(
                         "content.content",
                         "$.height",
-                        ExpressionOperator.LESS_THAN, "20000")
+                        PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java)
                 )
             ),
             Permission(
@@ -65,7 +65,7 @@ class AuthorizationService(
                             ExpressionPermissionCondition(
                                 "content.content",
                                 "$.height",
-                                ExpressionOperator.LESS_THAN, "20000"),
+                                PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java),
                             FieldPermissionCondition("assigneeFullName", "Asha Miller")
                         )
                     )
