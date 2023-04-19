@@ -10,7 +10,7 @@ import javax.persistence.criteria.Root
 class Permission(
     val resourceType: Class<*>,
     val action: Action,
-    val filters: List<PermissionFilter>
+    val filters: List<PermissionCondition>
 ) {
     fun <T> appliesTo(resourceType: Class<T>, entity: Any?): Boolean {
         return if (this.resourceType.javaClass == resourceType.javaClass) {

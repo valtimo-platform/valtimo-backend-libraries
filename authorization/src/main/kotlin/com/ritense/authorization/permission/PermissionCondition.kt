@@ -1,6 +1,5 @@
 package com.ritense.authorization.permission
 
-import com.ritense.authorization.AuthorizationRequest
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
@@ -8,7 +7,7 @@ import javax.persistence.criteria.Path
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
-abstract class PermissionFilter {
+abstract class PermissionCondition {
     abstract val permissionFilterType: PermissionFilterType
     abstract fun <T: Any> isValid(entity: T): Boolean
     abstract fun <T: Any> toPredicate(

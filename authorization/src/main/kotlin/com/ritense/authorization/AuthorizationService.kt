@@ -1,9 +1,9 @@
 package com.ritense.authorization
 
-import com.ritense.authorization.permission.ContainerPermissionFilter
+import com.ritense.authorization.permission.ContainerPermissionCondition
 import com.ritense.authorization.permission.ExpressionOperator
-import com.ritense.authorization.permission.ExpressionPermissionFilter
-import com.ritense.authorization.permission.FieldPermissionFilter
+import com.ritense.authorization.permission.ExpressionPermissionCondition
+import com.ritense.authorization.permission.FieldPermissionCondition
 import com.ritense.authorization.permission.Permission
 
 class AuthorizationService(
@@ -47,8 +47,8 @@ class AuthorizationService(
                 Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
                 Action.CLAIM,
                 listOf(
-                    FieldPermissionFilter("documentDefinitionId.name", "leningen"),
-                    ExpressionPermissionFilter(
+                    FieldPermissionCondition("documentDefinitionId.name", "leningen"),
+                    ExpressionPermissionCondition(
                         "content.content",
                         "$.height",
                         ExpressionOperator.LESS_THAN, "20000")
@@ -58,50 +58,19 @@ class AuthorizationService(
                 Class.forName("com.ritense.note.domain.Note"),
                 Action.VIEW,
                 listOf(
-                    ContainerPermissionFilter(
+                    ContainerPermissionCondition(
                         Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
                         listOf(
-                            FieldPermissionFilter("documentDefinitionId.name", "leningen"),
-                            ExpressionPermissionFilter(
+                            FieldPermissionCondition("documentDefinitionId.name", "leningen"),
+                            ExpressionPermissionCondition(
                                 "content.content",
                                 "$.height",
                                 ExpressionOperator.LESS_THAN, "20000"),
-                            FieldPermissionFilter("assigneeFullName", "Asha Miller")
+                            FieldPermissionCondition("assigneeFullName", "Asha Miller")
                         )
                     )
                 )
             ),
-            /*            Permission(
-                            "document-definition",
-                            Action.ASSIGN,
-                            listOf(FieldPermissionFilter("documentDefinitionId.name", "leningen"))
-                        ),
-                        Permission(
-                            "task-definition",
-                            Action.VIEW,
-                            listOf(
-                                FieldPermissionFilter("taskDefinition", "controle-aanvraag")
-                            )
-                        ),
-                        Permission( // This is generally not recommended, but can be done.
-                            "task-definition",
-                            Action.COMPLETE,
-                            listOf(
-                                FieldPermissionFilter("taskDefinition", "controle-aanvraag"),
-                                ContainerPermissionFilter(
-                                    "document-definition",
-                                    listOf(
-                                        FieldPermissionFilter("documentDefinitionId.name", "leningen"),
-                                        ExpressionPermissionFilter(
-                                            "content",
-                                            "$.amount",
-                                            "<",
-                                            "10000"
-                                        )
-                                    )
-                                )
-                            )
-                        )*/
         )
     }
 }

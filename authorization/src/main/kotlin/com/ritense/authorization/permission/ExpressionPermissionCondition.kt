@@ -9,12 +9,12 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 
-class ExpressionPermissionFilter(
+class ExpressionPermissionCondition(
     val field: String,
     val path: String,
     val operator: ExpressionOperator,
     val value: String
-): PermissionFilter() {
+): PermissionCondition() {
     override val permissionFilterType: PermissionFilterType = PermissionFilterType.EXPRESSION
     override fun <T: Any> isValid(entity: T): Boolean {
         val fieldValue = reflectionFindFieldIfString(entity) ?: return false
@@ -32,7 +32,7 @@ class ExpressionPermissionFilter(
         queryDialectHelper: QueryDialectHelper
     ): Predicate {
         val path: Path<Any>? = createDatabaseObjectPath(field, root, resourceType)
-
+        // TODO: Change expressionoperator to handle this, so no conditionals are necessary
         if (ExpressionOperator.LESS_THAN == operator) {
             return queryDialectHelper
                 .getJsonValueLessThanExistsInPathExpression(

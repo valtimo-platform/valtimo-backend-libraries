@@ -7,7 +7,7 @@ enum class ExpressionOperator(val asText: String, val function: (Int) -> Boolean
     GREATER_THAN(">", { value: Int -> greaterThan(value) }),
     GREATER_THAN_OR_EQUAL_TO(">=", { value: Int -> greaterThanOrEqualTo(value) });
 
-    fun evaluate(value1: String, value2: String): Boolean {
+    fun <T: Comparable<T>> evaluate(value1: T, value2: T): Boolean {
         return this.function.invoke(value1.compareTo(value2))
     }
 

@@ -7,10 +7,10 @@ import javax.persistence.criteria.Path
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
-class FieldPermissionFilter(
+class FieldPermissionCondition(
     val field: String,
-    val value: String
-) : PermissionFilter() {
+    val value: String // TODO: Ask Thomas if we have to support operators here as well
+) : PermissionCondition() {
     override val permissionFilterType: PermissionFilterType = PermissionFilterType.FIELD
     override fun <T: Any> isValid(entity: T): Boolean {
         return reflectionFindField(entity).toString() == value
