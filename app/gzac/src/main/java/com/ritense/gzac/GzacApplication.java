@@ -25,6 +25,7 @@ import com.ritense.openzaak.service.InformatieObjectTypeLinkService;
 import com.ritense.openzaak.service.ZaakTypeLinkService;
 import com.ritense.plugin.service.PluginService;
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
+import com.ritense.processlink.service.ProcessLinkService;
 import com.ritense.valtimo.config.DefaultProfileUtil;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.camunda.bpm.engine.RepositoryService;
@@ -71,6 +72,7 @@ public class GzacApplication {
         InformatieObjectTypeLinkService informatieObjectTypeLinkService,
         DocumentDefinitionService documentDefinitionService,
         PluginService pluginService,
+        ProcessLinkService processLinkService,
         ObjectManagementService objectManagementService,
         RepositoryService repositoryService,
         DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService
@@ -82,6 +84,7 @@ public class GzacApplication {
             informatieObjectTypeLinkService,
             documentDefinitionService,
             pluginService,
+            processLinkService,
             objectManagementService,
             repositoryService,
             documentDefinitionProcessLinkService

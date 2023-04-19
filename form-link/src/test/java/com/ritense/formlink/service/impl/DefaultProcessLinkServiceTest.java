@@ -17,7 +17,7 @@
 package com.ritense.formlink.service.impl;
 
 import com.ritense.formlink.domain.FormLink;
-import com.ritense.formlink.domain.ProcessLinkTaskProvider;
+import com.ritense.formlink.domain.FormLinkTaskProvider;
 import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation;
 import com.ritense.formlink.service.FormAssociationService;
@@ -46,13 +46,13 @@ class DefaultProcessLinkServiceTest {
     private final TaskService taskService = mock(TaskService.class, Mockito.RETURNS_DEEP_STUBS);
     private final RepositoryService repositoryService = mock(RepositoryService.class);
     private final FormAssociationService formAssociationService = mock(FormAssociationService.class);
-    private final ProcessLinkTaskProvider processLinkTaskProvider = mock(ProcessLinkTaskProvider.class);
-    private final List<ProcessLinkTaskProvider> processLinkTaskProviders = List.of(processLinkTaskProvider);
+    private final FormLinkTaskProvider formLinkTaskProvider = mock(FormLinkTaskProvider.class);
+    private final List<FormLinkTaskProvider> formLinkTaskProviders = List.of(formLinkTaskProvider);
     private final ProcessLinkService service = new DefaultProcessLinkService(
         repositoryService,
         taskService,
         formAssociationService,
-        processLinkTaskProviders
+            formLinkTaskProviders
     );
     Task task = mock(Task.class);
     CamundaFormAssociation formAssociation = mock(CamundaFormAssociation.class);
@@ -73,7 +73,7 @@ class DefaultProcessLinkServiceTest {
 
         when(formAssociation.getFormLink()).thenReturn(formLink);
 
-        when(processLinkTaskProvider.supports(formLink)).thenReturn(true);
+        when(formLinkTaskProvider.supports(formLink)).thenReturn(true);
 
         final var processDefinition = mock(ProcessDefinition.class);
         when(processDefinition.getKey()).thenReturn("test");
@@ -87,12 +87,12 @@ class DefaultProcessLinkServiceTest {
             "test",
             "test"
         );
-        when(processLinkTaskProvider.getTaskResult(task, formLink)).thenReturn(mockResult);
+        when(formLinkTaskProvider.getTaskResult(task, formLink)).thenReturn(mockResult);
 
         TaskOpenResult taskOpenResult = service.openTask(taskId);
 
         assertEquals(taskOpenResult, mockResult);
-        verify(processLinkTaskProvider).getTaskResult(task, formLink);
+        verify(formLinkTaskProvider).getTaskResult(task, formLink);
     }
 
     @Test
@@ -111,7 +111,7 @@ class DefaultProcessLinkServiceTest {
     void openTaskShouldThrowExceptionWhenNoProviderFound() {
         UUID taskId = UUID.randomUUID();
 
-        when(processLinkTaskProvider.supports(formLink)).thenReturn(false);
+        when(formLinkTaskProvider.supports(formLink)).thenReturn(false);
 
         assertThrows(NoSuchElementException.class, () -> {
             service.openTask(taskId);

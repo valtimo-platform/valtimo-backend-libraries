@@ -1,0 +1,8 @@
+[
+    {
+        "activityId": "do-something",
+        "activityType": "bpmn:UserTask:start",
+        "processLinkType": "form",
+        "formDefinitionName": "form-example"
+    }
+]

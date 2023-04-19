@@ -58,6 +58,7 @@ include(
     "plugin-authentication:notificaties-api-authentication",
     "plugin-authentication:objecten-api-authentication",
     "process-document",
+    "process-link",
     "resource",
     "resource:local-resource",
     "resource:openzaak-resource",

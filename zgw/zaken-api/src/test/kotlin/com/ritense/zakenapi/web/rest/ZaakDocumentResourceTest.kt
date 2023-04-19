@@ -86,7 +86,7 @@ class ZaakDocumentResourceTest : BaseIntegrationTest() {
         fileId = UUID.fromString(uri.path.substringAfterLast("/")),
         fileName = "titel",
         sizeInBytes = 1337L,
-        createdOn = LocalDateTime.now(),
+        createdOn = LocalDateTime.parse("2023-01-01T12:10:01"),
         createdBy = "y",
         pluginConfigurationId = UUID.fromString("1f925112-f090-404a-bee7-b20fd8047a72"),
     )

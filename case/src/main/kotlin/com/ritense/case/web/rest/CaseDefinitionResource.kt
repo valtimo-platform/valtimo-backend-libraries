@@ -21,7 +21,7 @@ import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.document.exception.UnknownDocumentDefinitionException
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -34,12 +34,12 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
-@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class CaseDefinitionResource(
     private val service: CaseDefinitionService
 ) {
 
-    @GetMapping(value = ["/v1/case/{caseDefinitionName}/settings"])
+    @GetMapping("/v1/case/{caseDefinitionName}/settings")
     fun getCaseSettings(
         @PathVariable caseDefinitionName: String
     ): ResponseEntity<CaseDefinitionSettings> {
@@ -52,7 +52,7 @@ class CaseDefinitionResource(
         }
     }
 
-    @PatchMapping(value = ["/v1/case/{caseDefinitionName}/settings"])
+    @PatchMapping("/v1/case/{caseDefinitionName}/settings")
     fun updateCaseSettings(
         @RequestBody caseSettingsDto: CaseSettingsDto,
         @PathVariable caseDefinitionName: String
@@ -66,14 +66,14 @@ class CaseDefinitionResource(
         }
     }
 
-    @GetMapping(value = ["/v1/case/{caseDefinitionName}/list-column"])
+    @GetMapping("/v1/case/{caseDefinitionName}/list-column")
     fun getCaseListColumn(
         @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<CaseListColumnDto>> {
         return ResponseEntity.ok().body(service.getListColumns(caseDefinitionName))
     }
 
-    @PostMapping(value = ["/v1/case/{caseDefinitionName}/list-column"])
+    @PostMapping("/v1/case/{caseDefinitionName}/list-column")
     fun createCaseListColumn(
         @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDto: CaseListColumnDto
@@ -82,7 +82,7 @@ class CaseDefinitionResource(
         return ResponseEntity.ok().build()
     }
 
-    @PutMapping(value = ["/v1/case/{caseDefinitionName}/list-column"])
+    @PutMapping("/v1/case/{caseDefinitionName}/list-column")
     fun updateListColumn(
         @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDtoList: List<CaseListColumnDto>
@@ -91,7 +91,7 @@ class CaseDefinitionResource(
         return ResponseEntity.ok().build()
     }
 
-    @DeleteMapping(value = ["/v1/case/{caseDefinitionName}/list-column/{columnKey}"])
+    @DeleteMapping("/v1/case/{caseDefinitionName}/list-column/{columnKey}")
     fun deleteListColumn(
         @PathVariable caseDefinitionName: String,
         @PathVariable columnKey: String

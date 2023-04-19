@@ -19,9 +19,9 @@ package com.ritense.case.web.rest
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.search.SearchWithConfigRequest
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PathVariable
@@ -30,12 +30,12 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
-@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class CaseInstanceResource(
     private val service: CaseInstanceService
 ) {
 
-    @PostMapping(value = ["/v1/case/{caseDefinitionName}/search"])
+    @PostMapping("/v1/case/{caseDefinitionName}/search")
     fun search(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @RequestBody searchRequest: SearchWithConfigRequest,

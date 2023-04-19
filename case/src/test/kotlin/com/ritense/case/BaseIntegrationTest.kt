@@ -29,7 +29,7 @@ import org.springframework.core.io.support.ResourcePatternResolver
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
-@ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
+@ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
 @Tag("integration")
 class BaseIntegrationTest {
 

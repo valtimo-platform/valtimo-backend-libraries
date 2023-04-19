@@ -31,11 +31,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public interface FormManagementResource {
 
-    @GetMapping(value = "/v1/form-management")
+    @GetMapping("/v1/form-management")
     ResponseEntity<Page<? extends FormDefinition>> getAll(Pageable pageable);
 
     @GetMapping(value = "/v1/form-management", params = {"searchTerm"})
@@ -53,7 +55,7 @@ public interface FormManagementResource {
     @PutMapping(value = "/v1/form-management", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<? extends FormDefinition> modifyFormDefinition(ModifyFormDefinitionRequest request);
 
-    @DeleteMapping(value = "/v1/form-management/{formDefinitionId}")
+    @DeleteMapping("/v1/form-management/{formDefinitionId}")
     ResponseEntity<Void> deleteFormDefinition(String formDefinitionId);
 
 }

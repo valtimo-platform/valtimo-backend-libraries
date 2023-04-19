@@ -20,13 +20,18 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.service.DocumentService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formflow.service.FormFlowService
-import com.ritense.formlink.domain.ProcessLinkTaskProvider
+import com.ritense.formlink.domain.FormLinkTaskProvider
 import com.ritense.formlink.service.FormAssociationService
 import com.ritense.formlink.service.impl.CamundaFormAssociationService
-import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
+import com.ritense.processlink.service.ProcessLinkActivityHandler
+import com.ritense.valtimo.formflow.FormFlowFormLinkTaskProvider
+import com.ritense.valtimo.formflow.FormFlowProcessLinkActivityHandler
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
+import com.ritense.valtimo.formflow.service.FormFlowSupportedProcessLinksHandler
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
+import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper
+import com.ritense.valtimo.formflow.repository.FormFlowProcessLinkRepository
 import com.ritense.valtimo.formflow.security.ValtimoFormFlowHttpSecurityConfigurer
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
 import com.ritense.valtimo.formflow.web.rest.ProcessLinkFormFlowDefinitionResource
@@ -35,27 +40,46 @@ import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
+@EnableJpaRepositories(
+    basePackageClasses = [FormFlowProcessLinkRepository::class]
+)
+@EntityScan(basePackages = ["com.ritense.valtimo.formflow.domain"])
 class FormFlowValtimoAutoConfiguration {
 
     @Bean
-    fun formFlowProcessLinkTaskProvider(
+    fun formFlowFormLinkTaskProvider(
         formFlowService: FormFlowService,
         formAssociationService: FormAssociationService,
         documentService: DocumentService,
         repositoryService: RepositoryService,
         runtimeService: RuntimeService,
-    ): ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
-        return FormFlowProcessLinkTaskProvider(
+    ): FormLinkTaskProvider<FormFlowTaskOpenResultProperties> {
+        return FormFlowFormLinkTaskProvider(
             formFlowService,
             formAssociationService,
             documentService,
             repositoryService,
             runtimeService,
+        )
+    }
+
+    @Bean
+    fun formFlowProcessLinkTaskProvider(
+        formFlowService: FormFlowService,
+        documentService: DocumentService,
+        runtimeService: RuntimeService,
+    ): ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties> {
+        return FormFlowProcessLinkActivityHandler(
+            formFlowService,
+            documentService,
+            runtimeService
         )
     }
 
@@ -108,5 +132,23 @@ class FormFlowValtimoAutoConfiguration {
             objectMapper,
             valueResolverService,
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowProcessLinkMapper::class)
+    fun formFlowProcessLinkMapper(
+        objectMapper: ObjectMapper,
+        formFlowService: FormFlowService,
+    ): FormFlowProcessLinkMapper {
+        return FormFlowProcessLinkMapper(
+            objectMapper,
+            formFlowService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowSupportedProcessLinksHandler::class)
+    fun formFlowSupportedProcessLinks(formFlowService: FormFlowService): FormFlowSupportedProcessLinksHandler {
+        return FormFlowSupportedProcessLinksHandler(formFlowService)
     }
 }

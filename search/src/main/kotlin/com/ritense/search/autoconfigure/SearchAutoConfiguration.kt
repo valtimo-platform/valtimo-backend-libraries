@@ -16,6 +16,11 @@
 
 package com.ritense.search.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.ritense.search.ObjectMapperConfigurer
+import com.ritense.search.domain.DateFormatDisplayTypeParameter
+import com.ritense.search.domain.EnumDisplayTypeParameter
 import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.repository.SearchListColumnRepository
 import com.ritense.search.security.config.SearchHttpSecurityConfigurer
@@ -80,6 +85,24 @@ class SearchAutoConfiguration {
     @ConditionalOnMissingBean(SearchHttpSecurityConfigurer::class)
     fun searchHttpSecurityConfigurer(): SearchHttpSecurityConfigurer {
         return SearchHttpSecurityConfigurer()
+    }
+
+    @Bean
+    fun searchEnumDisplayTypeParameterType(): NamedType {
+        return NamedType(EnumDisplayTypeParameter::class.java, "enum")
+    }
+
+    @Bean
+    fun searchDateFormatDisplayTypeParameterType(): NamedType {
+        return NamedType(DateFormatDisplayTypeParameter::class.java, "date")
+    }
+
+    @Bean
+    fun searchObjectMapper(
+        objectMapper: ObjectMapper,
+        displayTypeParameterTypes: Collection<NamedType>
+    ): ObjectMapperConfigurer {
+        return ObjectMapperConfigurer(objectMapper, displayTypeParameterTypes)
     }
 
 }

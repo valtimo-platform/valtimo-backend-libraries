@@ -22,8 +22,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface SearchFieldV2Repository : JpaRepository<SearchFieldV2, UUID> {
 
-    fun findByOwnerIdAndKey(ownerId: String, key: String): SearchFieldV2?
+    fun findByOwnerIdAndKeyOrderByOrder(ownerId: String, key: String): SearchFieldV2?
 
-    fun findAllByOwnerId(ownerId: String): List<SearchFieldV2>?
+    fun findAllByOwnerIdOrderByOrder(ownerId: String): List<SearchFieldV2>?
 
 }

@@ -33,7 +33,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
     ChoiceFieldRepository.class,
     ChoiceFieldValueRepository.class
 })
-@EntityScan(value = "com.ritense.valtimo.domain.choicefield")
+@EntityScan("com.ritense.valtimo.domain.choicefield")
 public class ChoiceFieldAutoConfiguration {
 
     @Bean

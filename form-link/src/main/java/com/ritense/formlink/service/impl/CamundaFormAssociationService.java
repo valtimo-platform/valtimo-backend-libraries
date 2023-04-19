@@ -338,6 +338,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         }
     }
 
+    @Deprecated(since = "10.6.0", forRemoval = true)
     public void prefillProcessVariables(FormIoFormDefinition formDefinition, Document document) {
         final List<String> processVarsNames = formDefinition.extractProcessVarNames();
         final Map<String, Object> processInstanceVariables = new HashMap<>();
@@ -353,6 +354,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         }
     }
 
+    @Deprecated(since = "10.6.0", forRemoval = true)
     public void prefillDataResolverFields(FormIoFormDefinition formDefinition, Document document, JsonNode extendedDocumentContent) {
         // FormFieldDataResolver pre-filling
         formDefinition
@@ -402,6 +404,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         formDefinition.preFill(extendedDocumentContent);
     }
 
+    @Deprecated(since = "10.6.0", forRemoval = true)
     public void prefillTaskVariables(FormIoFormDefinition formDefinition, String taskInstanceId, JsonNode extendedDocumentContent) {
         final Map<String, Object> taskVariables = taskService.getVariables(taskInstanceId);
         final ObjectNode placeholders = Mapper.INSTANCE.objectMapper().valueToTree(taskVariables);
