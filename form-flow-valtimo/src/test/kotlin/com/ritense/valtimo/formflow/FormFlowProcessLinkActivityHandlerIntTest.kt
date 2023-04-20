@@ -65,7 +65,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
 
         val processDefinition = repositoryService.createProcessDefinitionQuery()
             .latestVersion()
-            .processDefinitionKey("one-task-process")
+            .processDefinitionKey("formflow-one-task-process")
             .singleResult();
 
         processLinkService.createProcessLink(
@@ -90,7 +90,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
     fun `should create form flow instance when task is opened`() {
         val processDefinition = repositoryService.createProcessDefinitionQuery()
             .latestVersion()
-            .processDefinitionKey("one-task-process")
+            .processDefinitionKey("formflow-one-task-process")
             .singleResult();
 
         processLinkService.createProcessLink(
