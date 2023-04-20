@@ -15,7 +15,7 @@ class ContainerPermissionCondition<TO : Any>(
     val resourceType: Class<TO>,
     val conditions: List<PermissionCondition>
 ) : PermissionCondition() {
-    override val permissionFilterType: PermissionFilterType = PermissionFilterType.CONTAINER
+    override val permissionConditionType: PermissionConditionType = PermissionConditionType.CONTAINER
     override fun <FROM: Any> isValid(entity: FROM): Boolean {
         val mapper = findMapper(entity::class.java) as AuthorizationEntityMapper<FROM, TO>
         val relatedEntities = mapper.mapTo(entity)

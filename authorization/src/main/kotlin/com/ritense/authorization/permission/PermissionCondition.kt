@@ -8,7 +8,7 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 abstract class PermissionCondition {
-    abstract val permissionFilterType: PermissionFilterType
+    abstract val permissionConditionType: PermissionConditionType
     abstract fun <T: Any> isValid(entity: T): Boolean
     abstract fun <T: Any> toPredicate(
         root: Root<T>,
