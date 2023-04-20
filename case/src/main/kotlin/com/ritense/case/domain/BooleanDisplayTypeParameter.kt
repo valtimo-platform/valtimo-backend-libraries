@@ -23,6 +23,6 @@ data class BooleanDisplayTypeParameter(
     val enum: Map<String, String>?
 ) : DisplayTypeParameter {
     override fun validate(): Boolean {
-        return !enum.isNullOrEmpty()
+        return enum?.size == 2
     }
 }
