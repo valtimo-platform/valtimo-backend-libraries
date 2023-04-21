@@ -61,7 +61,6 @@ class CustomProcessLinkCreateRequestDtoTest {
               "processDefinitionId": "${value.processDefinitionId}",
               "activityId": "${value.activityId}",
               "activityType": "${value.activityType.value}",
-              "processLinkType":"$PROCESS_LINK_TYPE_TEST",
               "someValue": "test"
             }
         """.trimIndent(), json, JSONCompareMode.NON_EXTENSIBLE)

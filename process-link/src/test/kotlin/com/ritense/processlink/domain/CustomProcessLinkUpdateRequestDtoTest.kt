@@ -20,13 +20,13 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
-import java.util.UUID
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.instanceOf
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
+import java.util.UUID
 
 
 class CustomProcessLinkUpdateRequestDtoTest {
@@ -36,11 +36,26 @@ class CustomProcessLinkUpdateRequestDtoTest {
     }
 
     @Test
-    fun `should deserialise correctly`() {
+    fun `should deserialise correctly with processLinkType`() {
         val value: ProcessLinkUpdateRequestDto = mapper.readValue("""
             {
                 "id": "${UUID.randomUUID()}",
                 "processLinkType": "$PROCESS_LINK_TYPE_TEST",
+                "someValue": "test"
+            }
+        """.trimIndent())
+
+        assertThat(value, instanceOf(CustomProcessLinkUpdateRequestDto::class.java))
+        value as CustomProcessLinkUpdateRequestDto
+        assertThat(value.processLinkType, equalTo(PROCESS_LINK_TYPE_TEST))
+        assertThat(value.someValue, equalTo("test"))
+    }
+
+    @Test
+    fun `should deserialise correctly without processLinkType`() {
+        val value: ProcessLinkUpdateRequestDto = mapper.readValue("""
+            {
+                "id": "${UUID.randomUUID()}",
                 "someValue": "test"
             }
         """.trimIndent())
@@ -59,7 +74,6 @@ class CustomProcessLinkUpdateRequestDtoTest {
 
         JSONAssert.assertEquals("""
             {
-              "processLinkType":"$PROCESS_LINK_TYPE_TEST",
               "id":"${value.id}",
               "someValue": "test"
             }

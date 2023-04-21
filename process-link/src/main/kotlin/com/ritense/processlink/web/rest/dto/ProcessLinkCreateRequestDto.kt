@@ -16,10 +16,12 @@
 
 package com.ritense.processlink.web.rest.dto
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION, include = JsonTypeInfo.As.PROPERTY, property = "processLinkType")
+@JsonIgnoreProperties("processLinkType", allowSetters = true)
 interface ProcessLinkCreateRequestDto {
     val processDefinitionId: String
     val activityId: String
