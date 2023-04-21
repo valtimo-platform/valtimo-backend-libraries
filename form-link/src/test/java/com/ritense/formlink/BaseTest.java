@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 
 public abstract class BaseTest {
 
-    protected static final String PROCESS_DEFINITION_KEY = "process-definition-key";
+    protected static final String PROCESS_DEFINITION_KEY = "formlink-one-task-process";
     protected static final String USERNAME = "test@test.com";
     protected DocumentSequenceGeneratorService documentSequenceGeneratorService;
 
