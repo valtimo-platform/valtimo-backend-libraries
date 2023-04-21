@@ -53,6 +53,7 @@
     </changeSet>
 
     <changeSet id="6" author="Ritense">
+        <validCheckSum>8:f34aa99715f0d28665247e7d7e103be4</validCheckSum>
         <addColumn tableName="plugin_configuration">
             <column name="plugin_configuration_id" type="${uuidType}">
                 <constraints primaryKey="true" nullable="false"/>
