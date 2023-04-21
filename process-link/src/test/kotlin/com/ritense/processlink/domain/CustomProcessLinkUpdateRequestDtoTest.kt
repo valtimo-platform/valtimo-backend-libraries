@@ -75,7 +75,8 @@ class CustomProcessLinkUpdateRequestDtoTest {
         JSONAssert.assertEquals("""
             {
               "id":"${value.id}",
-              "someValue": "test"
+              "someValue": "test",
+              "processLinkType": "$PROCESS_LINK_TYPE_TEST",
             }
         """.trimIndent(), json, JSONCompareMode.NON_EXTENSIBLE)
     }

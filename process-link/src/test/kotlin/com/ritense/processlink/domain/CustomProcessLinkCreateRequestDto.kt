@@ -16,13 +16,17 @@
 
 package com.ritense.processlink.domain
 
+import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 
+@JsonTypeName(PROCESS_LINK_TYPE_TEST)
 data class CustomProcessLinkCreateRequestDto(
     override val processDefinitionId: String,
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
-    override val processLinkType: String = PROCESS_LINK_TYPE_TEST,
     val someValue: String = "test"
-) : ProcessLinkCreateRequestDto
+) : ProcessLinkCreateRequestDto {
+    override val processLinkType: String
+        get() = PROCESS_LINK_TYPE_TEST
+}

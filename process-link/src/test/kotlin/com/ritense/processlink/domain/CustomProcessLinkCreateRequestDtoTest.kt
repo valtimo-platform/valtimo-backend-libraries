@@ -19,6 +19,7 @@ package com.ritense.processlink.domain
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
+import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.instanceOf
@@ -34,8 +35,8 @@ class CustomProcessLinkCreateRequestDtoTest {
     }
 
     @Test
-    fun `should deserialise correctly`() {
-        val value: CustomProcessLinkCreateRequestDto = mapper.readValue("""
+    fun `should deserialise correctly with processLinkType`() {
+        val value: ProcessLinkCreateRequestDto = mapper.readValue("""
             {
                 "processDefinitionId": "process-definition:1",
                 "activityId": "serviceTask1",
@@ -46,6 +47,24 @@ class CustomProcessLinkCreateRequestDtoTest {
         """.trimIndent())
 
         assertThat(value, instanceOf(CustomProcessLinkCreateRequestDto::class.java))
+        value as CustomProcessLinkCreateRequestDto
+        assertThat(value.processLinkType, equalTo(PROCESS_LINK_TYPE_TEST))
+        assertThat(value.someValue, equalTo("test"))
+    }
+
+    @Test
+    fun `should deserialise correctly without processLinkType`() {
+        val value: ProcessLinkCreateRequestDto = mapper.readValue("""
+            {
+                "processDefinitionId": "process-definition:1",
+                "activityId": "serviceTask1",
+                "activityType": "${ActivityTypeWithEventName.SERVICE_TASK_START.value}",
+                "someValue": "test"
+            }
+        """.trimIndent())
+
+        assertThat(value, instanceOf(CustomProcessLinkCreateRequestDto::class.java))
+        value as CustomProcessLinkCreateRequestDto
         assertThat(value.processLinkType, equalTo(PROCESS_LINK_TYPE_TEST))
         assertThat(value.someValue, equalTo("test"))
     }
@@ -61,6 +80,7 @@ class CustomProcessLinkCreateRequestDtoTest {
               "processDefinitionId": "${value.processDefinitionId}",
               "activityId": "${value.activityId}",
               "activityType": "${value.activityType.value}",
+              "processLinkType": "$PROCESS_LINK_TYPE_TEST",
               "someValue": "test"
             }
         """.trimIndent(), json, JSONCompareMode.NON_EXTENSIBLE)
