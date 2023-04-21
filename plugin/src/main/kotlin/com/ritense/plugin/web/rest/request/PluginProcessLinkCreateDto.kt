@@ -16,22 +16,18 @@
 
 package com.ritense.plugin.web.rest.request
 
-import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUGIN
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import java.util.UUID
 
-@JsonTypeName(PROCESS_LINK_TYPE_PLUGIN)
 data class PluginProcessLinkCreateDto(
     override val processDefinitionId: String,
     override val activityId: String,
+    override val activityType: ActivityTypeWithEventName,
+    override val processLinkType: String = PROCESS_LINK_TYPE_PLUGIN,
     val pluginConfigurationId: UUID,
     val pluginActionDefinitionKey: String,
     val actionProperties: ObjectNode? = null,
-    override val activityType: ActivityTypeWithEventName,
-) : ProcessLinkCreateRequestDto {
-    override val processLinkType: String
-        get() = PROCESS_LINK_TYPE_PLUGIN
-}
+) : ProcessLinkCreateRequestDto

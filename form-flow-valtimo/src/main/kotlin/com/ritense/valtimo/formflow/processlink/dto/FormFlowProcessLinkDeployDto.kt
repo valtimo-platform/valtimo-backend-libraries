@@ -16,19 +16,14 @@
 
 package com.ritense.valtimo.formflow.processlink.dto
 
-import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName
-import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM_FLOW
 
-@JsonTypeName(PROCESS_LINK_TYPE_FORM_FLOW)
 data class FormFlowProcessLinkDeployDto(
     override val processDefinitionId: String,
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
+    override val processLinkType: String = PROCESS_LINK_TYPE_FORM_FLOW,
     val formFlowDefinitionId: String,
-) : ProcessLinkDeployDto {
-    override val processLinkType: String
-        get() = PROCESS_LINK_TYPE_FORM_FLOW
-}
+) : ProcessLinkDeployDto

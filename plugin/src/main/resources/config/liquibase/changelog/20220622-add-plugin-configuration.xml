@@ -54,7 +54,7 @@
 
     <changeSet id="6" author="Ritense">
         <addColumn tableName="plugin_configuration">
-            <column name="plugin_configuration_id" type="${uuidType}" beforeColumn="title">
+            <column name="plugin_configuration_id" type="${uuidType}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
         </addColumn>

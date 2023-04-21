@@ -16,16 +16,12 @@
 
 package com.ritense.valtimo.formflow.web.rest.dto
 
-import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM_FLOW
 import java.util.UUID
 
-@JsonTypeName(PROCESS_LINK_TYPE_FORM_FLOW)
 data class FormFlowProcessLinkUpdateRequestDto(
     override val id: UUID,
+    override val processLinkType: String = PROCESS_LINK_TYPE_FORM_FLOW,
     val formFlowDefinitionId: String,
-) : ProcessLinkUpdateRequestDto {
-    override val processLinkType: String
-        get() = PROCESS_LINK_TYPE_FORM_FLOW
-}
+) : ProcessLinkUpdateRequestDto

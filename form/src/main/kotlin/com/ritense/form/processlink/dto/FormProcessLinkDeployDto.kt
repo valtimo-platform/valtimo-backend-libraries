@@ -16,20 +16,14 @@
 
 package com.ritense.form.processlink.dto
 
-import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.form.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName
-import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
-import java.util.UUID
 
-@JsonTypeName(PROCESS_LINK_TYPE_FORM)
 data class FormProcessLinkDeployDto(
     override val processDefinitionId: String,
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
+    override val processLinkType: String = PROCESS_LINK_TYPE_FORM,
     val formDefinitionName: String,
-) : ProcessLinkDeployDto {
-    override val processLinkType: String
-        get() = PROCESS_LINK_TYPE_FORM
-}
+) : ProcessLinkDeployDto
