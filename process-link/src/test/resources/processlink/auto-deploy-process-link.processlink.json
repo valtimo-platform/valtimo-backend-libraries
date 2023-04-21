@@ -2,11 +2,13 @@
     {
         "activityId": "my-service-task",
         "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "test",
         "someValue": "test"
     },
     {
         "activityId": "my-service-task",
         "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "test",
         "someValue": "changed"
     }
 ]
