@@ -69,14 +69,14 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
 
         processDocumentAssociationService.createProcessDocumentDefinition(
             ProcessDocumentDefinitionRequest(
-                "one-task-process",
+                "formflow-one-task-process",
                 "testing",
                 true
             )
         )
 
         formAssociationService.createFormAssociation(
-            CreateFormAssociationRequest("one-task-process",
+            CreateFormAssociationRequest("formflow-one-task-process",
                 FormLinkRequest(
                     "do-something",
                     FormAssociationType.USER_TASK,
@@ -89,7 +89,7 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
         )
 
         processDocumentService.newDocumentAndStartProcess(
-            NewDocumentAndStartProcessRequest("one-task-process",
+            NewDocumentAndStartProcessRequest("formflow-one-task-process",
                 NewDocumentRequest("testing",
                     Mapper.INSTANCE.get().readTree("{}"))
             )
@@ -108,14 +108,14 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
 
         processDocumentAssociationService.createProcessDocumentDefinition(
             ProcessDocumentDefinitionRequest(
-                "one-task-process",
+                "formflow-one-task-process",
                 "testing",
                 true
             )
         )
 
         formAssociationService.createFormAssociation(
-            CreateFormAssociationRequest("one-task-process",
+            CreateFormAssociationRequest("formflow-one-task-process",
                 FormLinkRequest(
                     "do-something",
                     FormAssociationType.USER_TASK,
@@ -128,7 +128,7 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
         )
 
         val result = processDocumentService.newDocumentAndStartProcess(
-            NewDocumentAndStartProcessRequest("one-task-process",
+            NewDocumentAndStartProcessRequest("formflow-one-task-process",
                 NewDocumentRequest("testing",
                     Mapper.INSTANCE.get().readTree("{}"))
             )
