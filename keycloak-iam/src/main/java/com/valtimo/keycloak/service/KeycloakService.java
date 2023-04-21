@@ -16,7 +16,7 @@
 
 package com.valtimo.keycloak.service;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
 import org.keycloak.admin.client.Keycloak;
@@ -44,7 +44,7 @@ public class KeycloakService {
             .clientId(properties.getResource())
             .clientSecret((String) properties.getCredentials().get("secret"))
             .resteasyClient(
-                new ResteasyClientBuilder()
+                new ResteasyClientBuilderImpl()
                     .connectionPoolSize(10).build())
             .build();
     }
