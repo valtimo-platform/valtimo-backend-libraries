@@ -17,6 +17,7 @@
 package com.ritense.processlink.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.processlink.BaseIntegrationTest
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.processlink.domain.CustomProcessLink
@@ -72,6 +73,30 @@ internal class ProcessLinkResourceIT : BaseIntegrationTest() {
         mockMvc.perform(
             post("/api/v1/process-link")
                 .content(ObjectMapper().writeValueAsString(createDto))
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isNoContent)
+    }
+
+    @Test
+    @Transactional
+    fun `should create a process-link without processLinkType`() {
+        val createDto = CustomProcessLinkCreateRequestDto(
+            processDefinitionId = PROCESS_DEF_ID,
+            activityId = ACTIVITY_ID,
+            activityType = SERVICE_TASK_START
+        )
+        val objectMapper = ObjectMapper()
+        val jsonNode = objectMapper.valueToTree<ObjectNode>(createDto)
+        jsonNode.remove("processLinkType")
+        val body = objectMapper.writeValueAsString(jsonNode)
+
+        mockMvc.perform(
+            post("/api/v1/process-link")
+                .content(body)
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
