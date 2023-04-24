@@ -18,6 +18,7 @@ package com.ritense.case.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
@@ -154,6 +155,11 @@ class CaseAutoConfiguration {
     @Bean
     fun dateFormatDisplayTypeParameterType(): NamedType {
         return NamedType(DateFormatDisplayTypeParameter::class.java, "date")
+    }
+
+    @Bean
+    fun booleanDisplayTypeParameterType(): NamedType {
+        return NamedType(BooleanDisplayTypeParameter::class.java, "boolean")
     }
 
     @Bean
