@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id "idea"
 
@@ -24,25 +26,35 @@ plugins {
     id "org.jetbrains.kotlin.plugin.spring" version "${kotlinVersion}"
     id "org.jetbrains.kotlin.plugin.jpa" version "${kotlinVersion}"
     id "org.jetbrains.kotlin.plugin.allopen" version "${kotlinVersion}"
-    id "org.jetbrains.dokka" version "${kotlinVersion}"
+    id "org.jetbrains.dokka" version "${dokkaPluginVersion}"
     id "com.github.ben-manes.versions" version "${versionsPluginVersion}"
     id "org.sonarqube" version "${sonarqubePluginVersion}"
     id "checkstyle"
     id "jacoco"
+    id "jacoco-report-aggregation"
     id "com.avast.gradle.docker-compose" version "${dockerComposePluginVersion}"
     id "com.github.jk1.dependency-license-report" version "${dependencyLicenseReportVersion}"
     id "project-report"
 }
 
-//Jacoco
 jacoco {
-    toolVersion = "0.8.7"
+    toolVersion = "0.8.9"
 }
 
-def allTestCoverageFile = "${rootProject.buildDir}/jacoco/allTestCoverage.exec"
-task jacocoMerge(type: JacocoMerge, group: 'verification') {
-    destinationFile = file(allTestCoverageFile)
-    executionData = project.fileTree(dir: '.', include: '**/build/jacoco/test.exec')
+def allTestCoverageFile = "${rootDir}/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml"
+dependencies {
+    subprojects { subproject ->
+        if (!project.name.endsWith("-dependencies")) {
+            jacocoAggregation(subproject)
+        }
+    }
+}
+reporting {
+    reports {
+        testCodeCoverageReport(JacocoCoverageReport) {
+            testType = TestSuiteType.UNIT_TEST
+        }
+    }
 }
 
 htmlDependencyReport {
@@ -53,7 +65,7 @@ htmlDependencyReport {
 sonarqube {
     properties {
         property "sonar.scm.provider", "git"
-        property "sonar.jacoco.reportPaths", allTestCoverageFile
+        property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
     }
 }
 
@@ -79,6 +91,7 @@ allprojects {
             dependencies {
                 dependency "org.yaml:snakeyaml:${snakeYamlVersionOverride}"
                 dependency "io.netty:netty-codec:${nettyCodecVersionOverride}"
+                dependency "org.liquibase:liquibase-core:${liquibaseVersion}"
             }
         }
 
@@ -116,7 +129,7 @@ subprojects { subproject ->
         apply plugin: "com.avast.gradle.docker-compose"
         apply plugin: "org.jetbrains.dokka"
 
-        task allDeps(type: DependencyReportTask) {}
+        tasks.register("allDeps", DependencyReportTask) {}
 
         java {
             withSourcesJar()
@@ -131,7 +144,7 @@ subprojects { subproject ->
             }
         }
 
-        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        tasks.withType(KotlinCompile).configureEach {
             kotlinOptions {
                 jvmTarget = JavaVersion.VERSION_17
             }
@@ -144,7 +157,7 @@ subprojects { subproject ->
             showViolations = true
         }
 
-        tasks.withType(Checkstyle) {
+        tasks.withType(Checkstyle).configureEach {
             reports {
                 html.destination rootProject.file("build/reports/${subproject.project.name}-checkstyle.html")
             }
@@ -152,21 +165,9 @@ subprojects { subproject ->
 
         sonarqube {
             properties {
-                property "sonar.jacoco.reportPaths", allTestCoverageFile
+                property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
             }
         }
-
-        configurations.all {
-            resolutionStrategy {
-                eachDependency { details ->
-                    if ('org.jacoco' == details.requested.group) {
-                        details.useVersion "0.8.7"
-                    }
-                }
-            }
-        }
-
-        test.finalizedBy(jacocoMerge)
 
         jar {
             enabled = true
