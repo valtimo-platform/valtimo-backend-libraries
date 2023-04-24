@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.web.rest.dto
+package com.ritense.case.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.fasterxml.jackson.annotation.JsonProperty
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
-@JsonIgnoreProperties("processLinkType", allowGetters = true)
-interface ProcessLinkCreateRequestDto {
-    val processDefinitionId: String
-    val activityId: String
-    val activityType: ActivityTypeWithEventName
-    val processLinkType: String
+data class BooleanDisplayTypeParameter(
+    @JsonProperty("enum")
+    val enum: Map<String, String>?
+) : DisplayTypeParameter {
+    override fun validate(): Boolean {
+        return enum?.size == 2
+    }
 }
