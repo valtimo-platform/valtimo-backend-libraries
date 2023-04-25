@@ -7,14 +7,14 @@ import javax.persistence.criteria.Predicate
 
 enum class PermissionExpressionOperator(val asText: String) {
     EQUAL_TO("=="),
-    LESS_THAN("<"),
-    LESS_THAN_OR_EQUAL_TO("<="),
     GREATER_THAN(">"),
-    GREATER_THAN_OR_EQUAL_TO(">=");
+    GREATER_THAN_OR_EQUAL_TO(">="),
+    LESS_THAN("<"),
+    LESS_THAN_OR_EQUAL_TO("<=");
 
-    fun <T: Comparable<T>> evaluate(value1: T, value2: T): Boolean {
+    fun <T: Comparable<T>> evaluate(leftOperand: T, rightOperand: T): Boolean {
         return SpelExpressionParser()
-            .parseExpression(value1.compareTo(value2).toString() + this.asText + "0")
+            .parseExpression(leftOperand.compareTo(rightOperand).toString() + this.asText + "0")
             .getValue(Boolean::class.java) ?: false
     }
 

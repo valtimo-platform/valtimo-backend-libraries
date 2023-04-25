@@ -28,7 +28,7 @@ import javax.persistence.criteria.Root
 
 class NoteSpecification(
     permissions: List<Permission>,
-    private val authContext: AuthorizationRequest<Note>,
+    authContext: AuthorizationRequest<Note>,
     private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<Note>(permissions, authContext) {
     override fun toPredicate(
@@ -38,20 +38,20 @@ class NoteSpecification(
     ): Predicate {
         // Filter the permissions for the relevant ones and use those to  find the filters that are required
         // Turn those filters into predicates
-        val predicates: MutableList<Predicate> = ArrayList(listOf())
-        permissions.stream()
-            .filter { permission: Permission -> Note::class.java == permission.resourceType && authContext.action == permission.action }
-            .forEach { permission: Permission ->
-                predicates.add(
-                    permission.toPredicate(
-                        root,
-                        query,
-                        criteriaBuilder,
-                        authContext.resourceType,
-                        queryDialectHelper
-                    )
-                )
+        val predicates = permissions.stream()
+            .filter { permission: Permission ->
+                Note::class.java == permission.resourceType &&
+                    authContext.action == permission.action
             }
+            .map { permission: Permission ->
+                permission.toPredicate(
+                    root,
+                    query,
+                    criteriaBuilder,
+                    authContext.resourceType,
+                    queryDialectHelper
+                )
+            }.toList()
         return combinePredicates(criteriaBuilder, predicates)
     }
 }

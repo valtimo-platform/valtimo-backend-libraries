@@ -6,6 +6,7 @@ import com.ritense.authorization.permission.Permission;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -20,7 +21,8 @@ public class JsonSchemaDocumentSpecification extends AuthorizationSpecification<
     public JsonSchemaDocumentSpecification(
         List<Permission> permissions,
         @NotNull AuthorizationRequest<JsonSchemaDocument> authContext,
-        QueryDialectHelper queryDialectHelper) {
+        QueryDialectHelper queryDialectHelper
+    ) {
         super(permissions, authContext);
         this.permissions = permissions;
         this.authContext = authContext;
@@ -35,13 +37,13 @@ public class JsonSchemaDocumentSpecification extends AuthorizationSpecification<
     ) {
         // Filter the permissions for the relevant ones and use those to  find the filters that are required
         // Turn those filters into predicates
-        List<Predicate> predicates = new java.util.ArrayList<>(List.of());
+        List<Predicate> predicates = permissions.stream().filter(permission ->
+                JsonSchemaDocument.class.equals(permission.getResourceType()) &&
+                    authContext.getAction().equals(permission.getAction()))
+            .map(permission ->
+                permission.toPredicate(root, query, criteriaBuilder, authContext.getResourceType(), queryDialectHelper)
+            ).collect(Collectors.toList());
 
-        permissions.stream().filter(permission ->
-                JsonSchemaDocument.class.equals(permission.getResourceType())
-                    && authContext.getAction().equals(permission.getAction()))
-            .forEach(
-                permission -> predicates.add(permission.toPredicate(root, query, criteriaBuilder, authContext.getResourceType(), queryDialectHelper)));
         return combinePredicates(criteriaBuilder, predicates);
     }
 

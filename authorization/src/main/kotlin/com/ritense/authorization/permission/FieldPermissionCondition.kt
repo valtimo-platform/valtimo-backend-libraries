@@ -10,8 +10,7 @@ import javax.persistence.criteria.Root
 class FieldPermissionCondition(
     val field: String,
     val value: String // TODO: Ask Thomas if we have to support operators here as well
-) : PermissionCondition() {
-    override val permissionConditionType: PermissionConditionType = PermissionConditionType.FIELD
+) : PermissionCondition(PermissionConditionType.FIELD) {
     override fun <T: Any> isValid(entity: T): Boolean {
         return reflectionFindField(entity).toString() == value
     }

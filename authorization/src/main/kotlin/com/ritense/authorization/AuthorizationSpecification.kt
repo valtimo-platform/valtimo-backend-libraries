@@ -6,14 +6,14 @@ import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.Predicate
 
 abstract class AuthorizationSpecification<T: Any> (
-    val permissions: List<Permission>,
-    internal val authContext: AuthorizationRequest<T>
+    protected val permissions: List<Permission>,
+    protected val authContext: AuthorizationRequest<T>
 ): Specification<T> {
     fun isAuthorized(entity: T): Boolean {
-        return permissions.filter {
-            entity::class.java == it.resourceType && authContext.action == it.action
-        }.any {
-            it.appliesTo(authContext.resourceType, entity)
+        return permissions.filter { permission ->
+            entity::class.java == permission.resourceType && authContext.action == permission.action
+        }.any { permission ->
+            permission.appliesTo(authContext.resourceType, entity)
         }
     }
 

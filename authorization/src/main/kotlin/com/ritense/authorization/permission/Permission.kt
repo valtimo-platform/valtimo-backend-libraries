@@ -10,14 +10,14 @@ import javax.persistence.criteria.Root
 class Permission(
     val resourceType: Class<*>,
     val action: Action,
-    val filters: List<PermissionCondition>
+    val conditions: List<PermissionCondition>
 ) {
     fun <T> appliesTo(resourceType: Class<T>, entity: Any?): Boolean {
-        return if (this.resourceType.javaClass == resourceType.javaClass) {
-            if (entity == null && filters.isNotEmpty()) {
+        return if (this.resourceType == resourceType) {
+            if (entity == null && conditions.isNotEmpty()) {
                 return false
             }
-            filters
+            conditions
                 .map { it.isValid(entity!!) }
                 .all { it }
         } else {
@@ -34,7 +34,7 @@ class Permission(
     ): Predicate {
         return criteriaBuilder
             .and(
-                *filters.map {
+                *conditions.map {
                     it.toPredicate(
                         root,
                         query,

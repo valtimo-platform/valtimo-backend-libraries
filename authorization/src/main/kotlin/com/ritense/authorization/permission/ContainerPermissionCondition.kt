@@ -4,7 +4,7 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
-import com.ritense.authorization.AuthorizationSpringContextHelper
+import com.ritense.authorization.AuthorizationServiceHolder
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
@@ -14,8 +14,7 @@ import javax.persistence.criteria.Root
 class ContainerPermissionCondition<TO : Any>(
     val resourceType: Class<TO>,
     val conditions: List<PermissionCondition>
-) : PermissionCondition() {
-    override val permissionConditionType: PermissionConditionType = PermissionConditionType.CONTAINER
+) : PermissionCondition(PermissionConditionType.CONTAINER) {
     override fun <FROM: Any> isValid(entity: FROM): Boolean {
         val mapper = findMapper(entity::class.java) as AuthorizationEntityMapper<FROM, TO>
         val relatedEntities = mapper.mapTo(entity)
@@ -46,13 +45,13 @@ class ContainerPermissionCondition<TO : Any>(
     }
 
     private fun findChildSpecification(): AuthorizationSpecification<TO> {
-        return AuthorizationSpringContextHelper.getService().getAuthorizationSpecification(
+        return AuthorizationServiceHolder.currentInstance.getAuthorizationSpecification(
             AuthorizationRequest(this.resourceType, null, Action.IGNORE),
             listOf(Permission(resourceType, Action.IGNORE, conditions))
         )
     }
 
     private fun <FROM: Any> findMapper(fromType: Class<FROM>): AuthorizationEntityMapper<FROM, TO> {
-        return AuthorizationSpringContextHelper.getService().getMapper(fromType, this.resourceType)
+        return AuthorizationServiceHolder.currentInstance.getMapper(fromType, this.resourceType)
     }
 }

@@ -15,8 +15,7 @@ class ExpressionPermissionCondition<T: Comparable<T>>(
     val operator: PermissionExpressionOperator,
     val value: T,
     val clazz: Class<T>
-): PermissionCondition() {
-    override val permissionConditionType: PermissionConditionType = PermissionConditionType.EXPRESSION
+): PermissionCondition(PermissionConditionType.EXPRESSION) {
     override fun <T: Any> isValid(entity: T): Boolean {
         val fieldValue = reflectionFindFieldIfString(entity) ?: return false
 

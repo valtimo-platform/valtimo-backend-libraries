@@ -2,6 +2,7 @@ dockerCompose {
     projectName = "authorization"
     isRequiredBy(integrationTesting)
     isRequiredBy(securityTesting)
+    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
 }
 
 dependencies {
@@ -9,6 +10,12 @@ dependencies {
     implementation("org.springframework.security:spring-security-core")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("com.jayway.jsonpath:json-path:${jaywayJsonpathVersion}")
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+
+    testImplementation project(':test-utils-common')
 
     jar {
         enabled = true

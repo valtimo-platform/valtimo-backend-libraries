@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.authorization.AuthorizationConfiguration
+  com.ritense.authorization.autoconfigure.AuthorizationAutoConfiguration

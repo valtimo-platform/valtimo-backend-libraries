@@ -17,7 +17,7 @@
 package com.ritense.document.autoconfiguration
 
 import com.ritense.authorization.AuthorizationSpecificationFactory
-import com.ritense.authorization.AuthorizationSpringContextHelper
+import com.ritense.authorization.AuthorizationServiceHolder
 import com.ritense.document.JsonSchemaDocumentSpecificationFactory
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.listener.DocumentEventListener
@@ -43,11 +43,4 @@ class DocumentEventAutoConfiguration {
     ): AuthorizationSpecificationFactory<JsonSchemaDocument> {
         return JsonSchemaDocumentSpecificationFactory(queryDialectHelper)
     }
-
-    @Bean
-    // THIS SHOULD NOT BE HERE
-    fun springContextHelper(): AuthorizationSpringContextHelper {
-        return AuthorizationSpringContextHelper()
-    }
-
 }
