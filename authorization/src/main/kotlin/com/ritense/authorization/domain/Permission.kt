@@ -41,6 +41,6 @@ data class Permission(
     val action: PermissionAction,
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
-    @Column(name = "filters", columnDefinition = "json")
-    val filters: List<PermissionCondition> = emptyList()
+    @Column(name = "conditions", columnDefinition = "json")
+    val conditions: List<PermissionCondition> = emptyList()
 )

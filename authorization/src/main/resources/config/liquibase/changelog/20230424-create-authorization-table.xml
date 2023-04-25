@@ -29,7 +29,7 @@
             <column name="action" type="VARCHAR(64)">
                 <constraints nullable="false"/>
             </column>
-            <column name="filters" type="${jsonType}">
+            <column name="conditions" type="${jsonType}">
                 <constraints nullable="false"/>
             </column>
         </createTable>

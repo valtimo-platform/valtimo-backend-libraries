@@ -44,7 +44,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
         val permission = Permission(
             resourceType = Class.forName("com.ritense.authorization.test.TestDocument"),
             action = LIST_VIEW,
-            filters = listOf(
+            conditions = listOf(
                 FieldPermissionCondition(
                     field = "document.name",
                     value = "loan"
@@ -59,10 +59,10 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
         assertThat(permissions[0].id).isNotNull
         assertThat(permissions[0].resourceType).isEqualTo(Class.forName("com.ritense.authorization.test.TestDocument"))
         assertThat(permissions[0].action).isEqualTo(LIST_VIEW)
-        assertThat(permissions[0].filters).hasSize(1)
-        assertThat(permissions[0].filters[0].type).isEqualTo(FIELD)
-        assertTrue(permissions[0].filters[0] is FieldPermissionCondition)
-        assertThat((permissions[0].filters[0] as FieldPermissionCondition).field).isEqualTo("document.name")
-        assertThat((permissions[0].filters[0] as FieldPermissionCondition).value).isEqualTo("loan")
+        assertThat(permissions[0].conditions).hasSize(1)
+        assertThat(permissions[0].conditions[0].type).isEqualTo(FIELD)
+        assertTrue(permissions[0].conditions[0] is FieldPermissionCondition)
+        assertThat((permissions[0].conditions[0] as FieldPermissionCondition).field).isEqualTo("document.name")
+        assertThat((permissions[0].conditions[0] as FieldPermissionCondition).value).isEqualTo("loan")
     }
 }
