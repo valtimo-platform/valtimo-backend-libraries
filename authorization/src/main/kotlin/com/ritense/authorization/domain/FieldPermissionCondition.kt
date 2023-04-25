@@ -22,10 +22,9 @@ import com.ritense.authorization.domain.PermissionConditionType.FIELD
 
 @JsonTypeName(TYPE)
 class FieldPermissionCondition(
-    override val type: PermissionConditionType = FIELD,
     val field: String,
     val value: String, // TODO: Ask Thomas if we have to support operators here as well
-) : PermissionCondition() {
+) : PermissionCondition(FIELD) {
 
     companion object {
         const val TYPE = "FIELD"

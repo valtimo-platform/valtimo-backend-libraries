@@ -16,9 +16,9 @@
 
 package com.ritense.authorization.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-abstract class PermissionCondition {
-    abstract val type: PermissionConditionType
-}
+@JsonIgnoreProperties("type")
+abstract class PermissionCondition(val type: PermissionConditionType)
