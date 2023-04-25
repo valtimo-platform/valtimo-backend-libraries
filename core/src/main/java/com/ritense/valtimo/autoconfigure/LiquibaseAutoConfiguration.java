@@ -22,14 +22,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+
 import javax.sql.DataSource;
+
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Configuration
 @ConditionalOnClass(DataSource.class)
 public class LiquibaseAutoConfiguration {
 
-    @Order(HIGHEST_PRECEDENCE + 1)
+    @Order(HIGHEST_PRECEDENCE + 2)
     @Bean
     @ConditionalOnMissingBean(name = "coreLiquibaseMasterChangeLogLocation")
     public LiquibaseMasterChangeLogLocation coreLiquibaseMasterChangeLogLocation() {

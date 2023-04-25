@@ -16,9 +16,38 @@
 
 package com.ritense.authorization
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.domain.FieldPermissionCondition
+import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
+import org.springframework.core.annotation.Order
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import javax.sql.DataSource
 
 @Configuration
+@EnableJpaRepositories(basePackages = ["com.ritense.authorization.repository"])
+@EntityScan("com.ritense.authorization.domain")
 class AuthorizationAutoConfiguration {
+
+    @Order(HIGHEST_PRECEDENCE + 1)
+    @Bean
+    @ConditionalOnClass(DataSource::class)
+    @ConditionalOnMissingBean(name = ["authorizationLiquibaseMasterChangeLogLocation"])
+    fun authorizationLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
+        return LiquibaseMasterChangeLogLocation("config/liquibase/authorization-master.xml")
+    }
+
+    @Bean
+    fun permissionSubTypeObjectMapper(objectMapper: ObjectMapper): ObjectMapper {
+        objectMapper.registerSubtypes(
+            FieldPermissionCondition::class.java,
+        )
+        return objectMapper
+    }
 
 }
