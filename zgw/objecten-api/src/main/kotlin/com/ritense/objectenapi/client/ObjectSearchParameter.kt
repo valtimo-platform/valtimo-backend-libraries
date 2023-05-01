@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.ritense.objectenapi.client
-
-import org.springframework.web.util.HtmlUtils.htmlEscape
 
 data class ObjectSearchParameter(
     val attribute: String,
     val comparator: Comparator,
     val value: String
 ) {
-    fun toQueryParameter(): String = htmlEscape(attribute + "__" + comparator.value + "__" + value)
+    fun toQueryParameter() = attribute + "__" + comparator.value + "__" + value
 
     companion object {
         fun toQueryParameter(objectSearchParameters: List<ObjectSearchParameter>): String {
@@ -33,12 +30,11 @@ data class ObjectSearchParameter(
         }
     }
 }
-
 enum class Comparator(val value: String) {
     EQUAL_TO("exact"),
     GREATER_THAN("gt"),
     GREATER_THAN_OR_EQUAL_TO("gte"),
     LOWER_THAN("lt"),
     LOWER_THAN_OR_EQUAL_TO("lte"),
-    STRING_CONTAINS("icontains")
+    STRING_CONTAINS("icontains"),
 }
