@@ -1,6 +1,8 @@
 package com.ritense.authorization.permission
 
+import com.fasterxml.jackson.annotation.JsonTypeName
 import com.jayway.jsonpath.JsonPath
+import com.ritense.authorization.permission.ExpressionPermissionCondition.Companion.TYPE
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
@@ -9,6 +11,7 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 
+@JsonTypeName(TYPE)
 class ExpressionPermissionCondition<T: Comparable<T>>(
     val field: String,
     val path: String,
@@ -56,5 +59,9 @@ class ExpressionPermissionCondition<T: Comparable<T>>(
 
     private fun evaluateExpression(pathValue: T): Boolean {
         return operator.evaluate(pathValue, value)
+    }
+
+    companion object {
+        const val TYPE = "EXPRESSION"
     }
 }

@@ -1,5 +1,7 @@
 package com.ritense.authorization.permission
 
+import com.fasterxml.jackson.annotation.JsonTypeName
+import com.ritense.authorization.permission.FieldPermissionCondition.Companion.TYPE
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
@@ -7,6 +9,7 @@ import javax.persistence.criteria.Path
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
+@JsonTypeName(TYPE)
 class FieldPermissionCondition(
     val field: String,
     val value: String // TODO: Ask Thomas if we have to support operators here as well
@@ -35,5 +38,9 @@ class FieldPermissionCondition(
                 currentEntity = declaredField.get(currentEntity)
         }
         return currentEntity
+    }
+
+    companion object {
+        const val TYPE = "FIELD"
     }
 }

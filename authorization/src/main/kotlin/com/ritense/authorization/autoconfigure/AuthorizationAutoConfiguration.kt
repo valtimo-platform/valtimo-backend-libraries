@@ -26,11 +26,20 @@ import com.ritense.authorization.permission.ExpressionPermissionCondition
 import com.ritense.authorization.permission.FieldPermissionCondition
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.PermissionExpressionOperator
+import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
+import org.springframework.core.annotation.Order
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import javax.sql.DataSource
 
 @Configuration
+@EnableJpaRepositories(basePackages = ["com.ritense.authorization"])
+@EntityScan("com.ritense.authorization")
 class AuthorizationAutoConfiguration {
 
     @Bean
@@ -48,25 +57,33 @@ class AuthorizationAutoConfiguration {
         return AuthorizationServiceHolder(authorizationService)
     }
 
+    @Order(HIGHEST_PRECEDENCE + 1)
+    @Bean
+    @ConditionalOnClass(DataSource::class)
+    @ConditionalOnMissingBean(name = ["authorizationLiquibaseMasterChangeLogLocation"])
+    fun authorizationLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
+        return LiquibaseMasterChangeLogLocation("config/liquibase/authorization-master.xml")
+    }
+
     @Bean
     @ConditionalOnMissingBean(name = ["defaultPermissions"])
     fun defaultPermissions(): List<Permission> {
         val documentPermissions:List<Permission> = try {
             listOf(
                 Permission(
-                    Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
-                    Action.LIST_VIEW,
-                    listOf()
+                    resourceType = Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
+                    action = Action.LIST_VIEW,
+                    conditions = listOf()
                 ),
                 Permission(
-                    Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
-                    Action.VIEW,
-                    emptyList()
+                    resourceType = Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
+                    action = Action.VIEW,
+                    conditions = emptyList()
                 ),
                 Permission(
-                    Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
-                    Action.CLAIM,
-                    listOf(
+                    resourceType = Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
+                    action = Action.CLAIM,
+                    conditions = listOf(
                         FieldPermissionCondition("documentDefinitionId.name", "leningen"),
                         ExpressionPermissionCondition(
                             "content.content",
@@ -82,9 +99,9 @@ class AuthorizationAutoConfiguration {
         val notePermissions:List<Permission> = try {
             listOf(
                 Permission(
-                    Class.forName("com.ritense.note.domain.Note"),
-                    Action.VIEW,
-                    listOf(
+                    resourceType = Class.forName("com.ritense.note.domain.Note"),
+                    action = Action.VIEW,
+                    conditions = listOf(
                         ContainerPermissionCondition(
                             Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
                             listOf(

@@ -33,7 +33,7 @@ class AuthorizationSpecificationTest {
     fun `isAuthorized should return true`() {
         val spec = TestAuthorizationSpecification(
             listOf(
-                Permission(TestEntity::class.java, Action.COMPLETE, listOf())
+                Permission(resourceType = TestEntity::class.java, action = Action.COMPLETE, conditions = listOf())
             ),
             AuthorizationRequest(
                 TestEntity::class.java, action = Action.COMPLETE
@@ -47,7 +47,7 @@ class AuthorizationSpecificationTest {
     fun `isAuthorized should return false if no permission can be found for entity class`() {
         val spec = TestAuthorizationSpecification(
             listOf(
-                Permission(String::class.java, Action.COMPLETE, listOf())
+                Permission(resourceType = String::class.java, action = Action.COMPLETE, conditions = listOf())
             ),
             AuthorizationRequest(
                 TestEntity::class.java, action = Action.COMPLETE
@@ -61,7 +61,7 @@ class AuthorizationSpecificationTest {
     fun `isAuthorized should return false if no permission can be found for requested action`() {
         val spec = TestAuthorizationSpecification(
             listOf(
-                Permission(TestEntity::class.java, Action.COMPLETE, listOf())
+                Permission(resourceType = TestEntity::class.java, action = Action.COMPLETE, conditions = listOf())
             ),
             AuthorizationRequest(
                 TestEntity::class.java, action = Action.VIEW
@@ -73,7 +73,11 @@ class AuthorizationSpecificationTest {
 
     @Test
     fun `isAuthorized should return false when Permission_appliesTo() returns false`() {
-        val permission: Permission = spy(Permission(TestEntity::class.java, Action.COMPLETE, listOf()))
+        val permission: Permission = spy(Permission(
+            resourceType = TestEntity::class.java,
+            action = Action.COMPLETE,
+            conditions = listOf())
+        )
         val spec = TestAuthorizationSpecification(
             listOf(
                 permission

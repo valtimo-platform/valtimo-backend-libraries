@@ -1,16 +1,19 @@
 package com.ritense.authorization.permission
 
+import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationServiceHolder
+import com.ritense.authorization.permission.ContainerPermissionCondition.Companion.TYPE
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
+@JsonTypeName(TYPE)
 class ContainerPermissionCondition<TO : Any>(
     val resourceType: Class<TO>,
     val conditions: List<PermissionCondition>
@@ -47,11 +50,15 @@ class ContainerPermissionCondition<TO : Any>(
     private fun findChildSpecification(): AuthorizationSpecification<TO> {
         return AuthorizationServiceHolder.currentInstance.getAuthorizationSpecification(
             AuthorizationRequest(this.resourceType, null, Action.IGNORE),
-            listOf(Permission(resourceType, Action.IGNORE, conditions))
+            listOf(Permission(resourceType = resourceType, action = Action.IGNORE, conditions = conditions))
         )
     }
 
     private fun <FROM: Any> findMapper(fromType: Class<FROM>): AuthorizationEntityMapper<FROM, TO> {
         return AuthorizationServiceHolder.currentInstance.getMapper(fromType, this.resourceType)
+    }
+
+    companion object {
+        const val TYPE = "CONTAINER"
     }
 }

@@ -1,5 +1,6 @@
 package com.ritense.authorization.permission
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
@@ -7,6 +8,12 @@ import javax.persistence.criteria.Path
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type",
+    visible = true
+)
 abstract class PermissionCondition(
     val permissionConditionType: PermissionConditionType
 ) {
