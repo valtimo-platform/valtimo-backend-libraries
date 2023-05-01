@@ -10,7 +10,7 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 @JsonTypeName(TYPE)
-class FieldPermissionCondition(
+data class FieldPermissionCondition(
     val field: String,
     val value: String // TODO: Ask Thomas if we have to support operators here as well
 ) : PermissionCondition(PermissionConditionType.FIELD) {

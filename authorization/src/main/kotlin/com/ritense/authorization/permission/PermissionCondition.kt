@@ -15,7 +15,7 @@ import javax.persistence.criteria.Root
     visible = true
 )
 abstract class PermissionCondition(
-    val permissionConditionType: PermissionConditionType
+    val type: PermissionConditionType
 ) {
     abstract fun <T: Any> isValid(entity: T): Boolean
     abstract fun <T: Any> toPredicate(

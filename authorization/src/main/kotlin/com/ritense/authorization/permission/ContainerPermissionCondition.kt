@@ -14,7 +14,7 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 @JsonTypeName(TYPE)
-class ContainerPermissionCondition<TO : Any>(
+data class ContainerPermissionCondition<TO : Any>(
     val resourceType: Class<TO>,
     val conditions: List<PermissionCondition>
 ) : PermissionCondition(PermissionConditionType.CONTAINER) {

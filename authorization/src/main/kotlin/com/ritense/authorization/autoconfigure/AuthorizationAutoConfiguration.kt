@@ -16,6 +16,8 @@
 
 package com.ritense.authorization.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationService
@@ -63,6 +65,16 @@ class AuthorizationAutoConfiguration {
     @ConditionalOnMissingBean(name = ["authorizationLiquibaseMasterChangeLogLocation"])
     fun authorizationLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
         return LiquibaseMasterChangeLogLocation("config/liquibase/authorization-master.xml")
+    }
+
+    @Bean
+    fun permissionSubTypeObjectMapper(objectMapper: ObjectMapper): ObjectMapper {
+        objectMapper.registerSubtypes(
+            NamedType(ContainerPermissionCondition::class.java, "CONTAINER"),
+            NamedType(ExpressionPermissionCondition::class.java, "EXPRESSION"),
+            NamedType(FieldPermissionCondition::class.java, "FIELD"),
+        )
+        return objectMapper
     }
 
     @Bean

@@ -4,4 +4,4 @@ services:
         ports:
             - "3343:5432"
         environment:
-            - POSTGRES_DB=authorization
+            - POSTGRES_DB=authorization-test

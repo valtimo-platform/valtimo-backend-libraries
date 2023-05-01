@@ -12,7 +12,7 @@ import javax.persistence.criteria.Root
 
 
 @JsonTypeName(TYPE)
-class ExpressionPermissionCondition<T: Comparable<T>>(
+data class ExpressionPermissionCondition<T: Comparable<T>>(
     val field: String,
     val path: String,
     val operator: PermissionExpressionOperator,
