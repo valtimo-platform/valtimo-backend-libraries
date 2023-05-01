@@ -22,6 +22,8 @@ import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
+import com.ritense.form.web.rest.dto.FormOption;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.transaction.Transactional;
@@ -37,8 +39,16 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     }
 
     @Override
-    public Page<FormIoFormDefinition> getAll(Pageable pageable) {
+    public Page<FormIoFormDefinition> getAllFormOptions(Pageable pageable) {
         return formDefinitionRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<FormOption> getAllFormOptions() {
+        return formDefinitionRepository.findAll()
+            .stream()
+            .map(formIoFormDefinition -> new FormOption(formIoFormDefinition.getId(), formIoFormDefinition.getName()))
+            .toList();
     }
 
     @Override

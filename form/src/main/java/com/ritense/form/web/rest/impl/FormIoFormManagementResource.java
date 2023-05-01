@@ -21,14 +21,14 @@ import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.web.rest.FormManagementResource;
+import java.util.UUID;
+import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import javax.validation.Valid;
-import java.util.UUID;
 
 public class FormIoFormManagementResource implements FormManagementResource {
 
@@ -40,7 +40,7 @@ public class FormIoFormManagementResource implements FormManagementResource {
 
     @Override
     public ResponseEntity<Page<? extends FormDefinition>> getAll(Pageable pageable) {
-        return ResponseEntity.ok(formDefinitionService.getAll(pageable));
+        return ResponseEntity.ok(formDefinitionService.getAllFormOptions(pageable));
     }
 
     @Override

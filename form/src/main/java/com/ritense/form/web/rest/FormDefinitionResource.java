@@ -19,6 +19,7 @@ package com.ritense.form.web.rest;
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
+import com.ritense.form.web.rest.dto.FormOption;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,32 +32,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
-public interface FormManagementResource {
-
-    @GetMapping("/v1/form-management")
-    ResponseEntity<Page<? extends FormDefinition>> getAll(Pageable pageable);
-
-    @GetMapping(value = "/v1/form-management", params = {"searchTerm"})
-    ResponseEntity<Page<? extends FormDefinition>> queryFormDefinitions(@RequestParam("searchTerm") String searchTerm, Pageable pageable);
-
-    @GetMapping(value = "/v1/form-management/{formDefinitionId}", consumes = MediaType.ALL_VALUE)
-    ResponseEntity<? extends FormDefinition> getFormDefinitionById(String formDefinitionId);
-
-    @GetMapping(value = "/v1/form-management/exists/{name}", consumes = MediaType.ALL_VALUE)
-    ResponseEntity<? extends Boolean> getExistsByName(String name);
-
-    @PostMapping(value = "/v1/form-management", consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<? extends FormDefinition> createFormDefinition(CreateFormDefinitionRequest request);
-
-    @PutMapping(value = "/v1/form-management", consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<? extends FormDefinition> modifyFormDefinition(ModifyFormDefinitionRequest request);
-
-    @DeleteMapping("/v1/form-management/{formDefinitionId}")
-    ResponseEntity<Void> deleteFormDefinition(String formDefinitionId);
-
+public interface FormDefinitionResource {
+    @GetMapping(value = "/v1/form-definition")
+    ResponseEntity<List<FormOption>> getAll();
 }
