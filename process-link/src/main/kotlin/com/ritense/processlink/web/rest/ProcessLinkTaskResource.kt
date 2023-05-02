@@ -46,6 +46,6 @@ class ProcessLinkTaskResource(
         @PathVariable processDefinitionId: String,
         @RequestParam(required = false) documentId: UUID?
     ): ResponseEntity<Any> {
-        return ResponseEntity.ok(processLinkActivityService.getStartEventObject(processDefinitionId,documentId))
+        return ResponseEntity.ok(processLinkActivityService.getStartEventObject(processDefinitionId, documentId))
     }
 }
