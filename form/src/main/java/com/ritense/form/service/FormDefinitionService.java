@@ -28,7 +28,7 @@ import java.util.UUID;
 
 public interface FormDefinitionService {
 
-    Page<? extends FormDefinition> getAllFormOptions(Pageable pageable);
+    Page<? extends FormDefinition> getAll(Pageable pageable);
 
     List<FormOption> getAllFormOptions();
 

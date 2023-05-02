@@ -49,8 +49,8 @@ class FormIoFormDefinitionResourceIntTest extends BaseIntegrationTest {
 
     @Test
     void shouldReturn200WithForm() throws Exception {
-        formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "form1"));
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "form2"));
+        formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "form1"));
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "form3"));
 
         mockMvc.perform(
@@ -60,6 +60,8 @@ class FormIoFormDefinitionResourceIntTest extends BaseIntegrationTest {
             .andDo(print())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$", hasSize(3)))
-            .andExpect(jsonPath("$[0].name", equalTo("form1")));
+            .andExpect(jsonPath("$[0].name", equalTo("form1")))
+            .andExpect(jsonPath("$[0].name", equalTo("form2")))
+            .andExpect(jsonPath("$[0].name", equalTo("form3")));
     }
 }

@@ -39,13 +39,13 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     }
 
     @Override
-    public Page<FormIoFormDefinition> getAllFormOptions(Pageable pageable) {
+    public Page<FormIoFormDefinition> getAll(Pageable pageable) {
         return formDefinitionRepository.findAll(pageable);
     }
 
     @Override
     public List<FormOption> getAllFormOptions() {
-        return formDefinitionRepository.findAll()
+        return formDefinitionRepository.findALlByOrderByNameAsc()
             .stream()
             .map(formIoFormDefinition -> new FormOption(formIoFormDefinition.getId(), formIoFormDefinition.getName()))
             .toList();
