@@ -52,7 +52,7 @@ open class ProcessLinkActivityService(
         var result: ProcessLinkActivityResult<*>? = null
         processLinkActivityHandlers.forEach {
             if(it.supports(processLink)){
-                result = it.getStartEventObject(processDefinitionId,documentId, processLink)
+                result = it.getStartEventObject(processDefinitionId, documentId, processLink)
             }
         }
         return result
