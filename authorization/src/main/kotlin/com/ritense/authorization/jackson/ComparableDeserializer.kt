@@ -21,8 +21,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 
 class ComparableDeserializer : StdDeserializer<Comparable<*>>(Comparable::class.java) {
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Comparable<*> {
-        val value = ctxt.readValue(p, Any::class.java)
-        value is Comparable<*>
-        return value as Comparable<*>
+        return ctxt.readValue(p, Any::class.java) as Comparable<*>
     }
 }
