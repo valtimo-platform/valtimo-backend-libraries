@@ -133,7 +133,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
             activityType = ActivityTypeWithEventName.START_EVENT_START,
             formFlowDefinitionId = formFlowDefinition?.id.toString())
 
-        val result = processLinkActivityHandler.getStartEventObject("",null,processLink)
+        val result = processLinkActivityHandler.getStartEventObject("", null, processLink)
         val dbFormFlowInstances = formFlowInstanceRepository.findAll().filter { it.formFlowDefinition.id.toString() == "inkomens_loket:1" }
         assertEquals(1, dbFormFlowInstances.size)
         assertEquals("form-flow",result.type)
