@@ -24,7 +24,7 @@ import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import org.camunda.bpm.engine.task.Task
-import java.util.*
+import java.util.UUID
 
 class FormProcessLinkActivityHandler(
     private val formDefinitionService: FormIoFormDefinitionService,

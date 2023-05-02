@@ -21,7 +21,6 @@ import com.ritense.formlink.service.result.FormSubmissionResult;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
 
 public interface FormAssociationResource {
 
