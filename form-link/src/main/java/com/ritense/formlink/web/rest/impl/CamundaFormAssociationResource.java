@@ -75,7 +75,7 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
         @RequestParam String processDefinitionKey,
         @RequestParam(required = false) Optional<UUID> documentId
     ) {
-        return formAssociationService.getStartEventFormDefinition(processDefinitionKey,documentId)
+        return formAssociationService.getStartEventFormDefinition(processDefinitionKey, documentId)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }

@@ -125,7 +125,7 @@ public class CamundaFormAssociationResourceTest extends BaseTest {
         final ObjectNode jsonNode = JsonNodeFactory.instance.objectNode();
         when(camundaFormAssociationService
             .getStartEventFormDefinition(
-                eq(camundaProcessFormAssociation.getProcessDefinitionKey()),eq(Optional.empty())
+                eq(camundaProcessFormAssociation.getProcessDefinitionKey()), eq(Optional.empty())
             )
         ).thenReturn(Optional.of(jsonNode));
 
