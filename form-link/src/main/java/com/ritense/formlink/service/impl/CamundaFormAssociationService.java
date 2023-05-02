@@ -135,7 +135,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
             processDefinitionKey,
             formLinkId
         ).flatMap(
-            camundaFormAssociation -> Optional.of(buildFormDefinition(camundaFormAssociation,Optional.empty()))
+            camundaFormAssociation -> Optional.of(buildFormDefinition(camundaFormAssociation, Optional.empty()))
         );
     }
 
