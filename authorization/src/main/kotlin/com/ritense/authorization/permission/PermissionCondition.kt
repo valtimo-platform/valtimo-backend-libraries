@@ -1,5 +1,6 @@
 package com.ritense.authorization.permission
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
@@ -14,6 +15,7 @@ import javax.persistence.criteria.Root
     property = "type",
     visible = true
 )
+@JsonPropertyOrder("type")
 abstract class PermissionCondition(
     val type: PermissionConditionType
 ) {

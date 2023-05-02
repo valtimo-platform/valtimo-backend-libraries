@@ -122,16 +122,16 @@ class AuthorizationServiceTest {
 
     @Test
     fun `should get correct AuthorizationEntityMapper`() {
-        whenever(mapper2.appliesTo(any(), any())).thenReturn(true)
-        whenever(mapper3.appliesTo(any(), any())).thenReturn(true)
+        whenever(mapper2.supports(any(), any())).thenReturn(true)
+        whenever(mapper3.supports(any(), any())).thenReturn(true)
 
 
         val mapper = authorizationService.getMapper(String::class.java, String::class.java)
         assertEquals(mapper2, mapper)
 
-        verify(mapper1).appliesTo(any(), any())
-        verify(mapper2).appliesTo(any(), any())
-        verify(mapper3, never()).appliesTo(any(), any())
+        verify(mapper1).supports(any(), any())
+        verify(mapper2).supports(any(), any())
+        verify(mapper3, never()).supports(any(), any())
     }
 
     @Test
@@ -140,8 +140,8 @@ class AuthorizationServiceTest {
             authorizationService.getMapper(String::class.java, String::class.java)
         }
 
-        verify(mapper1).appliesTo(any(), any())
-        verify(mapper2).appliesTo(any(), any())
-        verify(mapper3).appliesTo(any(), any())
+        verify(mapper1).supports(any(), any())
+        verify(mapper2).supports(any(), any())
+        verify(mapper3).supports(any(), any())
     }
 }

@@ -28,11 +28,11 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class NoteDocumentMapper(): AuthorizationEntityMapper<Note, JsonSchemaDocument> {
-    override fun mapTo(entity: Note): List<JsonSchemaDocument> {
+    override fun mapRelated(entity: Note): List<JsonSchemaDocument> {
         TODO("Not yet implemented")
     }
 
-    override fun mapQueryTo(root: Root<Note>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<JsonSchemaDocument> {
+    override fun mapQuery(root: Root<Note>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<JsonSchemaDocument> {
         val documentRoot: Root<JsonSchemaDocument> = query.from(JsonSchemaDocument::class.java)
         return AuthorizationEntityMapperResult(
             documentRoot,
@@ -41,7 +41,7 @@ class NoteDocumentMapper(): AuthorizationEntityMapper<Note, JsonSchemaDocument> 
         )
     }
 
-    override fun appliesTo(fromClass: Class<*>, toClass: Class<*>): Boolean {
+    override fun supports(fromClass: Class<*>, toClass: Class<*>): Boolean {
         return fromClass == Note::class.java && toClass == JsonSchemaDocument::class.java
     }
 }

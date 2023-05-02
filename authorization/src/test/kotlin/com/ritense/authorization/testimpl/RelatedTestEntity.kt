@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.authorization.testimpl
 
-class AuthorizationServiceHolder(authorizationService: AuthorizationService) {
-
-    init {
-        Companion.authorizationService = authorizationService
-    }
-
-    companion object {
-        private var authorizationService: AuthorizationService? = null
-
-        val currentInstance: AuthorizationService
-            get() = authorizationService!!
-    }
-}
+data class RelatedTestEntity(
+    val property: String
+)

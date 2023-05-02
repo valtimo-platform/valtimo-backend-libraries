@@ -1,8 +1,11 @@
 package com.ritense.authorization.permission
 
 import com.fasterxml.jackson.annotation.JsonTypeName
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.jayway.jsonpath.JsonPath
-import com.ritense.authorization.permission.ExpressionPermissionCondition.Companion.TYPE
+import com.jayway.jsonpath.PathNotFoundException
+import com.ritense.authorization.jackson.ComparableDeserializer
+import com.ritense.authorization.permission.ExpressionPermissionCondition.Companion.EXPRESSION
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
@@ -11,20 +14,26 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 
-@JsonTypeName(TYPE)
+@JsonTypeName(EXPRESSION)
 data class ExpressionPermissionCondition<T: Comparable<T>>(
     val field: String,
     val path: String,
     val operator: PermissionExpressionOperator,
+    @JsonDeserialize(using = ComparableDeserializer::class)
     val value: T,
     val clazz: Class<T>
 ): PermissionCondition(PermissionConditionType.EXPRESSION) {
     override fun <T: Any> isValid(entity: T): Boolean {
-        val fieldValue = reflectionFindFieldIfString(entity) ?: return false
+        val fieldValue = findEntityJsonField(entity) ?: return false
 
-        return evaluateExpression(
-            JsonPath.read(fieldValue, path)
-        )
+        return try {
+            evaluateExpression(
+                JsonPath.read(fieldValue, path)
+            )
+        } catch (e: PathNotFoundException) {
+            false
+        }
+
     }
 
     override fun <T: Any> toPredicate(
@@ -43,7 +52,7 @@ data class ExpressionPermissionCondition<T: Comparable<T>>(
         )
     }
 
-    private fun reflectionFindFieldIfString(entity: Any): String? {
+    private fun findEntityJsonField(entity: Any): String? {
         var currentEntity = entity
         field.split('.').forEach {
             val declaredField = currentEntity.javaClass.getDeclaredField(it)
@@ -62,6 +71,6 @@ data class ExpressionPermissionCondition<T: Comparable<T>>(
     }
 
     companion object {
-        const val TYPE = "EXPRESSION"
+        const val EXPRESSION = "expression"
     }
 }

@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ritense.authorization.jackson
 
-package com.ritense.authorization
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 
-class AuthorizationServiceHolder(authorizationService: AuthorizationService) {
-
-    init {
-        Companion.authorizationService = authorizationService
-    }
-
-    companion object {
-        private var authorizationService: AuthorizationService? = null
-
-        val currentInstance: AuthorizationService
-            get() = authorizationService!!
+class ComparableDeserializer : StdDeserializer<Comparable<*>>(Comparable::class.java) {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Comparable<*> {
+        val value = ctxt.readValue(p, Any::class.java)
+        value is Comparable<*>
+        return value as Comparable<*>
     }
 }

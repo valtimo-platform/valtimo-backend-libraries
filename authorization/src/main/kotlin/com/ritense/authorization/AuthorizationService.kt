@@ -24,7 +24,7 @@ class AuthorizationService(
 
     fun <FROM, TO> getMapper(from: Class<FROM>, to: Class<TO>): AuthorizationEntityMapper<FROM, TO> {
         return mappers.first {
-            it.appliesTo(from, to)
+            it.supports(from, to)
         } as AuthorizationEntityMapper<FROM, TO>
     }
 }

@@ -1,11 +1,12 @@
 package com.ritense.authorization.permission
 
+import com.fasterxml.jackson.annotation.JsonValue
 import org.springframework.expression.spel.standard.SpelExpressionParser
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.Expression
 import javax.persistence.criteria.Predicate
 
-enum class PermissionExpressionOperator(val asText: String) {
+enum class PermissionExpressionOperator(@JsonValue val asText: String) {
     EQUAL_TO("=="),
     GREATER_THAN(">"),
     GREATER_THAN_OR_EQUAL_TO(">="),
