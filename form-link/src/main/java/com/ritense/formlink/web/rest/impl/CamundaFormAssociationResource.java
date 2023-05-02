@@ -72,9 +72,10 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
     @Override
     @GetMapping(value = "/v1/form-association/form-definition", params = {"processDefinitionKey"})
     public ResponseEntity<JsonNode> getStartEventFormDefinitionByProcessDefinitionKey(
-        @RequestParam String processDefinitionKey
+        @RequestParam String processDefinitionKey,
+        @RequestParam(required = false) Optional<UUID> documentId
     ) {
-        return formAssociationService.getStartEventFormDefinition(processDefinitionKey)
+        return formAssociationService.getStartEventFormDefinition(processDefinitionKey,documentId)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }

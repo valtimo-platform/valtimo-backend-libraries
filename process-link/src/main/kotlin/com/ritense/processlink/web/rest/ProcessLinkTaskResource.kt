@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
@@ -41,7 +42,10 @@ class ProcessLinkTaskResource(
         }}
 
     @GetMapping(value = ["/v1/process-definition/{processDefinitionId}/start-form"])
-    fun getFormDefinition(@PathVariable processDefinitionId: String): ResponseEntity<Any> {
-        return ResponseEntity.ok(processLinkActivityService.getStartEventObject(processDefinitionId))
+    fun getFormDefinition(
+        @PathVariable processDefinitionId: String,
+        @RequestParam(required = false) documentId: UUID?
+    ): ResponseEntity<Any> {
+        return ResponseEntity.ok(processLinkActivityService.getStartEventObject(processDefinitionId,documentId))
     }
 }

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.FormIoFormDefinition;
@@ -90,6 +91,18 @@ public class CamundaFormAssociationService implements FormAssociationService {
         this.formFieldDataResolvers = formFieldDataResolvers;
     }
 
+    private static <T> Collector<T, ?, Optional<T>> singleElementCollector() {
+        return Collectors.collectingAndThen(
+            Collectors.toList(),
+            list -> {
+                if (list.size() == 1) {
+                    return Optional.of(list.get(0));
+                }
+                throw new IllegalStateException("Expected single result but found: " + list.size());
+            }
+        );
+    }
+
     @Override
     public Set<CamundaFormAssociation> getAllFormAssociations(String processDefinitionKey) {
         return processFormAssociationRepository.findAssociationsByProcessDefinitionKey(processDefinitionKey);
@@ -122,7 +135,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
             processDefinitionKey,
             formLinkId
         ).flatMap(
-            camundaFormAssociation -> Optional.of(buildFormDefinition(camundaFormAssociation))
+            camundaFormAssociation -> Optional.of(buildFormDefinition(camundaFormAssociation,Optional.empty()))
         );
     }
 
@@ -130,8 +143,9 @@ public class CamundaFormAssociationService implements FormAssociationService {
         return Optional.ofNullable(processFormAssociationRepository.findStartEventAssociation(processDefinitionKey));
     }
 
-    public Optional<JsonNode> getStartEventFormDefinition(String processDefinitionKey) {
-        return getStartEventFormDefinitionByProcessDefinitionKey(processDefinitionKey).map(this::buildFormDefinition);
+    public Optional<JsonNode> getStartEventFormDefinition(String processDefinitionKey,Optional<UUID> documentId) {
+        return getStartEventFormDefinitionByProcessDefinitionKey(processDefinitionKey)
+            .map( (camundaFormAssociation) -> this.buildFormDefinition(camundaFormAssociation,documentId));
     }
 
     @Override
@@ -418,8 +432,12 @@ public class CamundaFormAssociationService implements FormAssociationService {
         return Optional.of(formDefinitionJson);
     }
 
-    private ObjectNode buildFormDefinition(CamundaFormAssociation camundaFormAssociation) {
-        return (ObjectNode) getPrefilledFormDefinitionFromFormAssociation(Optional.empty(), Optional.empty())
+    private ObjectNode buildFormDefinition(CamundaFormAssociation camundaFormAssociation, Optional<UUID> documentId) {
+        Optional<Document.Id> jsonSchemaDocumentId = Optional.empty();
+        if(documentId.isPresent()){
+            jsonSchemaDocumentId = Optional.of(JsonSchemaDocumentId.existingId(documentId.get()));
+        }
+        return (ObjectNode) getPrefilledFormDefinitionFromFormAssociation(jsonSchemaDocumentId, Optional.empty())
             .apply(camundaFormAssociation).orElseThrow();
     }
 
@@ -439,18 +457,6 @@ public class CamundaFormAssociationService implements FormAssociationService {
         metaDataNode.put("modifiedOn", document.modifiedOn().toString());
         metaDataNode.put("sequence", document.sequence());
         return metaDataNode;
-    }
-
-    private static <T> Collector<T, ?, Optional<T>> singleElementCollector() {
-        return Collectors.collectingAndThen(
-            Collectors.toList(),
-            list -> {
-                if (list.size() == 1) {
-                    return Optional.of(list.get(0));
-                }
-                throw new IllegalStateException("Expected single result but found: " + list.size());
-            }
-        );
     }
 
 }

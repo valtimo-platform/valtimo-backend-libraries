@@ -43,13 +43,16 @@ open class ProcessLinkActivityService(
             } ?: throw ProcessLinkNotFoundException("For task with id '$taskId'.")
     }
 
-    fun getStartEventObject(processDefinitionId: String): ProcessLinkActivityResult<*>? {
+    fun getStartEventObject(
+        processDefinitionId: String,
+        documentId: UUID?
+        ): ProcessLinkActivityResult<*>? {
         val processLink = processLinkService.getProcessLinksByProcessDefinitionIdAndActivityType(processDefinitionId,
             ActivityTypeWithEventName.START_EVENT_START)
         var result: ProcessLinkActivityResult<*>? = null
         processLinkActivityHandlers.forEach {
             if(it.supports(processLink)){
-                result = it.getStartEventObject(processDefinitionId, processLink)
+                result = it.getStartEventObject(processDefinitionId,documentId, processLink)
             }
         }
         return result

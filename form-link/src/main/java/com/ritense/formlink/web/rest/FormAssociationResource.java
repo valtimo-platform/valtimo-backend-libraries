@@ -21,6 +21,7 @@ import com.ritense.formlink.service.result.FormSubmissionResult;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface FormAssociationResource {
 
@@ -31,7 +32,10 @@ public interface FormAssociationResource {
         Optional<String> taskInstanceId
     );
 
-    ResponseEntity<JsonNode> getStartEventFormDefinitionByProcessDefinitionKey(String processDefinitionKey);
+    ResponseEntity<JsonNode> getStartEventFormDefinitionByProcessDefinitionKey(
+        String processDefinitionKey,
+        Optional<UUID> documentId
+    );
 
     ResponseEntity<JsonNode> getFormDefinitionByFormKey(String formKey, Optional<UUID> documentId);
 
