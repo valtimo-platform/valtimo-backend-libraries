@@ -61,7 +61,7 @@ class FormIoFormDefinitionResourceIntTest extends BaseIntegrationTest {
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$", hasSize(3)))
             .andExpect(jsonPath("$[0].name", equalTo("form1")))
-            .andExpect(jsonPath("$[0].name", equalTo("form2")))
-            .andExpect(jsonPath("$[0].name", equalTo("form3")));
+            .andExpect(jsonPath("$[1].name", equalTo("form2")))
+            .andExpect(jsonPath("$[2].name", equalTo("form3")));
     }
 }
