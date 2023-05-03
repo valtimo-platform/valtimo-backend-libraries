@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.form.service;
+package com.ritense.form.web.rest;
 
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
@@ -23,32 +23,20 @@ import com.ritense.form.web.rest.dto.FormOption;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.Optional;
-import java.util.UUID;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
-public interface FormDefinitionService {
-
-    Page<? extends FormDefinition> getAll(Pageable pageable);
-
-    List<FormOption> getAllFormOptions();
-
-    Page<? extends FormDefinition> queryFormDefinitions(String searchTerm, Pageable pageable);
-
-    Optional<? extends FormDefinition> getFormDefinitionById(UUID id);
-
-    Optional<? extends FormDefinition> getFormDefinitionByName(String name);
-
-    Optional<? extends FormDefinition> getFormDefinitionByNameIgnoringCase(String name);
-
-    FormDefinition createFormDefinition(CreateFormDefinitionRequest request);
-
-    FormDefinition modifyFormDefinition(ModifyFormDefinitionRequest request);
-
-    FormDefinition modifyFormDefinition(UUID id, String name, String definition, Boolean readOnly);
-
-    void deleteFormDefinition(UUID id);
-
-    boolean formDefinitionExistsById(UUID id);
-
-    Long countAllForms();
+@RestController
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
+public interface FormDefinitionResource {
+    @GetMapping(value = "/v1/form-definition")
+    ResponseEntity<List<FormOption>> getAll();
 }

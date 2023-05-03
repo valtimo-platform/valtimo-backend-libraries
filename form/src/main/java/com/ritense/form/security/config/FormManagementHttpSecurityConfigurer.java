@@ -34,6 +34,7 @@ public class FormManagementHttpSecurityConfigurer implements HttpSecurityConfigu
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
+                .antMatchers(GET, "/api/v1/form-definition").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/form-management").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/form-management/{formDefinitionId}").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/form-management/exists/{name}").hasAuthority(ADMIN)
