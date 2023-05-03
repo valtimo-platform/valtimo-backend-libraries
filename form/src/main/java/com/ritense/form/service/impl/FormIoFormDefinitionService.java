@@ -45,7 +45,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
 
     @Override
     public List<FormOption> getAllFormOptions() {
-        return formDefinitionRepository.findALlByOrderByNameAsc()
+        return formDefinitionRepository.findAllByOrderByNameAsc()
             .stream()
             .map(formIoFormDefinition -> new FormOption(formIoFormDefinition.getId(), formIoFormDefinition.getName()))
             .toList();

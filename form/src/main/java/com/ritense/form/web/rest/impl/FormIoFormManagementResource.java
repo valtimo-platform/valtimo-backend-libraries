@@ -40,7 +40,7 @@ public class FormIoFormManagementResource implements FormManagementResource {
 
     @Override
     public ResponseEntity<Page<? extends FormDefinition>> getAll(Pageable pageable) {
-        return ResponseEntity.ok(formDefinitionService.getAllFormOptions(pageable));
+        return ResponseEntity.ok(formDefinitionService.getAll(pageable));
     }
 
     @Override

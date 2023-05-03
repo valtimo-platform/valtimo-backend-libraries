@@ -29,7 +29,7 @@ import java.util.UUID;
 @Repository
 public interface FormDefinitionRepository extends JpaRepository<FormIoFormDefinition, UUID> {
 
-    List<FormIoFormDefinition> findALlByOrderByNameAsc();
+    List<FormIoFormDefinition> findAllByOrderByNameAsc();
 
     Optional<FormIoFormDefinition> findByName(String name);
 
