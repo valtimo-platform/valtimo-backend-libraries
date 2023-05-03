@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.connector
+package com.ritense.form.web.rest.dto;
 
-import com.ritense.openzaak.domain.configuration.Rsin
+import java.util.UUID;
 
-@Deprecated("Deprecated since Valtimo v10.6.0", ReplaceWith("ZakenApiPlugin"))
-data class OpenZaakConfig(
-    var url: String = "",
-    var clientId: String = "",
-    var secret: String = "",
-    var rsin: Rsin = Rsin(""),
-    var catalogusUrl: String = "",
-)
+public class FormOption {
+    private UUID id;
+    private String name;
+
+    public FormOption(UUID id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+}

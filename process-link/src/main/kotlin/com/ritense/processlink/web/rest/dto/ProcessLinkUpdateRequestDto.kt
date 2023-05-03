@@ -20,8 +20,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.util.UUID
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "processLinkType")
-@JsonIgnoreProperties("processLinkType", allowSetters = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
+@JsonIgnoreProperties("processLinkType", allowGetters = true)
 interface ProcessLinkUpdateRequestDto {
     val id: UUID
     val processLinkType: String

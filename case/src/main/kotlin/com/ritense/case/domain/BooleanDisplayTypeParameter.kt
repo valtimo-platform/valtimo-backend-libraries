@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.connector
+package com.ritense.case.domain
 
-import com.ritense.openzaak.domain.configuration.Rsin
+import com.fasterxml.jackson.annotation.JsonProperty
 
-@Deprecated("Deprecated since Valtimo v10.6.0", ReplaceWith("ZakenApiPlugin"))
-data class OpenZaakConfig(
-    var url: String = "",
-    var clientId: String = "",
-    var secret: String = "",
-    var rsin: Rsin = Rsin(""),
-    var catalogusUrl: String = "",
-)
+data class BooleanDisplayTypeParameter(
+    @JsonProperty("enum")
+    val enum: Map<String, String>?
+) : DisplayTypeParameter {
+    override fun validate(): Boolean {
+        return enum?.size == 1
+    }
+}
