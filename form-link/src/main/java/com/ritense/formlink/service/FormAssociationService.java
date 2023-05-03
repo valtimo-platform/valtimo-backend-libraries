@@ -40,7 +40,7 @@ public interface FormAssociationService {
 
     Optional<CamundaFormAssociation> getStartEventFormDefinitionByProcessDefinitionKey(String processDefinitionKey);
 
-    Optional<JsonNode> getStartEventFormDefinition(String processDefinitionKey);
+    Optional<JsonNode> getStartEventFormDefinition(String processDefinitionKey, Optional<UUID> documentId);
 
     Optional<JsonNode> getPreFilledFormDefinitionByFormLinkId(
         Document.Id documentId, String processDefinitionKey, String formLinkId
