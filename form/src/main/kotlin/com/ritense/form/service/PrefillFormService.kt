@@ -277,8 +277,8 @@ class PrefillFormService(
     fun preSubmissionTransform(
         formDefinition: FormIoFormDefinition,
         submission: JsonNode,
-        placeholders: JsonNode,
-        source: JsonNode
+        placeholders: JsonNode?,
+        source: JsonNode?
     ): JsonPatch {
         val sourceJsonPatchBuilder = JsonPatchBuilder()
         val submissionJsonPatchBuilder = JsonPatchBuilder()
@@ -296,9 +296,9 @@ class PrefillFormService(
                     JsonPointer.valueOf("/$propertyName")
                 if (container.contains("/{indexOf")) {
                     val indexValueJsonPointer = getIndexValueJsonPointer(container)
-                    val id = placeholders.at(indexValueJsonPointer).textValue()
+                    val id = placeholders!!.at(indexValueJsonPointer).textValue()
                     val arrayPointer = JsonPointer.compile(container.substringBefore("/{"))
-                    val list = source.at(arrayPointer) as ArrayNode //get sources array
+                    val list = source!!.at(arrayPointer) as ArrayNode //get sources array
                     val calculatedArrayItemIndex = lookupIndexForIdValue(list, id)
                     val arrayItemForSourceJsonPointer =
                         JsonPointer.compile("$arrayPointer/$calculatedArrayItemIndex/$propertyName")
@@ -306,7 +306,7 @@ class PrefillFormService(
                     submissionJsonPatchBuilder.remove(submissionProperty)
                 } else if (container.contains("/-/")) {
                     val arrayPointer = JsonPointer.compile(container.substringBefore("/-"))
-                    val array = source.at(arrayPointer)
+                    val array = source!!.at(arrayPointer)
                     if (array.isMissingNode) {
                         sourceJsonPatchBuilder.add(arrayPointer, JsonNodeFactory.instance.arrayNode())
                     }

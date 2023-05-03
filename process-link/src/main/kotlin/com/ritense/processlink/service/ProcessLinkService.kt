@@ -20,15 +20,16 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.domain.ProcessLinkType
 import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
+import com.ritense.processlink.exception.ProcessLinkNotFoundException
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
-import java.util.UUID
-import javax.validation.ValidationException
-import kotlin.jvm.optionals.getOrElse
 import mu.KotlinLogging
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
+import kotlin.jvm.optionals.getOrElse
 
 @Transactional(readOnly = true)
 open class ProcessLinkService(
@@ -36,6 +37,17 @@ open class ProcessLinkService(
     private val processLinkMappers: List<ProcessLinkMapper>,
     private val processLinkTypes: List<SupportedProcessLinkTypeHandler>
 ) {
+
+    fun <T: ProcessLink> getProcessLink(processLinkId: UUID, clazz: Class<T> ): T {
+        val processLink = processLinkRepository.findByIdOrNull(processLinkId)
+            ?: throw ProcessLinkNotFoundException("For id $processLinkId")
+
+        return try {
+            clazz.cast(processLink)
+        } catch (e: ClassCastException) {
+            throw IllegalStateException("Failed to get process link by id '$processLinkId'", e)
+        }
+    }
 
     fun getProcessLinks(processDefinitionId: String, activityId: String): List<ProcessLink> {
         return processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinitionId, activityId)
