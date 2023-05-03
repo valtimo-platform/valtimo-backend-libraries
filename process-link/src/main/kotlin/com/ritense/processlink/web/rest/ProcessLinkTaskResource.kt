@@ -38,7 +38,8 @@ class ProcessLinkTaskResource(
             ResponseEntity.ok(processLinkActivityService.openTask(taskId))
         } catch (e: ProcessLinkNotFoundException) {
             ResponseEntity.noContent().build()
-        }}
+        }
+    }
 
     @GetMapping(value = ["/v1/process-definition/{processDefinitionId}/start-form"])
     fun getFormDefinition(@PathVariable processDefinitionId: String): ResponseEntity<Any> {
