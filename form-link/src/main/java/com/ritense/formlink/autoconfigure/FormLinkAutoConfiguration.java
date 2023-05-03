@@ -50,6 +50,7 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import java.util.List;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.TaskService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
@@ -191,6 +192,7 @@ public class FormLinkAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnBean(FormLinkNewProcessFormFlowProvider.class)
     @ConditionalOnMissingBean(FormLinkFormFlowResource.class)
     public FormLinkFormFlowResource processLinkFormFlowResource(
         FormLinkNewProcessFormFlowProvider formLinkNewProcessFormFlowProvider
