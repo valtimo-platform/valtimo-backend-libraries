@@ -53,7 +53,7 @@ open class ProcessLinkService(
         )
     }
 
-    fun getProcessLinksByProcessDefinitionIdAndActivityType(processDefinitionId: String, activityType: ActivityTypeWithEventName): ProcessLink {
+    fun getProcessLinksByProcessDefinitionIdAndActivityType(processDefinitionId: String, activityType: ActivityTypeWithEventName): ProcessLink? {
         return processLinkRepository.findByProcessDefinitionIdAndActivityType(processDefinitionId, activityType)
     }
 
