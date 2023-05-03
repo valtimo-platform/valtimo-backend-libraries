@@ -1,0 +1,35 @@
+{
+    "startStep": "step1",
+    "steps": [
+        {
+            "key": "step1",
+            "onBack": [],
+            "onOpen": [],
+            "onComplete": [],
+            "nextSteps": [
+                {
+                    "condition": null,
+                    "step": "step2"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "start-form-form-flow-part1"
+                }
+            }
+        },
+        {
+            "key": "step2",
+            "onBack": [],
+            "onOpen": [],
+            "onComplete": [],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "start-form-form-flow-part2"
+                }
+            }
+        }
+    ]
+}

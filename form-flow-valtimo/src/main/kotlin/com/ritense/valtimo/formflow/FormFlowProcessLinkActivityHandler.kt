@@ -25,6 +25,7 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.task.Task
+import java.util.UUID
 
 class FormFlowProcessLinkActivityHandler(
     private val formFlowService: FormFlowService,
@@ -49,8 +50,10 @@ class FormFlowProcessLinkActivityHandler(
         }
         return ProcessLinkActivityResult(FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(instance.id.id))
     }
-
-    override fun getStartEventObject(processDefinitionId: String, processLink: ProcessLink): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
+    override fun getStartEventObject(
+        processDefinitionId: String,
+        documentId: UUID?,
+        processLink: ProcessLink): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
         processLink as FormFlowProcessLink
         val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId)!!
         val additionalProperties = mapOf<String,Any>("processDefinitionId" to processDefinitionId)
