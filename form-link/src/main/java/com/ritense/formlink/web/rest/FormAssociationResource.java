@@ -31,7 +31,10 @@ public interface FormAssociationResource {
         Optional<String> taskInstanceId
     );
 
-    ResponseEntity<JsonNode> getStartEventFormDefinitionByProcessDefinitionKey(String processDefinitionKey);
+    ResponseEntity<JsonNode> getStartEventFormDefinitionByProcessDefinitionKey(
+        String processDefinitionKey,
+        Optional<UUID> documentId
+    );
 
     ResponseEntity<JsonNode> getFormDefinitionByFormKey(String formKey, Optional<UUID> documentId);
 

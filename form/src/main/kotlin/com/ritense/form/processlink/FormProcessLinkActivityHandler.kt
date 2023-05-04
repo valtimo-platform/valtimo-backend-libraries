@@ -24,6 +24,7 @@ import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import org.camunda.bpm.engine.task.Task
+import java.util.UUID
 
 class FormProcessLinkActivityHandler(
     private val formDefinitionService: FormIoFormDefinitionService,
@@ -49,10 +50,11 @@ class FormProcessLinkActivityHandler(
 
     override fun getStartEventObject(
         processDefinitionId: String,
+        documentId: UUID?,
         processLink: ProcessLink
     ): ProcessLinkActivityResult<FormTaskOpenResultProperties> {
         processLink as FormProcessLink
-        val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
+        val formDefinition = prefillFormService.getPrefilledFormDefinition(processLink.formDefinitionId, documentId)
         return ProcessLinkActivityResult(
             FORM_TASK_TYPE_KEY,
             FormTaskOpenResultProperties(processLink.formDefinitionId, formDefinition.asJson())
