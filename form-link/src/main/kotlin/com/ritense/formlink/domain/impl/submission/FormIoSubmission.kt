@@ -43,11 +43,12 @@ import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromString
 import com.ritense.valtimo.service.CamundaTaskService
+import java.util.*
+import java.util.function.Consumer
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
-import java.util.UUID
-import java.util.function.Consumer
 
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.form.service.FormSubmissionService"))
 data class FormIoSubmission(
     val formAssociation: FormAssociation,
     val formDefinition: FormIoFormDefinition,

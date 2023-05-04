@@ -27,11 +27,7 @@ import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.formlink.domain.FormAssociation;
-import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation;
-import com.ritense.formlink.domain.impl.formassociation.FormAssociationFactory;
-import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
-import com.ritense.formlink.domain.impl.formassociation.Mapper;
-import com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation;
+import com.ritense.formlink.domain.impl.formassociation.*;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import com.ritense.formlink.domain.request.CreateFormAssociationRequest;
 import com.ritense.formlink.domain.request.FormLinkRequest;
@@ -47,12 +43,7 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -61,6 +52,7 @@ import static com.ritense.form.domain.FormIoFormDefinition.EXTERNAL_FORM_FIELD_T
 import static com.ritense.form.domain.FormIoFormDefinition.PROCESS_VAR_PREFIX;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class CamundaFormAssociationService implements FormAssociationService {
     private final FormDefinitionService formDefinitionService;
     private final ProcessFormAssociationRepository processFormAssociationRepository;

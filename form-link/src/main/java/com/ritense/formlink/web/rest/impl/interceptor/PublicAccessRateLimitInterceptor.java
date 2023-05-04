@@ -17,18 +17,16 @@
 package com.ritense.formlink.web.rest.impl.interceptor;
 
 import com.ritense.valtimo.contract.utils.RequestHelper;
-import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Bucket4j;
-import io.github.bucket4j.ConsumptionProbe;
-import io.github.bucket4j.Refill;
+import io.github.bucket4j.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class PublicAccessRateLimitInterceptor implements HandlerInterceptor {
 
     private static final ConcurrentHashMap<String, Bucket> ipMap = new ConcurrentHashMap<>();

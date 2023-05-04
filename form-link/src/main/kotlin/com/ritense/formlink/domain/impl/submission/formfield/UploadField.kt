@@ -18,12 +18,11 @@ package com.ritense.formlink.domain.impl.submission.formfield
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.resource.domain.TemporaryResourceSubmittedEvent
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent
+import java.util.*
 import org.springframework.context.ApplicationEventPublisher
-import java.util.UUID
 
 /**
  * Upload field class to perform additional processing when submission has files.
@@ -49,6 +48,7 @@ import java.util.UUID
  * @version 1.0
  * @since   2020-08-04
  */
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.form.domain.submission.formfield.UploadField"))
 data class UploadField(
     override val value: JsonNode,
     override val pointer: JsonPointer,

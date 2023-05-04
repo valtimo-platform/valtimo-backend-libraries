@@ -19,6 +19,7 @@ package com.ritense.formlink.domain;
 
 import org.camunda.bpm.engine.task.Task;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public interface FormLinkTaskProvider<T> {
     boolean supports(FormLink formLink);
     TaskOpenResult<T> getTaskResult(Task task, FormLink formLink);

@@ -26,6 +26,9 @@ import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementForm
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink
 import com.ritense.formlink.repository.ProcessFormAssociationRepository
+import java.sql.ResultSet
+import java.sql.Types
+import java.util.*
 import mu.KotlinLogging
 import org.hibernate.type.descriptor.java.UUIDTypeDescriptor
 import org.springframework.dao.DuplicateKeyException
@@ -33,10 +36,8 @@ import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.SqlParameterValue
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.transaction.annotation.Transactional
-import java.sql.ResultSet
-import java.sql.Types
-import java.util.UUID
 
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.processlink.repository.ProcessLinkRepository"))
 @Transactional
 class JdbcProcessFormAssociationRepository(
     private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate

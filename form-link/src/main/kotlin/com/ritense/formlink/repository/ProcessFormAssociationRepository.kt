@@ -17,8 +17,9 @@
 package com.ritense.formlink.repository
 
 import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation
-import java.util.UUID
+import java.util.*
 
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.processlink.repository.ProcessLinkRepository"))
 interface ProcessFormAssociationRepository {
 
     fun findByCamundaFormAssociationId(camundaFormAssociationId: UUID): CamundaFormAssociation?

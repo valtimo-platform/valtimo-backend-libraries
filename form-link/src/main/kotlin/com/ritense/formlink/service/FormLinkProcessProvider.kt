@@ -16,6 +16,7 @@
 
 package com.ritense.formlink.service
 
+@Deprecated("Since 10.6.0")
 interface FormLinkNewProcessFormFlowProvider {
     fun createFormFlow(processDefinitionKey: String, request: CreateFormFlowRequest): CreateFormFlowResponse
 }
