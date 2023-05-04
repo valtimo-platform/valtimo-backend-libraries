@@ -16,7 +16,7 @@
 
 package com.ritense.formlink.service
 
-import java.util.*
+import java.util.UUID
 
 @Deprecated("Since 10.6.0", ReplaceWith("com.ritense.form.web.rest.dto.FormProcessLinkResponseDto"))
 class CreateFormFlowResponse(

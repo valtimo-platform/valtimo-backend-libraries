@@ -17,7 +17,11 @@
 package com.ritense.formlink.web.rest.impl.interceptor;
 
 import com.ritense.valtimo.contract.utils.RequestHelper;
-import io.github.bucket4j.*;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Bucket4j;
+import io.github.bucket4j.ConsumptionProbe;
+import io.github.bucket4j.Refill;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 

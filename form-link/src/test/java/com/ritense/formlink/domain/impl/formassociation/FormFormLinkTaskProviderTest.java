@@ -20,9 +20,10 @@ import com.ritense.formlink.domain.FormLink;
 import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
-import java.util.UUID;
 import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

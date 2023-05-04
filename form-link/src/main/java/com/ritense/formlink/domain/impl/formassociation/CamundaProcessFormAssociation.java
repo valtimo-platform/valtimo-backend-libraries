@@ -20,7 +20,9 @@ import com.ritense.formlink.domain.ProcessFormAssociation;
 
 import java.util.UUID;
 
-import static com.ritense.valtimo.contract.utils.AssertionConcern.*;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Deprecated(since = "10.6.0", forRemoval = true)
 public class CamundaProcessFormAssociation implements ProcessFormAssociation {
