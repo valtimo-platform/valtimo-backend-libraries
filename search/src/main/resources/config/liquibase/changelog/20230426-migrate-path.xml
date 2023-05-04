@@ -89,7 +89,7 @@
 
     <changeSet id="12" author="Ritense">
         <update tableName="search_field_v2">
-            <column name="path" type="varchar(256)" valueComputed="CONCAT('obj:/', REPLACE(path, '__', '/'))"/>
+            <column name="path" type="varchar(256)" valueComputed="CONCAT('object:/', REPLACE(path, '__', '/'))"/>
             <where>path NOT LIKE '%/%'</where>
         </update>
     </changeSet>

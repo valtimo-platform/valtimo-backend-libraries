@@ -165,7 +165,7 @@ class ObjectManagementService(
         val listColumns = searchListColumnService.findByOwnerId(objectManagementId.toString())
         return objectsList.results.map { objectApiObject ->
             val listRowDto = listColumns?.map { listColumn ->
-                if (!listColumn.path.startsWith("obj:/") && !listColumn.path.startsWith("/")) {
+                if (!listColumn.path.startsWith("object:/") && !listColumn.path.startsWith("/")) {
                     throw IllegalArgumentException("Unknown list column path prefix in: '${listColumn.path}'")
                 }
 
@@ -247,11 +247,11 @@ class ObjectManagementService(
     }
 
     private fun mapToObjectApiPath(jsonPointerPath: String): String {
-        if (!jsonPointerPath.startsWith("obj:/") && !jsonPointerPath.startsWith("/")) {
+        if (!jsonPointerPath.startsWith("object:/") && !jsonPointerPath.startsWith("/")) {
             throw IllegalArgumentException("Unknown search path prefix in: '${jsonPointerPath}'")
         }
         return jsonPointerPath
-            .substringAfter("obj:")
+            .substringAfter("object:")
             .substringAfter("/")
             .replace("/", "__")
     }
