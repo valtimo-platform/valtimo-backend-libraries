@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.service.DocumentService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.formlink.autoconfigure.FormLinkAutoConfiguration
 import com.ritense.formlink.domain.FormLinkTaskProvider
 import com.ritense.formlink.repository.ProcessFormAssociationRepository
 import com.ritense.formlink.service.FormAssociationService
@@ -42,6 +43,7 @@ import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
+import org.springframework.boot.autoconfigure.AutoConfigureBefore
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
@@ -50,6 +52,7 @@ import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
+@AutoConfigureBefore(FormLinkAutoConfiguration::class)
 @EnableJpaRepositories(
     basePackageClasses = [FormFlowProcessLinkRepository::class]
 )
