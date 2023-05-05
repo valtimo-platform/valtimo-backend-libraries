@@ -19,6 +19,7 @@ package com.ritense.processlink.web.rest
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.processlink.domain.CustomProcessLinkMapper
+import com.ritense.processlink.exception.ProcessLinkNotFoundException
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
@@ -67,7 +68,6 @@ internal class ProcessLinkTaskResourceTest {
     fun `should list process links`() {
         val taskId = UUID.randomUUID()
 
-
         val processLinkActivityResult = ProcessLinkActivityResult("test", mapOf("x" to "y"))
         whenever(processLinkActivityService.openTask(taskId)).thenReturn(processLinkActivityResult)
 
@@ -80,6 +80,23 @@ internal class ProcessLinkTaskResourceTest {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.type").value("test"))
             .andExpect(jsonPath("$.properties.x").value("y"))
+
+        verify(processLinkActivityService).openTask(taskId)
+    }
+
+    @Test
+    fun `should return 404 when process link is not found`() {
+        val taskId = UUID.randomUUID()
+
+        whenever(processLinkActivityService.openTask(taskId)).thenThrow(ProcessLinkNotFoundException("No process link found."))
+
+        mockMvc.perform(
+            get("/api/v2/process-link/task/$taskId")
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isNotFound)
 
         verify(processLinkActivityService).openTask(taskId)
     }

@@ -53,7 +53,8 @@
     </changeSet>
 
     <changeSet id="6" author="Ritense">
-        <validCheckSum>8:f34aa99715f0d28665247e7d7e103be4</validCheckSum>
+        <validCheckSum>8:f34aa99715f0d28665247e7d7e103be4</validCheckSum><!-- Postgres check sum -->
+        <validCheckSum>8:ad48c1a6453fe5ff9951a64a62095005</validCheckSum><!-- MySQL check sum -->
         <addColumn tableName="plugin_configuration">
             <column name="plugin_configuration_id" type="${uuidType}">
                 <constraints primaryKey="true" nullable="false"/>

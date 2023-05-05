@@ -38,6 +38,7 @@ import java.util.UUID;
 
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 @RestController
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class CamundaFormAssociationResource implements FormAssociationResource {
@@ -72,9 +73,10 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
     @Override
     @GetMapping(value = "/v1/form-association/form-definition", params = {"processDefinitionKey"})
     public ResponseEntity<JsonNode> getStartEventFormDefinitionByProcessDefinitionKey(
-        @RequestParam String processDefinitionKey
+        @RequestParam String processDefinitionKey,
+        @RequestParam(required = false) Optional<UUID> documentId
     ) {
-        return formAssociationService.getStartEventFormDefinition(processDefinitionKey)
+        return formAssociationService.getStartEventFormDefinition(processDefinitionKey, documentId)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }

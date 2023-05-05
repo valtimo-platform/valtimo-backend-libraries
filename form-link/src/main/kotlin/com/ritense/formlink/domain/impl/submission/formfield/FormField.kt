@@ -24,6 +24,7 @@ import com.ritense.valtimo.contract.json.JsonPointerHelper
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.form.domain.submission.formfield.FormField"))
 abstract class FormField(
     open val value: JsonNode,
     open val pointer: JsonPointer,

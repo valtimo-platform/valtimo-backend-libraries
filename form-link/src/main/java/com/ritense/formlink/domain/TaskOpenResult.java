@@ -16,6 +16,7 @@
 
 package com.ritense.formlink.domain;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class TaskOpenResult<T> {
     private final String type;
     private final T properties;

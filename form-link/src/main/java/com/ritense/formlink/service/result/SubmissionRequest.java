@@ -18,6 +18,7 @@ package com.ritense.formlink.service.result;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public interface SubmissionRequest {
 
     String getProcessDefinitionKey();

@@ -22,6 +22,7 @@ import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
 
 import java.util.UUID;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormLinkRequest {
 
     @JsonProperty

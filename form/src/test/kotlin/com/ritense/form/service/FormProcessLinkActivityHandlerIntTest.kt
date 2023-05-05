@@ -18,6 +18,8 @@
 package com.ritense.form.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.document.service.DocumentService
 import com.ritense.form.BaseIntegrationTest
 import com.ritense.form.domain.FormProcessLink
 import com.ritense.form.domain.request.CreateFormDefinitionRequest
@@ -45,6 +47,9 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
+    @Autowired
+    lateinit var documentService: DocumentService
+
     @Test
     fun `should retrieve form definition`() {
         val formDefinition = formDefinitionService.createFormDefinition(
@@ -54,6 +59,12 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
                 false
             )
         )
+        val documentId = documentService.createDocument(
+            NewDocumentRequest(
+                "person",
+                objectMapper.readTree(getDocument())
+            )
+        ).resultingDocument().get().id()
         val processDefinitionId: String = UUID.randomUUID().toString()
         val processLinkId = UUID.randomUUID()
         val processLink: ProcessLink = FormProcessLink(
@@ -65,12 +76,22 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
         )
         val result = formProcessLinkActivityHandler.getStartEventObject(
             "",
-            processLink
+            documentId.id,
+            processLink,
         )
         assertEquals("form",result.type)
         assertEquals(formDefinition.id?.toString(),result.properties.formDefinitionId.toString())
         assertEquals(getForm(),objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.properties.prefilledForm))
         val x = true
+    }
+
+    private fun getDocument(): String {
+        return """
+            {
+                "firstName": "John"
+            }
+        """.trimIndent()
+
     }
 
     private fun getForm(): String{

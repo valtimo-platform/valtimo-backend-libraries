@@ -49,6 +49,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import javax.transaction.Transactional;
 import java.util.UUID;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class CamundaFormAssociationSubmissionService implements FormAssociationSubmissionService {
 
     private static final Logger logger = LoggerFactory.getLogger(CamundaFormAssociationSubmissionService.class);

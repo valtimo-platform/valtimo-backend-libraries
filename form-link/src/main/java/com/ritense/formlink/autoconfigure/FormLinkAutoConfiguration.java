@@ -28,6 +28,7 @@ import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.formlink.repository.impl.JdbcProcessFormAssociationRepository;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.FormAssociationSubmissionService;
+import com.ritense.formlink.service.FormLinkNewProcessFormFlowProvider;
 import com.ritense.formlink.service.ProcessLinkService;
 import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.formlink.service.impl.CamundaFormAssociationService;
@@ -36,6 +37,7 @@ import com.ritense.formlink.service.impl.DefaultProcessLinkService;
 import com.ritense.formlink.service.impl.FormIoJsonPatchSubmissionTransformerService;
 import com.ritense.formlink.web.rest.FormAssociationManagementResource;
 import com.ritense.formlink.web.rest.FormAssociationResource;
+import com.ritense.formlink.web.rest.FormLinkFormFlowResource;
 import com.ritense.formlink.web.rest.ProcessLinkResource;
 import com.ritense.formlink.web.rest.impl.CamundaFormAssociationManagementResource;
 import com.ritense.formlink.web.rest.impl.CamundaFormAssociationResource;
@@ -48,6 +50,7 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.TaskService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
@@ -59,6 +62,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.List;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.formlink.repository")
 @EntityScan("com.ritense.formlink.domain")
@@ -189,6 +193,15 @@ public class FormLinkAutoConfiguration {
         final NamedParameterJdbcTemplate namedParameterJdbcTemplate
     ) {
         return new JdbcProcessFormAssociationRepository(namedParameterJdbcTemplate);
+    }
+
+    @Bean
+    @ConditionalOnBean(FormLinkNewProcessFormFlowProvider.class)
+    @ConditionalOnMissingBean(FormLinkFormFlowResource.class)
+    public FormLinkFormFlowResource processLinkFormFlowResource(
+        FormLinkNewProcessFormFlowProvider formLinkNewProcessFormFlowProvider
+    ) {
+        return new FormLinkFormFlowResource(formLinkNewProcessFormFlowProvider);
     }
 
 }

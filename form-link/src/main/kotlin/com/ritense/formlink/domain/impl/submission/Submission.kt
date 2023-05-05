@@ -18,6 +18,7 @@ package com.ritense.formlink.domain.impl.submission
 
 import com.ritense.formlink.service.result.FormSubmissionResult
 
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.form.service.FormSubmissionService"))
 interface Submission {
     fun apply(): FormSubmissionResult
 }

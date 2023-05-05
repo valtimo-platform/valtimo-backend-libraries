@@ -21,8 +21,10 @@ import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementAngu
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink;
+
 import java.util.UUID;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormAssociationFactory {
 
     public static CamundaFormAssociation getFormAssociation(
