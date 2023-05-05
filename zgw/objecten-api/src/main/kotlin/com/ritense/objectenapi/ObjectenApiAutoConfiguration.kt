@@ -25,9 +25,11 @@ import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
 import com.ritense.objectenapi.service.ZaakObjectDataResolver
 import com.ritense.objectenapi.service.ZaakObjectService
+import com.ritense.objectenapi.service.ZaakObjectValueResolverFactory
 import com.ritense.objectenapi.web.rest.ObjectResource
 import com.ritense.objectenapi.web.rest.ZaakObjectResource
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -68,9 +70,9 @@ class ObjectenApiAutoConfiguration {
     @Bean
     fun zaakObjectService(
         zaakUrlProvider: ZaakUrlProvider,
-        pluginService : PluginService,
-        formDefinitionService : FormDefinitionService,
-        objectManagementInfoProvider : ObjectManagementInfoProvider
+        pluginService: PluginService,
+        formDefinitionService: FormDefinitionService,
+        objectManagementInfoProvider: ObjectManagementInfoProvider
     ): ZaakObjectService {
         return ZaakObjectService(zaakUrlProvider,
             pluginService,
@@ -86,11 +88,22 @@ class ObjectenApiAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ZaakObjectDataResolver::class)
     fun zaakObjectDataResolver(
         zaakObjectService: ZaakObjectService,
         objectMapper: ObjectMapper
     ): ZaakObjectDataResolver {
         return ZaakObjectDataResolver(zaakObjectService, objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakObjectValueResolverFactory::class)
+    fun zaakObjectValueResolverFactory(
+        zaakObjectService: ZaakObjectService,
+        objectMapper: ObjectMapper,
+        processDocumentService: ProcessDocumentService,
+    ): ZaakObjectValueResolverFactory {
+        return ZaakObjectValueResolverFactory(zaakObjectService, objectMapper, processDocumentService)
     }
 
     @Bean

@@ -61,6 +61,7 @@ import static com.ritense.form.domain.FormIoFormDefinition.EXTERNAL_FORM_FIELD_T
 import static com.ritense.form.domain.FormIoFormDefinition.PROCESS_VAR_PREFIX;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class CamundaFormAssociationService implements FormAssociationService {
     private final FormDefinitionService formDefinitionService;
     private final ProcessFormAssociationRepository processFormAssociationRepository;

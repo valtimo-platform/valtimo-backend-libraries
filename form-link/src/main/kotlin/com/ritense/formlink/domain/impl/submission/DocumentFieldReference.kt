@@ -18,6 +18,7 @@ package com.ritense.formlink.domain.impl.submission
 
 import com.ritense.formlink.domain.impl.submission.formfield.FormField
 
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.form.domain.submission.formfield.FormField"))
 data class DocumentFieldReference(
     val formfield: FormField
 )

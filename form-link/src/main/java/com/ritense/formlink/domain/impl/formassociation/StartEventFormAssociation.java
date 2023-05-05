@@ -18,8 +18,10 @@ package com.ritense.formlink.domain.impl.formassociation;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.formlink.domain.FormLink;
+
 import java.util.UUID;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class StartEventFormAssociation extends CamundaFormAssociation {
 
     @JsonCreator

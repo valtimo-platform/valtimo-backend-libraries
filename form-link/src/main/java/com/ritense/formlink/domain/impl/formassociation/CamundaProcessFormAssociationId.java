@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class CamundaProcessFormAssociationId extends AbstractId<CamundaProcessFormAssociationId>
     implements ProcessFormAssociation.Id {
 
