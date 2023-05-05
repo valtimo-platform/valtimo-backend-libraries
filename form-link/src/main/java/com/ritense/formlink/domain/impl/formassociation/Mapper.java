@@ -19,6 +19,7 @@ package com.ritense.formlink.domain.impl.formassociation;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public enum Mapper {
     INSTANCE;
     private final ObjectMapper mapper = new ObjectMapper();

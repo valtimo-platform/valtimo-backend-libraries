@@ -19,6 +19,7 @@ package com.ritense.formlink.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.formlink.service.result.FormSubmissionResult;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public interface FormAssociationSubmissionService {
 
     FormSubmissionResult handleSubmission(

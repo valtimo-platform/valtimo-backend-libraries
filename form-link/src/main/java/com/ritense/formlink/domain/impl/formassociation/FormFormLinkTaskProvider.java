@@ -22,6 +22,7 @@ import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import org.camunda.bpm.engine.task.Task;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormFormLinkTaskProvider implements FormLinkTaskProvider<FormTaskOpenResultProperties> {
 
     private static final String FORM_TASK_TYPE_KEY = "form";
