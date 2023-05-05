@@ -19,6 +19,7 @@ package com.ritense.form.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -162,8 +163,8 @@ open class FormSubmissionService(
         val preJsonPatch = prefillFormService.preSubmissionTransform(
             formDefinition,
             submittedDocumentContent,
-            processVariables,
-            document?.content()?.asJson()
+            processVariables ?: jacksonObjectMapper().createObjectNode(),
+            document?.content()?.asJson() ?: jacksonObjectMapper().createObjectNode()
         )
         logger.debug { "getContent:$submittedDocumentContent" }
         return preJsonPatch

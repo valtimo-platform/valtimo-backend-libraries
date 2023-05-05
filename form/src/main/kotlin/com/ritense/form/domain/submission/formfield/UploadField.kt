@@ -56,24 +56,24 @@ data class UploadField(
     private var processed = false
 
     override fun preProcess(document: Document?) {
-        logger.debug { "pre-processing $this" }
+        logger.debug { "pre-processing UploadField[$pointer:${value.asText()}]" }
         if (processed) {
             logger.debug { "skipping pre-processing already processed" }
             return
         }
-        processResource(document)
+        processResources(document)
     }
 
     override fun postProcess(document: Document?) {
-        logger.debug { "postProcessing $this" }
+        logger.debug { "postProcessing UploadField[$pointer:${value.asText()}]" }
         if (processed) {
             logger.debug { "skipping post-processing already processed" }
             return
         }
-        processResource(document)
+        processResources(document)
     }
 
-    private fun processResource(document: Document?) {
+    private fun processResources(document: Document?) {
         if (document != null) {
             value.forEach { resourceNode ->
                 val resourceId = getResourceId(resourceNode)

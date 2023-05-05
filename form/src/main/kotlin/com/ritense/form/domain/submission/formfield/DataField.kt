@@ -30,11 +30,11 @@ data class DataField(
 ) : FormField(value, pointer, applicationEventPublisher) {
 
     override fun preProcess(document: Document?) {
-        logger.debug { "processing $this" }
+        logger.debug { "processing DataField[$pointer:${value.asText()}]" }
     }
 
     override fun postProcess(document: Document?) {
-        logger.debug { "postProcess $this" }
+        logger.debug { "postProcess DataField[$pointer:${value.asText()}]" }
     }
 
     companion object {
