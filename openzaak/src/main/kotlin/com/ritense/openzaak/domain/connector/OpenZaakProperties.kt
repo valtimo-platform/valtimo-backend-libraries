@@ -18,8 +18,6 @@ package com.ritense.openzaak.domain.connector
 
 import com.ritense.connector.domain.ConnectorProperties
 
-@Deprecated("Deprecated since Valtimo v10.6.0", ReplaceWith("ZakenApiPlugin"))
 data class OpenZaakProperties(
     var openZaakConfig: OpenZaakConfig = OpenZaakConfig()
-) : ConnectorProperties {
-}
+) : ConnectorProperties

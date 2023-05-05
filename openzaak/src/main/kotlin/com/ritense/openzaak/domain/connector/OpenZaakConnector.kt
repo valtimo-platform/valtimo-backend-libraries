@@ -20,23 +20,19 @@ import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
 
-@Deprecated("Deprecated since Valtimo v10.6.0", ReplaceWith("ZakenApiPlugin"))
 @ConnectorType(name = "OpenZaak", allowMultipleConnectors = false)
 class OpenZaakConnector(
     private var openZaakProperties: OpenZaakProperties
 ): Connector {
 
-    @Deprecated("Deprecated since Valtimo v10.6.0")
     override fun getProperties(): OpenZaakProperties {
         return openZaakProperties
     }
 
-    @Deprecated("Deprecated since Valtimo v10.6.0")
     override fun setProperties(connectorProperties: ConnectorProperties) {
         openZaakProperties = connectorProperties as OpenZaakProperties
     }
 
-    @Deprecated("Deprecated since Valtimo v10.6.0")
     fun getName(): String {
         return "OpenZaak"
     }
