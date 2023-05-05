@@ -38,7 +38,7 @@ class ProcessLinkTaskResource(
         return try {
             ResponseEntity.ok(processLinkActivityService.openTask(taskId))
         } catch (e: ProcessLinkNotFoundException) {
-            ResponseEntity.noContent().build()
+            ResponseEntity.notFound().build()
         }
     }
 
