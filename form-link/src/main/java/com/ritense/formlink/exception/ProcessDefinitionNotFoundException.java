@@ -16,6 +16,7 @@
 
 package com.ritense.formlink.exception;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class ProcessDefinitionNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1881136036445485465L;

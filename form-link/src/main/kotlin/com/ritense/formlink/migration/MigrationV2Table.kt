@@ -52,7 +52,7 @@ internal class MigrationV2Table : CustomTaskChange {
     ): Boolean {
         val statement = connection.prepareStatement(
             """
-            SELECT COUNT(1) 
+            SELECT COUNT(1)
             FROM process_form_association_v2
             WHERE process_definition_key = ? AND form_association_form_link_element_id = ?
          """

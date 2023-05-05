@@ -19,6 +19,7 @@ package com.ritense.formlink.autodeployment;
 import com.ritense.form.domain.event.FormsAutoDeploymentFinishedEvent;
 import org.springframework.context.event.EventListener;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormsAutoDeploymentFinishedEventListener {
 
     private final FormLinkDeploymentService formLinkDeploymentService;

@@ -16,6 +16,7 @@
 
 package com.ritense.formlink.domain.impl.formassociation;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormTaskOpenResultProperties {
    private final String formLinkId;
 

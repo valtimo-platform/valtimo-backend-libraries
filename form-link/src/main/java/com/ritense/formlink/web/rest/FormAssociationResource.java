@@ -18,10 +18,12 @@ package com.ritense.formlink.web.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.formlink.service.result.FormSubmissionResult;
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Optional;
+import java.util.UUID;
+
+@Deprecated(since = "10.6.0", forRemoval = true)
 public interface FormAssociationResource {
 
     ResponseEntity<JsonNode> getPreFilledFormDefinition(
