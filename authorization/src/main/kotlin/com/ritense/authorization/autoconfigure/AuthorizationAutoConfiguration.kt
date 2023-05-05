@@ -16,8 +16,10 @@
 
 package com.ritense.authorization.autoconfigure
 
+import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationService
@@ -38,6 +40,7 @@ import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import javax.sql.DataSource
+import org.zalando.problem.jackson.ProblemModule
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.authorization"])
@@ -67,14 +70,10 @@ class AuthorizationAutoConfiguration {
         return LiquibaseMasterChangeLogLocation("config/liquibase/authorization-master.xml")
     }
 
+
     @Bean
-    fun permissionSubTypeObjectMapper(objectMapper: ObjectMapper): ObjectMapper {
-        objectMapper.registerSubtypes(
-            NamedType(ContainerPermissionCondition::class.java, "CONTAINER"),
-            NamedType(ExpressionPermissionCondition::class.java, "EXPRESSION"),
-            NamedType(FieldPermissionCondition::class.java, "FIELD"),
-        )
-        return objectMapper
+    fun permissionConditionTypeModule(): Module {
+        return PermissionConditionTypeModule()
     }
 
     @Bean

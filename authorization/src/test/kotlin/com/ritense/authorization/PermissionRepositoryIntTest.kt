@@ -41,7 +41,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
     @Test
     fun `should save Permission`() {
         val permission = Permission(
-            resourceType = Class.forName("com.ritense.authorization.TestDocument"),
+            resourceType = Class.forName("com.ritense.authorization.testimpl.TestDocument"),
             action = LIST_VIEW,
             conditions = listOf(
                 FieldPermissionCondition(
@@ -56,7 +56,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
         val permissions = permissionRepository.findAll()
         assertThat(permissions).hasSize(1)
         assertThat(permissions[0].id).isNotNull
-        assertThat(permissions[0].resourceType).isEqualTo(Class.forName("com.ritense.authorization.test.TestDocument"))
+        assertThat(permissions[0].resourceType).isEqualTo(Class.forName("com.ritense.authorization.testimpl.TestDocument"))
         assertThat(permissions[0].action).isEqualTo(LIST_VIEW)
         assertThat(permissions[0].conditions).hasSize(1)
         assertThat(permissions[0].conditions[0].type).isEqualTo(FIELD)

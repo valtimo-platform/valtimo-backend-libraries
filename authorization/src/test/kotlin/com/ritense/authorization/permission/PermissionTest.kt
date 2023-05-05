@@ -45,7 +45,7 @@ class PermissionTest {
     }
 
     @Test
-    fun `should apply to valid resource type and entity type and filters`() {
+    fun `should apply to valid resource type, entity type and condition`() {
         val entity = ""
         whenever(condition1.isValid(entity)).thenReturn(true)
         whenever(condition2.isValid(entity)).thenReturn(true)
@@ -57,7 +57,7 @@ class PermissionTest {
     }
 
     @Test
-    fun `should not apply when any filter fails`() {
+    fun `should not apply when any condition fails`() {
         val entity = ""
         whenever(condition1.isValid(entity)).thenReturn(true)
         val result = permission.appliesTo(String::class.java, entity)

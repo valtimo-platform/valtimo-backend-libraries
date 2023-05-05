@@ -8,7 +8,7 @@ spring:
         hikari:
             auto-commit: false
     liquibase:
-        enabled: true
+        enabled: false
     jpa:
         database-platform: org.hibernate.dialect.PostgreSQLDialect
         database: postgresql
