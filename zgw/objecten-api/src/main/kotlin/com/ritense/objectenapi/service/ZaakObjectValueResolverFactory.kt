@@ -18,6 +18,9 @@ package com.ritense.objectenapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valueresolver.ValueResolverFactory
 import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.UUID
@@ -25,7 +28,8 @@ import java.util.function.Function
 
 class ZaakObjectValueResolverFactory(
     val zaakObjectService: ZaakObjectService,
-    val objectMapper: ObjectMapper
+    val objectMapper: ObjectMapper,
+    val processDocumentService: ProcessDocumentService,
 ) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
@@ -36,15 +40,15 @@ class ZaakObjectValueResolverFactory(
         processInstanceId: String,
         variableScope: VariableScope
     ): Function<String, Any?> {
-        TODO()
+        return Function { requestedValue ->
+            val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(processInstanceId), variableScope).toString()
+            getZaakData(requestedValue, documentId)
+        }
     }
 
-    override fun createResolver(documentInstanceId: String): Function<String, Any?> {
+    override fun createResolver(documentId: String): Function<String, Any?> {
         return Function { requestedValue ->
-            val requestValue = ZaakObjectDataResolver.RequestedData(requestedValue)
-            val zaakObject = zaakObjectService.getZaakObjectOfTypeByName(UUID.fromString(documentInstanceId), requestValue.objectType)
-            val dataAsJsonNode = objectMapper.valueToTree<JsonNode>(zaakObject.record.data)
-            dataAsJsonNode.at(requestValue.path)
+            getZaakData(requestedValue, documentId)
         }
     }
 
@@ -54,5 +58,19 @@ class ZaakObjectValueResolverFactory(
         values: Map<String, Any>
     ) {
         TODO()
+    }
+
+    private fun getZaakData(requestedValue: String, documentId: String): Any? {
+        val requestedData = ZaakObjectDataResolver.RequestedData(requestedValue)
+        val zaakObject = zaakObjectService.getZaakObjectOfTypeByName(UUID.fromString(documentId), requestedData.objectType)
+        val dataAsJsonNode = objectMapper.valueToTree<JsonNode>(zaakObject.record.data)
+        val node = dataAsJsonNode.at(requestedData.path)
+        return if (node == null || node.isMissingNode || node.isNull) {
+            null
+        } else if (node.isValueNode || node.isArray || node.isObject) {
+            Mapper.INSTANCE.get().treeToValue(node, Object::class.java)
+        } else {
+            node.asText()
+        }
     }
 }
