@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import org.springframework.context.ApplicationEventPublisher
 
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.form.domain.submission.formfield.DataField"))
 data class DataField(
     override val value: JsonNode,
     override val pointer: JsonPointer,
