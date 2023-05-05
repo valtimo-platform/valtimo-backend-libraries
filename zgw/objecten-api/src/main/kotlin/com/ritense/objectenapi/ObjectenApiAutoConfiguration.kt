@@ -25,6 +25,7 @@ import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
 import com.ritense.objectenapi.service.ZaakObjectDataResolver
 import com.ritense.objectenapi.service.ZaakObjectService
+import com.ritense.objectenapi.service.ZaakObjectValueResolverFactory
 import com.ritense.objectenapi.web.rest.ObjectResource
 import com.ritense.objectenapi.web.rest.ZaakObjectResource
 import com.ritense.plugin.service.PluginService
@@ -86,11 +87,21 @@ class ObjectenApiAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ZaakObjectDataResolver::class)
     fun zaakObjectDataResolver(
         zaakObjectService: ZaakObjectService,
         objectMapper: ObjectMapper
     ): ZaakObjectDataResolver {
         return ZaakObjectDataResolver(zaakObjectService, objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakObjectValueResolverFactory::class)
+    fun zaakObjectValueResolverFactory(
+        zaakObjectService: ZaakObjectService,
+        objectMapper: ObjectMapper
+    ): ZaakObjectValueResolverFactory {
+        return ZaakObjectValueResolverFactory(zaakObjectService, objectMapper)
     }
 
     @Bean
