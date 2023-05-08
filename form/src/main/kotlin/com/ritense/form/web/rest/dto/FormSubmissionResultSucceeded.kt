@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.objectmanagement.domain.search
+package com.ritense.form.web.rest.dto
 
-data class SearchWithConfigRequest(
-    val otherFilters: List<SearchWithConfigFilter> = listOf()
-)
+import com.ritense.valtimo.contract.result.OperationError
+
+class FormSubmissionResultSucceeded(
+    private val documentId: String
+) : FormSubmissionResult {
+    override fun errors() = emptyList<OperationError>()
+
+    override fun documentId() = documentId
+}

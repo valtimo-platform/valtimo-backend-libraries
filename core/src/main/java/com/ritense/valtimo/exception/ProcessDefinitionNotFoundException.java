@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.objectmanagement.domain.search
+package com.ritense.valtimo.exception;
 
-data class SearchWithConfigRequest(
-    val otherFilters: List<SearchWithConfigFilter> = listOf()
-)
+public class ProcessDefinitionNotFoundException extends RuntimeException {
+
+    public ProcessDefinitionNotFoundException(String message) {
+        super("Unable to find process " + message);
+    }
+}

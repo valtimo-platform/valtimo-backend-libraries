@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.objectmanagement.domain.search
+package com.ritense.form.web.rest.dto
 
-data class SearchWithConfigRequest(
-    val otherFilters: List<SearchWithConfigFilter> = listOf()
-)
+import com.ritense.processdocument.service.result.TransactionalResult
+import com.ritense.valtimo.contract.result.OperationError
+
+class FormSubmissionResultFailed(
+    private val errors: List<OperationError>
+) : FormSubmissionResult, TransactionalResult {
+
+    constructor(error: OperationError) : this(listOf(error))
+
+    init {
+        require(errors.isNotEmpty()) { "errors may not be empty" }
+        rollback()
+    }
+
+    override fun errors() = errors
+
+    override fun documentId() = null
+}

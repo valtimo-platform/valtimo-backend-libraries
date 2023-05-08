@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.objectmanagement.domain.search
+package com.ritense.form.web.rest.dto
 
-data class SearchWithConfigRequest(
-    val otherFilters: List<SearchWithConfigFilter> = listOf()
-)
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.ritense.valtimo.contract.result.OperationError
+
+interface FormSubmissionResult {
+    @JsonProperty("errors")
+    fun errors(): List<OperationError>
+
+    @JsonProperty("documentId")
+    fun documentId(): String?
+}

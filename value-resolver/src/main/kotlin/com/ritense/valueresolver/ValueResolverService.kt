@@ -18,10 +18,11 @@ package com.ritense.valueresolver
 
 import org.camunda.bpm.engine.delegate.VariableScope
 
-open class ValueResolverService(
-    valueResolverFactories: List<ValueResolverFactory>
+class ValueResolverService(
+    private val valueResolverFactories: List<ValueResolverFactory>
 ) {
-    private val resolverFactoryMap: Map<String, ValueResolverFactory> = valueResolverFactories.groupBy { it.supportedPrefix() }
+    private val resolverFactoryMap: Map<String, ValueResolverFactory>
+        get() = valueResolverFactories.groupBy { it.supportedPrefix() }
         .filter { (key, value) ->
             if(value.size != 1) {
                 throw RuntimeException("Expected 1 resolver for prefix '$key'. Found: ${value.joinToString { resolver -> resolver.javaClass.simpleName }}")

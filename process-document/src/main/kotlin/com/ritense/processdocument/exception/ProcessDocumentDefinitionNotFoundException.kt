@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.objectmanagement.domain.search
+package com.ritense.processdocument.exception
 
-data class SearchWithConfigRequest(
-    val otherFilters: List<SearchWithConfigFilter> = listOf()
-)
+class ProcessDocumentDefinitionNotFoundException(message: String) :
+    RuntimeException("Unable to find a ProcessDocumentDefinition $message")
