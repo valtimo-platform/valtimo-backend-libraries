@@ -107,23 +107,28 @@ class ApplicationReadyEventListener(
 
     fun createPlugins() {
         try {
-            val zakenApiAuthenticationPluginId = createZakenApiAuthenticationPlugin()
-            val zakenApiPluginId = createZakenApiPlugin(zakenApiAuthenticationPluginId)
-            createBesluitenApiPlugin(zakenApiAuthenticationPluginId)
-            createCatalogiApiPlugin(zakenApiAuthenticationPluginId)
-            val documentenApiPluginId = createDocumentenApiPlugin(zakenApiAuthenticationPluginId)
-            val notificatiesApiAuthenticationPluginId = createNotificatiesApiAuthenticationPlugin()
-            val notificatiesApiPluginId = createNotificatiesApiPlugin(notificatiesApiAuthenticationPluginId)
-            val objectenApiAuthenticationPluginId = createObjectenApiAuthenticationPlugin()
-            val objectenApiPluginId = createObjectenApiPlugin(objectenApiAuthenticationPluginId)
-            val objecttypenApiAuthenticationPluginId = createObjecttypenApiAuthenticationPlugin()
-            val objecttypenApiPluginId = createObjecttypenApiPlugin(objecttypenApiAuthenticationPluginId)
+            val zakenApiAuthenticationPluginId = UUID.fromString("b609a0a3-886e-4b3d-ae0d-c01effb311ee")//createZakenApiAuthenticationPlugin()
+            val zakenApiPluginId = UUID.fromString("3079d6fe-42e3-4f8f-a9db-52ce2507b7ee")//createZakenApiPlugin(zakenApiAuthenticationPluginId)
+            //createBesluitenApiPlugin(zakenApiAuthenticationPluginId)
+            //createCatalogiApiPlugin(zakenApiAuthenticationPluginId)
+            val documentenApiPluginId = UUID.fromString("5474fe57-532a-4050-8d89-32e62ca3e895")//createDocumentenApiPlugin(zakenApiAuthenticationPluginId)
+            val notificatiesApiAuthenticationPluginId = UUID.fromString("df36cd33-d0dd-429a-a8ad-e16f307ac434")//createNotificatiesApiAuthenticationPlugin()
+            val notificatiesApiPluginId = UUID.fromString("bb1c601b-b257-497e-bab0-c21d339335d7")//createNotificatiesApiPlugin(notificatiesApiAuthenticationPluginId)
+            val objectenApiAuthenticationPluginId = UUID.fromString("21a006f9-7833-4cdf-a6b7-1927705dd543")//createObjectenApiAuthenticationPlugin()
+            val objectenApiPluginId = UUID.fromString("b6d83348-97e7-4660-bd35-2e5fcc9629b4")//createObjectenApiPlugin(objectenApiAuthenticationPluginId)
+            val objecttypenApiAuthenticationPluginId = UUID.fromString("acb0687a-075e-4435-923b-e6cb01d4d5db")//createObjecttypenApiAuthenticationPlugin()
+            val objecttypenApiPluginId = UUID.fromString("4021bb75-18c8-4ca5-8658-b9f9c728bba0")//createObjecttypenApiPlugin(objecttypenApiAuthenticationPluginId)
+
+            //Need to have autodeployment as well
             val bezwaarConfigurationId = createBezwaarObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
             val taakConfigurationId = createTaakObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
             createBomenObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
+
             createVerzoekPlugin(notificatiesApiPluginId, bezwaarConfigurationId)
-            createSmartDocumentsPlugin()
+            //createSmartDocumentsPlugin()
+
             val portaaltaakPluginId = createPortaaltaakPlugin(notificatiesApiPluginId, taakConfigurationId)
+
             portalPersonCreatePortaaltaak(portaaltaakPluginId)
             processCompletedPortaalTaakCompletePortaaltaak(portaaltaakPluginId)
             processCompletedPortaalTaakLinkDocumentToZaak(zakenApiPluginId)

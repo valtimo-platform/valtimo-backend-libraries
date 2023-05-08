@@ -26,6 +26,7 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.annotation.PluginEvent
+import com.ritense.plugin.autodeployment.PluginAutoDeploymentDto
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginConfiguration
@@ -104,6 +105,49 @@ class PluginService(
         }
 
         return pluginConfiguration
+    }
+
+    fun deployPluginConfigurations(deploymentDto: PluginAutoDeploymentDto){
+        val plugin: PluginConfiguration
+        val pluginDefinition = pluginDefinitionRepository.getById(deploymentDto.pluginDefinitionKey)
+        resolveProperties(deploymentDto.properties)
+        validateProperties(deploymentDto.properties!!, pluginDefinition)
+        plugin = if (deploymentDto.id != null){
+            pluginConfigurationRepository.save(PluginConfiguration(
+                PluginConfigurationId.existingId(deploymentDto.id),
+                deploymentDto.title,
+                resolveProperties(deploymentDto.properties),
+                pluginDefinition))
+        }else{
+            pluginConfigurationRepository.save(PluginConfiguration(
+                PluginConfigurationId.newId(),
+                deploymentDto.title,
+                resolveProperties(deploymentDto.properties),
+                pluginDefinition))
+        }
+        try {
+            plugin.runAllPluginEvents(EventType.CREATE)
+        } catch (e: Exception) {
+            pluginConfigurationRepository.deleteById(plugin.id)
+            throw PluginEventInvocationException(plugin, e)
+        }
+    }
+
+    private fun resolveProperties(properties: ObjectNode?): ObjectNode? {
+        properties?.fields()?.forEachRemaining{
+            if(it.value.isTextual){
+                properties.put(it.key,resolveValue(it.value))
+            }
+        }
+        return properties
+    }
+
+    private fun resolveValue(value: JsonNode?): String? {
+        val valueAsString = value?.textValue()
+        if(valueAsString?.startsWith("\${") == true && valueAsString.endsWith("}")){
+            return System.getenv()[valueAsString.substringAfterLast("\${").substringBeforeLast("}")]
+        }
+        return valueAsString
     }
 
     fun updatePluginConfiguration(
