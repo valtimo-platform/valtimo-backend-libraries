@@ -1,0 +1,21 @@
+[
+    {
+        "activityId": "update_portaal_taak_status",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginConfigurationId": "5bf50d21-9f9b-4168-9b09-98bf183fea2e",
+        "pluginActionDefinitionKey": "complete-portaaltaak"
+    },
+    {
+        "activityId": "link-document-to-zaak",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginConfigurationId": "3079d6fe-42e3-4f8f-a9db-52ce2507b7ee",
+        "pluginActionDefinitionKey": "link-document-to-zaak",
+        "actionProperties": {
+            "documentUrl": "pv:documentUrl",
+            "titel": "Portal document",
+            "beschrijving": "This document was uploaded in the portal"
+        }
+    }
+]

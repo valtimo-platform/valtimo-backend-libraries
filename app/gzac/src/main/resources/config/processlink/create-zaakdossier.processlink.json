@@ -1,0 +1,47 @@
+[
+    {
+        "activityId": "create-zaak",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginConfigurationId": "3079d6fe-42e3-4f8f-a9db-52ce2507b7ee",
+        "pluginActionDefinitionKey": "create-zaak",
+        "actionProperties": {
+            "rsin": "051845623",
+            "zaaktypeUrl": "http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"
+        }
+    },
+    {
+        "activityId": "create-initiator-zaak-rol",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginConfigurationId": "3079d6fe-42e3-4f8f-a9db-52ce2507b7ee",
+        "pluginActionDefinitionKey": "create-natuurlijk-persoon-zaak-rol",
+        "actionProperties": {
+            "roltypeUrl": "pv:rolTypeUrl",
+            "rolToelichting": "pv:rolDescription",
+            "inpBsn": "pv:initiatorValue"
+        }
+    },
+    {
+        "activityId": "link-document-to-zaak",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginConfigurationId": "3079d6fe-42e3-4f8f-a9db-52ce2507b7ee",
+        "pluginActionDefinitionKey": "link-document-to-zaak",
+        "actionProperties": {
+            "documentUrl": "pv:documentUrl",
+            "titel": "Verzoek document",
+            "beschrijving": "Document that belongs to a Verzoek"
+        }
+    },
+    {
+        "activityId": "delete-verzoek-from-objectsapi",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginConfigurationId": "b6d83348-97e7-4660-bd35-2e5fcc9629b4",
+        "pluginActionDefinitionKey": "delete-object",
+        "actionProperties": {
+            "objectUrl": "pv:verzoekObjectUrl"
+        }
+    }
+]

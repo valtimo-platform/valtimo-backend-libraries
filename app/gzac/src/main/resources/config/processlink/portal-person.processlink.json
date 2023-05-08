@@ -1,0 +1,28 @@
+[
+    {
+        "activityId": "portal-task",
+        "activityType": "bpmn:UserTask:create",
+        "processLinkType": "plugin",
+        "pluginConfigurationId": "5bf50d21-9f9b-4168-9b09-98bf183fea2e",
+        "pluginActionDefinitionKey": "create-portaaltaak",
+        "actionProperties": {
+            "formType": "id",
+            "formTypeId": "person",
+            "sendData": [
+                {
+                    "key": "/firstName",
+                    "value": "doc:/firstName"
+                }
+            ],
+            "receiveData": [
+                {
+                    "key": "doc:/firstName",
+                    "value": "/firstName"
+                }
+            ],
+            "receiver": "other",
+            "identificationKey": "bsn",
+            "identificationValue": "569312863"
+        }
+    }
+]
