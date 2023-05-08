@@ -94,13 +94,13 @@ class AuthorizationAutoConfiguration {
                 Permission(
                     resourceType = Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
                     action = Action.CLAIM,
-                    conditions = listOf(
-                        FieldPermissionCondition("documentDefinitionId.name", "leningen"),
-                        ExpressionPermissionCondition(
-                            "content.content",
-                            "$.height",
-                            PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java)
-                    )
+//                    conditions = listOf(
+//                        FieldPermissionCondition("documentDefinitionId.name", "leningen"),
+//                        ExpressionPermissionCondition(
+//                            "content.content",
+//                            "$.height",
+//                            PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java)
+//                    )
                 )
             )
         } catch (e:ClassNotFoundException) {
@@ -112,19 +112,19 @@ class AuthorizationAutoConfiguration {
                 Permission(
                     resourceType = Class.forName("com.ritense.note.domain.Note"),
                     action = Action.VIEW,
-                    conditions = listOf(
-                        ContainerPermissionCondition(
-                            Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
-                            listOf(
-                                FieldPermissionCondition("documentDefinitionId.name", "leningen"),
-                                ExpressionPermissionCondition(
-                                    "content.content",
-                                    "$.height",
-                                    PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java),
-                                FieldPermissionCondition("assigneeFullName", "Asha Miller")
-                            )
-                        )
-                    )
+//                    conditions = listOf(
+//                        ContainerPermissionCondition(
+//                            Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
+//                            listOf(
+//                                FieldPermissionCondition("documentDefinitionId.name", "leningen"),
+//                                ExpressionPermissionCondition(
+//                                    "content.content",
+//                                    "$.height",
+//                                    PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java),
+//                                FieldPermissionCondition("assigneeFullName", "Asha Miller")
+//                            )
+//                        )
+//                    )
                 )
             )
         } catch (e:ClassNotFoundException) {
