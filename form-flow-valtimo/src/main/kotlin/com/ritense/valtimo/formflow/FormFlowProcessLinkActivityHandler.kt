@@ -23,12 +23,14 @@ import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
+import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.task.Task
 import java.util.UUID
 
 class FormFlowProcessLinkActivityHandler(
     private val formFlowService: FormFlowService,
+    private val repositoryService: RepositoryService,
     documentService: DocumentService,
     runtimeService: RuntimeService,
 ): AbstractFormFlowLinkTaskProvider(
@@ -53,10 +55,18 @@ class FormFlowProcessLinkActivityHandler(
     override fun getStartEventObject(
         processDefinitionId: String,
         documentId: UUID?,
+        documentDefinitionName: String?,
         processLink: ProcessLink): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
         processLink as FormFlowProcessLink
         val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId)!!
-        val additionalProperties = mapOf<String,Any>("processDefinitionId" to processDefinitionId)
+        val processDefinition = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionId(processDefinitionId)
+            .singleResult()
+
+        val additionalProperties = mutableMapOf<String, Any>("processDefinitionKey" to processDefinition.key)
+        documentId?.let { additionalProperties["documentId"] = it }
+        documentDefinitionName?.let { additionalProperties["documentDefinitionName"] = it }
+
         return ProcessLinkActivityResult(FORM_FLOW_TASK_TYPE_KEY,FormFlowTaskOpenResultProperties(
             formFlowService.save(
                 formFlowDefinition.createInstance(additionalProperties)

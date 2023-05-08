@@ -51,6 +51,7 @@ class FormProcessLinkActivityHandler(
     override fun getStartEventObject(
         processDefinitionId: String,
         documentId: UUID?,
+        documentDefinitionName: String?,
         processLink: ProcessLink
     ): ProcessLinkActivityResult<FormTaskOpenResultProperties> {
         processLink as FormProcessLink

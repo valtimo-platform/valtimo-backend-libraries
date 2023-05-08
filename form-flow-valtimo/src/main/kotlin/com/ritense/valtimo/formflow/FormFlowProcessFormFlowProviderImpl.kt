@@ -45,6 +45,9 @@ class FormLinkNewProcessFormFlowProviderImpl(
         request.documentId?.let {
             additionalProperties["documentId"] = it.toString()
         }
+        request.documentDefinitionName?.let {
+            additionalProperties["documentDefinitionName"] = it
+        }
 
         return additionalProperties
     }
