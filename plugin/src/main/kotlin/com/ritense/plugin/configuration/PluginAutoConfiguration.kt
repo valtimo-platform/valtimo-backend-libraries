@@ -185,7 +185,7 @@ class PluginAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(PluginAutoDeploymentEventListener::class)
-    fun getPluginAutoDeploymentEventListener(
+    fun pluginAutoDeploymentEventListener(
         objectMapper: ObjectMapper,
         pluginService: PluginService,
         resourceLoader: ResourceLoader
