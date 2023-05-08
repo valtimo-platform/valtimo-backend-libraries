@@ -18,7 +18,6 @@ package com.ritense.openzaak.domain.connector
 
 import com.ritense.openzaak.domain.configuration.Rsin
 
-@Deprecated("Deprecated since Valtimo v10.6.0", ReplaceWith("ZakenApiPlugin"))
 data class OpenZaakConfig(
     var url: String = "",
     var clientId: String = "",
