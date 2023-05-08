@@ -33,9 +33,6 @@ class PluginAutoDeploymentEventListenerIntTest: BaseIntegrationTest() {
     @Autowired
     lateinit var pluginService : PluginService
 
-    @Autowired
-    lateinit var pluginDefinitionRepository: PluginDefinitionRepository
-
     @Test
     fun `should deploy plugin configuration`(){
         val result = pluginService.getPluginConfigurations(
