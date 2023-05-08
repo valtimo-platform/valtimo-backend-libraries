@@ -33,12 +33,20 @@ internal class ValueResolverFactoryServiceTest {
     )
 
     @Test
-    fun `Should fail on duplicate resolver prefixes at init`() {
+    fun `Should fail on duplicate resolver prefixes`() {
         val exception = assertThrows<RuntimeException> {
-            ValueResolverService(
+            val resolverService = ValueResolverService(
                 listOf(
                     ProcessVariableValueResolverFactory(runtimeService),
                     ProcessVariableValueResolverFactory(runtimeService)
+                )
+            )
+
+            resolverService.resolveValues(
+                processInstanceId = UUID.randomUUID().toString(),
+                variableScope = DelegateTaskFake(),
+                listOf(
+                    "pv:dummy"
                 )
             )
         }
