@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.connector
+package com.ritense.form.web.rest.dto
 
-import com.ritense.connector.domain.ConnectorProperties
+import com.ritense.processdocument.service.result.TransactionalResult
+import com.ritense.valtimo.contract.result.OperationError
 
-data class OpenZaakProperties(
-    var openZaakConfig: OpenZaakConfig = OpenZaakConfig()
-) : ConnectorProperties
+class FormSubmissionResultFailed(
+    private val errors: List<OperationError>
+) : FormSubmissionResult, TransactionalResult {
+
+    constructor(error: OperationError) : this(listOf(error))
+
+    init {
+        require(errors.isNotEmpty()) { "errors may not be empty" }
+        rollback()
+    }
+
+    override fun errors() = errors
+
+    override fun documentId() = null
+}

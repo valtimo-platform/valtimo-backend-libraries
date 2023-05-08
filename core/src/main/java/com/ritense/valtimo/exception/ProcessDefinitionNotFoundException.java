@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.connector
+package com.ritense.valtimo.exception;
 
-import com.ritense.connector.domain.ConnectorProperties
+public class ProcessDefinitionNotFoundException extends RuntimeException {
 
-data class OpenZaakProperties(
-    var openZaakConfig: OpenZaakConfig = OpenZaakConfig()
-) : ConnectorProperties
+    public ProcessDefinitionNotFoundException(String message) {
+        super("Unable to find process " + message);
+    }
+}

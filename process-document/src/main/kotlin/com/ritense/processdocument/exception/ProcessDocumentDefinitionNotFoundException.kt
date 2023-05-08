@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.connector
+package com.ritense.processdocument.exception
 
-import com.ritense.connector.domain.ConnectorProperties
-
-data class OpenZaakProperties(
-    var openZaakConfig: OpenZaakConfig = OpenZaakConfig()
-) : ConnectorProperties
+class ProcessDocumentDefinitionNotFoundException(message: String) :
+    RuntimeException("Unable to find a ProcessDocumentDefinition $message")

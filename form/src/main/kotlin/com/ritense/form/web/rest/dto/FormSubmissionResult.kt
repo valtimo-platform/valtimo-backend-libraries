@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.connector
+package com.ritense.form.web.rest.dto
 
-import com.ritense.connector.domain.ConnectorProperties
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.ritense.valtimo.contract.result.OperationError
 
-data class OpenZaakProperties(
-    var openZaakConfig: OpenZaakConfig = OpenZaakConfig()
-) : ConnectorProperties
+interface FormSubmissionResult {
+    @JsonProperty("errors")
+    fun errors(): List<OperationError>
+
+    @JsonProperty("documentId")
+    fun documentId(): String?
+}
