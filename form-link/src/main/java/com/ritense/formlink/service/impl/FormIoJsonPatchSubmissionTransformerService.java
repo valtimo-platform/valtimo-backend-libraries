@@ -27,10 +27,13 @@ import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder;
 import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
+
 import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowRemovalOperations;
 import static com.ritense.form.domain.FormIoFormDefinition.PROPERTY_KEY;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTransformerService<FormIoFormDefinition> {
 
     private static final String CUSTOM_PROPERTIES = "properties";

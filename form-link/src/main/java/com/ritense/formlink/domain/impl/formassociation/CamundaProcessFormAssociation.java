@@ -24,6 +24,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class CamundaProcessFormAssociation implements ProcessFormAssociation {
 
     private CamundaProcessFormAssociationId id;

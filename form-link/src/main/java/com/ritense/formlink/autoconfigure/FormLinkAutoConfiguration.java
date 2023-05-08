@@ -47,7 +47,6 @@ import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import java.util.List;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -60,6 +59,9 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import java.util.List;
+
+@Deprecated(since = "10.6.0", forRemoval = true)
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.formlink.repository")
 @EntityScan("com.ritense.formlink.domain")

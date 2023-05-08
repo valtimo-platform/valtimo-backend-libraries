@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.ritense.formlink.domain.impl.formassociation.FormAssociations;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public interface ProcessFormAssociation {
 
     @JsonProperty

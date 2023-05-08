@@ -19,6 +19,7 @@ package com.ritense.formlink.domain.impl.formassociation;
 import java.util.Collection;
 import java.util.HashSet;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormAssociations extends HashSet<CamundaFormAssociation> {
 
     public FormAssociations() {

@@ -18,8 +18,10 @@ package com.ritense.formlink.service.result;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.valtimo.contract.result.OperationError;
+
 import java.util.List;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public interface FormSubmissionResult {
 
     @JsonProperty("errors")

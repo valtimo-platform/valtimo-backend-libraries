@@ -36,6 +36,7 @@ import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.EncryptionService
 import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.service.PluginSupportedProcessLinksHandler
 import com.ritense.plugin.web.rest.PluginConfigurationResource
 import com.ritense.plugin.web.rest.PluginDefinitionResource
 import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
@@ -116,7 +117,7 @@ class PluginAutoConfiguration {
         pluginProcessLinkRepository: PluginProcessLinkRepository,
         @Lazy pluginFactories: List<PluginFactory<*>>,
         objectMapper: ObjectMapper,
-        valueResolverService: ValueResolverService,
+        @Lazy valueResolverService: ValueResolverService,
         pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
     ): PluginService {
         return PluginService(
