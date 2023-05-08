@@ -110,7 +110,6 @@ class PluginService(
     fun deployPluginConfigurations(deploymentDto: PluginAutoDeploymentDto){
         val plugin: PluginConfiguration
         val pluginDefinition = pluginDefinitionRepository.getById(deploymentDto.pluginDefinitionKey)
-        resolveProperties(deploymentDto.properties)
         validateProperties(deploymentDto.properties!!, pluginDefinition)
         plugin = if (deploymentDto.id != null){
             pluginConfigurationRepository.save(PluginConfiguration(
