@@ -114,7 +114,7 @@ class PluginAutoConfiguration {
         pluginProcessLinkRepository: PluginProcessLinkRepository,
         @Lazy pluginFactories: List<PluginFactory<*>>,
         objectMapper: ObjectMapper,
-        @Lazy valueResolverService: ValueResolverService,
+        valueResolverService: ValueResolverService,
         pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
     ): PluginService {
         return PluginService(
