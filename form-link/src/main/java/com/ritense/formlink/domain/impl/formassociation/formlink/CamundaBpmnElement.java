@@ -25,6 +25,7 @@ import java.util.Objects;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public abstract class CamundaBpmnElement implements Serializable {
 
     @JsonIgnore

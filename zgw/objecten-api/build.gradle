@@ -24,7 +24,10 @@ dockerCompose {
 dependencies {
     implementation project(':plugin')
     implementation project(':contract')
+    implementation project(':document')
     implementation project(':form')
+    implementation project(':process-document')
+    implementation project(':value-resolver')
     implementation project(':zgw:zaken-api')
     implementation project(':zgw:objecttypen-api')
 

@@ -19,6 +19,7 @@ package com.ritense.formlink.domain.impl.formassociation;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public enum FormAssociationType {
     @JsonProperty("start-event")
     START_EVENT("start-event"),

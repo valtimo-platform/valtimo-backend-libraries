@@ -11,7 +11,6 @@ dependencies {
     implementation(project(":plugin"))
     implementation(project(":form"))
     implementation(project(":form-flow-valtimo"))
-    implementation(project(":form-link"))
     implementation(project(":document-generation:local-document-generation"))
     implementation(project(":resource:local-resource"))
     implementation(project(":mail:local-mail"))

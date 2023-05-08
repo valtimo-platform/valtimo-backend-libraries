@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 @Configuration
 public class FormLinkRateLimitConfiguration implements WebMvcConfigurer {
 

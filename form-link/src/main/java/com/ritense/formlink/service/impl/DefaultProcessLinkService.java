@@ -22,17 +22,19 @@ import com.ritense.formlink.domain.FormLinkTaskProvider;
 import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.ProcessLinkService;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.UUID;
+
 import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class DefaultProcessLinkService implements ProcessLinkService {
     private final RepositoryService repositoryService;
     private final TaskService taskService;

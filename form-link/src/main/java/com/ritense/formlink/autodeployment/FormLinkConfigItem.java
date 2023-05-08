@@ -17,8 +17,10 @@
 package com.ritense.formlink.autodeployment;
 
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
+
 import java.util.Objects;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormLinkConfigItem {
     private String formName;
     private String formFlowName;

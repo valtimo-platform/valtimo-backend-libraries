@@ -26,7 +26,9 @@ import com.ritense.valtimo.contract.json.patch.operation.Operation;
 import com.ritense.valtimo.contract.json.patch.operation.ReplaceOperation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FormIoJsonPatchSubmissionTransformerServiceTest extends BaseTest {

@@ -19,9 +19,11 @@ package com.ritense.formlink.web.rest.impl;
 import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.service.ProcessLinkService;
 import com.ritense.formlink.web.rest.ProcessLinkResource;
-import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 
+import java.util.UUID;
+
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class DefaultProcessLinkResource implements ProcessLinkResource {
     private final ProcessLinkService processLinkService;
 
