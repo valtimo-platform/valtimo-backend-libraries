@@ -32,8 +32,8 @@ import com.ritense.valtimo.contract.form.DataResolvingContext
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
 
 class ZaakObjectDataResolver(
-    val zaakObjectService: ZaakObjectService,
-    val objectMapper: ObjectMapper
+    private val zaakObjectService: ZaakObjectService,
+    private val objectMapper: ObjectMapper
 ): FormFieldDataResolver {
 
     override fun supports(externalFormFieldType: String): Boolean {

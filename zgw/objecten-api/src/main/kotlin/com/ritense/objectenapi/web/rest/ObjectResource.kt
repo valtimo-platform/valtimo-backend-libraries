@@ -33,7 +33,7 @@ import java.util.UUID
 
 @RequestMapping("/api/v1/object", produces = [APPLICATION_JSON_UTF8_VALUE])
 class ObjectResource(
-    val zaakObjectService: ZaakObjectService
+    private val zaakObjectService: ZaakObjectService
 ) {
 
     @GetMapping("/form")

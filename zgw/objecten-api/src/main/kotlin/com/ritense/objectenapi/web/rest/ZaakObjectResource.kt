@@ -38,8 +38,8 @@ import java.util.UUID
 
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class ZaakObjectResource(
-    val zaakObjectService: ZaakObjectService,
-    val pluginService: PluginService
+    private val zaakObjectService: ZaakObjectService,
+    private val pluginService: PluginService
 ) {
     @GetMapping("/v1/document/{documentId}/zaak/objecttype")
     fun getZaakObjecttypes(
