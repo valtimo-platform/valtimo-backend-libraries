@@ -16,7 +16,9 @@
 
 package com.ritense.objectmanagement.domain.search
 
-class SearchRequestValue(
-    val value: Any
-) {
-}
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonValue
+
+class SearchRequestValue @JsonCreator constructor(
+    @get:JsonValue val value: Any?
+)
