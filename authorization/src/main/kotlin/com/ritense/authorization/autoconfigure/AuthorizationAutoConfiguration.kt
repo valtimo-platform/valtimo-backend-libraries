@@ -17,12 +17,12 @@
 package com.ritense.authorization.autoconfigure
 
 import com.fasterxml.jackson.databind.Module
-import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.AuthorizationServiceHolder
 import com.ritense.authorization.AuthorizationSpecificationFactory
-import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.PermissionRepository
+import com.ritense.authorization.RoleRepository
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -44,9 +44,10 @@ class AuthorizationAutoConfiguration {
     fun valtimoAuthorizationService(
         authorizationSpecificationFactories: List<AuthorizationSpecificationFactory<*>>,
         mappers: List<AuthorizationEntityMapper<*, *>>,
-        defaultPermissions: List<Permission>
+        permissionRepository: PermissionRepository,
+        roleRepository: RoleRepository
     ): AuthorizationService {
-        return AuthorizationService(authorizationSpecificationFactories, mappers, defaultPermissions)
+        return AuthorizationService(authorizationSpecificationFactories, mappers, permissionRepository)
     }
 
     @Bean
@@ -66,70 +67,5 @@ class AuthorizationAutoConfiguration {
     @Bean
     fun permissionConditionTypeModule(): Module {
         return PermissionConditionTypeModule()
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = ["defaultPermissions"])
-    fun defaultPermissions(): List<Permission> {
-        val jsonSchemaDocumentClassName = "com.ritense.document.domain.impl.JsonSchemaDocument"
-        val testRoleKey = "test-role"
-
-        val documentPermissions: List<Permission> = try {
-            listOf(
-                Permission(
-                    resourceType = Class.forName(jsonSchemaDocumentClassName),
-                    action = Action.LIST_VIEW,
-                    conditions = listOf(),
-                    roleKey = testRoleKey
-                ),
-                Permission(
-                    resourceType = Class.forName(jsonSchemaDocumentClassName),
-                    action = Action.VIEW,
-                    conditions = emptyList(),
-                    roleKey = testRoleKey
-                ),
-                Permission(
-                    resourceType = Class.forName(jsonSchemaDocumentClassName),
-                    action = Action.CLAIM,
-//                    conditions = listOf(
-//                        FieldPermissionCondition("documentDefinitionId.name", "leningen"),
-//                        ExpressionPermissionCondition(
-//                            "content.content",
-//                            "$.height",
-//                            PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java)
-//                    ),
-                    roleKey = testRoleKey
-                )
-            )
-        } catch (e: ClassNotFoundException) {
-            listOf()
-        }
-
-        val notePermissions: List<Permission> = try {
-            listOf(
-                Permission(
-                    resourceType = Class.forName("com.ritense.note.domain.Note"),
-                    action = Action.VIEW,
-//                    conditions = listOf(
-//                        ContainerPermissionCondition(
-//                            Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
-//                            listOf(
-//                                FieldPermissionCondition("documentDefinitionId.name", "leningen"),
-//                                ExpressionPermissionCondition(
-//                                    "content.content",
-//                                    "$.height",
-//                                    PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java),
-//                                FieldPermissionCondition("assigneeFullName", "Asha Miller")
-//                            )
-//                        )
-//                    )
-                    roleKey = testRoleKey
-                )
-            )
-        } catch (e: ClassNotFoundException) {
-            listOf()
-        }
-
-        return documentPermissions + notePermissions
     }
 }

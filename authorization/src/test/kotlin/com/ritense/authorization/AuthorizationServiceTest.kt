@@ -34,6 +34,7 @@ class AuthorizationServiceTest {
     lateinit var mapper1: AuthorizationEntityMapper<Int, Int>
     lateinit var mapper2: AuthorizationEntityMapper<String, String>
     lateinit var mapper3: AuthorizationEntityMapper<Boolean, Boolean>
+    lateinit var permissionRepository: PermissionRepository
     lateinit var authorizationService: AuthorizationService
 
     @BeforeEach
@@ -44,6 +45,7 @@ class AuthorizationServiceTest {
         mapper1 = mock()
         mapper2 = mock()
         mapper3 = mock()
+        permissionRepository = mock()
 
         authorizationService = AuthorizationService(
             listOf(
@@ -56,7 +58,7 @@ class AuthorizationServiceTest {
                 mapper2,
                 mapper3
             ),
-            listOf()
+            permissionRepository
         )
 
     }

@@ -20,14 +20,25 @@ import com.fasterxml.jackson.core.json.JsonReadFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.authorization.Action
+import com.ritense.authorization.PermissionRepository
+import com.ritense.authorization.Role
+import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.permission.ContainerPermissionCondition
+import com.ritense.authorization.permission.ExpressionPermissionCondition
+import com.ritense.authorization.permission.FieldPermissionCondition
+import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.permission.PermissionExpressionOperator
 import com.ritense.besluit.connector.BesluitProperties
 import com.ritense.besluitenapi.BesluitenApiPlugin
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
+import com.ritense.note.domain.Note
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
@@ -74,10 +85,13 @@ class ApplicationReadyEventListener(
     private val objectManagementService: ObjectManagementService,
     private val repositoryService: RepositoryService,
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+    private val permissionRepository: PermissionRepository,
+    private val roleRepository: RoleRepository
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
     fun handleApplicationReady() {
+        createDefaultPermissionsIfNotExists(permissionRepository, roleRepository)
         createConnectors()
         createPlugins()
     }
@@ -978,6 +992,78 @@ class ApplicationReadyEventListener(
                 )
             )
         }
+    }
+
+    private fun createDefaultPermissionsIfNotExists(
+        permissionRepository: PermissionRepository,
+        roleRepository: RoleRepository
+    ) {
+        val userRoleKey = "ROLE_USER"
+
+        if (!roleRepository.existsById(userRoleKey)) {
+            roleRepository.save(Role(userRoleKey))
+        }
+
+        permissionRepository.deleteAll(permissionRepository.findAllByRoleKeyIn(listOf(userRoleKey)))
+
+        val documentPermissions: List<Permission> = try {
+            listOf(
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = Action.LIST_VIEW,
+                    conditions = listOf(),
+                    roleKey = userRoleKey
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = Action.VIEW,
+                    conditions = emptyList(),
+                    roleKey = userRoleKey
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = Action.CLAIM,
+//                    conditions = listOf(
+//                        FieldPermissionCondition("documentDefinitionId.name", "leningen"),
+//                        ExpressionPermissionCondition(
+//                            "content.content",
+//                            "$.height",
+//                            PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java),
+//                    ),
+                    roleKey = userRoleKey
+                )
+            )
+        } catch (e: ClassNotFoundException) {
+            listOf()
+        }
+
+        val notePermissions: List<Permission> = try {
+            listOf(
+                Permission(
+                    resourceType = Note::class.java,
+                    action = Action.VIEW,
+                    conditions = listOf(
+                        ContainerPermissionCondition(
+                            JsonSchemaDocument::class.java,
+                            listOf(
+                                FieldPermissionCondition("documentDefinitionId.name", "leningen"),
+                                ExpressionPermissionCondition(
+                                    "content.content",
+                                    "$.height",
+                                    PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java),
+                                FieldPermissionCondition("assigneeFullName", "Asha Miller")
+                            )
+                        )
+                    ),
+                    roleKey = userRoleKey
+                )
+            )
+
+        } catch (e: ClassNotFoundException) {
+            listOf()
+        }
+
+        permissionRepository.saveAll(documentPermissions + notePermissions)
     }
 
     companion object {

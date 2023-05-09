@@ -21,5 +21,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface PermissionRepository : JpaRepository<Permission, UUID> {
-    fun findAllByRoleKey(roleKey: String): List<Permission>
+    fun findAllByRoleKeyIn(roleKeys: Collection<String>): List<Permission>
 }
