@@ -21,6 +21,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
+import java.lang.NullPointerException
 import kotlin.test.assertEquals
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
@@ -45,27 +46,76 @@ class FieldPermissionConditionTest {
             TestChildEntity(true)
         )
 
-        conditionTemplate = FieldPermissionCondition("child.property", "true")
+        conditionTemplate = FieldPermissionCondition("child.property", true)
     }
 
     @Test
-    fun `should find property and pass the condition`() {
+    fun `should pass validation when the property value is equal`() {
         val condition = conditionTemplate
         val result = condition.isValid(entity)
         assertEquals(true, result)
     }
 
     @Test
-    fun `should find property and fail the condition`() {
-        val condition = conditionTemplate.copy(value = "false")
+    fun `should fail validation when the property value is not equal`() {
+        val condition = conditionTemplate.copy(value = false)
         val result = condition.isValid(entity)
         assertEquals(false, result)
     }
 
     @Test
-    fun `should not find property and throw exception`() {
+    fun `should fail validation when the property value type is different`() {
+        val condition = conditionTemplate.copy(value = "test")
+        val result = condition.isValid(entity)
+        assertEquals(false, result)
+    }
+    @Test
+    fun `should fail validation when property value is null`() {
+        val entity = TestEntity(
+            TestChildEntity(null)
+        )
+        val condition = conditionTemplate.copy(value = "test")
+        val result = condition.isValid(entity)
+        assertEquals(false, result)
+    }
+
+    @Test
+    fun `should fail validation when property value is null and condition value is String('null')`() {
+        // Checking a null by passing a String("null") is strange behaviour,
+        // because it would also pass when the property value is not null but "null".
+        val entity = TestEntity(
+            TestChildEntity(null)
+        )
+        val condition = conditionTemplate.copy(value = "null")
+        val result = condition.isValid(entity)
+        assertEquals(false, result)
+    }
+
+    @Test
+    fun `should pass validation when property value is null and condition value is null`() {
+        // Checking a null by passing a String("null") is strange behaviour,
+        // because it would also pass when the property value is not null but "null".
+        val entity = TestEntity(
+            TestChildEntity(null)
+        )
+        val condition = conditionTemplate.copy(value = null)
+        val result = condition.isValid(entity)
+        assertEquals(true, result)
+    }
+
+    @Test
+    fun `should throw NoSuchFieldException when the property field cannot be found`() {
         val condition = conditionTemplate.copy(field = "child.non-existent")
         assertThrows<NoSuchFieldException> {
+            condition.isValid(entity)
+        }
+    }
+
+    @Test
+    fun `should throw NullPointerException when a parent in the path is null`() {
+        val entity = TestEntity(null)
+        val condition = conditionTemplate
+        assertThrows<NullPointerException> {
             condition.isValid(entity)
         }
     }
@@ -78,9 +128,9 @@ class FieldPermissionConditionTest {
         JSONAssert.assertEquals(
             """
             {
-              "type": "${condition.type.value}",
-              "field": "${condition.field}",
-              "value": "${condition.value}"
+              "type": "${PermissionConditionType.FIELD.value}",
+              "field": "child.property",
+              "value": true
             }
         """.trimIndent(), json, JSONCompareMode.NON_EXTENSIBLE
         )
@@ -93,7 +143,7 @@ class FieldPermissionConditionTest {
             {
               "type": "field",
               "field": "test-field",
-              "value": "test-value"
+              "value": true
             }
         """.trimIndent()
         )
@@ -102,6 +152,6 @@ class FieldPermissionConditionTest {
         result as FieldPermissionCondition
         MatcherAssert.assertThat(result.type, Matchers.equalTo(PermissionConditionType.FIELD))
         MatcherAssert.assertThat(result.field, Matchers.equalTo("test-field"))
-        MatcherAssert.assertThat(result.value, Matchers.equalTo("test-value"))
+        MatcherAssert.assertThat(result.value, Matchers.equalTo(true))
     }
 }

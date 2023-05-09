@@ -20,62 +20,96 @@ import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 
 class PermissionExpressionOperatorTest {
+
+    @Test
+    fun `NOT_EQUAL_TO should evaluate correctly`() {
+        val op = PermissionExpressionOperator.NOT_EQUAL_TO
+        assertEquals(true, op, "a", "b")
+        assertEquals(false, op, "b", "b")
+        assertEquals(true, op, "b", "a")
+        assertEquals(true, op, 1.35, 1.34)
+        assertEquals(false, op, 1.34, 1.34)
+        assertEquals(true, op, 1.33, 1.34)
+        assertEquals(false, op, null, null)
+        assertEquals(true, op, null, "a")
+        assertEquals(true, op, "a", null)
+    }
+
     @Test
     fun `EQUAL_TO should evaluate correctly`() {
         val op = PermissionExpressionOperator.EQUAL_TO
-        assertEquals(false, op.evaluate("a", "b"))
-        assertEquals(true, op.evaluate("b", "b"))
-        assertEquals(false, op.evaluate("b", "a"))
-        assertEquals(false, op.evaluate(1.35, 1.34))
-        assertEquals(true, op.evaluate(1.34, 1.34))
-        assertEquals(false, op.evaluate(1.33, 1.34))
+        assertEquals(false, op, "a", "b")
+        assertEquals(true, op, "b", "b")
+        assertEquals(false, op, "b", "a")
+        assertEquals(false, op, 1.35, 1.34)
+        assertEquals(true, op, 1.34, 1.34)
+        assertEquals(false, op, 1.33, 1.34)
+        assertEquals(true, op, null, null)
+        assertEquals(false, op, null, "a")
+        assertEquals(false, op, "a", null)
     }
 
     @Test
     fun `GREATER_THAN should evaluate correctly`() {
         val op = PermissionExpressionOperator.GREATER_THAN
 
-        assertEquals(false, op.evaluate("a", "b"))
-        assertEquals(false, op.evaluate("b", "b"))
-        assertEquals(true, op.evaluate("b", "a"))
-        assertEquals(true, op.evaluate(1.35, 1.34))
-        assertEquals(false, op.evaluate(1.34, 1.34))
-        assertEquals(false, op.evaluate(1.33, 1.34))
+        assertEquals(false, op, "a", "b")
+        assertEquals(false, op, "b", "b")
+        assertEquals(true, op, "b", "a")
+        assertEquals(true, op, 1.35, 1.34)
+        assertEquals(false, op, 1.34, 1.34)
+        assertEquals(false, op, 1.33, 1.34)
+        assertEquals(false, op, null, null)
+        assertEquals(false, op, null, "a")
+        assertEquals(false, op, "a", null)
     }
 
     @Test
     fun `GREATER_THAN_OR_EQUAL_TO should evaluate correctly`() {
         val op = PermissionExpressionOperator.GREATER_THAN_OR_EQUAL_TO
 
-        assertEquals(false, op.evaluate("a", "b"))
-        assertEquals(true, op.evaluate("b", "b"))
-        assertEquals(true, op.evaluate("b", "a"))
-        assertEquals(true, op.evaluate(1.35, 1.34))
-        assertEquals(true, op.evaluate(1.34, 1.34))
-        assertEquals(false, op.evaluate(1.33, 1.34))
+        assertEquals(false, op, "a", "b")
+        assertEquals(true, op, "b", "b")
+        assertEquals(true, op, "b", "a")
+        assertEquals(true, op, 1.35, 1.34)
+        assertEquals(true, op, 1.34, 1.34)
+        assertEquals(false, op, 1.33, 1.34)
+        assertEquals(true, op, null, null)
+        assertEquals(false, op, null, "a")
+        assertEquals(false, op, "a", null)
     }
 
     @Test
     fun `LESS_THAN should evaluate correctly`() {
         val op = PermissionExpressionOperator.LESS_THAN
 
-        assertEquals(true, op.evaluate("a", "b"))
-        assertEquals(false, op.evaluate("b", "b"))
-        assertEquals(false, op.evaluate("b", "a"))
-        assertEquals(false, op.evaluate(1.35, 1.34))
-        assertEquals(false, op.evaluate(1.34, 1.34))
-        assertEquals(true, op.evaluate(1.33, 1.34))
+        assertEquals(true, op, "a", "b")
+        assertEquals(false, op, "b", "b")
+        assertEquals(false, op, "b", "a")
+        assertEquals(false, op, 1.35, 1.34)
+        assertEquals(false, op, 1.34, 1.34)
+        assertEquals(true, op, 1.33, 1.34)
+        assertEquals(false, op, null, null)
+        assertEquals(false, op, null, "a")
+        assertEquals(false, op, "a", null)
     }
 
     @Test
     fun `LESS_THAN_OR_EQUAL_TO should evaluate correctly`() {
         val op = PermissionExpressionOperator.LESS_THAN_OR_EQUAL_TO
 
-        assertEquals(true, op.evaluate("a", "b"))
-        assertEquals(true, op.evaluate("b", "b"))
-        assertEquals(false, op.evaluate("b", "a"))
-        assertEquals(false, op.evaluate(1.35, 1.34))
-        assertEquals(true, op.evaluate(1.34, 1.34))
-        assertEquals(true, op.evaluate(1.33, 1.34))
+        assertEquals(true, op, "a", "b")
+        assertEquals(true, op, "b", "b")
+        assertEquals(false, op, "b", "a")
+        assertEquals(false, op, 1.35, 1.34)
+        assertEquals(true, op, 1.34, 1.34)
+        assertEquals(true, op, 1.33, 1.34)
+        assertEquals(true, op,null, null)
+        assertEquals(false, op, null, "a")
+        assertEquals(false, op, "a", null)
+    }
+
+    fun <T: Comparable<T>> assertEquals(expected: Boolean, op: PermissionExpressionOperator, left: T?, right: T?) {
+        assertEquals(expected, op.evaluate(left, right), "[ $left ${op.asText} $right ]")
     }
 }
