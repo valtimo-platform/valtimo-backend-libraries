@@ -22,7 +22,7 @@ import com.ritense.plugin.service.PluginService
 
 class ObjecttypenApiPluginFactory(
     pluginService: PluginService,
-    val objecttypenApiClient: ObjecttypenApiClient
+    private val objecttypenApiClient: ObjecttypenApiClient
 ) : PluginFactory<ObjecttypenApiPlugin>(pluginService) {
 
     override fun create(): ObjecttypenApiPlugin {
