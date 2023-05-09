@@ -33,8 +33,8 @@ import java.time.LocalDate
 import java.util.UUID
 
 class ZaakObjectListener(
-    val pluginService: PluginService,
-    val zaakObjectService: ZaakObjectService,
+    private val pluginService: PluginService,
+    private val zaakObjectService: ZaakObjectService,
 ) {
     @EventListener(ExternalDataSubmittedEvent::class)
     fun handle(event: ExternalDataSubmittedEvent) {
