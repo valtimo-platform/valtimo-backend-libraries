@@ -29,7 +29,7 @@ import org.springframework.web.util.UriComponentsBuilder
    description = "Connects to the Objecttypen API"
 )
 class ObjecttypenApiPlugin(
-    val objecttypenApiClient: ObjecttypenApiClient
+    private val objecttypenApiClient: ObjecttypenApiClient
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI

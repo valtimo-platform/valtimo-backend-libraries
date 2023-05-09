@@ -27,9 +27,9 @@ import java.util.UUID
 import java.util.function.Function
 
 class ZaakObjectValueResolverFactory(
-    val zaakObjectService: ZaakObjectService,
-    val objectMapper: ObjectMapper,
-    val processDocumentService: ProcessDocumentService,
+    private val zaakObjectService: ZaakObjectService,
+    private val objectMapper: ObjectMapper,
+    private val processDocumentService: ProcessDocumentService,
 ) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
