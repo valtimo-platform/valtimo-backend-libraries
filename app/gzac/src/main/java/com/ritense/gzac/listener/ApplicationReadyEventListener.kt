@@ -107,22 +107,9 @@ class ApplicationReadyEventListener(
 
     fun createPlugins() {
         try {
-            val zakenApiAuthenticationPluginId = UUID.fromString("b609a0a3-886e-4b3d-ae0d-c01effb311ee")
             val zakenApiPluginId = UUID.fromString("3079d6fe-42e3-4f8f-a9db-52ce2507b7ee")
             val documentenApiPluginId = UUID.fromString("5474fe57-532a-4050-8d89-32e62ca3e895")
-            val notificatiesApiAuthenticationPluginId = UUID.fromString("df36cd33-d0dd-429a-a8ad-e16f307ac434")
-            val notificatiesApiPluginId = UUID.fromString("bb1c601b-b257-497e-bab0-c21d339335d7")
-            val objectenApiAuthenticationPluginId = UUID.fromString("21a006f9-7833-4cdf-a6b7-1927705dd543")
             val objectenApiPluginId = UUID.fromString("b6d83348-97e7-4660-bd35-2e5fcc9629b4")
-            val objecttypenApiAuthenticationPluginId = UUID.fromString("acb0687a-075e-4435-923b-e6cb01d4d5db")
-            val objecttypenApiPluginId = UUID.fromString("4021bb75-18c8-4ca5-8658-b9f9c728bba0")
-
-            val bezwaarConfigurationId = UUID.fromString("29400564-d25f-491c-abb2-afc42894ac9d")//createBezwaarObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
-            val taakConfigurationId = UUID.fromString("16c69c86-0c5d-4d57-b4ac-0add8271a142")//createTaakObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
-            createBomenObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
-
-            //createVerzoekPlugin(notificatiesApiPluginId, bezwaarConfigurationId)
-
             val portaaltaakPluginId = UUID.fromString("d65113e0-a9cb-4904-93e1-5e8b1206e625")//createPortaaltaakPlugin(notificatiesApiPluginId, taakConfigurationId)
 
             portalPersonCreatePortaaltaak(portaaltaakPluginId)
