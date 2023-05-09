@@ -117,13 +117,13 @@ class ApplicationReadyEventListener(
             val objecttypenApiAuthenticationPluginId = UUID.fromString("acb0687a-075e-4435-923b-e6cb01d4d5db")
             val objecttypenApiPluginId = UUID.fromString("4021bb75-18c8-4ca5-8658-b9f9c728bba0")
 
-            val bezwaarConfigurationId = createBezwaarObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
-            val taakConfigurationId = createTaakObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
+            val bezwaarConfigurationId = UUID.fromString("29400564-d25f-491c-abb2-afc42894ac9d")//createBezwaarObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
+            val taakConfigurationId = UUID.fromString("16c69c86-0c5d-4d57-b4ac-0add8271a142")//createTaakObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
             createBomenObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
 
-            createVerzoekPlugin(notificatiesApiPluginId, bezwaarConfigurationId)
+            //createVerzoekPlugin(notificatiesApiPluginId, bezwaarConfigurationId)
 
-            val portaaltaakPluginId = createPortaaltaakPlugin(notificatiesApiPluginId, taakConfigurationId)
+            val portaaltaakPluginId = UUID.fromString("d65113e0-a9cb-4904-93e1-5e8b1206e625")//createPortaaltaakPlugin(notificatiesApiPluginId, taakConfigurationId)
 
             portalPersonCreatePortaaltaak(portaaltaakPluginId)
             processCompletedPortaalTaakCompletePortaaltaak(portaaltaakPluginId)

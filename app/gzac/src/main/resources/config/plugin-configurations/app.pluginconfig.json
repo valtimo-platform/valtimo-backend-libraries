@@ -108,5 +108,34 @@
             "username": "test-user",
             "password": "test-password"
         }
+    },
+    {
+        "id": "87bea80a-61da-46c1-b5fb-353d90751082",
+        "title": "Verzoek bezwaar",
+        "pluginDefinitionKey": "verzoek",
+        "properties": {
+            "notificatiesApiPluginConfiguration": "bb1c601b-b257-497e-bab0-c21d339335d7",
+            "objectManagementId": "29400564-d25f-491c-abb2-afc42894ac9d",
+            "processToStart": "create-zaakdossier",
+            "rsin": "051845623",
+            "verzoekProperties": [{
+                "type": "bezwaar",
+                "caseDefinitionName": "bezwaar",
+                "processDefinitionKey": "bezwaar",
+                "initiatorRoltypeUrl": "http://localhost:8001/catalogi/api/v1/roltypen/1c359a1b-c38d-47b8-bed5-994db88ead61",
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "full"
+            }]
+        }
+    },
+    {
+        "id": "d65113e0-a9cb-4904-93e1-5e8b1206e625",
+        "title": "Portaaltaak",
+        "pluginDefinitionKey": "portaaltaak",
+        "properties": {
+            "notificatiesApiPluginConfiguration": "bb1c601b-b257-497e-bab0-c21d339335d7",
+            "objectManagementConfigurationId": "16c69c86-0c5d-4d57-b4ac-0add8271a142",
+            "completeTaakProcess": "process-completed-portaaltaak"
+        }
     }
 ]

@@ -27,6 +27,8 @@ import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
@@ -42,6 +44,7 @@ class PluginAutoDeploymentEventListener(
 ) {
 
     @Transactional
+    @Order(Ordered.LOWEST_PRECEDENCE-1)
     @EventListener(ApplicationReadyEvent::class)
     fun deployPluginConfigurations(){
         logger.info { "Deploying all plugins from $PATH" }
