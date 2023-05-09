@@ -35,7 +35,7 @@ import org.springframework.http.HttpStatus
     description = "Connects to the Objecten API"
 )
 class ObjectenApiPlugin(
-    val objectenApiClient: ObjectenApiClient
+    private val objectenApiClient: ObjectenApiClient
 ) {
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
