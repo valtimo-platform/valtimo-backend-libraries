@@ -50,7 +50,14 @@ data class ContainerPermissionCondition<TO : Any>(
     private fun findChildSpecification(): AuthorizationSpecification<TO> {
         return AuthorizationServiceHolder.currentInstance.getAuthorizationSpecification(
             AuthorizationRequest(this.resourceType, null, Action.IGNORE),
-            listOf(Permission(resourceType = resourceType, action = Action.IGNORE, conditions = conditions))
+            listOf(
+                Permission(
+                    resourceType = resourceType,
+                    action = Action.IGNORE,
+                    conditions = conditions,
+                    roleKey = ""
+                )
+            )
         )
     }
 

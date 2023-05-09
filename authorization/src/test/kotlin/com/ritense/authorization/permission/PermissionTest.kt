@@ -37,11 +37,17 @@ class PermissionTest {
     fun setup() {
         condition1 = mock()
         condition2 = mock()
-        permission = spy(Permission(resourceType = String::class.java, action = Action.VIEW,
-            conditions = listOf(
-                condition1,
-                condition2
-            )))
+        permission = spy(
+            Permission(
+                resourceType = String::class.java,
+                action = Action.VIEW,
+                conditions = listOf(
+                    condition1,
+                    condition2
+                ),
+                roleKey = ""
+            )
+        )
     }
 
     @Test

@@ -17,19 +17,12 @@
 package com.ritense.authorization.autoconfigure
 
 import com.fasterxml.jackson.databind.Module
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.jsontype.NamedType
-import com.fasterxml.jackson.databind.module.SimpleModule
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.AuthorizationServiceHolder
-import com.ritense.authorization.permission.ContainerPermissionCondition
-import com.ritense.authorization.permission.ExpressionPermissionCondition
-import com.ritense.authorization.permission.FieldPermissionCondition
+import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
-import com.ritense.authorization.permission.PermissionExpressionOperator
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -40,7 +33,6 @@ import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import javax.sql.DataSource
-import org.zalando.problem.jackson.ProblemModule
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.authorization"])
@@ -79,20 +71,25 @@ class AuthorizationAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = ["defaultPermissions"])
     fun defaultPermissions(): List<Permission> {
-        val documentPermissions:List<Permission> = try {
+        val jsonSchemaDocumentClassName = "com.ritense.document.domain.impl.JsonSchemaDocument"
+        val testRoleKey = "test-role"
+
+        val documentPermissions: List<Permission> = try {
             listOf(
                 Permission(
-                    resourceType = Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
+                    resourceType = Class.forName(jsonSchemaDocumentClassName),
                     action = Action.LIST_VIEW,
-                    conditions = listOf()
+                    conditions = listOf(),
+                    roleKey = testRoleKey
                 ),
                 Permission(
-                    resourceType = Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
+                    resourceType = Class.forName(jsonSchemaDocumentClassName),
                     action = Action.VIEW,
-                    conditions = emptyList()
+                    conditions = emptyList(),
+                    roleKey = testRoleKey
                 ),
                 Permission(
-                    resourceType = Class.forName("com.ritense.document.domain.impl.JsonSchemaDocument"),
+                    resourceType = Class.forName(jsonSchemaDocumentClassName),
                     action = Action.CLAIM,
 //                    conditions = listOf(
 //                        FieldPermissionCondition("documentDefinitionId.name", "leningen"),
@@ -100,14 +97,15 @@ class AuthorizationAutoConfiguration {
 //                            "content.content",
 //                            "$.height",
 //                            PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java)
-//                    )
+//                    ),
+                    roleKey = testRoleKey
                 )
             )
-        } catch (e:ClassNotFoundException) {
+        } catch (e: ClassNotFoundException) {
             listOf()
         }
 
-        val notePermissions:List<Permission> = try {
+        val notePermissions: List<Permission> = try {
             listOf(
                 Permission(
                     resourceType = Class.forName("com.ritense.note.domain.Note"),
@@ -125,9 +123,10 @@ class AuthorizationAutoConfiguration {
 //                            )
 //                        )
 //                    )
+                    roleKey = testRoleKey
                 )
             )
-        } catch (e:ClassNotFoundException) {
+        } catch (e: ClassNotFoundException) {
             listOf()
         }
 

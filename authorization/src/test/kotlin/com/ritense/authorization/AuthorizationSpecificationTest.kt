@@ -33,7 +33,12 @@ class AuthorizationSpecificationTest {
     fun `isAuthorized should return true`() {
         val spec = TestAuthorizationSpecification(
             listOf(
-                Permission(resourceType = TestEntity::class.java, action = Action.COMPLETE, conditions = listOf())
+                Permission(
+                    resourceType = TestEntity::class.java,
+                    action = Action.COMPLETE,
+                    conditions = listOf(),
+                    roleKey = ""
+                )
             ),
             AuthorizationRequest(
                 TestEntity::class.java, action = Action.COMPLETE
@@ -47,7 +52,12 @@ class AuthorizationSpecificationTest {
     fun `isAuthorized should return false if no permission can be found for entity class`() {
         val spec = TestAuthorizationSpecification(
             listOf(
-                Permission(resourceType = String::class.java, action = Action.COMPLETE, conditions = listOf())
+                Permission(
+                    resourceType = String::class.java,
+                    action = Action.COMPLETE,
+                    conditions = listOf(),
+                    roleKey = ""
+                )
             ),
             AuthorizationRequest(
                 TestEntity::class.java, action = Action.COMPLETE
@@ -61,7 +71,12 @@ class AuthorizationSpecificationTest {
     fun `isAuthorized should return false if no permission can be found for requested action`() {
         val spec = TestAuthorizationSpecification(
             listOf(
-                Permission(resourceType = TestEntity::class.java, action = Action.COMPLETE, conditions = listOf())
+                Permission(
+                    resourceType = TestEntity::class.java,
+                    action = Action.COMPLETE,
+                    conditions = listOf(),
+                    roleKey = ""
+                )
             ),
             AuthorizationRequest(
                 TestEntity::class.java, action = Action.VIEW
@@ -76,7 +91,8 @@ class AuthorizationSpecificationTest {
         val permission: Permission = spy(Permission(
             resourceType = TestEntity::class.java,
             action = Action.COMPLETE,
-            conditions = listOf())
+            conditions = listOf(),
+            roleKey = "")
         )
         val spec = TestAuthorizationSpecification(
             listOf(

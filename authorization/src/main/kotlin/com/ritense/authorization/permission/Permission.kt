@@ -16,7 +16,6 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 
-// TODO: Connection with a role. What is a role? Separate entity?
 @Entity
 @Table(name = "permission")
 data class Permission(
@@ -33,7 +32,10 @@ data class Permission(
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "conditions", columnDefinition = "json")
-    val conditions: List<PermissionCondition> = emptyList()
+    val conditions: List<PermissionCondition> = emptyList(),
+
+    @Column(name = "role_key", nullable = false)
+    val roleKey: String,
 ) {
     fun <T> appliesTo(resourceType: Class<T>, entity: Any?): Boolean {
         return if (this.resourceType == resourceType) {

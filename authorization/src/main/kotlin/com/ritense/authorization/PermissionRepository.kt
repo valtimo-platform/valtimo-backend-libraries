@@ -20,4 +20,6 @@ import com.ritense.authorization.permission.Permission
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
-interface PermissionRepository : JpaRepository<Permission, UUID>
+interface PermissionRepository : JpaRepository<Permission, UUID> {
+    fun findAllByRoleKey(roleKey: String): List<Permission>
+}
