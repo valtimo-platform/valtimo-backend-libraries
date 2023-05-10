@@ -76,6 +76,11 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
         );
     }
 
+    @Override
+    public  <T> Expression<T> getValueForPath(CriteriaBuilder cb, Path column, String path, Class<T> type) {
+        return getValueForPathText(cb, column, path).as(type);
+    }
+
     private Expression<String> getValueForPathText(CriteriaBuilder cb, Path column, String path) {
         List<Expression<String>> pathParts = splitPath(path).stream().map(cb::literal).toList();
         Expression[] expressions = new Expression[pathParts.size() + 1];
@@ -85,20 +90,6 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
         return cb.function(
             "jsonb_extract_path_text",
             String.class,
-            expressions
-        );
-    }
-
-    @Override
-    public  <T> Expression<T> getValueForPath(CriteriaBuilder cb, Path column, String path, Class<T> type) {
-        List<Expression<String>> pathParts = splitPath(path).stream().map(cb::literal).toList();
-        Expression[] expressions = new Expression[pathParts.size() + 1];
-        expressions[0] = column;
-        System.arraycopy(pathParts.toArray(), 0, expressions, 1, pathParts.size());
-
-        return cb.function(
-            "jsonb_extract_path",
-            type,
             expressions
         );
     }
