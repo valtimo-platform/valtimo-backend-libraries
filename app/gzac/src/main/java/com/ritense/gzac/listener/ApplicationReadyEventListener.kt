@@ -16,19 +16,13 @@
 
 package com.ritense.gzac.listener
 
-import com.fasterxml.jackson.core.json.JsonReadFeature
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.besluit.connector.BesluitProperties
-import com.ritense.besluitenapi.BesluitenApiPlugin
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
-import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
@@ -46,12 +40,9 @@ import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
-import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
-import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import mu.KotlinLogging
@@ -333,33 +324,6 @@ class ApplicationReadyEventListener(
             event.documentDefinition().id().name(),
             setOf(AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER)
         )
-    }
-
-    private fun createProcessLinkIfNotExists(
-        processDefinitionKey: String,
-        activityId: String,
-        activityType: String,
-        pluginConfigurationId: UUID,
-        pluginActionDefinitionKey: String,
-        actionProperties: String,
-    ) {
-        val processDefinitionId = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey)
-            .latestVersion()
-            .singleResult()
-            .id
-        if (processLinkService.getProcessLinks(processDefinitionId, activityId).isEmpty()) {
-            processLinkService.createProcessLink(
-                PluginProcessLinkCreateDto(
-                    processDefinitionId = processDefinitionId,
-                    activityId = activityId,
-                    pluginConfigurationId = pluginConfigurationId,
-                    pluginActionDefinitionKey = pluginActionDefinitionKey,
-                    actionProperties = jacksonObjectMapper().readValue(actionProperties),
-                    activityType = ActivityTypeWithEventName.fromValue(activityType),
-                )
-            )
-        }
     }
 
     companion object {
