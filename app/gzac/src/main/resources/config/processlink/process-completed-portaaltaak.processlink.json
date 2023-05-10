@@ -3,7 +3,7 @@
         "activityId": "update_portaal_taak_status",
         "activityType": "bpmn:ServiceTask:start",
         "processLinkType": "plugin",
-        "pluginConfigurationId": "5bf50d21-9f9b-4168-9b09-98bf183fea2e",
+        "pluginConfigurationId": "d65113e0-a9cb-4904-93e1-5e8b1206e625",
         "pluginActionDefinitionKey": "complete-portaaltaak"
     },
     {

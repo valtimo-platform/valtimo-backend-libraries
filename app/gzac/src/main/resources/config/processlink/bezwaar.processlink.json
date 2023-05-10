@@ -1,0 +1,8 @@
+[
+  {
+    "activityId": "start-event-bezwaar-proces-gestart",
+    "activityType": "bpmn:StartEvent:start",
+    "processLinkType": "form",
+    "formDefinitionName": "start-form-bezwaar"
+  }
+]

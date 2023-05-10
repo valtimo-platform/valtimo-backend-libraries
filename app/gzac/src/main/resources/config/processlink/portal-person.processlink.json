@@ -1,9 +1,21 @@
 [
     {
+        "activityId": "start-event",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "form",
+        "formDefinitionName": "start-form-portal-person"
+    },
+    {
+        "activityId": "valtimo-task",
+        "activityType": "bpmn:UserTask:create",
+        "processLinkType": "form",
+        "formDefinitionName": "user-task-portal-person"
+    },
+    {
         "activityId": "portal-task",
         "activityType": "bpmn:UserTask:create",
         "processLinkType": "plugin",
-        "pluginConfigurationId": "5bf50d21-9f9b-4168-9b09-98bf183fea2e",
+        "pluginConfigurationId": "d65113e0-a9cb-4904-93e1-5e8b1206e625",
         "pluginActionDefinitionKey": "create-portaaltaak",
         "actionProperties": {
             "formType": "id",
