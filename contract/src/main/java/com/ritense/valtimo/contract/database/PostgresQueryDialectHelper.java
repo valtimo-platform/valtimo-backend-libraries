@@ -70,14 +70,13 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
             cb.function(
                 LOWER_CASE_FUNCTION,
                 String.class,
-                getValueForPath(cb, column, path, String.class)
+                getValueForPathText(cb, column, path)
             )
             , "%" + value.toLowerCase() + "%"
         );
     }
 
-    @Override
-    public <T> Expression<T> getValueForPath(CriteriaBuilder cb, Path column, String path, Class<T> type) {
+    private Expression<String> getValueForPathText(CriteriaBuilder cb, Path column, String path) {
         List<Expression<String>> pathParts = splitPath(path).stream().map(cb::literal).toList();
         Expression[] expressions = new Expression[pathParts.size() + 1];
         expressions[0] = column;
@@ -85,6 +84,20 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
 
         return cb.function(
             "jsonb_extract_path_text",
+            String.class,
+            expressions
+        );
+    }
+
+    @Override
+    public  <T> Expression<T> getValueForPath(CriteriaBuilder cb, Path column, String path, Class<T> type) {
+        List<Expression<String>> pathParts = splitPath(path).stream().map(cb::literal).toList();
+        Expression[] expressions = new Expression[pathParts.size() + 1];
+        expressions[0] = column;
+        System.arraycopy(pathParts.toArray(), 0, expressions, 1, pathParts.size());
+
+        return cb.function(
+            "jsonb_extract_path",
             type,
             expressions
         );
