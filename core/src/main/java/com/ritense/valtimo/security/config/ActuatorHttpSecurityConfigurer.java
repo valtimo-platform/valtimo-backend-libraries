@@ -56,6 +56,7 @@ public class ActuatorHttpSecurityConfigurer implements HttpSecurityConfigurer, A
                 .antMatchers(GET, "/management/mappings").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/logfile").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/loggers").hasAuthority(ACTUATOR)
+                .antMatchers(POST, "/management/loggers/**").hasAuthority(ACTUATOR)
                 .antMatchers(GET, "/management/info").hasAnyAuthority(ACTUATOR)
                 .and()
                 .httpBasic().authenticationEntryPoint(basicAuthenticationEntryPoint());
