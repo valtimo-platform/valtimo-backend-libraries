@@ -53,7 +53,7 @@ data class ExpressionPermissionCondition<V: Comparable<V>>(
 
         return operator.toPredicate(
             criteriaBuilder,
-            queryDialectHelper.getValueForPath(criteriaBuilder, path, this.path, clazz),
+            queryDialectHelper.getJsonValueExpression(criteriaBuilder, path, this.path, clazz),
             value
         )
     }

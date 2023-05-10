@@ -1032,7 +1032,7 @@ class ApplicationReadyEventListener(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.LIST_VIEW,
                     conditionContainer = ConditionContainer(listOf(
-                        FieldPermissionCondition("assigneeFullName", "Asha Miller")
+                        FieldPermissionCondition("assigneeFullName", "James Vance")
                     )),
                     roleKey = userRoleKey
                 ),

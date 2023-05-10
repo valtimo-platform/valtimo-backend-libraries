@@ -18,6 +18,6 @@ abstract class AuthorizationSpecification<T: Any> (
     }
 
     fun combinePredicates(criteriaBuilder: CriteriaBuilder, predicates: List<Predicate>): Predicate {
-        return criteriaBuilder.and(criteriaBuilder.or(*predicates.toTypedArray()))
+        return criteriaBuilder.or(*predicates.toTypedArray())
     }
 }
