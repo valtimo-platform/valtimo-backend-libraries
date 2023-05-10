@@ -1,0 +1,11 @@
+[
+    {
+        "title": "auto deployment test plugin",
+        "pluginDefinitionKey": "auto-deployment-test-plugin",
+        "properties": {
+            "property1": "property one",
+            "property2": true,
+            "property3": 3
+        }
+    }
+]
