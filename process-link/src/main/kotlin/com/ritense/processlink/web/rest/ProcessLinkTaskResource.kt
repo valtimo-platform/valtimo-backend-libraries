@@ -45,8 +45,15 @@ class ProcessLinkTaskResource(
     @GetMapping(value = ["/v1/process-definition/{processDefinitionId}/start-form"])
     fun getFormDefinition(
         @PathVariable processDefinitionId: String,
-        @RequestParam(required = false) documentId: UUID?
+        @RequestParam(required = false) documentId: UUID?,
+        @RequestParam(required = false) documentDefinitionName: String?
     ): ResponseEntity<Any> {
-        return ResponseEntity.ok(processLinkActivityService.getStartEventObject(processDefinitionId, documentId))
+        return ResponseEntity.ok(
+            processLinkActivityService.getStartEventObject(
+                processDefinitionId,
+                documentId,
+                documentDefinitionName
+            )
+        )
     }
 }

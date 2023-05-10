@@ -45,14 +45,15 @@ open class ProcessLinkActivityService(
 
     fun getStartEventObject(
         processDefinitionId: String,
-        documentId: UUID?
+        documentId: UUID?,
+        documentDefinitionName: String?
         ): ProcessLinkActivityResult<*>? {
         val processLink = processLinkService.getProcessLinksByProcessDefinitionIdAndActivityType(processDefinitionId,
             ActivityTypeWithEventName.START_EVENT_START) ?: return null
         var result: ProcessLinkActivityResult<*>? = null
         processLinkActivityHandlers.forEach {
             if(it.supports(processLink)){
-                result = it.getStartEventObject(processDefinitionId, documentId, processLink)
+                result = it.getStartEventObject(processDefinitionId, documentId, documentDefinitionName, processLink)
             }
         }
         return result
