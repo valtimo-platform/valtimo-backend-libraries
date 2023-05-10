@@ -20,5 +20,6 @@ import java.util.UUID
 
 @Deprecated("Since 10.6.0", ReplaceWith("com.ritense.form.web.rest.dto.FormProcessLinkCreateRequestDto"))
 class CreateFormFlowRequest(
-    val documentId: UUID?
+    val documentId: UUID?,
+    val documentDefinitionName: String?
 )

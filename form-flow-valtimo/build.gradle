@@ -24,6 +24,7 @@ dockerCompose {
 dependencies {
     api project(":form-flow")
     implementation project(":process-link")
+    implementation project(":process-document")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
