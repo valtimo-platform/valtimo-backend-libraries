@@ -79,7 +79,6 @@ class ApplicationReadyEventListener(
     @EventListener(ApplicationReadyEvent::class)
     fun handleApplicationReady() {
         createConnectors()
-        createPlugins()
     }
 
     @EventListener(DocumentDefinitionDeployedEvent::class)
@@ -102,30 +101,6 @@ class ApplicationReadyEventListener(
             createBesluitConnector(connectorTypes.findId("Besluiten"))
         } catch (ex: Exception) {
             logger.error { ex }
-        }
-    }
-
-    fun createPlugins() {
-        try {
-            val zakenApiAuthenticationPluginId = createZakenApiAuthenticationPlugin()
-            val zakenApiPluginId = createZakenApiPlugin(zakenApiAuthenticationPluginId)
-            createBesluitenApiPlugin(zakenApiAuthenticationPluginId)
-            createCatalogiApiPlugin(zakenApiAuthenticationPluginId)
-            val documentenApiPluginId = createDocumentenApiPlugin(zakenApiAuthenticationPluginId)
-            val notificatiesApiAuthenticationPluginId = createNotificatiesApiAuthenticationPlugin()
-            val notificatiesApiPluginId = createNotificatiesApiPlugin(notificatiesApiAuthenticationPluginId)
-            val objectenApiAuthenticationPluginId = createObjectenApiAuthenticationPlugin()
-            val objectenApiPluginId = createObjectenApiPlugin(objectenApiAuthenticationPluginId)
-            val objecttypenApiAuthenticationPluginId = createObjecttypenApiAuthenticationPlugin()
-            val objecttypenApiPluginId = createObjecttypenApiPlugin(objecttypenApiAuthenticationPluginId)
-            val bezwaarConfigurationId = createBezwaarObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
-            val taakConfigurationId = createTaakObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
-            createBomenObjectManagement(objecttypenApiPluginId, objectenApiPluginId)
-            createVerzoekPlugin(notificatiesApiPluginId, bezwaarConfigurationId)
-            createSmartDocumentsPlugin()
-            val portaaltaakPluginId = createPortaaltaakPlugin(notificatiesApiPluginId, taakConfigurationId)
-        } catch (ex: Exception) {
-            throw RuntimeException("Failed to deploy plugin configurations for development", ex)
         }
     }
 

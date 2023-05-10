@@ -21,6 +21,8 @@ import com.ritense.plugin.PluginCategoryResolver
 import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
 import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.autodeployment.PluginAutoDeploymentEventListener
+import com.ritense.plugin.service.PluginSupportedProcessLinksHandler
 import com.ritense.plugin.mapper.PluginProcessLinkMapper
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
@@ -34,7 +36,6 @@ import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.EncryptionService
 import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.service.PluginSupportedProcessLinksHandler
 import com.ritense.plugin.web.rest.PluginConfigurationResource
 import com.ritense.plugin.web.rest.PluginDefinitionResource
 import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
@@ -46,6 +47,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
+import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import javax.persistence.EntityManager
 
@@ -179,5 +181,19 @@ class PluginAutoConfiguration {
     @ConditionalOnMissingBean(PluginSupportedProcessLinksHandler::class)
     fun getPluginSupportedProcessLinks(pluginService: PluginService): PluginSupportedProcessLinksHandler {
         return PluginSupportedProcessLinksHandler(pluginService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginAutoDeploymentEventListener::class)
+    fun pluginAutoDeploymentEventListener(
+        objectMapper: ObjectMapper,
+        pluginService: PluginService,
+        resourceLoader: ResourceLoader
+    ): PluginAutoDeploymentEventListener{
+        return PluginAutoDeploymentEventListener(
+            pluginService = pluginService,
+            objectMapper = objectMapper,
+            resourceLoader = resourceLoader
+        )
     }
 }
