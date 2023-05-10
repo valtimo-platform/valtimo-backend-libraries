@@ -20,18 +20,18 @@ import com.ritense.formflow.repository.FormFlowInstanceRepository
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
-import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.service.ProcessLinkActivityService
+import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.valtimo.service.CamundaProcessService
-import java.util.UUID
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Transactional
 internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() {
@@ -121,23 +121,34 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
 
     @Test
     fun `should retrieve form-flow and create instance`(){
-        val processDefinitionId: String = UUID.randomUUID().toString()
         val processLinkId = UUID.randomUUID()
+
+        val processDefinition = repositoryService.createProcessDefinitionQuery()
+            .latestVersion()
+            .processDefinitionKey("formflow-one-task-process")
+            .singleResult();
 
         val formFlowDefinition = formFlowService.findDefinition("inkomens_loket:1")
 
         val processLink: ProcessLink = FormFlowProcessLink(
             id = processLinkId,
-            processDefinitionId = processDefinitionId,
+            processDefinitionId = processDefinition.id,
             activityId = "some_activity_id",
             activityType = ActivityTypeWithEventName.START_EVENT_START,
             formFlowDefinitionId = formFlowDefinition?.id.toString())
 
-        val result = processLinkActivityHandler.getStartEventObject("", null, processLink)
+        val result = processLinkActivityHandler.getStartEventObject(
+            processDefinition.id,
+            null,
+            "some-document",
+            processLink
+        )
         val dbFormFlowInstances = formFlowInstanceRepository.findAll().filter { it.formFlowDefinition.id.toString() == "inkomens_loket:1" }
         assertEquals(1, dbFormFlowInstances.size)
         assertEquals("form-flow",result.type)
         assertEquals(dbFormFlowInstances[0].id.id,result.properties.formFlowInstanceId)
-
+        val additionalProperties = dbFormFlowInstances[0].getAdditionalProperties()
+        assertEquals(additionalProperties["documentDefinitionName"], "some-document")
+        assertEquals(additionalProperties["processDefinitionKey"], "formflow-one-task-process")
     }
 }
