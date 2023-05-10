@@ -17,7 +17,6 @@
 package com.ritense.gzac.listener
 
 import com.fasterxml.jackson.core.json.JsonReadFeature
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -1001,39 +1000,90 @@ class ApplicationReadyEventListener(
         roleRepository: RoleRepository
     ) {
         val userRoleKey = "ROLE_USER"
+        val adminRoleKey = "ROLE_ADMIN"
 
         if (!roleRepository.existsById(userRoleKey)) {
             roleRepository.save(Role(userRoleKey))
         }
 
-        permissionRepository.deleteAll(permissionRepository.findAllByRoleKeyIn(listOf(userRoleKey)))
+        if (!roleRepository.existsById(adminRoleKey)) {
+            roleRepository.save(Role(adminRoleKey))
+        }
+
+        permissionRepository.deleteAll(permissionRepository.findAllByRoleKeyIn(listOf(userRoleKey, adminRoleKey)))
 
         val documentPermissions: List<Permission> = try {
             listOf(
+                // ROLE_USER
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.LIST_VIEW,
-                    conditionContainer = ConditionContainer(listOf()),
+                    conditionContainer = ConditionContainer(listOf(
+                        ExpressionPermissionCondition(
+                            "content.content",
+                            "$.height",
+                            PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java
+                        ),
+                        FieldPermissionCondition("documentDefinitionId.name", "leningen")
+                    )),
+                    roleKey = userRoleKey
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = Action.LIST_VIEW,
+                    conditionContainer = ConditionContainer(listOf(
+                        FieldPermissionCondition("assigneeFullName", "Asha Miller")
+                    )),
                     roleKey = userRoleKey
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.VIEW,
-                    conditionContainer = ConditionContainer(emptyList()),
+                    conditionContainer = ConditionContainer(listOf(
+                        ExpressionPermissionCondition(
+                            "content.content",
+                            "$.height",
+                            PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java
+                        ),
+                        FieldPermissionCondition("documentDefinitionId.name", "leningen")
+                    )),
+                    roleKey = userRoleKey
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = Action.VIEW,
+                    conditionContainer = ConditionContainer(listOf(
+                        FieldPermissionCondition("assigneeFullName", "James Vance")
+                    )),
                     roleKey = userRoleKey
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.CLAIM,
                     conditionContainer = ConditionContainer(listOf(
-                        ExpressionPermissionCondition(
-                            "content.content",
-                            "$.height",
-                            PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java),
-                        FieldPermissionCondition("documentDefinitionId.name", "leningen"),
+                        FieldPermissionCondition("assigneeFullName", "James Vance")
                     )),
                     roleKey = userRoleKey
-                )
+                ),
+                // ROLE_ADMIN
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = Action.LIST_VIEW,
+                    conditionContainer = ConditionContainer(emptyList()),
+                    roleKey = adminRoleKey
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = Action.VIEW,
+                    conditionContainer = ConditionContainer(emptyList()),
+                    roleKey = adminRoleKey
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = Action.CLAIM,
+                    conditionContainer = ConditionContainer(emptyList()),
+                    roleKey = adminRoleKey
+                ),
             )
         } catch (e: ClassNotFoundException) {
             listOf()
@@ -1041,6 +1091,7 @@ class ApplicationReadyEventListener(
 
         val notePermissions: List<Permission> = try {
             listOf(
+                // ROLE_USER
                 Permission(
                     resourceType = Note::class.java,
                     action = Action.VIEW,
@@ -1049,15 +1100,18 @@ class ApplicationReadyEventListener(
                             JsonSchemaDocument::class.java,
                             listOf(
                                 FieldPermissionCondition("documentDefinitionId.name", "leningen"),
-                                ExpressionPermissionCondition(
-                                    "content.content",
-                                    "$.height",
-                                    PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java),
-                                FieldPermissionCondition("assigneeFullName", "Asha Miller")
+                                FieldPermissionCondition("assigneeFullName", "James Vance")
                             )
                         ))
                     ),
                     roleKey = userRoleKey
+                ),
+                // ROLE_ADMIN
+                Permission(
+                    resourceType = Note::class.java,
+                    action = Action.VIEW,
+                    conditionContainer = ConditionContainer(listOf()),
+                    roleKey = adminRoleKey
                 )
             )
 
