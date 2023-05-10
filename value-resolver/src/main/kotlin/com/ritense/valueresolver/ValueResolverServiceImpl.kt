@@ -18,7 +18,7 @@ package com.ritense.valueresolver
 
 import org.camunda.bpm.engine.delegate.VariableScope
 
-class ValueResolverServiceImpl(
+open class ValueResolverServiceImpl(
     private val valueResolverFactories: List<ValueResolverFactory>
 ) : ValueResolverService {
     private val resolverFactoryMap: Map<String, ValueResolverFactory>
