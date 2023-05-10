@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package com.ritense.formlink.service.impl;
 
-import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowRemovalOperations;
-import static com.ritense.form.domain.FormIoFormDefinition.PROPERTY_KEY;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -28,8 +26,10 @@ import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder;
-import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import java.util.List;
+import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowRemovalOperations;
+import static com.ritense.form.domain.FormIoFormDefinition.PROPERTY_KEY;
 
 public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTransformerService<FormIoFormDefinition> {
 
@@ -194,19 +194,16 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
 
                 } else if (container.contains("/-/")) {
                     final JsonPointer arrayPointer = JsonPointer.compile(StringUtils.substringBefore(container, "/-"));
-                    final ArrayNode list = (ArrayNode) source.at(arrayPointer);//get sources array
-                    final String calculatedArrayItemIndex = String.valueOf(list.size());
-
-                    final JsonPointer arrayItemForSourceJsonPointer = JsonPointer.compile(
-                        arrayPointer + "/" + calculatedArrayItemIndex + "/" + propertyName
-                    );
+                    JsonNode array = source.at(arrayPointer);
+                    if(array.isMissingNode()) {
+                        sourceJsonPatchBuilder.add(arrayPointer, JsonNodeFactory.instance.arrayNode());
+                    }
 
                     //ensure object exist in array
-                    sourceJsonPatchBuilder.add(
-                        JsonPointer.valueOf(arrayPointer + "/" + calculatedArrayItemIndex), JsonNodeFactory.instance.objectNode()
-                    );
+                    JsonPointer itemPointer = arrayPointer.appendIndex(array.size()); //array.size returns 0 for MissingNode
+                    sourceJsonPatchBuilder.add(itemPointer, JsonNodeFactory.instance.objectNode());
                     //Add actual item to its position
-                    sourceJsonPatchBuilder.add(arrayItemForSourceJsonPointer, propertyValue);
+                    sourceJsonPatchBuilder.add(itemPointer.appendProperty(propertyName), propertyValue);
                     submissionJsonPatchBuilder.remove(submissionProperty);
                 }
             }

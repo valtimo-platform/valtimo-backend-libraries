@@ -140,8 +140,8 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
                     }
                 ],
                 "receiver": "${TaakReceiver.OTHER.key}",
-                "otherReceiver": "${OtherTaakReceiver.KVK.key}",
-                "kvk": "569312863"
+                "identificationKey": "${TaakIdentificatie.TYPE_KVK}",
+                "identificationValue": "569312863"
             }
         """.trimIndent()
         createProcessLink(actionPropertiesJson)
@@ -189,7 +189,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
         assertEquals("Luis", mapOfValuesToUpdate["doc:/name"])
 
         // assert second call to camundaProcessService.startProcess() where handling process is started
-        assertEquals("process-portaaltaak-uploaded-documents-mock", processDefinitionKeyCaptor.secondValue)
+        assertEquals("process-completed-portaaltaak-mock", processDefinitionKeyCaptor.secondValue)
         assertEquals(documentId!!.toString(), businessKeyCaptor.secondValue)
         val processVariables = processVariableCaptor.secondValue
         assertEquals(event.resourceUrl, processVariables["portaalTaakObjectUrl"])
@@ -269,7 +269,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPlugin.id.id}",
               "objectManagementConfigurationId": "${objectManagement.id}",
-              "uploadedDocumentsHandlerProcess": "process-portaaltaak-uploaded-documents-mock"
+              "completeTaakProcess": "process-completed-portaaltaak-mock"
             }
         """.trimIndent()
 

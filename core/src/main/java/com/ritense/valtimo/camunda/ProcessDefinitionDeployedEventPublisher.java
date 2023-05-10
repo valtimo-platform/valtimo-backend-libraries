@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,10 @@ public class ProcessDefinitionDeployedEventPublisher implements Deployer {
     @Override
     public void deploy(DeploymentEntity deployment) {
         if (deployment.isNew() && deployment.getDeployedArtifacts() != null) {
-            final var processDefinitions = (List<ProcessDefinitionEntity>) deployment.getDeployedArtifacts().get(ProcessDefinitionEntity.class);
-            processDefinitions.forEach(definition -> publishEvent(deployment, definition));
+            final var processDefinitions = (List<ProcessDefinitionEntity>) deployment.getDeployedArtifacts(ProcessDefinitionEntity.class);
+            if (processDefinitions != null) {
+                processDefinitions.forEach(definition -> publishEvent(deployment, definition));
+            }
         }
     }
 

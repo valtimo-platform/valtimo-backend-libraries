@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,17 @@ class ObjectenApiClient(
             .toEntity(ObjectWrapper::class.java)
             .block()
 
-        return result?.body!!
+        val responseBody = result?.body!!
+
+        return if (responseBody.type.host == "host.docker.internal") {
+            responseBody.copy(
+                type = URI.create(
+                    responseBody.type.toString().replace("host.docker.internal", "localhost")
+                )
+            )
+        } else {
+            responseBody
+        }
     }
 
     fun getObjectsByObjecttypeUrl(
@@ -164,6 +174,17 @@ class ObjectenApiClient(
         objectUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
+        val objectRequestCorrectedHost = if (objectRequest.type.host == "localhost") {
+            objectRequest.copy(
+                type = UriComponentsBuilder
+                    .fromUri(objectRequest.type)
+                    .host("host.docker.internal")
+                    .build()
+                    .toUri()
+            )
+        } else {
+            objectRequest
+        }
         val result = webclientBuilder
             .clone()
             .filter(authentication)
@@ -171,7 +192,7 @@ class ObjectenApiClient(
             .patch()
             .uri(objectUrl)
             .header("Content-Crs", "EPSG:4326")
-            .bodyValue(objectRequest)
+            .bodyValue(objectRequestCorrectedHost)
             .retrieve()
             .toEntity(ObjectWrapper::class.java)
             .block()

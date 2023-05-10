@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -235,7 +235,7 @@ internal class ObjectenApiClientTest {
         mockApi.enqueue(mockResponse(responseBody))
 
         val objectUrl = mockApi.url("/some-object").toString()
-        val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString()
+        val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString().replace("localhost","host")
 
         val result = client.objectPatch(
             TestAuthentication(),

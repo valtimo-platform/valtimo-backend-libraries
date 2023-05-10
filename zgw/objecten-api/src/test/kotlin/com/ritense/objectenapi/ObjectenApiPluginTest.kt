@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,11 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.http.HttpStatus
 import java.net.URI
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.never
 
 internal class ObjectenApiPluginTest{
 
@@ -36,12 +39,12 @@ internal class ObjectenApiPluginTest{
     @BeforeEach
     fun setUp() {
         plugin.authenticationPluginConfiguration = mock()
-        plugin.url = mock()
+        plugin.url = URI("http://example.com")
     }
 
     @Test
     fun `should call client on get object`() {
-        val objectUrl = URI("http://example.com")
+        val objectUrl = URI("http://example.com/1")
         val objectMock = mock<ObjectWrapper>()
         whenever(client.getObject(plugin.authenticationPluginConfiguration, objectUrl)).thenReturn(objectMock)
 
@@ -53,7 +56,7 @@ internal class ObjectenApiPluginTest{
 
     @Test
     fun `should call client on update object`() {
-        val objectUrl = URI("http://example.com")
+        val objectUrl =URI("http://example.com/1")
         val objectMock = mock<ObjectWrapper>()
         val objectRequest = mock<ObjectRequest>()
         whenever(client.objectUpdate(plugin.authenticationPluginConfiguration, objectUrl, objectRequest)).thenReturn(objectMock)
@@ -66,7 +69,7 @@ internal class ObjectenApiPluginTest{
 
     @Test
     fun `should call client on patch object`() {
-        val objectUrl = URI("http://example.com")
+        val objectUrl = URI("http://example.com/1")
         val objectMock = mock<ObjectWrapper>()
         val objectRequest = mock<ObjectRequest>()
         whenever(client.objectPatch(plugin.authenticationPluginConfiguration, objectUrl, objectRequest)).thenReturn(objectMock)
@@ -77,4 +80,26 @@ internal class ObjectenApiPluginTest{
         verify(client).objectPatch(any(), any(), any())
     }
 
+    @Test
+    fun `should call client on delete object`() {
+        val objectUrl = URI("http://example.com/1")
+        val mockStatus = mock<HttpStatus>()
+        whenever(client.deleteObject(plugin.authenticationPluginConfiguration, objectUrl)).thenReturn(mockStatus)
+
+        val result = plugin.deleteObject(objectUrl)
+
+        assertEquals(mockStatus, result)
+        verify(client).deleteObject(any(), any())
+    }
+
+    @Test
+    fun `should fail on delete object due to url mismatch`() {
+        val objectUrl = URI("http://localhost/1")
+
+        assertThrows<IllegalStateException> {
+            plugin.deleteObject(objectUrl)
+        }
+
+        verify(client, never()).deleteObject(any(), any())
+    }
 }

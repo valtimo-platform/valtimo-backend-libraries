@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,16 @@
 
 package com.ritense.documentenapi
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.DOCUMENT_URL_PROCESS_VAR
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.RESOURCE_ID_PROCESS_VAR
-import com.ritense.documentenapi.client.ConfidentialityLevel
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.CreateDocumentResult
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.zgw.domain.Vertrouwelijkheid
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -65,7 +66,7 @@ internal class DocumentenApiPluginTest {
             .thenReturn(fileStream)
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
-        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher)
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, jacksonObjectMapper())
         plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -73,7 +74,7 @@ internal class DocumentenApiPluginTest {
         plugin.storeTemporaryDocument(
             executionMock,
             "test.ext",
-            ConfidentialityLevel.ZAAKVERTROUWELIJK.key,
+            Vertrouwelijkheid.ZAAKVERTROUWELIJK.key,
             "title",
             "description",
             "localDocumentVariableName",
@@ -95,6 +96,7 @@ internal class DocumentenApiPluginTest {
         assertEquals("title", request.titel)
         assertEquals("GZAC", request.auteur)
         assertEquals("test.ext", request.bestandsnaam)
+        assertEquals(Vertrouwelijkheid.ZAAKVERTROUWELIJK, request.vertrouwelijkheidaanduiding)
         assertEquals("taal", request.taal)
         assertEquals(fileStream, request.inhoud)
         assertEquals("type", request.informatieobjecttype)
@@ -143,7 +145,7 @@ internal class DocumentenApiPluginTest {
                 "informatieobjecttype" to "type"))
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
-        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher)
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, jacksonObjectMapper())
         plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -168,7 +170,7 @@ internal class DocumentenApiPluginTest {
         assertEquals("type", request.informatieobjecttype)
         assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
         assertEquals(false, request.indicatieGebruiksrecht)
-        assertEquals(ConfidentialityLevel.ZAAKVERTROUWELIJK.key, request.vertrouwelijkheidaanduiding)
+        assertEquals(Vertrouwelijkheid.ZAAKVERTROUWELIJK, request.vertrouwelijkheidaanduiding)
     }
 
     @Test
@@ -199,7 +201,7 @@ internal class DocumentenApiPluginTest {
                 "informatieobjecttype" to "type"))
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
-        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher)
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, jacksonObjectMapper())
         plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -225,6 +227,29 @@ internal class DocumentenApiPluginTest {
         assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
         assertEquals(false, request.indicatieGebruiksrecht)
         assertNull(request.vertrouwelijkheidaanduiding)
+    }
+
+    @Test
+    fun `should call client to get document`() {
+        val client: DocumentenApiClient = mock()
+        val storageService: TemporaryResourceStorageService = mock()
+        val applicationEventPublisher: ApplicationEventPublisher= mock()
+        val authenticationMock = mock<DocumentenApiAuthentication>()
+
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, jacksonObjectMapper())
+        plugin.url = URI("http://some-url")
+        plugin.bronorganisatie = "123456789"
+        plugin.authenticationPluginConfiguration = authenticationMock
+
+        val informatieObjectUrl = URI("http://some-url/informatie-object/123")
+        plugin.getInformatieObject(informatieObjectUrl)
+
+        val informatieObjectUrlCaptor = argumentCaptor<URI>()
+        val authorizationCaptor = argumentCaptor<DocumentenApiAuthentication>()
+        verify(client).getInformatieObject(authorizationCaptor.capture(), informatieObjectUrlCaptor.capture())
+
+        assertEquals(informatieObjectUrl, informatieObjectUrlCaptor.firstValue)
+        assertEquals(authenticationMock, authorizationCaptor.firstValue)
     }
 
 }

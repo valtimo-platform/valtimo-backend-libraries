@@ -72,8 +72,8 @@ class PortaaltaakPlugin(
     @PluginProperty(key = "objectManagementConfigurationId", secret = false)
     lateinit var objectManagementConfigurationId: UUID
 
-    @PluginProperty(key = "uploadedDocumentsHandlerProcess", secret = false)
-    lateinit var uploadedDocumentsHandlerProcess: String
+    @PluginProperty(key = "completeTaakProcess", secret = false)
+    lateinit var completeTaakProcess: String
 
     @PluginAction(
         key = "create-portaaltaak",
@@ -89,9 +89,8 @@ class PortaaltaakPlugin(
         @PluginActionProperty sendData: List<DataBindingConfig>,
         @PluginActionProperty receiveData: List<DataBindingConfig>,
         @PluginActionProperty receiver: TaakReceiver,
-        @PluginActionProperty otherReceiver: OtherTaakReceiver?,
-        @PluginActionProperty kvk: String?,
-        @PluginActionProperty bsn: String?
+        @PluginActionProperty identificationKey: String?,
+        @PluginActionProperty identificationValue: String?,
     ) {
         val objectManagement = objectManagementService.getById(objectManagementConfigurationId)
             ?: throw IllegalStateException("Object management not found for portaal taak")
@@ -102,7 +101,7 @@ class PortaaltaakPlugin(
         ) as ObjectenApiPlugin
 
         val portaalTaak = TaakObject(
-            getTaakIdentification(delegateTask, receiver, otherReceiver, kvk, bsn),
+            getTaakIdentification(delegateTask, receiver, identificationKey, identificationValue),
             getTaakData(delegateTask, sendData),
             delegateTask.name,
             TaakStatus.OPEN,
@@ -160,22 +159,20 @@ class PortaaltaakPlugin(
     internal fun getTaakIdentification(
         delegateTask: DelegateTask,
         receiver: TaakReceiver,
-        otherReceiver: OtherTaakReceiver?,
-        kvk: String?,
-        bsn: String?
+        identificationKey: String?,
+        identificationValue: String?,
     ): TaakIdentificatie {
         return when (receiver) {
             TaakReceiver.ZAAK_INITIATOR -> getZaakinitiator(delegateTask)
             TaakReceiver.OTHER -> {
-                val identificationValue = when (otherReceiver) {
-                    OtherTaakReceiver.BSN -> bsn
-                    OtherTaakReceiver.KVK -> kvk
-                    null -> throw IllegalStateException("Other was chosen as taak receiver, but no identification type was chosen.")
+                if (identificationKey == null) {
+                    throw IllegalStateException("Other was chosen as taak receiver, but no identification key was chosen.")
                 }
-                    ?: throw IllegalStateException("Could not find identification value in configuration for type ${otherReceiver.key}")
-
+                if (identificationValue == null) {
+                    throw IllegalStateException("Other was chosen as taak receiver, but no identification value was chosen.")
+                }
                 TaakIdentificatie(
-                    otherReceiver.key,
+                    identificationKey,
                     identificationValue
                 )
             }
@@ -201,12 +198,17 @@ class PortaaltaakPlugin(
             initiator.betrokkeneIdentificatie.let {
                 when (it) {
                     is RolNatuurlijkPersoon -> TaakIdentificatie(
-                        OtherTaakReceiver.BSN.key,
+                        TaakIdentificatie.TYPE_BSN,
                         requireNotNull(it.inpBsn) {
                             "Zaak initiator did not have valid inpBsn BSN"
                         }
                     )
-                    is RolNietNatuurlijkPersoon -> TaakIdentificatie(OtherTaakReceiver.KVK.key, it.annIdentificatie)
+                    is RolNietNatuurlijkPersoon -> TaakIdentificatie(
+                        TaakIdentificatie.TYPE_KVK,
+                        requireNotNull(it.annIdentificatie) {
+                            "Zaak initiator did not have valid annIdentificatie KVK"
+                        }
+                    )
                     else -> null
                 }
             }
@@ -237,13 +239,10 @@ class PortaaltaakPlugin(
 
         if (sendData.size != sendDataValuesResolvedMap.size) {
             val failedValues = sendData
-                .filter { sendDataValuesResolvedMap.containsKey(it.value) }
+                .filter { !sendDataValuesResolvedMap.containsKey(it.value) }
                 .joinToString(", ") { "'${it.key}' = '${it.value}'" }
             throw IllegalArgumentException(
-                """
-                    Error in sendData for task: '${delegateTask.taskDefinitionKey}' and documentId: '${documentId}'. Failed to resolve values:
-                    $failedValues
-                """.trimMargin()
+                "Error in sendData for task: '${delegateTask.taskDefinitionKey}' and documentId: '${documentId}'. Failed to resolve values: $failedValues".trimMargin()
             )
         }
 

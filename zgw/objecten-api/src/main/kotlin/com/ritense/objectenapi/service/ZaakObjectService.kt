@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class ZaakObjectService(
     val objectManagementInfoProvider: ObjectManagementInfoProvider
 ) {
     fun getZaakObjectTypes(documentId: UUID): List<Objecttype> {
-        val zaakUrl = URI(zaakUrlProvider.getZaak(documentId))
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
         val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
 
         return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
@@ -59,7 +59,7 @@ class ZaakObjectService(
             }
     }
 
-    private fun getObjectByObjectUrl(objectUrl: URI): ObjectWrapper? {
+    fun getObjectByObjectUrl(objectUrl: URI): ObjectWrapper? {
         val objectenApiPlugin = pluginService
             .createInstance(ObjectenApiPlugin::class.java) { properties: JsonNode ->
                 objectUrl.toString().startsWith(properties.get("url").textValue())
@@ -77,7 +77,7 @@ class ZaakObjectService(
     }
 
     fun getZaakObjectenOfType(documentId: UUID, typeUrl: URI): List<ObjectWrapper> {
-        val zaakUrl = URI(zaakUrlProvider.getZaak(documentId))
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
         val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
 
         return zakenApiPluginInstance.getZaakObjecten(zaakUrl)
@@ -90,7 +90,7 @@ class ZaakObjectService(
 
     fun getZaakObjectOfTypeByName(documentId: UUID, objecttypeName: String): ObjectWrapper {
         logger.debug { "Getting zaakobject for documentId $documentId and objecttypeName '$objecttypeName'" }
-        val zaakUrl = URI(zaakUrlProvider.getZaak(documentId))
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
         val zakenApiPluginInstance = findZakenApiPlugin(zaakUrl)
 
         val listOfObjecttypeWithCorrectName = zakenApiPluginInstance.getZaakObjecten(zaakUrl)
@@ -165,14 +165,14 @@ class ZaakObjectService(
         }
     }
 
-    private fun getObjectByManagementIdAndObjectId(objectManagementId: UUID, objectId: UUID): ObjectWrapper? {
+    private fun getObjectByManagementIdAndObjectId(objectManagementId: UUID, objectId: UUID): ObjectWrapper {
         val objectManagement =
             objectManagementInfoProvider.getObjectManagementInfo(objectManagementId)
         val objectsApiPlugin =
             pluginService.createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
         val objectUrl = "${objectsApiPlugin.url}objects/$objectId"
         logger.debug { "Getting object for url $objectUrl" }
-        return getObjectByObjectUrl(URI.create(objectUrl))
+        return objectsApiPlugin.getObject(URI.create(objectUrl))
     }
 
     private fun findZakenApiPlugin(zaakUrl: URI): ZakenApiPlugin {
@@ -264,11 +264,18 @@ class ZaakObjectService(
         ) as ObjectenApiPlugin
 
         val objectTypenApiPlugin = pluginService.createInstance(
-            PluginConfigurationId.existingId(objectManagement.objectenApiPluginConfigurationId)
+            PluginConfigurationId.existingId(objectManagement.objecttypenApiPluginConfigurationId)
         ) as ObjecttypenApiPlugin
 
+        val objectTypeUrl = UriComponentsBuilder.newInstance()
+            .uri(objectTypenApiPlugin.url)
+            .pathSegment("objecttypes")
+            .pathSegment(objectManagement.objecttypeId)
+            .build()
+            .toUri()
+
         val objectRequest = ObjectRequest(
-            objectTypenApiPlugin.url,
+            objectTypeUrl,
             ObjectRecord(
                 typeVersion = objectManagement.objecttypeVersion,
                 data = jsonNode,

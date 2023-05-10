@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,7 @@ class SmartDocumentsPlugin(
     private fun generateDocument(
         templateGroup: String,
         templateName: String,
-        templateData: Map<String, Any>,
+        templateData: Map<String, Any?>,
         format: DocumentFormatOption
     ): FileStreamResponse {
         val request = SmartDocumentsRequest(
@@ -125,12 +125,12 @@ class SmartDocumentsPlugin(
     private fun resolveTemplateData(
         templateData: Array<TemplateDataEntry>,
         execution: DelegateExecution
-    ): Map<String, Any> {
+    ): Map<String, Any?> {
         val placeHolderValueMap = valueResolverService.resolveValues(
             execution.processInstanceId,
             execution,
             templateData.map { it.value }.toList()
         )
-        return templateData.associate { it.key to placeHolderValueMap.getOrDefault(it.value, it.value) }
+        return templateData.associate { it.key to placeHolderValueMap.getOrDefault(it.value, null) }
     }
 }

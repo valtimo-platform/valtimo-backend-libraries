@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ class CatalogiApiHttpSecurityConfigurer: HttpSecurityConfigurer {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype").hasAuthority(USER)
                 .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/roltype").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/statustype").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype").hasAuthority(USER)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

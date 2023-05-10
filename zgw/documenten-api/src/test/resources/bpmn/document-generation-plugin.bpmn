@@ -4,12 +4,12 @@
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>SequenceFlow_0rqqr55</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_0rqqr55" sourceRef="StartEvent_1" targetRef="StoreDocument" />
+    <bpmn:sequenceFlow id="SequenceFlow_0rqqr55" sourceRef="StartEvent_1" targetRef="serviceTask" />
     <bpmn:endEvent id="EndEvent_0v6qdzq">
       <bpmn:incoming>Flow_1mvuu3n</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_17rgisa" sourceRef="StoreDocument" targetRef="Verify" />
-    <bpmn:serviceTask id="StoreDocument" name="Store Document" camunda:expression="${null}">
+    <bpmn:sequenceFlow id="SequenceFlow_17rgisa" sourceRef="serviceTask" targetRef="Verify" />
+    <bpmn:serviceTask id="serviceTask" name="Service task" camunda:expression="${null}">
       <bpmn:extensionElements />
       <bpmn:incoming>SequenceFlow_0rqqr55</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_17rgisa</bpmn:outgoing>
@@ -37,7 +37,7 @@
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="155" y="141" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_0alraup_di" bpmnElement="StoreDocument">
+      <bpmndi:BPMNShape id="ServiceTask_0alraup_di" bpmnElement="serviceTask">
         <dc:Bounds x="241" y="119" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>

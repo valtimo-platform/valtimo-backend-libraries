@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.openzaak.plugin
 
+import com.ritense.besluitenapi.BesluitenApiAuthentication
 import com.ritense.catalogiapi.CatalogiApiAuthentication
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.openzaak.service.TokenGeneratorService
@@ -34,7 +35,7 @@ import reactor.core.publisher.Mono
 )
 class OpenZaakPlugin(
     val tokenGeneratorService: TokenGeneratorService
-): DocumentenApiAuthentication, ZakenApiAuthentication, CatalogiApiAuthentication {
+): DocumentenApiAuthentication, ZakenApiAuthentication, CatalogiApiAuthentication, BesluitenApiAuthentication {
     @PluginProperty(key = "clientId", secret = false, required = true)
     lateinit var clientId: String
     @PluginProperty(key = "clientSecret", secret = true, required = true)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,9 +49,9 @@ internal class OpenZaakUrlProviderTest {
         ))
 
         val documentId = UUID.randomUUID()
-        val zaakUrl = openZaakUrlProvider.getZaak(documentId)
+        val zaakUrl = openZaakUrlProvider.getZaakUrl(documentId)
 
-        assertEquals("http://some.url", zaakUrl)
+        assertEquals("http://some.url", zaakUrl.toString())
         verify(zaakInstanceLinkService).getByDocumentId(documentId)
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.ritense.zakenapi.uploadprocess
 
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.GET
@@ -27,7 +27,7 @@ class UploadProcessResourceHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/uploadprocess/case/{caseDefinitionKey}/check-link").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/uploadprocess/case/{caseDefinitionKey}/check-link").hasAuthority(USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.processdocument.BaseTest;
 import com.ritense.processdocument.domain.impl.delegate.DocumentVariableDelegateImpl;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -32,6 +33,7 @@ import org.camunda.community.mockito.delegate.DelegateExecutionFake;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -39,7 +41,7 @@ import static org.mockito.Mockito.when;
 
 public class DocumentVariableDelegateImplTest extends BaseTest {
 
-    private static final String NAAM_VAN_DE_STRAAT = "straat";
+    private static final String STREET_NAME = "street";
     private static final double HOUSE_NUMBER = 3.0;
     private static final boolean NO = false;
 
@@ -66,7 +68,7 @@ public class DocumentVariableDelegateImplTest extends BaseTest {
         when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
 
         String value = (String) documentVariableDelegate.findValueByJsonPointer("/applicant/street", delegateExecutionFake);
-        assertEquals(value, NAAM_VAN_DE_STRAAT);
+        assertEquals(STREET_NAME, value);
     }
 
     @Test
@@ -75,7 +77,7 @@ public class DocumentVariableDelegateImplTest extends BaseTest {
         when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
 
         double value = (double) documentVariableDelegate.findValueByJsonPointer("/applicant/number", delegateExecutionFake);
-        assertEquals(value, HOUSE_NUMBER);
+        assertEquals(HOUSE_NUMBER, value);
     }
 
     @Test
@@ -84,7 +86,7 @@ public class DocumentVariableDelegateImplTest extends BaseTest {
         when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
 
         boolean value = (boolean) documentVariableDelegate.findValueByJsonPointer("/applicant/prettyHouse", delegateExecutionFake);
-        assertEquals(value, NO);
+        assertEquals(NO, value);
     }
 
     @Test
@@ -93,7 +95,22 @@ public class DocumentVariableDelegateImplTest extends BaseTest {
         when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
 
         List<?> value = (List<?>) documentVariableDelegate.findValueByJsonPointer("/cars", delegateExecutionFake);
-        assertEquals(value.size(), 2);
+        assertEquals(2, value.size());
+        assertInstanceOf(Map.class, value.get(0));
+        Map<String, Object> firstCar = (Map<String, Object>)value.get(0);
+        assertEquals("volvo", firstCar.get("mark"));
+        assertEquals(1991, firstCar.get("year"));
+    }
+
+    @Test
+    public void findObjectByJsonPointer() {
+        Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
+        when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
+
+        Map<?, ?> value = (Map<?, ?>) documentVariableDelegate.findValueByJsonPointer("/applicant", delegateExecutionFake);
+        assertEquals(Double.valueOf(HOUSE_NUMBER).intValue(), value.get("number"));
+        assertEquals(STREET_NAME, value.get("street"));
+        assertEquals(NO, value.get("prettyHouse"));
     }
 
     @Test
@@ -101,16 +118,28 @@ public class DocumentVariableDelegateImplTest extends BaseTest {
         Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
         when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
 
-        assertThrows(NoSuchElementException.class, () -> {
-            documentVariableDelegate.findValueByJsonPointer("/street", delegateExecutionFake);
-        });
+        assertThrows(NoSuchElementException.class, () ->
+            documentVariableDelegate.findValueByJsonPointer("/street", delegateExecutionFake));
+    }
+
+    @Test
+    public void incorrectPathShouldReturnDefaultValue() {
+        Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
+        when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
+
+        final String DEFAULT_VALUE = "DEFAULT_VALUE";
+        Object value = documentVariableDelegate.findValueByJsonPointerOrDefault(
+            "/street", delegateExecutionFake, DEFAULT_VALUE);
+
+        assertEquals(DEFAULT_VALUE, value);
+
     }
 
     private Optional<JsonSchemaDocument> documentOptional() {
         return JsonSchemaDocument.create(
             definition,
             new JsonDocumentContent("{\"applicant\": " +
-                "{\"street\": \"" + NAAM_VAN_DE_STRAAT + "\"," +
+                "{\"street\": \"" + STREET_NAME + "\"," +
                     "\"number\": " + HOUSE_NUMBER + "," +
                     "\"prettyHouse\": " + NO + "}," +
                 "\"cars\":[ \n" +

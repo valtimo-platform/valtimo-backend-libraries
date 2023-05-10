@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.ritense.objectenapi.web.rest
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.form.domain.FormDefinition
+import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.web.rest.result.FormType
 import java.net.URI
@@ -53,4 +54,10 @@ class ObjectResource(
     ): ResponseEntity<URI> {
         return ResponseEntity.ok(zaakObjectService.patchObjectFromManagementId(objectManagementId, objectId, jsonNode))
     }
+
+    @GetMapping
+    fun getObjectByUrl(
+        @RequestParam(name = "objectUrl") objectUrl: URI): ResponseEntity<ObjectWrapper?> =
+         ResponseEntity.ok(zaakObjectService.getObjectByObjectUrl(objectUrl))
+
 }

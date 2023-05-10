@@ -18,6 +18,7 @@ package com.ritense.verzoek
 
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.service.DocumentService
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -32,8 +33,9 @@ class VerzoekAutoConfiguration {
     @ConditionalOnMissingBean(VerzoekPluginFactory::class)
     fun verzoekPluginFactory(
         pluginService: PluginService,
+        documentDefinitionService: JsonSchemaDocumentDefinitionService,
     ): VerzoekPluginFactory {
-        return VerzoekPluginFactory(pluginService)
+        return VerzoekPluginFactory(pluginService, documentDefinitionService)
     }
 
     @Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,7 +108,7 @@ internal class ZaakObjectServiceTest {
     @Test
     fun `should throw exception if zaak instance link is not found`() {
         val documentId = UUID.randomUUID()
-        whenever(zaakUrlProvider.getZaak(documentId))
+        whenever(zaakUrlProvider.getZaakUrl(documentId))
             .thenThrow(RuntimeException::class.java)
 
         assertThrows(RuntimeException::class.java) {
@@ -276,7 +276,6 @@ internal class ZaakObjectServiceTest {
     fun `should throw exception when getting object by type and there are no objects`() {
         val documentId = UUID.randomUUID()
         val objecttypeName = "test"
-        val objecttypeUrl = URI("http://example.com/objecttype")
 
         val zaakInstanceUrl = setupZaakInstanceLink(documentId)
         setupPlugins(zaakInstanceUrl)
@@ -410,7 +409,7 @@ internal class ZaakObjectServiceTest {
 
     private fun setupZaakInstanceLink(documentId: UUID): URI {
         val zaakInstanceUrl = URI("http://example.com/zaak/${UUID.randomUUID()}")
-        whenever(zaakUrlProvider.getZaak(documentId)).thenReturn(zaakInstanceUrl.toString())
+        whenever(zaakUrlProvider.getZaakUrl(documentId)).thenReturn(zaakInstanceUrl)
         return zaakInstanceUrl
     }
 

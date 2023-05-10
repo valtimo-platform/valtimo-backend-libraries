@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,12 @@ class CopyPluginActionsOnProcessDeploymentListener(
 
             val newLinks = pluginProcessLinkRepository.findByProcessDefinitionId(previousProcessDefinitionId)
                 .filter { link -> modelInstance.getModelElementById<FlowNode>(link.activityId) != null }
+                .filter { link ->
+                    pluginProcessLinkRepository.findByProcessDefinitionIdAndActivityId(
+                        event.processDefinitionId,
+                        link.activityId
+                    ).isEmpty()
+                }
                 .onEach { link ->
                     logger.debug { "Copying plugin action link to newly deployed process with id ${event.processDefinitionId}. Activity: '${link.activityId}', plugin action: '${link.pluginActionDefinitionKey}'." }
                 }.map { link ->

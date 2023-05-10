@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.request.Request
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
-import com.ritense.valtimo.contract.json.JsonPointerHelper
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromString
@@ -156,10 +155,11 @@ data class FormIoSubmission(
     }
 
     private fun buildDocumentContent() {
-        documentFieldReferences.forEach {
-            it.formfield.preProcess()
-            JsonPointerHelper.appendJsonPointerTo(documentContent, it.formfield.pointer, it.formfield.value)
-        }
+        documentFieldReferences.map(DocumentFieldReference::formfield)
+            .forEach {
+                it.preProcess()
+                it.appendValueToDocument(documentContent)
+            }
     }
 
     private fun parseAndLogException(ex: Exception): OperationError {

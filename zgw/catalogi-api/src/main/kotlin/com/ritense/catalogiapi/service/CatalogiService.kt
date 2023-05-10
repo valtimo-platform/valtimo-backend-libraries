@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,11 @@ package com.ritense.catalogiapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.catalogiapi.CatalogiApiPlugin
+import com.ritense.catalogiapi.domain.Besluittype
 import com.ritense.catalogiapi.domain.Informatieobjecttype
+import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
+import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
 import com.ritense.plugin.service.PluginService
 import mu.KotlinLogging
@@ -27,42 +30,77 @@ import java.net.URI
 
 class CatalogiService(
     val zaaktypeUrlProvider: ZaaktypeUrlProvider,
-    val pluginService : PluginService
+    val pluginService: PluginService
 ) {
     fun getInformatieobjecttypes(documentDefinitionName: String): List<Informatieobjecttype> {
         logger.debug { "Getting documenttypes for document definition $documentDefinitionName" }
-        val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(documentDefinitionName)
-
-        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl)
+        val zaakTypeUrl = getZaaktypeUrlByDocumentDefinitionName(documentDefinitionName) ?: return emptyList()
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
         return catalogiApiPluginInstance.getInformatieobjecttypes(zaakTypeUrl)
     }
+
     fun getRoltypes(caseDefinitionName: String): List<Roltype> {
         logger.debug { "Getting roltypes for case definition $caseDefinitionName" }
-        val zaakTypeUrl = try {
-            zaaktypeUrlProvider.getZaaktypeUrlByCaseDefinitionName(caseDefinitionName)
-        } catch (e: ZaakTypeLinkNotFoundException) {
-            logger.debug { e }
-            return emptyList()
-        }
-        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl)
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
         return catalogiApiPluginInstance.getRoltypes(zaakTypeUrl)
     }
 
-    private fun findCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin {
+    fun getStatustypen(caseDefinitionName: String): List<Statustype> {
+        logger.debug { "Getting statustypen for case definition $caseDefinitionName" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
+
+        return catalogiApiPluginInstance.getStatustypen(zaakTypeUrl)
+    }
+
+    fun getResultaattypen(caseDefinitionName: String): List<Resultaattype> {
+        logger.debug { "Getting resultaattypen for case definition $caseDefinitionName" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
+
+        return catalogiApiPluginInstance.getResultaattypen(zaakTypeUrl)
+    }
+
+    fun getBesluittypen(caseDefinitionName: String): List<Besluittype> {
+        logger.debug { "Getting besluittypen for case definition $caseDefinitionName" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
+
+        return catalogiApiPluginInstance.getBesluittypen(zaakTypeUrl)
+    }
+
+    private fun findCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin? {
         val catalogiApiPluginInstance = pluginService
             .createInstance(CatalogiApiPlugin::class.java) { properties: JsonNode ->
                 zaakTypeUrl.toString().startsWith(properties.get("url").textValue())
             }
 
-        requireNotNull(catalogiApiPluginInstance) {
-            "No catalogi plugin configuration was found for zaaktype with URL $zaakTypeUrl"
+        if (catalogiApiPluginInstance == null) {
+            logger.debug {"No catalogi plugin configuration was found for zaaktype with URL $zaakTypeUrl" }
         }
 
-        logger.trace { "Getting documenttypes by using plugin for url ${catalogiApiPluginInstance.url}" }
-
         return catalogiApiPluginInstance
+    }
+
+    private fun getZaaktypeUrlByDocumentDefinitionName(documentDefinitionName: String): URI? {
+        return try {
+            zaaktypeUrlProvider.getZaaktypeUrl(documentDefinitionName)
+        } catch (e: ZaakTypeLinkNotFoundException) {
+            logger.debug { e }
+            null
+        }
+    }
+
+    private fun getZaaktypeUrlByCaseDefinitionName(caseDefinitionName: String): URI? {
+        return try {
+            zaaktypeUrlProvider.getZaaktypeUrlByCaseDefinitionName(caseDefinitionName)
+        } catch (e: ZaakTypeLinkNotFoundException) {
+            logger.debug { e }
+            null
+        }
     }
 
     companion object {

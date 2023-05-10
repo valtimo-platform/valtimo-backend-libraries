@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.plugin.service.PluginService
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -57,20 +56,15 @@ internal class CatalogiServiceTest {
     }
 
     @Test
-    fun `should throw exception if no plugin is found for zaak`() {
+    fun `should return empty list if no plugin is found for zaak`() {
         val documentDefinitionName = "case-name"
         val zaaktypeUrl = URI("http://example.com/zaaktype")
 
         whenever(zaaktypeUrlProvider.getZaaktypeUrl(documentDefinitionName)).thenReturn(zaaktypeUrl)
 
-        val exception = assertThrows(IllegalArgumentException::class.java) {
-            catalogiService.getInformatieobjecttypes(documentDefinitionName)
-        }
+        val result = catalogiService.getInformatieobjecttypes(documentDefinitionName)
 
-        assertEquals(
-            "No catalogi plugin configuration was found for zaaktype with URL $zaaktypeUrl",
-            exception.message
-        )
+        assertEquals(emptyList<Informatieobjecttype>(), result)
     }
 
 }

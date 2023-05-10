@@ -70,7 +70,8 @@ internal class RolTest {
             LocalDateTime.of(2023, 2, 15, 10, 23, 43),
             IndicatieMachtiging.GEMACHTIGDE.key,
             RolNietNatuurlijkPersoon(
-                annIdentificatie = "kvk"
+                annIdentificatie = "kvk",
+                innNnpId = "innNnpId"
             )
         )
 
@@ -90,7 +91,8 @@ internal class RolTest {
                 "registratiedatum": "2023-02-15T10:23:43",
                 "indicatieMachtiging": "gemachtigde",
                 "betrokkeneIdentificatie": {
-                    "annIdentificatie": "kvk"
+                    "annIdentificatie": "kvk",
+                    "innNnpId": "innNnpId"
                 }
             }
             """.replace("[ \n]".toRegex(), "")

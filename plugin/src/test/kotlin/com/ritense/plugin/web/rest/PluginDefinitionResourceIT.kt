@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ internal class PluginDefinitionResourceIT: BaseIntegrationTest() {
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$").isArray)
-            .andExpect(jsonPath("$.*", hasSize<Int>(5)))
+            .andExpect(jsonPath("$.*", hasSize<Int>(6)))
             .andExpectActionInResponse("test-action", "Test action",
                 "This is an action used to verify plugin framework functionality")
             .andExpectActionInResponse("other-test-action", "Test action 2",
@@ -80,7 +80,7 @@ internal class PluginDefinitionResourceIT: BaseIntegrationTest() {
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$").isArray)
-            .andExpect(jsonPath("$.*", hasSize<Int>(3)))
+            .andExpect(jsonPath("$.*", hasSize<Int>(4)))
             .andExpectActionInResponse("test-action", "Test action",
                 "This is an action used to verify plugin framework functionality")
             .andExpectActionInResponse("other-test-action", "Test action 2",

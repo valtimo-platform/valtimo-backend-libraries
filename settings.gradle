@@ -76,7 +76,7 @@ include(
     "zgw:objecttypen-api",
     "zgw:verzoek",
     "zgw:zaken-api",
-    "zgw:portaaltaak"
+    "zgw:portaaltaak",
+    "zgw:besluiten-api"
 )
-
 

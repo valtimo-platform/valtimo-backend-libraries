@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -310,10 +310,6 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public List<NamedUser> getCandidateUsers(Document.Id documentId) {
-        var searchCriteria = new SearchByUserGroupsCriteria();
-        searchCriteria.addToOrUserGroups(getDocumentRoles(documentId));
-        return userManagementService.findByRoles(searchCriteria).stream()
-            .map(NamedUser::from)
-            .collect(Collectors.toList());
+        return userManagementService.findNamedUserByRoles(getDocumentRoles(documentId));
     }
 }

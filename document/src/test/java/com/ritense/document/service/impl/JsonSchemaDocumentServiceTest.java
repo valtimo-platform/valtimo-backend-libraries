@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +95,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             content.asJson()
         );
 
-        JsonSchemaDocumentDefinition definition = definition();
+        JsonSchemaDocumentDefinition definition = definitionOf("referenced-array");
         when(documentDefinitionService.findLatestByName(eq("document-definition"))).thenReturn(Optional.of(definition));
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 
@@ -132,7 +132,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         );
         documentRequest.withResources(Set.of(resource));
 
-        JsonSchemaDocumentDefinition definition = definition();
+        JsonSchemaDocumentDefinition definition = definitionOf("referenced-array");
         when(documentDefinitionService.findLatestByName(eq("document-definition"))).thenReturn(Optional.of(definition));
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 

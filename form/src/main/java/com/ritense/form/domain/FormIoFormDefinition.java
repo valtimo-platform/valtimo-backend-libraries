@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,6 +66,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ":";
     public static final String LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ".";
     public static final String DISABLED_KEY = "disabled";
+    public static final String PREFILL_KEY = "prefill";
 
     @Id
     @Column(name = "id", updatable = false)
@@ -145,9 +146,10 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     @Override
     public FormIoFormDefinition preFill(final JsonNode content) {
-        final JsonNode formDefinitionNode = asJson();
-        final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionNode);
-        inputFields.forEach(field -> fill(field, content));
+        FormIoFormDefinition.getInputFields(asJson()).stream()
+                .filter(this::shouldPrefillField)
+                .forEach(field -> fill(field, content));
+
         return this;
     }
 
@@ -294,6 +296,10 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         return FormAutoConfiguration.isIgnoreDisabledFields()
             && fieldNode.has(DISABLED_KEY)
             && fieldNode.get(DISABLED_KEY).asBoolean();
+    }
+
+    private boolean shouldPrefillField(JsonNode fieldNode) {
+        return !fieldNode.has(PREFILL_KEY) || fieldNode.get(PREFILL_KEY).asBoolean();
     }
 
     private void fill(ObjectNode field, JsonNode content) {

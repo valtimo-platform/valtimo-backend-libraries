@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,11 @@ package com.ritense.zakenapi.client
 import com.ritense.zakenapi.ZakenApiAuthentication
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResponse
+import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
+import com.ritense.zakenapi.domain.CreateZaakResultaatResponse
+import com.ritense.zakenapi.domain.CreateZaakStatusRequest
+import com.ritense.zakenapi.domain.CreateZaakStatusResponse
+import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolType
@@ -77,6 +82,29 @@ class ZakenApiClient(
             }
             .retrieve()
             .toEntity(ClientTools.getTypedPage(ZaakObject::class.java))
+            .block()
+
+        return result?.body!!
+    }
+
+    fun getZaakInformatieObjecten(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        zaakUrl: URI
+    ): List<ZaakInformatieObject> {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("zaakinformatieobjecten")
+                    .queryParam("zaak", zaakUrl)
+                    .build()
+            }
+            .retrieve()
+            .toEntityList(ZaakInformatieObject::class.java)
             .block()
 
         return result?.body!!
@@ -152,6 +180,56 @@ class ZakenApiClient(
             .body(BodyInserters.fromValue(request))
             .retrieve()
             .toEntity(CreateZaakResponse::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
+    fun createZaakStatus(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        request: CreateZaakStatusRequest,
+    ): CreateZaakStatusResponse {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .post()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("statussen")
+                    .build()
+            }
+            .headers(this::defaultHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(request))
+            .retrieve()
+            .toEntity(CreateZaakStatusResponse::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
+    fun createZaakResultaat(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        request: CreateZaakResultaatRequest,
+    ): CreateZaakResultaatResponse {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .post()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("resultaten")
+                    .build()
+            }
+            .headers(this::defaultHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(request))
+            .retrieve()
+            .toEntity(CreateZaakResultaatResponse::class.java)
             .block()
 
         return result?.body!!

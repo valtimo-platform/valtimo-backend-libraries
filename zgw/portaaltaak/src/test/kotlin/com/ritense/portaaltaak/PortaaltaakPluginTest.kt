@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,8 +92,7 @@ internal class PortaaltaakPluginTest {
         val sendData = emptyList<DataBindingConfig>()
         val receiveData = emptyList<DataBindingConfig>()
         val receiver = TaakReceiver.ZAAK_INITIATOR
-        val otherReceiver = OtherTaakReceiver.BSN
-        val kvk = null
+        val identificationKey = TaakIdentificatie.TYPE_BSN
         val zakenApiPlugin = mock<ZakenApiPlugin>()
         val objectenApiPlugin = mock<ObjectenApiPlugin>()
         val objecttypenApiPlugin = mock<ObjecttypenApiPlugin>()
@@ -125,8 +124,7 @@ internal class PortaaltaakPluginTest {
             sendData,
             receiveData,
             receiver,
-            otherReceiver,
-            kvk,
+            identificationKey,
             bsn
         )
 
@@ -154,7 +152,7 @@ internal class PortaaltaakPluginTest {
     @Test
     fun `should get the correct identification for case initiated by a citizen`() {
         val result =
-            portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, OtherTaakReceiver.BSN, null, bsn)
+            portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, TaakIdentificatie.TYPE_BSN, bsn)
         assertEquals("bsn", result.type)
         assertEquals(bsn, result.value)
     }
@@ -162,7 +160,7 @@ internal class PortaaltaakPluginTest {
     @Test
     fun `should get the correct task identification for task initiated by other with a citizen service number`() {
         val result =
-            portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, OtherTaakReceiver.BSN, null, bsn)
+            portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, TaakIdentificatie.TYPE_BSN, bsn)
         assertEquals("bsn", result.type)
         assertEquals(bsn, result.value)
     }
@@ -173,9 +171,8 @@ internal class PortaaltaakPluginTest {
             portaaltaakPlugin.getTaakIdentification(
                 delegateTask,
                 TaakReceiver.OTHER,
-                OtherTaakReceiver.KVK,
-                kvk,
-                null
+                TaakIdentificatie.TYPE_KVK,
+                kvk
             )
         assertEquals("kvk", result.type)
         assertEquals(kvk, result.value)
@@ -185,10 +182,10 @@ internal class PortaaltaakPluginTest {
     fun `should throw exception when no task sender is available`() {
         val result =
             assertThrows<IllegalStateException> {
-                portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, null, null, null)
+                portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.OTHER, null, null)
             }
         assertEquals(
-            "Other was chosen as taak receiver, but no identification type was chosen.",
+            "Other was chosen as taak receiver, but no identification key was chosen.",
             result.message
         )
     }
@@ -200,13 +197,12 @@ internal class PortaaltaakPluginTest {
                 portaaltaakPlugin.getTaakIdentification(
                     delegateTask,
                     TaakReceiver.OTHER,
-                    OtherTaakReceiver.KVK,
-                    null,
-                    bsn
+                    TaakIdentificatie.TYPE_KVK,
+                    null
                 )
             }
         assertEquals(
-            "Could not find identification value in configuration for type ${OtherTaakReceiver.KVK.key}",
+            "Other was chosen as taak receiver, but no identification value was chosen.",
             result.message
         )
     }
@@ -225,7 +221,7 @@ internal class PortaaltaakPluginTest {
 
 
         val result =
-            portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.ZAAK_INITIATOR, null, null, null)
+            portaaltaakPlugin.getTaakIdentification(delegateTask, TaakReceiver.ZAAK_INITIATOR, null, null)
 
         assertEquals("bsn", result.type)
         assertEquals(

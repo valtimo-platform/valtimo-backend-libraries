@@ -136,7 +136,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         objectManagement = createObjectManagement(objectenPlugin.id.id, objecttypenPlugin.id.id)
         portaalTaakPluginDefinition = createPortaalTaakPlugin(notificatiesApiPlugin, objectManagement)
 
-        whenever(zaakUrlProvider.getZaak(any())).thenReturn(ZAAK_URL)
+        whenever(zaakUrlProvider.getZaakUrl(any())).thenReturn(ZAAK_URL)
     }
 
     @Test
@@ -153,8 +153,8 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
                 ],
                 "receiveData": [],
                 "receiver": "${TaakReceiver.OTHER.key}",
-                "otherReceiver": "${OtherTaakReceiver.KVK.key}",
-                "kvk": "569312863"
+                "identificationKey": "${TaakIdentificatie.TYPE_KVK}",
+                "identificationValue": "569312863"
             }
         """.trimIndent()
 
@@ -337,7 +337,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPlugin.id.id}",
               "objectManagementConfigurationId": "${objectManagement.id}",
-              "uploadedDocumentsHandlerProcess": "process-portaaltaak-uploaded-documents"
+              "completeTaakProcess": "process-completed-portaaltaak"
             }
         """.trimIndent()
 
@@ -521,7 +521,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     companion object {
         private const val PROCESS_DEFINITION_KEY = "portaaltaak-process"
         private const val DOCUMENT_DEFINITION_KEY = "profile"
-        private const val ZAAK_URL = "http://zaak.url"
+        private val ZAAK_URL = URI("http://zaak.url")
     }
 
 }

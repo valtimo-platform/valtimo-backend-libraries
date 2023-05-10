@@ -16,19 +16,26 @@
 
 package com.ritense.verzoek
 
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.plugin.annotation.Plugin
+import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.domain.EventType
+import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
 import com.ritense.zgw.Rsin
 import java.util.UUID
+import javax.validation.ValidationException
 
 @Plugin(
     key = "verzoek",
     title = "Verzoek",
     description = "Handles verzoeken"
 )
-class VerzoekPlugin {
+class VerzoekPlugin(
+    private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
+) {
 
     @PluginProperty(key = "notificatiesApiPluginConfiguration", secret = false)
     lateinit var notificatiesApiPluginConfiguration: NotificatiesApiPlugin
@@ -45,4 +52,18 @@ class VerzoekPlugin {
     @PluginProperty(key = "verzoekProperties", secret = false)
     lateinit var verzoekProperties: List<VerzoekProperties>
 
+    @PluginEvent(invokedOn = [EventType.CREATE, EventType.UPDATE])
+    fun validateProperties() {
+        verzoekProperties
+            .filter { it.copyStrategy == CopyStrategy.SPECIFIED }
+            .forEach { property ->
+                property.mapping?.forEach {
+                    if (!it.target.startsWith("doc:")) {
+                        throw ValidationException("Failed to set mapping. Unknown prefix '${it.target.substringBefore(":")}:'.")
+                    }
+                    val documentPath = it.target.substringAfter(delimiter = ":")
+                    documentDefinitionService.validateJsonPointer(property.caseDefinitionName, documentPath)
+                }
+            }
+    }
 }
