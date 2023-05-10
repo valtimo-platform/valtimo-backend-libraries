@@ -17,6 +17,7 @@
 package com.ritense.gzac.listener
 
 import com.fasterxml.jackson.core.json.JsonReadFeature
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -24,6 +25,7 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.Role
 import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.ContainerPermissionCondition
 import com.ritense.authorization.permission.ExpressionPermissionCondition
 import com.ritense.authorization.permission.FieldPermissionCondition
@@ -1011,25 +1013,25 @@ class ApplicationReadyEventListener(
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.LIST_VIEW,
-                    conditions = listOf(),
+                    conditionContainer = ConditionContainer(listOf()),
                     roleKey = userRoleKey
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.VIEW,
-                    conditions = emptyList(),
+                    conditionContainer = ConditionContainer(emptyList()),
                     roleKey = userRoleKey
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.CLAIM,
-//                    conditions = listOf(
-//                        FieldPermissionCondition("documentDefinitionId.name", "leningen"),
-//                        ExpressionPermissionCondition(
-//                            "content.content",
-//                            "$.height",
-//                            PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java),
-//                    ),
+                    conditionContainer = ConditionContainer(listOf(
+                        ExpressionPermissionCondition(
+                            "content.content",
+                            "$.height",
+                            PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java),
+                        FieldPermissionCondition("documentDefinitionId.name", "leningen"),
+                    )),
                     roleKey = userRoleKey
                 )
             )
@@ -1042,7 +1044,7 @@ class ApplicationReadyEventListener(
                 Permission(
                     resourceType = Note::class.java,
                     action = Action.VIEW,
-                    conditions = listOf(
+                    conditionContainer = ConditionContainer(listOf(
                         ContainerPermissionCondition(
                             JsonSchemaDocument::class.java,
                             listOf(
@@ -1053,7 +1055,7 @@ class ApplicationReadyEventListener(
                                     PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java),
                                 FieldPermissionCondition("assigneeFullName", "Asha Miller")
                             )
-                        )
+                        ))
                     ),
                     roleKey = userRoleKey
                 )

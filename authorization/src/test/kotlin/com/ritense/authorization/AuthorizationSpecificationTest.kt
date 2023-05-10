@@ -16,6 +16,7 @@
 
 package com.ritense.authorization
 
+import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.testimpl.TestAuthorizationSpecification
 import com.ritense.authorization.testimpl.TestEntity
@@ -36,7 +37,7 @@ class AuthorizationSpecificationTest {
                 Permission(
                     resourceType = TestEntity::class.java,
                     action = Action.COMPLETE,
-                    conditions = listOf(),
+                    conditionContainer = ConditionContainer(listOf()),
                     roleKey = ""
                 )
             ),
@@ -55,7 +56,7 @@ class AuthorizationSpecificationTest {
                 Permission(
                     resourceType = String::class.java,
                     action = Action.COMPLETE,
-                    conditions = listOf(),
+                    conditionContainer = ConditionContainer(listOf()),
                     roleKey = ""
                 )
             ),
@@ -74,7 +75,7 @@ class AuthorizationSpecificationTest {
                 Permission(
                     resourceType = TestEntity::class.java,
                     action = Action.COMPLETE,
-                    conditions = listOf(),
+                    conditionContainer = ConditionContainer(listOf()),
                     roleKey = ""
                 )
             ),
@@ -91,7 +92,7 @@ class AuthorizationSpecificationTest {
         val permission: Permission = spy(Permission(
             resourceType = TestEntity::class.java,
             action = Action.COMPLETE,
-            conditions = listOf(),
+            conditionContainer = ConditionContainer(listOf()),
             roleKey = "")
         )
         val spec = TestAuthorizationSpecification(

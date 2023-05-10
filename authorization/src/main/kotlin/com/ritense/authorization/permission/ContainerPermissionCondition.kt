@@ -54,7 +54,7 @@ data class ContainerPermissionCondition<TO : Any>(
                 Permission(
                     resourceType = resourceType,
                     action = Action.IGNORE,
-                    conditions = conditions,
+                    conditionContainer = ConditionContainer(conditions),
                     roleKey = ""
                 )
             )

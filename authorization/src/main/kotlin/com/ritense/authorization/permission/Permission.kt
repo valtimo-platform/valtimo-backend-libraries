@@ -32,17 +32,17 @@ data class Permission(
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "conditions", columnDefinition = "json")
-    val conditions: List<PermissionCondition> = emptyList(),
+    val conditionContainer: ConditionContainer,
 
     @Column(name = "role_key", nullable = false)
     val roleKey: String,
 ) {
     fun <T> appliesTo(resourceType: Class<T>, entity: Any?): Boolean {
         return if (this.resourceType == resourceType) {
-            if (entity == null && conditions.isNotEmpty()) {
+            if (entity == null && conditionContainer.conditions.isNotEmpty()) {
                 return false
             }
-            conditions
+            conditionContainer.conditions
                 .map { it.isValid(entity!!) }
                 .all { it }
         } else {
@@ -59,7 +59,7 @@ data class Permission(
     ): Predicate {
         return criteriaBuilder
             .and(
-                *conditions.map {
+                *conditionContainer.conditions.map {
                     it.toPredicate(
                         root,
                         query,

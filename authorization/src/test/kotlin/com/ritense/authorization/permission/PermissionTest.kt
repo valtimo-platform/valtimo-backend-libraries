@@ -41,10 +41,10 @@ class PermissionTest {
             Permission(
                 resourceType = String::class.java,
                 action = Action.VIEW,
-                conditions = listOf(
+                conditionContainer = ConditionContainer(listOf(
                     condition1,
                     condition2
-                ),
+                )),
                 roleKey = ""
             )
         )
