@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.permission.PermissionExpressionOperator.EQUAL_TO
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
@@ -31,20 +30,23 @@ class ExpressionPermissionConditionTest {
         entity = TestEntity(
             TestChildEntity("""
             {
-                "stringProperty": "myValue"
+                "value": "myValue"
             }
         """.trimIndent()))
 
-        conditionTemplate = ExpressionPermissionCondition(
-            field = "child.property",
-            path = "stringProperty",
-            operator = EQUAL_TO,
-            value = "myValue",
-            clazz = String::class.java)
+        conditionTemplate = createExpressionCondition("myValue", String::class.java)
     }
 
+    private fun <T: Comparable<T>>createExpressionCondition(value: T, clazz: Class<T>) = ExpressionPermissionCondition(
+        field = "child.property",
+        path = "value",
+        operator = EQUAL_TO,
+        value = value,
+        clazz = clazz
+    )
+
     @Test
-    fun `should find property and pass expression evaluation`() {
+    fun `should pass validation when the property value is equal`() {
         val condition = conditionTemplate
 
         val result = condition.isValid(entity)
@@ -52,7 +54,7 @@ class ExpressionPermissionConditionTest {
     }
 
     @Test
-    fun `should find property and fail expression evaluation`() {
+    fun `should fail validation when the property value is not equal`() {
         val condition = conditionTemplate.copy(value = "notMyValue")
 
         val result = condition.isValid(entity)
@@ -60,7 +62,15 @@ class ExpressionPermissionConditionTest {
     }
 
     @Test
-    fun `should not find entity property and throw exception`() {
+    fun `should fail validation when the property type is not equal`() {
+        val condition = createExpressionCondition(true, Boolean::class.java)
+
+        val result = condition.isValid(entity)
+        assertEquals(false, result)
+    }
+
+    @Test
+    fun `should throw an exception when entity property is not found and condition value is not null`() {
         val condition = conditionTemplate.copy(field = "x")
         assertThrows<NoSuchFieldException> {
             condition.isValid(entity)
@@ -68,11 +78,27 @@ class ExpressionPermissionConditionTest {
     }
 
     @Test
-    fun `should not find json property and fail evaluation`() {
+    fun `should pass validation when entity property value is null and condition value is null`() {
+        val entity = TestEntity(TestChildEntity(null))
+        val condition = conditionTemplate.copy(value = null)
+        val result = condition.isValid(entity)
+        assertEquals(true, result)
+    }
+
+    @Test
+    fun `should fail validation when json property is not found and condition value is not null`() {
         val condition = conditionTemplate.copy(path = "y")
 
         val result = condition.isValid(entity)
         assertEquals(false, result)
+    }
+
+    @Test
+    fun `should pass validation when json property is not found and condition value is null`() {
+        val condition = conditionTemplate.copy(path = "y", value = null)
+
+        val result = condition.isValid(entity)
+        assertEquals(true, result)
     }
 
     @Test
@@ -101,7 +127,7 @@ class ExpressionPermissionConditionTest {
                 {
                     "type":"expression",
                     "field":"child.property",
-                    "path":"stringProperty",
+                    "path":"value",
                     "operator":"==",
                     "value":"myValue",
                     "clazz":"java.lang.String"

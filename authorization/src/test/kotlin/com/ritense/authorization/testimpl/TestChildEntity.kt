@@ -17,5 +17,5 @@
 package com.ritense.authorization.testimpl
 
 data class TestChildEntity(
-    val property: Any
+    val property: Any?
 )

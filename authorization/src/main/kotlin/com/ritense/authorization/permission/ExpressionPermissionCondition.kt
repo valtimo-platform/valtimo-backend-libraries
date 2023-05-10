@@ -7,6 +7,7 @@ import com.jayway.jsonpath.PathNotFoundException
 import com.ritense.authorization.jackson.ComparableDeserializer
 import com.ritense.authorization.permission.ExpressionPermissionCondition.Companion.EXPRESSION
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import java.util.Objects
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Path
@@ -15,32 +16,37 @@ import javax.persistence.criteria.Root
 
 
 @JsonTypeName(EXPRESSION)
-data class ExpressionPermissionCondition<T: Comparable<T>>(
+data class ExpressionPermissionCondition<V: Comparable<V>>(
     val field: String,
     val path: String,
     val operator: PermissionExpressionOperator,
     @JsonDeserialize(using = ComparableDeserializer::class)
-    val value: T,
-    val clazz: Class<T>
-): PermissionCondition(PermissionConditionType.EXPRESSION) {
-    override fun <T: Any> isValid(entity: T): Boolean {
-        val fieldValue = findEntityJsonField(entity) ?: return false
-
-        return try {
-            evaluateExpression(
-                JsonPath.read(fieldValue, path)
-            )
-        } catch (e: PathNotFoundException) {
-            false
+    val value: V?,
+    val clazz: Class<V>
+): ReflectingPermissionCondition(PermissionConditionType.EXPRESSION) {
+    override fun <E: Any> isValid(entity: E): Boolean {
+        val jsonValue = findEntityFieldValue(entity, field)
+        if (jsonValue !is String) {
+            return value == null && jsonValue == null
         }
+
+        val pathValue = try {
+            JsonPath.read<V?>(jsonValue, path)
+        } catch (e: PathNotFoundException) {
+            null
+        }
+
+        return evaluateExpression(
+            pathValue
+        )
 
     }
 
-    override fun <T: Any> toPredicate(
-        root: Root<T>,
+    override fun <E: Any> toPredicate(
+        root: Root<E>,
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder,
-        resourceType: Class<T>,
+        resourceType: Class<E>,
         queryDialectHelper: QueryDialectHelper
     ): Predicate {
         val path: Path<Any>? = createDatabaseObjectPath(field, root, resourceType)
@@ -52,21 +58,7 @@ data class ExpressionPermissionCondition<T: Comparable<T>>(
         )
     }
 
-    private fun findEntityJsonField(entity: Any): String? {
-        var currentEntity = entity
-        field.split('.').forEach {
-            val declaredField = currentEntity.javaClass.getDeclaredField(it)
-            declaredField.trySetAccessible()
-            currentEntity = declaredField.get(currentEntity)
-        }
-        return if (currentEntity is String) {
-            currentEntity as String
-        } else {
-            null
-        }
-    }
-
-    private fun evaluateExpression(pathValue: T): Boolean {
+    private fun evaluateExpression(pathValue: V?): Boolean {
         return operator.evaluate(pathValue, value)
     }
 

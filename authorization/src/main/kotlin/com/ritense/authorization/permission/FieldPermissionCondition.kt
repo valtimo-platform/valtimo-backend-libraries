@@ -12,13 +12,14 @@ import javax.persistence.criteria.Root
 @JsonTypeName(FIELD)
 data class FieldPermissionCondition(
     val field: String,
-    val value: String // TODO: Ask Thomas if we have to support operators here as well
-) : PermissionCondition(PermissionConditionType.FIELD) {
-    override fun <T: Any> isValid(entity: T): Boolean {
-        return findEntityField(entity).toString() == value
+    val value: Any?
+    // TODO: We might have to support operators here as well. Currently, this condition behaves as EQUAL_TO.
+) : ReflectingPermissionCondition(PermissionConditionType.FIELD) {
+    override fun <T : Any> isValid(entity: T): Boolean {
+        return findEntityFieldValue(entity, field) == value
     }
 
-    override fun <T: Any> toPredicate(
+    override fun <T : Any> toPredicate(
         root: Root<T>,
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder,
@@ -28,16 +29,6 @@ data class FieldPermissionCondition(
         val path: Path<Any>? = createDatabaseObjectPath(field, root, resourceType)
 
         return criteriaBuilder.equal(path, this.value)
-    }
-
-    private fun findEntityField(entity: Any): Any {
-        var currentEntity = entity
-        field.split('.').forEach {
-                val declaredField = currentEntity.javaClass.getDeclaredField(it)
-                declaredField.trySetAccessible()
-                currentEntity = declaredField.get(currentEntity)
-        }
-        return currentEntity
     }
 
     companion object {
