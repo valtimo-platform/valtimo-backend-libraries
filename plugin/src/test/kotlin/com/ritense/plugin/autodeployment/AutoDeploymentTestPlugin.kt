@@ -46,7 +46,7 @@ class AutoDeploymentTestPlugin(
         key = "test-action-task",
         title = "Test action task",
         description = "This is an action used to verify plugin framework functionality",
-        activityTypes = [ActivityType.USER_TASK_CREATE]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun testActionTask() {
         //do nothing

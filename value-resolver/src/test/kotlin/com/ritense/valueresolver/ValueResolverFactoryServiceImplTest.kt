@@ -25,17 +25,17 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import java.util.UUID
 
-internal class ValueResolverFactoryServiceTest {
+internal class ValueResolverFactoryServiceImplTest {
 
     private val runtimeService: RuntimeService = mock()
-    private val resolverService = ValueResolverService(
+    private val resolverService = ValueResolverServiceImpl(
         listOf(ProcessVariableValueResolverFactory(runtimeService), FixedValueResolverFactory())
     )
 
     @Test
     fun `Should fail on duplicate resolver prefixes`() {
         val exception = assertThrows<RuntimeException> {
-            val resolverService = ValueResolverService(
+            val resolverService = ValueResolverServiceImpl(
                 listOf(
                     ProcessVariableValueResolverFactory(runtimeService),
                     ProcessVariableValueResolverFactory(runtimeService)
@@ -103,7 +103,7 @@ internal class ValueResolverFactoryServiceTest {
     @Test
     @Throws(RuntimeException::class)
     fun `Should throw exception when no resolvers are configured`() {
-        val resolverService = ValueResolverService(listOf())
+        val resolverService = ValueResolverServiceImpl(listOf())
         val exception = assertThrows<RuntimeException> {
             resolverService.resolveValues(
                 processInstanceId = UUID.randomUUID().toString(),

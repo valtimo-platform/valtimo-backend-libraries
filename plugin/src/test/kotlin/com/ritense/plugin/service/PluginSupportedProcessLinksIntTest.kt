@@ -65,7 +65,7 @@ class PluginSupportedProcessLinksIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should return a plugin process link type for ServiceTaskStart with enabled false`() {
+    fun `should return a plugin process link type for UserTaskCreate with enabled false`() {
         val result = pluginSupportedProcessLinks.getProcessLinkType("bpmn:UserTask:create")
         assertEquals("plugin", result?.processLinkType)
         assertEquals(false, result?.enabled)

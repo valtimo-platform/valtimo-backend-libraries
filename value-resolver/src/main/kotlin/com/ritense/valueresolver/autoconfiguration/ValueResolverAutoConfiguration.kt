@@ -20,6 +20,7 @@ import com.ritense.valueresolver.FixedValueResolverFactory
 import com.ritense.valueresolver.ProcessVariableValueResolverFactory
 import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.valueresolver.ValueResolverService
+import com.ritense.valueresolver.ValueResolverServiceImpl
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -35,7 +36,7 @@ class ValueResolverAutoConfiguration {
     fun valueResolverService(
         @Lazy valueResolverFactories: List<ValueResolverFactory>
     ): ValueResolverService {
-        return ValueResolverService(valueResolverFactories)
+        return ValueResolverServiceImpl(valueResolverFactories)
     }
 
     @Bean
