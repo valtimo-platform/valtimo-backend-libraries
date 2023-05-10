@@ -33,6 +33,7 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
+import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
@@ -163,7 +164,12 @@ class PluginService(
         }
     }
 
-    fun processLinkExists(pluginConfigurationId: PluginConfigurationId, activityId: String, activityType: ActivityType): Boolean {
+    @Deprecated("Marked for removal since 10.6.0", ReplaceWith("processLinkService.processLinkExists(i,j,k)"))
+    fun processLinkExists(
+        pluginConfigurationId: PluginConfigurationId,
+        activityId: String,
+        activityType: ActivityType
+    ): Boolean {
         return pluginProcessLinkRepository
             .findByPluginConfigurationIdAndActivityIdAndActivityType(
                 pluginConfigurationId,
@@ -172,6 +178,7 @@ class PluginService(
             ).size == 1
     }
 
+    @Deprecated("Marked for removal since 10.6.0", ReplaceWith("processLinkService.getProcessLinks(i,j)"))
     fun getProcessLinks(
         processDefinitionId: String,
         activityId: String
@@ -179,9 +186,10 @@ class PluginService(
         return pluginProcessLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinitionId, activityId)
             .map {
                 PluginProcessLinkResultDto(
-                    id = it.id.id,
+                    id = it.id,
                     processDefinitionId = it.processDefinitionId,
                     activityId = it.activityId,
+                    activityType = it.activityType,
                     pluginConfigurationId = it.pluginConfigurationId.id,
                     pluginActionDefinitionKey = it.pluginActionDefinitionKey,
                     actionProperties = it.actionProperties
@@ -189,6 +197,7 @@ class PluginService(
             }
     }
 
+    @Deprecated("Marked for removal since 10.6.0", ReplaceWith("processLinkService.createProcessLink(i)"))
     fun createProcessLink(processLink: PluginProcessLinkCreateDto) {
         if (getProcessLinks(processLink.processDefinitionId, processLink.activityId).isNotEmpty()) {
             throw ValidationException("A process-link for this process-definition and activity already exists!")
@@ -201,11 +210,12 @@ class PluginService(
             actionProperties = processLink.actionProperties,
             pluginConfigurationId = PluginConfigurationId.existingId(processLink.pluginConfigurationId),
             pluginActionDefinitionKey = processLink.pluginActionDefinitionKey,
-            activityType = ActivityType.fromValue(processLink.activityType).mapOldActivityTypeToCurrent()
+            activityType = ActivityType.fromValue(processLink.activityType.value).mapOldActivityTypeToCurrent()
         )
         pluginProcessLinkRepository.save(newProcessLink)
     }
 
+    @Deprecated("Marked for removal since 10.6.0", ReplaceWith("processLinkService.updateProcessLink(i)"))
     fun updateProcessLink(processLink: PluginProcessLinkUpdateDto) {
         val link = pluginProcessLinkRepository.getById(
             PluginProcessLinkId.existingId(processLink.id)
@@ -217,6 +227,7 @@ class PluginService(
         pluginProcessLinkRepository.save(link)
     }
 
+    @Deprecated("Marked for removal since 10.6.0", ReplaceWith("processLinkService.deleteProcessLink(id)"))
     fun deleteProcessLink(id: UUID) {
         pluginProcessLinkRepository.deleteById(PluginProcessLinkId.existingId(id))
     }
@@ -475,7 +486,13 @@ class PluginService(
         return this
     }
 
+    fun getPluginDefinitionActionsByActivityType(activityType: String): List<PluginActionDefinition> {
+        return pluginActionDefinitionRepository.findByActivityTypes(ActivityType.fromValue(activityType))
+    }
+
     companion object {
         val logger = KotlinLogging.logger {}
+
+        const val PROCESS_LINK_TYPE_PLUGIN = "plugin"
     }
 }

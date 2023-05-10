@@ -16,13 +16,20 @@
 
 package com.ritense.besluitenapi
 
+import com.ritense.besluitenapi.client.BesluitenApiClient
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
+import com.ritense.zakenapi.ZaakUrlProvider
 
 class BesluitenApiPluginFactory(
-    pluginService: PluginService
-): PluginFactory<BesluitenApiPlugin>(pluginService) {
+    pluginService: PluginService,
+    private val besluitenApiClient: BesluitenApiClient,
+    private val urlProvider: ZaakUrlProvider,
+) : PluginFactory<BesluitenApiPlugin>(pluginService) {
     override fun create(): BesluitenApiPlugin {
-        return BesluitenApiPlugin()
+        return BesluitenApiPlugin(
+            besluitenApiClient,
+            urlProvider
+        )
     }
 }

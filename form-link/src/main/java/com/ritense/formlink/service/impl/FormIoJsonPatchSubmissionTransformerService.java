@@ -16,8 +16,6 @@
 
 package com.ritense.formlink.service.impl;
 
-import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowRemovalOperations;
-import static com.ritense.form.domain.FormIoFormDefinition.PROPERTY_KEY;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -28,9 +26,14 @@ import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder;
-import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
+
+import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowRemovalOperations;
+import static com.ritense.form.domain.FormIoFormDefinition.PROPERTY_KEY;
+
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTransformerService<FormIoFormDefinition> {
 
     private static final String CUSTOM_PROPERTIES = "properties";
@@ -194,19 +197,16 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
 
                 } else if (container.contains("/-/")) {
                     final JsonPointer arrayPointer = JsonPointer.compile(StringUtils.substringBefore(container, "/-"));
-                    final ArrayNode list = (ArrayNode) source.at(arrayPointer);//get sources array
-                    final String calculatedArrayItemIndex = String.valueOf(list.size());
-
-                    final JsonPointer arrayItemForSourceJsonPointer = JsonPointer.compile(
-                        arrayPointer + "/" + calculatedArrayItemIndex + "/" + propertyName
-                    );
+                    JsonNode array = source.at(arrayPointer);
+                    if(array.isMissingNode()) {
+                        sourceJsonPatchBuilder.add(arrayPointer, JsonNodeFactory.instance.arrayNode());
+                    }
 
                     //ensure object exist in array
-                    sourceJsonPatchBuilder.add(
-                        JsonPointer.valueOf(arrayPointer + "/" + calculatedArrayItemIndex), JsonNodeFactory.instance.objectNode()
-                    );
+                    JsonPointer itemPointer = arrayPointer.appendIndex(array.size()); //array.size returns 0 for MissingNode
+                    sourceJsonPatchBuilder.add(itemPointer, JsonNodeFactory.instance.objectNode());
                     //Add actual item to its position
-                    sourceJsonPatchBuilder.add(arrayItemForSourceJsonPointer, propertyValue);
+                    sourceJsonPatchBuilder.add(itemPointer.appendProperty(propertyName), propertyValue);
                     submissionJsonPatchBuilder.remove(submissionProperty);
                 }
             }

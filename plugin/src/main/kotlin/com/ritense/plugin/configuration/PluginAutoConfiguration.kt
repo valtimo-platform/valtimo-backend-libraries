@@ -21,6 +21,7 @@ import com.ritense.plugin.PluginCategoryResolver
 import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
 import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.mapper.PluginProcessLinkMapper
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginCategoryRepository
@@ -28,13 +29,14 @@ import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginConfigurationSearchRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.plugin.repository.PluginProcessLinkRepositoryImpl
 import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.EncryptionService
 import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.service.PluginSupportedProcessLinksHandler
 import com.ritense.plugin.web.rest.PluginConfigurationResource
 import com.ritense.plugin.web.rest.PluginDefinitionResource
-import com.ritense.plugin.web.rest.PluginProcessLinkResource
 import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.beans.factory.annotation.Value
@@ -55,7 +57,7 @@ import javax.persistence.EntityManager
         PluginCategoryRepository::class,
         PluginConfigurationRepository::class,
         PluginDefinitionRepository::class,
-        PluginProcessLinkRepository::class,
+        PluginProcessLinkRepositoryImpl::class,
         PluginPropertyRepository::class,
     ]
 )
@@ -115,7 +117,8 @@ class PluginAutoConfiguration {
         valueResolverService: ValueResolverService,
         pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
     ): PluginService {
-        return PluginService(pluginDefinitionRepository,
+        return PluginService(
+            pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
             pluginProcessLinkRepository,
@@ -149,11 +152,19 @@ class PluginAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(PluginProcessLinkResource::class)
-    fun pluginProcessLinkResource(
-        pluginService: PluginService
-    ): PluginProcessLinkResource {
-        return PluginProcessLinkResource(pluginService)
+    @ConditionalOnMissingBean(PluginProcessLinkMapper::class)
+    fun pluginProcessLinkMapper(
+        objectMapper: ObjectMapper
+    ): PluginProcessLinkMapper {
+        return PluginProcessLinkMapper(objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginProcessLinkRepository::class)
+    fun pluginProcessLinkRepository(
+        pluginProcessLinkRepositoryImpl: PluginProcessLinkRepositoryImpl
+    ): PluginProcessLinkRepository {
+        return PluginProcessLinkRepository(pluginProcessLinkRepositoryImpl)
     }
 
     @Bean
@@ -162,5 +173,11 @@ class PluginAutoConfiguration {
         secret: String
     ): EncryptionService {
         return EncryptionService(secret)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginSupportedProcessLinksHandler::class)
+    fun getPluginSupportedProcessLinks(pluginService: PluginService): PluginSupportedProcessLinksHandler {
+        return PluginSupportedProcessLinksHandler(pluginService)
     }
 }

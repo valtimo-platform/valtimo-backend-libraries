@@ -22,10 +22,13 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':contract')
-    implementation project(':core')
-    implementation project(':resource')
-    implementation project(':document')
+    implementation project(":contract")
+    implementation project(":core")
+    implementation project(":document")
+    implementation project(":process-document")
+    implementation project(":process-link")
+    implementation project(":resource")
+    implementation project(":resource:temporary-resource-storage")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -60,6 +63,7 @@ dependencies {
     testImplementation project(path: ":core", configuration: 'testOutput')
     testImplementation project(':test-utils-common')
     testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {
         enabled = true

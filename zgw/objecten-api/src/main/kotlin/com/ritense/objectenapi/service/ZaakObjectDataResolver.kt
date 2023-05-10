@@ -28,13 +28,12 @@ import com.fasterxml.jackson.databind.node.JsonNodeType.OBJECT
 import com.fasterxml.jackson.databind.node.JsonNodeType.POJO
 import com.fasterxml.jackson.databind.node.JsonNodeType.STRING
 import com.ritense.objectenapi.service.ZaakObjectConstants.Companion.ZAAKOBJECT_PREFIX
-import com.ritense.valtimo.contract.form.FormFieldDataResolver
 import com.ritense.valtimo.contract.form.DataResolvingContext
-import java.util.UUID
+import com.ritense.valtimo.contract.form.FormFieldDataResolver
 
 class ZaakObjectDataResolver(
-    val zaakObjectService: ZaakObjectService,
-    val objectMapper: ObjectMapper
+    private val zaakObjectService: ZaakObjectService,
+    private val objectMapper: ObjectMapper
 ): FormFieldDataResolver {
 
     override fun supports(externalFormFieldType: String): Boolean {

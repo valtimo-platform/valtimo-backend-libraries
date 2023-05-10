@@ -20,4 +20,4 @@ import com.ritense.plugin.annotation.PluginCategory
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
 @PluginCategory("besluiten-api-authentication")
-interface BesluitenApiAuthentication: ExchangeFilterFunction
+interface BesluitenApiAuthentication : ExchangeFilterFunction

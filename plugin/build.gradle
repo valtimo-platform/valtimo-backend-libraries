@@ -22,8 +22,11 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':contract')
-    implementation project(':value-resolver')
+    api(project(":process-link")) {
+        exclude(group: "com.ritense.valtimo", module: "core")
+    }
+    implementation project(":contract")
+    implementation project(":value-resolver")
 
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter"

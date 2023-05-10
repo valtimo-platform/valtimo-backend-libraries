@@ -17,6 +17,7 @@
 package com.ritense.haalcentraal.brp.web.rest
 
 import com.ritense.haalcentraal.brp.BaseIntegrationTest
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -58,7 +59,7 @@ class HaalCentraalBrpResourceIntTest : BaseIntegrationTest() {
             .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$.[0].burgerservicenummer").value("555555021"))
             .andExpect(jsonPath("$.[0].voornamen").value("Pieter Jan"))
@@ -81,7 +82,7 @@ class HaalCentraalBrpResourceIntTest : BaseIntegrationTest() {
             .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$.[0].burgerservicenummer").value("555555021"))
             .andExpect(jsonPath("$.[0].voornamen").value("Pieter Jan"))

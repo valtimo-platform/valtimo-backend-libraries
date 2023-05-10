@@ -19,6 +19,8 @@ package com.ritense.search.domain
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.Table
 
@@ -39,7 +41,9 @@ data class SearchFieldV2(
     @Column(name = "column_order")
     val order: Int,
     @Column(name = "data_type")
+    @Enumerated(EnumType.STRING)
     val dataType: DataType,
     @Column(name = "field_type")
+    @Enumerated(EnumType.STRING)
     val fieldType: FieldType
 )

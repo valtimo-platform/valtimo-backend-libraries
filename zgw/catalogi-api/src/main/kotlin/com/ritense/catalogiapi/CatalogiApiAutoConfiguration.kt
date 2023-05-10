@@ -16,21 +16,18 @@
 
 package com.ritense.catalogiapi
 
-import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.catalogiapi.client.CatalogiApiClient
 import com.ritense.catalogiapi.security.CatalogiApiHttpSecurityConfigurer
 import com.ritense.catalogiapi.service.CatalogiService
-import com.ritense.plugin.service.PluginService
-import com.ritense.catalogiapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.catalogiapi.web.rest.CatalogiResource
-import io.netty.handler.logging.LogLevel
+import com.ritense.document.service.DocumentService
+import com.ritense.plugin.service.PluginService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.netty.http.client.HttpClient
-import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
 class CatalogiApiAutoConfiguration {
@@ -43,9 +40,11 @@ class CatalogiApiAutoConfiguration {
     @Bean
     fun catalogiApiPluginFactory(
         pluginService: PluginService,
-        client: CatalogiApiClient
+        client: CatalogiApiClient,
+        zaaktypeUrlProvider: ZaaktypeUrlProvider,
+        documentService: DocumentService,
     ): CatalogiApiPluginFactory {
-        return CatalogiApiPluginFactory(pluginService, client)
+        return CatalogiApiPluginFactory(pluginService, client, zaaktypeUrlProvider, documentService)
     }
 
     @Bean

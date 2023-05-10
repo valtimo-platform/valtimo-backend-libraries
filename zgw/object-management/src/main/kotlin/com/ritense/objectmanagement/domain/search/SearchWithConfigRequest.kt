@@ -16,7 +16,6 @@
 
 package com.ritense.objectmanagement.domain.search
 
-class SearchWithConfigRequest(
+data class SearchWithConfigRequest(
     val otherFilters: List<SearchWithConfigFilter> = listOf()
-) {
-}
+)

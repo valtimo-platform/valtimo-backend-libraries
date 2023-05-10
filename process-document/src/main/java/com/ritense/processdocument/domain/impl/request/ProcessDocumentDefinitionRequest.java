@@ -19,6 +19,7 @@ package com.ritense.processdocument.domain.impl.request;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.processdocument.domain.request.Request;
+
 import javax.validation.constraints.NotNull;
 
 public class ProcessDocumentDefinitionRequest implements Request {
@@ -51,7 +52,7 @@ public class ProcessDocumentDefinitionRequest implements Request {
         @JsonProperty(value = "processDefinitionKey", required = true) @NotNull String processDefinitionKey,
         @JsonProperty(value = "documentDefinitionName", required = true) @NotNull String documentDefinitionName,
         @JsonProperty(value = "canInitializeDocument", required = true) boolean canInitializeDocument,
-        @JsonProperty(value = "startableByUser") Boolean startableByUser
+        @JsonProperty("startableByUser") Boolean startableByUser
     ) {
         this.processDefinitionKey = processDefinitionKey;
         this.documentDefinitionName = documentDefinitionName;

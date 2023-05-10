@@ -140,7 +140,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     private fun linkFormFlowToUserTask() {
         formAssociationService.createFormAssociation(
             CreateFormAssociationRequest(
-                "one-task-process",
+                "formflow-one-task-process",
                 FormLinkRequest(
                     "do-something",
                     FormAssociationType.USER_TASK,
@@ -156,7 +156,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     private fun newDocumentAndStartProcess(): NewDocumentAndStartProcessResult {
         return processDocumentService.newDocumentAndStartProcess(
             NewDocumentAndStartProcessRequest(
-                "one-task-process",
+                "formflow-one-task-process",
                 NewDocumentRequest(
                     "profile",
                     Mapper.INSTANCE.get().readTree("{}")

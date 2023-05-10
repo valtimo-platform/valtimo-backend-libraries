@@ -19,8 +19,10 @@ package com.ritense.formlink.web.rest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.formlink.service.result.FormSubmissionResult;
 import org.springframework.http.ResponseEntity;
+
 import java.util.UUID;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public interface PublicFormAssociationResource {
 
     ResponseEntity<JsonNode> getFormDefinitionByFormLinkId(String authorizationHeader);

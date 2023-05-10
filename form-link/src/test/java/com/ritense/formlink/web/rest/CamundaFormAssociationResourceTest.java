@@ -36,9 +36,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -125,7 +127,7 @@ public class CamundaFormAssociationResourceTest extends BaseTest {
         final ObjectNode jsonNode = JsonNodeFactory.instance.objectNode();
         when(camundaFormAssociationService
             .getStartEventFormDefinition(
-                eq(camundaProcessFormAssociation.getProcessDefinitionKey())
+                eq(camundaProcessFormAssociation.getProcessDefinitionKey()), eq(Optional.empty())
             )
         ).thenReturn(Optional.of(jsonNode));
 

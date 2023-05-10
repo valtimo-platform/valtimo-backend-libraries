@@ -34,7 +34,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.mail.repository")
 @EntityScan("com.ritense.mail.domain")
-@EnableConfigurationProperties(value = {MandrillProperties.class})
+@EnableConfigurationProperties(MandrillProperties.class)
 public class MandrillMailAutoConfiguration {
 
     //services

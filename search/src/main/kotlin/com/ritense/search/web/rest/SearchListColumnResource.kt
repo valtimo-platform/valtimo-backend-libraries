@@ -18,8 +18,7 @@ package com.ritense.search.web.rest
 
 import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.service.SearchListColumnService
-import javax.validation.Valid
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -28,8 +27,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import javax.validation.Valid
 
-@RequestMapping("/api/v1/search/list-column", produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api/v1/search/list-column", produces = [APPLICATION_JSON_UTF8_VALUE])
 class SearchListColumnResource(
     private val searchListColumnService: SearchListColumnService
 ) {
@@ -48,6 +48,13 @@ class SearchListColumnResource(
         @Valid @RequestBody searchListColumn: SearchListColumn
     ) =
         ResponseEntity.ok(searchListColumnService.update(ownerId, key, searchListColumn))
+
+    @PutMapping("/{ownerId}/search-list-columns")
+    fun updateList(
+        @PathVariable ownerId: String,
+        @Valid @RequestBody searchListColumn: List<SearchListColumn>
+    ) =
+        ResponseEntity.ok(searchListColumnService.updateList(ownerId, searchListColumn))
 
     @GetMapping("/{ownerId}")
     fun getByKey(@PathVariable ownerId: String) =

@@ -65,7 +65,6 @@ internal class ObjectenApiPluginFactoryTest {
 
         assertEquals(URI("http://objecten.plugin.url"), plugin.url)
         assertEquals(authenticationMock, plugin.authenticationPluginConfiguration)
-        assertEquals(objectenApiClient, plugin.objectenApiClient)
     }
 
     private fun createPluginDefinition(): PluginDefinition {

@@ -25,7 +25,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
 @Import(FormFlowBeanTestHelper::class)
-@ExtendWith(value = [SpringExtension::class])
+@ExtendWith(SpringExtension::class)
 @Tag("integration")
 class BaseIntegrationTest : BaseTest() {
 

@@ -36,6 +36,7 @@ import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentI
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import com.ritense.processdocument.exception.DuplicateProcessDocumentDefinitionException;
+import com.ritense.processdocument.exception.ProcessDocumentDefinitionNotFoundException;
 import com.ritense.processdocument.exception.UnknownProcessDefinitionException;
 import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
@@ -49,9 +50,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 public class CamundaProcessJsonSchemaDocumentAssociationService implements ProcessDocumentAssociationService {
@@ -84,6 +87,12 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
+    public CamundaProcessJsonSchemaDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey) {
+        return findProcessDocumentDefinition(processDefinitionKey)
+            .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException("for processDefinitionKey '" + processDefinitionKey + "'"));
+    }
+
+    @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findAllProcessDocumentDefinitions(ProcessDefinitionKey processDefinitionKey) {
         return processDocumentDefinitionRepository.findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
     }
@@ -94,8 +103,19 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
+    public CamundaProcessJsonSchemaDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion) {
+        return findProcessDocumentDefinition(processDefinitionKey, documentDefinitionVersion)
+            .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException("for processDefinitionKey '" + processDefinitionKey + "' and version '" + documentDefinitionVersion + "'"));
+    }
+
+    @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName) {
         return processDocumentDefinitionRepository.findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(documentDefinitionName);
+    }
+
+    @Override
+    public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitionsByProcessDefinitionKey(String processDefinitionKey) {
+        return processDocumentDefinitionRepository.findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
     }
 
     @Override

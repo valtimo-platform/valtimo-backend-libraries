@@ -21,7 +21,7 @@ import com.ritense.objectsapi.web.rest.request.CreateObjectSyncConfigRequest
 import com.ritense.objectsapi.web.rest.request.ModifyObjectSyncConfigRequest
 import com.ritense.objectsapi.web.rest.result.CreateObjectSyncConfigResult
 import com.ritense.objectsapi.web.rest.result.ModifyObjectSyncConfigResult
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -35,28 +35,29 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 import javax.validation.Valid
 
+
 @RestController
-@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface ObjectSyncConfigResource {
 
-    @GetMapping(value = ["/v1/object/sync/config/{id}"])
+    @GetMapping("/v1/object/sync/config/{id}")
     fun getConfig(@PathVariable(name = "id") id: UUID): ResponseEntity<ObjectSyncConfig>
 
-    @GetMapping(value = ["/v1/object/sync/config"])
+    @GetMapping("/v1/object/sync/config")
     fun getConfigs(
         @RequestParam("documentDefinitionName") documentDefinitionName: String
     ): ResponseEntity<List<ObjectSyncConfig>>
 
-    @PostMapping(value = ["/v1/object/sync/config"])
+    @PostMapping("/v1/object/sync/config")
     fun create(
         @Valid @RequestBody request: CreateObjectSyncConfigRequest
     ): ResponseEntity<CreateObjectSyncConfigResult>
 
-    @PutMapping(value = ["/v1/object/sync/config"])
+    @PutMapping("/v1/object/sync/config")
     fun modify(
         @Valid @RequestBody request: ModifyObjectSyncConfigRequest
     ): ResponseEntity<ModifyObjectSyncConfigResult>
 
-    @DeleteMapping(value = ["/v1/object/sync/config/{id}"])
+    @DeleteMapping("/v1/object/sync/config/{id}")
     fun remove(@PathVariable(name = "id") id: UUID): ResponseEntity<Void>
 }

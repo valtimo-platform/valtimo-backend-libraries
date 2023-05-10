@@ -27,6 +27,7 @@ import com.ritense.formflow.handler.TypeProperties
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
+import kotlin.jvm.optionals.getOrNull
 
 class FormFlowService(
     private val formFlowDefinitionRepository: FormFlowDefinitionRepository,
@@ -41,6 +42,20 @@ class FormFlowService(
 
     fun findDefinition(formFlowId: FormFlowDefinitionId): FormFlowDefinition {
         return formFlowDefinitionRepository.getById(formFlowId)
+    }
+
+    fun findDefinition(formFlowDefinitionId: String): FormFlowDefinition? {
+        val formFlowIdAsArray = formFlowDefinitionId.split(":")
+        if (formFlowIdAsArray.size != 2) {
+            throw IllegalArgumentException("Invalid Format found for formFlowId '${formFlowIdAsArray.joinToString(":")}'. Form flow id must have format key:version")
+        }
+        return if (formFlowIdAsArray[1] == "latest") {
+            findLatestDefinitionByKey(formFlowIdAsArray[0])
+        } else {
+            formFlowDefinitionRepository.findById(
+                FormFlowDefinitionId(formFlowIdAsArray[0], formFlowIdAsArray[1].toLong())
+            ).getOrNull()
+        }
     }
 
     fun findLatestDefinitionByKey(formFlowKey: String): FormFlowDefinition? {
