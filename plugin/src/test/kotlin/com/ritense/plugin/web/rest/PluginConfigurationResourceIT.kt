@@ -127,7 +127,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$").isNotEmpty)
-            .andExpect(jsonPath("$.*", hasSize<Int>(1)))
+            .andExpect(jsonPath("$.*", hasSize<Int>(2)))
             .andExpect(jsonPath("$[0].title").value("some-config"))
     }
 }
