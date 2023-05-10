@@ -76,11 +76,6 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
         );
     }
 
-    @Override
-    public  <T> Expression<T> getValueForPath(CriteriaBuilder cb, Path column, String path, Class<T> type) {
-        return getValueForPathText(cb, column, path).as(type);
-    }
-
     private Expression<String> getValueForPathText(CriteriaBuilder cb, Path column, String path) {
         List<Expression<String>> pathParts = splitPath(path).stream().map(cb::literal).toList();
         Expression[] expressions = new Expression[pathParts.size() + 1];

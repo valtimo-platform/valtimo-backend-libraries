@@ -27,8 +27,6 @@ public interface QueryDialectHelper {
 
     Predicate getJsonValueExistsExpression(CriteriaBuilder cb, Path column, String value);
 
-    <T> Expression<T> getValueForPath(CriteriaBuilder cb, Path column, String path, Class<T> type);
-
     Predicate getJsonValueExistsInPathExpression(CriteriaBuilder cb, Path column, String path, String value);
 
 }
