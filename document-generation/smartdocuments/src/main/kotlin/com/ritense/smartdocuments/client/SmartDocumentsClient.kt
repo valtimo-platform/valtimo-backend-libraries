@@ -56,7 +56,7 @@ class SmartDocumentsClient(
         return webClient().post()
             .uri("/wsxmldeposit/deposit/unattended")
             .contentType(APPLICATION_JSON)
-            .bodyValue(smartDocumentsRequest)
+            .bodyValue(fixRequest(smartDocumentsRequest))
             .retrieve()
             .bodyToMono(FilesResponse::class.java)
             .doOnError { throw toHttpClientErrorException(it) }
@@ -73,7 +73,7 @@ class SmartDocumentsClient(
         val bodyFlux = webClient().post()
             .uri("/wsxmldeposit/deposit/unattended")
             .contentType(APPLICATION_JSON)
-            .bodyValue(smartDocumentsRequest)
+            .bodyValue(fixRequest(smartDocumentsRequest))
             .retrieve()
             .bodyToFlux<DataBuffer>()
             .doOnError {
@@ -96,6 +96,22 @@ class SmartDocumentsClient(
             FilenameUtils.getExtension(parsedResponse.fileName),
             Base64.getDecoder().wrap(documentDataIn)
         )
+    }
+
+    private fun fixRequest(smartDocumentsRequest: SmartDocumentsRequest): SmartDocumentsRequest {
+        return if (smartDocumentsRequest.smartDocument.selection.templateGroup.length > 18) {
+            // Bugfix: SmartDocuments always throws error when the templateGroup is longer than 18
+            // Note: The templateGroup doesn't have to exist in SmartDocuments for it to generate a document
+            smartDocumentsRequest.copy(
+                smartDocument = smartDocumentsRequest.smartDocument.copy(
+                    selection = smartDocumentsRequest.smartDocument.selection.copy(
+                        templateGroup = smartDocumentsRequest.smartDocument.selection.templateGroup.substring(0, 18)
+                    )
+                )
+            )
+        } else {
+            smartDocumentsRequest
+        }
     }
 
     private fun toHttpClientErrorException(e: Throwable): HttpClientErrorException {
