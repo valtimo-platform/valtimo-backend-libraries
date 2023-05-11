@@ -41,6 +41,7 @@ import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import java.io.Writer
 import java.util.Base64
+import java.util.UUID
 import java.util.concurrent.Executors
 
 class SmartDocumentsClient(
@@ -56,7 +57,7 @@ class SmartDocumentsClient(
         return webClient().post()
             .uri("/wsxmldeposit/deposit/unattended")
             .contentType(APPLICATION_JSON)
-            .bodyValue(smartDocumentsRequest)
+            .bodyValue(fixRequest(smartDocumentsRequest))
             .retrieve()
             .bodyToMono(FilesResponse::class.java)
             .doOnError { throw toHttpClientErrorException(it) }
@@ -73,7 +74,7 @@ class SmartDocumentsClient(
         val bodyFlux = webClient().post()
             .uri("/wsxmldeposit/deposit/unattended")
             .contentType(APPLICATION_JSON)
-            .bodyValue(smartDocumentsRequest)
+            .bodyValue(fixRequest(smartDocumentsRequest))
             .retrieve()
             .bodyToFlux<DataBuffer>()
             .doOnError {
@@ -95,6 +96,18 @@ class SmartDocumentsClient(
             parsedResponse.fileName,
             FilenameUtils.getExtension(parsedResponse.fileName),
             Base64.getDecoder().wrap(documentDataIn)
+        )
+    }
+
+    private fun fixRequest(smartDocumentsRequest: SmartDocumentsRequest): SmartDocumentsRequest {
+        // Bugfix: SmartDocuments throws an error when using an existing templateGroup
+        // Note: The templateGroup doesn't have to exist in SmartDocuments for it to generate a document
+        return smartDocumentsRequest.copy(
+            smartDocument = smartDocumentsRequest.smartDocument.copy(
+                selection = smartDocumentsRequest.smartDocument.selection.copy(
+                    templateGroup = UUID.randomUUID().toString()
+                )
+            )
         )
     }
 
