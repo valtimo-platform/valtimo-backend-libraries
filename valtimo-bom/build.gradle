@@ -20,7 +20,7 @@ javaPlatform {
 
 dependencies {
     constraints {
-        api("org.springframework.boot:spring-boot:${springBootVersion}")
+        api("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
         api("de.codecentric:spring-boot-admin-starter-client:${springBootAdminStarterClientVersion}")
 
         api("org.liquibase:liquibase-core:${liquibaseVersion}")
@@ -28,11 +28,20 @@ dependencies {
 
         api("org.hibernate:hibernate-core:${hibernateCoreVersion}")
 
+        api("software.amazon.awssdk:bom:${awssdkVersion}")
+        api("com.fasterxml.jackson:jackson-bom:${jacksonVersion}")
+        api("org.yaml:snakeyaml:${snakeYamlVersionOverride}")
+        api("io.netty:netty-codec:${nettyCodecVersionOverride}")
+        api("org.liquibase:liquibase-core:${liquibaseVersion}")
+
         project.rootProject.subprojects.forEach { subproject ->
-            if (!["app", "gzac", "valtimo-core", 'valtimo-dependencies', 'valtimo-gzac-dependencies'].contains(subproject.name)) {
+            if (!["app", "gzac", "valtimo-bom"].contains(subproject.name)) {
                 api(subproject)
             }
         }
+
+        //Testing
+        api("org.junit:junit-bom:${junitVersion}")
     }
 }
 

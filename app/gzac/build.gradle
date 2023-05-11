@@ -1,40 +1,16 @@
+dependencyManagement {
+    imports {
+        project(":valtimo-bom")
+    }
+}
+
 dependencies {
-    implementation(project(":app"))
-    implementation(project(":audit"))
-    implementation(project(":besluit"))
-    implementation(project(":case"))
-    implementation(project(":contactmoment"))
-    implementation(project(":contract"))
-    implementation(project(":connector"))
-    implementation(project(":core"))
-    implementation(project(":document"))
+    implementation platform(project(":valtimo-gzac-dependencies"))
     implementation(project(":document-generation:smartdocuments"))
-    implementation(project(":form"))
-    implementation(project(":form-flow-valtimo"))
-    implementation(project(":haalcentraal:haalcentraal-brp"))
-    implementation(project(":keycloak-iam"))
     implementation(project(":mail:local-mail"))
-    implementation(project(":notes"))
-    implementation(project(":objects-api"))
-    implementation(project(":openzaak"))
-    implementation(project(":plugin-authentication:notificaties-api-authentication"))
-    implementation(project(":plugin-authentication:objecten-api-authentication"))
-    implementation(project(":plugin-valtimo"))
-    implementation(project(":process-document"))
     implementation(project(":resource:openzaak-resource"))
     implementation(project(":resource:temporary-resource-storage"))
     implementation(project(":search"))
-    implementation(project(":web"))
-    implementation(project(":zgw:catalogi-api"))
-    implementation(project(":zgw:documenten-api"))
-    implementation(project(":zgw:notificaties-api"))
-    implementation(project(":zgw:object-management"))
-    implementation(project(":zgw:objecten-api"))
-    implementation(project(":zgw:objecttypen-api"))
-    implementation(project(":zgw:portaaltaak"))
-    implementation(project(":zgw:verzoek"))
-    implementation(project(":zgw:zaken-api"))
-    implementation(project(":zgw:besluiten-api"))
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
