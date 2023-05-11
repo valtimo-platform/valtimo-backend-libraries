@@ -22,6 +22,7 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.AuthorizationServiceHolder
 import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.PermissionRepository
+import com.ritense.authorization.ValtimoAuthorizationService
 import com.ritense.authorization.RoleRepository
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -47,7 +48,7 @@ class AuthorizationAutoConfiguration {
         permissionRepository: PermissionRepository,
         roleRepository: RoleRepository
     ): AuthorizationService {
-        return AuthorizationService(authorizationSpecificationFactories, mappers, permissionRepository)
+        return ValtimoAuthorizationService(authorizationSpecificationFactories, mappers, permissionRepository)
     }
 
     @Bean

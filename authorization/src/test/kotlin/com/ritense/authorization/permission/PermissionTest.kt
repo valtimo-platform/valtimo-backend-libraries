@@ -17,7 +17,7 @@
 package com.ritense.authorization.permission
 
 import com.ritense.authorization.Action
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any

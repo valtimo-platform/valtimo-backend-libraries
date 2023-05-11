@@ -16,6 +16,7 @@
 
 package com.ritense
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.authentication.UserManagementService
@@ -51,4 +52,8 @@ abstract class BaseIntegrationTest {
 
     @SpyBean
     lateinit var pluginService: PluginService
+
+    // TODO: remove authorization service mocking when call to run without permissions is added
+    @MockBean
+    lateinit var authorizationService: AuthorizationService
 }

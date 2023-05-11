@@ -26,7 +26,7 @@ import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult
 import org.camunda.bpm.engine.runtime.ProcessInstance
-import java.util.*
+import java.util.UUID
 
 class CorrelationServiceImpl(
     val runtimeService: RuntimeService,

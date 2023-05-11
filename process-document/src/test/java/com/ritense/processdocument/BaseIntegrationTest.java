@@ -17,6 +17,7 @@
 package com.ritense.processdocument;
 
 import com.ritense.audit.service.impl.AuditServiceImpl;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.resource.service.ResourceService;
@@ -58,6 +59,10 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @MockBean
     protected ResourceService resourceService;
+
+    // TODO: remove authorization service mocking when call to run without permissions is added
+    @MockBean
+    public AuthorizationService authorizationService;
 
     @BeforeAll
     static void beforeAll() {

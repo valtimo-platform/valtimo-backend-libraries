@@ -26,7 +26,7 @@ import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -39,7 +39,7 @@ import java.net.URI
 import java.time.LocalDate
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class BesluitenApiClientTest{
+class BesluitenApiClientTest {
     lateinit var mockApi: MockWebServer
 
     @BeforeAll
@@ -149,7 +149,7 @@ class BesluitenApiClientTest{
         )
     }
 
-    class TestAuthentication: BesluitenApiAuthentication {
+    class TestAuthentication : BesluitenApiAuthentication {
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             val filteredRequest = ClientRequest.from(request).headers { headers ->
                 headers.setBearerAuth("test")

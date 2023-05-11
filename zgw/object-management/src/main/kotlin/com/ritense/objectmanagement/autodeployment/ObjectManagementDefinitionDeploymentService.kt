@@ -21,8 +21,6 @@ import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.domain.ObjectManagementConfigurationAutoDeploymentFinishedEvent
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.service.ObjectManagementService
-import java.io.IOException
-import java.util.*
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationEventPublisher
@@ -30,6 +28,8 @@ import org.springframework.context.event.EventListener
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
+import java.io.IOException
+import java.util.*
 
 class ObjectManagementDefinitionDeploymentService(
     private val resourceLoader: ResourceLoader,
@@ -45,7 +45,7 @@ class ObjectManagementDefinitionDeploymentService(
         val objectManagementList = resources.map { resource ->
             try {
                 require(resource != null)
-                val objectManagement = jacksonObjectMapper().readValue<ObjectManagement>(resource.inputStream )
+                val objectManagement = jacksonObjectMapper().readValue<ObjectManagement>(resource.inputStream)
                 if (
                     objectManagementRepository.findByObjecttypeId(objectManagement.objecttypeId) == null &&
                     objectManagementRepository.findByTitle(objectManagement.title) == null

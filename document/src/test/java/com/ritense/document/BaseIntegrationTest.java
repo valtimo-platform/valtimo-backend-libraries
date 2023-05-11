@@ -16,6 +16,12 @@
 
 package com.ritense.document;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.AuthorizationSpecification;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -33,11 +39,14 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
@@ -84,12 +93,25 @@ public abstract class BaseIntegrationTest extends BaseTest {
     @MockBean
     public SimpleApplicationEventMulticaster applicationEventMulticaster;
 
+    // TODO: remove authorization service mocking when case support is added
+    @MockBean
+    public AuthorizationService authorizationService;
+    // TODO: remove entity manager when case support is added
+    @Autowired
+    private EntityManager entityManager;
+
     @BeforeAll
     static void beforeAll() {
     }
 
     @BeforeEach
-    public void beforeEach() {
+    public void beforeEachBase() {
+        // TODO: remove mocking when case support is added
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        AuthorizationSpecification authorizationSpecification = mock(AuthorizationSpecification.class);
+        when(authorizationService.getAuthorizationSpecification(any(), any()))
+            .thenReturn(authorizationSpecification);
+        when(authorizationSpecification.toPredicate(any(), any(), any())).thenReturn(criteriaBuilder.equal(criteriaBuilder.literal(1), 1));
     }
 
     @AfterEach

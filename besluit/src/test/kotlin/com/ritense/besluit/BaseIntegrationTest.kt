@@ -16,6 +16,7 @@
 
 package com.ritense.besluit
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.besluit.connector.BesluitConnector
 import com.ritense.besluit.connector.BesluitProperties
 import com.ritense.connector.domain.ConnectorInstance
@@ -39,9 +40,13 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpMethod
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.util.UUID
@@ -80,6 +85,10 @@ class BaseIntegrationTest : BaseTest() {
 
     @MockBean
     lateinit var mailSender: MailSender
+
+    // TODO: remove authorization service mocking when call to run without permissions is added
+    @MockBean
+    lateinit var authorizationService: AuthorizationService
 
     lateinit var server: MockWebServer
     protected var executedRequests: MutableList<RecordedRequest> = mutableListOf()

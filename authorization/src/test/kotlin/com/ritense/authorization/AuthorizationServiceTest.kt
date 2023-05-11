@@ -47,7 +47,7 @@ class AuthorizationServiceTest {
         mapper3 = mock()
         permissionRepository = mock()
 
-        authorizationService = AuthorizationService(
+        authorizationService = ValtimoAuthorizationService(
             listOf(
                 factory1,
                 factory2,
