@@ -100,19 +100,15 @@ class SmartDocumentsClient(
     }
 
     private fun fixRequest(smartDocumentsRequest: SmartDocumentsRequest): SmartDocumentsRequest {
-        return if (smartDocumentsRequest.smartDocument.selection.templateGroup.length > 18) {
-            // Bugfix: SmartDocuments throws an error when using an existing templateGroup
-            // Note: The templateGroup doesn't have to exist in SmartDocuments for it to generate a document
-            smartDocumentsRequest.copy(
-                smartDocument = smartDocumentsRequest.smartDocument.copy(
-                    selection = smartDocumentsRequest.smartDocument.selection.copy(
-                        templateGroup = UUID.randomUUID().toString()
-                    )
+        // Bugfix: SmartDocuments throws an error when using an existing templateGroup
+        // Note: The templateGroup doesn't have to exist in SmartDocuments for it to generate a document
+        return smartDocumentsRequest.copy(
+            smartDocument = smartDocumentsRequest.smartDocument.copy(
+                selection = smartDocumentsRequest.smartDocument.selection.copy(
+                    templateGroup = UUID.randomUUID().toString()
                 )
             )
-        } else {
-            smartDocumentsRequest
-        }
+        )
     }
 
     private fun toHttpClientErrorException(e: Throwable): HttpClientErrorException {
