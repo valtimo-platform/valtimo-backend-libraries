@@ -21,6 +21,7 @@ import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.note.domain.Note
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import java.util.UUID
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
@@ -38,6 +39,10 @@ class NoteSpecification(
     ): Predicate {
         // Filter the permissions for the relevant ones and use those to  find the filters that are required
         // Turn those filters into predicates
+        val groupList = query.groupList.toMutableList()
+        groupList.add(root.get<UUID>("id"))
+        query.groupBy(groupList)
+
         val predicates = permissions.stream()
             .filter { permission: Permission ->
                 Note::class.java == permission.resourceType &&

@@ -24,16 +24,19 @@ import com.ritense.note.domain.Note
 import java.util.UUID
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
-class NoteDocumentMapper(): AuthorizationEntityMapper<Note, JsonSchemaDocument> {
+class NoteDocumentMapper() : AuthorizationEntityMapper<Note, JsonSchemaDocument> {
     override fun mapRelated(entity: Note): List<JsonSchemaDocument> {
         TODO("Not yet implemented")
     }
 
     override fun mapQuery(root: Root<Note>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<JsonSchemaDocument> {
         val documentRoot: Root<JsonSchemaDocument> = query.from(JsonSchemaDocument::class.java)
+        val groupList = query.groupList.toMutableList()
+        groupList.add(root.get<UUID>("documentId"))
+        query.groupBy(groupList)
+
         return AuthorizationEntityMapperResult(
             documentRoot,
             query,
