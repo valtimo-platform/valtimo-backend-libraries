@@ -41,6 +41,7 @@ import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import java.io.Writer
 import java.util.Base64
+import java.util.UUID
 import java.util.concurrent.Executors
 
 class SmartDocumentsClient(
@@ -100,12 +101,12 @@ class SmartDocumentsClient(
 
     private fun fixRequest(smartDocumentsRequest: SmartDocumentsRequest): SmartDocumentsRequest {
         return if (smartDocumentsRequest.smartDocument.selection.templateGroup.length > 18) {
-            // Bugfix: SmartDocuments always throws error when the templateGroup is longer than 18
+            // Bugfix: SmartDocuments throws an error when using an existing templateGroup
             // Note: The templateGroup doesn't have to exist in SmartDocuments for it to generate a document
             smartDocumentsRequest.copy(
                 smartDocument = smartDocumentsRequest.smartDocument.copy(
                     selection = smartDocumentsRequest.smartDocument.selection.copy(
-                        templateGroup = smartDocumentsRequest.smartDocument.selection.templateGroup.substring(0, 18)
+                        templateGroup = UUID.randomUUID().toString()
                     )
                 )
             )
