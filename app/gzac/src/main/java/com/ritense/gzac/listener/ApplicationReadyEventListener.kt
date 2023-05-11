@@ -16,10 +16,6 @@
 
 package com.ritense.gzac.listener
 
-import com.fasterxml.jackson.core.json.JsonReadFeature
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.Action
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.Role
@@ -39,7 +35,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
 import com.ritense.note.domain.Note
-import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
