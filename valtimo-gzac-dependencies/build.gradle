@@ -40,26 +40,7 @@ dependencies {
     api("com.ritense.valtimo:zaken-api")
 
     constraints {
-        api(platform(project(":valtimo-dependencies")))
-        api("com.ritense.valtimo:besluit:${projectVersion}")
-        api("com.ritense.valtimo:contactmoment:${projectVersion}")
-        api("com.ritense.valtimo:haalcentraal-brp:${projectVersion}")
-        api("com.ritense.valtimo:klant:${projectVersion}")
-        api("com.ritense.valtimo:objects-api:${projectVersion}")
-        api("com.ritense.valtimo:openzaak:${projectVersion}")
-        api("com.ritense.valtimo:notificaties-api-authentication:${projectVersion}")
-        api("com.ritense.valtimo:objecten-api-authentication:${projectVersion}")
-        api("com.ritense.valtimo:openzaak-resource:${projectVersion}")
-
-        api("com.ritense.valtimo:catalogi-api:${projectVersion}")
-        api("com.ritense.valtimo:documenten-api:${projectVersion}")
-        api("com.ritense.valtimo:notificaties-api:${projectVersion}")
-        api("com.ritense.valtimo:object-management:${projectVersion}")
-        api("com.ritense.valtimo:objecten-api:${projectVersion}")
-        api("com.ritense.valtimo:objecttypen-api:${projectVersion}")
-        api("com.ritense.valtimo:verzoek:${projectVersion}")
-        api("com.ritense.valtimo:zaken-api:${projectVersion}")
-
+        api(platform(project(":valtimo-bom")))
     }
 }
 

@@ -65,6 +65,7 @@ include(
     "search",
     "test-utils-common",
     "value-resolver",
+    "valtimo-bom",
     "valtimo-dependencies",
     "valtimo-gzac-dependencies",
     "web",

@@ -39,32 +39,7 @@ dependencies {
     api("com.ritense.valtimo:web")
 
     constraints {
-        api("com.ritense.valtimo:audit:${projectVersion}!!")
-        api("com.ritense.valtimo:case:${projectVersion}!!")
-        api("com.ritense.valtimo:connector:${projectVersion}!!")
-        api("com.ritense.valtimo:contract:${projectVersion}!!")
-        api("com.ritense.valtimo:core:${projectVersion}!!")
-        api("com.ritense.valtimo:document:${projectVersion}!!")
-        api("com.ritense.valtimo:form:${projectVersion}!!")
-        api("com.ritense.valtimo:form-flow:${projectVersion}!!")
-        api("com.ritense.valtimo:form-flow-valtimo:${projectVersion}!!")
-        api("com.ritense.valtimo:form-link:${projectVersion}!!")
-        api("com.ritense.valtimo:keycloak-iam:${projectVersion}!!")
-        api("com.ritense.valtimo:notes:${projectVersion}!!")
-        api("com.ritense.valtimo:plugin:${projectVersion}!!")
-        api("com.ritense.valtimo:plugin-valtimo:${projectVersion}!!")
-        api("com.ritense.valtimo:process-document:${projectVersion}!!")
-        api("com.ritense.valtimo:temporary-resource-storage:${projectVersion}!!")
-        api("com.ritense.valtimo:value-resolver:${projectVersion}!!")
-        api("com.ritense.valtimo:web:${projectVersion}!!")
-
-        api("org.springframework.boot:spring-boot:${springBootVersion}")
-        api("de.codecentric:spring-boot-admin-starter-client:${springBootAdminStarterClientVersion}")
-
-        api("org.liquibase:liquibase-core:${liquibaseVersion}")
-        api("org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}")
-
-        api("org.hibernate:hibernate-core:${hibernateCoreVersion}")
+        api(platform(project(":valtimo-bom")))
     }
 }
 
