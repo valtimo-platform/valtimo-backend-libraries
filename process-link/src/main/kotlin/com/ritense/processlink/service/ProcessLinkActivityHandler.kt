@@ -26,5 +26,6 @@ interface ProcessLinkActivityHandler<T> {
     fun getStartEventObject(
         processDefinitionId: String,
         documentId: UUID?,
+        documentDefinitionName: String?,
         processLink: ProcessLink): ProcessLinkActivityResult<T>
 }
