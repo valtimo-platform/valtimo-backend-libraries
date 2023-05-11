@@ -124,7 +124,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
         var searchCriteria = searchWithConfigRequest.getOtherFilters().stream()
             .map(otherFilter -> SearchRequestMapper.toOtherFilter(otherFilter, searchFieldMap.get(otherFilter.getKey())))
-            .collect(toList());
+            .toList();
 
         var advancedSearchRequest = SearchRequestMapper.toAdvancedSearchRequest(searchWithConfigRequest, searchCriteria);
 
@@ -170,7 +170,15 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         countQuery.select(cb.count(countRoot));
         queryWhereBuilder.apply(cb, countQuery, selectRoot);
 
-        return new PageImpl<>(typedQuery.getResultList(), pageable, entityManager.createQuery(countQuery).getSingleResult());
+        List<Long> countResultList = entityManager.createQuery(countQuery).getResultList();
+
+        Long count = 0L;
+
+        if (!countResultList.isEmpty()) {
+            count = countResultList.get(0);
+        }
+
+        return new PageImpl<>(typedQuery.getResultList(), pageable, count);
     }
 
     private void buildQueryWhere(SearchRequest searchRequest, CriteriaBuilder cb, CriteriaQuery<?> query, Root<JsonSchemaDocument> documentRoot, boolean withAuthorization) {
@@ -180,14 +188,6 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         addJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
         if (withAuthorization) {
             addUserRolePredicate(query, documentRoot, predicates);
-//            authorizationService.requirePermission(
-//                new AuthorizationRequest<>(
-//                    JsonSchemaDocument.class,
-//                    null,
-//                    Action.LIST_VIEW
-//                ),
-//                null
-//            );
             predicates.add(
                 authorizationService
                     .getAuthorizationSpecification(
@@ -218,14 +218,6 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             addUserRolePredicate(query, documentRoot, predicates);
-//            authorizationService.requirePermission(
-//                new AuthorizationRequest<>(
-//                    JsonSchemaDocument.class,
-//                    null,
-//                    Action.LIST_VIEW
-//                ),
-//                null
-//            );
             predicates.add(
                 authorizationService
                     .getAuthorizationSpecification(
@@ -288,12 +280,12 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                             pathEntry.getValue().stream()
                                 .map(currentCriteria -> findJsonPathValue(cb, root, currentCriteria.getPath(),
                                     currentCriteria.getValue()))
-                                .collect(toList())
+                                .toList()
                                 .toArray(Predicate[]::new)
                         ));
                     }
                 })
-                .collect(toList());
+                .toList();
 
             predicates.add(cb.and(criteriaPredicates.toArray(Predicate[]::new)));
         }
@@ -322,7 +314,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     ) {
         var jsonPredicates = searchRequest.getOtherFilters().stream()
             .map(currentCriteria -> buildQueryForSearchCriteria(cb, root, currentCriteria))
-            .collect(toList())
+            .toList()
             .toArray(Predicate[]::new);
 
         if (searchRequest.getSearchOperator() == SearchOperator.AND) {
