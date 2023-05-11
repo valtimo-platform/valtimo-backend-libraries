@@ -31,8 +31,10 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher
 import java.io.InputStream
 import java.net.URI
@@ -49,9 +51,11 @@ class DocumentenApiPlugin(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val objectMapper: ObjectMapper,
 ) {
+    @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
     lateinit var url: URI
 
+    @Length(min = 9, max = 9)
     @PluginProperty(key = "bronorganisatie", secret = false)
     lateinit var bronorganisatie: String
 

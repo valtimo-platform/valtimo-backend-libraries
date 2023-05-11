@@ -52,7 +52,7 @@
         "pluginDefinitionKey": "notificatiesapiauthentication",
         "properties": {
             "clientId": "valtimo",
-            "clientSecret": "zZ!xRP&\\${'$'}qTn4A9ETa^ZMKepDm^8egjPz"
+            "clientSecret": "zZ!xRP&$qTn4A9ETa^ZMKepDm^8egjPz"
         }
     },
     {

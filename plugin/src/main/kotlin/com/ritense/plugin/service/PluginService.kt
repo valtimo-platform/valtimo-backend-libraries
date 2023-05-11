@@ -29,12 +29,12 @@ import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.autodeployment.PluginAutoDeploymentDto
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.EventType
+import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
-import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
@@ -55,7 +55,9 @@ import org.springframework.data.repository.findByIdOrNull
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import java.util.UUID
+import javax.validation.ConstraintViolationException
 import javax.validation.ValidationException
+import javax.validation.Validator
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
 
@@ -67,7 +69,8 @@ class PluginService(
     private val pluginFactories: List<PluginFactory<*>>,
     private val objectMapper: ObjectMapper,
     private val valueResolverService: ValueResolverService,
-    private val pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
+    private val pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
+    private val validator: Validator,
 ) {
 
     fun getObjectMapper(): ObjectMapper {
@@ -464,6 +467,7 @@ class PluginService(
 
     private fun validateProperties(properties: ObjectNode, pluginDefinition: PluginDefinition) {
         val errors = mutableListOf<Throwable>()
+        val pluginClass = Class.forName(pluginDefinition.fullyQualifiedClassName)
         pluginDefinition.properties.forEach { pluginProperty ->
             val propertyNode = properties[pluginProperty.fieldName]
 
@@ -484,8 +488,13 @@ class PluginService(
                         val propertyConfiguration = pluginConfigurationRepository.findById(propertyConfigurationId)
                         assert(propertyConfiguration.isPresent) { "Plugin configuration with id ${propertyConfigurationId.id} does not exist!" }
                     } else {
-                        val property = objectMapper.treeToValue(propertyNode, propertyClass)
-                        assert(property != null)
+                        val propertyValue = objectMapper.treeToValue(propertyNode, propertyClass)
+                        assert(propertyValue != null)
+                        val validationErrors =
+                            validator.validateValue(pluginClass, pluginProperty.fieldName, propertyValue)
+                        if (validationErrors.isNotEmpty()) {
+                            throw ConstraintViolationException(validationErrors)
+                        }
                     }
                 } catch (e: Exception) {
                     errors.add(PluginPropertyParseException(pluginProperty.fieldName, pluginDefinition.title, e))
