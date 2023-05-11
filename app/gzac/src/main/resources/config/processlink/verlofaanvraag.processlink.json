@@ -1,0 +1,14 @@
+[
+  {
+    "activityId": "start-event-verlofaanvraag",
+    "activityType": "bpmn:StartEvent:start",
+    "processLinkType": "form",
+    "formDefinitionName": "start-form-verlofaanvraag"
+  },
+  {
+    "activityId": "akkoord-verlof",
+    "activityType": "bpmn:UserTask:start",
+    "processLinkType": "form",
+    "formDefinitionName": "user-task-akkoord-administratie"
+  }
+]

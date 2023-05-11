@@ -16,19 +16,13 @@
 
 package com.ritense.gzac.listener
 
-import com.fasterxml.jackson.core.json.JsonReadFeature
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.besluit.connector.BesluitProperties
-import com.ritense.besluitenapi.BesluitenApiPlugin
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
-import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
@@ -46,12 +40,9 @@ import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
-import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
-import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
-import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import mu.KotlinLogging
@@ -79,7 +70,6 @@ class ApplicationReadyEventListener(
     @EventListener(ApplicationReadyEvent::class)
     fun handleApplicationReady() {
         createConnectors()
-        createPlugins()
     }
 
     @EventListener(DocumentDefinitionDeployedEvent::class)
@@ -103,173 +93,6 @@ class ApplicationReadyEventListener(
         } catch (ex: Exception) {
             logger.error { ex }
         }
-    }
-
-    fun createPlugins() {
-        try {
-            val zakenApiPluginId = UUID.fromString("3079d6fe-42e3-4f8f-a9db-52ce2507b7ee")
-            val documentenApiPluginId = UUID.fromString("5474fe57-532a-4050-8d89-32e62ca3e895")
-            val objectenApiPluginId = UUID.fromString("b6d83348-97e7-4660-bd35-2e5fcc9629b4")
-            val portaaltaakPluginId = UUID.fromString("d65113e0-a9cb-4904-93e1-5e8b1206e625")//createPortaaltaakPlugin(notificatiesApiPluginId, taakConfigurationId)
-
-            portalPersonCreatePortaaltaak(portaaltaakPluginId)
-            processCompletedPortaalTaakCompletePortaaltaak(portaaltaakPluginId)
-            processCompletedPortaalTaakLinkDocumentToZaak(zakenApiPluginId)
-            createZaakdossierCreateZaak(zakenApiPluginId)
-            createZaakdossierCreateZaakRol(zakenApiPluginId)
-            createZaakdossierLinkDocumentToZaak(zakenApiPluginId)
-            createZaakdossierDeleteVerzoek(objectenApiPluginId)
-            uploadDocumentUploadDocument(documentenApiPluginId)
-            uploadDocumentLinkDocumentToZaak(zakenApiPluginId)
-        } catch (ex: Exception) {
-            throw RuntimeException("Failed to deploy plugin configurations for development", ex)
-        }
-    }
-
-    private fun portalPersonCreatePortaaltaak(portaaltaakPluginId: UUID) {
-        createProcessLinkIfNotExists(
-            processDefinitionKey = "portal-person",
-            activityId = "portal-task",
-            activityType = "bpmn:UserTask:create",
-            pluginConfigurationId = portaaltaakPluginId,
-            pluginActionDefinitionKey = "create-portaaltaak",
-            actionProperties = """
-                {
-                    "formType": "id",
-                    "formTypeId": "person",
-                    "sendData": [
-                        {
-                            "key": "/firstName",
-                            "value": "doc:/firstName"
-                        }
-                    ],
-                    "receiveData": [
-                        {
-                            "key": "doc:/firstName",
-                            "value": "/firstName"
-                        }
-                    ],
-                    "receiver": "other",
-                    "identificationKey": "bsn",
-                    "identificationValue": "569312863"
-                }
-                """.trimIndent()
-        )
-    }
-
-    private fun processCompletedPortaalTaakCompletePortaaltaak(portaaltaakPluginId: UUID) {
-        createProcessLinkIfNotExists(
-            processDefinitionKey = "process-completed-portaaltaak",
-            activityId = "update_portaal_taak_status",
-            activityType = "bpmn:ServiceTask:start",
-            pluginConfigurationId = portaaltaakPluginId,
-            pluginActionDefinitionKey = "complete-portaaltaak",
-            actionProperties = "{}",
-        )
-    }
-
-    private fun processCompletedPortaalTaakLinkDocumentToZaak(zakenApiPluginId: UUID) {
-        createProcessLinkIfNotExists(
-            processDefinitionKey = "process-completed-portaaltaak",
-            activityId = "link-document-to-zaak",
-            activityType = "bpmn:ServiceTask:start",
-            pluginConfigurationId = zakenApiPluginId,
-            pluginActionDefinitionKey = "link-document-to-zaak",
-            actionProperties = """
-                {
-                    "documentUrl": "pv:documentUrl",
-                    "titel": "Portal document",
-                    "beschrijving": "This document was uploaded in the portal"
-                }
-                """.trimIndent()
-        )
-    }
-
-    private fun createZaakdossierCreateZaak(zakenApiPluginId: UUID) {
-        createProcessLinkIfNotExists(
-            processDefinitionKey = "create-zaakdossier",
-            activityId = "create-zaak",
-            activityType = "bpmn:ServiceTask:start",
-            pluginConfigurationId = zakenApiPluginId,
-            pluginActionDefinitionKey = "create-zaak",
-            actionProperties = """
-                {
-                    "rsin": "051845623",
-                    "zaaktypeUrl": "http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"
-                }
-            """.trimIndent()
-        )
-    }
-
-    private fun createZaakdossierCreateZaakRol(zakenApiPluginId: UUID) {
-        createProcessLinkIfNotExists(
-            processDefinitionKey = "create-zaakdossier",
-            activityId = "create-initiator-zaak-rol",
-            activityType = "bpmn:ServiceTask:start",
-            pluginConfigurationId = zakenApiPluginId,
-            pluginActionDefinitionKey = "create-natuurlijk-persoon-zaak-rol",
-            actionProperties = """
-                {
-                    "roltypeUrl": "pv:rolTypeUrl",
-                    "rolToelichting": "pv:rolDescription",
-                    "inpBsn": "pv:initiatorValue"
-                }
-            """.trimIndent()
-        )
-    }
-
-    private fun createZaakdossierLinkDocumentToZaak(zakenApiPluginId: UUID) {
-        createProcessLinkIfNotExists(
-            processDefinitionKey = "create-zaakdossier",
-            activityId = "link-document-to-zaak",
-            activityType = "bpmn:ServiceTask:start",
-            pluginConfigurationId = zakenApiPluginId,
-            pluginActionDefinitionKey = "link-document-to-zaak",
-            actionProperties = """
-                {
-                    "documentUrl": "pv:documentUrl",
-                    "titel": "Verzoek document",
-                    "beschrijving": "Document that belongs to a Verzoek"
-                }
-            """.trimIndent(),
-        )
-    }
-
-    private fun createZaakdossierDeleteVerzoek(objectenApiPluginId: UUID) {
-        createProcessLinkIfNotExists(
-            processDefinitionKey = "create-zaakdossier",
-            activityId = "delete-verzoek-from-objectsapi",
-            activityType = "bpmn:ServiceTask:start",
-            pluginConfigurationId = objectenApiPluginId,
-            pluginActionDefinitionKey = "delete-object",
-            actionProperties = """
-                {
-                    "objectUrl": "pv:verzoekObjectUrl"
-                }
-            """.trimIndent(),
-        )
-    }
-
-    private fun uploadDocumentUploadDocument(documentenApiPluginId: UUID) {
-        createProcessLinkIfNotExists(
-            processDefinitionKey = "document-upload",
-            activityId = "upload-document",
-            activityType = "bpmn:ServiceTask:start",
-            pluginConfigurationId = documentenApiPluginId,
-            pluginActionDefinitionKey = "store-uploaded-document",
-            actionProperties = "{}",
-        )
-    }
-
-    private fun uploadDocumentLinkDocumentToZaak(zakenApiPluginId: UUID) {
-        createProcessLinkIfNotExists(
-            processDefinitionKey = "document-upload",
-            activityId = "link-document-to-zaak",
-            activityType = "bpmn:ServiceTask:start",
-            pluginConfigurationId = zakenApiPluginId,
-            pluginActionDefinitionKey = "link-uploaded-document-to-zaak",
-            actionProperties = "{}",
-        )
     }
 
     fun List<ConnectorType>.findId(connectorName: String): UUID {
@@ -501,33 +324,6 @@ class ApplicationReadyEventListener(
             event.documentDefinition().id().name(),
             setOf(AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER)
         )
-    }
-
-    private fun createProcessLinkIfNotExists(
-        processDefinitionKey: String,
-        activityId: String,
-        activityType: String,
-        pluginConfigurationId: UUID,
-        pluginActionDefinitionKey: String,
-        actionProperties: String,
-    ) {
-        val processDefinitionId = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey)
-            .latestVersion()
-            .singleResult()
-            .id
-        if (processLinkService.getProcessLinks(processDefinitionId, activityId).isEmpty()) {
-            processLinkService.createProcessLink(
-                PluginProcessLinkCreateDto(
-                    processDefinitionId = processDefinitionId,
-                    activityId = activityId,
-                    pluginConfigurationId = pluginConfigurationId,
-                    pluginActionDefinitionKey = pluginActionDefinitionKey,
-                    actionProperties = jacksonObjectMapper().readValue(actionProperties),
-                    activityType = ActivityTypeWithEventName.fromValue(activityType),
-                )
-            )
-        }
     }
 
     companion object {

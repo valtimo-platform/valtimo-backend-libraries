@@ -1,0 +1,12 @@
+[
+    {
+        "activityId": "TestTask",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginConfigurationId": "0a750334-a065-48fa-bb02-293d21df2213",
+        "pluginActionDefinitionKey": "test-action",
+        "actionProperties": {
+            "testActionProperty": "test-value"
+        }
+    }
+]
