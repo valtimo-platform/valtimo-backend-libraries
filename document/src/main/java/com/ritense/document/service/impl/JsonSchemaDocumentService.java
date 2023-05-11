@@ -16,8 +16,6 @@
 
 package com.ritense.document.service.impl;
 
-import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationRequest;
@@ -49,19 +47,19 @@ import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
@@ -81,12 +79,12 @@ public class JsonSchemaDocumentService implements DocumentService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public JsonSchemaDocumentService(DocumentRepository documentRepository,
-        JsonSchemaDocumentDefinitionService documentDefinitionService,
-        JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
-        ResourceService resourceService,
-        UserManagementService userManagementService,
-        AuthorizationService authorizationService,
-        ApplicationEventPublisher applicationEventPublisher
+                                     JsonSchemaDocumentDefinitionService documentDefinitionService,
+                                     JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
+                                     ResourceService resourceService,
+                                     UserManagementService userManagementService,
+                                     AuthorizationService authorizationService,
+                                     ApplicationEventPublisher applicationEventPublisher
     ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
