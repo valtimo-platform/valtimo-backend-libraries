@@ -37,6 +37,7 @@ import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
 import org.springframework.context.event.EventListener
+import mu.KotlinLogging
 import java.net.URI
 
 class VerzoekPluginEventListener(
@@ -165,13 +166,12 @@ class VerzoekPluginEventListener(
             val jsonPatchBuilder = JsonPatchBuilder()
             verzoekTypeProperties.mapping?.map {
                 val verzoekDataItem = verzoekDataData.at(it.source)
-                if (verzoekDataItem.isMissingNode) {
-                    throw NotificatiesNotificationEventException(
-                        "Missing Verzoek data at path '${it.source}', for Verzoek with type '${verzoekTypeProperties.type}'"
-                    )
+                if (!verzoekDataItem.isMissingNode) {
+                    val documentPath = JsonPointer.valueOf(it.target.substringAfter(delimiter = ":"))
+                    jsonPatchBuilder.addJsonNodeValue(documentContent, documentPath, verzoekDataItem)
+                } else {
+                    logger.debug { "Missing Verzoek data of Verzoek type '${verzoekTypeProperties.type}' at path '${it.source}' is not mapped!" }
                 }
-                val documentPath = JsonPointer.valueOf(it.target.substringAfter(delimiter = ":"))
-                jsonPatchBuilder.addJsonNodeValue(documentContent, documentPath, verzoekDataItem)
             }
             JsonPatchService.apply(jsonPatchBuilder.build(), documentContent)
             documentContent
@@ -187,5 +187,8 @@ class VerzoekPluginEventListener(
                         result.errors().joinToString(separator = "\n - ")
             )
         }
+    }
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }
