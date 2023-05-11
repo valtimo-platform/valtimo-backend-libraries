@@ -1,0 +1,8 @@
+[
+    {
+        "processDefinitionKey": "bezwaar",
+        "canInitializeDocument": true,
+        "startableByUser": true,
+        "processIsVisibleInMenu": true
+    }
+]
