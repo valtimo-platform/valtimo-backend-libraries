@@ -48,12 +48,10 @@ class AuthorizationAutoConfiguration {
         permissionRepository: PermissionRepository,
         roleRepository: RoleRepository
     ): AuthorizationService {
-        return ValtimoAuthorizationService(authorizationSpecificationFactories, mappers, permissionRepository)
-    }
-
-    @Bean
-    fun authorizationServiceHolder(authorizationService: AuthorizationService): AuthorizationServiceHolder {
-        return AuthorizationServiceHolder(authorizationService)
+        val authorizationService =
+            ValtimoAuthorizationService(authorizationSpecificationFactories, mappers, permissionRepository)
+        AuthorizationServiceHolder(authorizationService)
+        return authorizationService
     }
 
     @Order(HIGHEST_PRECEDENCE + 1)

@@ -83,6 +83,7 @@ class ApplicationReadyEventListener(
 
     @EventListener(ApplicationReadyEvent::class)
     fun handleApplicationReady() {
+        // TODO: support auto-deployment
         createDefaultPermissionsIfNotExists(permissionRepository, roleRepository)
         createConnectors()
     }
