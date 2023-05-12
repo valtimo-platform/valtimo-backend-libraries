@@ -41,7 +41,6 @@ import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valueresolver.ValueResolverService
-import kotlin.test.assertEquals
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -54,6 +53,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import javax.validation.Validation
+import kotlin.test.assertEquals
 
 internal class PluginServiceTest {
 
@@ -83,7 +84,8 @@ internal class PluginServiceTest {
             listOf(pluginFactory),
             jacksonObjectMapper(),
             valueResolverService,
-            pluginConfigurationSearchRepository
+            pluginConfigurationSearchRepository,
+            Validation.buildDefaultValidatorFactory().validator
         ))
     }
 
@@ -289,7 +291,7 @@ internal class PluginServiceTest {
             ActivityType.SERVICE_TASK_START
         )
 
-        val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
+        val pluginDefinition = newPluginDefinition()
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
@@ -317,7 +319,7 @@ internal class PluginServiceTest {
             ActivityType.SERVICE_TASK_START
         )
 
-        val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
+        val pluginDefinition = newPluginDefinition()
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
@@ -345,7 +347,7 @@ internal class PluginServiceTest {
             ActivityType.SERVICE_TASK_START
         )
 
-        val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
+        val pluginDefinition = newPluginDefinition()
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
@@ -373,7 +375,7 @@ internal class PluginServiceTest {
             ActivityType.SERVICE_TASK_START
         )
 
-        val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
+        val pluginDefinition = newPluginDefinition()
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
@@ -404,7 +406,7 @@ internal class PluginServiceTest {
             ActivityType.SERVICE_TASK_START
         )
 
-        val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
+        val pluginDefinition = newPluginDefinition()
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
@@ -435,7 +437,7 @@ internal class PluginServiceTest {
             ActivityType.SERVICE_TASK_START
         )
 
-        val pluginDefinition = newPluginDefinition(TestPlugin::class.java.name)
+        val pluginDefinition = newPluginDefinition()
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
@@ -451,12 +453,12 @@ internal class PluginServiceTest {
         }
     }
 
-    private fun newPluginDefinition(className: String = "className"): PluginDefinition {
+    private fun newPluginDefinition(): PluginDefinition {
         val pluginDefinition = PluginDefinition(
             "TestPlugin",
             "Test Plugin",
             "description",
-            "className",
+            TestPlugin::class.java.name,
             mutableSetOf()
         )
         whenever(pluginDefinitionRepository.getById("key")).thenReturn(pluginDefinition)

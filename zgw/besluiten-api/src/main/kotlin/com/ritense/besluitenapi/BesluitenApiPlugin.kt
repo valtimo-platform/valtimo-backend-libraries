@@ -17,14 +17,15 @@
 package com.ritense.besluitenapi
 
 import com.ritense.besluitenapi.client.BesluitenApiClient
+import com.ritense.besluitenapi.client.CreateBesluitInformatieObject
 import com.ritense.besluitenapi.client.CreateBesluitRequest
 import com.ritense.besluitenapi.client.Vervalreden
-import com.ritense.besluitenapi.client.CreateBesluitInformatieObject
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
+import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zgw.Rsin
 import mu.KLogger
@@ -43,6 +44,7 @@ class BesluitenApiPlugin(
     private val besluitenApiClient: BesluitenApiClient,
     private val zaakUrlProvider: ZaakUrlProvider,
 ) {
+    @Url
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
 

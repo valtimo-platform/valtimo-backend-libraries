@@ -23,6 +23,7 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.CreateZaakRequest
@@ -59,6 +60,7 @@ class ZakenApiPlugin(
     private val storageService: TemporaryResourceStorageService,
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
 ) {
+    @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
     lateinit var url: URI
 
