@@ -19,6 +19,8 @@ package com.ritense.valtimo.web.rest;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
+import com.ritense.valtimo.domain.user.UserSettings;
+import com.ritense.valtimo.service.UserSettingsService;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +52,11 @@ public class UserResource {
 
     private static final Logger logger = LoggerFactory.getLogger(UserResource.class);
     private final UserManagementService userManagementService;
+    private final UserSettingsService userSettingsService;
 
-    public UserResource(UserManagementService userManagementService) {
+    public UserResource(UserManagementService userManagementService, UserSettingsService userSettingsService) {
         this.userManagementService = userManagementService;
+        this.userSettingsService = userSettingsService;
     }
 
     @PostMapping("/v1/users")
@@ -135,6 +139,27 @@ public class UserResource {
         logger.debug("Request to resend verification email to user : {}", userId);
         boolean success = userManagementService.resendVerificationEmail(userId);
         return success ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/v1/users/settings")
+    public ResponseEntity<String> getCurrentUserSettings(){
+        logger.debug("Request to get current user settings");
+        var result = userSettingsService.getCurrentUserSettings(userManagementService.getCurrentUser());
+        return result.map(userSettings -> ResponseEntity.ok(userSettings.getUserProperties())).orElse(null);
+    }
+
+    @PostMapping("/v1/users/settings")
+    public ResponseEntity<Object> upsertCurrentUserSettings(@RequestBody String settings){
+        logger.debug("Request to create settings for current user");
+        userSettingsService.upsertUserSettings(userManagementService.getCurrentUser(),settings);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/v1/users/settings")
+    public ResponseEntity<Object> deleteUserSettings(){
+        logger.debug("Request to delete setting for current user");
+        userSettingsService.deleteUserSettings(userManagementService.getCurrentUser());
+        return ResponseEntity.noContent().build();
     }
 
 }
