@@ -40,6 +40,7 @@ class PluginProcessLinkMapper(
             PluginProcessLinkResultDto::class.java,
             PluginProcessLinkCreateDto::class.java,
             PluginProcessLinkUpdateDto::class.java,
+            PluginProcessLinkDeployDto::class.java,
         )
     }
 
@@ -59,7 +60,15 @@ class PluginProcessLinkMapper(
     }
 
     override fun toProcessLinkCreateRequestDto(deployDto: ProcessLinkDeployDto): ProcessLinkCreateRequestDto {
-        throw UnsupportedOperationException("Plugins are not yet supported for autodeployment!")
+        deployDto as PluginProcessLinkDeployDto
+        return PluginProcessLinkCreateDto(
+            processDefinitionId = deployDto.processDefinitionId,
+            activityId = deployDto.activityId,
+            pluginConfigurationId = deployDto.pluginConfigurationId,
+            pluginActionDefinitionKey = deployDto.pluginActionDefinitionKey,
+            actionProperties = deployDto.actionProperties,
+            activityType = deployDto.activityType,
+        )
     }
 
     override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink {

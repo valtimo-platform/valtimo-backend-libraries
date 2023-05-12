@@ -36,6 +36,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.nio.charset.StandardCharsets
 import javax.transaction.Transactional
+import org.hamcrest.Matchers.greaterThanOrEqualTo
 
 @Transactional
 internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
@@ -83,10 +84,9 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
                 jsonPath("$").isNotEmpty)
             .andExpect(
                 jsonPath("$").isArray)
-            .andExpect(
-                jsonPath("$.*", hasSize<Int>(1)))
-            .andExpect(jsonPath("$[0].title").value("some-config"))
-            .andExpect(jsonPath("$[0].id").value(pluginConfiguration.id.id.toString()))
+            .andExpect(jsonPath("$.*", hasSize<Int>(greaterThanOrEqualTo(1))))
+            .andExpect(jsonPath("$.[?(@.title=='some-config')]","").exists())
+            .andExpect(jsonPath("$.[?(@.title=='some-config')].id").value(pluginConfiguration.id.id.toString()))
     }
 
     @Test
@@ -127,7 +127,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$").isNotEmpty)
-            .andExpect(jsonPath("$.*", hasSize<Int>(1)))
-            .andExpect(jsonPath("$[0].title").value("some-config"))
+            .andExpect(jsonPath("$.*", hasSize<Int>(greaterThanOrEqualTo(1))))
+            .andExpect(jsonPath("$[?(@.title=='some-config')]","").exists())
     }
 }

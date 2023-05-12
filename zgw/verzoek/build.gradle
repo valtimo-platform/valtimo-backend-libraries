@@ -30,6 +30,7 @@ dependencies {
     implementation project(":zgw")
     implementation project(":zgw:catalogi-api")
     implementation project(":zgw:notificaties-api")
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation project(":zgw:object-management")
     implementation project(":zgw:objecten-api")
     implementation "org.springframework.boot:spring-boot-starter"

@@ -26,6 +26,7 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.annotation.PluginEvent
+import com.ritense.plugin.autodeployment.PluginAutoDeploymentDto
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginConfiguration
@@ -104,6 +105,43 @@ class PluginService(
         }
 
         return pluginConfiguration
+    }
+
+    fun deployPluginConfigurations(deploymentDto: PluginAutoDeploymentDto) {
+        val plugin: PluginConfiguration
+        val pluginDefinition = pluginDefinitionRepository.getById(deploymentDto.pluginDefinitionKey)
+        validateProperties(deploymentDto.properties!!, pluginDefinition)
+        plugin = pluginConfigurationRepository.save(
+            PluginConfiguration(
+                deploymentDto.id?.let { PluginConfigurationId.existingId(it) } ?: PluginConfigurationId.newId(),
+                deploymentDto.title,
+                resolveProperties(deploymentDto.properties),
+                pluginDefinition
+            )
+        )
+        try {
+            plugin.runAllPluginEvents(EventType.CREATE)
+        } catch (e: Exception) {
+            pluginConfigurationRepository.deleteById(plugin.id)
+            throw PluginEventInvocationException(plugin, e)
+        }
+    }
+
+    private fun resolveProperties(properties: ObjectNode?): ObjectNode? {
+        properties?.fields()?.forEachRemaining {
+            if (it.value.isTextual) {
+                properties.put(it.key, resolveValue(it.value))
+            }
+        }
+        return properties
+    }
+
+    private fun resolveValue(value: JsonNode?): String? {
+        val valueAsString = value?.textValue()
+        if (valueAsString?.startsWith("\${") == true && valueAsString.endsWith("}")) {
+            return System.getenv()[valueAsString.substringAfterLast("\${").substringBeforeLast("}")]
+        }
+        return valueAsString
     }
 
     fun updatePluginConfiguration(
@@ -333,8 +371,8 @@ class PluginService(
             param.isAnnotationPresent(PluginActionProperty::class.java)
         }.mapNotNull { param ->
             param to actionProperties.get(param.name)
-        }.filter {
-            pair -> pair.second != null
+        }.filter { pair ->
+            pair.second != null
         }.toMap()
 
         // We want to process all placeholder values together to improve performance if external sources are needed.
@@ -354,12 +392,18 @@ class PluginService(
         return mapActionParamValues(paramValues, placeHolderValueMap)
     }
 
-    private fun mapActionParamValues(paramValues: Map<Parameter, JsonNode>, placeHolderValueMap: Map<String, Any>): Map<Parameter, Any> {
+    private fun mapActionParamValues(
+        paramValues: Map<Parameter, JsonNode>,
+        placeHolderValueMap: Map<String, Any>
+    ): Map<Parameter, Any> {
         return paramValues.mapValues { (param, value) ->
             if (value.isTextual) {
                 val placeHolderValueAsString = placeHolderValueMap[value.textValue()]
                 if (placeHolderValueAsString != null) {
-                    objectMapper.convertValue(placeHolderValueAsString, objectMapper.constructType(param.parameterizedType))
+                    objectMapper.convertValue(
+                        placeHolderValueAsString,
+                        objectMapper.constructType(param.parameterizedType)
+                    )
                 } else {
                     toValue(value, param)
                 }

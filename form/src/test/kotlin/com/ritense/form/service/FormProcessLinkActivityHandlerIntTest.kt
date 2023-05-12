@@ -28,12 +28,10 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @Transactional
 internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
@@ -77,12 +75,12 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
         val result = formProcessLinkActivityHandler.getStartEventObject(
             "",
             documentId.id,
+            "",
             processLink,
         )
         assertEquals("form",result.type)
         assertEquals(formDefinition.id?.toString(),result.properties.formDefinitionId.toString())
         assertEquals(getForm(),objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.properties.prefilledForm))
-        val x = true
     }
 
     private fun getDocument(): String {
