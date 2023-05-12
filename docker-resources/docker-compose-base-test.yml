@@ -49,3 +49,4 @@ services:
 #   url: jdbc:postgresql://localhost:3339/dataprovider-test
 #   url: jdbc:postgresql://localhost:3341/search-test
 #   url: jdbc:postgresql://localhost:3342/process-link-test
+#   url: jdbc:postgresql://localhost:3343/authorization

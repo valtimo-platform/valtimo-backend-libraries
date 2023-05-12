@@ -16,6 +16,9 @@
 
 package com.ritense.note.service
 
+import com.ritense.authorization.Action
+import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.AuthorizationService
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.note.domain.Note
 import com.ritense.note.event.NoteCreatedEvent
@@ -24,6 +27,7 @@ import com.ritense.note.event.NoteUpdatedEvent
 import com.ritense.note.exception.NoteAccessDeniedException
 import com.ritense.note.exception.NoteNotFoundException
 import com.ritense.note.repository.NoteRepository
+import com.ritense.note.repository.SpecificationHelper
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import mu.KotlinLogging
@@ -36,13 +40,22 @@ class NoteService(
     private val noteRepository: NoteRepository,
     private val userManagementService: UserManagementService,
     private val applicationEventPublisher: ApplicationEventPublisher,
+    private val authorizationService: AuthorizationService,
 ) {
 
     fun getNotes(
         documentId: UUID,
         pageable: Pageable = Pageable.unpaged(),
     ): Page<Note> {
-        return noteRepository.findAllByDocumentId(documentId, pageable)
+        val spec = authorizationService.getAuthorizationSpecification(
+            AuthorizationRequest(
+                Note::class.java,
+                null,
+                Action.VIEW
+            ),
+            null
+        )
+        return noteRepository.findAll(spec.and(SpecificationHelper.byDocumentId(documentId)), pageable)
     }
 
     fun createNote(

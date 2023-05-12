@@ -60,9 +60,9 @@ class NoteResource(
 
         val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(documentId)
 
-        if (!documentService.currentUserCanAccessDocument(jsonSchemaDocumentId)) {
+/*        if (!documentService.currentUserCanAccessDocument(jsonSchemaDocumentId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
-        }
+        }*/
 
         return ResponseEntity.ok(notes.map { note -> NoteResponseDto(note) })
     }

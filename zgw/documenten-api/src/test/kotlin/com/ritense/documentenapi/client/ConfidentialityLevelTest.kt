@@ -18,7 +18,7 @@ package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.zgw.domain.Vertrouwelijkheid
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class ConfidentialityLevelTest {

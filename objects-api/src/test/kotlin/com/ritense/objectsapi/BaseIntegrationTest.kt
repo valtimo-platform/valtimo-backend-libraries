@@ -16,6 +16,7 @@
 
 package com.ritense.objectsapi
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorService
@@ -64,6 +65,10 @@ abstract class BaseIntegrationTest {
     @Autowired
     @Qualifier("openNotificatieConnector")
     lateinit var openNotificatieConnector: Connector
+
+    // TODO: remove authorization service mocking when call to run without permissions is added
+    @MockBean
+    lateinit var authorizationService: AuthorizationService
 
     fun setupObjectApiConnector(url: String) {
         val properties = ObjectsApiProperties(

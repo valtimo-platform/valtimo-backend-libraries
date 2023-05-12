@@ -16,7 +16,7 @@
 
 package com.ritense.plugin.service
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class EncryptionServiceTest {

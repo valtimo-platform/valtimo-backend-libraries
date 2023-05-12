@@ -47,7 +47,7 @@ class ObjectManagementDefinitionDeploymentService(
         val objectManagementList = resources.map { resource ->
             try {
                 require(resource != null)
-                val objectManagement = jacksonObjectMapper().readValue<ObjectManagement>(resource.inputStream )
+                val objectManagement = jacksonObjectMapper().readValue<ObjectManagement>(resource.inputStream)
                 if (
                     objectManagementRepository.findByObjecttypeId(objectManagement.objecttypeId) == null &&
                     objectManagementRepository.findByTitle(objectManagement.title) == null

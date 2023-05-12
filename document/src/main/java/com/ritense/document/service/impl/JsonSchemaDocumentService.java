@@ -17,6 +17,9 @@
 package com.ritense.document.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -71,6 +74,8 @@ public class JsonSchemaDocumentService implements DocumentService {
     private final UserManagementService userManagementService;
     private final ResourceService resourceService;
 
+    private final AuthorizationService authorizationService;
+
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public JsonSchemaDocumentService(DocumentRepository documentRepository,
@@ -78,18 +83,34 @@ public class JsonSchemaDocumentService implements DocumentService {
                                      JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
                                      ResourceService resourceService,
                                      UserManagementService userManagementService,
-                                     ApplicationEventPublisher applicationEventPublisher) {
+                                     AuthorizationService authorizationService,
+                                     ApplicationEventPublisher applicationEventPublisher
+    ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
         this.documentSequenceGeneratorService = documentSequenceGeneratorService;
         this.resourceService = resourceService;
         this.userManagementService = userManagementService;
+        this.authorizationService = authorizationService;
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
     public Optional<JsonSchemaDocument> findBy(Document.Id documentId) {
-        return documentRepository.findById(documentId);
+        Optional<JsonSchemaDocument> optionalDocument = documentRepository.findById(documentId);
+
+        if (optionalDocument.isPresent()) {
+            authorizationService.requirePermission(
+                new AuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    List.of(optionalDocument.get().definitionId().name()),
+                    Action.VIEW
+                ),
+                optionalDocument.get(),
+                null
+            );
+        }
+        return optionalDocument;
     }
 
     @Override
@@ -98,9 +119,21 @@ public class JsonSchemaDocumentService implements DocumentService {
             JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
         );
 
-        return documentOptional.orElseThrow(
+        JsonSchemaDocument document = documentOptional.orElseThrow(
             () -> new DocumentNotFoundException("Document not found with id " + documentId)
         );
+
+        authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                List.of(document.definitionId().name()),
+                Action.VIEW
+            ),
+            document,
+            null
+        );
+
+        return document;
     }
 
     @Override
@@ -255,6 +288,17 @@ public class JsonSchemaDocumentService implements DocumentService {
     public void assignUserToDocument(UUID documentId, String assigneeId) {
         JsonSchemaDocument document = getDocumentBy(
             JsonSchemaDocumentId.existingId(documentId));
+
+        authorizationService
+            .requirePermission(
+                new AuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    List.of(document.definitionId().name()),
+                    Action.CLAIM
+                ),
+                document,
+                null
+            );
 
         var assignee = userManagementService.findById(assigneeId);
         if (assignee == null) {

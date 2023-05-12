@@ -16,6 +16,7 @@
 
 package com.ritense.document.autoconfigure;
 
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
@@ -59,7 +60,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
 import javax.persistence.EntityManager;
 import java.util.Optional;
 
@@ -76,6 +76,7 @@ public class DocumentAutoConfiguration {
         final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
         final ResourceService resourceService,
         final UserManagementService userManagementService,
+        final AuthorizationService authorizationService,
         final ApplicationEventPublisher applicationEventPublisher
     ) {
         return new JsonSchemaDocumentService(
@@ -84,6 +85,7 @@ public class DocumentAutoConfiguration {
             documentSequenceGeneratorService,
             resourceService,
             userManagementService,
+            authorizationService,
             applicationEventPublisher
         );
     }
@@ -130,14 +132,15 @@ public class DocumentAutoConfiguration {
         final EntityManager entityManager,
         final QueryDialectHelper queryDialectHelper,
         final SearchFieldService searchFieldService,
-        final UserManagementService userManagementService
+        final UserManagementService userManagementService,
+        final AuthorizationService authorizationService
     ) {
         return new JsonSchemaDocumentSearchService(
             entityManager,
             queryDialectHelper,
             searchFieldService,
-            userManagementService
-        );
+            userManagementService,
+            authorizationService);
     }
 
     @Bean

@@ -22,8 +22,6 @@ import com.ritense.notificatiesapi.domain.NotificatiesApiConfigurationId
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
 import com.ritense.notificatiesapi.exception.AuthorizationException
 import com.ritense.notificatiesapi.service.NotificatiesApiService
-import java.util.*
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -35,6 +33,8 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
+import java.util.UUID
+import kotlin.test.assertEquals
 
 
 class NotificatiesApiResourceTest {

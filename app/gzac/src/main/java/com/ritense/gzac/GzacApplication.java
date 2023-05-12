@@ -16,6 +16,8 @@
 
 package com.ritense.gzac;
 
+import com.ritense.authorization.PermissionRepository;
+import com.ritense.authorization.RoleRepository;
 import com.ritense.connector.service.ConnectorService;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.gzac.listener.ApplicationReadyEventListener;
@@ -75,7 +77,9 @@ public class GzacApplication {
         ProcessLinkService processLinkService,
         ObjectManagementService objectManagementService,
         RepositoryService repositoryService,
-        DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService
+        DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService,
+        PermissionRepository permissionRepository,
+        RoleRepository roleRepository
     ) {
         return new ApplicationReadyEventListener(
             connectorService,
@@ -87,7 +91,9 @@ public class GzacApplication {
             processLinkService,
             objectManagementService,
             repositoryService,
-            documentDefinitionProcessLinkService
+            documentDefinitionProcessLinkService,
+            permissionRepository,
+            roleRepository
         );
     }
 }

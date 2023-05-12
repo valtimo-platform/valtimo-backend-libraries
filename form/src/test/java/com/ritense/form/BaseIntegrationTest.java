@@ -16,6 +16,7 @@
 
 package com.ritense.form;
 
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.resource.service.ResourceService;
@@ -50,6 +51,10 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @Inject
     public FormDefinitionRepository formDefinitionRepository;
+
+    // TODO: remove authorization service mocking when call to run without permissions is added
+    @MockBean
+    public AuthorizationService authorizationService;
 
     @BeforeAll
     static void beforeAll() {

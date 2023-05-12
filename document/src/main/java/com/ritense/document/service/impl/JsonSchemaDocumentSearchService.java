@@ -25,6 +25,9 @@ import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.domain.search.SearchRequestMapper;
 import com.ritense.document.domain.search.SearchRequestValidator;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -88,16 +91,19 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private final SearchFieldService searchFieldService;
     private final UserManagementService userManagementService;
 
+    private final AuthorizationService authorizationService;
+
     public JsonSchemaDocumentSearchService(
         EntityManager entityManager,
         QueryDialectHelper queryDialectHelper,
         SearchFieldService searchFieldService,
-        UserManagementService userManagementService
-    ) {
+        UserManagementService userManagementService,
+        AuthorizationService authorizationService) {
         this.entityManager = entityManager;
         this.queryDialectHelper = queryDialectHelper;
         this.searchFieldService = searchFieldService;
         this.userManagementService = userManagementService;
+        this.authorizationService = authorizationService;
     }
 
     @Override
@@ -118,7 +124,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
         var searchCriteria = searchWithConfigRequest.getOtherFilters().stream()
             .map(otherFilter -> SearchRequestMapper.toOtherFilter(otherFilter, searchFieldMap.get(otherFilter.getKey())))
-            .collect(toList());
+            .toList();
 
         var advancedSearchRequest = SearchRequestMapper.toAdvancedSearchRequest(searchWithConfigRequest, searchCriteria);
 
@@ -164,7 +170,15 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         countQuery.select(cb.count(countRoot));
         queryWhereBuilder.apply(cb, countQuery, selectRoot);
 
-        return new PageImpl<>(typedQuery.getResultList(), pageable, entityManager.createQuery(countQuery).getSingleResult());
+        List<Long> countResultList = entityManager.createQuery(countQuery).getResultList();
+
+        Long count = 0L;
+
+        if (!countResultList.isEmpty()) {
+            count = countResultList.get(0);
+        }
+
+        return new PageImpl<>(typedQuery.getResultList(), pageable, count);
     }
 
     private void buildQueryWhere(SearchRequest searchRequest, CriteriaBuilder cb, CriteriaQuery<?> query, Root<JsonSchemaDocument> documentRoot, boolean withAuthorization) {
@@ -174,6 +188,16 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         addJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
         if (withAuthorization) {
             addUserRolePredicate(query, documentRoot, predicates);
+            predicates.add(
+                authorizationService
+                    .getAuthorizationSpecification(
+                        new AuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            null,
+                            Action.VIEW
+                        ),
+                        null
+                    ).toPredicate(documentRoot, query, cb));
         }
 
         query.where(predicates.toArray(new Predicate[0]));
@@ -194,6 +218,16 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             addUserRolePredicate(query, documentRoot, predicates);
+            predicates.add(
+                authorizationService
+                    .getAuthorizationSpecification(
+                        new AuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            null,
+                            Action.VIEW
+                        ),
+                        null
+                    ).toPredicate(documentRoot, query, cb));
         }
 
         if (searchRequest.getAssigneeFilter() != null && searchRequest.getAssigneeFilter() != AssigneeFilter.ALL) {
@@ -246,12 +280,12 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                             pathEntry.getValue().stream()
                                 .map(currentCriteria -> findJsonPathValue(cb, root, currentCriteria.getPath(),
                                     currentCriteria.getValue()))
-                                .collect(toList())
+                                .toList()
                                 .toArray(Predicate[]::new)
                         ));
                     }
                 })
-                .collect(toList());
+                .toList();
 
             predicates.add(cb.and(criteriaPredicates.toArray(Predicate[]::new)));
         }
@@ -280,7 +314,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     ) {
         var jsonPredicates = searchRequest.getOtherFilters().stream()
             .map(currentCriteria -> buildQueryForSearchCriteria(cb, root, currentCriteria))
-            .collect(toList())
+            .toList()
             .toArray(Predicate[]::new);
 
         if (searchRequest.getSearchOperator() == SearchOperator.AND) {

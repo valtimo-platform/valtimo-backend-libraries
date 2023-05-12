@@ -19,9 +19,12 @@ package com.ritense.note.repository
 import com.ritense.note.domain.Note
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import java.util.UUID
+import javax.persistence.criteria.CriteriaBuilder
+import javax.persistence.criteria.CriteriaQuery
+import javax.persistence.criteria.Root
 
-interface NoteRepository : JpaRepository<Note, UUID> {
-    fun findAllByDocumentId(documentId: UUID, pageable: Pageable): Page<Note>
-}
+interface NoteRepository : JpaRepository<Note, UUID>, JpaSpecificationExecutor<Note>

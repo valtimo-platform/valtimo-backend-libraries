@@ -26,6 +26,7 @@ dependencies {
     implementation project(":data-provider")
     implementation project(":resource")
     implementation project(":web")
+    implementation project(":authorization")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

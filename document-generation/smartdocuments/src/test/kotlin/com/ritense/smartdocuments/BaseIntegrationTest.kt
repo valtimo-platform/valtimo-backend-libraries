@@ -16,6 +16,7 @@
 
 package com.ritense.smartdocuments
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.connector.autodeployment.ConnectorApplicationReadyEventListener
 import com.ritense.resource.service.ResourceService
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
@@ -47,4 +48,8 @@ abstract class BaseIntegrationTest : BaseTest() {
 
     @MockBean
     lateinit var mailSender: MailSender
+
+    // TODO: remove authorization service mocking when call to run without permissions is added
+    @MockBean
+    var authorizationService: AuthorizationService? = null
 }

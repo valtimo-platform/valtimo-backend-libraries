@@ -16,6 +16,7 @@
 
 package com.ritense
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
@@ -67,4 +68,8 @@ abstract class BaseIntegrationTest {
 
     @MockBean
     lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
+
+    // TODO: remove authorization service mocking when call to run without permissions is added
+    @MockBean
+    lateinit var authorizationService: AuthorizationService
 }
