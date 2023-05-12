@@ -89,6 +89,7 @@ allprojects {
                 mavenBom "org.junit:junit-bom:${junitVersion}"
             }
             dependencies {
+                dependency "org.yaml:snakeyaml:${snakeYamlVersionOverride}"
                 dependency "io.netty:netty-codec:${nettyCodecVersionOverride}"
                 dependency "org.liquibase:liquibase-core:${liquibaseVersion}"
             }
