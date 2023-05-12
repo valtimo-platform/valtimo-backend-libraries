@@ -20,6 +20,8 @@ import com.ritense.valtimo.contract.security.jwt.TokenAuthenticator;
 import com.ritense.valtimo.contract.security.jwt.provider.SecretKeyProvider;
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
 import com.ritense.valtimo.security.jwt.provider.SecretKeyResolver;
+import io.jsonwebtoken.SigningKeyResolver;
+import liquibase.pro.packaged.S;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,14 +34,14 @@ public class AuthenticationAutoConfiguration {
     @ConditionalOnMissingBean(TokenAuthenticationService.class)
     public TokenAuthenticationService tokenAuthenticationService(
         final List<TokenAuthenticator> tokenAuthenticators,
-        final SecretKeyResolver secretKeyResolver
+        final SigningKeyResolver secretKeyResolver
     ) {
         return new TokenAuthenticationService(tokenAuthenticators, secretKeyResolver);
     }
 
     @Bean
-    @ConditionalOnMissingBean(SecretKeyResolver.class)
-    public SecretKeyResolver secretKeyResolver(
+    @ConditionalOnMissingBean(SigningKeyResolver.class)
+    public SigningKeyResolver secretKeyResolver(
         final List<SecretKeyProvider> secretKeyProviders
     ) {
         return new SecretKeyResolver(secretKeyProviders);

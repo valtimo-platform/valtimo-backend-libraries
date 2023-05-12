@@ -22,6 +22,7 @@ import com.ritense.valtimo.security.jwt.provider.SecretKeyResolver;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SigningKeyResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -31,9 +32,9 @@ public class TokenAuthenticationService {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenAuthenticationService.class);
     private final List<TokenAuthenticator> tokenAuthenticators;
-    private final SecretKeyResolver secretKeyResolver;
+    private final SigningKeyResolver secretKeyResolver;
 
-    public TokenAuthenticationService(List<TokenAuthenticator> tokenAuthenticators, SecretKeyResolver secretKeyResolver) {
+    public TokenAuthenticationService(List<TokenAuthenticator> tokenAuthenticators, SigningKeyResolver secretKeyResolver) {
         this.tokenAuthenticators = tokenAuthenticators;
         this.secretKeyResolver = secretKeyResolver;
     }
