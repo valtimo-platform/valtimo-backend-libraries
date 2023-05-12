@@ -47,6 +47,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.keycloak:keycloak-spring-boot-starter:${keycloakClientVersion}"
     implementation "org.keycloak:keycloak-admin-client:${keycloakClientVersion}"
+    implementation "com.nimbusds:nimbus-jose-jwt:${nimbusVersion}"
 
     testImplementation project(":core")
     testImplementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"

@@ -51,7 +51,7 @@ public class KeycloakSecretKeyProviderTest {
         final int secretBase64Length = keyPair.getPublic().getEncoded().length;
 
         //when
-        final Key key = keycloakSecretKeyProvider.getKey(signatureAlgorithm);
+        final Key key = keycloakSecretKeyProvider.getKey(signatureAlgorithm, "aKeyId");
 
         //then
         assertThat(key).isNotNull();

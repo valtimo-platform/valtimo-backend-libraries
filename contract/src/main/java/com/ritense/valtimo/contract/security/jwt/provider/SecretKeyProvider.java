@@ -24,6 +24,6 @@ public interface SecretKeyProvider {
 
     boolean supports(SignatureAlgorithm algorithm, Claims claims);
 
-    Key getKey(SignatureAlgorithm algorithm);
+    Key getKey(SignatureAlgorithm algorithm, String kId);
 
 }

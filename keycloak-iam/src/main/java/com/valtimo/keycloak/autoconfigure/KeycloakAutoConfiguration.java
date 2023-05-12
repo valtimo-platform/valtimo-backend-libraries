@@ -16,8 +16,10 @@
 
 package com.valtimo.keycloak.autoconfigure;
 
+import com.nimbusds.jose.jwk.JWKSet;
 import com.valtimo.keycloak.repository.KeycloakCurrentUserRepository;
 import com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator;
+import com.valtimo.keycloak.security.jwt.provider.JwksKeyCloakProvider;
 import com.valtimo.keycloak.security.jwt.provider.KeycloakSecretKeyProvider;
 import com.valtimo.keycloak.service.KeycloakService;
 import com.valtimo.keycloak.service.KeycloakUserManagementService;
@@ -30,6 +32,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.ParseException;
 
 @Configuration
 @KeycloakConfiguration
@@ -51,6 +58,15 @@ public class KeycloakAutoConfiguration {
         @Value("${valtimo.jwt.secret}") final String secret
     ) {
         return new KeycloakSecretKeyProvider(secret);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(JwksKeyCloakProvider.class)
+    @ConditionalOnProperty("valtimo.jwt.jwks")
+    public JwksKeyCloakProvider keycloakSecretKeyProviderForJwks(
+        @Value("${valtimo.jwt.jwks}") final String jwks
+    ) throws IOException, ParseException {
+        return new JwksKeyCloakProvider(JWKSet.load(new URL(jwks)));
     }
 
     @Bean

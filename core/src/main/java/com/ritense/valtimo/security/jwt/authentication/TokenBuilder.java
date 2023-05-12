@@ -27,6 +27,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.List;
 
+@Deprecated(since = "Will be removed in the next major version")
 public class TokenBuilder {
 
     private final List<SecretKeyProvider> secretKeyProviders;
@@ -62,7 +63,7 @@ public class TokenBuilder {
         return secretKeyProviders.stream()
             .filter(secretKeyProvider -> secretKeyProvider.supports(algorithm, claims))
             .findFirst()
-            .map(secretKeyProvider -> secretKeyProvider.getKey(algorithm))
+            .map(secretKeyProvider -> secretKeyProvider.getKey(algorithm, "aKeyId"))
             .orElse(null);
     }
 

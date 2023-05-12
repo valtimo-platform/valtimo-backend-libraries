@@ -41,7 +41,7 @@ public class SecretKeyResolver implements SigningKeyResolver {
             .stream()
             .filter(provider -> provider.supports(algorithm, claims))
             .findFirst()
-            .map(secretKeyProvider -> secretKeyProvider.getKey(algorithm))
+            .map(secretKeyProvider -> secretKeyProvider.getKey(algorithm, header.getKeyId()))
             .orElse(null);
     }
 
