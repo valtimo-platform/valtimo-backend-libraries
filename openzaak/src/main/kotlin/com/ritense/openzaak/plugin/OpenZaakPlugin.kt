@@ -35,9 +35,11 @@ import reactor.core.publisher.Mono
 )
 class OpenZaakPlugin(
     val tokenGeneratorService: TokenGeneratorService
-): DocumentenApiAuthentication, ZakenApiAuthentication, CatalogiApiAuthentication, BesluitenApiAuthentication {
+) : DocumentenApiAuthentication, ZakenApiAuthentication, CatalogiApiAuthentication, BesluitenApiAuthentication {
+
     @PluginProperty(key = "clientId", secret = false, required = true)
     lateinit var clientId: String
+
     @PluginProperty(key = "clientSecret", secret = true, required = true)
     lateinit var clientSecret: String
 

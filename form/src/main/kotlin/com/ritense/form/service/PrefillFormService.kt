@@ -66,10 +66,12 @@ class PrefillFormService(
         formDefinitionId: UUID,
         documentId: UUID?,
     ): FormIoFormDefinition {
-        val document = documentService.get(documentId.toString())
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
-        prefillFormDefinition(formDefinition, document)
+        if (documentId != null) {
+            val document = documentService.get(documentId.toString())
+            prefillFormDefinition(formDefinition, document)
+        }
         return formDefinition
     }
 
