@@ -22,8 +22,9 @@ dockerCompose {
 }
 
 dependencies {
-    api project(':plugin')
-    implementation project(':core')
+    api project(":plugin")
+    implementation project(":contract")
+    implementation project(":core")
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
@@ -31,7 +32,6 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
-    testImplementation project(":contract")
     testImplementation project(":test-utils-common")
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
