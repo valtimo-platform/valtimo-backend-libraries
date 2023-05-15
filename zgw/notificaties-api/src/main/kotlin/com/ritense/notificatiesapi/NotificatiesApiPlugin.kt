@@ -27,13 +27,14 @@ import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginConfigurationId
-import java.net.URI
-import java.security.SecureRandom
-import java.util.Base64
+import com.ritense.valtimo.contract.validation.Url
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
+import java.net.URI
+import java.security.SecureRandom
+import java.util.Base64
 
 @Plugin(
     key = "notificatiesapi",
@@ -47,9 +48,11 @@ class NotificatiesApiPlugin(
 ) {
     val notificatiesApiConfigurationId = NotificatiesApiConfigurationId(pluginConfigurationId.id)
 
+    @Url
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
 
+    @Url
     @PluginProperty(key = "callbackUrl", secret = false)
     lateinit var callbackUrl: URI
 
