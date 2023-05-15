@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.web.rest;
 
+import camundajar.impl.com.google.gson.JsonElement;
+import camundajar.impl.com.google.gson.JsonParser;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
@@ -150,7 +152,13 @@ public class UserResource {
     @PostMapping("/v1/users/settings")
     public ResponseEntity<Object> saveCurrentUserSettings(@RequestBody String settings){
         logger.debug("Request to create settings for current user");
+        try{
+            JsonParser.parseString(settings);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
         userSettingsService.saveUserSettings(userManagementService.getCurrentUser(),settings);
         return ResponseEntity.ok().build();
+
     }
 }
