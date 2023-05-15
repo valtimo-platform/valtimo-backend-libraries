@@ -14,31 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.verzoek.domain
+package com.ritense.valtimo.contract.validation
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.ritense.valtimo.contract.validation.Url
 import java.net.URI
+import javax.validation.ConstraintValidator
+import javax.validation.ConstraintValidatorContext
 
-data class VerzoekProperties(
-    val type: String,
-    val caseDefinitionName: String,
-    val processDefinitionKey: String,
-    @field:Url val initiatorRoltypeUrl: URI,
-    val initiatorRolDescription: String,
-    val copyStrategy: CopyStrategy,
-    val mapping: List<Mapping>?,
-)
+open class URIUrlValidator : ConstraintValidator<Url, URI> {
 
-enum class CopyStrategy {
-    @JsonProperty("full")
-    FULL,
-
-    @JsonProperty("specified")
-    SPECIFIED
+    override fun isValid(value: URI?, context: ConstraintValidatorContext?) =
+        try {
+            value?.toURL()
+            true
+        } catch (e: Exception) {
+            false
+        }
 }
-
-data class Mapping(
-    val source: String,
-    val target: String,
-)

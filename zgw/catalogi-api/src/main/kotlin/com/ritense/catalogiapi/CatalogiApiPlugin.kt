@@ -36,6 +36,7 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
+import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.Page
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -51,6 +52,7 @@ class CatalogiApiPlugin(
     val zaaktypeUrlProvider: ZaaktypeUrlProvider,
     val documentService: DocumentService,
 ) {
+    @Url
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
 
