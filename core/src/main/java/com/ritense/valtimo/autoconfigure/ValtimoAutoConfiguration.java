@@ -38,7 +38,14 @@ import com.ritense.valtimo.repository.UserSettingsRepository;
 import com.ritense.valtimo.security.permission.Permission;
 import com.ritense.valtimo.security.permission.TaskAccessPermission;
 import com.ritense.valtimo.security.permission.ValtimoPermissionEvaluator;
-import com.ritense.valtimo.service.*;
+import com.ritense.valtimo.service.AuthorizedUsersService;
+import com.ritense.valtimo.service.BpmnModelService;
+import com.ritense.valtimo.service.CamundaProcessService;
+import com.ritense.valtimo.service.CamundaTaskService;
+import com.ritense.valtimo.service.ContextService;
+import com.ritense.valtimo.service.ProcessPropertyService;
+import com.ritense.valtimo.service.ProcessShortTimerService;
+import com.ritense.valtimo.service.UserSettingsService;
 import com.ritense.valtimo.web.rest.AccountResource;
 import com.ritense.valtimo.web.rest.PingResource;
 import com.ritense.valtimo.web.rest.ProcessInstanceResource;
@@ -76,7 +83,7 @@ import java.util.Optional;
 @EnableJpaAuditing(dateTimeProviderRef = "customDateTimeProvider")
 @EnableCamundaEventBus
 @EnableJpaRepositories(basePackageClasses = {ProcessDefinitionPropertiesRepository.class, UserSettingsRepository.class})
-@EntityScan("com.ritense.valtimo.domain.*")
+@EntityScan("com.ritense.valtimo.domain.processdefinition")
 public class ValtimoAutoConfiguration {
 
     @Bean
