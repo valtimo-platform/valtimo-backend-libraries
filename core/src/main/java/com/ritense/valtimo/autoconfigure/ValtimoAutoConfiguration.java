@@ -83,7 +83,7 @@ import java.util.Optional;
 @EnableJpaAuditing(dateTimeProviderRef = "customDateTimeProvider")
 @EnableCamundaEventBus
 @EnableJpaRepositories(basePackageClasses = {ProcessDefinitionPropertiesRepository.class, UserSettingsRepository.class})
-@EntityScan("com.ritense.valtimo.domain.processdefinition")
+@EntityScan("com.ritense.valtimo.domain.*")
 public class ValtimoAutoConfiguration {
 
     @Bean

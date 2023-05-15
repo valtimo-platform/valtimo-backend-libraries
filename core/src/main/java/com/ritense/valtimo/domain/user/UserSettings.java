@@ -36,8 +36,6 @@ public class UserSettings {
         @Column(name = "user_properties", columnDefinition = "JSON")
         private String userProperties;
 
-        public UserSettings(){}
-
         public UserSettings(String userId, String userProperties){
             this.userId = userId;
             this.userProperties = userProperties;

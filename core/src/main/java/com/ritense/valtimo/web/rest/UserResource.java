@@ -154,12 +154,4 @@ public class UserResource {
         userSettingsService.upsertUserSettings(userManagementService.getCurrentUser(),settings);
         return ResponseEntity.ok().build();
     }
-
-    @DeleteMapping("/v1/users/settings")
-    public ResponseEntity<Object> deleteUserSettings(){
-        logger.debug("Request to delete setting for current user");
-        userSettingsService.deleteUserSettings(userManagementService.getCurrentUser());
-        return ResponseEntity.noContent().build();
-    }
-
 }

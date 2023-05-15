@@ -38,8 +38,4 @@ public class UserSettingsService {
     public void upsertUserSettings(ManageableUser currentUser, String settings) {
         userSettingsRepository.save(new UserSettings(currentUser.getId(),settings));
     }
-
-    public void deleteUserSettings(ManageableUser currentUser) {
-        userSettingsRepository.deleteById(currentUser.getId());
-    }
 }
