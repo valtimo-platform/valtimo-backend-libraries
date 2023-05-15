@@ -35,7 +35,7 @@ public class UserSettingsService {
         return userSettingsRepository.findById(currentUser.getId());
     }
 
-    public void upsertUserSettings(ManageableUser currentUser, String settings) {
+    public void saveUserSettings(ManageableUser currentUser, String settings) {
         userSettingsRepository.save(new UserSettings(currentUser.getId(),settings));
     }
 }

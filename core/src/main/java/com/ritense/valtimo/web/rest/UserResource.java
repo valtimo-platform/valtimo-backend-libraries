@@ -19,7 +19,6 @@ package com.ritense.valtimo.web.rest;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
-import com.ritense.valtimo.domain.user.UserSettings;
 import com.ritense.valtimo.service.UserSettingsService;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import org.slf4j.Logger;
@@ -149,9 +148,9 @@ public class UserResource {
     }
 
     @PostMapping("/v1/users/settings")
-    public ResponseEntity<Object> upsertCurrentUserSettings(@RequestBody String settings){
+    public ResponseEntity<Object> saveCurrentUserSettings(@RequestBody String settings){
         logger.debug("Request to create settings for current user");
-        userSettingsService.upsertUserSettings(userManagementService.getCurrentUser(),settings);
+        userSettingsService.saveUserSettings(userManagementService.getCurrentUser(),settings);
         return ResponseEntity.ok().build();
     }
 }
