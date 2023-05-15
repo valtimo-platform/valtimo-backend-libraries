@@ -45,7 +45,7 @@ public class KeycloakSecretKeyProvider implements SecretKeyProvider {
     }
 
     @Override
-    public Key getKey(SignatureAlgorithm algorithm, String kId) {
+    public Key getKey(SignatureAlgorithm algorithm, String kid) {
         try {
             return getPublicKey(algorithm, getSecret());
         } catch (GeneralSecurityException e) {

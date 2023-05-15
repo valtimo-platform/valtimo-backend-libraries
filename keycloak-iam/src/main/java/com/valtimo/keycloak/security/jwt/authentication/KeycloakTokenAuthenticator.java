@@ -36,10 +36,9 @@ import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE
 import static java.util.Objects.requireNonNull;
 
 public class KeycloakTokenAuthenticator extends TokenAuthenticator {
-
-    private static final Logger logger = LoggerFactory.getLogger(KeycloakTokenAuthenticator.class);
     public final static String REALM_ACCESS = "realm_access";
     public final static String RESOURCE_ACCESS = "resource_access";
+    private static final Logger logger = LoggerFactory.getLogger(KeycloakTokenAuthenticator.class);
     private final String clientName;
 
     public KeycloakTokenAuthenticator(String keycloakClient) {
