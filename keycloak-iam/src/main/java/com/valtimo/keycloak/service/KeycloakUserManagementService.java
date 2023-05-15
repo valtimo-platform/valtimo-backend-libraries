@@ -88,10 +88,6 @@ public class KeycloakUserManagementService implements UserManagementService {
         return null;
     }
 
-    public Integer countUsers() {
-        return keycloakService.usersResource().count();
-    }
-
     @Override
     public List<ManageableUser> getAllUsers() {
         var users = keycloakService.usersResource().list(0, MAX_USERS).stream()
@@ -173,6 +169,10 @@ public class KeycloakUserManagementService implements UserManagementService {
         } else {
             return new ValtimoUserBuilder().id(SYSTEM_ACCOUNT).lastName(SYSTEM_ACCOUNT).build();
         }
+    }
+
+    public Integer countUsers() {
+        return keycloakService.usersResource().count();
     }
 
     private List<UserRepresentation> findUserRepresentationByRole(String authority) {
