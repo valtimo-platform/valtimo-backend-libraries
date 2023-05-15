@@ -23,7 +23,7 @@ import com.ritense.objectenapi.client.Comparator.GREATER_THAN_OR_EQUAL_TO
 import com.ritense.objectenapi.client.Comparator.LOWER_THAN_OR_EQUAL_TO
 import com.ritense.objectenapi.client.Comparator.STRING_CONTAINS
 import com.ritense.objectenapi.client.ObjectSearchParameter
-import com.ritense.objectenapi.client.ObjectsList
+import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.domain.ObjectsListRowDto
 import com.ritense.objectmanagement.domain.search.SearchRequestValue
@@ -90,6 +90,8 @@ class ObjectManagementService(
 
     fun getById(id: UUID): ObjectManagement? = objectManagementRepository.findByIdOrNull(id)
 
+    fun getByTitle(title: String): ObjectManagement? = objectManagementRepository.findByTitle(title)
+
     fun getAll(): List<ObjectManagement> = objectManagementRepository.findAll()
 
     @Transactional
@@ -128,9 +130,8 @@ class ObjectManagementService(
         id: UUID,
         pageable: Pageable
     ): PageImpl<ObjectsListRowDto> {
-        val objectManagement = getById(id) ?: let {
-            throw IllegalStateException("The requested Id is not configured as a object management configuration. The requested id was: $id")
-        }
+        val objectManagement = getById(id)
+            ?: throw IllegalStateException("The requested Id is not configured as a object management configuration. The requested id was: $id")
 
         val searchFieldList = searchFieldV2Service.findAllByOwnerId(id.toString())!!
 
@@ -140,7 +141,19 @@ class ObjectManagementService(
                 .flatMap { otherFilter -> mapToObjectSearchParameters(searchField, otherFilter) }
         }
 
-        val searchString = ObjectSearchParameter.toQueryParameter(searchDtoList)
+        val objectsList = getObjectsWithSearchParams(objectManagement, searchDtoList, pageable)
+
+        val objectsListDto = mapToObjectListRowDto(objectsList.toList(), id)
+
+        return PageImpl(objectsListDto, pageable, objectsList.totalElements)
+    }
+
+    fun getObjectsWithSearchParams(
+        objectManagement: ObjectManagement,
+        searchParameters: List<ObjectSearchParameter>,
+        pageable: Pageable
+    ): PageImpl<ObjectWrapper> {
+        val searchString = ObjectSearchParameter.toQueryParameter(searchParameters)
 
         val objectTypePluginInstance = getObjectTypenApiPlugin(objectManagement.objecttypenApiPluginConfigurationId)
 
@@ -153,17 +166,15 @@ class ObjectManagementService(
             pageable
         )
 
-        val objectsListDto = mapToObjectListRowDto(objectsList, id)
-
-        return PageImpl(objectsListDto, pageable, objectsList.count.toLong())
+        return PageImpl(objectsList.results, pageable, objectsList.count.toLong())
     }
 
     private fun mapToObjectListRowDto(
-        objectsList: ObjectsList,
+        objectsList: List<ObjectWrapper>,
         objectManagementId: UUID
     ): List<ObjectsListRowDto> {
         val listColumns = searchListColumnService.findByOwnerId(objectManagementId.toString())
-        return objectsList.results.map { objectApiObject ->
+        return objectsList.map { objectApiObject ->
             val listRowDto = listColumns?.map { listColumn ->
                 if (!listColumn.path.startsWith("object:/") && !listColumn.path.startsWith("/")) {
                     throw IllegalArgumentException("Unknown list column path prefix in: '${listColumn.path}'")
