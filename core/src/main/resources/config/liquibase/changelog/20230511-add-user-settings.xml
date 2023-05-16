@@ -24,7 +24,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="user_properties" type="${jsonType}">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
