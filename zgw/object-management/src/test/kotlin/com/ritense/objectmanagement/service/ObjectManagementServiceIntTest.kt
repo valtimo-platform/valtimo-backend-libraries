@@ -33,8 +33,6 @@ import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.search.service.SearchListColumnService
-import java.util.UUID
-import javax.transaction.Transactional
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
@@ -45,6 +43,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
+import java.util.UUID
+import javax.transaction.Transactional
 
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -123,7 +123,7 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
         val authenticationPlugin = pluginService.createPluginConfiguration(
             title = "Objecten authentication",
             properties = ObjectMapper().readTree(
-                """{"token":"some-secret-token"},
+                """{"token":"some-secret-token-long"},
                     "pluginDefinition": {
                     "key": "objecttokenauthentication",
                     "title": "Object Token Authentication",
