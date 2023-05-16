@@ -15,13 +15,13 @@
  *
  */
 
-package com.ritense.plugin.service
+package com.ritense.valtimo.processlink.service
 
-import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.valtimo.BaseIntegrationTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,7 +46,7 @@ class PluginSupportedProcessLinksIntTest : BaseIntegrationTest() {
     @BeforeEach
     fun init() {
 
-        val categoryPluginDefinition = pluginDefinitionRepository.getById("test-category-plugin")
+        val categoryPluginDefinition = pluginDefinitionRepository.findById("test-plugin").orElseThrow()
         categoryPluginConfiguration = pluginConfigurationRepository.save(
             PluginConfiguration(
                 PluginConfigurationId.newId(),

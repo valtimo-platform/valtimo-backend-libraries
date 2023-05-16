@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.mapper
+package com.ritense.valtimo.processlink.mapper
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
