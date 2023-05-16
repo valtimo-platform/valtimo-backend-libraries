@@ -142,14 +142,14 @@ public class UserResource {
         return success ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 
-    @GetMapping("/v1/users/settings")
+    @GetMapping("/v1/user/settings")
     public ResponseEntity<String> getCurrentUserSettings(){
         logger.debug("Request to get current user settings");
         var result = userSettingsService.getCurrentUserSettings(userManagementService.getCurrentUser());
         return result.map(userSettings -> ResponseEntity.ok(userSettings.getUserProperties())).orElse(null);
     }
 
-    @PostMapping("/v1/users/settings")
+    @PostMapping("/v1/user/settings")
     public ResponseEntity<Object> saveCurrentUserSettings(@RequestBody String settings){
         logger.debug("Request to create settings for current user");
         try{
