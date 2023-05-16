@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.ritense.valtimo.processlink
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.processlink.mapper.PluginProcessLinkMapper
+import com.ritense.valtimo.processlink.service.PluginSupportedProcessLinksHandler
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -57,5 +61,19 @@ class ProcessLinkAutoConfiguration {
             pluginProcessLinkRepository!!,
             pluginService!!
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginProcessLinkMapper::class)
+    fun pluginProcessLinkMapper(
+        objectMapper: ObjectMapper
+    ): PluginProcessLinkMapper {
+        return PluginProcessLinkMapper(objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginSupportedProcessLinksHandler::class)
+    fun pluginSupportedProcessLinksHandler(pluginService: PluginService): PluginSupportedProcessLinksHandler {
+        return PluginSupportedProcessLinksHandler(pluginService)
     }
 }
