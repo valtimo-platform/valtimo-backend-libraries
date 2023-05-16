@@ -23,7 +23,7 @@
             "key": "step2",
             "onBack": [],
             "onOpen": [],
-            "onComplete": ["${valtimoFormFlow.startCase(instance.id, {'doc:/voornaam':'/voornaam', 'doc:/height':'/height'})}"],
+            "onComplete": ["${valtimoFormFlow.startSupportingProcess(instance.id, {'doc:/voornaam':'/voornaam', 'doc:/height':'/height'})}"],
             "type": {
                 "name": "form",
                 "properties": {
