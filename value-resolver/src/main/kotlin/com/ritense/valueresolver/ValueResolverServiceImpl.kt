@@ -17,6 +17,7 @@
 package com.ritense.valueresolver
 
 import org.camunda.bpm.engine.delegate.VariableScope
+import java.util.UUID
 
 open class ValueResolverServiceImpl(
     private val valueResolverFactories: List<ValueResolverFactory>
@@ -130,6 +131,31 @@ open class ValueResolverServiceImpl(
                 variableScope,
                 propertyPaths.associate { propertyPath -> propertyPath.substringAfter(":") to values[propertyPath]!! }
             )
+        }
+    }
+
+    override fun handleValues(
+        documentId: UUID,
+        values: Map<String, Any>
+    ) {
+        toResolverFactoryMap(values.keys).forEach { (resolverFactory, propertyPaths) ->
+
+            resolverFactory.handleValues(
+                documentId,
+                propertyPaths.associate { propertyPath -> propertyPath.substringAfter(":") to values[propertyPath]!! }
+            )
+        }
+    }
+
+    override fun preProcessValuesForNewCase(
+        values: Map<String, Any>
+    ): Map<String, Any> {
+        return toResolverFactoryMap(values.keys).mapValues { (resolverFactory, propertyPaths) ->
+            resolverFactory.preProcessValuesForNewCase(
+                propertyPaths.associate { propertyPath -> propertyPath.substringAfter(":") to values[propertyPath]!! }
+            )
+        }.mapKeys { (resolverFactory, _) ->
+            resolverFactory.supportedPrefix()
         }
     }
 
