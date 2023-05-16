@@ -159,7 +159,7 @@ open class ValtimoFormFlow(
 
         val processDefinitionKey = getRequiredAdditionalProperty(formFlowInstance.getAdditionalProperties(), "processDefinitionKey").toString()
         val startProcessForDocumentRequest = StartProcessForDocumentRequest(
-            JsonSchemaDocumentId.existingId(UUID.fromString(getRequiredAdditionalProperty(formFlowInstance.getAdditionalProperties(), "documentId").toString())),
+            JsonSchemaDocumentId.existingId(UUID.fromString(documentId)),
             processDefinitionKey,
             submittedByType["pv"] as Map<String, Objects>
         )
