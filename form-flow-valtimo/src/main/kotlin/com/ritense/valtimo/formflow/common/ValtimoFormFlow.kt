@@ -126,7 +126,7 @@ open class ValtimoFormFlow(
         val startProcessForDocumentRequest = StartProcessForDocumentRequest(
             document.id(),
             processDefinitionKey,
-            submittedByType["pv"] as Map<String, Any>
+            submittedByType["pv"] as Map<String, Any>?
         )
         val startProcessForDocumentResult = processDocumentService.startProcessForDocument(startProcessForDocumentRequest)
         if (startProcessForDocumentResult.errors().isNotEmpty()) {
@@ -161,7 +161,7 @@ open class ValtimoFormFlow(
         val startProcessForDocumentRequest = StartProcessForDocumentRequest(
             JsonSchemaDocumentId.existingId(UUID.fromString(documentId)),
             processDefinitionKey,
-            submittedByType["pv"] as Map<String, Objects>
+            submittedByType["pv"] as Map<String, Objects>?
         )
         val startProcessForDocumentResult = processDocumentService.startProcessForDocument(startProcessForDocumentRequest)
         if (startProcessForDocumentResult.errors().isNotEmpty()) {
