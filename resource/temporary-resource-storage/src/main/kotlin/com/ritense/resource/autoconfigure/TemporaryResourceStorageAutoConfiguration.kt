@@ -19,6 +19,7 @@ package com.ritense.resource.autoconfigure
 import com.ritense.resource.security.config.TemporaryResourceStorageHttpSecurityConfigurer
 import com.ritense.resource.service.TemporaryResourceStorageDeletionService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.resource.service.TemporaryResourceStorageService.Companion.TEMP_DIR
 import com.ritense.resource.web.rest.TemporaryResourceStorageResource
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -28,24 +29,46 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.scheduling.annotation.EnableScheduling
+import java.nio.file.Path
 
 @EnableScheduling
 @Configuration
 class TemporaryResourceStorageAutoConfiguration {
 
+    @Qualifier("valtimoResourceTempDirectory")
+    @Bean
+    @ConditionalOnMissingBean(TemporaryResourceStorageService::class)
+    fun valtimoResourceTempDirectory(
+        @Value("\${valtimo.resource.temp.directory:}") tempDir: String,
+    ): Path {
+        return if (tempDir.isNotBlank()) {
+            Path.of(tempDir)
+        } else {
+            TEMP_DIR
+        }
+    }
+
     @Qualifier("temporaryResourceStorageService")
     @Bean
     @ConditionalOnMissingBean(TemporaryResourceStorageService::class)
-    fun temporaryResourceStorageService(): TemporaryResourceStorageService {
-        return TemporaryResourceStorageService()
+    fun temporaryResourceStorageService(
+        @Qualifier("valtimoResourceTempDirectory") valtimoResourceTempDirectory: Path,
+    ): TemporaryResourceStorageService {
+        return TemporaryResourceStorageService(
+            tempDir = valtimoResourceTempDirectory,
+        )
     }
 
     @Bean
     @ConditionalOnMissingBean(TemporaryResourceStorageDeletionService::class)
     fun temporaryResourceStorageDeletionService(
-        @Value("\${valtimo.temporaryResourceStorage.retentionInMinutes:60}") retentionInMinutes: Long
+        @Value("\${valtimo.temporaryResourceStorage.retentionInMinutes:60}") retentionInMinutes: Long,
+        @Qualifier("valtimoResourceTempDirectory") valtimoResourceTempDirectory: Path,
     ): TemporaryResourceStorageDeletionService {
-        return TemporaryResourceStorageDeletionService(retentionInMinutes)
+        return TemporaryResourceStorageDeletionService(
+            retentionInMinutes,
+            valtimoResourceTempDirectory,
+        )
     }
 
     @Bean

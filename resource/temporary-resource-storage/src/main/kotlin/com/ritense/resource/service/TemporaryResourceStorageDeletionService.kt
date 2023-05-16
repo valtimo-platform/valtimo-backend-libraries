@@ -20,6 +20,7 @@ import com.ritense.resource.service.TemporaryResourceStorageService.Companion.TE
 import mu.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.Duration
 import java.time.Instant
@@ -29,6 +30,7 @@ import kotlin.io.path.listDirectoryEntries
 
 open class TemporaryResourceStorageDeletionService(
     private val retentionInMinutes: Long,
+    private val tempDir: Path = TEMP_DIR,
 ) {
 
     @Scheduled(
@@ -37,7 +39,7 @@ open class TemporaryResourceStorageDeletionService(
     )
     open fun deleteOldTemporaryResources() {
 
-        TEMP_DIR.listDirectoryEntries().forEach { file ->
+        tempDir.listDirectoryEntries().forEach { file ->
             try {
                 val fileCreationTime = Files.readAttributes(file, BasicFileAttributes::class.java).creationTime()
 

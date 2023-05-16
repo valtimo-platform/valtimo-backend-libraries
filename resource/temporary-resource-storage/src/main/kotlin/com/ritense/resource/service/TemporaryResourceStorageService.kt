@@ -33,15 +33,16 @@ import kotlin.io.path.readText
 
 class TemporaryResourceStorageService(
     private val random: SecureRandom = SecureRandom(),
+    private val tempDir: Path = TEMP_DIR,
 ) {
 
     fun store(inputStream: InputStream, metadata: Map<String, Any> = emptyMap()): String {
-        val dataFile = Files.createTempFile(TEMP_DIR, "temporaryResource", ".tmp")
+        val dataFile = Files.createTempFile(tempDir, "temporaryResource", ".tmp")
         dataFile.toFile().outputStream().use { inputStream.copyTo(it) }
 
         val mutableMetadata = metadata.toMutableMap()
         mutableMetadata[MetadataType.FILE_PATH.key] = dataFile.absolutePathString()
-        val metaDataFile = Files.createTempFile(TEMP_DIR, "${random.nextLong().toULong()}-", ".json")
+        val metaDataFile = Files.createTempFile(tempDir, "${random.nextLong().toULong()}-", ".json")
         metaDataFile.toFile().writeText(Mapper.INSTANCE.get().writeValueAsString(mutableMetadata))
 
         return metaDataFile.nameWithoutExtension
@@ -76,7 +77,7 @@ class TemporaryResourceStorageService(
     }
 
     internal fun getMetaDataFileFromResourceId(resourceId: String): Path {
-        return Path.of(TEMP_DIR.pathString, "$resourceId.json")
+        return Path.of(tempDir.pathString, "$resourceId.json")
     }
 
     companion object {
