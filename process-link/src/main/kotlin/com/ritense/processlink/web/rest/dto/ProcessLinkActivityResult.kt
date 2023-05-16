@@ -16,7 +16,10 @@
 
 package com.ritense.processlink.web.rest.dto
 
+import java.util.UUID
+
 data class ProcessLinkActivityResult<T> (
+    val processLinkId: UUID,
     val type: String,
     val properties: T
 )
