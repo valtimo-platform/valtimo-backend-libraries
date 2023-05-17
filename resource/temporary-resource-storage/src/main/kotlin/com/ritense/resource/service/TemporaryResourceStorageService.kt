@@ -33,7 +33,7 @@ import kotlin.io.path.readText
 
 class TemporaryResourceStorageService(
     private val random: SecureRandom = SecureRandom(),
-    valtimoResourceTempDirectory: String,
+    valtimoResourceTempDirectory: String = "",
 ) {
     val tempDir: Path = if (valtimoResourceTempDirectory.isNotBlank()) {
         Path.of(valtimoResourceTempDirectory)
