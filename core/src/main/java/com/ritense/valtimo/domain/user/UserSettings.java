@@ -22,6 +22,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Map;
 
 @Entity
 @Table(name = "user_settings")
@@ -32,12 +33,12 @@ public class UserSettings {
         private String userId;
 
         @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
-        @Column(name = "user_properties", columnDefinition = "JSON")
-        private String userProperties;
+        @Column(name = "settings", columnDefinition = "JSON")
+        private Map<String, Object> settings;
 
-        public UserSettings(String userId, String userProperties){
+        public UserSettings(String userId, Map<String, Object> settings){
             this.userId = userId;
-            this.userProperties = userProperties;
+            this.settings = settings;
         }
 
     protected UserSettings() {
@@ -52,12 +53,12 @@ public class UserSettings {
         this.userId = userId;
     }
 
-    public String getUserProperties() {
-        return userProperties;
+    public Map<String, Object> getSettings() {
+        return settings;
     }
 
-    public void setUserProperties(String userProperties) {
-        this.userProperties = userProperties;
+    public void setSettings(Map<String, Object> settings) {
+        this.settings = settings;
     }
 
     @Override
@@ -68,21 +69,13 @@ public class UserSettings {
         UserSettings that = (UserSettings) o;
 
         if (getUserId() != null ? !getUserId().equals(that.getUserId()) : that.getUserId() != null) return false;
-        return getUserProperties() != null ? getUserProperties().equals(that.getUserProperties()) : that.getUserProperties() == null;
+        return getSettings() != null ? getSettings().equals(that.getSettings()) : that.getSettings() == null;
     }
 
     @Override
     public int hashCode() {
         int result = getUserId() != null ? getUserId().hashCode() : 0;
-        result = 31 * result + (getUserProperties() != null ? getUserProperties().hashCode() : 0);
+        result = 31 * result + (getSettings() != null ? getSettings().hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "UserSettings{" +
-            "userId='" + userId + '\'' +
-            ", userProperties='" + userProperties + '\'' +
-            '}';
     }
 }

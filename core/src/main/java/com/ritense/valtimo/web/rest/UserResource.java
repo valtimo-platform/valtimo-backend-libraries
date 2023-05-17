@@ -16,11 +16,12 @@
 
 package com.ritense.valtimo.web.rest;
 
-import camundajar.impl.com.google.gson.JsonElement;
-import camundajar.impl.com.google.gson.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
+import com.ritense.valtimo.contract.json.Mapper;
 import com.ritense.valtimo.service.UserSettingsService;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
@@ -143,21 +145,35 @@ public class UserResource {
     }
 
     @GetMapping("/v1/user/settings")
-    public ResponseEntity<String> getCurrentUserSettings(){
+    public ResponseEntity getCurrentUserSettings(){
         logger.debug("Request to get current user settings");
-        var result = userSettingsService.getCurrentUserSettings(userManagementService.getCurrentUser());
-        return result.map(userSettings -> ResponseEntity.ok(userSettings.getUserProperties())).orElse(null);
+        var result = userSettingsService.findUserSettings(userManagementService.getCurrentUser());
+        return result
+            .map(
+                userSettings -> {
+                    try {
+                        return ResponseEntity
+                            .ok(
+                                Mapper.INSTANCE.get().writeValueAsString(userSettings.getSettings())
+                            );
+                    } catch (JsonProcessingException e) {
+                        return ResponseEntity.notFound().build();
+                    }
+                }
+            )
+            .orElse(null);
     }
 
     @PostMapping("/v1/user/settings")
     public ResponseEntity<Object> saveCurrentUserSettings(@RequestBody String settings){
         logger.debug("Request to create settings for current user");
         try{
-            JsonParser.parseString(settings);
-        }catch (Exception e){
+            Map<String, Object> settingsMap = Mapper.INSTANCE.get().readValue(settings, new TypeReference<>() {});
+            userSettingsService.saveUserSettings(userManagementService.getCurrentUser(), settingsMap);
+        } catch (Exception e){
             return ResponseEntity.badRequest().build();
         }
-        userSettingsService.saveUserSettings(userManagementService.getCurrentUser(),settings);
+
         return ResponseEntity.ok().build();
     }
 }

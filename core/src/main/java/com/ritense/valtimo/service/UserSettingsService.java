@@ -20,6 +20,7 @@ import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.domain.user.UserSettings;
 import com.ritense.valtimo.repository.UserSettingsRepository;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class UserSettingsService {
@@ -30,11 +31,11 @@ public class UserSettingsService {
         this.userSettingsRepository = userSettingsRepository;
     }
 
-    public Optional<UserSettings> getCurrentUserSettings(ManageableUser currentUser) {
-        return userSettingsRepository.findById(currentUser.getId());
+    public Optional<UserSettings> findUserSettings(ManageableUser user) {
+        return userSettingsRepository.findById(user.getId());
     }
 
-    public void saveUserSettings(ManageableUser currentUser, String settings) {
-        userSettingsRepository.save(new UserSettings(currentUser.getId(),settings));
+    public void saveUserSettings(ManageableUser user, Map<String, Object> settings) {
+        userSettingsRepository.save(new UserSettings(user.getId(), settings));
     }
 }

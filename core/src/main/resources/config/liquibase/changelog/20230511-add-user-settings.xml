@@ -23,7 +23,7 @@
             <column name="user_id" type="VARCHAR(255)">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="user_properties" type="${jsonType}">
+            <column name="settings" type="${jsonType}">
                 <constraints nullable="false"/>
             </column>
         </createTable>
