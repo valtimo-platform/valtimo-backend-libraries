@@ -18,28 +18,19 @@ package com.ritense.valtimo.web.rest;
 
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
-import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
-import com.ritense.valtimo.contract.utils.SecurityUtils;
-import org.camunda.bpm.engine.RepositoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import javax.inject.Inject;
-
 import java.util.UUID;
 
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,9 +50,9 @@ class UserResourceIntTest extends BaseIntegrationTest {
     void shouldCreateAndRetrieveUserSettings() throws Exception {
         when(userManagementService.getCurrentUser()).thenReturn(getUser());
         mockMvc.perform(
-            post("/api/v1/user/settings")
-                .accept(APPLICATION_JSON_VALUE)
-                .content(buildJson())
+                put("/api/v1/user/settings")
+                    .accept(APPLICATION_JSON_VALUE)
+                    .content(buildJson())
             )
             .andDo(print())
             .andExpect(status().isOk());

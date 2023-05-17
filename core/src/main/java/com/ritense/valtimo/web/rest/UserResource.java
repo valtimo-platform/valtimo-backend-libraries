@@ -22,6 +22,7 @@ import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.json.Mapper;
+import com.ritense.valtimo.domain.user.UserSettings;
 import com.ritense.valtimo.service.UserSettingsService;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import org.slf4j.Logger;
@@ -145,23 +146,15 @@ public class UserResource {
     }
 
     @GetMapping("/v1/user/settings")
-    public ResponseEntity getCurrentUserSettings(){
+    public ResponseEntity<String> getCurrentUserSettings() throws JsonProcessingException {
         logger.debug("Request to get current user settings");
         var result = userSettingsService.findUserSettings(userManagementService.getCurrentUser());
-        return result
-            .map(
-                userSettings -> {
-                    try {
-                        return ResponseEntity
-                            .ok(
-                                Mapper.INSTANCE.get().writeValueAsString(userSettings.getSettings())
-                            );
-                    } catch (JsonProcessingException e) {
-                        return ResponseEntity.notFound().build();
-                    }
-                }
-            )
-            .orElse(null);
+        Map<String, Object> settings = Map.of();
+        if (result.isPresent()) {
+            settings = result.get().getSettings();
+        }
+
+        return ResponseEntity.ok(Mapper.INSTANCE.get().writeValueAsString(settings));
     }
 
     @PutMapping("/v1/user/settings")
