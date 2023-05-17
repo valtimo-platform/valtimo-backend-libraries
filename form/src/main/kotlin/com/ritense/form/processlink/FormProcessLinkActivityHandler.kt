@@ -43,6 +43,7 @@ class FormProcessLinkActivityHandler(
             taskInstanceId = task.id,
         )
         return ProcessLinkActivityResult(
+            processLink.id,
             FORM_TASK_TYPE_KEY,
             FormTaskOpenResultProperties(processLink.formDefinitionId, formDefinition.asJson())
         )
@@ -57,6 +58,7 @@ class FormProcessLinkActivityHandler(
         processLink as FormProcessLink
         val formDefinition = prefillFormService.getPrefilledFormDefinition(processLink.formDefinitionId, documentId)
         return ProcessLinkActivityResult(
+            processLink.id,
             FORM_TASK_TYPE_KEY,
             FormTaskOpenResultProperties(processLink.formDefinitionId, formDefinition.asJson())
         )

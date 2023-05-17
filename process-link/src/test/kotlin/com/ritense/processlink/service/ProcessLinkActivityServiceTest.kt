@@ -61,7 +61,7 @@ class ProcessLinkActivityServiceTest {
             .build()
 
         val processLink: ProcessLink = mock()
-        val processLinkActivityResult = ProcessLinkActivityResult<Map<String,Any>>("test", mapOf())
+        val processLinkActivityResult = ProcessLinkActivityResult<Map<String,Any>>(UUID.randomUUID(), "test", mapOf())
 
         CamundaMockito.mockTaskQuery(taskService).singleResult(task)
         whenever(processLinkService.getProcessLinks(any(), any())).thenReturn(listOf(processLink))
