@@ -33,8 +33,13 @@ import kotlin.io.path.readText
 
 class TemporaryResourceStorageService(
     private val random: SecureRandom = SecureRandom(),
-    private val tempDir: Path = TEMP_DIR,
+    valtimoResourceTempDirectory: String,
 ) {
+    val tempDir: Path = if (valtimoResourceTempDirectory.isNotBlank()) {
+        Path.of(valtimoResourceTempDirectory)
+    } else {
+        TEMP_DIR
+    }
 
     fun store(inputStream: InputStream, metadata: Map<String, Any> = emptyMap()): String {
         val dataFile = Files.createTempFile(tempDir, "temporaryResource", ".tmp")
