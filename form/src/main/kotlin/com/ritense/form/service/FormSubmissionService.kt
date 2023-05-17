@@ -191,7 +191,7 @@ open class FormSubmissionService(
         preJsonPatch: JsonPatch
     ): Request {
         return if (processLink.activityType == START_EVENT_START) {
-            if (processDocumentDefinition.canInitializeDocument()) {
+            if (processDocumentDefinition.canInitializeDocument() && document == null) {
                 newDocumentAndStartProcessRequest(
                     processDocumentDefinition,
                     submittedDocumentContent,
