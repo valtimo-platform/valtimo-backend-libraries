@@ -159,6 +159,5 @@ public class UserResource {
         }
         userSettingsService.saveUserSettings(userManagementService.getCurrentUser(),settings);
         return ResponseEntity.ok().build();
-
     }
 }
