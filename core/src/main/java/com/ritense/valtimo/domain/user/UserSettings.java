@@ -28,18 +28,18 @@ import java.util.Map;
 @Table(name = "user_settings")
 public class UserSettings {
 
-        @Id
-        @Column(name = "user_id", nullable = false)
-        private String userId;
+    @Id
+    @Column(name = "user_id", nullable = false)
+    private String userId;
 
-        @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
-        @Column(name = "settings", columnDefinition = "JSON")
-        private Map<String, Object> settings;
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "settings", columnDefinition = "JSON")
+    private Map<String, Object> settings;
 
-        public UserSettings(String userId, Map<String, Object> settings){
-            this.userId = userId;
-            this.settings = settings;
-        }
+    public UserSettings(String userId, Map<String, Object> settings) {
+        this.userId = userId;
+        this.settings = settings;
+    }
 
     protected UserSettings() {
 
@@ -49,16 +49,8 @@ public class UserSettings {
         return userId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public Map<String, Object> getSettings() {
         return settings;
-    }
-
-    public void setSettings(Map<String, Object> settings) {
-        this.settings = settings;
     }
 
     @Override
