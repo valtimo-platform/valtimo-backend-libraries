@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.web.rest.dto
+package com.ritense.valtimo.repository;
 
-import java.util.UUID
+import com.ritense.valtimo.domain.user.UserSettings;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-data class ProcessLinkActivityResult<T> (
-    val processLinkId: UUID,
-    val type: String,
-    val properties: T
-)
+@Repository
+public interface UserSettingsRepository extends JpaRepository<UserSettings, String> {
+}

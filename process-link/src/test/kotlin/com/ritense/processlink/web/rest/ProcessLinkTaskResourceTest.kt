@@ -68,7 +68,7 @@ internal class ProcessLinkTaskResourceTest {
     fun `should list process links`() {
         val taskId = UUID.randomUUID()
 
-        val processLinkActivityResult = ProcessLinkActivityResult("test", mapOf("x" to "y"))
+        val processLinkActivityResult = ProcessLinkActivityResult(UUID.randomUUID(), "test", mapOf("x" to "y"))
         whenever(processLinkActivityService.openTask(taskId)).thenReturn(processLinkActivityResult)
 
         mockMvc.perform(
