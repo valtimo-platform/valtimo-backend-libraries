@@ -50,7 +50,7 @@ class FormFlowProcessLinkActivityHandler(
             1 -> instances[0]
             else -> throw IllegalStateException("Multiple form flow instances linked to task: ${task.id}")
         }
-        return ProcessLinkActivityResult(FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(instance.id.id))
+        return ProcessLinkActivityResult(processLink.id, FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(instance.id.id))
     }
     override fun getStartEventObject(
         processDefinitionId: String,
@@ -67,7 +67,7 @@ class FormFlowProcessLinkActivityHandler(
         documentId?.let { additionalProperties["documentId"] = it }
         documentDefinitionName?.let { additionalProperties["documentDefinitionName"] = it }
 
-        return ProcessLinkActivityResult(FORM_FLOW_TASK_TYPE_KEY,FormFlowTaskOpenResultProperties(
+        return ProcessLinkActivityResult(processLink.id, FORM_FLOW_TASK_TYPE_KEY,FormFlowTaskOpenResultProperties(
             formFlowService.save(
                 formFlowDefinition.createInstance(additionalProperties)
             ).id.id)
