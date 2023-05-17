@@ -164,7 +164,7 @@ public class UserResource {
             .orElse(null);
     }
 
-    @PostMapping("/v1/user/settings")
+    @PutMapping("/v1/user/settings")
     public ResponseEntity<Object> saveCurrentUserSettings(@RequestBody String settings){
         logger.debug("Request to create settings for current user");
         try{
