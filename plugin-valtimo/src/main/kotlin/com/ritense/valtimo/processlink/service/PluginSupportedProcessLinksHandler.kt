@@ -15,9 +15,11 @@
  *
  */
 
-package com.ritense.plugin.service
+package com.ritense.valtimo.processlink.service
 
 import com.ritense.plugin.domain.ActivityType
+import com.ritense.plugin.service.PluginConfigurationSearchParameters
+import com.ritense.plugin.service.PluginService
 import com.ritense.processlink.domain.ProcessLinkType
 import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
 

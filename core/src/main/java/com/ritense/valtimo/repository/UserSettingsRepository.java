@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.valtimo.repository;
 
-class TestPluginConfiguredProperties(
-    var property1: String,
-    var property2: Boolean? = null,
-    var property3: Number,
-    var property4: String,
-)
+import com.ritense.valtimo.domain.user.UserSettings;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UserSettingsRepository extends JpaRepository<UserSettings, String> {
+}

@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.valtimo.contract.validation
 
-class TestPluginConfiguredProperties(
-    var property1: String,
-    var property2: Boolean? = null,
-    var property3: Number,
-    var property4: String,
+import javax.validation.Constraint
+import javax.validation.Payload
+import kotlin.reflect.KClass
+
+@Constraint(validatedBy = [URIUrlValidator::class])
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Url(
+    val message: String = "URL has invalid format",
+    val groups: Array<KClass<*>> = [],
+    val payload: Array<KClass<out Payload>> = []
 )

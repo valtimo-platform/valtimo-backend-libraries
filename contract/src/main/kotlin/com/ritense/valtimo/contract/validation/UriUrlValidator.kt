@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.valtimo.contract.validation
 
-class TestPluginConfiguredProperties(
-    var property1: String,
-    var property2: Boolean? = null,
-    var property3: Number,
-    var property4: String,
-)
+import java.net.URI
+import javax.validation.ConstraintValidator
+import javax.validation.ConstraintValidatorContext
+
+open class URIUrlValidator : ConstraintValidator<Url, URI> {
+
+    override fun isValid(value: URI?, context: ConstraintValidatorContext?) =
+        try {
+            value?.toURL()
+            true
+        } catch (e: Exception) {
+            false
+        }
+}

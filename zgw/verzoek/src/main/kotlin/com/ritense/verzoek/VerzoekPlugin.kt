@@ -26,6 +26,7 @@ import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
 import com.ritense.zgw.Rsin
 import java.util.UUID
+import javax.validation.Valid
 import javax.validation.ValidationException
 
 @Plugin(
@@ -49,6 +50,7 @@ class VerzoekPlugin(
     @PluginProperty(key = "rsin", secret = false)
     lateinit var rsin: Rsin
 
+    @Valid
     @PluginProperty(key = "verzoekProperties", secret = false)
     lateinit var verzoekProperties: List<VerzoekProperties>
 

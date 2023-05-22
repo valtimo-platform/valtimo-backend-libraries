@@ -146,11 +146,18 @@ class FormFlowValtimoAutoConfiguration {
         taskService: TaskService,
         objectMapper: ObjectMapper,
         valueResolverService: ValueResolverService,
+        formFlowService: FormFlowService,
+        processDocumentService: ProcessDocumentService,
+        documentService: DocumentService
+
     ): ValtimoFormFlow {
         return ValtimoFormFlow(
             taskService,
             objectMapper,
             valueResolverService,
+            formFlowService,
+            processDocumentService,
+            documentService
         )
     }
 

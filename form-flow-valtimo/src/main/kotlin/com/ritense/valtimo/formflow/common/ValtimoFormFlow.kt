@@ -19,17 +19,30 @@ package com.ritense.valtimo.formflow.common
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.document.domain.impl.JsonSchemaDocumentId
+import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.document.service.DocumentService
+import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.expression.FormFlowBean
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.formflow.service.FormFlowService
+import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
+import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.TaskService
 import org.springframework.transaction.annotation.Transactional
+import java.util.Objects
+import java.util.UUID
 
 @FormFlowBean
 open class ValtimoFormFlow(
     private val taskService: TaskService,
     private val objectMapper: ObjectMapper,
     private val valueResolverService: ValueResolverService,
+    private val formFlowService: FormFlowService,
+    private val processDocumentService: ProcessDocumentService,
+    private val documentService: DocumentService
 ) {
 
     /**
@@ -73,6 +86,97 @@ open class ValtimoFormFlow(
         }
 
         taskService.complete(additionalProperties["taskInstanceId"] as String)
+    }
+
+    /**
+     * Starts a new case by creating a document and starting a process.
+     */
+    @Transactional
+    open fun startCase(
+        formFlowInstanceId: FormFlowInstanceId,
+        submissionSavePath: Map<String, String>
+    ) {
+        val formFlowInstance = formFlowService.getInstanceById(formFlowInstanceId)
+        val documentDefinitionName = getRequiredAdditionalProperty(
+            formFlowInstance.getAdditionalProperties(),
+            "documentDefinitionName"
+        ).toString()
+
+        val submission = jacksonObjectMapper().readValue<JsonNode>(formFlowInstance.getSubmissionDataContext())
+
+        val submissionValues = submissionSavePath.entries.associate { it.key to getValue(submission, it.value) }
+        val submittedByType = valueResolverService.preProcessValuesForNewCase(submissionValues)
+
+        val document = documentService.createDocument(
+            NewDocumentRequest(
+                documentDefinitionName,
+                submittedByType["doc"] as JsonNode
+            )
+        ).also { result ->
+            if (result.errors().size > 0) {
+                throw RuntimeException(
+                    "Could not create document for document definition $documentDefinitionName\n" +
+                        "Reason:\n" +
+                        result.errors().joinToString(separator = "\n - ")
+                )
+            }
+        }.resultingDocument().orElseThrow()
+
+        val processDefinitionKey = getRequiredAdditionalProperty(formFlowInstance.getAdditionalProperties(), "processDefinitionKey").toString()
+        val startProcessForDocumentRequest = StartProcessForDocumentRequest(
+            document.id(),
+            processDefinitionKey,
+            submittedByType["pv"] as Map<String, Any>?
+        )
+        val startProcessForDocumentResult = processDocumentService.startProcessForDocument(startProcessForDocumentRequest)
+        if (startProcessForDocumentResult.errors().isNotEmpty()) {
+            throw RuntimeException(
+                "Could not start process with definition $processDefinitionKey for document ${document.id()}\n" +
+                    "Reason:\n" +
+                    startProcessForDocumentResult.errors().joinToString(separator = "\n - ")
+            )
+        }
+    }
+
+    /**
+     * Starts a process for an existing case
+     */
+    @Transactional
+    open fun startSupportingProcess(
+        formFlowInstanceId: FormFlowInstanceId,
+        submissionSavePath: Map<String, String>
+    ) {
+        val formFlowInstance = formFlowService.getInstanceById(formFlowInstanceId)
+        val documentId = getRequiredAdditionalProperty(
+            formFlowInstance.getAdditionalProperties(),
+            "documentId"
+        ).toString()
+
+        val submission = jacksonObjectMapper().readValue<JsonNode>(formFlowInstance.getSubmissionDataContext())
+        val submissionValues = submissionSavePath.entries.associate { it.key to getValue(submission, it.value) }
+        valueResolverService.handleValues(UUID.fromString(documentId), submissionValues)
+        val submittedByType = valueResolverService.preProcessValuesForNewCase(submissionValues)
+
+        val processDefinitionKey = getRequiredAdditionalProperty(formFlowInstance.getAdditionalProperties(), "processDefinitionKey").toString()
+        val startProcessForDocumentRequest = StartProcessForDocumentRequest(
+            JsonSchemaDocumentId.existingId(UUID.fromString(documentId)),
+            processDefinitionKey,
+            submittedByType["pv"] as Map<String, Objects>?
+        )
+        val startProcessForDocumentResult = processDocumentService.startProcessForDocument(startProcessForDocumentRequest)
+        if (startProcessForDocumentResult.errors().isNotEmpty()) {
+            throw RuntimeException(
+                "Could not start process with definition $processDefinitionKey for document ${documentId}\n" +
+                    "Reason:\n" +
+                    startProcessForDocumentResult.errors().joinToString(separator = "\n - ")
+            )
+        }
+    }
+
+    private fun getRequiredAdditionalProperty(additionalProperties: Map<String, Any>, propertyName: String): Any {
+        if (!additionalProperties.containsKey(propertyName))
+            throw IllegalStateException("Properties for form flow does not contain $propertyName")
+        return additionalProperties[propertyName]!!
     }
 
     private fun getValue(data: JsonNode, path: String): Any {

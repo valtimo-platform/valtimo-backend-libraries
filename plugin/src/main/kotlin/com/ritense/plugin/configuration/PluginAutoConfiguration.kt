@@ -22,8 +22,6 @@ import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.autodeployment.PluginAutoDeploymentEventListener
-import com.ritense.plugin.service.PluginSupportedProcessLinksHandler
-import com.ritense.plugin.mapper.PluginProcessLinkMapper
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginCategoryRepository
@@ -50,6 +48,7 @@ import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import javax.persistence.EntityManager
+import javax.validation.Validator
 
 @Configuration
 @EnableJpaRepositories(
@@ -117,7 +116,8 @@ class PluginAutoConfiguration {
         @Lazy pluginFactories: List<PluginFactory<*>>,
         objectMapper: ObjectMapper,
         valueResolverService: ValueResolverService,
-        pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
+        pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
+        validator: Validator
     ): PluginService {
         return PluginService(
             pluginDefinitionRepository,
@@ -127,7 +127,8 @@ class PluginAutoConfiguration {
             pluginFactories,
             objectMapper,
             valueResolverService,
-            pluginConfigurationSearchRepository
+            pluginConfigurationSearchRepository,
+            validator,
         )
     }
 
@@ -154,14 +155,6 @@ class PluginAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(PluginProcessLinkMapper::class)
-    fun pluginProcessLinkMapper(
-        objectMapper: ObjectMapper
-    ): PluginProcessLinkMapper {
-        return PluginProcessLinkMapper(objectMapper)
-    }
-
-    @Bean
     @ConditionalOnMissingBean(PluginProcessLinkRepository::class)
     fun pluginProcessLinkRepository(
         pluginProcessLinkRepositoryImpl: PluginProcessLinkRepositoryImpl
@@ -175,12 +168,6 @@ class PluginAutoConfiguration {
         secret: String
     ): EncryptionService {
         return EncryptionService(secret)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(PluginSupportedProcessLinksHandler::class)
-    fun getPluginSupportedProcessLinks(pluginService: PluginService): PluginSupportedProcessLinksHandler {
-        return PluginSupportedProcessLinksHandler(pluginService)
     }
 
     @Bean
