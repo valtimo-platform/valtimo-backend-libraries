@@ -78,6 +78,21 @@ class AuthorizationServiceTest {
     }
 
     @Test
+    fun `should bypass permission check`() {
+        whenever(factory2.canCreate(any())).thenReturn(true)
+        val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
+        val authorizationSpecification = mock<AuthorizationSpecification<String>>()
+        whenever(factory2.create(context, listOf())).thenReturn(authorizationSpecification)
+        val entity = ""
+
+        AuthorizationContext.runWithoutAuthorization {
+            authorizationService.requirePermission(context, entity, null)
+        }
+
+        verify(authorizationSpecification, never()).isAuthorized(entity)
+    }
+
+    @Test
     fun `should fail permission check`() {
         whenever(factory2.canCreate(any())).thenReturn(true)
         val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
