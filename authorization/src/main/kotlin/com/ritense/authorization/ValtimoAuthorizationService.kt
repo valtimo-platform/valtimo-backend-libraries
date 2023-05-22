@@ -26,7 +26,7 @@ class ValtimoAuthorizationService(
 ): AuthorizationService {
     override fun <T : Any> requirePermission(context: AuthorizationRequest<T>, entity: T, permissions: List<Permission>?) {
 
-        if (!AuthorizationContext.bypassAuthorization && !getAuthorizationSpecification(context, permissions).isAuthorized(entity))
+        if (!AuthorizationContext.ignoreAuthorization && !getAuthorizationSpecification(context, permissions).isAuthorized(entity))
             throw RuntimeException("Unauthorized")
     }
 
@@ -34,9 +34,13 @@ class ValtimoAuthorizationService(
         context: AuthorizationRequest<T>,
         permissions: List<Permission>?
     ): AuthorizationSpecification<T> {
-        return (authorizationSpecificationFactories.first {
-            it.canCreate(context)
-        } as AuthorizationSpecificationFactory<T>).create(context, permissions ?: getPermissions())
+        return if (AuthorizationContext.ignoreAuthorization) {
+            NoopAuthorizationSpecification()
+        } else {
+            (authorizationSpecificationFactories.first {
+                it.canCreate(context)
+            } as AuthorizationSpecificationFactory<T>).create(context, permissions ?: getPermissions())
+        }
     }
 
     override fun <FROM, TO> getMapper(from: Class<FROM>, to: Class<TO>): AuthorizationEntityMapper<FROM, TO> {

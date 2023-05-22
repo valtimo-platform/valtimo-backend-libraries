@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.testimpl
+package com.ritense.authorization
 
-import com.ritense.authorization.AbstractAuthorizationSpecification
-import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.permission.Permission
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
 
-class TestAuthorizationSpecification(
-    permissions: List<Permission>,
-    authContext: AuthorizationRequest<TestEntity>,
-): AbstractAuthorizationSpecification<TestEntity>(permissions, authContext) {
-    override fun toPredicate(
-        root: Root<TestEntity>,
-        query: CriteriaQuery<*>,
-        criteriaBuilder: CriteriaBuilder
-    ): Predicate {
-        return criteriaBuilder.isTrue(root.isNotNull)
+abstract class AbstractAuthorizationSpecification<T: Any> (
+    protected val permissions: List<Permission>,
+    protected val authContext: AuthorizationRequest<T>
+): AuthorizationSpecification<T> {
+    override fun isAuthorized(entity: T): Boolean {
+        return permissions.filter { permission ->
+            entity::class.java == permission.resourceType && authContext.action == permission.action
+        }.any { permission ->
+            permission.appliesTo(authContext.resourceType, entity)
+        }
+    }
+
+    fun combinePredicates(criteriaBuilder: CriteriaBuilder, predicates: List<Predicate>): Predicate {
+        return criteriaBuilder.or(*predicates.toTypedArray())
     }
 }

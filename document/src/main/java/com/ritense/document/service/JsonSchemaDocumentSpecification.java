@@ -16,13 +16,12 @@
 
 package com.ritense.document.service;
 
+import com.ritense.authorization.AbstractAuthorizationSpecification;
 import com.ritense.authorization.AuthorizationRequest;
-import com.ritense.authorization.AuthorizationSpecification;
 import com.ritense.authorization.permission.Permission;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import org.jetbrains.annotations.NotNull;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -32,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class JsonSchemaDocumentSpecification extends AuthorizationSpecification<JsonSchemaDocument> {
+public class JsonSchemaDocumentSpecification extends AbstractAuthorizationSpecification<JsonSchemaDocument> {
     private List<Permission> permissions;
     private AuthorizationRequest<JsonSchemaDocument> authContext;
     private QueryDialectHelper queryDialectHelper;
@@ -48,6 +47,7 @@ public class JsonSchemaDocumentSpecification extends AuthorizationSpecification<
         this.queryDialectHelper = queryDialectHelper;
     }
 
+    @NotNull
     @Override
     public Predicate toPredicate(
         Root<JsonSchemaDocument> root,
