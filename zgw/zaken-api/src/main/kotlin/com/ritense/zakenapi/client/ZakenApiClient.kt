@@ -17,14 +17,7 @@
 package com.ritense.zakenapi.client
 
 import com.ritense.zakenapi.ZakenApiAuthentication
-import com.ritense.zakenapi.domain.CreateZaakRequest
-import com.ritense.zakenapi.domain.CreateZaakResponse
-import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
-import com.ritense.zakenapi.domain.CreateZaakResultaatResponse
-import com.ritense.zakenapi.domain.CreateZaakStatusRequest
-import com.ritense.zakenapi.domain.CreateZaakStatusResponse
-import com.ritense.zakenapi.domain.ZaakInformatieObject
-import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.*
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zgw.ClientTools
@@ -238,5 +231,25 @@ class ZakenApiClient(
     private fun defaultHeaders(headers: HttpHeaders) {
         headers.set("Accept-Crs", "EPSG:4326")
         headers.set("Content-Crs", "EPSG:4326")
+    }
+
+    fun getZaakMetaData(authentication: ZakenApiAuthentication, url: URI, uuid: String): ZaakResponse {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, url)
+                    .path("zaken")
+                    .pathSegment(uuid)
+                    .build()
+            }
+            .headers(this::defaultHeaders)
+            .retrieve()
+            .toEntity(ZaakResponse::class.java)
+            .block()
+
+        return result?.body!!
     }
 }

@@ -26,13 +26,7 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
-import com.ritense.zakenapi.domain.CreateZaakRequest
-import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
-import com.ritense.zakenapi.domain.CreateZaakStatusRequest
-import com.ritense.zakenapi.domain.ZaakInformatieObject
-import com.ritense.zakenapi.domain.ZaakInstanceLink
-import com.ritense.zakenapi.domain.ZaakInstanceLinkId
-import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.*
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
@@ -315,6 +309,10 @@ class ZakenApiPlugin(
                 }
             }
         }
+    }
+
+    fun getZaakMetaData(zaakUrl: URI,uuid: UUID): ZaakResponse{
+        return client.getZaakMetaData(authenticationPluginConfiguration,zaakUrl, uuid.toString())
     }
 
     companion object {

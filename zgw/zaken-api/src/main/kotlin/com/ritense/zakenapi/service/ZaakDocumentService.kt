@@ -21,14 +21,15 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
-import com.ritense.zakenapi.domain.RelatedFileDto
-import com.ritense.zakenapi.domain.ZaakInformatieObject
+import com.ritense.zakenapi.domain.*
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import java.net.URI
 import java.util.UUID
 
 class ZaakDocumentService(
     val zaakUrlProvider: ZaakUrlProvider,
-    val pluginService: PluginService
+    val pluginService: PluginService,
+    val zaakInstanceLinkService: ZaakInstanceLinkService
 ) {
 
     fun getInformatieObjectenAsRelatedFiles(documentId: UUID): List<RelatedFileDto> {
@@ -66,6 +67,18 @@ class ZaakDocumentService(
                 DocumentenApiPlugin.findConfigurationByUrl(informatieobjectUrl)
             )
         ) { "Could not find ${DocumentenApiPlugin::class.simpleName} configuration for informatieobjectUrl: $informatieobjectUrl" }
+
+    }
+
+    fun getZaakMetaData(documentId: UUID): ZaakResponse? {
+        val url = zaakUrlProvider.getZaakUrl(documentId)
+        val pluginConfiguration = pluginService.findPluginConfiguration(
+            ZakenApiPlugin::class.java,
+            ZakenApiPlugin.findConfigurationByUrl(url)
+        )
+        return pluginConfiguration?.let {
+            pluginService.createInstance(it) as ZakenApiPlugin
+        }?.getZaakMetaData(url,UUID.fromString("")) // where does the zaak uuid come from?
 
     }
 
