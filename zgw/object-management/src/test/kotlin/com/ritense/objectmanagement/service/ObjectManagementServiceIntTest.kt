@@ -19,6 +19,8 @@ package com.ritense.objectmanagement.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.objectenapi.client.Comparator.EQUAL_TO
+import com.ritense.objectenapi.client.ObjectSearchParameter
 import com.ritense.objectmanagement.BaseIntegrationTest
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.domain.search.SearchRequestValue
@@ -38,11 +40,11 @@ import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
+import java.net.URI
 import java.util.UUID
 import javax.transaction.Transactional
 
@@ -67,7 +69,7 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
     @BeforeAll
     fun setUp() {
         mockApi = MockWebServer()
-        mockApi.start()
+        mockApi.start(port = 47797)
     }
 
     @AfterAll
@@ -76,14 +78,12 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    @Order(1)
     fun `objectManagementConfiguration can be created`() {
         val objectManagement = createObjectManagement()
         assertThat(objectManagement).isNotNull
     }
 
     @Test
-    @Order(2)
     fun `should get by id`() {
         val objectManagement = createObjectManagement()
         val toReviewObjectManagement = objectManagementService.getById(objectManagement.id)
@@ -94,7 +94,6 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    @Order(3)
     fun `should get all`() {
         val test1 = createObjectManagement("test1")
         val test2 = createObjectManagement("test2")
@@ -104,7 +103,6 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    @Order(4)
     fun `delete by id`() {
         val objectManagement = createObjectManagement()
 
@@ -115,7 +113,6 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    @Order(5)
     fun `get objects from objects api with search fields`() {
         val objectUrl = mockApi.url("/some-object").toString()
         val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString()
@@ -251,6 +248,58 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
         val value = objects.first().items[0].value as JsonNode
         assertThat(value.asText()).isEqualTo("henk")
 
+    }
+
+    @Test
+    fun `get objects from objects api with search field parameters`() {
+        mockApi.enqueue(
+            mockResponse(
+                """
+                {
+                  "count": 1,
+                  "next": "next.url",
+                  "previous": "previous.url",
+                  "results": [{
+                      "url": "https://example.com/123",
+                      "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                      "type": "https://example.com/qwe",
+                      "record": {
+                        "index": 0,
+                        "typeVersion": 32767,
+                        "data": {
+                          "property1": "henk",
+                          "property2": 123
+                        },
+                        "geometry": {
+                          "type": "string",
+                          "coordinates": [
+                            0,
+                            0
+                          ]
+                        },
+                        "startAt": "2019-08-24",
+                        "endAt": "2019-08-25",
+                        "registrationAt": "2019-08-26",
+                        "correctionFor": "string",
+                        "correctedBy": "string2"
+                      }
+                  }]
+                }
+                """.trimIndent()
+            )
+        )
+        val objectManagement = objectManagementService.getByTitle("My Object Management")!!
+        val searchParameters = listOf(ObjectSearchParameter("property1", EQUAL_TO, "henk"))
+
+        val objects = objectManagementService.getObjectsWithSearchParams(
+            objectManagement,
+            searchParameters,
+            PageRequest.of(0, 10)
+        )
+
+        assertThat(objects.content.size).isEqualTo(1)
+        assertThat(objects.first().url).isEqualTo(URI("https://example.com/123"))
+        assertThat(objects.first().record.data.toString()).isEqualTo("""{"property1":"henk","property2":123}""")
     }
 
     private fun createObjectManagement(title: String? = null): ObjectManagement =
