@@ -37,7 +37,7 @@ class ValtimoAuthorizationService(
         val usedPermissions = permissions ?: getPermissions()
 
         return if (AuthorizationContext.ignoreAuthorization) {
-            NoopAuthorizationSpecification(usedPermissions, context)
+            NoopAuthorizationSpecification(context, usedPermissions)
         } else {
             (authorizationSpecificationFactories.first {
                 it.canCreate(context)

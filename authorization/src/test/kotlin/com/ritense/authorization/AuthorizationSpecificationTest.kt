@@ -33,6 +33,9 @@ class AuthorizationSpecificationTest {
     @Test
     fun `isAuthorized should return true`() {
         val spec = TestAuthorizationSpecification(
+            AuthorizationRequest(
+                TestEntity::class.java, action = Action.COMPLETE
+            ),
             listOf(
                 Permission(
                     resourceType = TestEntity::class.java,
@@ -40,9 +43,6 @@ class AuthorizationSpecificationTest {
                     conditionContainer = ConditionContainer(listOf()),
                     roleKey = ""
                 )
-            ),
-            AuthorizationRequest(
-                TestEntity::class.java, action = Action.COMPLETE
             )
         )
 
@@ -52,6 +52,9 @@ class AuthorizationSpecificationTest {
     @Test
     fun `isAuthorized should return false if no permission can be found for entity class`() {
         val spec = TestAuthorizationSpecification(
+            AuthorizationRequest(
+                TestEntity::class.java, action = Action.COMPLETE
+            ),
             listOf(
                 Permission(
                     resourceType = String::class.java,
@@ -59,9 +62,6 @@ class AuthorizationSpecificationTest {
                     conditionContainer = ConditionContainer(listOf()),
                     roleKey = ""
                 )
-            ),
-            AuthorizationRequest(
-                TestEntity::class.java, action = Action.COMPLETE
             )
         ) as AuthorizationSpecification<Any>
 
@@ -71,6 +71,9 @@ class AuthorizationSpecificationTest {
     @Test
     fun `isAuthorized should return false if no permission can be found for requested action`() {
         val spec = TestAuthorizationSpecification(
+            AuthorizationRequest(
+                TestEntity::class.java, action = Action.VIEW
+            ),
             listOf(
                 Permission(
                     resourceType = TestEntity::class.java,
@@ -78,9 +81,6 @@ class AuthorizationSpecificationTest {
                     conditionContainer = ConditionContainer(listOf()),
                     roleKey = ""
                 )
-            ),
-            AuthorizationRequest(
-                TestEntity::class.java, action = Action.VIEW
             )
         )
 
@@ -96,11 +96,11 @@ class AuthorizationSpecificationTest {
             roleKey = "")
         )
         val spec = TestAuthorizationSpecification(
-            listOf(
-                permission
-            ),
             AuthorizationRequest(
                 TestEntity::class.java, action = Action.COMPLETE
+            ),
+            listOf(
+                permission
             )
         )
 

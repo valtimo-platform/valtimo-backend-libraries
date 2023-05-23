@@ -22,8 +22,8 @@ import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
-class NoopAuthorizationSpecification<T: Any>(permissions: List<Permission>, authContext: AuthorizationRequest<T>) : AuthorizationSpecification<T>(
-    permissions, authContext
+class NoopAuthorizationSpecification<T: Any>(authContext: AuthorizationRequest<T>, permissions: List<Permission>) : AuthorizationSpecification<T>(
+    authContext, permissions
 ) {
     override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
         return criteriaBuilder.isTrue(root.isNotNull)

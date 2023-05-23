@@ -32,8 +32,8 @@ class NoteSpecificationFactory(
         permissions: List<Permission>
     ): AuthorizationSpecification<Note> {
         return NoteSpecification(
-            permissions,
             context,
+            permissions,
             queryDialectHelper
         )
     }

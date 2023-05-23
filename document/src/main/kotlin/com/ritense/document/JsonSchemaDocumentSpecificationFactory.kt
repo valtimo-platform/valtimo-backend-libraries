@@ -33,8 +33,8 @@ class JsonSchemaDocumentSpecificationFactory(
         permissions: List<Permission>
     ): AuthorizationSpecification<JsonSchemaDocument> {
         return JsonSchemaDocumentSpecification(
-            permissions,
             context,
+            permissions,
             queryDialectHelper
         )
     }

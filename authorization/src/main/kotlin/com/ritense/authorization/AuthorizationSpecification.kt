@@ -23,9 +23,9 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
 
-abstract class AuthorizationSpecification<T: Any> (
-    protected val permissions: List<Permission>,
-    protected val authContext: AuthorizationRequest<T>
+abstract class AuthorizationSpecification<T: Any>(
+    protected val authContext: AuthorizationRequest<T>,
+    protected val permissions: List<Permission>
 ): Specification<T> {
 
     fun isAuthorized(entity: T): Boolean {

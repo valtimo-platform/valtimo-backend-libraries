@@ -28,10 +28,10 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class NoteSpecification(
-    permissions: List<Permission>,
     authContext: AuthorizationRequest<Note>,
+    permissions: List<Permission>,
     private val queryDialectHelper: QueryDialectHelper
-) : AuthorizationSpecification<Note>(permissions, authContext) {
+) : AuthorizationSpecification<Note>(authContext, permissions) {
     override fun toPredicate(
         root: Root<Note>,
         query: CriteriaQuery<*>,

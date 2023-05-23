@@ -25,9 +25,9 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class TestAuthorizationSpecification(
-    permissions: List<Permission>,
     authContext: AuthorizationRequest<TestEntity>,
-): AuthorizationSpecification<TestEntity>(permissions, authContext) {
+    permissions: List<Permission>,
+): AuthorizationSpecification<TestEntity>(authContext, permissions) {
     override fun toPredicate(
         root: Root<TestEntity>,
         query: CriteriaQuery<*>,
