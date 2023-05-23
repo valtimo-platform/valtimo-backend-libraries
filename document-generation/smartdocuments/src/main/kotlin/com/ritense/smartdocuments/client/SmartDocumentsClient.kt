@@ -24,7 +24,6 @@ import com.ritense.smartdocuments.domain.FileStreamResponse
 import com.ritense.smartdocuments.domain.FilesResponse
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import org.apache.commons.io.FilenameUtils
-import org.apache.commons.text.StringEscapeUtils
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.HttpStatus
@@ -213,7 +212,7 @@ class SmartDocumentsClient(
         var bytePointer = startByteOffset
         while (bytePointer < endByteOffset) {
             val buffer = inputStream.readNBytes((endByteOffset - bytePointer).toInt().coerceAtMost(1024))
-            outputWriter.write(StringEscapeUtils.unescapeJson(String(buffer)))
+            outputWriter.write(String(buffer))
             bytePointer += buffer.size
         }
         outputWriter.flush()

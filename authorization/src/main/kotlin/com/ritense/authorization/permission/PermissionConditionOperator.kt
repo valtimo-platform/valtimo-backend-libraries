@@ -17,32 +17,12 @@
 package com.ritense.authorization.permission
 
 import com.fasterxml.jackson.annotation.JsonValue
-import kotlin.reflect.full.isSubclassOf
 
-enum class PermissionExpressionOperator(
-    @JsonValue val asText: String,
-    private val notEqualCompareResult:Int = 1
-) {
+enum class PermissionConditionOperator(@JsonValue val asText: String) {
     NOT_EQUAL_TO("!="),
     EQUAL_TO("=="),
-    GREATER_THAN(">", -1),
-    GREATER_THAN_OR_EQUAL_TO(">=", -1),
+    GREATER_THAN(">"),
+    GREATER_THAN_OR_EQUAL_TO(">="),
     LESS_THAN("<"),
-    LESS_THAN_OR_EQUAL_TO("<=");
-
-    private class NullableComparator<T: Comparable<T>>(private val notEqualResult: Int): Comparator<T?> {
-        override fun compare(left: T?, right: T?): Int {
-            return if (left == right) {
-                0
-            } else if (
-                left == null ||
-                right == null ||
-                (!left::class.isSubclassOf(right::class))
-            ) {
-                notEqualResult
-            } else {
-                left.compareTo(right)
-            }
-        }
-    }
+    LESS_THAN_OR_EQUAL_TO("<=")
 }

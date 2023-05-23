@@ -23,12 +23,13 @@ import com.jayway.jsonpath.PathNotFoundException
 import com.ritense.authorization.jackson.ComparableDeserializer
 import com.ritense.authorization.permission.ExpressionPermissionCondition.Companion.EXPRESSION
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import org.springframework.expression.spel.standard.SpelExpressionParser
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
+import javax.persistence.criteria.Expression
 import javax.persistence.criteria.Path
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
-
 
 @JsonTypeName(EXPRESSION)
 data class ExpressionPermissionCondition<V : Comparable<V>>(
@@ -66,7 +67,7 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
     ): Predicate {
         val path: Path<Any>? = createDatabaseObjectPath(field, root)
 
-        return operator.toPredicate(
+        return toPredicate(
             criteriaBuilder,
             queryDialectHelper.getJsonValueExpression(criteriaBuilder, path, this.path, clazz),
             value
@@ -74,7 +75,58 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
     }
 
     private fun evaluateExpression(pathValue: V?): Boolean {
-        return operator.evaluate(pathValue, value)
+        return evaluate(pathValue, value)
+    }
+
+
+    private fun <T: Comparable<T>> evaluate(leftOperand: T?, rightOperand: T?): Boolean {
+        val comparator = PermissionExpressionOperator.NullableComparator<T>(notEqualCompareResult)
+        return SpelExpressionParser()
+            .parseExpression(comparator.compare(leftOperand, rightOperand).toString() + this.asText + "0")
+            .getValue(Boolean::class.java) ?: false
+    }
+
+    private fun <T : Comparable<T>> toPredicate(criteriaBuilder: CriteriaBuilder, expression: Expression<T>, value: T?): Predicate {
+        return when(this) {
+            PermissionExpressionOperator.NOT_EQUAL_TO ->
+                criteriaBuilder.notEqual(
+                    expression,
+                    value
+                )
+            PermissionExpressionOperator.EQUAL_TO ->
+                criteriaBuilder.equal(
+                    expression,
+                    value
+                )
+            PermissionExpressionOperator.LESS_THAN ->
+                criteriaBuilder.lessThan(
+                    expression,
+                    value!!
+                )
+            PermissionExpressionOperator.LESS_THAN_OR_EQUAL_TO ->
+                if(value == null) {
+                    PermissionExpressionOperator.EQUAL_TO.toPredicate(criteriaBuilder, expression, null)
+                } else {
+                    criteriaBuilder.lessThanOrEqualTo(
+                        expression,
+                        value
+                    )
+                }
+            PermissionExpressionOperator.GREATER_THAN ->
+                criteriaBuilder.greaterThan(
+                    expression,
+                    value!!
+                )
+            PermissionExpressionOperator.GREATER_THAN_OR_EQUAL_TO ->
+                if (value == null) {
+                    PermissionExpressionOperator.EQUAL_TO.toPredicate(criteriaBuilder, expression, null)
+                } else {
+                    criteriaBuilder.greaterThanOrEqualTo(
+                        expression,
+                        value
+                    )
+                }
+        }
     }
 
     companion object {

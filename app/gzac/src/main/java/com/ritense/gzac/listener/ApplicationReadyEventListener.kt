@@ -25,6 +25,7 @@ import com.ritense.authorization.permission.ContainerPermissionCondition
 import com.ritense.authorization.permission.ExpressionPermissionCondition
 import com.ritense.authorization.permission.FieldPermissionCondition
 import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.permission.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.permission.PermissionExpressionOperator
 import com.ritense.besluit.connector.BesluitProperties
 import com.ritense.connector.domain.ConnectorType
@@ -365,51 +366,61 @@ class ApplicationReadyEventListener(
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.LIST_VIEW,
-                    conditionContainer = ConditionContainer(listOf(
-                        ExpressionPermissionCondition(
-                            "content.content",
-                            "$.height",
-                            PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java
-                        ),
-                        FieldPermissionCondition("documentDefinitionId.name", "leningen")
-                    )),
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            ExpressionPermissionCondition(
+                                "content.content",
+                                "$.height",
+                                PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java
+                            ),
+                            FieldPermissionCondition("documentDefinitionId.name", EQUAL_TO, "leningen")
+                        )
+                    ),
                     roleKey = userRoleKey
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.LIST_VIEW,
-                    conditionContainer = ConditionContainer(listOf(
-                        FieldPermissionCondition("assigneeFullName", "James Vance")
-                    )),
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
+                        )
+                    ),
                     roleKey = userRoleKey
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.VIEW,
-                    conditionContainer = ConditionContainer(listOf(
-                        ExpressionPermissionCondition(
-                            "content.content",
-                            "$.height",
-                            PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java
-                        ),
-                        FieldPermissionCondition("documentDefinitionId.name", "leningen")
-                    )),
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            ExpressionPermissionCondition(
+                                "content.content",
+                                "$.height",
+                                PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java
+                            ),
+                            FieldPermissionCondition("documentDefinitionId.name", EQUAL_TO, "leningen")
+                        )
+                    ),
                     roleKey = userRoleKey
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.VIEW,
-                    conditionContainer = ConditionContainer(listOf(
-                        FieldPermissionCondition("assigneeFullName", "James Vance")
-                    )),
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
+                        )
+                    ),
                     roleKey = userRoleKey
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.CLAIM,
-                    conditionContainer = ConditionContainer(listOf(
-                        FieldPermissionCondition("assigneeFullName", "James Vance")
-                    )),
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
+                        )
+                    ),
                     roleKey = userRoleKey
                 ),
                 // ROLE_ADMIN
@@ -442,14 +453,16 @@ class ApplicationReadyEventListener(
                 Permission(
                     resourceType = Note::class.java,
                     action = Action.VIEW,
-                    conditionContainer = ConditionContainer(listOf(
-                        ContainerPermissionCondition(
-                            JsonSchemaDocument::class.java,
-                            listOf(
-                                FieldPermissionCondition("documentDefinitionId.name", "leningen"),
-                                FieldPermissionCondition("assigneeFullName", "James Vance")
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            ContainerPermissionCondition(
+                                JsonSchemaDocument::class.java,
+                                listOf(
+                                    FieldPermissionCondition("documentDefinitionId.name", EQUAL_TO, "leningen"),
+                                    FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
+                                )
                             )
-                        ))
+                        )
                     ),
                     roleKey = userRoleKey
                 ),

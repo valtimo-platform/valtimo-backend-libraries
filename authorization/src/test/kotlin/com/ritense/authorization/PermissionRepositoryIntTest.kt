@@ -16,12 +16,13 @@
 
 package com.ritense.authorization
 
-import com.ritense.authorization.permission.FieldPermissionCondition
-import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.Action.ASSIGN
 import com.ritense.authorization.Action.LIST_VIEW
 import com.ritense.authorization.Action.VIEW
 import com.ritense.authorization.permission.ConditionContainer
+import com.ritense.authorization.permission.FieldPermissionCondition
+import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.permission.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.permission.PermissionConditionType.FIELD
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -60,6 +61,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
+                    operator = EQUAL_TO,
                     value = "loan"
                 ))
             ),
@@ -90,6 +92,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
+                    operator = EQUAL_TO,
                     value = "loan"
                 ))
             ),
@@ -102,6 +105,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
+                    operator = EQUAL_TO,
                     value = "loan"
                 ))
             ),
@@ -114,6 +118,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
+                    operator = EQUAL_TO,
                     value = "loan"
                 ))
             ),

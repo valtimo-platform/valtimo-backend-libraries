@@ -19,17 +19,18 @@ package com.ritense.authorization.permission
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.authorization.permission.PermissionConditionOperator.EQUAL_TO
+import com.ritense.authorization.permission.PermissionConditionOperator.GREATER_THAN
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
-import java.lang.NullPointerException
-import kotlin.test.assertEquals
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
+import kotlin.test.assertEquals
 
 class FieldPermissionConditionTest {
     lateinit var mapper: ObjectMapper
@@ -46,7 +47,7 @@ class FieldPermissionConditionTest {
             TestChildEntity(true)
         )
 
-        conditionTemplate = FieldPermissionCondition("child.property", true)
+        conditionTemplate = FieldPermissionCondition("child.property", EQUAL_TO, true)
     }
 
     @Test
@@ -69,6 +70,7 @@ class FieldPermissionConditionTest {
         val result = condition.isValid(entity)
         assertEquals(false, result)
     }
+
     @Test
     fun `should fail validation when property value is null`() {
         val entity = TestEntity(
@@ -130,6 +132,7 @@ class FieldPermissionConditionTest {
             {
               "type": "${PermissionConditionType.FIELD.value}",
               "field": "child.property",
+              "operator": "==",
               "value": true
             }
         """.trimIndent(), json, JSONCompareMode.NON_EXTENSIBLE
@@ -143,6 +146,7 @@ class FieldPermissionConditionTest {
             {
               "type": "field",
               "field": "test-field",
+              "operator": ">",
               "value": true
             }
         """.trimIndent()
@@ -152,6 +156,7 @@ class FieldPermissionConditionTest {
         result as FieldPermissionCondition
         MatcherAssert.assertThat(result.type, Matchers.equalTo(PermissionConditionType.FIELD))
         MatcherAssert.assertThat(result.field, Matchers.equalTo("test-field"))
+        MatcherAssert.assertThat(result.operator, Matchers.equalTo(GREATER_THAN))
         MatcherAssert.assertThat(result.value, Matchers.equalTo(true))
     }
 }

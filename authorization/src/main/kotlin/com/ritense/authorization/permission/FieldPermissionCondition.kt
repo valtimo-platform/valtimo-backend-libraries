@@ -18,21 +18,36 @@ package com.ritense.authorization.permission
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.authorization.permission.FieldPermissionCondition.Companion.FIELD
+import com.ritense.authorization.permission.PermissionConditionOperator.EQUAL_TO
+import com.ritense.authorization.permission.PermissionConditionOperator.GREATER_THAN
+import com.ritense.authorization.permission.PermissionConditionOperator.GREATER_THAN_OR_EQUAL_TO
+import com.ritense.authorization.permission.PermissionConditionOperator.LESS_THAN
+import com.ritense.authorization.permission.PermissionConditionOperator.LESS_THAN_OR_EQUAL_TO
+import com.ritense.authorization.permission.PermissionConditionOperator.NOT_EQUAL_TO
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Path
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
+import kotlin.reflect.full.isSubclassOf
 
 @JsonTypeName(FIELD)
-data class FieldPermissionCondition(
+data class FieldPermissionCondition<V : Comparable<V>>(
     val field: String,
-    val value: Any?
-    // TODO: add support for operators
+    val operator: PermissionConditionOperator,
+    val value: V?
 ) : ReflectingPermissionCondition(PermissionConditionType.FIELD) {
     override fun <T : Any> isValid(entity: T): Boolean {
-        return findEntityFieldValue(entity, field) == value
+        val foundValue = findEntityFieldValue(entity, field)
+        return when (operator) {
+            NOT_EQUAL_TO -> foundValue != value
+            EQUAL_TO -> foundValue == value
+            GREATER_THAN -> compare(foundValue as V?, value, -1) > 0
+            GREATER_THAN_OR_EQUAL_TO -> compare(foundValue as V?, value, -1) >= 0
+            LESS_THAN -> compare(foundValue as V?, value) < 0
+            LESS_THAN_OR_EQUAL_TO -> compare(foundValue as V?, value) <= 0
+        }
     }
 
     override fun <T : Any> toPredicate(
@@ -45,6 +60,16 @@ data class FieldPermissionCondition(
         val path: Path<Any>? = createDatabaseObjectPath(field, root)
 
         return criteriaBuilder.equal(path, this.value)
+    }
+
+    private fun compare(left: V?, right: V?, notEqualResult: Int = 1): Int {
+        return if (left == right) {
+            0
+        } else if (left == null || right == null || (!left::class.isSubclassOf(right::class))) {
+            notEqualResult
+        } else {
+            left.compareTo(right)
+        }
     }
 
     companion object {

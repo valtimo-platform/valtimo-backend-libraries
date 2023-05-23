@@ -23,10 +23,11 @@ import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.AuthorizationServiceHolder
 import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.permission.PermissionConditionOperator.LESS_THAN_OR_EQUAL_TO
+import com.ritense.authorization.permission.PermissionConditionOperator.NOT_EQUAL_TO
 import com.ritense.authorization.testimpl.RelatedTestEntity
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
-import kotlin.test.assertEquals
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
@@ -39,6 +40,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
+import kotlin.test.assertEquals
 
 class ContainerPermissionConditionTest {
 
@@ -56,11 +58,13 @@ class ContainerPermissionConditionTest {
         }
         //TODO: The entity or child objects can't be a Map, don't we want to support this?
         entity = TestEntity(
-            TestChildEntity("""
+            TestChildEntity(
+                """
             {
                 "stringProperty": "myValue"
             }
-        """.trimIndent())
+        """.trimIndent()
+            )
         )
 
         conditionTemplate = ContainerPermissionCondition(
@@ -138,7 +142,7 @@ class ContainerPermissionConditionTest {
 
     @Test
     fun `should serialize to JSON`() {
-        val permissionCondition = FieldPermissionCondition("myField", "myValue")
+        val permissionCondition = FieldPermissionCondition("myField", NOT_EQUAL_TO, "myValue")
         val condition = conditionTemplate.copy(
             conditions = listOf(
                 permissionCondition
@@ -155,6 +159,7 @@ class ContainerPermissionConditionTest {
                       {
                           "type": "${permissionCondition.type.value}",
                           "field": "${permissionCondition.field}",
+                          "operator": "${permissionCondition.operator.asText}",
                           "value": "${permissionCondition.value}"
                       }
                   ]
@@ -174,6 +179,7 @@ class ContainerPermissionConditionTest {
                         {
                             "type": "field",
                             "field": "myField",
+                            "operator": "<=",
                             "value": "myValue"
                         }
                     ]
@@ -183,7 +189,7 @@ class ContainerPermissionConditionTest {
 
         val condition = conditionTemplate.copy(
             conditions = listOf(
-                FieldPermissionCondition("myField", "myValue")
+                FieldPermissionCondition("myField", LESS_THAN_OR_EQUAL_TO, "myValue")
             )
         )
         MatcherAssert.assertThat(result, Matchers.equalTo(condition))
