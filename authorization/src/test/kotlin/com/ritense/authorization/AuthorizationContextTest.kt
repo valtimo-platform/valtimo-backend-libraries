@@ -33,7 +33,7 @@ class AuthorizationContextTest {
 
     @Test
     fun `should run callable without return type from runWithoutAuthorization`() {
-        val result =AuthorizationContext.runWithoutAuthorization {
+        val result = AuthorizationContext.runWithoutAuthorization {
             assertEquals(true, AuthorizationContext.ignoreAuthorization)
         }
 
