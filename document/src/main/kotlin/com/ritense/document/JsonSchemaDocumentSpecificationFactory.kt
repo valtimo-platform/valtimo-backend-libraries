@@ -16,8 +16,8 @@
 
 package com.ritense.document
 
-import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.JsonSchemaDocument
@@ -33,8 +33,8 @@ class JsonSchemaDocumentSpecificationFactory(
         permissions: List<Permission>
     ): AuthorizationSpecification<JsonSchemaDocument> {
         return JsonSchemaDocumentSpecification(
-            permissions,
             context,
+            permissions,
             queryDialectHelper
         )
     }

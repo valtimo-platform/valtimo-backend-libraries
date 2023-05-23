@@ -44,9 +44,7 @@ abstract class PermissionCondition(
         queryDialectHelper: QueryDialectHelper
     ): Predicate
 
-    fun <T> createDatabaseObjectPath(field: String, root: Root<T>, resourceType: Class<T>): Path<Any>? {
-        //TODO: resourceType is unused, is it really needed?
-
+    fun <T> createDatabaseObjectPath(field: String, root: Root<T>): Path<Any>? {
         var path: Path<Any>? = null
         field.split('.').forEach {
             path = if (path == null) {

@@ -17,23 +17,32 @@
 package com.ritense.authorization
 
 import com.ritense.authorization.permission.Permission
-import org.springframework.data.jpa.domain.Specification
 import javax.persistence.criteria.CriteriaBuilder
+import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
+import javax.persistence.criteria.Root
+import org.springframework.data.jpa.domain.Specification
 
-abstract class AuthorizationSpecification<T: Any> (
-    protected val permissions: List<Permission>,
-    protected val authContext: AuthorizationRequest<T>
+abstract class AuthorizationSpecification<T: Any>(
+    protected val authContext: AuthorizationRequest<T>,
+    protected val permissions: List<Permission>
 ): Specification<T> {
+
     fun isAuthorized(entity: T): Boolean {
-        return permissions.filter { permission ->
-            entity::class.java == permission.resourceType && authContext.action == permission.action
-        }.any { permission ->
-            permission.appliesTo(authContext.resourceType, entity)
+        return if (AuthorizationContext.ignoreAuthorization) {
+            true
+        } else {
+            permissions.filter { permission ->
+                entity::class.java == permission.resourceType && authContext.action == permission.action
+            }.any { permission ->
+                permission.appliesTo(authContext.resourceType, entity)
+            }
         }
     }
 
     fun combinePredicates(criteriaBuilder: CriteriaBuilder, predicates: List<Predicate>): Predicate {
         return criteriaBuilder.or(*predicates.toTypedArray())
     }
+
+    abstract override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate
 }
