@@ -25,7 +25,6 @@ class ValtimoAuthorizationService(
     private val permissionRepository: PermissionRepository
 ): AuthorizationService {
     override fun <T : Any> requirePermission(context: AuthorizationRequest<T>, entity: T, permissions: List<Permission>?) {
-
         if (!getAuthorizationSpecification(context, permissions).isAuthorized(entity))
             throw RuntimeException("Unauthorized")
     }

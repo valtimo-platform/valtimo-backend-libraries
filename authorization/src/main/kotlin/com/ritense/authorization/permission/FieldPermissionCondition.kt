@@ -42,7 +42,7 @@ data class FieldPermissionCondition(
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper
     ): Predicate {
-        val path: Path<Any>? = createDatabaseObjectPath(field, root, resourceType)
+        val path: Path<Any>? = createDatabaseObjectPath(field, root)
 
         return criteriaBuilder.equal(path, this.value)
     }
