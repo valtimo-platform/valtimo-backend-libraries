@@ -67,7 +67,7 @@ class AuthorizationServiceTest {
     fun `should pass permission check`() {
         whenever(factory2.canCreate(any())).thenReturn(true)
         val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
-        val authorizationSpecification = mock<AbstractAuthorizationSpecification<String>>()
+        val authorizationSpecification = mock<AuthorizationSpecification<String>>()
         whenever(factory2.create(context, listOf())).thenReturn(authorizationSpecification)
         val entity = ""
         whenever(authorizationSpecification.isAuthorized(entity)).thenReturn(true)
@@ -81,7 +81,7 @@ class AuthorizationServiceTest {
     fun `should bypass permission check`() {
         whenever(factory2.canCreate(any())).thenReturn(true)
         val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
-        val authorizationSpecification = mock<AbstractAuthorizationSpecification<String>>()
+        val authorizationSpecification = mock<AuthorizationSpecification<String>>()
         whenever(factory2.create(context, listOf())).thenReturn(authorizationSpecification)
         val entity = ""
 
@@ -96,7 +96,7 @@ class AuthorizationServiceTest {
     fun `should fail permission check`() {
         whenever(factory2.canCreate(any())).thenReturn(true)
         val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
-        val authorizationSpecification = mock<AbstractAuthorizationSpecification<String>>()
+        val authorizationSpecification = mock<AuthorizationSpecification<String>>()
         whenever(factory2.create(context, listOf())).thenReturn(authorizationSpecification)
         val entity = ""
         whenever(authorizationSpecification.isAuthorized(entity)).thenReturn(false)
@@ -115,7 +115,7 @@ class AuthorizationServiceTest {
 
 
         val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
-        val authorizationSpecification = mock<AbstractAuthorizationSpecification<String>>()
+        val authorizationSpecification = mock<AuthorizationSpecification<String>>()
         whenever(factory2.create(context, listOf())).thenReturn(authorizationSpecification)
         val result = authorizationService.getAuthorizationSpecification(context, null)
         assertEquals(authorizationSpecification, result)

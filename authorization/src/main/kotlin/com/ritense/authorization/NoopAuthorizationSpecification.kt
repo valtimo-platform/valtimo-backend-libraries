@@ -16,16 +16,15 @@
 
 package com.ritense.authorization
 
+import com.ritense.authorization.permission.Permission
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
-class NoopAuthorizationSpecification<T: Any>: AuthorizationSpecification<T> {
-    override fun isAuthorized(entity: T): Boolean {
-        return AuthorizationContext.ignoreAuthorization
-    }
-
+class NoopAuthorizationSpecification<T: Any>(permissions: List<Permission>, authContext: AuthorizationRequest<T>) : AuthorizationSpecification<T>(
+    permissions, authContext
+) {
     override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
         return criteriaBuilder.isTrue(root.isNotNull)
     }

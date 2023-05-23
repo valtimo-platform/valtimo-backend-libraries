@@ -16,7 +16,7 @@
 
 package com.ritense.authorization.testimpl
 
-import com.ritense.authorization.AbstractAuthorizationSpecification
+import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.permission.Permission
 import javax.persistence.criteria.CriteriaBuilder
@@ -27,7 +27,7 @@ import javax.persistence.criteria.Root
 class TestAuthorizationSpecification(
     permissions: List<Permission>,
     authContext: AuthorizationRequest<TestEntity>,
-): AbstractAuthorizationSpecification<TestEntity>(permissions, authContext) {
+): AuthorizationSpecification<TestEntity>(permissions, authContext) {
     override fun toPredicate(
         root: Root<TestEntity>,
         query: CriteriaQuery<*>,

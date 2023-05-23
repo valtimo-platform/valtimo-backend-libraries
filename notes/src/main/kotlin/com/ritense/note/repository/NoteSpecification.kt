@@ -16,7 +16,7 @@
 
 package com.ritense.note.repository
 
-import com.ritense.authorization.AbstractAuthorizationSpecification
+import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.permission.Permission
 import com.ritense.note.domain.Note
@@ -31,7 +31,7 @@ class NoteSpecification(
     permissions: List<Permission>,
     authContext: AuthorizationRequest<Note>,
     private val queryDialectHelper: QueryDialectHelper
-) : AbstractAuthorizationSpecification<Note>(permissions, authContext) {
+) : AuthorizationSpecification<Note>(permissions, authContext) {
     override fun toPredicate(
         root: Root<Note>,
         query: CriteriaQuery<*>,
