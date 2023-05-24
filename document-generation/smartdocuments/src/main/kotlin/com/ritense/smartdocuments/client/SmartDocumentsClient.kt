@@ -201,16 +201,13 @@ class SmartDocumentsClient(
         val documentDataIn = PipedInputStream(documentDataOut)
         val documentDataOutWriter = documentDataOut.writer()
         Executors.newSingleThreadExecutor().execute {
-            try {
+            documentDataOutWriter.use {
                 write(
-                    documentDataOutWriter,
+                    it,
                     inputStream,
                     parsedResponse.documentDataStart,
                     parsedResponse.documentDataEnd
                 )
-            } finally {
-                documentDataOutWriter.close()
-                inputStream.close()
             }
         }
         return documentDataIn
