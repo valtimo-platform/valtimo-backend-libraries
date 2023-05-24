@@ -37,12 +37,4 @@ public interface DocumentSearchService {
     @SuppressWarnings({"squid:S1452","java:S1452"})
     Page<? extends Document> search(String documentDefinitionName, AdvancedSearchRequest searchRequest, Pageable pageable);
 
-    @SuppressWarnings({"squid:S1452","java:S1452"})
-    default Page<? extends Document> searchWithoutAuthorization(
-        SearchRequest searchRequest,
-        Pageable pageable
-    ) {
-        return null;
-    }
-
 }

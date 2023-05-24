@@ -142,23 +142,6 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    void searchWithoutAuthorizationShouldFindSearchMatch() {
-        final List<SearchCriteria> searchCriteriaList = List.of(new SearchCriteria("$.street", "park"));
-
-        SearchRequest searchRequest = new SearchRequest();
-        searchRequest.setDocumentDefinitionName(definition.id().name());
-        searchRequest.setOtherFilters(searchCriteriaList);
-
-        final Page<? extends Document> page = documentSearchService.searchWithoutAuthorization(
-            searchRequest,
-            PageRequest.of(0, 10)
-        );
-        assertThat(page).isNotNull();
-        assertThat(page.getTotalElements()).isEqualTo(1);
-        assertThat(page.getTotalPages()).isEqualTo(1);
-    }
-
-    @Test
     @WithMockUser(username = USERNAME, authorities = USER)
     void searchShouldFindMultipleSearchMatches() {
         final List<SearchCriteria> searchCriteriaList = List.of(
