@@ -16,14 +16,16 @@
 
 package com.ritense.zakenapi.domain
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.ritense.zgw.Rsin
+import com.ritense.zgw.domain.ArchiefStatus
 import com.ritense.zgw.domain.Archiefnominatie
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class ZaakResponse(
     val url: URI,
     val uuid: UUID,
@@ -42,8 +44,7 @@ data class ZaakResponse(
     val communicatiekanaal: URI? = null,
     val productenOfDiensten: List<URI>? = null,
     val vertrouwelijkheidaanduiding: Vertrouwelijkheid? = null,
-    @JsonProperty("betalingsindicatie")
-    private val betalingsindicatieString: String? = null,
+    val betalingsindicatie: Betalingsindicatie? = null,
     val betalingsindicatieWeergave: String? = null,
     val laatsteBetaaldatum: LocalDate? = null,
     val zaakgeometrie: Geometry? = null,
@@ -60,15 +61,11 @@ data class ZaakResponse(
     val zaakobjecten: List<URI>? = null,
     val kenmerken: List<Kenmerk>? = null,
     val archiefnominatie: Archiefnominatie? = null,
-    val archiefstatus: String? = null,
-    val archiefactiedatum: String? = null,
-    val resultaat: List<URI>? = null,
+    val archiefstatus: ArchiefStatus? = null,
+    val archiefactiedatum: LocalDate? = null,
+    val resultaat: URI? = null,
     val opdrachtgevendeOrganisatie: String? = null,
     val processobjectaard: String? = null,
     val resultaattoelichting: String? = null,
-    val startdatumBewaartermijn: String? = null
-) {
-    val betalingsindicatie = betalingsindicatieString?.let {betalingsindicatie ->
-        Betalingsindicatie.values().find {it.key == betalingsindicatie}
-    }
-}
+    val startdatumBewaartermijn: LocalDate? = null
+)

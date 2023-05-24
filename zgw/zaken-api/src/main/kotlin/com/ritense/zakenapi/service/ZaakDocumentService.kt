@@ -21,15 +21,15 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
-import com.ritense.zakenapi.domain.*
-import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import com.ritense.zakenapi.domain.RelatedFileDto
+import com.ritense.zakenapi.domain.ZaakInformatieObject
+import com.ritense.zakenapi.domain.ZaakResponse
 import java.net.URI
 import java.util.UUID
 
 class ZaakDocumentService(
     val zaakUrlProvider: ZaakUrlProvider,
-    val pluginService: PluginService,
-    val zaakInstanceLinkService: ZaakInstanceLinkService
+    val pluginService: PluginService
 ) {
 
     fun getInformatieObjectenAsRelatedFiles(documentId: UUID): List<RelatedFileDto> {
@@ -70,16 +70,14 @@ class ZaakDocumentService(
 
     }
 
-    fun getZaakMetaData(documentId: UUID): ZaakResponse? {
+    fun getZaakByDocumentId(documentId: UUID): ZaakResponse? {
         val url = zaakUrlProvider.getZaakUrl(documentId)
-        val pluginConfiguration = pluginService.findPluginConfiguration(
+        val plugin = pluginService.createInstance(
             ZakenApiPlugin::class.java,
             ZakenApiPlugin.findConfigurationByUrl(url)
         )
-        return pluginConfiguration?.let {
-            pluginService.createInstance(it) as ZakenApiPlugin
-        }?.getZaakMetaData(url,UUID.fromString("")) // where does the zaak uuid come from?
 
+        return plugin?.getZaak(url)
     }
 
 }

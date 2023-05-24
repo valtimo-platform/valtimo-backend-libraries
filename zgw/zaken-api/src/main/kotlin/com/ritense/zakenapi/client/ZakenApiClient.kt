@@ -228,28 +228,23 @@ class ZakenApiClient(
         return result?.body!!
     }
 
-    private fun defaultHeaders(headers: HttpHeaders) {
-        headers.set("Accept-Crs", "EPSG:4326")
-        headers.set("Content-Crs", "EPSG:4326")
-    }
-
-    fun getZaakMetaData(authentication: ZakenApiAuthentication, url: URI, uuid: String): ZaakResponse {
+    fun getZaak(authentication: ZakenApiAuthentication, zaakUrl: URI): ZaakResponse {
         val result = webclientBuilder
             .clone()
             .filter(authentication)
             .build()
             .get()
-            .uri {
-                ClientTools.baseUrlToBuilder(it, url)
-                    .path("zaken")
-                    .pathSegment(uuid)
-                    .build()
-            }
+            .uri(zaakUrl)
             .headers(this::defaultHeaders)
             .retrieve()
             .toEntity(ZaakResponse::class.java)
             .block()
 
         return result?.body!!
+    }
+
+    private fun defaultHeaders(headers: HttpHeaders) {
+        headers.set("Accept-Crs", "EPSG:4326")
+        headers.set("Content-Crs", "EPSG:4326")
     }
 }

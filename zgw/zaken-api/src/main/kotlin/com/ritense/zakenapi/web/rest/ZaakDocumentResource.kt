@@ -18,7 +18,6 @@ package com.ritense.zakenapi.web.rest
 
 import com.ritense.document.domain.RelatedFile
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
-import com.ritense.zakenapi.domain.CreateZaakResultaatResponse
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.service.ZaakDocumentService
 import org.springframework.web.bind.annotation.GetMapping
@@ -40,6 +39,6 @@ class ZaakDocumentResource(
 
     @GetMapping("/zaak")
     fun getZaakMetadata(@PathVariable(name = "documentId") documentId: UUID): ZaakResponse? {
-        return zaakDocumentService.getZaakMetaData(documentId)
+        return zaakDocumentService.getZaakByDocumentId(documentId)
     }
 }

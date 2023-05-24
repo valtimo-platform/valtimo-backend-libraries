@@ -311,8 +311,8 @@ class ZakenApiPlugin(
         }
     }
 
-    fun getZaakMetaData(zaakUrl: URI,uuid: UUID): ZaakResponse{
-        return client.getZaakMetaData(authenticationPluginConfiguration,zaakUrl, uuid.toString())
+    fun getZaak(zaakUrl: URI): ZaakResponse {
+        return client.getZaak(authenticationPluginConfiguration, zaakUrl)
     }
 
     companion object {
@@ -321,6 +321,7 @@ class ZakenApiPlugin(
         const val URL_PROPERTY = "url"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
-        fun findConfigurationByUrl(url:URI) = { properties:JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
+        fun findConfigurationByUrl(url: URI) =
+            { properties: JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
     }
 }
