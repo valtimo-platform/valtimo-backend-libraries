@@ -24,6 +24,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.ZaakInformatieObject
+import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zgw.Rsin
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -89,6 +90,28 @@ class ZaakDocumentServiceTest {
             assertEquals(UUID.fromString("b059092c-9557-431a-9118-97f147903270"), relatedFile.fileId)
             assertEquals(documentenApiPluginConfiguration.id.id, relatedFile.pluginConfigurationId)
         }
+    }
+
+    @Test
+    fun `should get zaak by document id`() {
+        val documentId = UUID.randomUUID()
+        val zaakId = UUID.randomUUID()
+        val zaak = ZaakResponse(
+            url = URI("http://localhost/$zaakId"),
+            uuid = zaakId,
+            bronorganisatie = Rsin("002564440"),
+            zaaktype = URI("http://localhost/zaaktype"),
+            verantwoordelijkeOrganisatie = Rsin("002564440"),
+            startdatum = LocalDate.now()
+        )
+        doReturn(zaak.url).whenever(zaakUrlProvider).getZaakUrl(documentId)
+        val zakenApiPlugin = mock<ZakenApiPlugin>()
+        doReturn(zakenApiPlugin).whenever(pluginService).createInstance(eq(ZakenApiPlugin::class.java), any())
+        doReturn(zaak).whenever(zakenApiPlugin).getZaak(zaak.url)
+
+        val result = service.getZaakByDocumentId(documentId)
+
+        assertEquals(zaak, result)
     }
 
     private fun createZaakInformatieObjecten(zaakUrl: URI, count: Int = 5): List<ZaakInformatieObject> {

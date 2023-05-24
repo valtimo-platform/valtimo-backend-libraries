@@ -35,13 +35,13 @@ class ZaakResponseTest {
     companion object {
         const val ZAAK_JSON = """
             {
-                "url": "http://example.com",
+                "url": "https://example.com",
                 "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
                 "identificatie": "string",
                 "bronorganisatie": "002564440",
                 "omschrijving": "string",
                 "toelichting": "string",
-                "zaaktype": "http://example.com",
+                "zaaktype": "https://example.com",
                 "registratiedatum": "2019-08-24",
                 "verantwoordelijkeOrganisatie": "002564440",
                 "startdatum": "2019-08-24",
@@ -49,9 +49,9 @@ class ZaakResponseTest {
                 "einddatumGepland": "2019-08-24",
                 "uiterlijkeEinddatumAfdoening": "2019-08-24",
                 "publicatiedatum": "2019-08-24",
-                "communicatiekanaal": "http://example.com",
+                "communicatiekanaal": "https://example.com",
                 "productenOfDiensten": [
-                    "http://example.com"
+                    "https://example.com"
                 ],
                 "vertrouwelijkheidaanduiding": "openbaar",
                 "betalingsindicatie": "nvt",
@@ -72,29 +72,29 @@ class ZaakResponseTest {
                     "indicatie": true,
                     "reden": "string"
                 },
-                "selectielijstklasse": "http://example.com",
-                "hoofdzaak": "http://example.com",
+                "selectielijstklasse": "https://example.com",
+                "hoofdzaak": "https://example.com",
                 "deelzaken": [
-                    "http://example.com"
+                    "https://example.com"
                 ],
                 "relevanteAndereZaken": [
                     {
-                        "url": "http://example.com",
+                        "url": "https://example.com",
                         "aardRelatie": "vervolg"
                     }
                 ],
                 "eigenschappen": [
-                    "http://example.com"
+                    "https://example.com"
                 ],
                 "rollen": [
-                    "http://example.com"
+                    "https://example.com"
                 ],
-                "status": "http://example.com",
+                "status": "https://example.com",
                 "zaakinformatieobjecten": [
-                    "http://example.com"
+                    "https://example.com"
                 ],
                 "zaakobjecten": [
-                    "http://example.com"
+                    "https://example.com"
                 ],
                 "kenmerken": [
                     {
@@ -105,7 +105,7 @@ class ZaakResponseTest {
                 "archiefnominatie": "blijvend_bewaren",
                 "archiefstatus": "nog_te_archiveren",
                 "archiefactiedatum": "2019-08-24",
-                "resultaat": "http://example.com",
+                "resultaat": "https://example.com",
                 "opdrachtgevendeOrganisatie": "string",
                 "processobjectaard": "string",
                 "resultaattoelichting": "string",

@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.ritense.zgw.Rsin
 import com.ritense.zgw.domain.Archiefnominatie
 import com.ritense.zgw.domain.Vertrouwelijkheid
@@ -24,6 +25,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Deprecated("Marked for removal since 10.7.0. Will be replaced by ZaakResponse")
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class CreateZaakResponse(
     val url: URI,
     val uuid: UUID,
