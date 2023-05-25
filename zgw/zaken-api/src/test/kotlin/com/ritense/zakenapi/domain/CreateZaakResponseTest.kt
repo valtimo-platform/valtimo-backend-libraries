@@ -18,7 +18,8 @@ package com.ritense.zakenapi.domain
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
 class CreateZaakResponseTest {
@@ -26,10 +27,11 @@ class CreateZaakResponseTest {
         .findAndRegisterModules()
 
     @Test
-    fun `should deserialize JSON into ZaakResponse`() {
+    fun `should deserialize JSON into CreateZaakResponse`() {
         val zaak: CreateZaakResponse = objectMapper.readValue(ZAAK_JSON)
 
         assertNotNull(zaak)
+        assertEquals(Betalingsindicatie.NVT, zaak.betalingsindicatie)
     }
 
     companion object {
