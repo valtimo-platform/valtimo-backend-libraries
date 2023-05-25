@@ -102,10 +102,6 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         @PathVariable(name = "document-id") UUID documentId,
         @PathVariable(name = "resource-id") UUID resourceId
     ) {
-        if (!hasAccessToDocumentId(documentId)) {
-            return ResponseEntity.badRequest().build();
-        }
-
         documentService.assignResource(JsonSchemaDocumentId.existingId(documentId), resourceId);
         return ResponseEntity.noContent().build();
     }
@@ -116,10 +112,6 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         @PathVariable(name = "document-id") UUID documentId,
         @PathVariable(name = "resource-id") UUID resourceId
     ) {
-        if (!hasAccessToDocumentId(documentId)) {
-            return ResponseEntity.badRequest().build();
-        }
-
         documentService.removeRelatedFile(JsonSchemaDocumentId.existingId(documentId), resourceId);
         return ResponseEntity.noContent().build();
     }
@@ -132,10 +124,6 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         logger.debug(String.format("REST call /api/v1/document/%s/assign", documentId));
 
         try {
-            if (!hasAccessToDocumentId(documentId)) {
-                return ResponseEntity.badRequest().build();
-            }
-
             documentService.assignUserToDocument(documentId, request.getAssigneeId());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -150,10 +138,6 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         logger.debug(String.format("REST call /api/v1/document/%s/unassign", documentId));
 
         try {
-            if (!hasAccessToDocumentId(documentId)) {
-                return ResponseEntity.badRequest().build();
-            }
-
             documentService.unassignUserFromDocument(documentId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -167,16 +151,8 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     public ResponseEntity<List<NamedUser>> getCandidateUsers(
         @PathVariable(name = "document-id") UUID documentId
     ) {
-        if (!hasAccessToDocumentId(documentId)) {
-            return ResponseEntity.badRequest().build();
-        }
-
         List<NamedUser> users = documentService.getCandidateUsers(JsonSchemaDocumentId.existingId(documentId));
         return ResponseEntity.ok(users);
-    }
-
-    private boolean hasAccessToDocumentId(UUID documentId) {
-        return hasAccessToDocumentId(documentId.toString());
     }
 
     private boolean hasAccessToDocumentId(String documentId) {

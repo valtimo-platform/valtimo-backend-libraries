@@ -45,6 +45,8 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
 
     @Override
     public Optional<JsonSchemaDocumentSnapshot> findById(DocumentSnapshot.Id id) {
+        // TODO: Retrieve document for snapshot
+        // TODO: VIEW on JsonSchemaDocument
         return documentSnapshotRepository.findById(id);
     }
 
@@ -57,6 +59,8 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
         Pageable pageable
     ) {
         List<String> roles = SecurityUtils.getCurrentUserRoles();
+        // TODO: Retrieve document for snapshot
+        // TODO: VIEW on JsonSchemaDocument
         return documentSnapshotRepository.getDocumentSnapshots(
             definitionName,
             documentId,
@@ -70,6 +74,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     @Transactional
     @Override
     public void makeSnapshot(Document.Id documentId, LocalDateTime createdOn, String createdBy) {
+        // TODO: DENY
         var document = documentService.findBy(documentId)
             .orElseThrow(() -> new DocumentNotFoundException("Document not found with id " + documentId));
 
@@ -82,6 +87,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     @Transactional
     @Override
     public void deleteSnapshotsBy(String documentDefinitionName) {
+        // TODO: DENY
         documentSnapshotRepository.deleteAllByDefinitionName(documentDefinitionName);
     }
 

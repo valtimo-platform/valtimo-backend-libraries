@@ -62,13 +62,9 @@ public interface DocumentService {
 
     void removeDocuments(String documentDefinitionName);
 
-    boolean currentUserCanAccessDocument(Document.Id documentId);
-
     void assignUserToDocument(UUID documentId, String assigneeId);
 
     void unassignUserFromDocument(UUID documentId);
-
-    Set<String> getDocumentRoles(Document.Id documentId);
 
     List<NamedUser> getCandidateUsers(Document.Id documentId);
 }

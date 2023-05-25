@@ -24,6 +24,7 @@ class ValtimoAuthorizationService(
     private val mappers: List<AuthorizationEntityMapper<*, *>>,
     private val permissionRepository: PermissionRepository
 ): AuthorizationService {
+    // TODO: Implement DENY action
     override fun <T : Any> requirePermission(context: AuthorizationRequest<T>, entity: T, permissions: List<Permission>?) {
         if (!getAuthorizationSpecification(context, permissions).isAuthorized(entity))
             throw RuntimeException("Unauthorized")

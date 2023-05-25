@@ -18,11 +18,15 @@ package com.ritense.authorization
 
 // TODO: Don't make this an enum, make these values that can be stored in the DB
 enum class Action {
-    VIEW,
-    CREATE_INSTANCE,
-    ASSIGN,
-    CLAIM,
-    COMPLETE,
-    LIST_VIEW,
-    IGNORE
+    LIST_VIEW, // case, process, task, note
+    VIEW, // case, process, task, note
+    START, // case-instance, process-instance
+    CREATE, // note, s3resource, document-instance
+    MODIFY, // document-instance, note, add file to document, assign resource
+    DELETE, // note, s3resource
+    COMPLETE, // task-instance
+    ASSIGN, // document-instance, task-instance
+    CLAIM, // Assign to self
+    IGNORE,
+    DENY // assign document relation
 }

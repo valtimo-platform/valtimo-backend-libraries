@@ -27,7 +27,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -58,12 +57,6 @@ class NoteResource(
             documentId, pageable
         )
 
-        val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(documentId)
-
-/*        if (!documentService.currentUserCanAccessDocument(jsonSchemaDocumentId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
-        }*/
-
         return ResponseEntity.ok(notes.map { note -> NoteResponseDto(note) })
     }
 
@@ -74,10 +67,6 @@ class NoteResource(
     ): ResponseEntity<NoteResponseDto> {
 
         val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(documentId)
-
-        if (!documentService.currentUserCanAccessDocument(jsonSchemaDocumentId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
-        }
         val note = noteService.createNote(
             jsonSchemaDocumentId,
             noteDto.content,

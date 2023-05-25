@@ -113,7 +113,7 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                         new AuthorizationRequest<>(
                             JsonSchemaDocument.class,
                             List.of(processDefinitionKey),
-                            Action.CREATE_INSTANCE
+                            Action.CREATE
                         ),
                         document,
                         null

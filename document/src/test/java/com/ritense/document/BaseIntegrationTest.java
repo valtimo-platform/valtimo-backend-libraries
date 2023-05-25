@@ -20,11 +20,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.AuthorizationSpecification;
+import com.ritense.authorization.PermissionRepository;
+import com.ritense.authorization.Role;
+import com.ritense.authorization.RoleRepository;
+import com.ritense.authorization.permission.ConditionContainer;
+import com.ritense.authorization.permission.Permission;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonDocumentContent;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.repository.DocumentSnapshotRepository;
@@ -36,6 +43,7 @@ import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
@@ -53,11 +61,13 @@ import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @SpringBootTest
 @Tag("integration")
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, LiquibaseRunnerExtension.class})
 public abstract class BaseIntegrationTest extends BaseTest {
 
     @Inject
@@ -84,6 +94,12 @@ public abstract class BaseIntegrationTest extends BaseTest {
     @Inject
     protected SearchFieldRepository searchFieldRepository;
 
+    @Inject
+    protected RoleRepository roleRepository;
+
+    @Inject
+    protected PermissionRepository permissionRepository;
+
     @MockBean
     public ResourceService resourceService;
 
@@ -93,25 +109,13 @@ public abstract class BaseIntegrationTest extends BaseTest {
     @MockBean
     public SimpleApplicationEventMulticaster applicationEventMulticaster;
 
-    // TODO: remove authorization service mocking when case support is added
-    @MockBean
-    public AuthorizationService authorizationService;
-    // TODO: remove entity manager when case support is added
-    @Autowired
-    private EntityManager entityManager;
-
     @BeforeAll
     static void beforeAll() {
     }
 
     @BeforeEach
     public void beforeEachBase() {
-        // TODO: remove mocking when case support is added
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        AuthorizationSpecification authorizationSpecification = mock(AuthorizationSpecification.class);
-        when(authorizationService.getAuthorizationSpecification(any(), any()))
-            .thenReturn(authorizationSpecification);
-        when(authorizationSpecification.toPredicate(any(), any(), any())).thenReturn(criteriaBuilder.equal(criteriaBuilder.literal(1), 1));
+        setUpPermissions();
     }
 
     @AfterEach
@@ -133,5 +137,25 @@ public abstract class BaseIntegrationTest extends BaseTest {
                 new JsonDocumentContent(content).asJson()
             )
         ).resultingDocument().orElseThrow();
+    }
+
+    private void setUpPermissions() {
+        String role1 = "test-role-1";
+        String role2 = "test-role-2";
+
+        roleRepository.save(new Role(role1));
+        roleRepository.save(new Role(role2));
+
+        List<Permission> permissions = List.of(
+            new Permission(
+                UUID.randomUUID(),
+                JsonSchemaDocument.class,
+                Action.LIST_VIEW,
+                new ConditionContainer(Collections.emptyList()),
+                role1
+            )
+        );
+
+        permissionRepository.saveAllAndFlush(permissions);
     }
 }
