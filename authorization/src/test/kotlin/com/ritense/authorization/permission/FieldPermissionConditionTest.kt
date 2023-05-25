@@ -32,7 +32,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
-import kotlin.test.assertEquals
+import java.time.LocalDate
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class FieldPermissionConditionTest {
     lateinit var mapper: ObjectMapper
@@ -56,42 +58,52 @@ class FieldPermissionConditionTest {
     fun `should pass validation with NOT_EQUAL_TO comparator`() {
         val condition = FieldPermissionCondition("child.property", NOT_EQUAL_TO, 99)
         val result = condition.isValid(entity)
-        assertEquals(true, result)
+        assertTrue(result)
     }
 
     @Test
     fun `should pass validation when the property value is equal`() {
         val condition = conditionTemplate
         val result = condition.isValid(entity)
-        assertEquals(true, result)
+        assertTrue(result)
     }
 
     @Test
     fun `should pass validation with GREATER_THAN comparator`() {
         val condition = FieldPermissionCondition("child.property", GREATER_THAN, 99)
         val result = condition.isValid(entity)
-        assertEquals(true, result)
+        assertTrue(result)
     }
 
     @Test
     fun `should pass validation with LESS_THAN comparator`() {
         val condition = FieldPermissionCondition("child.property", LESS_THAN, 101)
         val result = condition.isValid(entity)
-        assertEquals(true, result)
+        assertTrue(result)
     }
 
     @Test
     fun `should fail validation when the property value is not equal`() {
         val condition = conditionTemplate.copy(value = 99)
         val result = condition.isValid(entity)
-        assertEquals(false, result)
+        assertFalse(result)
     }
 
     @Test
     fun `should fail validation when the property value type is different`() {
         val condition = FieldPermissionCondition("child.property", EQUAL_TO, "test")
         val result = condition.isValid(entity)
-        assertEquals(false, result)
+        assertFalse(result)
+    }
+
+    @Test
+    fun `should pass validation with property LocalDateTime`() {
+        val entity = TestEntity(
+            TestChildEntity(LocalDate.parse("2000-01-01"))
+        )
+        val condition = FieldPermissionCondition("child.property", LESS_THAN, LocalDate.parse("2023-05-25"))
+        val result = condition.isValid(entity)
+        assertTrue(result)
     }
 
     @Test
@@ -101,7 +113,7 @@ class FieldPermissionConditionTest {
         )
         val condition = conditionTemplate.copy(value = 100)
         val result = condition.isValid(entity)
-        assertEquals(false, result)
+        assertFalse(result)
     }
 
     @Test
@@ -113,7 +125,7 @@ class FieldPermissionConditionTest {
         )
         val condition = FieldPermissionCondition("child.property", EQUAL_TO, "null")
         val result = condition.isValid(entity)
-        assertEquals(false, result)
+        assertFalse(result)
     }
 
     @Test
@@ -125,7 +137,7 @@ class FieldPermissionConditionTest {
         )
         val condition = conditionTemplate.copy(value = null)
         val result = condition.isValid(entity)
-        assertEquals(true, result)
+        assertTrue(result)
     }
 
     @Test

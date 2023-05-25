@@ -29,6 +29,7 @@ import javax.persistence.criteria.Path
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
+
 @JsonTypeName(EXPRESSION)
 data class ExpressionPermissionCondition<V : Comparable<V>>(
     val field: String,
