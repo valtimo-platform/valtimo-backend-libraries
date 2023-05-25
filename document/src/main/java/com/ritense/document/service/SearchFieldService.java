@@ -47,7 +47,7 @@ public class SearchFieldService {
     }
 
     public void addSearchField(String documentDefinitionName, SearchField searchField) {
-        // TODO: ADMIN role only, so solve in endpoint
+        // TODO: ADMIN role only, so solve in endpoint and DENY here
         Optional<SearchField> optSearchField = searchFieldRepository
                 .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchField.getKey());
         if (optSearchField.isPresent()) {
@@ -66,7 +66,7 @@ public class SearchFieldService {
     }
 
     public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
-        // TODO: ADMIN role only, so solve in endpoint
+        // TODO: ADMIN role only, so solve in endpoint and DENY here
         searchFieldDtos.forEach(this::validateSearchField);
         searchFieldDtos.forEach(searchFieldDto ->
                 documentDefinitionService.validateJsonPath(documentDefinitionName, searchFieldDto.getPath())
@@ -95,7 +95,7 @@ public class SearchFieldService {
     }
 
     public void deleteSearchField(String documentDefinitionName, String key) {
-        // TODO: ADMIN role only, so solve in endpoint
+        // TODO: ADMIN role only, so solve in endpoint and DENY here
         searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName, key).ifPresent(
                 searchFieldRepository::delete);
     }
