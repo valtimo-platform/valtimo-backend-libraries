@@ -149,6 +149,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .setMaxResults(pageable.getPageSize());
         }
 
+        // TODO: Should be turned into a subquery, and then do a count over the results from the subquery
         final CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<JsonSchemaDocument> countRoot = countQuery.from(JsonSchemaDocument.class);
         countQuery.select(cb.count(countRoot));
@@ -159,7 +160,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         Long count = 0L;
 
         if (!countResultList.isEmpty()) {
-            count = countResultList.get(0);
+            count = (long) countResultList.size();
         }
 
         return new PageImpl<>(typedQuery.getResultList(), pageable, count);

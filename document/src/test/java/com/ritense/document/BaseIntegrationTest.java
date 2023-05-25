@@ -18,12 +18,9 @@ package com.ritense.document;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.AuthorizationService;
-import com.ritense.authorization.AuthorizationSpecification;
 import com.ritense.authorization.PermissionRepository;
 import com.ritense.authorization.Role;
 import com.ritense.authorization.RoleRepository;
@@ -48,14 +45,11 @@ import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
@@ -111,7 +105,7 @@ public abstract class BaseIntegrationTest extends BaseTest {
     public SimpleApplicationEventMulticaster applicationEventMulticaster;
 
     protected static final String ROLE1 = "test-role-1";
-    protected static final String ROLE2 = "test-role-2";
+    protected static final String FULL_ACCESS_ROLE = "full access role";
 
     @BeforeAll
     static void beforeAll() {
@@ -148,7 +142,7 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     private void setUpPermissions() {
         roleRepository.save(new Role(ROLE1));
-        roleRepository.save(new Role(ROLE2));
+        roleRepository.save(new Role(FULL_ACCESS_ROLE));
 
         List<Permission> permissions = List.of(
             new Permission(
@@ -156,14 +150,35 @@ public abstract class BaseIntegrationTest extends BaseTest {
                 JsonSchemaDocument.class,
                 Action.LIST_VIEW,
                 new ConditionContainer(Collections.emptyList()),
-                ROLE1
+                FULL_ACCESS_ROLE
+            ),
+            new Permission(
+                UUID.randomUUID(),
+                JsonSchemaDocument.class,
+                Action.VIEW,
+                new ConditionContainer(Collections.emptyList()),
+                FULL_ACCESS_ROLE
+            ),
+            new Permission(
+                UUID.randomUUID(),
+                JsonSchemaDocument.class,
+                Action.CREATE,
+                new ConditionContainer(Collections.emptyList()),
+                FULL_ACCESS_ROLE
+            ),
+            new Permission(
+                UUID.randomUUID(),
+                JsonSchemaDocument.class,
+                Action.CLAIM,
+                new ConditionContainer(Collections.emptyList()),
+                FULL_ACCESS_ROLE
             ),
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
                 Action.ASSIGN,
                 new ConditionContainer(Collections.emptyList()),
-                ROLE2
+                FULL_ACCESS_ROLE
             )
         );
 

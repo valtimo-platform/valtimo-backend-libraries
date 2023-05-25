@@ -30,7 +30,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 import javax.transaction.Transactional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,7 +58,7 @@ class DocumentStatisticServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = ROLE2)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldReturnUnassignedDocumentCount() {
         // run without authorization
         var document1 = createDocument(definition, "{}");

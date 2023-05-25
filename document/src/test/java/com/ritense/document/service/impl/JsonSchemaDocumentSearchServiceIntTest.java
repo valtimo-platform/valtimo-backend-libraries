@@ -17,6 +17,7 @@
 package com.ritense.document.service.impl;
 
 import com.fasterxml.jackson.core.JsonPointer;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -124,7 +125,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldFindSearchMatch() {
         final List<SearchCriteria> searchCriteriaList = List.of(new SearchCriteria("$.street", "park"));
 
@@ -142,7 +143,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldFindMultipleSearchMatches() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.street", "park"),
@@ -163,7 +164,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldFindCaseInsensitive() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.street", "funenpark")
@@ -183,7 +184,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldSearchThroughAllDocumentDefinitionVersions() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.place", "Amsterdam")
@@ -203,7 +204,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldFindDocumentByMultipleCriteria() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.street", "Kalver"),
@@ -245,7 +246,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldFindDocumentByGlobalSearchFilter() {
 
         SearchRequest searchRequest = new SearchRequest();
@@ -262,7 +263,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldFindDocumentBySequence() {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setDocumentDefinitionName(definition.id().name());
@@ -278,7 +279,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldFindDocumentByCreatedBy() {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setDocumentDefinitionName(definition.id().name());
@@ -294,7 +295,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldReturnPageableData() {
 
         createDocument("{\"street\": \"Czaar Peterstraat\", \"number\": 7}");
@@ -319,7 +320,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldReturnFullPages() {
 
         createDocument("{\"street\": \"Czaar Peterstraat 1\"}");
@@ -348,7 +349,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldOrderAllDocumentsByContentProperty() {
 
         createDocument("{\"street\": \"Alexanderkade\"}");
@@ -376,7 +377,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldOrderAllDocumentsDescendingByContentProperty() {
 
         createDocument("{\"street\": \"Alexanderkade\"}");
@@ -404,7 +405,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldOrderAllDocumentsByMultipleProperties() {
 
         createDocument("{\"street\": \"Alexanderkade\", \"number\": 7}");
@@ -437,7 +438,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldOrderAllDocumentsByOtherField() {
 
         CreateDocumentResult documentOne = createDocument("{\"street\": \"Alexanderkade\"}");
@@ -462,7 +463,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldOrderAllDocumentsWithoutCapitals() {
 
         CreateDocumentResult documentOne = createDocument("{\"street\": \"abc\",\"place\": \"test\"}");
@@ -487,7 +488,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldOrderAllDocumentsBasedOnAssigneeFullName() {
         documentRepository.deleteAllInBatch();
         var documentOne = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
@@ -513,7 +514,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestAndLikeText() {
         documentRepository.deleteAllInBatch();
 
@@ -536,7 +537,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestAndLikeTextInListOfMultipleValues() {
         documentRepository.deleteAllInBatch();
 
@@ -561,7 +562,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestAndTextInListOfMultipleValues() {
         documentRepository.deleteAllInBatch();
 
@@ -588,7 +589,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestAndBetweenRangedValues() {
         documentRepository.deleteAllInBatch();
 
@@ -619,7 +620,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestAndFromRangedValue() {
         documentRepository.deleteAllInBatch();
 
@@ -649,7 +650,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestAndToRangedValue() {
         documentRepository.deleteAllInBatch();
 
@@ -699,7 +700,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestAndRangedDateValues() {
         documentRepository.deleteAllInBatch();
 
@@ -730,7 +731,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestAndFromDateTimeValues() {
         documentRepository.deleteAllInBatch();
 
@@ -762,7 +763,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "example@ritense.com", authorities = USER)
+    @WithMockUser(username = "example@ritense.com", authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestAndCreatedBy() {
         documentRepository.deleteAllInBatch();
 
@@ -787,7 +788,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestAndOrderBySequence() {
         documentRepository.deleteAllInBatch();
 
@@ -810,7 +811,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchForCreatedOnCasePropertyWithLocalDateClass() {
         documentRepository.deleteAllInBatch();
 
@@ -833,7 +834,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = ROLE1)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchForBooleanTrueProperty() {
         documentRepository.deleteAllInBatch();
 
@@ -859,7 +860,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchForBooleanFalseProperty() {
         documentRepository.deleteAllInBatch();
 
@@ -885,7 +886,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchForIntegerProperty() {
         documentRepository.deleteAllInBatch();
 
@@ -909,7 +910,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestWithMultipleFieldsUsingAnd() {
         documentRepository.deleteAllInBatch();
 
@@ -938,7 +939,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestWithMultipleFieldsUsingOr() {
         documentRepository.deleteAllInBatch();
 
@@ -967,7 +968,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestWithIn() {
         documentRepository.deleteAllInBatch();
 
@@ -992,7 +993,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchForOpenCases() {
         documentRepository.deleteAllInBatch();
 
@@ -1000,7 +1001,12 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
         var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
 
-        documentService.assignUserToDocument(document2.id().getId(), USER_ID);
+        AuthorizationContext.runWithoutAuthorization(
+            () -> {
+                documentService.assignUserToDocument(document2.id().getId(), USER_ID);
+                return null;
+            }
+        );
 
         var searchRequest = new AdvancedSearchRequest()
             .assigneeFilter(AssigneeFilter.OPEN);
@@ -1016,7 +1022,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchForMyCases() {
         documentRepository.deleteAllInBatch();
 
@@ -1024,7 +1030,12 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
         var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
 
-        documentService.assignUserToDocument(document2.id().getId(), USER_ID);
+        AuthorizationContext.runWithoutAuthorization(
+            () -> {
+                documentService.assignUserToDocument(document2.id().getId(), USER_ID);
+                return null;
+            }
+        );
 
         var searchRequest = new AdvancedSearchRequest()
             .assigneeFilter(AssigneeFilter.MINE);
@@ -1039,7 +1050,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchForAll() {
         documentRepository.deleteAllInBatch();
 
@@ -1047,7 +1058,16 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
         var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
 
-        documentService.assignUserToDocument(document2.id().getId(), USER_ID);
+        AuthorizationContext
+            .runWithoutAuthorization(() -> {
+                    documentService
+                        .assignUserToDocument(
+                            document2.id().getId(),
+                            USER_ID
+                        );
+                    return null;
+                }
+            );
 
         var searchRequest = new AdvancedSearchRequest()
             .assigneeFilter(AssigneeFilter.ALL);
@@ -1066,10 +1086,12 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     private CreateDocumentResult createDocument(String content) {
         var documentContent = new JsonDocumentContent(content);
 
-        return documentService.createDocument(
-            new NewDocumentRequest(
-                definition.id().name(),
-                documentContent.asJson()
+        return AuthorizationContext.runWithoutAuthorization(
+            () -> documentService.createDocument(
+                new NewDocumentRequest(
+                    definition.id().name(),
+                    documentContent.asJson()
+                )
             )
         );
     }
