@@ -36,6 +36,7 @@ public class DocumentStatisticService {
     }
 
     public List<UnassignedDocumentCountDto> getUnassignedDocumentCountDtos() {
+        // TODO: LIST_VIEW
         return documentDefinitionService.findForUser(true, Pageable.unpaged())
             .map(documentDefinition -> getUnassignedDocumentCountDto(documentDefinition.id().name()))
             .toList();

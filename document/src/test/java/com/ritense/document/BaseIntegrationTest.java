@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.AuthorizationSpecification;
 import com.ritense.authorization.PermissionRepository;
@@ -109,6 +110,9 @@ public abstract class BaseIntegrationTest extends BaseTest {
     @MockBean
     public SimpleApplicationEventMulticaster applicationEventMulticaster;
 
+    protected static final String ROLE1 = "test-role-1";
+    protected static final String ROLE2 = "test-role-2";
+
     @BeforeAll
     static void beforeAll() {
     }
@@ -131,20 +135,20 @@ public abstract class BaseIntegrationTest extends BaseTest {
     }
 
     protected Document createDocument(DocumentDefinition documentDefinition, String content) {
-        return documentService.createDocument(
-            new NewDocumentRequest(
-                documentDefinition.id().name(),
-                new JsonDocumentContent(content).asJson()
-            )
-        ).resultingDocument().orElseThrow();
+        return AuthorizationContext
+            .runWithoutAuthorization(
+                () -> documentService.createDocument(
+                    new NewDocumentRequest(
+                        documentDefinition.id().name(),
+                        new JsonDocumentContent(content).asJson()
+                    )
+                ).resultingDocument().orElseThrow()
+            );
     }
 
     private void setUpPermissions() {
-        String role1 = "test-role-1";
-        String role2 = "test-role-2";
-
-        roleRepository.save(new Role(role1));
-        roleRepository.save(new Role(role2));
+        roleRepository.save(new Role(ROLE1));
+        roleRepository.save(new Role(ROLE2));
 
         List<Permission> permissions = List.of(
             new Permission(
@@ -152,7 +156,14 @@ public abstract class BaseIntegrationTest extends BaseTest {
                 JsonSchemaDocument.class,
                 Action.LIST_VIEW,
                 new ConditionContainer(Collections.emptyList()),
-                role1
+                ROLE1
+            ),
+            new Permission(
+                UUID.randomUUID(),
+                JsonSchemaDocument.class,
+                Action.ASSIGN,
+                new ConditionContainer(Collections.emptyList()),
+                ROLE2
             )
         );
 

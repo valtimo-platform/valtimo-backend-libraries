@@ -18,6 +18,7 @@ package com.ritense.document.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.AuthorizationSpecification;
@@ -41,6 +42,7 @@ import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.JsonSchemaDocumentSpecification;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.authentication.NamedUser;
@@ -140,16 +142,17 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public Page<JsonSchemaDocument> getAllByDocumentDefinitionName(Pageable pageable, String definitionName) {
-        AuthorizationSpecification spec = authorizationService.getAuthorizationSpecification(
-            new AuthorizationRequest(
-                JsonSchemaDocument.class,
-                List.of(definitionName),
-                Action.LIST_VIEW
-            ),
-            null
-        );
+        AuthorizationSpecification spec = authorizationService
+            .getAuthorizationSpecification(
+                new AuthorizationRequest(
+                    JsonSchemaDocument.class,
+                    List.of(definitionName),
+                    Action.LIST_VIEW
+                ),
+                null
+            );
 
-        return documentRepository.findAllByDocumentDefinitionIdName(spec, pageable, definitionName);
+        return documentRepository.findAll(spec.and(JsonSchemaDocumentSpecification.Companion.byDocumentDefinitionIdName(definitionName)), pageable);
     }
 
     @Override
@@ -283,6 +286,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Override
     @Transactional
     public void assignResource(Document.Id documentId, UUID resourceId) {
+        // TODO: MODIFY
         assignResource(documentId, resourceId, null);
     }
 
@@ -327,8 +331,12 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public void assignUserToDocument(UUID documentId, String assigneeId) {
-        JsonSchemaDocument document = getDocumentBy(
-            JsonSchemaDocumentId.existingId(documentId));
+        JsonSchemaDocument document = AuthorizationContext
+            .runWithoutAuthorization(
+                () -> getDocumentBy(
+                    JsonSchemaDocumentId.existingId(documentId)
+                )
+            );
 
         authorizationService
             .requirePermission(

@@ -20,6 +20,8 @@ import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import org.springframework.data.jpa.domain.Specification
+import java.util.UUID
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
@@ -56,5 +58,16 @@ class JsonSchemaDocumentSpecification(
                 )
             }
         return combinePredicates(criteriaBuilder, predicates)
+    }
+
+    companion object {
+        fun byDocumentDefinitionIdName(name: String): Specification<JsonSchemaDocument> {
+            return Specification { root: Root<JsonSchemaDocument>,
+                                   _: CriteriaQuery<*>?,
+                                   criteriaBuilder: CriteriaBuilder ->
+                // documentRoot.get(DOCUMENT_DEFINITION_ID).get(NAME), documentDefinitionName)
+                criteriaBuilder.equal(root.get<UUID>("documentDefinitionId").get<String>("name"), name)
+            }
+        }
     }
 }

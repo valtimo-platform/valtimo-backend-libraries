@@ -69,7 +69,6 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     @GetMapping("/v1/document/{id}")
     public ResponseEntity<? extends Document> getDocument(@PathVariable(name = "id") UUID id) {
         return documentService.findBy(JsonSchemaDocumentId.existingId(id))
-            .filter(it -> hasAccessToDefinitionName(it.definitionId().name()))
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
@@ -79,9 +78,6 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     public ResponseEntity<CreateDocumentResult> createNewDocument(
         @RequestBody @Valid NewDocumentRequest request
     ) {
-        if (!hasAccessToDefinitionName(request.documentDefinitionName())) {
-            return ResponseEntity.badRequest().build();
-        }
         return applyResult(documentService.createDocument(request));
     }
 
@@ -90,9 +86,6 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     public ResponseEntity<ModifyDocumentResult> modifyDocumentContent(
         @RequestBody @Valid ModifyDocumentRequest request
     ) {
-        if (!hasAccessToDocumentId(request.documentId())) {
-            return ResponseEntity.badRequest().build();
-        }
         return applyResult(documentService.modifyDocument(request));
     }
 
@@ -153,18 +146,6 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     ) {
         List<NamedUser> users = documentService.getCandidateUsers(JsonSchemaDocumentId.existingId(documentId));
         return ResponseEntity.ok(users);
-    }
-
-    private boolean hasAccessToDocumentId(String documentId) {
-        return hasAccessToDefinitionName(
-            documentService.get(documentId).definitionId().name()
-        );
-    }
-
-    private boolean hasAccessToDefinitionName(String definitionName) {
-        return documentDefinitionService.currentUserCanAccessDocumentDefinition(
-            definitionName
-        );
     }
 
     <T extends DocumentResult> ResponseEntity<T> applyResult(T result) {

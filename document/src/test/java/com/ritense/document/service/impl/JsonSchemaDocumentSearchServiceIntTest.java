@@ -833,7 +833,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = ROLE1)
     void shouldSearchForBooleanTrueProperty() {
         documentRepository.deleteAllInBatch();
 

@@ -47,6 +47,7 @@ public class SearchFieldService {
     }
 
     public void addSearchField(String documentDefinitionName, SearchField searchField) {
+        // TODO: ADMIN role only, so solve in endpoint
         Optional<SearchField> optSearchField = searchFieldRepository
                 .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchField.getKey());
         if (optSearchField.isPresent()) {
@@ -60,10 +61,12 @@ public class SearchFieldService {
     }
 
     public List<SearchField> getSearchFields(String documentDefinitionName) {
+        // TODO: (LIST_VIEW solve here)/(or ADMIN role, so solve in endpoint, consider making separate endpoint)
         return searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder(documentDefinitionName);
     }
 
     public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
+        // TODO: ADMIN role only, so solve in endpoint
         searchFieldDtos.forEach(this::validateSearchField);
         searchFieldDtos.forEach(searchFieldDto ->
                 documentDefinitionService.validateJsonPath(documentDefinitionName, searchFieldDto.getPath())
@@ -75,6 +78,7 @@ public class SearchFieldService {
     }
 
     public void createSearchConfiguration(List<SearchField> searchFields) {
+        // TODO: DENY
         searchFields.forEach(searchField -> {
             assert searchField.getId() != null;
             documentDefinitionService.validateJsonPath(searchField.getId().getDocumentDefinitionName(), searchField.getPath());
@@ -91,6 +95,7 @@ public class SearchFieldService {
     }
 
     public void deleteSearchField(String documentDefinitionName, String key) {
+        // TODO: ADMIN role only, so solve in endpoint
         searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName, key).ifPresent(
                 searchFieldRepository::delete);
     }

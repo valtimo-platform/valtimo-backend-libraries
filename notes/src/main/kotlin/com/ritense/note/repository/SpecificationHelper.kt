@@ -24,8 +24,6 @@ import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Root
 
 class SpecificationHelper {
-
-
     companion object {
         fun byDocumentId(documentId: UUID): Specification<Note> {
             return Specification { root: Root<Note>,

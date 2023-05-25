@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.DocumentStatisticService;
@@ -58,17 +59,31 @@ class DocumentStatisticServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = ROLE2)
     void shouldReturnUnassignedDocumentCount() {
+        // run without authorization
         var document1 = createDocument(definition, "{}");
         createDocument(definition, "{}");
         documentService.assignUserToDocument(document1.id().getId(), USER_ID);
 
         var unassignedDocumentCountDtos = documentStatisticService.getUnassignedDocumentCountDtos();
 
-        assertThat(documentService.getAllByDocumentDefinitionName(Pageable.unpaged(), "house").getTotalElements()).isEqualTo(2);
+        // run without authorization
+
+        assertThat(
+            AuthorizationContext.runWithoutAuthorization(
+                () -> documentService.getAllByDocumentDefinitionName(
+                    Pageable.unpaged(),
+                    "house"
+                    ).getTotalElements()
+            )
+        ).isEqualTo(2);
         assertThat(unassignedDocumentCountDtos).hasSizeGreaterThanOrEqualTo(1);
-        var unassignedHouseCountDto = unassignedDocumentCountDtos.stream().filter(dto->dto.getDocumentDefinitionName().equals("house")).collect(Collectors.toList()).get(0);
+        var unassignedHouseCountDto = unassignedDocumentCountDtos
+            .stream()
+            .filter(
+                dto -> dto.getDocumentDefinitionName().equals("house")
+            ).toList().get(0);
         assertThat(unassignedHouseCountDto.getDocumentDefinitionName()).isEqualTo("house");
         assertThat(unassignedHouseCountDto.getOpenDocumentCount()).isEqualTo(1);
     }
