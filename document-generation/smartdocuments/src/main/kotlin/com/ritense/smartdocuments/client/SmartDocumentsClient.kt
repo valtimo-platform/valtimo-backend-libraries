@@ -201,9 +201,16 @@ class SmartDocumentsClient(
         val documentDataIn = PipedInputStream(documentDataOut)
         val documentDataOutWriter = documentDataOut.writer()
         Executors.newSingleThreadExecutor().execute {
-            write(documentDataOutWriter, inputStream, parsedResponse.documentDataStart, parsedResponse.documentDataEnd)
-            documentDataOutWriter.close()
-            inputStream.close()
+            documentDataOutWriter.use { outStream ->
+                inputStream.use { inStream ->
+                    write(
+                        outStream,
+                        inStream,
+                        parsedResponse.documentDataStart,
+                        parsedResponse.documentDataEnd
+                    )
+                }
+            }
         }
         return documentDataIn
     }
@@ -212,7 +219,13 @@ class SmartDocumentsClient(
         inputStream.skipNBytes(startByteOffset)
         var bytePointer = startByteOffset
         while (bytePointer < endByteOffset) {
-            val buffer = inputStream.readNBytes((endByteOffset - bytePointer).toInt().coerceAtMost(1024))
+            var buffer = inputStream.readNBytes((endByteOffset - bytePointer).toInt().coerceAtMost(1024))
+
+            val possibleUnicodeCharIndex = buffer.lastIndexOf('\\'.code.toByte())
+            if (possibleUnicodeCharIndex != -1 && (buffer.size - possibleUnicodeCharIndex) < 6) {
+                buffer += inputStream.readNBytes(6 - (buffer.size - possibleUnicodeCharIndex))
+            }
+
             outputWriter.write(StringEscapeUtils.unescapeJson(String(buffer)))
             bytePointer += buffer.size
         }
