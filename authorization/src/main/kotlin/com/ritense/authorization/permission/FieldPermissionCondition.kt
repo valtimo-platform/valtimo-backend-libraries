@@ -17,6 +17,8 @@
 package com.ritense.authorization.permission
 
 import com.fasterxml.jackson.annotation.JsonTypeName
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.ritense.authorization.jackson.ComparableDeserializer
 import com.ritense.authorization.permission.FieldPermissionCondition.Companion.FIELD
 import com.ritense.authorization.permission.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.permission.PermissionConditionOperator.GREATER_THAN
@@ -36,6 +38,7 @@ import kotlin.reflect.full.isSubclassOf
 data class FieldPermissionCondition<V : Comparable<V>>(
     val field: String,
     val operator: PermissionConditionOperator,
+    @JsonDeserialize(using = ComparableDeserializer::class)
     val value: V?
 ) : ReflectingPermissionCondition(PermissionConditionType.FIELD) {
     override fun <T : Any> isValid(entity: T): Boolean {
@@ -43,10 +46,10 @@ data class FieldPermissionCondition<V : Comparable<V>>(
         return when (operator) {
             NOT_EQUAL_TO -> foundValue != value
             EQUAL_TO -> foundValue == value
-            GREATER_THAN -> compare(foundValue as V?, value, -1) > 0
-            GREATER_THAN_OR_EQUAL_TO -> compare(foundValue as V?, value, -1) >= 0
-            LESS_THAN -> compare(foundValue as V?, value) < 0
-            LESS_THAN_OR_EQUAL_TO -> compare(foundValue as V?, value) <= 0
+            GREATER_THAN -> compare(foundValue, value, -1) > 0
+            GREATER_THAN_OR_EQUAL_TO -> compare(foundValue, value, -1) >= 0
+            LESS_THAN -> compare(foundValue, value) < 0
+            LESS_THAN_OR_EQUAL_TO -> compare(foundValue, value) <= 0
         }
     }
 
@@ -62,13 +65,13 @@ data class FieldPermissionCondition<V : Comparable<V>>(
         return criteriaBuilder.equal(path, this.value)
     }
 
-    private fun compare(left: V?, right: V?, notEqualResult: Int = 1): Int {
+    private fun <R : Comparable<R>> compare(left: Any?, right: R?, notEqualResult: Int = 1): Int {
         return if (left == right) {
             0
         } else if (left == null || right == null || (!left::class.isSubclassOf(right::class))) {
             notEqualResult
         } else {
-            left.compareTo(right)
+            (left as R).compareTo(right)
         }
     }
 
