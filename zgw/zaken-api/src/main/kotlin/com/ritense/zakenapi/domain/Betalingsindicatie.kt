@@ -16,11 +16,23 @@
 
 package com.ritense.zakenapi.domain
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 
 enum class Betalingsindicatie(@JsonValue val key: String) {
     NVT("nvt"),
     NOG_NIET("nog_niet"),
     GEDEELTELIJK("gedeeltelijk"),
-    GEHEEL("geheel")
+    GEHEEL("geheel");
+
+    companion object {
+        /**
+         * This creator allows for null, empty or non-matching keys to result in a null value.
+         */
+        @JvmStatic
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        fun create(key: String?): Betalingsindicatie? {
+            return Betalingsindicatie.values().find { it.key == key }
+        }
+    }
 }
