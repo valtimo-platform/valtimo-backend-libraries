@@ -18,7 +18,6 @@ package com.ritense.document.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.authorization.Action;
-import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.AuthorizationSpecification;
@@ -55,16 +54,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
+import static com.ritense.authorization.AuthorizationContext.getWithoutAuthorization;
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
 public class JsonSchemaDocumentService implements DocumentService {
@@ -119,9 +116,8 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public JsonSchemaDocument get(String documentId) {
-        var documentOptional = findBy(
-            JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
-        );
+        var documentOptional = getWithoutAuthorization(
+            () -> findBy(JsonSchemaDocumentId.existingId(UUID.fromString(documentId))));
 
         JsonSchemaDocument document = documentOptional.orElseThrow(
             () -> new DocumentNotFoundException("Document not found with id " + documentId)
@@ -157,7 +153,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public Page<JsonSchemaDocument> getAll(Pageable pageable) {
-        Specification<JsonSchemaDocument> spec = authorizationService.getAuthorizationSpecification(
+        var spec = authorizationService.getAuthorizationSpecification(
             new AuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 null,
@@ -180,9 +176,13 @@ public class JsonSchemaDocumentService implements DocumentService {
     public JsonSchemaDocument.CreateDocumentResultImpl createDocument(
         NewDocumentRequest newDocumentRequest
     ) {
-        final JsonSchemaDocumentDefinition definition = documentDefinitionService
-            .findLatestByName(newDocumentRequest.documentDefinitionName())
-            .orElseThrow(() -> new UnknownDocumentDefinitionException(newDocumentRequest.documentDefinitionName()));
+        final JsonSchemaDocumentDefinition definition = getWithoutAuthorization(
+            () -> documentDefinitionService
+                .findLatestByName(newDocumentRequest.documentDefinitionName())
+                .orElseThrow(
+                    () -> new UnknownDocumentDefinitionException(newDocumentRequest.documentDefinitionName())
+                )
+        );
         final var content = JsonDocumentContent.build(newDocumentRequest.content());
         final var user = SecurityUtils.getCurrentUserLogin() != null ? SecurityUtils.getCurrentUserLogin() : SYSTEM_ACCOUNT;
 
@@ -193,24 +193,47 @@ public class JsonSchemaDocumentService implements DocumentService {
             documentSequenceGeneratorService,
             JsonSchemaDocumentRelation.from(newDocumentRequest.documentRelation())
         );
-        // TODO: CREATE
-        result.resultingDocument().ifPresent(jsonSchemaDocument -> {
-            newDocumentRequest.getResources()
-                .stream()
-                .map(JsonSchemaRelatedFile::from)
-                .map(relatedFile -> relatedFile.withCreatedBy(user))
-                .forEach(jsonSchemaDocument::addRelatedFile);
-            documentRepository.saveAndFlush(jsonSchemaDocument);
-        });
+        result.resultingDocument().ifPresent(
+            jsonSchemaDocument -> {
+                newDocumentRequest.getResources()
+                    .stream()
+                    .map(JsonSchemaRelatedFile::from)
+                    .map(relatedFile -> relatedFile.withCreatedBy(user))
+                    .forEach(jsonSchemaDocument::addRelatedFile);
+
+                authorizationService.requirePermission(
+                    new AuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        List.of(jsonSchemaDocument.definitionId().name()),
+                        Action.CREATE
+                    ),
+                    jsonSchemaDocument,
+                    null
+                );
+
+                documentRepository.saveAndFlush(jsonSchemaDocument);
+            }
+        );
         return result;
     }
 
     @Override
     @Transactional
     public void modifyDocument(Document document, JsonNode jsonNode) {
-        // TODO: MODIFY
+        JsonSchemaDocument jsonSchemaDocument = (JsonSchemaDocument) document;
+
+        authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                List.of(jsonSchemaDocument.definitionId().name()),
+                Action.MODIFY
+            ),
+            jsonSchemaDocument,
+            null
+        );
+
         final var documentRequest = ModifyDocumentRequest.create(document, jsonNode);
-        final var modifyResult = modifyDocument(documentRequest);
+        final var modifyResult = getWithoutAuthorization(() -> modifyDocument(documentRequest));
         if (!modifyResult.errors().isEmpty()) {
             throw new ModifyDocumentException(modifyResult.errors());
         }
@@ -223,17 +246,31 @@ public class JsonSchemaDocumentService implements DocumentService {
     ) {
         final var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(request.documentId()));
         final var version = JsonSchemaDocumentVersion.from(request.versionBasedOn());
-        final var document = findBy(documentId)
-            .orElseThrow(() -> new DocumentNotFoundException("Document not found with id " + request.documentId()));
+        final var document = getWithoutAuthorization(
+            () -> findBy(documentId)
+            .orElseThrow(
+                () -> new DocumentNotFoundException("Document not found with id " + request.documentId())
+            )
+        );
 
-        // TODO: MODIFY
+        authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                List.of(document.definitionId().name()),
+                Action.MODIFY
+            ),
+            document,
+            null
+        );
 
         final var modifiedContent = JsonDocumentContent.build(
             document.content().asJson(),
             request.content(),
             request.jsonPatch()
         );
-        var documentDefinition = documentDefinitionService.findBy(document.definitionId()).orElseThrow();
+        var documentDefinition = getWithoutAuthorization(
+            () -> documentDefinitionService.findBy(document.definitionId()).orElseThrow()
+        );
         final var result = document.applyModifiedContent(
             modifiedContent,
             documentDefinition,
@@ -267,7 +304,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                 documentRelation.relationType()
             )
         );
-        findBy(documentId)
+        getWithoutAuthorization(() ->findBy(documentId))
             .ifPresent(document -> documentRepository.save(document.addRelatedDocument(jsonSchemaDocumentRelation)));
     }
 
@@ -277,8 +314,18 @@ public class JsonSchemaDocumentService implements DocumentService {
         final Document.Id documentId,
         final RelatedFile relatedFile
     ) {
-        // TODO: MODIFY
         JsonSchemaDocument document = getDocumentBy(documentId);
+
+        authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                List.of(document.definitionId().name()),
+                Action.MODIFY
+            ),
+            document,
+            null
+        );
+
         document.addRelatedFile(JsonSchemaRelatedFile.from(relatedFile));
         documentRepository.save(document);
     }
@@ -303,8 +350,18 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Override
     @Transactional
     public void removeRelatedFile(Document.Id documentId, UUID fileId) {
-        // TODO: MODIFY
         JsonSchemaDocument document = getDocumentBy(documentId);
+
+        authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                List.of(document.definitionId().name()),
+                Action.MODIFY
+            ),
+            document,
+            null
+        );
+
         document.removeRelatedFileBy(fileId);
         documentRepository.save(document);
     }
@@ -317,22 +374,70 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public void removeDocuments(String documentDefinitionName) {
-        // TODO: DELETE
         List<JsonSchemaDocument> documents = getAllByDocumentDefinitionName(Pageable.unpaged(), documentDefinitionName).toList();
         if (!documents.isEmpty()) {
-            documents.forEach(JsonSchemaDocument::removeAllRelatedFiles);
+            documents.forEach(document -> {
+                    authorizationService.requirePermission(
+                        new AuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            List.of(document.definitionId().name()),
+                            Action.DELETE
+                        ),
+                        document,
+                        null
+                    );
+                    document.removeAllRelatedFiles();
+                });
             documentRepository.saveAll(documents);
             documentRepository.deleteAll(documents);
             documentSequenceGeneratorService.deleteSequenceRecordBy(documentDefinitionName);
         }
     }
 
-    // TODO: Add claim method. Works for both claim and assign actions.
+    @Override
+    public void claim(UUID documentId) {
+        JsonSchemaDocument document = getWithoutAuthorization(
+            () -> getDocumentBy(
+                JsonSchemaDocumentId.existingId(documentId)
+            )
+        );
+
+        // TODO: Expand authorizationRequest to accept a list of actions, which is handled like OR
+        try {
+            authorizationService
+                .requirePermission(
+                    new AuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        List.of(document.definitionId().name()),
+                        Action.CLAIM
+                    ),
+                    document,
+                    null
+                );
+        } catch (Exception e) {
+            authorizationService
+                .requirePermission(
+                    new AuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        List.of(document.definitionId().name()),
+                        Action.ASSIGN
+                    ),
+                    document,
+                    null
+                );
+        }
+        var assignee = userManagementService.getCurrentUser();
+
+        document.setAssignee(assignee.getId(), assignee.getFullName());
+        documentRepository.save(document);
+
+        // Publish an event to update the audit log
+        publishDocumentAssigneeChangedEvent(documentId, assignee.getFullName());
+    }
 
     @Override
     public void assignUserToDocument(UUID documentId, String assigneeId) {
-        JsonSchemaDocument document = AuthorizationContext
-            .getWithoutAuthorization(
+        JsonSchemaDocument document = getWithoutAuthorization(
                 () -> getDocumentBy(
                     JsonSchemaDocumentId.existingId(documentId)
                 )
@@ -349,7 +454,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                 null
             );
 
-        var assignee = userManagementService.findById(assigneeId);
+        var assignee = getWithoutAuthorization(() -> userManagementService.findById(assigneeId));
         if (assignee == null) {
             logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
             throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
@@ -364,7 +469,9 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public void unassignUserFromDocument(UUID documentId) {
-        JsonSchemaDocument document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId));
+        JsonSchemaDocument document = getWithoutAuthorization(
+            () -> getDocumentBy(JsonSchemaDocumentId.existingId(documentId))
+        );
 
         authorizationService
             .requirePermission(
