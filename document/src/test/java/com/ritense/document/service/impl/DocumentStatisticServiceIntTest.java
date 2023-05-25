@@ -70,7 +70,7 @@ class DocumentStatisticServiceIntTest extends BaseIntegrationTest {
         // run without authorization
 
         assertThat(
-            AuthorizationContext.runWithoutAuthorization(
+            AuthorizationContext.getWithoutAuthorization(
                 () -> documentService.getAllByDocumentDefinitionName(
                     Pageable.unpaged(),
                     "house"

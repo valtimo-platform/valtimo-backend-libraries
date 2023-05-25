@@ -16,6 +16,7 @@
 
 package com.ritense.document.web.rest.impl;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.DocumentSearchFields;
@@ -53,7 +54,11 @@ public class SearchFieldResource implements DocumentSearchFields {
                 || searchField.getKey().trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        searchFieldService.addSearchField(documentDefinitionName, SearchFieldMapper.toEntity(searchField, -1));
+
+        AuthorizationContext.runWithoutAuthorization(() ->
+            searchFieldService.addSearchField(documentDefinitionName, SearchFieldMapper.toEntity(searchField, -1))
+        );
+
         return ResponseEntity.ok().build();
     }
 
@@ -73,7 +78,11 @@ public class SearchFieldResource implements DocumentSearchFields {
         if (searchFieldDtos.stream().anyMatch(searchFieldDto -> searchFieldDto.getKey() == null || searchFieldDto.getKey().trim().isEmpty())) {
             return ResponseEntity.badRequest().build();
         }
-        searchFieldService.updateSearchFields(documentDefinitionName, searchFieldDtos);
+
+        AuthorizationContext.runWithoutAuthorization(() ->
+            searchFieldService.updateSearchFields(documentDefinitionName, searchFieldDtos)
+        );
+
         return ResponseEntity.ok().build();
     }
 
@@ -85,7 +94,10 @@ public class SearchFieldResource implements DocumentSearchFields {
         if (documentDefinitionName == null || documentDefinitionName.trim().isEmpty() || key == null || key.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        searchFieldService.deleteSearchField(documentDefinitionName, key);
+
+        AuthorizationContext.runWithoutAuthorization(() ->
+            searchFieldService.deleteSearchField(documentDefinitionName, key)
+        );
         return ResponseEntity.noContent().build();
     }
 }

@@ -16,6 +16,8 @@
 
 package com.ritense.document.web.rest.searchfields;
 
+import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.domain.impl.searchfield.SearchField;
@@ -65,6 +67,9 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private DocumentModuleExceptionTranslator documentModuleExceptionTranslator;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     private MockMvc mockMvc;
     private SearchFieldResource searchFieldResource;
     private static final String DOCUMENT_DEFINITION_NAME = "house";
@@ -81,7 +86,9 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach()
     void setUp() {
-        searchFieldService = new SearchFieldService(searchFieldRepository, documentDefinitionService);
+        searchFieldService = new SearchFieldService(searchFieldRepository, documentDefinitionService,
+                authorizationService
+        );
         searchFieldResource = new SearchFieldResource(searchFieldService);
 
         mockMvc = MockMvcBuilders
@@ -204,7 +211,9 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldUpdateSearchField() throws Exception {
-        searchFieldService.addSearchField(DOCUMENT_DEFINITION_NAME, SEARCH_FIELD);
+        AuthorizationContext.runWithoutAuthorization(() ->
+            searchFieldService.addSearchField(DOCUMENT_DEFINITION_NAME, SEARCH_FIELD)
+        );
         SearchFieldId searchFieldId = searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder(DOCUMENT_DEFINITION_NAME).get(0).getId();
         SearchFieldDto searchFieldToUpdate = new SearchFieldDto(
                 SEARCH_FIELD.getKey(),

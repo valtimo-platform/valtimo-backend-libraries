@@ -1001,11 +1001,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
         var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
 
-        AuthorizationContext.runWithoutAuthorization(
-            () -> {
-                documentService.assignUserToDocument(document2.id().getId(), USER_ID);
-                return null;
-            }
+        AuthorizationContext.runWithoutAuthorization(() ->
+            documentService.assignUserToDocument(document2.id().getId(), USER_ID)
         );
 
         var searchRequest = new AdvancedSearchRequest()
@@ -1030,11 +1027,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
         var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
 
-        AuthorizationContext.runWithoutAuthorization(
-            () -> {
-                documentService.assignUserToDocument(document2.id().getId(), USER_ID);
-                return null;
-            }
+        AuthorizationContext.runWithoutAuthorization(() ->
+            documentService.assignUserToDocument(document2.id().getId(), USER_ID)
         );
 
         var searchRequest = new AdvancedSearchRequest()
@@ -1059,14 +1053,11 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
 
         AuthorizationContext
-            .runWithoutAuthorization(() -> {
-                    documentService
-                        .assignUserToDocument(
-                            document2.id().getId(),
-                            USER_ID
-                        );
-                    return null;
-                }
+            .runWithoutAuthorization(() ->
+                documentService.assignUserToDocument(
+                    document2.id().getId(),
+                    USER_ID
+                )
             );
 
         var searchRequest = new AdvancedSearchRequest()
@@ -1086,7 +1077,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     private CreateDocumentResult createDocument(String content) {
         var documentContent = new JsonDocumentContent(content);
 
-        return AuthorizationContext.runWithoutAuthorization(
+        return AuthorizationContext.getWithoutAuthorization(
             () -> documentService.createDocument(
                 new NewDocumentRequest(
                     definition.id().name(),

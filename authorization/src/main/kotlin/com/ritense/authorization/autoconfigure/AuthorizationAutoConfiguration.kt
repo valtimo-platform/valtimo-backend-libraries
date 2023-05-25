@@ -24,6 +24,8 @@ import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.ValtimoAuthorizationService
 import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.specification.DenyAuthorizationSpecificationFactory
+import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -34,6 +36,7 @@ import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import javax.sql.DataSource
+import org.springframework.core.Ordered
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.authorization"])
@@ -66,5 +69,17 @@ class AuthorizationAutoConfiguration {
     @Bean
     fun permissionConditionTypeModule(): Module {
         return PermissionConditionTypeModule()
+    }
+
+    @Bean
+    @Order(HIGHEST_PRECEDENCE)
+    fun <T: Any> noopAuthorizationSpecificationFactory(): AuthorizationSpecificationFactory<T> {
+        return NoopAuthorizationSpecificationFactory()
+    }
+
+    @Bean
+    @Order(HIGHEST_PRECEDENCE + 1)
+    fun <T: Any> denyAuthorizationSpecificationFactory(): AuthorizationSpecificationFactory<T> {
+        return DenyAuthorizationSpecificationFactory()
     }
 }

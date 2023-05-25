@@ -40,7 +40,7 @@ import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
-import com.ritense.document.repository.DocumentRepository;
+import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.JsonSchemaDocumentSpecification;
 import com.ritense.resource.service.ResourceService;
@@ -71,7 +71,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentService.class);
 
-    private final DocumentRepository documentRepository;
+    private final JsonSchemaDocumentRepository documentRepository;
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
     private final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService;
 
@@ -82,7 +82,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public JsonSchemaDocumentService(DocumentRepository documentRepository,
+    public JsonSchemaDocumentService(JsonSchemaDocumentRepository documentRepository,
                                      JsonSchemaDocumentDefinitionService documentDefinitionService,
                                      JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
                                      ResourceService resourceService,
@@ -142,9 +142,9 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public Page<JsonSchemaDocument> getAllByDocumentDefinitionName(Pageable pageable, String definitionName) {
-        AuthorizationSpecification spec = authorizationService
+        AuthorizationSpecification<JsonSchemaDocument> spec = authorizationService
             .getAuthorizationSpecification(
-                new AuthorizationRequest(
+                new AuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     List.of(definitionName),
                     Action.LIST_VIEW
@@ -152,20 +152,20 @@ public class JsonSchemaDocumentService implements DocumentService {
                 null
             );
 
-        return documentRepository.findAll(spec.and(JsonSchemaDocumentSpecification.Companion.byDocumentDefinitionIdName(definitionName)), pageable);
+        return documentRepository.findAll(spec.and(JsonSchemaDocumentSpecification.byDocumentDefinitionIdName(definitionName)), pageable);
     }
 
     @Override
     public Page<JsonSchemaDocument> getAll(Pageable pageable) {
-        Specification spec = authorizationService.getAuthorizationSpecification(
-            new AuthorizationRequest(
+        Specification<JsonSchemaDocument> spec = authorizationService.getAuthorizationSpecification(
+            new AuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 null,
                 Action.LIST_VIEW
             ),
             null
         ).or(authorizationService.getAuthorizationSpecification(
-            new AuthorizationRequest(
+            new AuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 null,
                 Action.VIEW
@@ -332,7 +332,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Override
     public void assignUserToDocument(UUID documentId, String assigneeId) {
         JsonSchemaDocument document = AuthorizationContext
-            .runWithoutAuthorization(
+            .getWithoutAuthorization(
                 () -> getDocumentBy(
                     JsonSchemaDocumentId.existingId(documentId)
                 )

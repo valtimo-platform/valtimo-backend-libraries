@@ -17,6 +17,7 @@
 package com.ritense.document.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.SearchConfigurationDto;
 import com.ritense.document.exception.SearchConfigurationDeploymentException;
@@ -75,14 +76,16 @@ public class SearchConfigurationDeploymentService {
         var searchConfiguration = objectMapper.readValue(searchConfigurationJson, SearchConfigurationDto.class);
 
         try {
-            List<SearchField> databaseSearchFields =  searchFieldService.getSearchFields(documentDefinitionName);
-            List<SearchField> searchConfigurationFields  = searchConfiguration.toEntity(documentDefinitionName);
-            databaseSearchFields.forEach(databaseSearchField ->
-                searchConfigurationFields
-                        .removeIf(
-                                searchConfigurationField -> databaseSearchField.getKey().equals(searchConfigurationField.getKey())));
-            searchFieldService.createSearchConfiguration(searchConfigurationFields);
-            logger.info("Deployed search configuration for document - {}", documentDefinitionName);
+            AuthorizationContext.runWithoutAuthorization(() -> {
+                List<SearchField> databaseSearchFields =  searchFieldService.getSearchFields(documentDefinitionName);
+                List<SearchField> searchConfigurationFields  = searchConfiguration.toEntity(documentDefinitionName);
+                databaseSearchFields.forEach(databaseSearchField ->
+                    searchConfigurationFields
+                            .removeIf(
+                                    searchConfigurationField -> databaseSearchField.getKey().equals(searchConfigurationField.getKey())));
+                searchFieldService.createSearchConfiguration(searchConfigurationFields);
+                logger.info("Deployed search configuration for document - {}", documentDefinitionName);
+            });
         } catch (Exception e) {
             throw new SearchFieldConfigurationDeploymentException(documentDefinitionName, e);
         }

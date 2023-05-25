@@ -36,15 +36,12 @@ public class DocumentSnapshotCapturedEventListener {
     public void handleDocumentCreatedEvent(JsonSchemaDocumentSnapshotCapturedEvent event) {
         logger.debug("{} - handle - JsonSchemaDocumentSnapshotEvent - {}", Thread.currentThread().getName(), event.documentId());
         AuthorizationContext.runWithoutAuthorization(
-            () -> {
-                documentSnapshotService
-                    .makeSnapshot(
-                        event.documentId(),
-                        event.createdOn(),
-                        event.createdBy()
-                    );
-                return null;
-            }
+            () -> documentSnapshotService
+                .makeSnapshot(
+                    event.documentId(),
+                    event.createdOn(),
+                    event.createdBy()
+                )
         );
     }
 

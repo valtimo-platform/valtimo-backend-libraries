@@ -14,17 +14,28 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.authorization.specification
 
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
-class NoopAuthorizationSpecification<T: Any>(authContext: AuthorizationRequest<T>, permissions: List<Permission>) : AuthorizationSpecification<T>(
-    authContext, permissions
+class NoopAuthorizationSpecification<T : Any>(
+    authContext: AuthorizationRequest<T>,
+    permissions: List<Permission>
+) : AuthorizationSpecification<T>(
+    authContext,
+    permissions
 ) {
+    override fun isAuthorized(entity: T): Boolean {
+        return AuthorizationContext.ignoreAuthorization
+    }
+
     override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
         return criteriaBuilder.isTrue(root.isNotNull)
     }

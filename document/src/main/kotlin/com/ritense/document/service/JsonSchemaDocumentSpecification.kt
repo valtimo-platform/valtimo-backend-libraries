@@ -61,6 +61,7 @@ class JsonSchemaDocumentSpecification(
     }
 
     companion object {
+        @JvmStatic
         fun byDocumentDefinitionIdName(name: String): Specification<JsonSchemaDocument> {
             return Specification { root: Root<JsonSchemaDocument>,
                                    _: CriteriaQuery<*>?,

@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.authorization.specification
 
+import com.ritense.authorization.Action
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
 
-interface AuthorizationService {
-    fun <T : Any> requirePermission(context: AuthorizationRequest<T>, entity: T, permissions: List<Permission>? = null)
-
-    fun <T : Any> getAuthorizationSpecification(
+class DenyAuthorizationSpecificationFactory<T: Any> : AuthorizationSpecificationFactory<T> {
+    override fun create(
         context: AuthorizationRequest<T>,
-        permissions: List<Permission>? = null
-    ): AuthorizationSpecification<T>
+        permissions: List<Permission>
+    ): AuthorizationSpecification<T> {
+        return DenyAuthorizationSpecification(context, permissions)
+    }
 
-    fun <FROM, TO> getMapper(from: Class<FROM>, to: Class<TO>): AuthorizationEntityMapper<FROM, TO>
+    override fun canCreate(context: AuthorizationRequest<*>): Boolean {
+        return context.action == Action.DENY
+    }
 }

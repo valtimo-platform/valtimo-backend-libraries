@@ -28,7 +28,7 @@ import org.springframework.lang.Nullable;
 @NoRepositoryBean
 public interface DocumentRepository<T extends Document>
     extends JpaRepository<T, Document.Id>,
-    JpaSpecificationExecutor<Document>
+    JpaSpecificationExecutor<T>
 {
 
     Page<T> findAllByDocumentDefinitionIdName(

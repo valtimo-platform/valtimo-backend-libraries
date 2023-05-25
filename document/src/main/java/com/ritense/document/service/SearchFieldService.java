@@ -16,6 +16,9 @@
 
 package com.ritense.document.service;
 
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
@@ -38,16 +41,21 @@ public class SearchFieldService {
     private final SearchFieldRepository searchFieldRepository;
     private final DocumentDefinitionService documentDefinitionService;
 
+    private final AuthorizationService authorizationService;
+
     public SearchFieldService(
             final SearchFieldRepository searchFieldRepository,
-            final DocumentDefinitionService documentDefinitionService
+            final DocumentDefinitionService documentDefinitionService,
+            final AuthorizationService authorizationService
     ) {
         this.searchFieldRepository = searchFieldRepository;
         this.documentDefinitionService = documentDefinitionService;
+        this.authorizationService = authorizationService;
     }
 
     public void addSearchField(String documentDefinitionName, SearchField searchField) {
-        // TODO: ADMIN role only, so solve in endpoint and DENY here
+        authorizeAction(Action.DENY);
+
         Optional<SearchField> optSearchField = searchFieldRepository
                 .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchField.getKey());
         if (optSearchField.isPresent()) {
@@ -61,12 +69,14 @@ public class SearchFieldService {
     }
 
     public List<SearchField> getSearchFields(String documentDefinitionName) {
+        authorizeAction(Action.LIST_VIEW);
         // TODO: (LIST_VIEW solve here)/(or ADMIN role, so solve in endpoint, consider making separate endpoint)
         return searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder(documentDefinitionName);
     }
 
     public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
-        // TODO: ADMIN role only, so solve in endpoint and DENY here
+        authorizeAction(Action.DENY);
+
         searchFieldDtos.forEach(this::validateSearchField);
         searchFieldDtos.forEach(searchFieldDto ->
                 documentDefinitionService.validateJsonPath(documentDefinitionName, searchFieldDto.getPath())
@@ -78,7 +88,8 @@ public class SearchFieldService {
     }
 
     public void createSearchConfiguration(List<SearchField> searchFields) {
-        // TODO: DENY
+        authorizeAction(Action.DENY);
+
         searchFields.forEach(searchField -> {
             assert searchField.getId() != null;
             documentDefinitionService.validateJsonPath(searchField.getId().getDocumentDefinitionName(), searchField.getPath());
@@ -95,7 +106,8 @@ public class SearchFieldService {
     }
 
     public void deleteSearchField(String documentDefinitionName, String key) {
-        // TODO: ADMIN role only, so solve in endpoint and DENY here
+        authorizeAction(Action.DENY);
+
         searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName, key).ifPresent(
                 searchFieldRepository::delete);
     }
@@ -144,5 +156,17 @@ public class SearchFieldService {
                 Status.BAD_REQUEST
             );
         }
+    }
+
+    private void authorizeAction(Action action) {
+        authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                Boolean.class,
+                null,
+                action
+            ),
+            false,
+            null
+        );
     }
 }

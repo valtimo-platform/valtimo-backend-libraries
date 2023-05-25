@@ -130,7 +130,7 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     protected Document createDocument(DocumentDefinition documentDefinition, String content) {
         return AuthorizationContext
-            .runWithoutAuthorization(
+            .getWithoutAuthorization(
                 () -> documentService.createDocument(
                     new NewDocumentRequest(
                         documentDefinition.id().name(),

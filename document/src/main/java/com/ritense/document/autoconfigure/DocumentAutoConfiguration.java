@@ -27,7 +27,7 @@ import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSeq
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.repository.DocumentDefinitionRoleRepository;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
-import com.ritense.document.repository.DocumentRepository;
+import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
@@ -58,7 +58,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
 import javax.persistence.EntityManager;
 import java.util.Optional;
 
@@ -70,7 +69,7 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentService.class)
     public JsonSchemaDocumentService documentService(
-        final DocumentRepository documentRepository,
+        final JsonSchemaDocumentRepository documentRepository,
         final JsonSchemaDocumentDefinitionService documentDefinitionService,
         final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
         final ResourceService resourceService,

@@ -16,6 +16,10 @@
 
 package com.ritense.authorization
 
+import com.ritense.authorization.specification.DenyAuthorizationSpecification
+import com.ritense.authorization.specification.DenyAuthorizationSpecificationFactory
+import com.ritense.authorization.specification.NoopAuthorizationSpecification
+import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -49,6 +53,8 @@ class AuthorizationServiceTest {
 
         authorizationService = ValtimoAuthorizationService(
             listOf(
+                NoopAuthorizationSpecificationFactory(),
+                DenyAuthorizationSpecificationFactory(),
                 factory1,
                 factory2,
                 factory3
@@ -72,7 +78,7 @@ class AuthorizationServiceTest {
         val entity = ""
         whenever(authorizationSpecification.isAuthorized(entity)).thenReturn(true)
 
-        authorizationService.requirePermission(context, entity, null)
+        authorizationService.requirePermission(context, entity)
 
         verify(authorizationSpecification).isAuthorized(entity)
     }
@@ -86,7 +92,7 @@ class AuthorizationServiceTest {
         val entity = ""
 
         AuthorizationContext.runWithoutAuthorization {
-            authorizationService.requirePermission(context, entity, null)
+            authorizationService.requirePermission(context, entity)
         }
 
         verify(authorizationSpecification, never()).isAuthorized(entity)
@@ -102,7 +108,7 @@ class AuthorizationServiceTest {
         whenever(authorizationSpecification.isAuthorized(entity)).thenReturn(false)
 
         assertThrows<RuntimeException> {
-            authorizationService.requirePermission(context, entity, null)
+            authorizationService.requirePermission(context, entity)
         }
 
         verify(authorizationSpecification).isAuthorized(entity)
@@ -117,7 +123,7 @@ class AuthorizationServiceTest {
         val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
         val authorizationSpecification = mock<AuthorizationSpecification<String>>()
         whenever(factory2.create(context, listOf())).thenReturn(authorizationSpecification)
-        val result = authorizationService.getAuthorizationSpecification(context, null)
+        val result = authorizationService.getAuthorizationSpecification(context)
         assertEquals(authorizationSpecification, result)
 
         verify(factory1).canCreate(any())
@@ -128,14 +134,27 @@ class AuthorizationServiceTest {
 
     @Test
     fun `should get NoopAuthorizationSpecification`() {
+        whenever(factory1.canCreate(any())).thenReturn(true)
         whenever(factory2.canCreate(any())).thenReturn(true)
-        whenever(factory3.canCreate(any())).thenReturn(true)
 
         val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
-        val result = AuthorizationContext.runWithoutAuthorization {
-            authorizationService.getAuthorizationSpecification(context, null)
+        val result = AuthorizationContext.getWithoutAuthorization {
+            authorizationService.getAuthorizationSpecification(context)
         }
         assertEquals(true, result is NoopAuthorizationSpecification)
+
+        verify(factory1, never()).canCreate(any())
+        verify(factory2, never()).canCreate(any())
+    }
+
+    @Test
+    fun `should get DenyAuthorizationSpecification`() {
+        whenever(factory1.canCreate(any())).thenReturn(true)
+        whenever(factory2.canCreate(any())).thenReturn(true)
+
+        val context = AuthorizationRequest(String::class.java, action = Action.DENY)
+        val result = authorizationService.getAuthorizationSpecification(context)
+        assertEquals(true, result is DenyAuthorizationSpecification)
 
         verify(factory1, never()).canCreate(any())
         verify(factory2, never()).canCreate(any())
@@ -145,7 +164,7 @@ class AuthorizationServiceTest {
     fun `should throw an error when no correct AuthorizationSpecification can be found`() {
         assertThrows<NoSuchElementException> {
             val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
-            authorizationService.getAuthorizationSpecification(context, null)
+            authorizationService.getAuthorizationSpecification(context)
         }
         verify(factory1).canCreate(any())
         verify(factory2).canCreate(any())
