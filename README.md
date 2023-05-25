@@ -34,5 +34,56 @@ For more information check the following links.
 - Documentation: https://docs.valtimo.nl
 
 ## Getting started
-* Clone `https://github.com/valtimo-platform/valtimo-docker-profiles` and run the compose file for your desired edition
-* Then run the gradle `bootRun` for your desired edition (for the gzac edition this is `app/gzac/application/bootRun`)
+This is a step by step guide to setup a local Valtimo backend environment with **Spring Boot** and **IntelliJ**.
+
+* ⚠️ This repository is meant for development/contribution to the Valtimo platform. If you are looking for how to run a Valtimo instance locally, please consult the [public guide](https://docs.valtimo.nl/getting-started/first-dive/creating-your-own-valtimo-implementation).
+ 
+* ⚠️ There are two editions of Valtimo: ‘Valtimo-core’ and ‘GZAC’. The ‘GZAC’ edition is a special Valtimo implementation meant for government organizations. At the moment of publication, this guide only works for the ‘GZAC’ Valtimo development environment. This due to a problem with the docker containers for the ‘Valtimo’ edition. For this reason, this guide is ‘GZAC’ focused.
+
+### Prerequisites:
+
+- [Git](https://git-scm.com/downloads)
+- [IntelliJ](https://www.jetbrains.com/idea/download/)
+- [Docker (Desktop)](https://www.docker.com/products/docker-desktop/)
+- [NPM Package manager / NodeJS (version 16 or higher)](https://nodejs.org/en/download/)
+ 
+### Setup the Valtimo environment:
+The environment consists of 3 components:
+* Docker containers for supporting services
+* Valtimo backend
+* Valtimo frontend
+
+#### - Docker:
+1. Make sure docker is running.
+2. Open IntelliJ and create a new project from Version Control. Use the code URL from the **valtimo-docker-profiles** repository: [Valtimo docker github page](https://github.com/valtimo-platform/valtimo-docker-profiles).
+3. Open the terminal, go to the `gzac-platform` folder and run command 
+    ```
+    docker compose up
+    ``` 
+    ⚠️ Note that the first time it takes quite a while to pull the required images. Some containers start up and end after a short while, this is on purpose.
+
+#### - Valtimo Backend:
+1. In IntelliJ create a new project from Version Control. Use the code url from the **Valtimo-backend-libraries** repository [Valtimo backend github page](https://github.com/valtimo-platform/valtimo-backend-libraries).
+2. Open the `Gradle` view. Click the `Refresh` and the `hammer` icon to build the project
+3. Then run the `Gradle` bootRun for your desired edition (for the gzac edition this is app/gzac/application/bootRun)\
+⚠️ Note: use the same one as in the docker profiles repo:
+    * If you use `gzac` start `gzac` bootrun 
+    * If you used `valtimo-core` start `valtimo-core` bootrun
+
+#### - Valtimo Frontend:
+1. In IntelliJ create a new project from Version Control. Use the code url from the **Valtimo-frontend-libraries** repository [Valtimo frontend github page](https://github.com/valtimo-platform/valtimo-frontend-libraries).
+2. Open the terminal and run the commands:
+    ```
+    nvm use 16
+    npm install 
+    ```
+3. Now build all the libraries with:
+    ```
+    npm run libs-build-all
+    ``` 
+5. Start the frontend with 
+    ```
+    npm start
+    ``` 
+
+The application runs on [localhost:4200](http://localhost:4200), the credentials (login/password) are **admin** for both fields.
