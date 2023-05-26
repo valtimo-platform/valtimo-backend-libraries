@@ -21,8 +21,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.charset.Charset
-import java.util.LinkedList
-import java.util.Queue
 
 /*
  * An input stream that unescapes unicode characters.
@@ -34,7 +32,7 @@ class UnicodeUnescapeInputStream(
 
     private var closed: Boolean = false
     private val reader = InputStreamReader(inputStream, charset)
-    private val buf: Queue<Int> = LinkedList()
+    private var spare: Int = -1
 
     override fun read(): Int {
         if (closed) {
@@ -48,18 +46,24 @@ class UnicodeUnescapeInputStream(
 
         val char2 = read0()
         if (char2 != 'u'.code) {
-            buf.add(char2)
+            spare = char2
             return char1
         }
 
-        val hexChars = (0..3).map { read0() }
-        val unicodeChar = String(hexChars.map { Char(it) }.toCharArray()).toIntOrNull(16)
-        if (unicodeChar == null) {
-            buf.addAll(hexChars)
-            return char1
+        var char3 = read0()
+        while (char3 == 'u'.code) {
+            char3 = read0()
+        }
+        if (char3 == '+'.code) {
+            char3 = read0()
         }
 
-        return unicodeChar
+        val unicodeHex = String(charArrayOf(Char(char3), Char(read0()), Char(read0()), Char(read0())))
+        return try {
+            unicodeHex.toInt(16)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Unable to parse unicode value: '\\u$unicodeHex'", e);
+        }
     }
 
     override fun read(b: ByteArray, off: Int, len: Int): Int {
@@ -84,10 +88,10 @@ class UnicodeUnescapeInputStream(
     }
 
     private fun read0(): Int {
-        return if (buf.isEmpty()) {
+        return if (spare == -1) {
             reader.read()
         } else {
-            buf.poll()
+            spare
         }
     }
 }
