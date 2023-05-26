@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.zgw.domain
 
-data class Kenmerk(
-    val kenmerk: String,
-    val bron: String,
-)
+import com.fasterxml.jackson.annotation.JsonValue
+
+enum class ArchiefStatus(@JsonValue val key: String) {
+    NOG_TE_ARCHIVEREN("nog_te_archiveren"),
+    GEARCHIVEERD("gearchiveerd"),
+    GEARCHIVEERD_PROCESTERMIJN_ONBEKEND("gearchiveerd_procestermijn_onbekend"),
+    OVERGEDRAGEN("overgedragen")
+}

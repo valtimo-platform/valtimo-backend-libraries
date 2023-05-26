@@ -16,6 +16,7 @@
 
 package com.ritense.objectenapi
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectenApiClient
@@ -26,9 +27,9 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.valtimo.contract.validation.Url
+import java.net.URI
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
-import java.net.URI
 
 @Plugin(
     key = "objectenapi",
@@ -104,5 +105,12 @@ class ObjectenApiPlugin(
 
     fun createObject(objectRequest: ObjectRequest): ObjectWrapper {
         return objectenApiClient.createObject(authenticationPluginConfiguration, url, objectRequest)
+    }
+
+    companion object {
+        const val URL_PROPERTY = "url"
+
+        fun findConfigurationByUrl(url: URI) =
+            { properties: JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
     }
 }

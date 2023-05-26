@@ -61,17 +61,13 @@ class ZaakObjectService(
 
     fun getObjectByObjectUrl(objectUrl: URI): ObjectWrapper? {
         val objectenApiPlugin = pluginService
-            .createInstance(ObjectenApiPlugin::class.java) { properties: JsonNode ->
-                objectUrl.toString().startsWith(properties.get("url").textValue())
-            } ?: return null
+            .createInstance(ObjectenApiPlugin::class.java, ObjectenApiPlugin.findConfigurationByUrl(objectUrl)) ?: return null
         return objectenApiPlugin.getObject(objectUrl)
     }
 
     private fun getObjectTypeByUrl(objectTypeUrl: URI): Objecttype? {
         val objectTypePluginInstance = pluginService
-            .createInstance(ObjecttypenApiPlugin::class.java) { properties: JsonNode ->
-                objectTypeUrl.toString().startsWith(properties.get("url").textValue())
-            } ?: return null
+            .createInstance(ObjecttypenApiPlugin::class.java, ObjecttypenApiPlugin.findConfigurationByUrl(objectTypeUrl)) ?: return null
 
         return objectTypePluginInstance.getObjecttype(objectTypeUrl)
     }
@@ -177,9 +173,7 @@ class ZaakObjectService(
 
     private fun findZakenApiPlugin(zaakUrl: URI): ZakenApiPlugin {
         val zakenApiPluginInstance = pluginService
-            .createInstance(ZakenApiPlugin::class.java) { properties: JsonNode ->
-                zaakUrl.toString().startsWith(properties.get("url").textValue())
-            }
+            .createInstance(ZakenApiPlugin::class.java, ZakenApiPlugin.findConfigurationByUrl(zaakUrl))
 
         requireNotNull(zakenApiPluginInstance) { "No plugin configuration was found for zaak with URL $zaakUrl" }
 

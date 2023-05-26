@@ -98,9 +98,7 @@ class ZaakObjectListener(
 
     private fun findObjectenApiPlugin(objectUrl: URI): ObjectenApiPlugin {
         val objectenApiPluginInstance = pluginService
-            .createInstance(ObjectenApiPlugin::class.java) { properties: JsonNode ->
-                objectUrl.toString().startsWith(properties.get("url").textValue())
-            }
+            .createInstance(ObjectenApiPlugin::class.java, ObjectenApiPlugin.findConfigurationByUrl(objectUrl))
 
         requireNotNull(objectenApiPluginInstance) { "No objecten plugin configuration was found for the URL $objectUrl" }
 

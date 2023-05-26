@@ -16,6 +16,7 @@
 
 package com.ritense.objecttypenapi
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.objecttypenapi.client.ObjecttypenApiClient
 import com.ritense.plugin.annotation.Plugin
@@ -49,5 +50,12 @@ class ObjecttypenApiPlugin(
             .pathSegment(id)
             .build()
             .toUri()
+    }
+
+    companion object {
+        const val URL_PROPERTY = "url"
+
+        fun findConfigurationByUrl(url: URI) =
+            { properties: JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
     }
 }
