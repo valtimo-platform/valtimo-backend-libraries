@@ -48,7 +48,7 @@ For more information check the following links.
 The environment consists of 3 components:
 * [Docker containers for supporting services](https://github.com/valtimo-platform/valtimo-docker-profiles)
 * Valtimo backend (this repository)
-* [Valtimo frontend](https://github.com/valtimo-platform/valtimo-frontend-libraries/)
+* [Valtimo frontend](https://github.com/valtimo-platform/valtimo-frontend-template)
 
 #### Docker containers for supporting services
 * Make sure docker is running. 
