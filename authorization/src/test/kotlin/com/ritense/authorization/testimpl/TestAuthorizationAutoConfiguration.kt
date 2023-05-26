@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.authorization.testimpl
 
-import com.ritense.authorization.permission.Permission
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
-interface AuthorizationService {
-    fun <T : Any> requirePermission(
-        context: AuthorizationRequest<T>,
-        entity: T?,
-        permissions: List<Permission>? = null
-    )
-
-    fun <T : Any> getAuthorizationSpecification(
-        context: AuthorizationRequest<T>,
-        permissions: List<Permission>? = null
-    ): AuthorizationSpecification<T>
-
-    fun <FROM, TO> getMapper(from: Class<FROM>, to: Class<TO>): AuthorizationEntityMapper<FROM, TO>
+@Configuration
+class TestAuthorizationAutoConfiguration {
+    @Bean
+    fun testAuthorizationSpecificationFactory() = TestAuthorizationSpecificationFactory()
 }

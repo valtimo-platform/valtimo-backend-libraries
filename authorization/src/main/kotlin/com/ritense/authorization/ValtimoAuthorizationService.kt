@@ -18,15 +18,20 @@ package com.ritense.authorization
 
 import com.ritense.authorization.permission.Permission
 import com.ritense.valtimo.contract.utils.SecurityUtils
+import org.springframework.security.access.AccessDeniedException
 
 class ValtimoAuthorizationService(
     private val authorizationSpecificationFactories: List<AuthorizationSpecificationFactory<*>>,
     private val mappers: List<AuthorizationEntityMapper<*, *>>,
     private val permissionRepository: PermissionRepository
 ): AuthorizationService {
-    override fun <T : Any> requirePermission(context: AuthorizationRequest<T>, entity: T, permissions: List<Permission>?) {
+    override fun <T : Any> requirePermission(
+        context: AuthorizationRequest<T>,
+        entity: T?,
+        permissions: List<Permission>?
+    ) {
         if (!getAuthorizationSpecification(context, permissions).isAuthorized(entity))
-            throw RuntimeException("Unauthorized")
+            throw AccessDeniedException("Unauthorized")
     }
 
     override fun <T : Any> getAuthorizationSpecification(
@@ -35,16 +40,19 @@ class ValtimoAuthorizationService(
     ): AuthorizationSpecification<T> {
         val usedPermissions = permissions ?: getPermissions()
 
-        val factory = authorizationSpecificationFactories.first {
+        val factory = (authorizationSpecificationFactories.firstOrNull() {
             it.canCreate(context)
-        } as AuthorizationSpecificationFactory<T>
+        } as AuthorizationSpecificationFactory<T>?)?: throw AccessDeniedException("No specification found for given context.")
         return factory.create(context, usedPermissions)
     }
 
-    override fun <FROM, TO> getMapper(from: Class<FROM>, to: Class<TO>): AuthorizationEntityMapper<FROM, TO> {
-        return mappers.first {
+    override fun <FROM, TO> getMapper(
+        from: Class<FROM>,
+        to: Class<TO>
+    ): AuthorizationEntityMapper<FROM, TO> {
+        return (mappers.firstOrNull() {
             it.supports(from, to)
-        } as AuthorizationEntityMapper<FROM, TO>
+        } as AuthorizationEntityMapper<FROM, TO>?)?: throw AccessDeniedException("No entity mapper found for given arguments.")
     }
 
     private fun getPermissions(): List<Permission> {

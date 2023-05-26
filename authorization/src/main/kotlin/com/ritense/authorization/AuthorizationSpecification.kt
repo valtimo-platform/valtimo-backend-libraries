@@ -28,8 +28,8 @@ abstract class AuthorizationSpecification<T : Any>(
     protected val permissions: List<Permission>
 ) : Specification<T> {
 
-    internal open fun isAuthorized(entity: T): Boolean {
-        return permissions.filter { permission ->
+    internal open fun isAuthorized(entity: T?): Boolean {
+        return entity != null && permissions.filter { permission ->
             entity::class.java == permission.resourceType && authContext.action == permission.action
         }.any { permission ->
             permission.appliesTo(authContext.resourceType, entity)

@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.specification
+package com.ritense.authorization.testimpl
 
 import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
 
-class DenyAuthorizationSpecification<T : Any>(
-    authContext: AuthorizationRequest<T>,
-    permissions: List<Permission>
-) : AuthorizationSpecification<T>(
-    authContext,
-    permissions
-) {
-    override fun isAuthorized(entity: T?): Boolean {
-        return false
+class TestAuthorizationSpecificationFactory : AuthorizationSpecificationFactory<TestEntity> {
+    override fun create(
+        context: AuthorizationRequest<TestEntity>,
+        permissions: List<Permission>
+    ): AuthorizationSpecification<TestEntity> {
+        return TestAuthorizationSpecification(
+            context,
+            permissions
+        )
     }
-    override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
-        return criteriaBuilder.isTrue(root.isNull)
+
+    override fun canCreate(context: AuthorizationRequest<*>): Boolean {
+        return TestEntity::class.java == context.resourceType
     }
+
+
 }

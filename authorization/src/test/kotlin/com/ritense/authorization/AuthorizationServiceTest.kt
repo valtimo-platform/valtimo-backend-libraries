@@ -29,6 +29,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.security.access.AccessDeniedException
 
 class AuthorizationServiceTest {
 
@@ -162,7 +163,7 @@ class AuthorizationServiceTest {
 
     @Test
     fun `should throw an error when no correct AuthorizationSpecification can be found`() {
-        assertThrows<NoSuchElementException> {
+        assertThrows<AccessDeniedException> {
             val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
             authorizationService.getAuthorizationSpecification(context)
         }
@@ -186,8 +187,8 @@ class AuthorizationServiceTest {
     }
 
     @Test
-    fun `should throw an error when no correct AuthorizationEntityMapper van be found`() {
-        assertThrows<NoSuchElementException> {
+    fun `should throw an error when no correct AuthorizationEntityMapper can be found`() {
+        assertThrows<AccessDeniedException> {
             authorizationService.getMapper(String::class.java, String::class.java)
         }
 

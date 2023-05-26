@@ -54,7 +54,7 @@ public class SearchFieldService {
     }
 
     public void addSearchField(String documentDefinitionName, SearchField searchField) {
-        authorizeAction(Action.DENY);
+        denyAuthorization();
 
         Optional<SearchField> optSearchField = searchFieldRepository
                 .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchField.getKey());
@@ -69,13 +69,12 @@ public class SearchFieldService {
     }
 
     public List<SearchField> getSearchFields(String documentDefinitionName) {
-        authorizeAction(Action.LIST_VIEW);
         // TODO: (LIST_VIEW solve here)/(or ADMIN role, so solve in endpoint, consider making separate endpoint)
         return searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder(documentDefinitionName);
     }
 
     public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
-        authorizeAction(Action.DENY);
+        denyAuthorization();
 
         searchFieldDtos.forEach(this::validateSearchField);
         searchFieldDtos.forEach(searchFieldDto ->
@@ -88,7 +87,7 @@ public class SearchFieldService {
     }
 
     public void createSearchConfiguration(List<SearchField> searchFields) {
-        authorizeAction(Action.DENY);
+        denyAuthorization();
 
         searchFields.forEach(searchField -> {
             assert searchField.getId() != null;
@@ -106,7 +105,7 @@ public class SearchFieldService {
     }
 
     public void deleteSearchField(String documentDefinitionName, String key) {
-        authorizeAction(Action.DENY);
+        denyAuthorization();
 
         searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName, key).ifPresent(
                 searchFieldRepository::delete);
@@ -158,14 +157,14 @@ public class SearchFieldService {
         }
     }
 
-    private void authorizeAction(Action action) {
+    private void denyAuthorization() {
         authorizationService.requirePermission(
             new AuthorizationRequest<>(
-                Boolean.class,
+                SearchField.class,
                 null,
-                action
+                Action.DENY
             ),
-            false,
+            null,
             null
         );
     }

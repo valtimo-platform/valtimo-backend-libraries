@@ -32,7 +32,7 @@ class NoopAuthorizationSpecification<T : Any>(
     authContext,
     permissions
 ) {
-    override fun isAuthorized(entity: T): Boolean {
+    override fun isAuthorized(entity: T?): Boolean {
         return AuthorizationContext.ignoreAuthorization
     }
 
