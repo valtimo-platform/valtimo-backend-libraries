@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.smartdocuments.domain
+package com.ritense.smartdocuments.io
 
-import java.io.InputStream
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 
-data class FileStreamResponse(
-    val filename: String,
-    val extension: String,
-    val documentData: InputStream,
-) : AutoCloseable {
-    override fun close() {
-        documentData.close()
+class SubInputStreamTest {
+
+    @Test
+    fun `should only read part of input stream`() {
+        val inputStream = "0123456789".byteInputStream(Charsets.UTF_8)
+
+        val subIn = SubInputStream(inputStream, 2, 6)
+
+        val result = subIn.bufferedReader().use { it.readText() }
+        assertThat(result).isEqualTo("23456")
     }
 }
