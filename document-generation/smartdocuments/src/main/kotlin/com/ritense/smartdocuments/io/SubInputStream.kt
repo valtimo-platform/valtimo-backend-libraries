@@ -16,7 +16,7 @@
 
 package com.ritense.smartdocuments.io
 
-import java.io.FilterInputStream
+import org.apache.commons.lang3.math.NumberUtils.min
 import java.io.IOException
 import java.io.InputStream
 
@@ -27,9 +27,8 @@ class SubInputStream(
     inputStream: InputStream,
     startByteIndex: Long,
     val endByteIndex: Long
-) : FilterInputStream(inputStream) {
+) : BaseInputStream(inputStream) {
 
-    private var closed: Boolean = false
     private var index: Long = 0
 
     init {
@@ -49,24 +48,5 @@ class SubInputStream(
         return b
     }
 
-    override fun read(b: ByteArray, off: Int, len: Int): Int {
-        if (closed) {
-            throw IOException("Stream is closed")
-        }
-        return super.read(b, off, len)
-    }
-
-    override fun available(): Int {
-        if (closed) {
-            throw IOException("Stream is closed")
-        }
-        return super.available()
-    }
-
-    override fun close() {
-        if (!closed) {
-            closed = true
-            super.close()
-        }
-    }
+    override fun available() = min(super.available(), (endByteIndex - index).toInt())
 }

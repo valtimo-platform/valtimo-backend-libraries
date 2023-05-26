@@ -16,7 +16,6 @@
 
 package com.ritense.smartdocuments.io
 
-import java.io.FilterInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -28,9 +27,8 @@ import java.nio.charset.Charset
 class UnicodeUnescapeInputStream(
     inputStream: InputStream,
     charset: Charset = Charsets.UTF_8,
-) : FilterInputStream(inputStream) {
+) : BaseInputStream(inputStream) {
 
-    private var closed: Boolean = false
     private val reader = InputStreamReader(inputStream, charset)
     private var spare: Int = -1
 
@@ -66,32 +64,7 @@ class UnicodeUnescapeInputStream(
         }
     }
 
-    override fun read(b: ByteArray, off: Int, len: Int): Int {
-        if (closed) {
-            throw IOException("Stream is closed")
-        }
-        return super.read(b, off, len)
-    }
-
-    override fun available(): Int {
-        if (closed) {
-            throw IOException("Stream is closed")
-        }
-        return super.available()
-    }
-
-    override fun close() {
-        if (!closed) {
-            closed = true
-            reader.close()
-        }
-    }
-
     private fun read0(): Int {
-        return if (spare == -1) {
-            reader.read()
-        } else {
-            spare
-        }
+        return if (spare == -1) reader.read() else spare
     }
 }
