@@ -33,6 +33,7 @@ import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
@@ -41,13 +42,13 @@ import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
-import mu.KLogger
-import mu.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
+import mu.KLogger
+import mu.KotlinLogging
+import org.camunda.bpm.engine.delegate.DelegateExecution
 
 @Plugin(
     key = ZakenApiPlugin.PLUGIN_KEY,
@@ -317,12 +318,17 @@ class ZakenApiPlugin(
         }
     }
 
+    fun getZaak(zaakUrl: URI): ZaakResponse {
+        return client.getZaak(authenticationPluginConfiguration, zaakUrl)
+    }
+
     companion object {
         private val logger: KLogger = KotlinLogging.logger {}
         const val PLUGIN_KEY = "zakenapi"
         const val URL_PROPERTY = "url"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
-        fun findConfigurationByUrl(url:URI) = { properties:JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
+        fun findConfigurationByUrl(url: URI) =
+            { properties: JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
     }
 }

@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.smartdocuments.io
 
-data class Kenmerk(
-    val kenmerk: String,
-    val bron: String,
-)
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+
+class SubInputStreamTest {
+
+    @Test
+    fun `should only read part of input stream`() {
+        val inputStream = "0123456789".byteInputStream(Charsets.UTF_8)
+
+        val subIn = SubInputStream(inputStream, 2, 6)
+
+        val result = subIn.bufferedReader().use { it.readText() }
+        assertThat(result).isEqualTo("23456")
+    }
+}

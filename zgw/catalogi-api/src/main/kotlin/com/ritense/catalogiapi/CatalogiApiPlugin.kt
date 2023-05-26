@@ -16,6 +16,7 @@
 
 package com.ritense.catalogiapi
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.catalogiapi.client.BesluittypeRequest
 import com.ritense.catalogiapi.client.CatalogiApiClient
 import com.ritense.catalogiapi.client.ResultaattypeRequest
@@ -260,5 +261,9 @@ class CatalogiApiPlugin(
 
     companion object {
         val logger = KotlinLogging.logger {}
+        const val URL_PROPERTY = "url"
+
+        fun findConfigurationByUrl(url: URI) =
+            { properties: JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
     }
 }

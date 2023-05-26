@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.smartdocuments.io
 
-data class Kenmerk(
-    val kenmerk: String,
-    val bron: String,
-)
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import kotlin.text.Charsets.UTF_8
+
+class UnicodeUnescapeInputStreamTest {
+
+    @Test
+    fun `should only read part of input stream`() {
+        val inputStream = "1\u002b2\u003D3".byteInputStream(UTF_8)
+
+        val unescapedIn = UnicodeUnescapeInputStream(inputStream)
+
+        val result = unescapedIn.bufferedReader().use { it.readText() }
+        assertThat(result).isEqualTo("1+2=3")
+    }
+}

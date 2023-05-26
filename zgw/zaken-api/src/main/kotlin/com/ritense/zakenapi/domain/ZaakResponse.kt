@@ -18,15 +18,15 @@ package com.ritense.zakenapi.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.ritense.zgw.Rsin
+import com.ritense.zgw.domain.ArchiefStatus
 import com.ritense.zgw.domain.Archiefnominatie
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 
-@Deprecated("Marked for removal since 10.7.0. Will be replaced by ZaakResponse")
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class CreateZaakResponse(
+data class ZaakResponse(
     val url: URI,
     val uuid: UUID,
     val identificatie: String? = null,
@@ -55,11 +55,17 @@ data class CreateZaakResponse(
     val deelzaken: List<URI>? = null,
     val relevanteAndereZaken: List<RelevanteZaak>? = null,
     val eigenschappen: List<URI>? = null,
-    val status: URI? = null,
+    val rollen: List<URI?>? = null,
+    val status: String? = null,
+    val zaakinformatieobjecten: List<URI>? = null,
+    val zaakobjecten: List<URI>? = null,
     val kenmerken: List<Kenmerk>? = null,
     val archiefnominatie: Archiefnominatie? = null,
-    val archiefstatus: Archiefstatus? = null,
+    val archiefstatus: ArchiefStatus? = null,
     val archiefactiedatum: LocalDate? = null,
     val resultaat: URI? = null,
     val opdrachtgevendeOrganisatie: String? = null,
+    val processobjectaard: String? = null,
+    val resultaattoelichting: String? = null,
+    val startdatumBewaartermijn: LocalDate? = null
 )

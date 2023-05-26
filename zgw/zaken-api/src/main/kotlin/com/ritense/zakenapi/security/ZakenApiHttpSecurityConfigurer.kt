@@ -28,6 +28,7 @@ class ZakenApiHttpSecurityConfigurer: HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/zaken-api/document/{documentId}/files").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/zaken-api/document/{documentId}/zaak").hasAuthority(USER)
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
