@@ -33,57 +33,39 @@ For more information check the following links.
 - Website: https://www.valtimo.nl
 - Documentation: https://docs.valtimo.nl
 
-## Getting started
-This is a step by step guide to setup a local Valtimo backend environment with **Spring Boot** and **IntelliJ**.
+## Running the Valtimo libraries from source
 
-* ⚠️ This repository is meant for development/contribution to the Valtimo platform. If you are looking for how to run a Valtimo instance locally, please consult the [public guide](https://docs.valtimo.nl/getting-started/first-dive/creating-your-own-valtimo-implementation).
- 
-* ⚠️ There are two editions of Valtimo: ‘Valtimo-core’ and ‘GZAC’. The ‘GZAC’ edition is a special Valtimo implementation meant for government organizations. At the moment of publication, this guide only works for the ‘GZAC’ Valtimo development environment. This due to a problem with the docker containers for the ‘Valtimo’ edition. For this reason, this guide is ‘GZAC’ focused.
+⚠️ The following instructions are for running Valtimo from source code. Usually with the intention of development/contribution to the Valtimo platform. If you only want to run a Valtimo implementation, please consult the [getting started guide](https://docs.valtimo.nl/getting-started/first-dive/creating-your-own-valtimo-implementation).
 
 ### Prerequisites:
 
+- Java 17
 - [Git](https://git-scm.com/downloads)
-- [IntelliJ](https://www.jetbrains.com/idea/download/)
+- An IDE like [IntelliJ](https://www.jetbrains.com/idea/download/) or [Eclipse](https://www.eclipse.org/downloads/)
 - [Docker (Desktop)](https://www.docker.com/products/docker-desktop/)
-- [NPM Package manager / NodeJS (version 16 or higher)](https://nodejs.org/en/download/)
  
 ### Setup the Valtimo environment:
 The environment consists of 3 components:
-* Docker containers for supporting services
-* Valtimo backend
-* Valtimo frontend
+* [Docker containers for supporting services](https://github.com/valtimo-platform/valtimo-docker-profiles)
+* Valtimo backend (this repository)
+* [Valtimo frontend](https://github.com/valtimo-platform/valtimo-frontend-libraries/)
 
-#### - Docker:
+#### - Docker containers for supporting services:
 1. Make sure docker is running.
-2. Open IntelliJ and create a new project from Version Control. Use the code URL from the **valtimo-docker-profiles** repository: [Valtimo docker github page](https://github.com/valtimo-platform/valtimo-docker-profiles).
-3. Open the terminal, go to the `gzac-platform` folder and run command 
+2. Clone the Git repository **valtimo-docker-profiles** repository: [Valtimo docker git repository](https://github.com/valtimo-platform/valtimo-docker-profiles).
+3. Open a terminal, go to the `valtimo-platform` folder and run command
     ```
-    docker compose up
+    docker compose up -d
     ``` 
-    ⚠️ Note that the first time it takes quite a while to pull the required images. Some containers start up and end after a short while, this is on purpose.
 
 #### - Valtimo Backend:
-1. In IntelliJ create a new project from Version Control. Use the code url from the **Valtimo-backend-libraries** repository [Valtimo backend github page](https://github.com/valtimo-platform/valtimo-backend-libraries).
-2. Open the `Gradle` view. Click the `Refresh` and the `hammer` icon to build the project
-3. Then run the `Gradle` bootRun for your desired edition (for the gzac edition this is app/gzac/application/bootRun)\
-⚠️ Note: use the same one as in the docker profiles repo:
-    * If you use `gzac` start `gzac` bootrun 
-    * If you used `valtimo-core` start `valtimo-core` bootrun
+1. Make sure this repository (the one where this README is a part of) is cloned to your workstation  
+2. The application can be started with the gradle task ```:app:valtimo-core:bootRun```. 
+
+The Valtimo backend api is now available at http://localhost:8080 . In order to work with it, you will need a running frontend implementation. See the next step.
 
 #### - Valtimo Frontend:
-1. In IntelliJ create a new project from Version Control. Use the code url from the **Valtimo-frontend-libraries** repository [Valtimo frontend github page](https://github.com/valtimo-platform/valtimo-frontend-libraries).
-2. Open the terminal and run the commands:
-    ```
-    nvm use 16
-    npm install 
-    ```
-3. Now build all the libraries with:
-    ```
-    npm run libs-build-all
-    ``` 
-5. Start the frontend with 
-    ```
-    npm start
-    ``` 
 
-The application runs on [localhost:4200](http://localhost:4200), the credentials (login/password) are **admin** for both fields.
+The Git repository for running a frontend implementation can be found here: [Valtimo frontend template](https://github.com/valtimo-platform/valtimo-frontend-template). The repository includes the instructions for running the frontend. 
+
+
