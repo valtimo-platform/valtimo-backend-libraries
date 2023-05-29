@@ -56,6 +56,7 @@ public interface AuditRecordRepository<T extends AuditRecord, ID extends AuditRe
         Pageable pageable
     );
 
+    //TODO: unused? @Marijn
     Page<AuditRecord> findAuditRecordsByProperty(String key, Object value, Pageable pageable);
 
     void deleteAllBefore(LocalDateTime date);

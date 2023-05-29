@@ -142,6 +142,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
+    //TODO: case VIEW @Marijn
     public List<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstances(Document.Id documentId) {
         var processes = processDocumentInstanceRepository.findAllByDocumentId(documentId);
         for (var process : processes) {
@@ -155,6 +156,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     @Transactional
+    //TODO: DENY @Marijn
     public void deleteProcessDocumentInstances(String processName) {
         logger.debug("Remove all running process document instances for process: {}", processName);
         processDocumentInstanceRepository.deleteAllByProcessName(processName);
@@ -230,6 +232,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Transactional
     @Override
+    //TODO: ??? @Marijn
     public Optional<CamundaProcessJsonSchemaDocumentInstance> createProcessDocumentInstance(
         String processInstanceId,
         UUID documentId,
@@ -252,6 +255,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
+    //TODO: unused - remove? @Marijn
     public FunctionResult<CamundaProcessJsonSchemaDocumentDefinition, OperationError> getProcessDocumentDefinitionResult(
         ProcessDocumentDefinitionId processDocumentDefinitionId
     ) {
@@ -265,6 +269,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
+    //TODO: ??? @Marijn
     public FunctionResult<CamundaProcessJsonSchemaDocumentInstance, OperationError> getProcessDocumentInstanceResult(
         ProcessDocumentInstanceId processDocumentInstanceId
     ) {
