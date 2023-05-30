@@ -61,7 +61,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import static com.ritense.authorization.AuthorizationContext.getWithoutAuthorization;
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
 public class JsonSchemaDocumentService implements DocumentService {
@@ -104,7 +104,6 @@ public class JsonSchemaDocumentService implements DocumentService {
             authorizationService.requirePermission(
                 new AuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    List.of(optionalDocument.get().definitionId().name()),
                     Action.VIEW
                 ),
                 optionalDocument.get(),
@@ -116,7 +115,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public JsonSchemaDocument get(String documentId) {
-        var documentOptional = getWithoutAuthorization(
+        var documentOptional = runWithoutAuthorization(
             () -> findBy(JsonSchemaDocumentId.existingId(UUID.fromString(documentId))));
 
         JsonSchemaDocument document = documentOptional.orElseThrow(
@@ -126,7 +125,6 @@ public class JsonSchemaDocumentService implements DocumentService {
         authorizationService.requirePermission(
             new AuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                List.of(document.definitionId().name()),
                 Action.VIEW
             ),
             document,
@@ -142,7 +140,6 @@ public class JsonSchemaDocumentService implements DocumentService {
             .getAuthorizationSpecification(
                 new AuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    List.of(definitionName),
                     Action.LIST_VIEW
                 ),
                 null
@@ -156,14 +153,12 @@ public class JsonSchemaDocumentService implements DocumentService {
         var spec = authorizationService.getAuthorizationSpecification(
             new AuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                null,
                 Action.LIST_VIEW
             ),
             null
         ).or(authorizationService.getAuthorizationSpecification(
             new AuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                null,
                 Action.VIEW
             ),
             null
@@ -176,7 +171,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     public JsonSchemaDocument.CreateDocumentResultImpl createDocument(
         NewDocumentRequest newDocumentRequest
     ) {
-        final JsonSchemaDocumentDefinition definition = getWithoutAuthorization(
+        final JsonSchemaDocumentDefinition definition = runWithoutAuthorization(
             () -> documentDefinitionService
                 .findLatestByName(newDocumentRequest.documentDefinitionName())
                 .orElseThrow(
@@ -204,7 +199,6 @@ public class JsonSchemaDocumentService implements DocumentService {
                 authorizationService.requirePermission(
                     new AuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        List.of(jsonSchemaDocument.definitionId().name()),
                         Action.CREATE
                     ),
                     jsonSchemaDocument,
@@ -225,7 +219,6 @@ public class JsonSchemaDocumentService implements DocumentService {
         authorizationService.requirePermission(
             new AuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                List.of(jsonSchemaDocument.definitionId().name()),
                 Action.MODIFY
             ),
             jsonSchemaDocument,
@@ -233,7 +226,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
 
         final var documentRequest = ModifyDocumentRequest.create(document, jsonNode);
-        final var modifyResult = getWithoutAuthorization(() -> modifyDocument(documentRequest));
+        final var modifyResult = runWithoutAuthorization(() -> modifyDocument(documentRequest));
         if (!modifyResult.errors().isEmpty()) {
             throw new ModifyDocumentException(modifyResult.errors());
         }
@@ -246,7 +239,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     ) {
         final var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(request.documentId()));
         final var version = JsonSchemaDocumentVersion.from(request.versionBasedOn());
-        final var document = getWithoutAuthorization(
+        final var document = runWithoutAuthorization(
             () -> findBy(documentId)
             .orElseThrow(
                 () -> new DocumentNotFoundException("Document not found with id " + request.documentId())
@@ -256,7 +249,6 @@ public class JsonSchemaDocumentService implements DocumentService {
         authorizationService.requirePermission(
             new AuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                List.of(document.definitionId().name()),
                 Action.MODIFY
             ),
             document,
@@ -268,7 +260,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             request.content(),
             request.jsonPatch()
         );
-        var documentDefinition = getWithoutAuthorization(
+        var documentDefinition = runWithoutAuthorization(
             () -> documentDefinitionService.findBy(document.definitionId()).orElseThrow()
         );
         final var result = document.applyModifiedContent(
@@ -291,7 +283,6 @@ public class JsonSchemaDocumentService implements DocumentService {
             .requirePermission(
                 new AuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    null,
                     Action.DENY
                 ),
                 null,
@@ -304,7 +295,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                 documentRelation.relationType()
             )
         );
-        getWithoutAuthorization(() ->findBy(documentId))
+        runWithoutAuthorization(() ->findBy(documentId))
             .ifPresent(document -> documentRepository.save(document.addRelatedDocument(jsonSchemaDocumentRelation)));
     }
 
@@ -319,7 +310,6 @@ public class JsonSchemaDocumentService implements DocumentService {
         authorizationService.requirePermission(
             new AuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                List.of(document.definitionId().name()),
                 Action.MODIFY
             ),
             document,
@@ -333,15 +323,34 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Override
     @Transactional
     public void assignResource(Document.Id documentId, UUID resourceId) {
-        // TODO: MODIFY
+        JsonSchemaDocument document = getDocumentBy(documentId);
+
+        authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                Action.MODIFY
+            ),
+            document,
+            null
+        );
+
         assignResource(documentId, resourceId, null);
     }
 
     @Override
     @Transactional
     public void assignResource(Document.Id documentId, UUID resourceId, Map<String, Object> metadata) {
-        // TODO: MODIFY
         JsonSchemaDocument document = getDocumentBy(documentId);
+
+        authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                Action.MODIFY
+            ),
+            document,
+            null
+        );
+
         final Resource resource = resourceService.getResource(resourceId);
         document.addRelatedFile(JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin()), metadata);
         documentRepository.save(document);
@@ -355,7 +364,6 @@ public class JsonSchemaDocumentService implements DocumentService {
         authorizationService.requirePermission(
             new AuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                List.of(document.definitionId().name()),
                 Action.MODIFY
             ),
             document,
@@ -367,8 +375,18 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     public JsonSchemaDocument getDocumentBy(Document.Id documentId) {
-        // TODO: VIEW
-        return findBy(documentId)
+        Optional<JsonSchemaDocument> optionalDocument = findBy(documentId);
+
+        optionalDocument.ifPresent(document -> authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                Action.VIEW
+            ),
+            document,
+            null
+        ));
+
+        return optionalDocument
             .orElseThrow(() -> new DocumentNotFoundException("Unable to find document with ID " + documentId));
     }
 
@@ -380,7 +398,6 @@ public class JsonSchemaDocumentService implements DocumentService {
                     authorizationService.requirePermission(
                         new AuthorizationRequest<>(
                             JsonSchemaDocument.class,
-                            List.of(document.definitionId().name()),
                             Action.DELETE
                         ),
                         document,
@@ -396,7 +413,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public void claim(UUID documentId) {
-        JsonSchemaDocument document = getWithoutAuthorization(
+        JsonSchemaDocument document = runWithoutAuthorization(
             () -> getDocumentBy(
                 JsonSchemaDocumentId.existingId(documentId)
             )
@@ -408,7 +425,6 @@ public class JsonSchemaDocumentService implements DocumentService {
                 .requirePermission(
                     new AuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        List.of(document.definitionId().name()),
                         Action.CLAIM
                     ),
                     document,
@@ -419,7 +435,6 @@ public class JsonSchemaDocumentService implements DocumentService {
                 .requirePermission(
                     new AuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        List.of(document.definitionId().name()),
                         Action.ASSIGN
                     ),
                     document,
@@ -437,7 +452,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public void assignUserToDocument(UUID documentId, String assigneeId) {
-        JsonSchemaDocument document = getWithoutAuthorization(
+        JsonSchemaDocument document = runWithoutAuthorization(
                 () -> getDocumentBy(
                     JsonSchemaDocumentId.existingId(documentId)
                 )
@@ -447,14 +462,13 @@ public class JsonSchemaDocumentService implements DocumentService {
             .requirePermission(
                 new AuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    List.of(document.definitionId().name()),
                     Action.ASSIGN
                 ),
                 document,
                 null
             );
 
-        var assignee = getWithoutAuthorization(() -> userManagementService.findById(assigneeId));
+        var assignee = runWithoutAuthorization(() -> userManagementService.findById(assigneeId));
         if (assignee == null) {
             logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
             throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
@@ -469,7 +483,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public void unassignUserFromDocument(UUID documentId) {
-        JsonSchemaDocument document = getWithoutAuthorization(
+        JsonSchemaDocument document = runWithoutAuthorization(
             () -> getDocumentBy(JsonSchemaDocumentId.existingId(documentId))
         );
 
@@ -477,7 +491,6 @@ public class JsonSchemaDocumentService implements DocumentService {
             .requirePermission(
                 new AuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    List.of(document.definitionId().name()),
                     Action.ASSIGN
                 ),
                 document,

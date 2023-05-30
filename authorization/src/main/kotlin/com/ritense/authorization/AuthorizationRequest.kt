@@ -19,6 +19,5 @@ package com.ritense.authorization
 class AuthorizationRequest<T>(
     val resourceType: Class<T>,
     //TODO: Should we make this argument the last one? Also, the default value of listOf isn't doing anything when `null` is provided.
-    val resources: List<String>? = listOf(),
     val action: Action,
 )

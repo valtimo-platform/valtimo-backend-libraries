@@ -55,8 +55,10 @@ public class SearchFieldResource implements DocumentSearchFields {
             return ResponseEntity.badRequest().build();
         }
 
-        AuthorizationContext.runWithoutAuthorization(() ->
-            searchFieldService.addSearchField(documentDefinitionName, SearchFieldMapper.toEntity(searchField, -1))
+        AuthorizationContext.runWithoutAuthorization(() -> {
+                searchFieldService.addSearchField(documentDefinitionName, SearchFieldMapper.toEntity(searchField, -1));
+                return null;
+            }
         );
 
         return ResponseEntity.ok().build();
@@ -79,8 +81,10 @@ public class SearchFieldResource implements DocumentSearchFields {
             return ResponseEntity.badRequest().build();
         }
 
-        AuthorizationContext.runWithoutAuthorization(() ->
-            searchFieldService.updateSearchFields(documentDefinitionName, searchFieldDtos)
+        AuthorizationContext.runWithoutAuthorization(() -> {
+                searchFieldService.updateSearchFields(documentDefinitionName, searchFieldDtos);
+                return null;
+            }
         );
 
         return ResponseEntity.ok().build();
@@ -95,8 +99,10 @@ public class SearchFieldResource implements DocumentSearchFields {
             return ResponseEntity.badRequest().build();
         }
 
-        AuthorizationContext.runWithoutAuthorization(() ->
-            searchFieldService.deleteSearchField(documentDefinitionName, key)
+        AuthorizationContext.runWithoutAuthorization(() -> {
+                searchFieldService.deleteSearchField(documentDefinitionName, key);
+                return null;
+            }
         );
         return ResponseEntity.noContent().build();
     }

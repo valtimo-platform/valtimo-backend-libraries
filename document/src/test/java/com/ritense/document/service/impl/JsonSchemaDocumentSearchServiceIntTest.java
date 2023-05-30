@@ -71,25 +71,26 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     @BeforeEach
     public void beforeEach() {
+
         definition = definition();
         documentDefinitionService.putDocumentDefinitionRoles(definition.id().name(), Set.of(USER, DEVELOPER));
         var content = new JsonDocumentContent("{\"street\": \"Funenpark\"}");
 
-        originalDocument = documentService.createDocument(
+        originalDocument = AuthorizationContext.runWithoutAuthorization(() -> documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
                 content.asJson()
             )
-        );
+        ));
 
         var content2 = new JsonDocumentContent("{\"street\": \"Kalverstraat\"}");
 
-        documentService.createDocument(
+        AuthorizationContext.runWithoutAuthorization(() -> documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
                 content2.asJson()
             )
-        );
+        ));
 
         JsonSchemaDocumentDefinition definitionHouseV2 = definitionOf("house", 2, "noautodeploy/house_v2.schema.json");
         documentDefinitionService.store(definitionHouseV2);
@@ -107,7 +108,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldNotFindSearchMatch() {
         final List<SearchCriteria> searchCriteriaList = List.of(new SearchCriteria("$.street", "random"));
 
@@ -225,7 +226,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldNotFindDocumentIfNotAllCriteriaMatch() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.street", "Kalver"),
@@ -678,7 +679,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldFailOnFromSearchWithoutRangeFrom() {
         documentRepository.deleteAllInBatch();
 
@@ -1001,8 +1002,10 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
         var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
 
-        AuthorizationContext.runWithoutAuthorization(() ->
-            documentService.assignUserToDocument(document2.id().getId(), USER_ID)
+        AuthorizationContext.runWithoutAuthorization(() -> {
+                documentService.assignUserToDocument(document2.id().getId(), USER_ID);
+                return null;
+            }
         );
 
         var searchRequest = new AdvancedSearchRequest()
@@ -1027,8 +1030,10 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
         var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
 
-        AuthorizationContext.runWithoutAuthorization(() ->
-            documentService.assignUserToDocument(document2.id().getId(), USER_ID)
+        AuthorizationContext.runWithoutAuthorization(() -> {
+                documentService.assignUserToDocument(document2.id().getId(), USER_ID);
+                return null;
+            }
         );
 
         var searchRequest = new AdvancedSearchRequest()
@@ -1053,11 +1058,13 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
 
         AuthorizationContext
-            .runWithoutAuthorization(() ->
-                documentService.assignUserToDocument(
-                    document2.id().getId(),
-                    USER_ID
-                )
+            .runWithoutAuthorization(() -> {
+                    documentService.assignUserToDocument(
+                        document2.id().getId(),
+                        USER_ID
+                    );
+                    return null;
+                }
             );
 
         var searchRequest = new AdvancedSearchRequest()
@@ -1077,7 +1084,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     private CreateDocumentResult createDocument(String content) {
         var documentContent = new JsonDocumentContent(content);
 
-        return AuthorizationContext.getWithoutAuthorization(
+        return AuthorizationContext.runWithoutAuthorization(
             () -> documentService.createDocument(
                 new NewDocumentRequest(
                     definition.id().name(),

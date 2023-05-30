@@ -37,7 +37,7 @@ class DocumentEventAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(JsonSchemaDocumentSpecificationFactory::class)
     fun jsonSchemaDocumentSpecificationFactory(
         queryDialectHelper: QueryDialectHelper
     ): AuthorizationSpecificationFactory<JsonSchemaDocument> {

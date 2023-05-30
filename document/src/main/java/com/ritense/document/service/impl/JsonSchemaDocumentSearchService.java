@@ -177,7 +177,6 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .getAuthorizationSpecification(
                     new AuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        null,
                         Action.VIEW
                     ),
                     null
@@ -204,7 +203,6 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .getAuthorizationSpecification(
                     new AuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        null,
                         Action.VIEW
                     ),
                     null

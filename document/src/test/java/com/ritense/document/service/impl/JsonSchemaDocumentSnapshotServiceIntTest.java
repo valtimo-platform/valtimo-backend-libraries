@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -23,6 +24,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.repository.impl.PostgresJsonSchemaDocumentSnapshotRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +45,8 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     private JsonSchemaDocument document;
     @Inject
     private DocumentDefinitionService documentDefinitionService;
+    @Inject
+    private PostgresJsonSchemaDocumentSnapshotRepository documentSnapshotRepository;
 
     @BeforeEach
     public void beforeEach() {
@@ -58,7 +62,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = "john@ritense.com", authorities = FULL_ACCESS_ROLE)
     public void shouldGetDocumentSnapshots() {
         final var page = documentSnapshotService.getDocumentSnapshots(
             definition.id().name(),
@@ -74,7 +78,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = "john@ritense.com", authorities = FULL_ACCESS_ROLE)
     public void shouldCreateSnapshotWhenCreatingDocument() {
 
         final var document = (JsonSchemaDocument) createDocument("{}");
@@ -97,7 +101,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = "john@ritense.com", authorities = FULL_ACCESS_ROLE)
     public void shouldCreateSnapshotWhenModifyingDocument() throws InterruptedException {
         final var request = new ModifyDocumentRequest(
             document.id().toString(),
@@ -124,12 +128,12 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     }
 
     private Document createDocument(String content) {
-        return documentService.createDocument(
+        return AuthorizationContext.runWithoutAuthorization(() -> documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
                 new JsonDocumentContent(content).asJson()
             )
-        ).resultingDocument().orElseThrow();
+        )).resultingDocument().orElseThrow();
     }
 
 }

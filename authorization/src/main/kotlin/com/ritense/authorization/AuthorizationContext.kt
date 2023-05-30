@@ -1,6 +1,6 @@
 package com.ritense.authorization
 
-import java.util.function.Supplier
+import java.util.concurrent.Callable
 
 
 class AuthorizationContext {
@@ -13,20 +13,14 @@ class AuthorizationContext {
             get() = ignoreAuthorizationThreadLocal.get()
 
         @JvmStatic
-        fun runWithoutAuthorization(runnable: Runnable) {
+        fun <T> runWithoutAuthorization(callable: Callable<T>): T {
             return try {
                 ignoreAuthorizationThreadLocal.set(true)
-                runnable.run()
-            } finally {
-                ignoreAuthorizationThreadLocal.set(false)
-            }
-        }
-
-        @JvmStatic
-        fun <T> getWithoutAuthorization(supplier: Supplier<T>): T {
-            return try {
-                ignoreAuthorizationThreadLocal.set(true)
-                supplier.get()
+                callable.call()
+            } catch (e: RuntimeException) {
+                throw e
+            } catch (e: Exception) {
+                throw RuntimeException(e)
             } finally {
                 ignoreAuthorizationThreadLocal.set(false)
             }

@@ -85,6 +85,7 @@ public class SearchConfigurationDeploymentService {
                                     searchConfigurationField -> databaseSearchField.getKey().equals(searchConfigurationField.getKey())));
                 searchFieldService.createSearchConfiguration(searchConfigurationFields);
                 logger.info("Deployed search configuration for document - {}", documentDefinitionName);
+                return null;
             });
         } catch (Exception e) {
             throw new SearchFieldConfigurationDeploymentException(documentDefinitionName, e);

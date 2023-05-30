@@ -60,7 +60,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
     @Test
     fun `should succeed when ran without authorization when action is DENY`() {
         assertDoesNotThrow {
-            AuthorizationContext.getWithoutAuthorization {
+            AuthorizationContext.runWithoutAuthorization {
                 requirePermission(Action.DENY)
             }
         }

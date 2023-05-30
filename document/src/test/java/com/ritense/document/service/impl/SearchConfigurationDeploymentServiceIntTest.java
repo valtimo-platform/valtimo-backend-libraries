@@ -44,7 +44,7 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
     void shouldDeploySearchConfigurationFromResourceFolder() {
         var documentDefinitionName = "person";
 
-        var searchFields = AuthorizationContext.getWithoutAuthorization(() -> searchFieldService.getSearchFields(documentDefinitionName));
+        var searchFields = AuthorizationContext.runWithoutAuthorization(() -> searchFieldService.getSearchFields(documentDefinitionName));
 
         assertThat(searchFields).hasSize(2);
         assertThat(searchFields.get(0).getId().getDocumentDefinitionName()).isEqualTo(documentDefinitionName);
@@ -85,7 +85,7 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
             searchFieldFactory.apply(1)
         );
 
-        List<SearchField> result = AuthorizationContext.getWithoutAuthorization(() -> {
+        List<SearchField> result = AuthorizationContext.runWithoutAuthorization(() -> {
             searchFieldService.createSearchConfiguration(searchFields);
             return searchFieldService.getSearchFields("house");
         });
@@ -107,6 +107,7 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
             searchFieldService.addSearchField("person", searchField);
             assertThrows(IllegalArgumentException.class,
                     () -> searchFieldService.addSearchField("person", searchField));
+            return null;
         });
     }
 

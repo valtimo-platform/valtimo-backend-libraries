@@ -139,7 +139,7 @@ class AuthorizationServiceTest {
         whenever(factory2.canCreate(any())).thenReturn(true)
 
         val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
-        val result = AuthorizationContext.getWithoutAuthorization {
+        val result = AuthorizationContext.runWithoutAuthorization {
             authorizationService.getAuthorizationSpecification(context)
         }
         assertEquals(true, result is NoopAuthorizationSpecification)

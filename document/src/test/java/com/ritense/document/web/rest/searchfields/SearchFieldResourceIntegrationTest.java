@@ -211,8 +211,10 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldUpdateSearchField() throws Exception {
-        AuthorizationContext.runWithoutAuthorization(() ->
-            searchFieldService.addSearchField(DOCUMENT_DEFINITION_NAME, SEARCH_FIELD)
+        AuthorizationContext.runWithoutAuthorization(() -> {
+                searchFieldService.addSearchField(DOCUMENT_DEFINITION_NAME, SEARCH_FIELD);
+                return null;
+            }
         );
         SearchFieldId searchFieldId = searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder(DOCUMENT_DEFINITION_NAME).get(0).getId();
         SearchFieldDto searchFieldToUpdate = new SearchFieldDto(

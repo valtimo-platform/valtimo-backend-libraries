@@ -16,7 +16,11 @@
 
 package com.ritense.document.service.impl;
 
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
@@ -36,18 +40,31 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     private final DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
     private final JsonSchemaDocumentService documentService;
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
+    private final AuthorizationService authorizationService;
 
-    public JsonSchemaDocumentSnapshotService(DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository, JsonSchemaDocumentService documentService, JsonSchemaDocumentDefinitionService documentDefinitionService) {
+    public JsonSchemaDocumentSnapshotService(DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository, JsonSchemaDocumentService documentService, JsonSchemaDocumentDefinitionService documentDefinitionService, AuthorizationService authorizationService) {
         this.documentSnapshotRepository = documentSnapshotRepository;
         this.documentService = documentService;
         this.documentDefinitionService = documentDefinitionService;
+        this.authorizationService = authorizationService;
     }
 
     @Override
     public Optional<JsonSchemaDocumentSnapshot> findById(DocumentSnapshot.Id id) {
-        // TODO: Retrieve document for snapshot
-        // TODO: VIEW on JsonSchemaDocument
-        return documentSnapshotRepository.findById(id);
+        Optional<JsonSchemaDocumentSnapshot> optionalSnapshot = documentSnapshotRepository.findById(id);
+        optionalSnapshot.ifPresent(snapshot -> {
+            JsonSchemaDocument document = documentService.getDocumentBy(snapshot.document().id());
+            authorizationService
+                .requirePermission(
+                    new AuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        Action.VIEW
+                    ),
+                    document,
+                    null
+                );
+        });
+        return optionalSnapshot;
     }
 
     @Override
@@ -58,9 +75,19 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
         LocalDateTime toDateTime,
         Pageable pageable
     ) {
+        // TODO: DocumentId can be null. Should instead use the toPredicate method
+        JsonSchemaDocument document = documentService.getDocumentBy(documentId);
+        authorizationService
+            .requirePermission(
+                new AuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    Action.VIEW
+                ),
+                document,
+                null
+            );
+
         List<String> roles = SecurityUtils.getCurrentUserRoles();
-        // TODO: Retrieve document for snapshot
-        // TODO: VIEW on JsonSchemaDocument
         return documentSnapshotRepository.getDocumentSnapshots(
             definitionName,
             documentId,
@@ -74,7 +101,8 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     @Transactional
     @Override
     public void makeSnapshot(Document.Id documentId, LocalDateTime createdOn, String createdBy) {
-        // TODO: DENY
+        denyAuthorization();
+
         var document = documentService.findBy(documentId)
             .orElseThrow(() -> new DocumentNotFoundException("Document not found with id " + documentId));
 
@@ -87,8 +115,20 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     @Transactional
     @Override
     public void deleteSnapshotsBy(String documentDefinitionName) {
-        // TODO: DENY
+        denyAuthorization();
+
         documentSnapshotRepository.deleteAllByDefinitionName(documentDefinitionName);
+    }
+
+    private void denyAuthorization() {
+        authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                JsonSchemaDocumentSnapshot.class,
+                Action.DENY
+            ),
+            null,
+            null
+        );
     }
 
 }
