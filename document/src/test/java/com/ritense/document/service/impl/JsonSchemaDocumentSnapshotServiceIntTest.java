@@ -52,7 +52,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     public void beforeEach() {
         definition = definition();
         documentDefinitionService.store(definition);
-        documentDefinitionService.putDocumentDefinitionRoles(definition.id().name(), Set.of(USER));
+        documentDefinitionService.putDocumentDefinitionRoles(definition.id().name(), Set.of(FULL_ACCESS_ROLE));
         document = (JsonSchemaDocument) createDocument("{\"street\": \"Funenpark\"}");
     }
 

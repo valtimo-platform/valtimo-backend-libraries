@@ -162,6 +162,13 @@ public abstract class BaseIntegrationTest extends BaseTest {
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
+                Action.MODIFY,
+                new ConditionContainer(Collections.emptyList()),
+                FULL_ACCESS_ROLE
+            ),
+            new Permission(
+                UUID.randomUUID(),
+                JsonSchemaDocument.class,
                 Action.CREATE,
                 new ConditionContainer(Collections.emptyList()),
                 FULL_ACCESS_ROLE
