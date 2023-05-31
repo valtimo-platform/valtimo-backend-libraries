@@ -14,25 +14,6 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.formflow
+package com.ritense.valtimo.web.rest
 
-import com.ritense.resource.service.ResourceService
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.test.mock.mockito.MockBean
-
-@SpringBootApplication
-class TestApplication {
-
-    fun main(args: Array<String>) {
-        runApplication<TestApplication>(*args)
-    }
-
-    @TestConfiguration
-    class TestConfig {
-
-        @MockBean
-        lateinit var resourceService: ResourceService
-    }
-}
+class CoreCoreSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()

@@ -17,9 +17,12 @@
 package com.ritense.case
 
 import com.ritense.case.configuration.CaseAutoConfiguration
+import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.test.mock.mockito.MockBean
 
 @SpringBootApplication(
     scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class, CaseAutoConfiguration::class],
@@ -28,5 +31,13 @@ class TestApplication {
 
     fun main(args: Array<String>) {
         runApplication<TestApplication>(*args)
+    }
+
+    @TestConfiguration
+    class TestConfig {
+
+        @MockBean
+        lateinit var resourceService: ResourceService
+
     }
 }

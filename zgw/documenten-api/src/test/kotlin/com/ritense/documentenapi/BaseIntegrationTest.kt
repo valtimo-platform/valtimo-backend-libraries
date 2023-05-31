@@ -16,11 +16,9 @@
 
 package com.ritense.documentenapi
 
-import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
-import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import okhttp3.mockwebserver.MockResponse
@@ -51,12 +49,6 @@ class BaseIntegrationTest {
 
     @MockBean
     lateinit var userManagementService: UserManagementService
-
-    @MockBean
-    lateinit var resourceService: ResourceService
-
-    @MockBean
-    lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
 
     @TestComponent
     class Consumer {

@@ -17,6 +17,7 @@
 package com.ritense.valtimo.web.rest;
 
 import org.springframework.web.bind.annotation.RequestMethod;
+
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;

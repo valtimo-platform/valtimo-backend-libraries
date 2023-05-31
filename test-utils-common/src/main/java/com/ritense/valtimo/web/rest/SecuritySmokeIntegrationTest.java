@@ -17,6 +17,7 @@
 package com.ritense.valtimo.web.rest;
 
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.mail.MailSender;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.TestFactory;
@@ -41,6 +42,8 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.NameValueExpression;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.pattern.PathPattern;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +54,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -62,7 +66,10 @@ public abstract class SecuritySmokeIntegrationTest {
     @MockBean
     public UserManagementService userManagementService;
 
-    @Qualifier("controllerEndpointHandlerMapping")
+    @MockBean
+    public MailSender mailSender;
+
+    @Qualifier("requestMappingHandlerMapping")
     @Autowired
     private RequestMappingHandlerMapping handlerMapping;
 
@@ -90,7 +97,7 @@ public abstract class SecuritySmokeIntegrationTest {
         final HandlerMethod handlerMethod = entry.getValue();
 
         final String methods = key.getMethodsCondition().getMethods().stream().map(Object::toString).collect(Collectors.joining("|"));
-        final Set<String> patterns = key.getPatternsCondition().getPatterns();
+        final Set<String> patterns = getPathPatternsCondition(key);
 
         String testName = String.format("%s %s", methods, String.join(", ", patterns));
 
@@ -225,11 +232,21 @@ public abstract class SecuritySmokeIntegrationTest {
     }
 
     private Optional<String> findSimplePath(RequestMappingInfo key) {
-        Set<String> patterns = key.getPatternsCondition().getPatterns();
+        Set<String> patterns = getPathPatternsCondition(key);
         return patterns.stream()
             .filter(s -> !s.matches(".*\\{.*:.*\\}.*"))
             .findFirst()
             .map(s -> s.replaceAll("\\{.*\\}", "1337"));
+    }
+
+    private Set<String> getPathPatternsCondition(RequestMappingInfo key) {
+        if (key.getPathPatternsCondition() != null) {
+            return key.getPathPatternsCondition().getPatterns().stream()
+                .map(PathPattern::getPatternString)
+                .collect(Collectors.toSet());
+        } else {
+            return Set.of();
+        }
     }
 
     enum SecurityResult {
