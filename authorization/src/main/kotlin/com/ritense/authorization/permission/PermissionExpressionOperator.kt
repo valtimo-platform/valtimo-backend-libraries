@@ -17,11 +17,11 @@
 package com.ritense.authorization.permission
 
 import com.fasterxml.jackson.annotation.JsonValue
+import org.springframework.expression.spel.standard.SpelExpressionParser
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.Expression
 import javax.persistence.criteria.Predicate
 import kotlin.reflect.full.isSubclassOf
-import org.springframework.expression.spel.standard.SpelExpressionParser
 
 enum class PermissionExpressionOperator(
     @JsonValue val asText: String,
