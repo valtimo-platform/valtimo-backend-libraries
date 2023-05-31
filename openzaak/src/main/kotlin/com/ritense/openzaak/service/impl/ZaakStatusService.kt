@@ -16,6 +16,7 @@
 
 package com.ritense.openzaak.service.impl
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.service.ZaakStatusService
@@ -56,7 +57,7 @@ class ZaakStatusService(
     }
 
     override fun setStatus(documentId: Document.Id, status: String) {
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = AuthorizationContext.runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
         val zaakTypeLink = zaakTypeLinkService.findBy(document.definitionId().name())
         val zaakInstanceUrl = zaakInstanceLinkService.getByDocumentId(documentId.id).zaakInstanceUrl
         val statusUri = getStatusTypeByOmschrijving(zaakTypeLink.zaakTypeUrl, status).url!!

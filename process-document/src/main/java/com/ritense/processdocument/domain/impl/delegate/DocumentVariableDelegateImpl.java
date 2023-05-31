@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.domain.delegate.DocumentVariableDelegate;
@@ -50,8 +51,8 @@ public class DocumentVariableDelegateImpl implements DocumentVariableDelegate {
     public Object findValueByJsonPointerOrDefault(String jsonPointer, DelegateExecution execution, Object defaultValue) {
         final var jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(execution.getProcessBusinessKey()));
         logger.debug("Retrieving value for key {} from documentId {}", jsonPointer, execution.getProcessBusinessKey());
-        return documentService
-            .findBy(jsonSchemaDocumentId)
+        return AuthorizationContext.runWithoutAuthorization(() -> documentService
+            .findBy(jsonSchemaDocumentId))
             .flatMap(jsonSchemaDocument -> jsonSchemaDocument.content().getValueBy(JsonPointer.valueOf(jsonPointer)))
             .map(this::transform)
             .orElse(defaultValue);

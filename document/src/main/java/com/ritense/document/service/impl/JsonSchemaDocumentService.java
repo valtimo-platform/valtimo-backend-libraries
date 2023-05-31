@@ -18,6 +18,7 @@ package com.ritense.document.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.AuthorizationSpecification;
@@ -148,6 +149,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         return documentRepository.findAll(spec.and(JsonSchemaDocumentSpecification.byDocumentDefinitionIdName(definitionName)), pageable);
     }
 
+    // TODO: Can this be removed?
     @Override
     public Page<JsonSchemaDocument> getAll(Pageable pageable) {
         var spec = authorizationService.getAuthorizationSpecification(
@@ -392,7 +394,9 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public void removeDocuments(String documentDefinitionName) {
-        List<JsonSchemaDocument> documents = getAllByDocumentDefinitionName(Pageable.unpaged(), documentDefinitionName).toList();
+        List<JsonSchemaDocument> documents = AuthorizationContext
+            .runWithoutAuthorization(
+                () -> getAllByDocumentDefinitionName(Pageable.unpaged(), documentDefinitionName).toList());
         if (!documents.isEmpty()) {
             documents.forEach(document -> {
                     authorizationService.requirePermission(
@@ -523,12 +527,6 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
     }
 
-    private Set<String> getDocumentRoles(Document.Id documentId) {
-        // TODO determine permissions (and thus roles) based on document ID
-        var document = get(documentId.toString());
-        return documentDefinitionService.getDocumentDefinitionRoles(document.definitionId().name());
-    }
-
     @Override
     public List<NamedUser> getCandidateUsers(Document.Id documentId) {
         // TODO: Determine permissions
@@ -536,4 +534,11 @@ public class JsonSchemaDocumentService implements DocumentService {
 
         return userManagementService.findNamedUserByRoles(getDocumentRoles(documentId));
     }
+
+    private Set<String> getDocumentRoles(Document.Id documentId) {
+        // TODO determine permissions (and thus roles) based on document ID
+        var document = AuthorizationContext.runWithoutAuthorization(() -> get(documentId.toString()));
+        return documentDefinitionService.getDocumentDefinitionRoles(document.definitionId().name());
+    }
+
 }

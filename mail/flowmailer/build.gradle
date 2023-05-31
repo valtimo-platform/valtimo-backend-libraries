@@ -23,6 +23,7 @@ dockerCompose {
 
 dependencies {
     api project(":mail")
+    implementation project(":authorization")
     implementation project(":connector")
     implementation project(":document")
     implementation project(":resource")

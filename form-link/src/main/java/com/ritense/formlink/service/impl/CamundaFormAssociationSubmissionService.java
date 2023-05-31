@@ -18,6 +18,7 @@ package com.ritense.formlink.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -104,9 +105,12 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
 
             JsonSchemaDocument document = null;
             if (documentId != null) {
-                document = (JsonSchemaDocument) documentService.findBy(
-                    JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
-                ).orElseThrow(() -> new DocumentNotFoundException(String.format("Unable to find a Document for document ID '%s'", documentId)));
+                document = (JsonSchemaDocument) AuthorizationContext
+                    .runWithoutAuthorization(
+                        () -> documentService.findBy(
+                            JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+                        )
+                    ).orElseThrow(() -> new DocumentNotFoundException(String.format("Unable to find a Document for document ID '%s'", documentId)));
 
                 authorizationService
                     .requirePermission(

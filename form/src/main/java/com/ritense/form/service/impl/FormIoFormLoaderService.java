@@ -17,6 +17,7 @@
 package com.ritense.form.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
 import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormIoFormDefinition;
@@ -47,7 +48,7 @@ public class FormIoFormLoaderService implements FormLoaderService {
     @Override
     public Optional<JsonNode> getFormDefinitionByNamePreFilled(final String formDefinitionName, final Document.Id documentId) {
         assertArgumentNotNull(documentId, "documentId is required");
-        return documentService.findBy(documentId)
+        return AuthorizationContext.runWithoutAuthorization(() -> documentService.findBy(documentId))
             .flatMap(jsonSchemaDocument -> formDefinitionRepository.findByName(formDefinitionName)
                 .map(formIoFormDefinition -> {
                     formIoFormDefinition.preFill(jsonSchemaDocument.content().asJson());

@@ -39,7 +39,8 @@ class DocumentDelegate(
             val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
             val user = userManagementService.findByEmail(userEmail)
                 .orElseThrow { IllegalArgumentException("No user found with email: $userEmail") }
-            documentService.assignUserToDocument(documentId.id, user.id)
+            AuthorizationContext
+                .runWithoutAuthorization { documentService.assignUserToDocument(documentId.id, user.id) }
         }
     }
 

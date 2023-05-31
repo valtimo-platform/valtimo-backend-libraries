@@ -16,6 +16,7 @@
 
 package com.ritense.externalevent.service
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
@@ -49,7 +50,7 @@ class ExternalTaskService(
     fun publishPortalTask(formDefinitionName: String, task: DelegateTask) {
         val formDefinition = formIoFormDefinitionService.getFormDefinitionByName(formDefinitionName).orElseThrow()
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(task.execution.processBusinessKey))
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = AuthorizationContext.runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
         formDefinition.preFill(document.content().asJson())
 
         sink.tryEmitNext(
@@ -83,7 +84,7 @@ class ExternalTaskService(
 
     fun completeTask(completeTaskMessage: CompleteTaskMessage) {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(completeTaskMessage.externalCaseId))
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = AuthorizationContext.runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
 
         val modifyDocumentRequest = ModifyDocumentRequest(
             completeTaskMessage.externalCaseId,

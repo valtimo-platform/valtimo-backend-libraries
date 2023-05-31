@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.service.impl;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentService;
@@ -106,7 +107,8 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             final var processDefinitionKey = new CamundaProcessDefinitionKey(request.processDefinitionKey());
             final var newDocumentRequest = request.newDocumentRequest();
 
-            final var newDocumentResult = documentService.createDocument(newDocumentRequest);
+            final var newDocumentResult = AuthorizationContext
+                .runWithoutAuthorization(() -> documentService.createDocument(newDocumentRequest));
 
             if (newDocumentResult.resultingDocument().isEmpty()) {
                 return new NewDocumentAndStartProcessResultFailed(newDocumentResult.errors());
@@ -159,7 +161,8 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
                 return new ModifyDocumentAndCompleteTaskResultFailed(processDocumentInstanceResult.errors());
             }
 
-            final var modifyDocumentResult = documentService.modifyDocument(modifyDocumentRequest);
+            final var modifyDocumentResult = AuthorizationContext
+                .runWithoutAuthorization(() -> documentService.modifyDocument(modifyDocumentRequest));
             if (modifyDocumentResult.resultingDocument().isEmpty()) {
                 return new ModifyDocumentAndCompleteTaskResultFailed(modifyDocumentResult.errors());
             }
@@ -180,7 +183,8 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             final var processInstanceId = new CamundaProcessInstanceId(request.processInstanceId());
             final var newDocumentRequest = request.newDocumentRequest();
 
-            final var newDocumentResult = documentService.createDocument(newDocumentRequest);
+            final var newDocumentResult = AuthorizationContext
+                .runWithoutAuthorization(() -> documentService.createDocument(newDocumentRequest));
 
             if (newDocumentResult.resultingDocument().isEmpty()) {
                 return new NewDocumentForRunningProcessResultFailed(newDocumentResult.errors());
@@ -211,7 +215,8 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     ) {
         try {
             //Part 1 Modify document
-            final var modifyDocumentResult = documentService.modifyDocument(request.modifyDocumentRequest());
+            final var modifyDocumentResult = AuthorizationContext
+                .runWithoutAuthorization(() -> documentService.modifyDocument(request.modifyDocumentRequest()));
 
             if (modifyDocumentResult.resultingDocument().isEmpty()) {
                 return new ModifyDocumentAndStartProcessResultFailed(modifyDocumentResult.errors());
@@ -239,7 +244,8 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     public StartProcessForDocumentResult startProcessForDocument(StartProcessForDocumentRequest request) {
         try {
             //Part 1 find document
-            Optional<? extends Document> optionalDocument = documentService.findBy(request.getDocumentId());
+            Optional<? extends Document> optionalDocument = AuthorizationContext
+                .runWithoutAuthorization(() -> documentService.findBy(request.getDocumentId()));
 
             if (optionalDocument.isEmpty()) {
                 return new StartProcessForDocumentResultFailed(new OperationError.FromString("Document could not be found"));
@@ -283,7 +289,10 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     }
 
     public Document getDocument(ProcessInstanceId processInstanceId, VariableScope variableScope) {
-        return documentService.get(getDocumentId(processInstanceId, variableScope).toString());
+        return AuthorizationContext
+            .runWithoutAuthorization(
+                () -> documentService.get(getDocumentId(processInstanceId, variableScope).toString())
+            );
     }
 
     @Override

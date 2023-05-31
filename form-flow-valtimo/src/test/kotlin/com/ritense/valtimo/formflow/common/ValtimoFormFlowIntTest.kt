@@ -17,6 +17,7 @@
 package com.ritense.valtimo.formflow.common
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.formflow.domain.instance.FormFlowInstance
@@ -67,7 +68,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     lateinit var processLinkService: ProcessLinkService
 
     @Autowired
-    lateinit var docummentService: DocumentService
+    lateinit var documentService: DocumentService
 
     @Autowired
     lateinit var newProcessLinkService: com.ritense.processlink.service.ProcessLinkService
@@ -161,12 +162,16 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
             .getInstanceById(FormFlowInstanceId.existingId(startEventResponse.properties.formFlowInstanceId))
 
         // number before complete
-        val totalDocumentsBefore = docummentService.getAllByDocumentDefinitionName(Pageable.unpaged(), "profile").totalElements
+        val totalDocumentsBefore = AuthorizationContext.runWithoutAuthorization {
+            documentService.getAllByDocumentDefinitionName(Pageable.unpaged(), "profile").totalElements
+        }
 
         formFlowStepComplete(formFlowInstance, submission = """{"street":"Koningin Wilhelminaplein","approval":true}""")
 
         //find latest document
-        val allDocuments = docummentService.getAllByDocumentDefinitionName(Pageable.unpaged(), "profile")
+        val allDocuments = AuthorizationContext.runWithoutAuthorization {
+            documentService.getAllByDocumentDefinitionName(Pageable.unpaged(), "profile")
+        }
         val latestDocument = allDocuments.content.sortedByDescending { it.createdOn() }.first()
 
         assertEquals(allDocuments.totalElements, totalDocumentsBefore+1)
@@ -193,12 +198,14 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         deployFormFlow(onComplete = "\${valtimoFormFlow.startSupportingProcess(instance.id, {'doc:/address/streetName':'/street', 'pv:approved':'/approval'})}")
         val processLink = linkFormFlowToStartEvent()
 
-        val document = docummentService.createDocument(
-            NewDocumentRequest(
-                "profile",
-                Mapper.INSTANCE.get().readTree("{}")
-            )
-        ).resultingDocument().get()
+        val document = AuthorizationContext.runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    "profile",
+                    Mapper.INSTANCE.get().readTree("{}")
+                )
+            ).resultingDocument().get()
+        }
 
         val startEventResponse = processLinkActivityHandler.getStartEventObject(
             getProcessDefinitionId(),
@@ -211,7 +218,9 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
 
         formFlowStepComplete(formFlowInstance, submission = """{"street":"Koningin Wilhelminaplein","approval":true}""")
 
-        val updatedDocument = docummentService.get(document.id().toString())
+        val updatedDocument = AuthorizationContext.runWithoutAuthorization {
+            documentService.get(document.id().toString())
+        }
 
         assertEquals(
             """{"address":{"streetName":"Koningin Wilhelminaplein"}}""",

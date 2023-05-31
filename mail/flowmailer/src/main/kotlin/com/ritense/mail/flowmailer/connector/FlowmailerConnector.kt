@@ -17,6 +17,7 @@ package com.ritense.mail.flowmailer.connector
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
@@ -91,9 +92,10 @@ class FlowmailerConnector(
         pathToRecipientCollection: String,
         itemEmailProperty: String
     ): FlowmailerConnector {
-        val document = documentService
-            .findBy(JsonSchemaDocumentId.existingId(UUID.fromString(delegateExecution.businessKey)))
-            .orElseThrow()
+        val document = AuthorizationContext.runWithoutAuthorization {
+            documentService
+                .findBy(JsonSchemaDocumentId.existingId(UUID.fromString(delegateExecution.businessKey)))
+        }.orElseThrow()
 
         val recipientsArrayNode = document
             .content()
@@ -122,9 +124,11 @@ class FlowmailerConnector(
         key: String,
         pathToValue: String
     ): FlowmailerConnector {
-        val document = documentService.findBy(
-            JsonSchemaDocumentId.existingId(UUID.fromString(delegateExecution.businessKey))
-        ).orElseThrow()
+        val document = AuthorizationContext.runWithoutAuthorization {
+            documentService.findBy(
+                JsonSchemaDocumentId.existingId(UUID.fromString(delegateExecution.businessKey))
+            )
+        }.orElseThrow()
         val value = document.content().getValueBy(JsonPointer.valueOf(pathToValue)).orElseThrow().asText()
         this.placeholders + Pair(key, value)
         return this

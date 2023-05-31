@@ -16,6 +16,7 @@
 
 package com.ritense.document.domain.impl.listener;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.relation.JsonSchemaDocumentRelation;
 import com.ritense.document.domain.listener.RelatedDocumentAvailableEventListener;
@@ -35,7 +36,11 @@ public class RelatedJsonSchemaDocumentAvailableEventListenerImpl implements Rela
     public void handle(NextDocumentRelationAvailableEvent event) {
         final var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(event.previousDocumentId()));
         final var documentRelation = documentRelation(event);
-        documentService.assignDocumentRelation(documentId, documentRelation);
+        AuthorizationContext
+            .runWithoutAuthorization(() -> {
+                documentService.assignDocumentRelation(documentId, documentRelation);
+                return null;
+            });
     }
 
     private JsonSchemaDocumentRelation documentRelation(NextDocumentRelationAvailableEvent event) {

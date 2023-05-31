@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
@@ -47,7 +48,10 @@ public class UndeployJsonSchemaDocumentDefinitionService implements UndeployDocu
         try {
             Optional<JsonSchemaDocumentDefinition> documentDefinition = documentDefinitionService.findLatestByName(documentDefinitionName);
             if (documentDefinition.isPresent() && !documentDefinition.get().isReadOnly()) {
-                documentService.removeDocuments(documentDefinitionName);
+                AuthorizationContext.runWithoutAuthorization(() -> {
+                    documentService.removeDocuments(documentDefinitionName);
+                    return null;
+                });
                 documentDefinitionService.removeDocumentDefinition(documentDefinitionName);
                 applicationEventPublisher.publishEvent(new UndeployDocumentDefinitionEvent(documentDefinitionName));
                 return new UndeployDocumentDefinitionResultSucceeded(documentDefinitionName);

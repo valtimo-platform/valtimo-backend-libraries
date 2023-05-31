@@ -19,6 +19,7 @@ package com.ritense.verzoek
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -36,8 +37,8 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
-import org.springframework.context.event.EventListener
 import mu.KotlinLogging
+import org.springframework.context.event.EventListener
 import java.net.URI
 
 class VerzoekPluginEventListener(
@@ -77,16 +78,16 @@ class VerzoekPluginEventListener(
             val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
             val startProcessRequest = StartProcessForDocumentRequest(
                 document.id(), processToStart, mapOf(
-                    "RSIN" to this.rsin.toString(),
-                    "zaakTypeUrl" to zaakTypeUrl.toString(),
-                    "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
-                    "rolDescription" to verzoekTypeProperties.initiatorRolDescription,
-                    "verzoekObjectUrl" to event.resourceUrl,
-                    "initiatorType" to initiatorType,
-                    "initiatorValue" to verzoekObjectData.get(initiatorType).textValue(),
-                    "processDefinitionKey" to verzoekTypeProperties.processDefinitionKey,
-                    "documentUrls" to getDocumentUrls(verzoekObjectData)
-                )
+                "RSIN" to this.rsin.toString(),
+                "zaakTypeUrl" to zaakTypeUrl.toString(),
+                "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
+                "rolDescription" to verzoekTypeProperties.initiatorRolDescription,
+                "verzoekObjectUrl" to event.resourceUrl,
+                "initiatorType" to initiatorType,
+                "initiatorValue" to verzoekObjectData.get(initiatorType).textValue(),
+                "processDefinitionKey" to verzoekTypeProperties.processDefinitionKey,
+                "documentUrls" to getDocumentUrls(verzoekObjectData)
+            )
             )
 
             startProcess(startProcessRequest)
@@ -135,17 +136,19 @@ class VerzoekPluginEventListener(
         verzoekTypeProperties: VerzoekProperties,
         verzoekObjectData: JsonNode
     ): Document {
-        return documentService.createDocument(
-            NewDocumentRequest(
-                verzoekTypeProperties.caseDefinitionName,
-                getDocumentContent(verzoekTypeProperties, verzoekObjectData)
+        return AuthorizationContext.runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    verzoekTypeProperties.caseDefinitionName,
+                    getDocumentContent(verzoekTypeProperties, verzoekObjectData)
+                )
             )
-        ).also { result ->
+        }.also { result ->
             if (result.errors().size > 0) {
                 throw NotificatiesNotificationEventException(
                     "Could not create document for case ${verzoekTypeProperties.caseDefinitionName}\n" +
-                            "Reason:\n" +
-                            result.errors().joinToString(separator = "\n - ")
+                        "Reason:\n" +
+                        result.errors().joinToString(separator = "\n - ")
                 )
             }
         }.resultingDocument().orElseThrow()
@@ -183,11 +186,12 @@ class VerzoekPluginEventListener(
         if (result == null || result.errors().size > 0) {
             throw NotificatiesNotificationEventException(
                 "Could not start process ${startProcessRequest.processDefinitionKey}\n" +
-                        "Reason:\n" +
-                        result.errors().joinToString(separator = "\n - ")
+                    "Reason:\n" +
+                    result.errors().joinToString(separator = "\n - ")
             )
         }
     }
+
     companion object {
         val logger = KotlinLogging.logger {}
     }

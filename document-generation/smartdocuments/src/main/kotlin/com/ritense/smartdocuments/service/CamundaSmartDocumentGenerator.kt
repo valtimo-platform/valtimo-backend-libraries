@@ -17,6 +17,7 @@
 package com.ritense.smartdocuments.service
 
 import com.fasterxml.jackson.core.JsonPointer
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
@@ -43,11 +44,15 @@ class CamundaSmartDocumentGenerator(
         val processDocumentInstance = processDocumentAssociationService.findProcessDocumentInstance(processInstanceId)
         return if (processDocumentInstance.isPresent) {
             val jsonSchemaDocumentId = processDocumentInstance.get().processDocumentInstanceId().documentId()
-            documentService.findBy(jsonSchemaDocumentId).orElseThrow()
+            AuthorizationContext.runWithoutAuthorization {
+                documentService.findBy(jsonSchemaDocumentId).orElseThrow()
+            }
         } else {
             // In case a process has no token wait state ProcessDocumentInstance is not yet created,
             // therefore out business-key is our last chance which is populated with the documentId also.
-            documentService.get(delegateExecution.businessKey)
+            AuthorizationContext.runWithoutAuthorization {
+                documentService.get(delegateExecution.businessKey)
+            }
         }
     }
 

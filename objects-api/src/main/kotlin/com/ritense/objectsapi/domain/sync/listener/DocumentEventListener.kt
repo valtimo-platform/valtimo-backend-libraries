@@ -17,6 +17,7 @@
 package com.ritense.objectsapi.domain.sync.listener
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.connector.service.ConnectorFluentBuilder
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentCreatedEvent
@@ -55,7 +56,9 @@ open class DocumentEventListener(
                         .builder()
                         .withConnector(connectorInstance.name) as ObjectsApiConnector
 
-                    val document = documentService.findBy(event.documentId()).orElseThrow()
+                    val document = AuthorizationContext
+                        .runWithoutAuthorization { documentService.findBy(event.documentId()) }
+                        .orElseThrow()
                     val content = document.content().asJson() as ObjectNode
                     content.put("caseId", event.documentId().id.toString())
                     objectsApiConnector.payload(content)
@@ -71,7 +74,9 @@ open class DocumentEventListener(
     )
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     open fun handleDocumentModifiedEvent(event: JsonSchemaDocumentModifiedEvent) {
-        val document = documentService.findBy(event.documentId()).orElseThrow()
+        val document = AuthorizationContext
+            .runWithoutAuthorization { documentService.findBy(event.documentId()) }
+            .orElseThrow()
         val objectSyncConfig = objectSyncService.getObjectSyncConfig(document.definitionId().name())
         objectSyncConfig.content.forEach {
             when {

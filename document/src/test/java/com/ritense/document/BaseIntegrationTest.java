@@ -103,8 +103,6 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @MockBean
     public SimpleApplicationEventMulticaster applicationEventMulticaster;
-
-    protected static final String ROLE1 = "test-role-1";
     protected static final String FULL_ACCESS_ROLE = "full access role";
 
     @BeforeAll
@@ -141,7 +139,6 @@ public abstract class BaseIntegrationTest extends BaseTest {
     }
 
     private void setUpPermissions() {
-        roleRepository.save(new Role(ROLE1));
         roleRepository.save(new Role(FULL_ACCESS_ROLE));
 
         List<Permission> permissions = List.of(

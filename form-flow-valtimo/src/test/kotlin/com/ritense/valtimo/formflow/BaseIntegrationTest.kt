@@ -39,9 +39,5 @@ class BaseIntegrationTest : BaseTest() {
 
     @MockBean
     lateinit var resourceService: ResourceService
-
-    // TODO: remove authorization service mocking when call to run without permissions is added
-    @MockBean
-    lateinit var authorizationService: AuthorizationService
 }
 
