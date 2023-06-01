@@ -16,8 +16,12 @@
 
 package com.ritense.valtimo.contract.domain
 
+import org.springframework.http.MediaType
+import java.nio.charset.StandardCharsets.UTF_8
+
 object ValtimoMediaType {
 
+    val APPLICATION_JSON_UTF8 = MediaType("application", "json", UTF_8);
     const val APPLICATION_JSON_UTF8_VALUE = "application/json;charset=UTF-8"
     const val TEXT_PLAIN_UTF8_VALUE = "text/plain;charset=UTF-8"
 
