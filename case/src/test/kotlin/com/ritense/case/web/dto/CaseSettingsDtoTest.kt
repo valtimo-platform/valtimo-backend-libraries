@@ -47,6 +47,6 @@ class CaseSettingsDtoTest {
         assertTrue(currentCaseSettings.autoAssignTasks)
         assertNull(caseSettingsDto.autoAssignTasks)
         assertFalse(updatedCaseSettings.canHaveAssignee)
-        assertFalse(updatedCaseSettings.canHaveAssignee)
+        assertFalse(updatedCaseSettings.autoAssignTasks)
     }
 }
