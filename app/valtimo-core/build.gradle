@@ -6,6 +6,7 @@ dependencies {
     implementation(project(":keycloak-iam"))
     implementation(project(":web"))
     implementation(project(":audit"))
+    implementation(project(":case"))
     implementation(project(":document"))
     implementation(project(":process-document"))
     implementation(project(":plugin"))
@@ -14,7 +15,7 @@ dependencies {
     implementation(project(":document-generation:local-document-generation"))
     implementation(project(":resource:local-resource"))
     implementation(project(":mail:local-mail"))
-    implementation(project(":external-event"))
+//    implementation(project(":external-event"))
     implementation(project(":connector"))
 
     api "org.springframework.security:spring-security-core"
