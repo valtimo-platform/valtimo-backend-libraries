@@ -37,9 +37,7 @@ class CaseAssigneeListener(
     fun updateAssigneeOnTasks(event: DocumentAssigneeChangedEvent) {
         val document: Document = documentService.get(event.documentId.toString())
         val caseSettings: CaseDefinitionSettings = caseDefinitionService.getCaseSettings(
-            document.definitionId()
-                .toString()
-                .substringBeforeLast(":")
+            document.definitionId().name()
         )
 
         if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {
@@ -67,9 +65,7 @@ class CaseAssigneeListener(
 
         val document: Document = documentService.get(event.documentId.toString())
         val caseSettings: CaseDefinitionSettings = caseDefinitionService.getCaseSettings(
-            document.definitionId()
-                .toString()
-                .substringBeforeLast(":")
+            document.definitionId().name()
         )
 
         if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {

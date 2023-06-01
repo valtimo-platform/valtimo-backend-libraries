@@ -46,9 +46,7 @@ open class CaseAssigneeTaskCreatedListener(
 
         document?.run {
             val caseSettings: CaseDefinitionSettings = caseDefinitionService.getCaseSettings(
-                this.definitionId()
-                    .toString()
-                    .substringBeforeLast(":")
+                this.definitionId().name()
             )
 
             if (
