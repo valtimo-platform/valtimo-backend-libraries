@@ -16,6 +16,8 @@
 
 package com.ritense.besluit.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class BesluitSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class BesluitSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.besluit"
+)

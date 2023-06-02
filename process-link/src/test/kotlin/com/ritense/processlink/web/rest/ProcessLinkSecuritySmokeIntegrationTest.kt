@@ -16,6 +16,8 @@
 
 package com.ritense.processlink.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class ProcessLinkSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class ProcessLinkSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.processlink"
+)

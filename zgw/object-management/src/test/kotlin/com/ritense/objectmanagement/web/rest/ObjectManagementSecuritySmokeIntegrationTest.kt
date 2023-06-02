@@ -16,13 +16,8 @@
 
 package com.ritense.objectmanagement.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class ObjectManagementSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest() {
-
-    override fun getIgnoredPathPatterns(): Set<String> {
-        val ignoredPathPatterns = super.getIgnoredPathPatterns()
-        ignoredPathPatterns.add("/api/v1/form-file")
-        return ignoredPathPatterns
-    }
-}
+class ObjectManagementSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.objectmanagement"
+)

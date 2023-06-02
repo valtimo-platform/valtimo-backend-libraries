@@ -16,6 +16,8 @@
 
 package com.ritense.openzaak.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class OpenZaakSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class OpenZaakSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.openzaak"
+)

@@ -16,6 +16,8 @@
 
 package com.ritense.contactmoment.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class ContactMomentSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class ContactMomentSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.contactmoment"
+)

@@ -16,6 +16,8 @@
 
 package com.ritense.note.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class NotesSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class NotesSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.note"
+)

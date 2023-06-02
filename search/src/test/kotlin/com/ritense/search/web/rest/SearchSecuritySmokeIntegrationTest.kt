@@ -16,6 +16,8 @@
 
 package com.ritense.search.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class SearchSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class SearchSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.search"
+)

@@ -16,6 +16,8 @@
 
 package com.ritense.resource.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class TemporaryResourceStorageSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class TemporaryResourceStorageSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.resource"
+)

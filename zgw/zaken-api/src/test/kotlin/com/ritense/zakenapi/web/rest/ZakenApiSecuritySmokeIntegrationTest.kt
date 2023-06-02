@@ -16,6 +16,8 @@
 
 package com.ritense.zakenapi.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class ZakenApiSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class ZakenApiSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.zakenapi"
+)

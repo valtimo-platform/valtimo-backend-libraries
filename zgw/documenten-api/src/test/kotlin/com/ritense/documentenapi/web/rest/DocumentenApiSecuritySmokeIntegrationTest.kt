@@ -16,6 +16,8 @@
 
 package com.ritense.documentenapi.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class DocumentenApiSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class DocumentenApiSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.documentenapi"
+)

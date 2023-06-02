@@ -16,6 +16,8 @@
 
 package com.ritense.connector.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class ConnectorSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class ConnectorSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.connector"
+)

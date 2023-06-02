@@ -16,6 +16,8 @@
 
 package com.ritense.plugin.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class PluginSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class PluginSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.plugin"
+)

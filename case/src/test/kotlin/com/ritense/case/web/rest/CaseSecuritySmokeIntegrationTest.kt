@@ -16,6 +16,8 @@
 
 package com.ritense.case.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class CaseSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class CaseSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.case"
+)

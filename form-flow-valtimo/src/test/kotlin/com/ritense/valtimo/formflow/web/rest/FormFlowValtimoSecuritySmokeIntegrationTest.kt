@@ -16,13 +16,8 @@
 
 package com.ritense.valtimo.formflow.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class FormFlowValtimoSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest() {
-
-    override fun getIgnoredPathPatterns(): Set<String> {
-        val ignoredPathPatterns = super.getIgnoredPathPatterns()
-        ignoredPathPatterns.add("/api/v1/form-file")
-        return ignoredPathPatterns
-    }
-}
+class FormFlowValtimoSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.valtimo.formflow"
+)

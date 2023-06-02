@@ -16,6 +16,8 @@
 
 package com.ritense.haalcentraal.brp.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class HaalCentraalBprSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class HaalCentraalBprSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.haalcentraal"
+)

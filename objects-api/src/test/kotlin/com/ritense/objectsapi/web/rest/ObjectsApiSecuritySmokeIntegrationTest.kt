@@ -16,13 +16,9 @@
 
 package com.ritense.objectsapi.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class ObjectsApiSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest() {
-
-    override fun getIgnoredPathPatterns(): Set<String> {
-        val ignoredPathPatterns = super.getIgnoredPathPatterns()
-        ignoredPathPatterns.add("/api/v1/notification")
-        return ignoredPathPatterns
-    }
-}
+class ObjectsApiSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.objectsapi",
+    ignoredPathPatterns = setOf("/api/v1/notification")
+)

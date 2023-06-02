@@ -16,6 +16,8 @@
 
 package com.ritense.dataprovider.web.rest
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-class DataProviderSecuritySmokeIntegrationTest : CoreSecuritySmokeIntegrationTest()
+class DataProviderSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.dataprovider"
+)

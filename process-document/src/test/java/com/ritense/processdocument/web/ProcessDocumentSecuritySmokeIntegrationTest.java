@@ -16,7 +16,11 @@
 
 package com.ritense.processdocument.web;
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest;
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest;
+import java.util.Set;
 
-public class ProcessDocumentSecuritySmokeIntegrationTest extends CoreSecuritySmokeIntegrationTest {
+public class ProcessDocumentSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTest {
+    public ProcessDocumentSecuritySmokeIntegrationTest() {
+        super("com.ritense.processdocument", Set.of());
+    }
 }
