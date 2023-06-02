@@ -27,11 +27,19 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.boot:spring-boot-starter-data-r2dbc"
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
+    implementation "org.liquibase:liquibase-core"
+    implementation "org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}"
+    implementation "com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}"
+
+
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
+
+    testImplementation "org.postgresql:r2dbc-postgresql:${postgresqlR2dbcVersion}"
 
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 

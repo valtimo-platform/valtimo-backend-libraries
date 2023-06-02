@@ -1,7 +1,5 @@
 spring:
-  datasource:
-    type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:3343/dashboard-test
+  r2dbc:
+    url: r2dbc:postgresql://localhost:3343/dashboard-test
     username: valtimo
     password: password

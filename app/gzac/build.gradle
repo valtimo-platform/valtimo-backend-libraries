@@ -74,6 +74,7 @@ dependencies {
 
     // Database
     implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
+    implementation "org.postgresql:r2dbc-postgresql:${postgresqlR2dbcVersion}"
 }
 
 apply from: "gradle/publishing.gradle"
