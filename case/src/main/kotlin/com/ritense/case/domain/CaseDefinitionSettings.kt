@@ -28,5 +28,16 @@ class CaseDefinitionSettings(
     @Column(name = "case_definition_name")
     val name: String,
     @Column(name = "can_have_assignee")
-    val canHaveAssignee: Boolean = false
-)
+    val canHaveAssignee: Boolean = false,
+    @Column(name = "auto_assign_tasks")
+    val autoAssignTasks: Boolean = false,
+) {
+    init {
+        require(
+            when (autoAssignTasks) {
+                true -> canHaveAssignee
+                else -> true
+            }
+        ) { "Case property [autoAssignTasks] can only be true when [canHaveAssignee] is true." }
+    }
+}

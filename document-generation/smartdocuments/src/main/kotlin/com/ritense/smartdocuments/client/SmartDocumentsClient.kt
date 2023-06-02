@@ -25,11 +25,11 @@ import com.ritense.smartdocuments.domain.FilesResponse
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
 import org.apache.commons.io.FilenameUtils
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.codec.ClientCodecConfigurer
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
@@ -55,7 +55,7 @@ class SmartDocumentsClient(
     ): FilesResponse {
         return webClient().post()
             .uri("/wsxmldeposit/deposit/unattended")
-            .contentType(APPLICATION_JSON)
+            .contentType(APPLICATION_JSON_UTF8)
             .bodyValue(fixRequest(smartDocumentsRequest))
             .retrieve()
             .bodyToMono(FilesResponse::class.java)
@@ -72,7 +72,7 @@ class SmartDocumentsClient(
 
         val bodyFlux = webClient().post()
             .uri("/wsxmldeposit/deposit/unattended")
-            .contentType(APPLICATION_JSON)
+            .contentType(APPLICATION_JSON_UTF8)
             .bodyValue(fixRequest(smartDocumentsRequest))
             .retrieve()
             .bodyToFlux<DataBuffer>()

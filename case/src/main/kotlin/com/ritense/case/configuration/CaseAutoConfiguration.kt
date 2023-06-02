@@ -64,6 +64,7 @@ class CaseAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = ["caseInstanceResource"]) // because integration tests fail to initialise in portaaltaak
     fun caseInstanceResource(
         service: CaseInstanceService
     ): CaseInstanceResource {
