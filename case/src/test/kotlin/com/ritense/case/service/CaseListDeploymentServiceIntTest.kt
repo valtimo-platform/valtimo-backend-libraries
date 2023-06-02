@@ -48,7 +48,7 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
 
         assertEquals("some-title", firstColumn.title)
         assertEquals("test", firstColumn.key)
-        assertEquals("case:createdOn", firstColumn.path)
+        assertEquals("test:createdOn", firstColumn.path)
         assertEquals("date", firstColumn.displayType.type)
         assertTrue(firstColumn.displayType.displayTypeParameters is DateFormatDisplayTypeParameter)
         assertEquals("yyyy-MM-dd",
@@ -69,7 +69,7 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
                 {
                     "key": "old",
                     "title": "old-title",
-                    "path": "case:createdOn",
+                    "path": "test:createdOn",
                     "displayType": {
                         "type": "date",
                         "displayTypeParameters": {
@@ -103,7 +103,7 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
                 {
                     "key": "test",
                     "title": "some-title",
-                    "path": "case:createdOn",
+                    "path": "test:createdOn",
                     "displayType": {
                         "type": "date",
                         "displayTypeParameters": {
@@ -129,7 +129,7 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
         assertEquals(1, listColumns.size)
         assertEquals("some-title", firstColumn.title)
         assertEquals("test", firstColumn.key)
-        assertEquals("case:createdOn", firstColumn.path)
+        assertEquals("test:createdOn", firstColumn.path)
         assertEquals("date", firstColumn.displayType.type)
         assertTrue(firstColumn.displayType.displayTypeParameters is DateFormatDisplayTypeParameter)
         assertEquals("yyyy-MM-dd",

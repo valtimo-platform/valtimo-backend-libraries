@@ -2,7 +2,7 @@
     {
         "key": "test",
         "title": "some-title",
-        "path": "case:createdOn",
+        "path": "test:createdOn",
         "displayType": {
             "type": "date",
             "displayTypeParameters": {
