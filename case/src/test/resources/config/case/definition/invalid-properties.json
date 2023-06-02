@@ -1,4 +1,4 @@
 {
-    "canHaveAssignee": true,
+    "canHaveAssignee": false,
     "autoAssignTasks": true
 }

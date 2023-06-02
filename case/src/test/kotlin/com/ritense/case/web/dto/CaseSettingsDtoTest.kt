@@ -30,4 +30,23 @@ class CaseSettingsDtoTest {
         assertNull(caseSettingsDto.canHaveAssignee)
         assertFalse(updatedCaseSettings.canHaveAssignee)
     }
+
+    @Test
+    fun `should set autoAssignTasks to false when canHaveAssignee is set to false`() {
+        val currentCaseSettings = CaseDefinitionSettings(
+            name = "case-name",
+            canHaveAssignee = true,
+            autoAssignTasks = true
+        )
+        val caseSettingsDto = CaseSettingsDto(
+            canHaveAssignee = false
+        )
+        val updatedCaseSettings = caseSettingsDto.update(currentCaseSettings)
+
+        assertTrue(currentCaseSettings.canHaveAssignee)
+        assertTrue(currentCaseSettings.autoAssignTasks)
+        assertNull(caseSettingsDto.autoAssignTasks)
+        assertFalse(updatedCaseSettings.canHaveAssignee)
+        assertFalse(updatedCaseSettings.autoAssignTasks)
+    }
 }

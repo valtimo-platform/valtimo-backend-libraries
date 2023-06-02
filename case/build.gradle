@@ -37,7 +37,7 @@ dependencies {
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "com.github.erosb:everit-json-schema:${everitJsonSchemaVersion}"
 
-    testImplementation project(':process-document')
+    testImplementation project(':core')
     testImplementation project(':resource')
     testImplementation project(':test-utils-common')
 
