@@ -20,6 +20,7 @@ import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.testimpl.TestAuthorizationSpecification
 import com.ritense.authorization.testimpl.TestEntity
+import com.ritense.authorization.testimpl.TestEntityActionProvider
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -34,12 +35,12 @@ class AuthorizationSpecificationTest {
     fun `isAuthorized should return true`() {
         val spec = TestAuthorizationSpecification(
             AuthorizationRequest(
-                TestEntity::class.java, action = Action.COMPLETE
+                TestEntity::class.java, action = TestEntityActionProvider.complete
             ),
             listOf(
                 Permission(
                     resourceType = TestEntity::class.java,
-                    action = Action.COMPLETE,
+                    action = TestEntityActionProvider.complete,
                     conditionContainer = ConditionContainer(listOf()),
                     roleKey = ""
                 )
@@ -53,12 +54,12 @@ class AuthorizationSpecificationTest {
     fun `isAuthorized should return false if no permission can be found for entity class`() {
         val spec = TestAuthorizationSpecification(
             AuthorizationRequest(
-                TestEntity::class.java, action = Action.COMPLETE
+                TestEntity::class.java, action = TestEntityActionProvider.complete
             ),
             listOf(
                 Permission(
                     resourceType = String::class.java,
-                    action = Action.COMPLETE,
+                    action = TestEntityActionProvider.complete,
                     conditionContainer = ConditionContainer(listOf()),
                     roleKey = ""
                 )
@@ -72,12 +73,12 @@ class AuthorizationSpecificationTest {
     fun `isAuthorized should return false if no permission can be found for requested action`() {
         val spec = TestAuthorizationSpecification(
             AuthorizationRequest(
-                TestEntity::class.java, action = Action.VIEW
+                TestEntity::class.java, action = TestEntityActionProvider.view
             ),
             listOf(
                 Permission(
                     resourceType = TestEntity::class.java,
-                    action = Action.COMPLETE,
+                    action = TestEntityActionProvider.complete,
                     conditionContainer = ConditionContainer(listOf()),
                     roleKey = ""
                 )
@@ -91,13 +92,13 @@ class AuthorizationSpecificationTest {
     fun `isAuthorized should return false when Permission_appliesTo() returns false`() {
         val permission: Permission = spy(Permission(
             resourceType = TestEntity::class.java,
-            action = Action.COMPLETE,
+            action = TestEntityActionProvider.complete,
             conditionContainer = ConditionContainer(listOf()),
             roleKey = "")
         )
         val spec = TestAuthorizationSpecification(
             AuthorizationRequest(
-                TestEntity::class.java, action = Action.COMPLETE
+                TestEntity::class.java, action = TestEntityActionProvider.complete
             ),
             listOf(
                 permission

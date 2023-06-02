@@ -16,17 +16,16 @@
 
 package com.ritense.authorization.testimpl
 
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import com.ritense.authorization.Action
+import com.ritense.authorization.ResourceActionProvider
 
-@Configuration
-class TestAuthorizationAutoConfiguration {
-    @Bean
-    fun testAuthorizationSpecificationFactory() = TestAuthorizationSpecificationFactory()
+class TestEntityActionProvider: ResourceActionProvider<TestEntity> {
+    override fun getAvailableActions(): List<Action<TestEntity>> {
+        return listOf(view, complete)
+    }
 
-    @Bean
-    fun testEntityActionProvider() = TestEntityActionProvider()
-
-    @Bean
-    fun customTestEntityActionProvider() = CustomTestEntityActionProvider()
+    companion object {
+        val view = Action<TestEntity>(Action.VIEW)
+        val complete = Action<TestEntity>(Action.COMPLETE)
+    }
 }

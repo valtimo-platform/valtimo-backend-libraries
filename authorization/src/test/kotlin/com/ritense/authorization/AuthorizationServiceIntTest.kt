@@ -18,7 +18,8 @@ package com.ritense.authorization
 
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.testimpl.TestEntity
-import org.springframework.security.access.AccessDeniedException
+import org.hamcrest.CoreMatchers.hasItems
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -30,6 +31,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.access.AccessDeniedException
 
 class AuthorizationServiceIntTest @Autowired constructor(
     private val authorizationService: AuthorizationService
@@ -53,7 +55,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
     @Test
     fun `should throw RuntimeException when action is DENY`() {
         assertThrows<AccessDeniedException> {
-            requirePermission(Action.DENY)
+            requirePermission(Action(Action.DENY))
         }
     }
 
@@ -61,7 +63,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
     fun `should succeed when ran without authorization when action is DENY`() {
         assertDoesNotThrow {
             AuthorizationContext.runWithoutAuthorization {
-                requirePermission(Action.DENY)
+                requirePermission(Action(Action.DENY))
             }
         }
     }
@@ -69,7 +71,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
     @Test
     fun `should pass permission check when entity is not null`() {
         val permission: Permission = mock()
-        doReturn(Action.VIEW).whenever(permission).action
+        doReturn(Action<TestEntity>(Action.VIEW)).whenever(permission).action
         doReturn(TestEntity::class.java).whenever(permission).resourceType
         doReturn(true).whenever(permission).appliesTo(eq(TestEntity::class.java), any())
 
@@ -95,14 +97,28 @@ class AuthorizationServiceIntTest @Autowired constructor(
         verify(permission, never()).appliesTo(eq(TestEntity::class.java), any())
     }
 
-    fun requirePermission(action: Action = Action.VIEW) {
+    @Test
+    fun `should find all available actions for entity`() {
+        val allActions = authorizationService.getAvailableActionsForResource(TestEntity::class.java)
+        assertThat(
+            allActions,
+            hasItems(
+                Action(Action.VIEW),
+                Action(Action.COMPLETE),
+                Action(Action.MODIFY),
+                Action("custom")
+            )
+        )
+    }
+
+    fun requirePermission(action: Action<TestEntity> = Action(Action.VIEW)) {
         requirePermission(
             action = action,
             entity = TestEntity())
     }
 
     fun requirePermission(
-        action: Action = Action.VIEW,
+        action: Action<TestEntity> = Action(Action.VIEW),
         entity: TestEntity? = null,
         permission: Permission? = null
     ) {

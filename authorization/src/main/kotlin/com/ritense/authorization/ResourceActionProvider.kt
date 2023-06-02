@@ -16,21 +16,6 @@
 
 package com.ritense.authorization
 
-import com.ritense.authorization.permission.Permission
-
-interface AuthorizationService {
-    fun <T : Any> requirePermission(
-        context: AuthorizationRequest<T>,
-        entity: T?,
-        permissions: List<Permission>? = null
-    )
-
-    fun <T : Any> getAuthorizationSpecification(
-        context: AuthorizationRequest<T>,
-        permissions: List<Permission>? = null
-    ): AuthorizationSpecification<T>
-
-    fun <FROM, TO> getMapper(from: Class<FROM>, to: Class<TO>): AuthorizationEntityMapper<FROM, TO>
-
-    fun <T : Any> getAvailableActionsForResource(clazz: Class<T>): List<Action<T>>
+interface ResourceActionProvider<T : Any>{
+    fun getAvailableActions(): List<Action<T>>
 }
