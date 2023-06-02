@@ -18,7 +18,6 @@ package com.ritense.valtimo.web.rest
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.TestFactory
@@ -48,17 +47,17 @@ abstract class SecuritySmokeIntegrationTest(
     private val ignoredPathPatterns: Set<String> = setOf()
 ) {
     @MockBean
-    var userManagementService: UserManagementService? = null
+    private lateinit var userManagementService: UserManagementService
 
     @MockBean
-    var mailSender: MailSender? = null
+    private lateinit var mailSender: MailSender
 
     @Qualifier("requestMappingHandlerMapping")
     @Autowired
-    private val handlerMapping: RequestMappingHandlerMapping? = null
+    private lateinit var handlerMapping: RequestMappingHandlerMapping
 
     @Autowired
-    private val mockMvc: MockMvc? = null
+    private lateinit var mockMvc: MockMvc
 
     @TestFactory
     fun shouldTestAllSimpleEndpointsForAuthentication(): Collection<DynamicTest> {
@@ -111,7 +110,7 @@ abstract class SecuritySmokeIntegrationTest(
                 .andReturn()
             val statusCode = mvcResult.response.status
 
-            assertTrue(statusCode == 401 || statusCode == 403) { "Expected status 401 or 403, was $statusCode" }
+            assert(statusCode == 401 || statusCode == 403) { "Expected status 401 or 403, was $statusCode" }
         }
     }
 
