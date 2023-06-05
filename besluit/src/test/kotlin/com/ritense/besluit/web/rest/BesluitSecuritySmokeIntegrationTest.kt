@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.processdocument.web;
+package com.ritense.besluit.web.rest
 
-import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest;
-import java.util.Set;
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-public class ProcessDocumentSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTest {
-    public ProcessDocumentSecuritySmokeIntegrationTest() {
-        super("com.ritense.processdocument", Set.of());
-    }
-}
+class BesluitSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.besluit"
+)

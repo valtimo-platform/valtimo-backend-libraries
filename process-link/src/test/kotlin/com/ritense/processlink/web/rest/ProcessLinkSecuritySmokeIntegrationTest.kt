@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.processdocument.web;
+package com.ritense.processlink.web.rest
 
-import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest;
-import java.util.Set;
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-public class ProcessDocumentSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTest {
-    public ProcessDocumentSecuritySmokeIntegrationTest() {
-        super("com.ritense.processdocument", Set.of());
-    }
-}
+class ProcessLinkSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.processlink"
+)

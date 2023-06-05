@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.processdocument.web;
+package com.ritense.valtimo.web.rest
 
-import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest;
-import java.util.Set;
-
-public class ProcessDocumentSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTest {
-    public ProcessDocumentSecuritySmokeIntegrationTest() {
-        super("com.ritense.processdocument", Set.of());
-    }
-}
+class CoreSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    ignoredPathPatterns = setOf(
+        "/api/v1/ping",
+        "/api/v1/public/process/definition/{processDefinitionKey}/start-form"
+    )
+)

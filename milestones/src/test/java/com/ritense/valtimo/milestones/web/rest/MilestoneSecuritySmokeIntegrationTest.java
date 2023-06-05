@@ -16,8 +16,11 @@
 
 package com.ritense.valtimo.milestones.web.rest;
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest;
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest;
+import java.util.Set;
 
-public class MilestoneSecuritySmokeIntegrationTest extends CoreSecuritySmokeIntegrationTest {
-
+public class MilestoneSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTest {
+    public MilestoneSecuritySmokeIntegrationTest() {
+        super("com.ritense.valtimo.milestones", Set.of());
+    }
 }
