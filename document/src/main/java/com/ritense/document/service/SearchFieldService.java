@@ -161,7 +161,7 @@ public class SearchFieldService {
         authorizationService.requirePermission(
             new AuthorizationRequest<>(
                 SearchField.class,
-                Action.DENY
+                Action.Companion.deny()
             ),
             null,
             null

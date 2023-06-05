@@ -25,6 +25,10 @@ data class Action<T>(
     val key: String
 ) {
     companion object {
+        fun <T> deny(): Action<T>{
+            return Action(DENY)
+        }
+
         // common action keys are defined here
         const val LIST_VIEW = "list_view"
         const val VIEW = "view"
