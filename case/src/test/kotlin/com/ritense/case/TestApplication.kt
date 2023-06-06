@@ -17,10 +17,13 @@
 package com.ritense.case
 
 import com.ritense.case.configuration.CaseAutoConfiguration
+import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import com.ritense.valueresolver.ValueResolverFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
 
 @SpringBootApplication(
@@ -35,5 +38,13 @@ class TestApplication {
     @Bean
     fun testResolverFactory(): ValueResolverFactory{
         return TestResolverFactory()
+    }
+
+    @TestConfiguration
+    class TestConfig {
+
+        @MockBean
+        lateinit var resourceService: ResourceService
+
     }
 }
