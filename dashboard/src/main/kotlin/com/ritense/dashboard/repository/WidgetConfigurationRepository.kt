@@ -19,7 +19,6 @@ package com.ritense.dashboard.repository
 import com.ritense.dashboard.domain.WidgetConfiguration
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import java.util.UUID
 
 @Repository
-interface WidgetConfigurationRepository : JpaRepository<WidgetConfiguration, UUID>
+interface WidgetConfigurationRepository : JpaRepository<WidgetConfiguration, String>
