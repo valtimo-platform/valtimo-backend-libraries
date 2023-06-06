@@ -19,7 +19,6 @@ package com.ritense.dashboard.repository
 import com.ritense.dashboard.domain.Dashboard
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import java.util.UUID
 
 @Repository
-interface DashboardRepository : JpaRepository<Dashboard, UUID>
+interface DashboardRepository : JpaRepository<Dashboard, String>

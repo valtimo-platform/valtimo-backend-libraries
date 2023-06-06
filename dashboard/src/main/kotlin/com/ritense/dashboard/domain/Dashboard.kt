@@ -16,7 +16,6 @@
 
 package com.ritense.dashboard.domain
 
-import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -27,8 +26,8 @@ import javax.persistence.Table
 data class Dashboard(
 
     @Id
-    @Column(name = "id", updatable = false, nullable = false, unique = true)
-    val id: UUID = UUID.randomUUID(),
+    @Column(name = "key", updatable = false, nullable = false, unique = true)
+    val key: String,
 
     @Column(name = "title", updatable = false, nullable = false)
     val title: String,

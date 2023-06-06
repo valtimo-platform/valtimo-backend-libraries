@@ -20,7 +20,7 @@
 
     <changeSet author="Ritense" id="1">
         <createTable tableName="dashboard">
-            <column name="id" type="${uuidType}">
+            <column name="key" type="VARCHAR(256)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="title" type="VARCHAR(256)">
@@ -37,7 +37,7 @@
             <column name="id" type="${uuidType}">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="dashboard_id" type="${uuidType}">
+            <column name="dashboard_key" type="VARCHAR(256)">
                 <constraints nullable="false"/>
             </column>
             <column name="data_source_key" type="VARCHAR(256)">
@@ -57,10 +57,10 @@
 
     <changeSet id="3" author="Ritense">
         <addForeignKeyConstraint baseTableName="widget_configuration"
-                                 baseColumnNames="dashboard_id"
-                                 constraintName="fk_dashboard_id_dashboard_id"
+                                 baseColumnNames="dashboard_key"
+                                 constraintName="fk_dashboard_key_dashboard_key"
                                  referencedTableName="dashboard"
-                                 referencedColumnNames="id"/>
+                                 referencedColumnNames="key"/>
     </changeSet>
 
 </databaseChangeLog>

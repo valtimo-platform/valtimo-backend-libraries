@@ -36,7 +36,7 @@ data class WidgetConfiguration(
     val id: UUID = UUID.randomUUID(),
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "dashboard_id")
+    @JoinColumn(name = "dashboard_key")
     val dashboard: Dashboard,
 
     @Column(name = "data_source_key", nullable = false)

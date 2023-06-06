@@ -34,7 +34,7 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
 
     @Test
     fun `should save and get widget configuration with dashboard`() {
-        val dashboard = dashboardRepository.save(Dashboard(title = "My dashboard", order = 1))
+        val dashboard = dashboardRepository.save(Dashboard(key = "mine", title = "My dashboard", order = 1))
         widgetConfigurationRepository.save(
             WidgetConfiguration(
                 dashboard = dashboard,
@@ -49,6 +49,7 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
 
         assertThat(widgets).hasSize(1)
         assertThat(widgets[0].dashboard).isEqualTo(dashboard)
+        assertThat(widgets[0].dashboard.key).isEqualTo("mine")
         assertThat(widgets[0].dashboard.title).isEqualTo("My dashboard")
         assertThat(widgets[0].dashboard.order).isEqualTo(1)
         assertThat(widgets[0].dataSourceKey).isEqualTo("doorlooptijd")
