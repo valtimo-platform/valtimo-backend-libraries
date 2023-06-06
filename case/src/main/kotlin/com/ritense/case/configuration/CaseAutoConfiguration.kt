@@ -42,8 +42,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.io.support.ResourcePatternResolver
-import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
@@ -116,19 +116,19 @@ class CaseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ResourcePatternResolver::class)
-    fun resourcePatternResolver2(resourceLoader: ResourceLoader): ResourcePatternResolver {
-        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+    fun resourcePatternResolver(resourceLoader: ResourceLoader): ResourcePatternResolver {
+        return PathMatchingResourcePatternResolver(resourceLoader)
     }
 
     @Bean
     @Order(Ordered.LOWEST_PRECEDENCE)
     fun caseListDeploymentService(
-        resourcePatternResolver2: ResourcePatternResolver,
+        resourcePatternResolver: ResourcePatternResolver,
         objectMapper: ObjectMapper,
         caseDefinitionService: CaseDefinitionService
     ): CaseListDeploymentService {
         return CaseListDeploymentService(
-            resourcePatternResolver2,
+            resourcePatternResolver,
             objectMapper,
             caseDefinitionService
         )

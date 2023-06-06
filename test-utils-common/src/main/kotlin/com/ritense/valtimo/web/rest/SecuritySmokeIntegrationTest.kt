@@ -54,9 +54,6 @@ abstract class SecuritySmokeIntegrationTest(
     @MockBean
     private lateinit var mailSender: MailSender
 
-    @MockBean
-    private lateinit var resourcePatternResolver2: ResourcePatternResolver
-
     @Qualifier("requestMappingHandlerMapping")
     @Autowired
     private lateinit var handlerMapping: RequestMappingHandlerMapping
