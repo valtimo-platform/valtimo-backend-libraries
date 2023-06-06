@@ -17,9 +17,13 @@
 package com.ritense.dashboard.domain
 
 import java.util.UUID
+import javax.persistence.CascadeType.ALL
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType.LAZY
 import javax.persistence.Id
+import javax.persistence.OneToMany
+import javax.persistence.OrderBy
 import javax.persistence.Table
 
 @Entity
@@ -32,6 +36,10 @@ data class Dashboard(
 
     @Column(name = "title", updatable = false, nullable = false)
     val title: String,
+
+    @OneToMany(mappedBy = "dashboard", fetch = LAZY, cascade = [ALL], orphanRemoval = true)
+    @OrderBy("order ASC")
+    val widgetConfigurations: List<WidgetConfiguration> = listOf(),
 
     @Column(name = "sort_order", nullable = false)
     val order: Int

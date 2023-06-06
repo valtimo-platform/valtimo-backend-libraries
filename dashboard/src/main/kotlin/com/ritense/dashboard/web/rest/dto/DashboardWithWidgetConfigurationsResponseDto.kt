@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.repository
+package com.ritense.dashboard.web.rest.dto
 
 import com.ritense.dashboard.domain.Dashboard
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
 import java.util.UUID
 
-@Repository
-interface DashboardRepository : JpaRepository<Dashboard, UUID> {
-
-    fun findAllByOrderByOrderAsc(): List<Dashboard>
+data class DashboardWithWidgetConfigurationsResponseDto(
+    val id: UUID,
+    val title: String,
+    val widgetConfigurations: List<WidgetConfigurationResponseDto>
+) {
+    companion object {
+        fun of(dashboard: Dashboard): DashboardWithWidgetConfigurationsResponseDto {
+            return DashboardWithWidgetConfigurationsResponseDto(
+                id = dashboard.id,
+                title = dashboard.title,
+                widgetConfigurations = dashboard.widgetConfigurations.map { WidgetConfigurationResponseDto.of(it) }
+            )
+        }
+    }
 }
