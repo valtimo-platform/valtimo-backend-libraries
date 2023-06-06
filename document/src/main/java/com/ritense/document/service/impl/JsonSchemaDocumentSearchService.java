@@ -132,6 +132,13 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         );
     }
 
+    @Override
+    public Long count(String documentDefinitionName, AdvancedSearchRequest advancedSearchRequest) {
+        return count(
+            (cb, query, documentRoot) -> buildQueryWhere(documentDefinitionName, advancedSearchRequest, cb, query, documentRoot)
+        );
+    }
+
     private Page<JsonSchemaDocument> search(QueryWhereBuilder queryWhereBuilder, Pageable pageable) {
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaQuery<JsonSchemaDocument> query = cb.createQuery(JsonSchemaDocument.class);
@@ -149,12 +156,19 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .setMaxResults(pageable.getPageSize());
         }
 
-        // TODO: Should be turned into a subquery, and then do a count over the results from the subquery
+        return new PageImpl<>(typedQuery.getResultList(), pageable, count(queryWhereBuilder));
+    }
+
+    private Long count(
+        QueryWhereBuilder queryWhereBuilder
+    ) {
+        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<JsonSchemaDocument> countRoot = countQuery.from(JsonSchemaDocument.class);
         countQuery.select(cb.count(countRoot));
-        queryWhereBuilder.apply(cb, countQuery, selectRoot);
+        queryWhereBuilder.apply(cb, countQuery, countRoot);
 
+        // TODO: Should be turned into a subquery, and then do a count over the results from the subquery.
         List<Long> countResultList = entityManager.createQuery(countQuery).getResultList();
 
         Long count = 0L;
@@ -163,7 +177,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             count = (long) countResultList.size();
         }
 
-        return new PageImpl<>(typedQuery.getResultList(), pageable, count);
+        return count;
     }
 
     private void buildQueryWhere(SearchRequest searchRequest, CriteriaBuilder cb, CriteriaQuery<?> query, Root<JsonSchemaDocument> documentRoot) {

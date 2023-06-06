@@ -151,13 +151,12 @@ internal class NoteResourceIT : BaseIntegrationTest() {
 //    }
 
     @Test
-    @WithMockUser(TEST_USER)
+    @WithMockUser(username = TEST_USER, authorities = [FULL_ACCESS_ROLE])
     fun `should get notes`() {
         val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(documentId)
 
         val testContent = "body test"
-
-        noteService.createNote(jsonSchemaDocumentId, testContent)
+        AuthorizationContext.runWithoutAuthorization { noteService.createNote(jsonSchemaDocumentId, testContent) }
 
         mockMvc.perform(
             get("/api/v1/document/{documentId}/note", documentId)

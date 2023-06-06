@@ -21,6 +21,7 @@ import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.repository.SearchFieldRepository;
 import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.SearchConfigurationDeploymentService;
 import com.ritense.document.service.SearchFieldService;
@@ -65,8 +66,8 @@ public class SearchFieldAutoConfiguration {
     @ConditionalOnMissingBean(DocumentStatisticService.class)
     public DocumentStatisticService documentStatisticService(
         DocumentDefinitionService documentDefinitionService,
-        DocumentRepository documentRepository
+        DocumentSearchService documentSearchService
     ) {
-        return new DocumentStatisticService(documentDefinitionService, documentRepository);
+        return new DocumentStatisticService(documentDefinitionService, documentSearchService);
     }
 }

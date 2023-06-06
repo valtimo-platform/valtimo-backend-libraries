@@ -37,4 +37,6 @@ public interface DocumentSearchService {
     @SuppressWarnings({"squid:S1452","java:S1452"})
     Page<? extends Document> search(String documentDefinitionName, AdvancedSearchRequest searchRequest, Pageable pageable);
 
+    Long count(String documentDefinitionName, AdvancedSearchRequest advancedSearchRequest);
+
 }

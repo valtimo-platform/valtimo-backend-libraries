@@ -53,11 +53,6 @@ data class Permission(
     val roleKey: String,
 ) {
     fun <T> appliesTo(resourceType: Class<T>, entity: Any?): Boolean {
-        /**
-         * TODO: Why is `entity` nullable?
-         * The calling method (AuthorizationSpecification.isAuthorized) didn't support nullables, and any path in this
-         * method with a null entity results in false anyway.
-         */
         return if (this.resourceType == resourceType) {
             if (entity == null && conditionContainer.conditions.isNotEmpty()) {
                 return false

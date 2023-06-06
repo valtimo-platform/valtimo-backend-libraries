@@ -27,6 +27,7 @@ enum class Action {
     COMPLETE, // task-instance
     ASSIGN, // document-instance, task-instance
     CLAIM, // Assign to self
+    ASSIGNABLE, // Can be assigned
     IGNORE,
     DENY // assign document relation
 }

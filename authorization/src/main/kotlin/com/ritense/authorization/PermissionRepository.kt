@@ -22,4 +22,6 @@ import java.util.UUID
 
 interface PermissionRepository : JpaRepository<Permission, UUID> {
     fun findAllByRoleKeyIn(roleKeys: Collection<String>): List<Permission>
+
+    fun findAllByResourceTypeAndAction(resourceType: Class<*>, action: Action): List<Permission>
 }
