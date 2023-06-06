@@ -16,6 +16,8 @@
 
 package com.ritense.document.service.impl;
 
+import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.AuthorizationSpecification;
 import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -47,8 +49,11 @@ import java.util.UUID;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,14 +84,14 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         userManagementService = mock(UserManagementService.class);
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
 
-        jsonSchemaDocumentService = new JsonSchemaDocumentService(
+        jsonSchemaDocumentService = spy(new JsonSchemaDocumentService(
             documentRepository,
             documentDefinitionService,
             documentSequenceGeneratorService,
             resourceService,
             userManagementService,
             authorizationService,
-            applicationEventPublisher);
+            applicationEventPublisher));
 
         var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");
         jsonSchemaDocument = createDocument(definitionOf("person"), content).resultingDocument().orElseThrow();
@@ -165,8 +170,11 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
     void shouldRemoveDocuments() {
         PageImpl<JsonSchemaDocument> jsonSchemaDocuments = new PageImpl<>(List.of(this.jsonSchemaDocument));
 
-        when(documentRepository.findAllByDocumentDefinitionIdName(eq(Pageable.unpaged()), eq(documentDefinitionName)))
-            .thenReturn(jsonSchemaDocuments);
+        doReturn(jsonSchemaDocuments)
+            .when(jsonSchemaDocumentService).getAllByDocumentDefinitionName(
+                eq(Pageable.unpaged()),
+                eq(documentDefinitionName)
+            );
 
         jsonSchemaDocumentService.removeDocuments(documentDefinitionName);
 
@@ -179,8 +187,11 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
     void shouldNotRemoveDocumentsBecauseTheyDontExist() {
         PageImpl<JsonSchemaDocument> jsonSchemaDocuments = new PageImpl<>(Collections.emptyList());
 
-        when(documentRepository.findAllByDocumentDefinitionIdName(eq(Pageable.unpaged()), eq(documentDefinitionName)))
-            .thenReturn(jsonSchemaDocuments);
+        doReturn(jsonSchemaDocuments)
+            .when(jsonSchemaDocumentService).getAllByDocumentDefinitionName(
+                eq(Pageable.unpaged()),
+                eq(documentDefinitionName)
+            );
 
         jsonSchemaDocumentService.removeDocuments(documentDefinitionName);
 
