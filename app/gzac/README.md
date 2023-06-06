@@ -26,10 +26,10 @@ Keycloak management can be accessed on http://localhost:8082 with the default cr
 
 Keycloak comes preconfigured with the following users. 
 
-| Name | Role | Username | Password |
-|---|---|---|---|
-| James Vance | ROLE_USER | user | user |
-| Asha Miller | ROLE_ADMIN | admin | admin |
+| Name         | Role           | Username  | Password  |
+|--------------|----------------|-----------|-----------|
+| James Vance  | ROLE_USER      | user      | user      |
+| Asha Miller  | ROLE_ADMIN     | admin     | admin     |
 | Morgan Finch | ROLE_DEVELOPER | developer | developer |
 
 ### Objects API 

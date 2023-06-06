@@ -19,17 +19,22 @@ package com.ritense.authorization.permission
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.authorization.UserManagementServiceHolder
 import com.ritense.authorization.permission.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.permission.PermissionConditionOperator.GREATER_THAN
 import com.ritense.authorization.permission.PermissionConditionOperator.LESS_THAN
 import com.ritense.authorization.permission.PermissionConditionOperator.NOT_EQUAL_TO
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
 import java.time.LocalDate
@@ -52,6 +57,11 @@ class FieldPermissionConditionTest {
         )
 
         conditionTemplate = FieldPermissionCondition("child.property", EQUAL_TO, 100)
+
+        val userManagementService = mock<UserManagementService>(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
+        whenever(userManagementService.currentUser.id).thenReturn("91bb73e1-5f5b-46e3-8c60-ca424a5fcfcd")
+        whenever(userManagementService.currentUser.email).thenReturn("example@ritense.com")
+        UserManagementServiceHolder(userManagementService)
     }
 
     @Test
@@ -114,6 +124,26 @@ class FieldPermissionConditionTest {
         val condition = conditionTemplate.copy(value = 100)
         val result = condition.isValid(entity)
         assertFalse(result)
+    }
+
+    @Test
+    fun `should pass validation with resolved placeholder ${currentUserEmail}`() {
+        val entity = TestEntity(
+            TestChildEntity("example@ritense.com")
+        )
+        val condition = FieldPermissionCondition("child.property", NOT_EQUAL_TO, "\${currentUserEmail}")
+        val result = condition.isValid(entity)
+        assertTrue(result)
+    }
+
+    @Test
+    fun `should pass validation with resolved placeholder ${currentUserId}`() {
+        val entity = TestEntity(
+            TestChildEntity("91bb73e1-5f5b-46e3-8c60-ca424a5fcfcd")
+        )
+        val condition = FieldPermissionCondition("child.property", NOT_EQUAL_TO, "\${currentUserId}")
+        val result = condition.isValid(entity)
+        assertTrue(result)
     }
 
     @Test

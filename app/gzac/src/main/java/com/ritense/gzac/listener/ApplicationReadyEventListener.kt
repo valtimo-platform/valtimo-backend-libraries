@@ -58,6 +58,8 @@ import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcess
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -347,18 +349,16 @@ class ApplicationReadyEventListener(
         permissionRepository: PermissionRepository,
         roleRepository: RoleRepository
     ) {
-        val userRoleKey = "ROLE_USER"
-        val adminRoleKey = "ROLE_ADMIN"
 
-        if (!roleRepository.existsById(userRoleKey)) {
-            roleRepository.save(Role(userRoleKey))
+        if (!roleRepository.existsById(USER)) {
+            roleRepository.save(Role(USER))
         }
 
-        if (!roleRepository.existsById(adminRoleKey)) {
-            roleRepository.save(Role(adminRoleKey))
+        if (!roleRepository.existsById(ADMIN)) {
+            roleRepository.save(Role(ADMIN))
         }
 
-        permissionRepository.deleteAll(permissionRepository.findAllByRoleKeyIn(listOf(userRoleKey, adminRoleKey)))
+        permissionRepository.deleteAll(permissionRepository.findAllByRoleKeyIn(listOf(USER, ADMIN)))
 
         val documentPermissions: List<Permission> = try {
             listOf(
@@ -376,17 +376,17 @@ class ApplicationReadyEventListener(
                             FieldPermissionCondition("documentDefinitionId.name", EQUAL_TO, "leningen")
                         )
                     ),
-                    roleKey = userRoleKey
+                    roleKey = USER
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.LIST_VIEW,
                     conditionContainer = ConditionContainer(
                         listOf(
-                            FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
+                            FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
                         )
                     ),
-                    roleKey = userRoleKey
+                    roleKey = USER
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
@@ -401,46 +401,46 @@ class ApplicationReadyEventListener(
                             FieldPermissionCondition("documentDefinitionId.name", EQUAL_TO, "leningen")
                         )
                     ),
-                    roleKey = userRoleKey
+                    roleKey = USER
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.VIEW,
                     conditionContainer = ConditionContainer(
                         listOf(
-                            FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
+                            FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
                         )
                     ),
-                    roleKey = userRoleKey
+                    roleKey = USER
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.CLAIM,
                     conditionContainer = ConditionContainer(
                         listOf(
-                            FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
+                            FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
                         )
                     ),
-                    roleKey = userRoleKey
+                    roleKey = USER
                 ),
                 // ROLE_ADMIN
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.LIST_VIEW,
                     conditionContainer = ConditionContainer(emptyList()),
-                    roleKey = adminRoleKey
+                    roleKey = ADMIN
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.VIEW,
                     conditionContainer = ConditionContainer(emptyList()),
-                    roleKey = adminRoleKey
+                    roleKey = ADMIN
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
                     action = Action.CLAIM,
                     conditionContainer = ConditionContainer(emptyList()),
-                    roleKey = adminRoleKey
+                    roleKey = ADMIN
                 ),
             )
         } catch (e: ClassNotFoundException) {
@@ -464,14 +464,14 @@ class ApplicationReadyEventListener(
                             )
                         )
                     ),
-                    roleKey = userRoleKey
+                    roleKey = USER
                 ),
                 // ROLE_ADMIN
                 Permission(
                     resourceType = Note::class.java,
                     action = Action.VIEW,
                     conditionContainer = ConditionContainer(listOf()),
-                    roleKey = adminRoleKey
+                    roleKey = ADMIN
                 )
             )
 

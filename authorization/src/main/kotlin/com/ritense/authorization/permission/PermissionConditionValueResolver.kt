@@ -20,16 +20,15 @@ import com.ritense.authorization.UserManagementServiceHolder
 
 object PermissionConditionValueResolver {
 
-    fun <V : Comparable<V>> resolveValue(value: V): Any {
-        return if (value is String) {
+    fun <V> resolveValue(value: V?): V? {
+        if (value is String) {
             return when (value) {
-                "\${currentUserId}" -> UserManagementServiceHolder.currentInstance.currentUser.id
-                "\${currentUserEmail}" -> UserManagementServiceHolder.currentInstance.currentUser.email
-                else -> throw IllegalArgumentException("Unknown permission condition value '${value}'")
+                "\${currentUserId}" -> UserManagementServiceHolder.currentInstance.currentUser.id as V
+                "\${currentUserEmail}" -> UserManagementServiceHolder.currentInstance.currentUser.email as V
+                else -> value
             }
-        } else {
-            value
         }
+        return value
     }
 
 }
