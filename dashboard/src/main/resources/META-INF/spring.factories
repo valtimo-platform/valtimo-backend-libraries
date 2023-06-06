@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.dashboard.autoconfigure.DataProviderAutoConfiguration
+  com.ritense.dashboard.autoconfigure.DashboardAutoConfiguration

@@ -9,10 +9,6 @@ spring:
             enabled: true
         livereload:
             enabled: true
-#    r2dbc:
-#        url: r2dbc:postgresql://localhost:5444/gzac-core-db
-#        username: valtimo
-#        password: password
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: org.postgresql.Driver

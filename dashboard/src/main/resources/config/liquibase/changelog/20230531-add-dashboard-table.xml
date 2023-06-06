@@ -49,7 +49,18 @@
             <column name="display_type" type="VARCHAR(256)">
                 <constraints nullable="false"/>
             </column>
+            <column name="sort_order" type="${intType}">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <addForeignKeyConstraint baseTableName="widget_configuration"
+                                 baseColumnNames="dashboard_id"
+                                 constraintName="fk_dashboard_id_dashboard_id"
+                                 referencedTableName="dashboard"
+                                 referencedColumnNames="id"/>
     </changeSet>
 
 </databaseChangeLog>

@@ -16,67 +16,28 @@
 
 package com.ritense.dashboard.autoconfigure
 
-import com.ritense.dashboard.liquibase.LiquibaseRunner
-import io.r2dbc.spi.ConnectionFactories
-import io.r2dbc.spi.ConnectionFactory
-import org.springframework.beans.factory.annotation.Qualifier
+import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties
+import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
-import org.springframework.data.r2dbc.core.DefaultReactiveDataAccessStrategy
-import org.springframework.data.r2dbc.core.R2dbcEntityOperations
-import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
-import org.springframework.data.r2dbc.dialect.MySqlDialect
-import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean
-import org.springframework.r2dbc.core.DatabaseClient
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import javax.sql.DataSource
 
 @Configuration
-@EnableR2dbcRepositories(entityOperationsRef = "valtimoR2dbcEntityTemplate")
-class DataProviderAutoConfiguration {
-
-
-    @Bean(name = ["entityManagerFactory"])
-    fun sessionFactory(): LocalSessionFactoryBean {
-        return LocalSessionFactoryBean()
-    }
-
-    @ConditionalOnMissingBean(name = ["valtimoR2dbcConnectionFactory"])
-    @Bean
-    @Qualifier(value = "valtimoR2dbcConnectionFactory")
-    fun valtimoR2dbcConnectionFactory(): ConnectionFactory {
-        return ConnectionFactories.get("r2dbc:postgresql://localhost:5444/gzac-core-db")
-    }
-
-    @ConditionalOnMissingBean(name = ["valtimoR2dbcEntityTemplate"])
-    @Bean
-    fun valtimoR2dbcEntityTemplate(
-        @Qualifier("valtimoR2dbcConnectionFactory") connectionFactory: ConnectionFactory
-    ): R2dbcEntityOperations {
-        val strategy = DefaultReactiveDataAccessStrategy(MySqlDialect.INSTANCE)
-        val databaseClient = DatabaseClient.builder()
-            .connectionFactory(connectionFactory)
-            .bindMarkers(MySqlDialect.INSTANCE.bindMarkersFactory)
-            .build()
-        return R2dbcEntityTemplate(databaseClient, strategy)
-    }
+@EnableJpaRepositories(basePackages = ["com.ritense.dashboard.repository"])
+@EntityScan("com.ritense.dashboard.domain")
+class DashboardAutoConfiguration {
 
     @Order(HIGHEST_PRECEDENCE + 29)
     @Bean
-    @ConditionalOnMissingBean(LiquibaseRunner::class)
-    fun dashboardLiquibaseRunner(
-        liquibaseProperties: LiquibaseProperties,
-        datasource: DataSource,
-    ): LiquibaseRunner {
-        return LiquibaseRunner(
-            liquibaseProperties,
-            datasource,
-        )
+    @ConditionalOnClass(DataSource::class)
+    @ConditionalOnMissingBean(name = ["dashboardLiquibaseMasterChangeLogLocation"])
+    fun dashboardLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
+        return LiquibaseMasterChangeLogLocation("config/liquibase/dashboard-master.xml")
     }
-
 
 }
