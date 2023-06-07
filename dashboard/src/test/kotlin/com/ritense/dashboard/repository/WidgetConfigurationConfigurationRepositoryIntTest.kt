@@ -37,6 +37,7 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
         val dashboard = dashboardRepository.save(Dashboard(key = "mine", title = "My dashboard", order = 1))
         widgetConfigurationRepository.save(
             WidgetConfiguration(
+                key = "doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().createObjectNode(),

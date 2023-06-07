@@ -34,7 +34,7 @@
 
     <changeSet author="Ritense" id="2">
         <createTable tableName="widget_configuration">
-            <column name="id" type="${uuidType}">
+            <column name="key" type="VARCHAR(256)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="dashboard_key" type="VARCHAR(256)">
