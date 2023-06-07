@@ -23,12 +23,17 @@ dockerCompose {
 
 dependencies {
 
-    /* DO NOT ADD DEPENDENCIES TO OTHER VALTIMO MODULES */
+    implementation(project(":contract"))
+
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+
+    testImplementation project(":core")
+    testImplementation project(":resource:local-resource")
+    testImplementation project(":test-utils-common")
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
