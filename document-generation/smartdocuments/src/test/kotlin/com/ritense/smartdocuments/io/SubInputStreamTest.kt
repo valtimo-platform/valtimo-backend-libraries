@@ -18,16 +18,17 @@ package com.ritense.smartdocuments.io
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import kotlin.text.Charsets.UTF_8
 
 class SubInputStreamTest {
 
     @Test
     fun `should only read part of input stream`() {
-        val inputStream = "0123456789".byteInputStream(Charsets.UTF_8)
+        val inputStream = "0123456789".byteInputStream(UTF_8)
 
         val subIn = SubInputStream(inputStream, 2, 6)
 
         val result = subIn.bufferedReader().use { it.readText() }
-        assertThat(result).isEqualTo("23456")
+        assertThat(result).isEqualTo("2345")
     }
 }
