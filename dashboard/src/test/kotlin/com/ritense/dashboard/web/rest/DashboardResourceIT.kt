@@ -42,7 +42,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 
-internal class DashboardResourceIT : BaseIntegrationTest() {
+class DashboardResourceIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext
@@ -91,6 +91,7 @@ internal class DashboardResourceIT : BaseIntegrationTest() {
         val dashboard = dashboardService.createDashboard(key = "test", title = "Test dashboard")
         widgetConfigurationRepository.save(
             WidgetConfiguration(
+                key = "doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
@@ -107,7 +108,7 @@ internal class DashboardResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$[0].key").value("test"))
             .andExpect(jsonPath("$[0].title").value("Test dashboard"))
             .andExpect(jsonPath("$[0].widgetConfigurations.size()").value(1))
-            .andExpect(jsonPath("$[0].widgetConfigurations[0].id").isNotEmpty)
+            .andExpect(jsonPath("$[0].widgetConfigurations[0].key").value("doorlooptijd"))
             .andExpect(jsonPath("$[0].widgetConfigurations[0].dataSourceKey").value("doorlooptijd"))
             .andExpect(jsonPath("$[0].widgetConfigurations[0].dataSourceProperties.threshold").value(50))
             .andExpect(jsonPath("$[0].widgetConfigurations[0].displayType").value("gauge"))
@@ -138,6 +139,7 @@ internal class DashboardResourceIT : BaseIntegrationTest() {
         val dashboard = dashboardService.createDashboard(key = "test", title = "Test dashboard")
         widgetConfigurationRepository.save(
             WidgetConfiguration(
+                key = "doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().createObjectNode(),

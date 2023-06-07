@@ -19,15 +19,13 @@ package com.ritense.dashboard.service
 import com.ritense.dashboard.domain.Dashboard
 import com.ritense.dashboard.repository.DashboardRepository
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
-import org.springframework.transaction.annotation.Transactional
 
-open class DashboardService(
+class DashboardService(
     private val dashboardRepository: DashboardRepository
 ) {
 
-    @Transactional(readOnly = true)
-    open fun getDashboards(): Collection<Dashboard> {
-        return dashboardRepository.findAllByOrderByOrderAsc()
+    fun getDashboards(): Collection<Dashboard> {
+        return dashboardRepository.findAllWithWidgetConfigurations()
     }
 
     fun createDashboard(key: String, title: String): Dashboard {

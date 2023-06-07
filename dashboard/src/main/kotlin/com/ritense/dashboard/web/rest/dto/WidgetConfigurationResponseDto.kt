@@ -18,17 +18,16 @@ package com.ritense.dashboard.web.rest.dto
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.dashboard.domain.WidgetConfiguration
-import java.util.UUID
 
 data class WidgetConfigurationResponseDto(
-    val id: UUID,
+    val key: String,
     val dataSourceKey: String,
     val displayType: String,
     val dataSourceProperties: ObjectNode
 ) {
     companion object {
         fun of(widget: WidgetConfiguration) = WidgetConfigurationResponseDto(
-            id = widget.id,
+            key = widget.key,
             dataSourceKey = widget.dataSourceKey,
             displayType = widget.displayType,
             dataSourceProperties = widget.dataSourceProperties
