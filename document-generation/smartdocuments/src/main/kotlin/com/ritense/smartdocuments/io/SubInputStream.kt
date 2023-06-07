@@ -22,6 +22,10 @@ import java.io.InputStream
 
 /*
  * A limited input stream. Only reads a section of the given input stream.
+ *
+ * @param inputStream the stream to change.
+ * @param startByteIndex the start index (inclusive).
+ * @param endByteIndex the end index (exclusive).
  */
 class SubInputStream(
     inputStream: InputStream,
@@ -40,7 +44,7 @@ class SubInputStream(
         if (closed) {
             throw IOException("Stream is closed")
         }
-        if (index > endByteIndex) {
+        if (index >= endByteIndex) {
             return -1
         }
         val b = super.read()

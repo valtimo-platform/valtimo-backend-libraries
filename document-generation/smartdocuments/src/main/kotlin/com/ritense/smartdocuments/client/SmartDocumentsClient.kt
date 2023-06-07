@@ -174,8 +174,8 @@ class SmartDocumentsClient(
             } else if ("data" == fieldName) {
                 jsonParser.nextToken()
                 documentDataStart = jsonParser.currentLocation.byteOffset
-                jsonParser.nextToken()
-                documentDataEnd = jsonParser.currentLocation.byteOffset - 2
+                jsonParser.finishToken()
+                documentDataEnd = jsonParser.currentLocation.byteOffset - 1
             }
 
             if (correctOutputFormat && fileName != null && documentDataStart != -1L) {
