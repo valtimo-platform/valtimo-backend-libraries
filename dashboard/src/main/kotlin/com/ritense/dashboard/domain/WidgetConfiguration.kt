@@ -27,7 +27,7 @@ import javax.persistence.ManyToOne
 import javax.persistence.Table
 
 @Entity
-@Table(name = "widget_configuration")
+@Table(name = "dashboard_widget_configuration")
 data class WidgetConfiguration(
 
     @Id
