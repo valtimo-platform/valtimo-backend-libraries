@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <!--
   ~ Copyright 2015-2023 Ritense BV, the Netherlands.
   ~
@@ -15,15 +15,16 @@
   ~ limitations under the License.
   -->
 
-<databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
-    <property name="uuidType" value="uuid" dbms="postgresql"/>
-
-    <include file="changelog/20230327-create-process-link-table.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/20230602-fix-actiity-type-call-activity-start.xml" relativeToChangelogFile="true"/>
+    <changeSet author="Ritense" id="1">
+        <sql>
+            UPDATE process_link
+            SET activity_type = 'CALL_ACTIVITY_START'
+            WHERE activity_type = 'CALL_ACTIVITY_START_START'
+        </sql>
+    </changeSet>
 
 </databaseChangeLog>
