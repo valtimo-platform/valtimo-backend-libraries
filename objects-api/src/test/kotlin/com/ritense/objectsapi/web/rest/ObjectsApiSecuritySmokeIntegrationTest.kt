@@ -20,5 +20,5 @@ import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
 class ObjectsApiSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
     basePackageName = "com.ritense.objectsapi",
-    ignoredPathPatterns = setOf("/api/v1/notification")
+    ignoredPathPatterns = setOf("POST /api/v1/notification")
 )

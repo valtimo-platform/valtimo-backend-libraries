@@ -22,7 +22,7 @@ import java.util.Set;
 public class FormSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTest {
     public FormSecuritySmokeIntegrationTest() {
         super("com.ritense.form", Set.of(
-            "/api/v1/form-file"
+            "GET /api/v1/form-file"
         ));
     }
 }
