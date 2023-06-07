@@ -17,16 +17,15 @@
 package com.ritense.dashboard.web.rest.dto
 
 import com.ritense.dashboard.domain.Dashboard
-import java.util.UUID
 
 data class DashboardUpdateRequestDto(
-    val id: UUID,
+    val key: String,
     val title: String
 ) {
     companion object {
         fun of(dashboard: Dashboard): DashboardUpdateRequestDto {
             return DashboardUpdateRequestDto(
-                id = dashboard.id,
+                key = dashboard.key,
                 title = dashboard.title
             )
         }

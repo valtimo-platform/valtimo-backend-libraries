@@ -34,7 +34,7 @@ class DashboardHttpSecurityConfigurer : HttpSecurityConfigurer {
                 .antMatchers(GET, "/api/v1/dashboard").hasAuthority(USER)
                 .antMatchers(POST, "/api/v1/dashboard").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/v1/dashboard").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/dashboard/{dashboard-id}").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/dashboard/{dashboard-key}").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

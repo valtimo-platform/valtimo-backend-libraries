@@ -16,6 +16,7 @@
 
 package com.ritense.dashboard.web.rest
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.dashboard.BaseIntegrationTest
 import com.ritense.dashboard.domain.WidgetConfiguration
@@ -25,6 +26,7 @@ import com.ritense.dashboard.service.DashboardService
 import com.ritense.dashboard.web.rest.dto.DashboardCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -63,9 +65,15 @@ internal class DashboardResourceIT : BaseIntegrationTest() {
             .build()
     }
 
+    @AfterEach
+    fun afterEach() {
+        widgetConfigurationRepository.deleteAll()
+        dashboardRepository.deleteAll()
+    }
+
     @Test
     fun `should create dashboard`() {
-        val dashboard = DashboardCreateRequestDto(title = "Test dashboard")
+        val dashboard = DashboardCreateRequestDto(key = "test", title = "Test dashboard")
 
         mockMvc.perform(
             post("/api/v1/dashboard")
@@ -74,13 +82,60 @@ internal class DashboardResourceIT : BaseIntegrationTest() {
         )
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.id").isNotEmpty)
-            .andExpect(jsonPath("$.title").value("anId"))
+            .andExpect(jsonPath("$.key").value("test"))
+            .andExpect(jsonPath("$.title").value("Test dashboard"))
     }
 
     @Test
     fun `should get dashboards`() {
-        val dashboard = dashboardService.createDashboard("Test dashboard")
+        val dashboard = dashboardService.createDashboard(key = "test", title = "Test dashboard")
+        widgetConfigurationRepository.save(
+            WidgetConfiguration(
+                dashboard = dashboard,
+                dataSourceKey = "doorlooptijd",
+                dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
+                displayType = "gauge",
+                order = 1
+            )
+        )
+
+        mockMvc.perform(
+            get("/api/v1/dashboard")
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[0].key").value("test"))
+            .andExpect(jsonPath("$[0].title").value("Test dashboard"))
+            .andExpect(jsonPath("$[0].widgetConfigurations.size()").value(1))
+            .andExpect(jsonPath("$[0].widgetConfigurations[0].id").isNotEmpty)
+            .andExpect(jsonPath("$[0].widgetConfigurations[0].dataSourceKey").value("doorlooptijd"))
+            .andExpect(jsonPath("$[0].widgetConfigurations[0].dataSourceProperties.threshold").value(50))
+            .andExpect(jsonPath("$[0].widgetConfigurations[0].displayType").value("gauge"))
+    }
+
+    @Test
+    fun `should update dashboard`() {
+        val dashboard1 = dashboardService.createDashboard("1", "First dashboard")
+        val dashboard2 = dashboardService.createDashboard("2", "Second dashboard")
+        val updateRequest = listOf(dashboard2, dashboard1.copy(title = "Third dashboard"))
+            .map { DashboardUpdateRequestDto.of(it) }
+
+        mockMvc.perform(
+            put("/api/v1/dashboard")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(jacksonObjectMapper().writeValueAsString(updateRequest))
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[0].key").value("2"))
+            .andExpect(jsonPath("$[0].title").value("Second dashboard"))
+            .andExpect(jsonPath("$[1].key").value("1"))
+            .andExpect(jsonPath("$[1].title").value("Third dashboard"))
+    }
+
+    @Test
+    fun `should delete dashboard`() {
+        val dashboard = dashboardService.createDashboard(key = "test", title = "Test dashboard")
         widgetConfigurationRepository.save(
             WidgetConfiguration(
                 dashboard = dashboard,
@@ -92,49 +147,11 @@ internal class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            get("/api/v1/dashboard")
-        )
-            .andDo(print())
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content[0].id").isNotEmpty)
-            .andExpect(jsonPath("$.content[0].title").value("Test dashboard"))
-            .andExpect(jsonPath("$.content[0].widgetConfigurations.size()").value(1))
-            .andExpect(jsonPath("$.content[0].widgetConfigurations[0].id").isNotEmpty)
-            .andExpect(jsonPath("$.content[0].widgetConfigurations[0].dashboard").value(dashboard))
-            .andExpect(jsonPath("$.content[0].widgetConfigurations[0].dataSourceKey").value("doorlooptijd"))
-            .andExpect(jsonPath("$.content[0].widgetConfigurations[0].dataSourceProperties").isNotEmpty)
-            .andExpect(jsonPath("$.content[0].widgetConfigurations[0].displayType").value("gauge"))
-            .andExpect(jsonPath("$.content[0].widgetConfigurations[0].order").value(1))
-    }
-
-    @Test
-    fun `should update dashboard`() {
-        val dashboard1 = dashboardService.createDashboard("First dashboard")
-        val dashboard2 = dashboardService.createDashboard("Second dashboard")
-        val updateRequest = listOf(dashboard2, dashboard1.copy(title = "Third dashboard"))
-            .map { DashboardUpdateRequestDto.of(it) }
-
-        mockMvc.perform(
-            put("/api/v1/dashboard")
-                .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(updateRequest))
-        )
-            .andDo(print())
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content[0].title").value("Second dashboard"))
-            .andExpect(jsonPath("$.content[1].title").value("Third dashboard"))
-    }
-
-    @Test
-    fun `should delete dashboard`() {
-        val dashboard = dashboardService.createDashboard("Test dashboard")
-
-        mockMvc.perform(
-            delete("/api/v1/dashboard/{dashboardId}", dashboard.id)
+            delete("/api/v1/dashboard/{dashboardId}", dashboard.key)
         )
             .andDo(print())
             .andExpect(status().isNoContent)
 
-        assertThat(dashboardRepository.existsById(dashboard.id)).isFalse
+        assertThat(dashboardRepository.existsById(dashboard.key)).isFalse
     }
 }

@@ -20,38 +20,37 @@ import com.ritense.dashboard.domain.Dashboard
 import com.ritense.dashboard.repository.DashboardRepository
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
 
 open class DashboardService(
     private val dashboardRepository: DashboardRepository
 ) {
 
-    @Transactional
+    @Transactional(readOnly = true)
     open fun getDashboards(): Collection<Dashboard> {
         return dashboardRepository.findAllByOrderByOrderAsc()
     }
 
-    fun createDashboard(title: String): Dashboard {
+    fun createDashboard(key: String, title: String): Dashboard {
         val order = dashboardRepository.count().toInt()
         return dashboardRepository.save(
             Dashboard(
+                key = key,
                 title = title,
                 order = order
             )
         )
     }
 
-    @Transactional
-    open fun updateDashboards(dashboardUpdateDtos: List<DashboardUpdateRequestDto>): List<Dashboard> {
+    fun updateDashboards(dashboardUpdateDtos: List<DashboardUpdateRequestDto>): List<Dashboard> {
         dashboardUpdateDtos.forEach {
-            if (!dashboardRepository.existsById(it.id)) {
-                throw RuntimeException("Failed to updated dashboard. Cause dashboard with id '${it.id}' doesn't exist.")
+            if (!dashboardRepository.existsById(it.key)) {
+                throw RuntimeException("Failed to updated dashboard. Cause dashboard with key '${it.key}' doesn't exist.")
             }
         }
 
         val dashboards = dashboardUpdateDtos.mapIndexed { index, dashboardUpdateDto ->
             Dashboard(
-                id = dashboardUpdateDto.id,
+                key = dashboardUpdateDto.key,
                 title = dashboardUpdateDto.title,
                 order = index
             )
@@ -60,7 +59,7 @@ open class DashboardService(
         return dashboardRepository.saveAll(dashboards)
     }
 
-    fun deleteDashboard(dashboardId: UUID) {
-        dashboardRepository.deleteById(dashboardId)
+    fun deleteDashboard(dashboardKey: String) {
+        dashboardRepository.deleteById(dashboardKey)
     }
 }

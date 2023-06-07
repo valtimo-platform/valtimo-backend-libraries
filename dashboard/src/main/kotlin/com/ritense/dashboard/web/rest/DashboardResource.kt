@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import java.util.UUID
 
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class DashboardResource(
@@ -49,6 +48,7 @@ class DashboardResource(
         @RequestBody dashboardDto: DashboardCreateRequestDto
     ): ResponseEntity<DashboardResponseDto> {
         val dashboard = dashboardService.createDashboard(
+            dashboardDto.key,
             dashboardDto.title,
         )
         return ResponseEntity.ok(DashboardResponseDto.of(dashboard))
@@ -56,7 +56,6 @@ class DashboardResource(
 
     @PutMapping("/v1/dashboard")
     fun editDashboard(
-        @PathVariable(name = "dashboardId") dashboardId: UUID,
         @RequestBody dashboardUpdateRequestDtos: List<DashboardUpdateRequestDto>
     ): ResponseEntity<List<DashboardResponseDto>> {
         val dashboardResponseDtos = dashboardService.updateDashboards(dashboardUpdateRequestDtos)
@@ -64,11 +63,11 @@ class DashboardResource(
         return ResponseEntity.ok(dashboardResponseDtos)
     }
 
-    @DeleteMapping("/v1/dashboard/{dashboardId}")
+    @DeleteMapping("/v1/dashboard/{dashboardKey}")
     fun deleteDashboard(
-        @PathVariable(name = "dashboardId") dashboardId: UUID
+        @PathVariable(name = "dashboardKey") dashboardKey: String
     ): ResponseEntity<Unit> {
-        dashboardService.deleteDashboard(dashboardId)
+        dashboardService.deleteDashboard(dashboardKey)
         return ResponseEntity.noContent().build()
     }
 }

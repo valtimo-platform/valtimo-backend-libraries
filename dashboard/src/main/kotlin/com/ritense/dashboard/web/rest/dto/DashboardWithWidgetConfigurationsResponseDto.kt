@@ -17,17 +17,16 @@
 package com.ritense.dashboard.web.rest.dto
 
 import com.ritense.dashboard.domain.Dashboard
-import java.util.UUID
 
 data class DashboardWithWidgetConfigurationsResponseDto(
-    val id: UUID,
+    val key: String,
     val title: String,
     val widgetConfigurations: List<WidgetConfigurationResponseDto>
 ) {
     companion object {
         fun of(dashboard: Dashboard): DashboardWithWidgetConfigurationsResponseDto {
             return DashboardWithWidgetConfigurationsResponseDto(
-                id = dashboard.id,
+                key = dashboard.key,
                 title = dashboard.title,
                 widgetConfigurations = dashboard.widgetConfigurations.map { WidgetConfigurationResponseDto.of(it) }
             )
